@@ -27,6 +27,7 @@ package com.sun.enterprise.rails;
 
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
 import org.glassfish.api.deployment.Deployer;
@@ -35,6 +36,7 @@ import org.glassfish.api.deployment.MetaData;
 import com.sun.grizzly.jruby.RubyObjectPool;
 import com.sun.grizzly.jruby.RubyRuntimeAsyncFilter;
 import java.util.Iterator;
+import java.util.logging.Level;
 import org.jruby.RubyArray;
 import org.jruby.RubyException;
 import org.jruby.exceptions.RaiseException;
@@ -132,7 +134,12 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
         context.getLogger().info("Loading application " + 
                 context.getCommandParameters().getProperty(DeployCommand.NAME) 
                 + " at " + contextRoot);
-        grizzlyAdapter.registerEndpoint(contextRoot, null, adapter, adapter);
+        //@TODO change EndportRegistrationException processing if required
+        try {
+            grizzlyAdapter.registerEndpoint(contextRoot, null, adapter, adapter);
+        } catch (EndpointRegistrationException e) {
+            context.getLogger().log(Level.WARNING, "Error registering RailsAdapter", e);
+        }
         return adapter;
     }
 

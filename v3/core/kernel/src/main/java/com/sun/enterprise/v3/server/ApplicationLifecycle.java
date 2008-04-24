@@ -31,6 +31,7 @@ import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.EnableCommand;
+import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -891,9 +892,14 @@ abstract public class ApplicationLifecycle {
             } else {
                 Thread.currentThread().setContextClassLoader(module.getContainerInfo().getContainer().getClass().getClassLoader());
             }
+            
+            //@TODO change EndportRegistrationException processing if required
             try {
                 final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
                 adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
+            } catch (EndpointRegistrationException e) {
+                logger.log(Level.WARNING, "Exception during unloading module '" + 
+                        module + "'", e);
             } catch(ClassCastException e) {
                 // do nothing the application did not have an adapter
             }

@@ -33,10 +33,9 @@ import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.common.Result;
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
-import com.sun.grizzly.tcp.Adapter;
 
 import java.util.List;
 import java.util.Collection;
@@ -89,8 +88,13 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 if (loadToAll || vsList.contains(vs.getName())
                         || isAliasMatched(vsList,vs)) {
                     for (int port : vs.getPorts()) {
-                        CoyoteAdapter adapter = container.adapterMap.get(Integer.valueOf(port));
-                        grizzlyAdapter.registerEndpoint(contextRoot, adapter.getPort(), c, adapter, this);
+                            CoyoteAdapter adapter = container.adapterMap.get(Integer.valueOf(port));
+                        //@TODO change EndportRegistrationException processing if required
+                        try {
+                            grizzlyAdapter.registerEndpoint(contextRoot, adapter.getPort(), c, adapter, this);
+                        } catch(EndpointRegistrationException e) {
+                            logger.log(Level.WARNING, "Error while deploying", e);
+                        }
                     }
                 }
             } else {
@@ -137,7 +141,12 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                             + " from virtual server "
                             + vs.getName());
                     // ToDo : dochez : not good, we unregister from everywhere...
-                    grizzlyAdapter.unregisterEndpoint(ctxtRoot, this);
+                    //@TODO change EndportRegistrationException processing if required
+                    try {
+                        grizzlyAdapter.unregisterEndpoint(ctxtRoot, this);
+                    } catch (EndpointRegistrationException e) {
+                        logger.log(Level.WARNING, "Error while undeploying", e);
+                    }
                 } else {
                     isLeftOver = true;
                 }

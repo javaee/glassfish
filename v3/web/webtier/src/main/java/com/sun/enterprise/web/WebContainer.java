@@ -168,6 +168,7 @@ import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 
 /**
  * Web container service
@@ -2475,8 +2476,20 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
                             WebApplication application = new WebApplication(this, 
                                     wmInfo, grizzlyAdapter);
- 	                    grizzlyAdapter.registerEndpoint(wmInfo.getContextPath(), 
-                                    adapter, application);
+                            //@TODO change EndportRegistrationException processing if required
+                            try {
+                                grizzlyAdapter.registerEndpoint(wmInfo.getContextPath(),
+                                        adapter, application);
+                            } catch(EndpointRegistrationException e) {
+                                String msg = _rb.getString(
+                                        "webcontainer.defaultWebModuleError");
+                                msg = MessageFormat.format(
+                                        msg,
+                                        new Object[]{defaultPath,
+                                    vs.getName()
+                                });
+                                _logger.log(Level.SEVERE, msg, e);
+                            }
                         }
                     }
                 }

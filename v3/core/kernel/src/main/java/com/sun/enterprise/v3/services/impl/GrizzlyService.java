@@ -118,10 +118,17 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
             // now register all proxies you can find out there !
             // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
             for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
-                registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
+                //@TODO change EndportRegistrationException processing if required
+                try {
+                    registerEndpoint(subAdapter.getContextRoot(), null, 
+                            subAdapter, null);
+                } catch(EndpointRegistrationException e) {
+                    logger.log(Level.WARNING, 
+                            "GrizzlyService endpoint registration problem", e);
+                }
             }
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
-            logger.warning("Closing initialized network proxies");
+            logger.log(Level.WARNING, "Closing initialized network proxies");
             for(NetworkProxy proxy : proxies) {
                 try {
                     proxy.stop();
@@ -151,7 +158,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * @param endpointAdapter servicing requests.
      */
     public void registerEndpoint(String contextRoot, com.sun.grizzly.tcp.Adapter endpointAdapter,
-                                 ApplicationContainer container) {
+                                 ApplicationContainer container) throws EndpointRegistrationException {
 
         registerEndpoint(contextRoot, null, endpointAdapter, container);
     }
@@ -163,8 +170,9 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers, com.sun.grizzly.tcp.Adapter endpointAdapter,
-                                 ApplicationContainer container) {
+    public void registerEndpoint(String contextRoot, Collection<String> vsServers,
+            com.sun.grizzly.tcp.Adapter endpointAdapter,
+            ApplicationContainer container) throws EndpointRegistrationException {
 
         for (NetworkProxy proxy : proxies) {
             proxy.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
@@ -180,7 +188,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
                                  int port,
                                  Collection<String> vsServers,
                                  com.sun.grizzly.tcp.Adapter endpointAdapter,
-                                 ApplicationContainer container) {
+                                 ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
             if (proxy.getPort() == port) {
                 proxy.registerEndpoint(contextRoot, vsServers,
@@ -193,17 +201,17 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     /**
      * Removes the contex-root from our list of endpoints.
      */
-    public void unregisterEndpoint(String contextRoot) {
+    public void unregisterEndpoint(String contextRoot) throws EndpointRegistrationException {
         unregisterEndpoint(contextRoot, null);
     }
 
     /**
      * Removes the contex-root from our list of endpoints.
      */
-    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
+    public void unregisterEndpoint(String contextRoot, 
+            ApplicationContainer app) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
             proxy.unregisterEndpoint(contextRoot, app);
         }
-
     }    
 }

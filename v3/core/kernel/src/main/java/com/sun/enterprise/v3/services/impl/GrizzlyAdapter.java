@@ -108,11 +108,17 @@ public class GrizzlyAdapter extends AbstractAdapter implements NetworkProxy {
      */
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
                                  com.sun.grizzly.tcp.Adapter endpointAdapter,
-                                 ApplicationContainer container) {
+                                 ApplicationContainer container) throws EndpointRegistrationException {
         
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
         }
+        
+        if (vsMapper.getEndpoint(contextRoot) != null) {
+            throw new EndpointRegistrationException("Application with context-root '" + 
+                    contextRoot + "' is already registered on Adapter '" + toString() + "'!");
+        }
+        
         vsMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
     }
 

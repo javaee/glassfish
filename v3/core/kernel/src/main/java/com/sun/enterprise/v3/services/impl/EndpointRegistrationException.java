@@ -23,31 +23,16 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import java.util.Collection;
-import org.glassfish.api.deployment.ApplicationContainer;
-
 /**
- * registration interface to use with the Mapper classes. 
+ * Exception, which will be thrown on endpoint registration problems.
  * 
- * @author Jeanfrancois Arcand
+ * @author Alexey Stashok
  */
-public interface EndpointMapper<E> {
-    
-    
-    /**
-     * Registers a new endpoint (proxy implementation) for a particular
-     * context-root. All request coming with the context root will be dispatched
-     * to the proxy instance passed in.
-     * @param contextRoot for the proxy
-     * @param endpointAdapter servicing requests.
-     */
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers, E adapter,
-                                 ApplicationContainer container) throws EndpointRegistrationException;
-    
-    
-    /**
-     * Removes the contex-root from our list of endpoints.
-     */
-    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException;
-    
+public class EndpointRegistrationException extends Exception {
+    public EndpointRegistrationException() {
+    }
+
+    public EndpointRegistrationException(String message) {
+        super(message);
+    }
 }

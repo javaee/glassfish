@@ -37,6 +37,7 @@ import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
+import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Host;
@@ -150,8 +151,13 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
                 Collection<String> c = new HashSet<String>();
                 c.add(vs.getName());
                 for (int port : vs.getPorts()) {
-                    Adapter adapter = container.adapterMap.get(Integer.valueOf(port));                    
-                    grizzlyAdapter.registerEndpoint(ctxtRoot, c, adapter, webApplication);
+                    Adapter adapter = container.adapterMap.get(Integer.valueOf(port));
+                    //@TODO change EndportRegistrationException processing if required
+                    try {
+                        grizzlyAdapter.registerEndpoint(ctxtRoot, c, adapter, webApplication);
+                    } catch (EndpointRegistrationException e) {
+                        dc.getLogger().log(Level.WARNING, "Error while deploying", e);
+                    }
                 }
             }
         }
@@ -167,7 +173,12 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
         } else if ("/".equals(ctxtRoot)) {
             ctxtRoot = "";
         }
-        grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+        //@TODO change EndportRegistrationException processing if required
+        try {
+            grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+        } catch (EndpointRegistrationException e) {
+            dc.getLogger().log(Level.WARNING, "Error while undeploying", e);
+        }
 
         List<String> targets = StringUtils.parseStringList(
             params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
@@ -201,7 +212,12 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
                                         + " from virtual server "
                                         + vs.getName());
                     // ToDo : dochez : not good, we unregister from everywhere.
-                    grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+                    //@TODO change EndportRegistrationException processing if required
+                    try {
+                        grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+                    } catch (EndpointRegistrationException e) {
+                        dc.getLogger().log(Level.WARNING, "Error while undeploying", e);
+                    }
 		}
             }
         }

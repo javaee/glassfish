@@ -153,7 +153,7 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
                                  Adapter endpointAdapter,
-                                 ApplicationContainer container) {
+                                 ApplicationContainer container) throws EndpointRegistrationException {
         
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
@@ -171,7 +171,7 @@ public class GrizzlyProxy implements NetworkProxy {
     /**
      * Removes the contex-root from our list of endpoints.
      */
-    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
+    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
         endPointMapper.unregisterEndpoint(contextRoot, app);
         vsMapper.unregisterEndpoint(contextRoot, app);
     }
