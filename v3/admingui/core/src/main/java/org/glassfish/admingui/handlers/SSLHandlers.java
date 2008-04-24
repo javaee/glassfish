@@ -148,6 +148,7 @@ public class SSLHandlers {
             boolean isEdit = ((Boolean)handlerCtx.getInputValue("Edit")).booleanValue();
             Map sslProps = (Map)handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("sslProps");
             if(isEdit){
+                sslProps = null;
                 if(type.equals("jmx")){
                     JMXConnectorConfig jmxConfig = config.getAdminServiceConfig().getJMXConnectorConfigMap().get(oName);
                     sslContainerConfig = (SSLConfigContainer)jmxConfig;
