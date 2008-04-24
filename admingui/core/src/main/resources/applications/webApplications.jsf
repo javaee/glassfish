@@ -38,6 +38,7 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
+        setResourceBundle(key="help" bundle="core.Helplinks");
         getDeployedWebInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
         setPageSessionAttribute(key="editLink" value="/applications/webApplicationsEdit.jsf");

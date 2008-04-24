@@ -10,7 +10,6 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -36,25 +35,13 @@
 <!-- applications/uploadButtons.inc -->
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
-        onClick="javascript: 
+            onClick="javascript: 
             if (checkType(this, '#{typeId}', '#{extensionId}', '$resource{i18n.msg.JS.deploy.confirmType}')){
-                var result;
-                if(getSelectedValue('uploadRdBtn')=='client') {
-                    result = (checkRequired('#{fileuploadId}', '#{reqMsg}'));
-                } else {
-                    result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
-                }
-                if(result == true) {
-                        if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                            submitAndDisable(this, '$resource{i18n.button.Processing}');
-                            alert(' after guiValidate, return true');
-                            return true;
-                        }
-                }  
-              }
-              alert('return false');
+                    if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                            return submitAndDisable(this, '$resource{i18n.button.Processing}');                       
+            } 
               return false;            
-                ">
+            ">
         <!command
          compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
             if (${needUpload}){

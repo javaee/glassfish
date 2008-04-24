@@ -122,11 +122,10 @@
                         onClick="javascript: showNewAccount(false)" onKeyPress="javascript: return true;" />
                     </sun:property>
                      <sun:property id="unameProp" style="margin-left: 17pt;" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.userName}" helpText="$resource{i18n.reg.userNameHelp}" >                           
-                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" >
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{userNameId});
                         />
-                    </sun:textField>
+                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" />
                     </sun:property>
                     
                     <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.pswd}" helpText="$resource{i18n.reg.resetPswdHelp}" >                           
@@ -308,14 +307,15 @@
                 }
             }
             
+            
             function validateRegisterField(){
                 ss = getSelectedValue('accountGroup');
                 if( ss =='hasAccount'){
-                    test= (checkRequired('#{userNameId}', '#{reqMsg}') && checkRequired('#{pswdId}',  '#{reqMsg}') ) ;
+                    test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswdProp',  '#{reqMsg}') ) ;
                     if (!test){
                         return test;
                     }
-                    if (! checkProxyPort('#{portId}')){
+                    if (! checkProxyPort('#{portId}:port')){
                         return false;
                     }
                     return true;
@@ -352,7 +352,7 @@
             
             function checkEmailAdr(componentId){
                 var component = document.getElementById(componentId);
-                var emailAdr = component.value;
+                var emailAdr = component.getProps().value;
                 if (( emailAdr.indexOf("@") == -1) || (emailAdr.indexOf("@") != emailAdr.lastIndexOf("@")) ||
                     ( (emailAdr.indexOf("@")+1) == emailAdr.length)){
                     alert('$resource{i18n.msg.JS.improperEmail}');
@@ -364,8 +364,8 @@
             }
             
             function checkMatchingPswd(pswdId1, pswdId2){
-                var pswd = document.getElementById(pswdId1).value;
-                var pswd2 = document.getElementById(pswdId2).value;
+                var pswd = document.getElementById(pswdId1).getProps().value;
+                var pswd2 = document.getElementById(pswdId2).getProps().value;
                 if (pswd != pswd2){
                     alert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
                     document.getElementById(pswdId1).select();
@@ -377,7 +377,7 @@
             
             function checkProxyPort(componentId){
                 var component = document.getElementById(componentId);
-                if (! checkForPortOrEmpty(component.value)) {
+                if (! checkForPortOrEmpty(component.getProps().value)) {
                     component.select();
                     component.focus();
                     return showAlert('$resource{i18n.msg.JS.enterPortValue} '+  getLabel( component ));

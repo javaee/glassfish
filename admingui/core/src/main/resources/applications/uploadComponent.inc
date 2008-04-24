@@ -62,6 +62,7 @@
                 label="$resource{i18n.deploy.chooseJarLabel}" 
                 selected="#{uploadRdBtn}"  selectedValue="client" 
                 onClick="javascript:
+                    //disableDOMComponent('#{dirPathId}');
                     disableComponent('#{dirPathId}', 'text');
                     disableBtnComponent('#{dirSelectBtnId}');
                     disableBtnComponent('#{filSelectBtnId}');
@@ -86,10 +87,12 @@
                 selected="#{uploadRdBtn}"  selectedValue="serverSide" 
                 label="$resource{i18n.deploy.chooseLocal}" 
                 onClick="javascript:  
-                    enableComponent('#{dirPathId}', 'text');
+                    enableDOMComponent('#{dirPathId}');
                     enableBtnComponent('#{dirSelectBtnId}');
                     enableBtnComponent('#{filSelectBtnId}');
                     disableComponent('#{fileuploadId}', 'file'); "
+
+                    
             /> 
             "<br />
 

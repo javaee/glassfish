@@ -85,8 +85,8 @@
 </f:verbatim>
 			    <sun:image url="#{request.contextPath}/resource/#{loginProductImageURL}" 
                                  alt="#{fullProductName}" 
-                                 width="#{loginProductImageWidth}" 
-                                 height="#{loginProductImageHeight}" />
+                                 width="284" 
+                                 height="42" />
 
 <f:verbatim>
 			    <table border="0" cellspacing="0" cellpadding="0">

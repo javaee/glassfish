@@ -70,6 +70,10 @@ function getFileInputElement(componentName) {
     return webui.suntheme.upload.getInputElement(componentName);
 }
 
+function disableDOMComponent(componentName) {
+    document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
+}
+
 function disableComponent(componentName, type) {
     component = null;
     if (type != null && type == 'file') {
@@ -86,16 +90,13 @@ function disableComponent(componentName, type) {
     component.className='TxtFldDis_sun4';
 }
 
+
 function disableBtnComponent(componentName) {
-    component = document.getElementById(componentName);
-    component.disabled=true;
-    component.className='Btn1Dis';
+   document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis'});
 }
 
 function enableBtnComponent(componentName) {
-    component = document.getElementById(componentName);
-    component.disabled=false;
-    component.className='Btn1';
+    document.getElementById(componentName).setProps({disabled: false, className: 'Btn1'});
 }
 
 function enableComponent(componentName, type) {
@@ -111,6 +112,10 @@ function enableComponent(componentName, type) {
     }
     component.className='TxtFld_sun4';
     component.disabled=false;
+}
+
+function enableDOMComponent(componentName) {
+      document.getElementById(componentName).setProps({disabled: false, className: 'TxtFld_sun4'});
 }
 
 function isChecked (elementName)
@@ -1111,8 +1116,8 @@ function checkForNumericValue(value) {
 //Special check for StatementTimeout for JDBC and connector connection pool
 
 function checkPoolAttr(componentId, msg){
-    component = getTextElement(componentId);
-    value = component.value;
+    var component = getTextElement(componentId);
+    var value = component.getProps().value;
     if (value == '' || value == '-1' || checkForIntValue(value))
         return true;
     showAlert(msg + ' ' + getLabel(component));
@@ -1123,9 +1128,11 @@ function checkPoolAttr(componentId, msg){
 
 function checkRequired(componentId, reqMsg){
     component = document.getElementById(componentId);
-    var result = (component.value != '') && (isWhitespace(component.value) == false); 
+    var value = component.getProps().value;
+    var result = (value != '') && (isWhitespace(value) == false); 
     if (result == false) {
         showAlert(reqMsg + ' ' + getLabel(component));
+        component.select();
         component.focus();
     }
     return result;

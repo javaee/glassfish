@@ -70,12 +70,10 @@
 
 		<div style="text-align: center;">
     </f:verbatim>
+              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.parent.location='sysnet/#{registrationNodePage}.jsf'" onKeyPress="javascript: return true;">
         <sun:button text="$resource{i18n.button.register}" 
-              onClick="document.getElementById('${popupId}').style.visibility='hidden'; 
+              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.parent.location='sysnet/#{registrationNodePage}.jsf' 
                admingui.nav.selectTreeNodeById('form:registration'); target='main'" onKeyPress="javascript: return true;">
-            <!command 
-                redirect("sysnet/#{registrationNodePage}.jsf");
-            />
         </sun:button>
         <sun:button text="$resource{i18n.button.regRemind}" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}" onKeyPress="javascript: return true;">
             <!command
