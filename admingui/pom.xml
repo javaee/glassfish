@@ -10,7 +10,7 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>admingui</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-tp-2-SNAPSHOT</version>
+    <version>10.0-tp-2-SNAPSHOT</version>
     <name>Admin Console Webapp Packages</name>
 
     <modules>
@@ -32,7 +32,7 @@
                         <processor>
                             <groupId>com.sun.jsftemplating</groupId>
                             <artifactId>jsftemplating-dt</artifactId>
-                            <version>1.2-SNAPSHOT</version>
+                            <version>1.2-GFv3-tp2</version>
                         </processor>
                     </processors>
                 </configuration>
@@ -73,18 +73,18 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2-GFv3-tp2</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2-GFv3-tp2</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dynafaces</artifactId>
-            <version>0.1-1.2-SNAPSHOT</version>
+            <version>0.1-1.2-GFv3-tp2</version>
         </dependency>
         <dependency>
             <groupId>javax.faces</groupId>
