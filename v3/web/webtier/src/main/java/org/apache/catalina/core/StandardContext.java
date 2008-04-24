@@ -112,6 +112,7 @@ import org.apache.catalina.Pipeline;
 //end HERCULES:add
 import org.apache.catalina.Server;
 import org.apache.catalina.ServerFactory;
+import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEjb;
@@ -4381,6 +4382,26 @@ public class StandardContext
 
     // --------------------------------------------------------- Public Methods
 
+
+    /**
+     * SailFin extension.
+     *
+     * Allows context to implement additional tasks at the beginning of its
+     * pipeline invocation.
+     */
+    public void beginPipelineInvoke(Session s) {
+        // Deliberate noop
+    }
+
+    /**
+     * SailFin extension.
+     *
+     * Allows context to implement additional tasks at the end of its
+     * pipeline invocation.
+     */
+    public void endPipelineInvoke() {
+        // Deliberate noop
+    }
 
     /**
      * Configure and initialize the set of filters for this Context.
