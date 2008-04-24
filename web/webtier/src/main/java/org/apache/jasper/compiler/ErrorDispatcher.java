@@ -262,7 +262,7 @@ public class ErrorDispatcher {
 
 	JasperException newEx = new JasperException(file + "("
                 + where.getLineNumber() + "," + where.getColumnNumber()
-                + ")" + " " + je.getMessage());
+                + ")" + " " + je.getMessage(),je.getCause());
         newEx.setStackTrace(je.getStackTrace());
  
         throw newEx;
