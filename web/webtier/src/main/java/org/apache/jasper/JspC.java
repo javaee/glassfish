@@ -805,7 +805,10 @@ public class JspC implements Options {
      * Sets the path prefix for .dtd resources
      */
     public static void setDtdResourcePrefix(String prefix) {
-        ParserUtils.setDtdResourcePrefix(prefix);
+        // TODO: JspC needs to launch the webtier in HK2 habitat,
+        // and when you do that, you can override WebEntityResolver
+        // so that this option takes an effect.
+        throw new UnsupportedOperationException();
     }
     // END PWC 6386258
 
