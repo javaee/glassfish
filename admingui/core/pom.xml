@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>1.0-tp-2-SNAPSHOT</version>
+        <version>10.0-tp-2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,6 +58,13 @@
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>deployment-client</artifactId>
+            <version>${glassfish.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
             <version>${glassfish.version}</version>
             <scope>provided</scope>
         </dependency>
