@@ -39,7 +39,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.jvnet.hk2</groupId>
-  <artifactId>osgi-manifest-viewer</artifactId>
+  <artifactId>bundle-viewer</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Dumps the OSGi manifest entry in a human readable foramt</name>
   
