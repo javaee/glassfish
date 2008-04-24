@@ -121,14 +121,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         return createHabitat(name, h);
     }
 
-    @Override
     public Habitat createHabitat(String name, Habitat h) throws ComponentException {
         if (h==null)
             h = newHabitat();
         return createHabitat(name,new InhabitantsParser(h));
     }
 
-    @Override
     public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
         try {
             Habitat habitat = parser.habitat;
