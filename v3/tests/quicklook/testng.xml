@@ -76,7 +76,7 @@
        <class name="test.jpa.jpainjectemf.JpaInjectEMFTestNG" />
     </classes>
   </test>
-  <test name="jpainjectemf">
+  <test name="security_hello_jsp">
     <classes>
        <class name="test.security.hellojsp.HelloJSPTestNG" />
     </classes>
