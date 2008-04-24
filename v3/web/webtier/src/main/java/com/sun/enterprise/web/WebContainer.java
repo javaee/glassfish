@@ -90,6 +90,7 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -390,6 +391,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     boolean instanceEnableCookies = true;
 
+    private Config cfg;
+
     /**
      * Static initialization
      */
@@ -459,7 +462,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          */
 
         LogService logService = null;
-        Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
+        cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
         getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
         logService = cfg.getLogService();
         initLogLevel(logService);
@@ -4619,9 +4622,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private void initInstanceSessionProperties() {
 
-        /*ServerConfigLookup lookup = new ServerConfigLookup();
-        com.sun.enterprise.config.serverbeans.SessionProperties spBean =
-                lookup.getInstanceSessionProperties();
+        ServerConfigLookup lookup = new ServerConfigLookup(cfg);
+        SessionProperties spBean = lookup.getInstanceSessionProperties();
 
         if (spBean == null || spBean.getProperty() == null) {
             return;
@@ -4646,7 +4648,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 Object[] params = { propName };
                 _logger.log(Level.INFO, "webcontainer.notYet", params);
             }
-        }*/
+        }
     }
 
     private static synchronized void setJspFactory() {
