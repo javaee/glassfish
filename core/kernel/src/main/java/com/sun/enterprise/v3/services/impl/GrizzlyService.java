@@ -171,6 +171,25 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
         }
     }
 
+
+    /**
+     * Registers a new endpoint for the given context root at the given port
+     * number.
+     */
+    public void registerEndpoint(String contextRoot,
+                                 int port,
+                                 Collection<String> vsServers,
+                                 com.sun.grizzly.tcp.Adapter endpointAdapter,
+                                 ApplicationContainer container) {
+        for (NetworkProxy proxy : proxies) {
+            if (proxy.getPort() == port) {
+                proxy.registerEndpoint(contextRoot, vsServers,
+                                       endpointAdapter, container);
+            }
+        }
+    }
+
+
     /**
      * Removes the contex-root from our list of endpoints.
      */

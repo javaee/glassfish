@@ -172,4 +172,9 @@ public class GrizzlyAdapter extends AbstractAdapter implements NetworkProxy {
         return vsMapper;
     }
 
+    
+    public int getPort() {
+        return portNumber;
+    }
+        
 }

@@ -67,6 +67,9 @@ public class GrizzlyProxy implements NetworkProxy {
         
     private VirtualHostMapper vsMapper;
     
+
+    private int portNumber;
+
     
     //TODO: This must be configurable.
     private final static boolean isWebProfile = 
@@ -95,7 +98,7 @@ public class GrizzlyProxy implements NetworkProxy {
         this.httpService = httpService;
 
         String port = httpListener.getPort();
-        int portNumber = 8080;
+        portNumber = 8080;
 
         if (port==null) {
             logger.severe("Cannot find port information from domain.xml");
@@ -210,6 +213,11 @@ public class GrizzlyProxy implements NetworkProxy {
     
     public VirtualHostMapper getVsMapper() {
         return vsMapper;
+    }
+
+
+    public int getPort() {
+        return portNumber;
     }
 
 }

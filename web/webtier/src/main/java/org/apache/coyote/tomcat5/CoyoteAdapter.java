@@ -1054,5 +1054,14 @@ public class CoyoteAdapter
             serverName = System.getProperty("product.name");
         }
     }
-       
+
+
+    /**
+     * Gets the port of this CoyoteAdapter.
+     *
+     * @return the port of this CoyoteAdapter
+     */
+    public int getPort() {
+        return connector.getPort();
+    }       
 }
