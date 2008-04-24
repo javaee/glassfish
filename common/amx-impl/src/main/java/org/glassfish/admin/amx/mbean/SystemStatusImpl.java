@@ -63,7 +63,7 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
     {
         final Map<String,Object> result = new HashMap<String,Object>();
         boolean pingable = false;
-        final Habitat habitat = com.sun.enterprise.v3.server.Globals.getDefaultHabitat();
+        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
         ConnectorRuntime connRuntime;
 
         // check pool name

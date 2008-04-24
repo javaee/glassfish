@@ -947,7 +947,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 	{
 		Object	result	= null;
 		
-		if ( ! (isLegalAttribute( name ) || name.equals( OBJECT_REF_ATTR_NAME) ) )
+		if ( name == null || ! (isLegalAttribute( name ) || name.equals( OBJECT_REF_ATTR_NAME) ) )
 		{
 			throw new AttributeNotFoundException( name );
 		}
@@ -988,9 +988,9 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         final Method m	= findGetter( name );
         if ( m != null )
         {
-            //cdebug( "getAttributeInternal: found getter method for: " + name );
+            //debug( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
-            debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
+            //debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
             handleManually	= false;
         }
         else if ( isSpecialAMXAttr( name ) )
@@ -1000,12 +1000,10 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         }
         else if ( haveDelegate() )
         {
-       // System.out.println( "getAttributeInternal: haveDelegate() for: " + name );
             trace( "getAttribute: " + name + " HAVE DELEGATE " );
                 
             if ( getDelegate().supportsAttribute( name ) )
             {
-                trace( "getAttribute: " + name + " CALLING DELEGATE " );
                 try
                 {
                     result	= delegateGetAttribute( name );
@@ -1018,7 +1016,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
             }
             else
             {
-                trace( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
+                //cdebug( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
                 handleManually	= true;
             }
         }
@@ -1433,7 +1431,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
             final AttributeList delegateSuccess = getDelegate().setAttributes( delegatedAttrs, oldValues );
             successList.addAll( delegateSuccess );
             
-            sendAttributeChangeNotifications( delegateSuccess, oldValues );
+            //sendAttributeChangeNotifications( delegateSuccess, oldValues );
         }
         
         if ( otherAttrs.size() != 0 )
@@ -2272,6 +2270,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         }
         catch( Exception e )
         {
+            e.printStackTrace();
            throw new RuntimeException(e);
         }
     }

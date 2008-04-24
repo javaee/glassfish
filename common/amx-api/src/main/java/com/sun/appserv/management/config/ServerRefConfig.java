@@ -79,5 +79,5 @@ public interface ServerRefConfig extends RefConfig, HealthCheckerConfigCR, Conta
         this application to consider this application unavailable to
         them. 
      */    
-     public void setLBEnabled(final boolean lbEnabled);        
+     public void setLBEnabled(final boolean String);        
 }

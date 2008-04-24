@@ -1,121 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>GlassFish Admin Console - Installation in Progress ...</title>
-	<style type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>GlassFish Admin Console - Installation in Progress ...</title>
 
-
-		body {
-		font-family:Arial, Helvetica, sans-serif;
-		font-size:76%;
-		}
-		
-		h4 {font-style:normal; font-size:.9em;
-		}
-		
-		h1 {
-		margin-left:395px;
-		margin-top:2em;
-		color:#46626e;
-		font-size:21px;
-		}
-
-		#container {
-			padding-left: 0px;      
-			padding-right: 180px;     
-			background:#d4dbe1;
-			height:435px;
-		}
-		
-		#container .column {
-			position: relative;
-			float: left;
-		}
-		
-		#container #buttons {
-		margin-left:465px;
-		color:#666;
-		}
-		
-		#center {
-			padding-right:10px;       
-			width: 100%;
-			height:435px;
-		}
-		
-		#center p {
-		margin-left:395px;
-		}
-		
-		#footer {
-			clear: both;
-		}
-		* html #left {
-			left: 150px; 
-		}
-
-		#container {
-			overflow: hidden;
-		}
-
-		* html body {
-			overflow: hidden;
-		}
-		
-		* html #footer-wrapper {
-			float: left;
-			position: relative;
-			width: 100%;
-			padding-bottom: 10010px;
-			margin-bottom: -10000px;
-			background:#4a5c6a;         
-		}
-
-		body {
-			margin: 0;
-			padding: 0;
-			background:#4a5c6a;
-		}
-
-		#header, #footer {
-			font-size: small;
-			text-align: center;
-			padding: 0.3em 0;
-			background:#4a5c6a;
-			height:20px;
-			color:#FFFFFF;
-		}
-
-		// #center {background-image:url(login-backimage2.jpg);
-		background-repeat:no-repeat;
-		background-color:#FFFFFF;
-		}
-
-		#container .column {
-			text-align: left;
-		}
-
-	</style>
+<style type="text/css">
+a:link {color:#003399;text-decoration:none}
+a:visited {color:#003399;text-decoration:none}
+a:hover {color:#003399;text-decoration:underline}
+body {font-family:Arial,Helvetica,sans-serif;font-size:76%;margin:0px;padding:0px;background:#4a5c6a;}
+h1 {padding-top:50px;margin-top:0px;color:#46626e;font-size:21px;}
+oldh1 {margin-left:395px;margin-top:2em;color:#46626e;font-size:21px;}
+h2 {color:#46626e;font-size:16px;}
+oldh2 {margin-left:395px;color:#46626e;font-size:16px;}
+h4 {font-style:normal;font-size:.9em;color:#666;}
+* html body {overflow:hidden;}
+* html #footer-wrapper {float:left;position:relative;width:100%;padding-bottom:10010px;margin-bottom:-10000px;background:#4a5c6a;}
+.subtitle {color:#000000;font-size:16px;font-weight:bold;}
+.container {overflow:hidden;text-align:center;background:#d4dbe1;height:435px;}
+.container .column {text-align:left;height:435px;margin:auto;width:540px;padding-left:300px;padding-right:40px;background-image:url(http://download.java.net/glassfish/v3/admingui/download-backimage.jpg);background-repeat:no-repeat;background-color:#FFFFFF;}
+.container #fields {margin-left:22px;margin-top:1em;}
+#footer {clear:both;}
+#header, #footer {font-size:small;text-align:center;padding:0.3em 0;background:#4a5c6a;height:20px;color:#FFFFFF;font-weight:bold;}
+.progress {padding-left:130px;padding-top:10px;}
+</style>
+<meta http-equiv="refresh" content="5;url=status.html" />
 </head>
 
-<body>
-
-	<div id="header"></div>
-
-	<div id="container">
-
-		<div id="center" class="column">
-                     <h1>Installing the GlassFish Administration Console ...</h1>
-                     <h1>Refresh the page for status ... </h1>   
-                     <h1>Current status: %%%STATUS%%%</h1>
-                </div>
-        </div>      
-
-	<div id="footer-wrapper">
-		<div id="footer">Thank you for using GlassFish Application Server!</div>
-</div>
-
+<body onLoad="document.getElementById('spin').src = 'http://download.java.net/glassfish/v3/admingui/asynch-1F.gif';">
+    <div id="header"></div>
+    <div class="container">
+	<div id="center" class="column">
+	    <!-- <div id="page_content"> -->
+	    <h1>GlassFish Application Server -<br>
+		<small>Administration Console</small></h1>
+	    <p> <span class="subtitle">GlassFish Administration Console - Installation</span>
+		<br>The browser will refresh automatically, or you may press reload on your browser.</p>
+	    <!-- don't change the names -->
+	    <form id="form1" name="form1" method="post" action="%%%MYURL%%%">
+		<p><h2>Installation in progress...<br />
+		    <img id="spin" class="progress" src="http://download.java.net/glassfish/v3/admingui/asynch-1F.gif" border="0" alt="status indicator image" align="center"></h2></p>
+		<div id="fields">
+		    <p> <span class="subtitle">Current Status:</subtitle>
+			<small>%%%STATUS%%%</small></p>
+		</div>
+	    </form>
+	</div>
+   </div>
+   <div id="footer-wrapper">
+       <div id="footer">Thank you for using GlassFish Application Server!</div>
+    </div>
 </body>
-
 </html>

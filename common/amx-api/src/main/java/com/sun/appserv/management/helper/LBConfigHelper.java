@@ -472,7 +472,7 @@ public final class LBConfigHelper {
                 Map<String, ServerRefConfig> serverRefConfigMap = 
                     mDomainConfig.getClustersConfig().getClusterConfigMap().get(target).getServerRefConfigMap();
                 for (ServerRefConfig serverRefConfig : serverRefConfigMap.values()) {
-                    if (serverRefConfig.getLBEnabled()){
+                    if ( serverRefConfig.getLBEnabled() ){
                         String msg = formatter.format(
                         resBundle.getString("DisableServer"), target);
                         throw new MBeanException(new RuntimeException(msg));            
@@ -484,7 +484,7 @@ public final class LBConfigHelper {
             lbConfig.removeClusterRefConfig(target);
         } else {
             if (!force && 
-                (lbConfig.getServerRefConfigMap().get(target).getLBEnabled())){
+                ( lbConfig.getServerRefConfigMap().get(target).getLBEnabled()) ){
                 String msg = formatter.format(
                     resBundle.getString("DisableServer"), target);
                 throw new MBeanException(new RuntimeException(msg));            
@@ -770,7 +770,7 @@ public final class LBConfigHelper {
             if(app != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(app.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled(true);
+                    deployedItemRefConfig.setLBEnabled( true );
                 }
                 continue;
             }
@@ -780,7 +780,7 @@ public final class LBConfigHelper {
             if (web != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(web.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled(true);
+                    deployedItemRefConfig.setLBEnabled( true);
                 }
                 continue;
             }
@@ -790,7 +790,7 @@ public final class LBConfigHelper {
             if (ejb != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(ejb.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled(true);
+                    deployedItemRefConfig.setLBEnabled( true);
                 }
                 continue;
             }
@@ -800,7 +800,7 @@ public final class LBConfigHelper {
             if (rar != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(rar.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled(true);
+                    deployedItemRefConfig.setLBEnabled( true);
                 }
                 continue;
             }
@@ -810,7 +810,7 @@ public final class LBConfigHelper {
             if (appClient != null) {
                 //if the type is user (There is no API yet), then only set the lb-enabled to true
                 //if(appClient.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled(true);
+                    deployedItemRefConfig.setLBEnabled( true);
                 //}
                 continue;
             }

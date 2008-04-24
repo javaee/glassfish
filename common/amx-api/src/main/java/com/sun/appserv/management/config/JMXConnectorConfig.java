@@ -61,14 +61,14 @@ public interface JMXConnectorConfig
 
 	public String	getPort();
 
-	public boolean	getAcceptAll();
+	public String	getAcceptAll();
 
-	public void		setAcceptAll( final boolean value );
+	public void		setAcceptAll( final String value );
 
 	public String	getAuthRealmName();
 
-	public boolean	getSecurityEnabled();
+	public String	getSecurityEnabled();
 
-	public void		setSecurityEnabled( final boolean value );
+	public void		setSecurityEnabled( final String value );
 
 }

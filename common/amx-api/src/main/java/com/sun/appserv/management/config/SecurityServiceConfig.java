@@ -50,8 +50,8 @@ public interface SecurityServiceConfig extends
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SECURITY_SERVICE_CONFIG;
 
-	public boolean	getAuditEnabled();
-	public void	setAuditEnabled( boolean value );
+	public String	getAuditEnabled();
+	public void	setAuditEnabled( String value );
 
 	public String	getAuditModules();
 	public void	setAuditModules( String value );
@@ -97,12 +97,12 @@ public interface SecurityServiceConfig extends
         Tomcat servlet container. It is off by default.    
         @since AppServer 9.0
      */
-    public boolean  getActivateDefaultPrincipalToRoleMapping();
+    public String  getActivateDefaultPrincipalToRoleMapping();
     /**
         @see #getActivateDefaultPrincipalToRoleMapping
         @since AppServer 9.0
      */
-    public void     setActivateDefaultPrincipalToRoleMapping( boolean enabled );
+    public void     setActivateDefaultPrincipalToRoleMapping( String enabled );
 
 // -------------------- Operations --------------------
 
@@ -203,19 +203,6 @@ public interface SecurityServiceConfig extends
 	 */
 	public Map<String,MessageSecurityConfig>	getMessageSecurityConfigMap();
 	
-	/**
-    could never have worked; removing
-		Create a new &lt;message-security-config&gt;
-
-		@param authLayer
-		@param reserved
-		@return A proxy to the MessageSecurityConfig MBean.
-		@see MessageSecurityConfigKeys
-        @deprecated use the form which takes providerID, etc.
-	public MessageSecurityConfig	createMessageSecurityConfig(
-		String	authLayer,
-		Map<String,String>		reserved );
-	*/
         
     /**
 		Create a new &lt;message-security-config&gt;.  Because there must exist at least one

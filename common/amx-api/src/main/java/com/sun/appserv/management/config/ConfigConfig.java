@@ -83,20 +83,17 @@ public interface ConfigConfig
 	/**
         @deprecated used {@link ThreadPoolsConfig#getThreadPoolConfigMap}
 	 */
-    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
 	public Map<String,ThreadPoolConfig>	getThreadPoolConfigMap();
     
     
 	/**
         @deprecated used {@link ThreadPoolsConfig#createThreadPoolConfig}
 	 */
-    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
 	public ThreadPoolConfig	createThreadPoolConfig( String name, Map<String,String> optional );
 
 	/**
         @deprecated used {@link ThreadPoolsConfig#removeThreadPoolConfig}
 	 */
-    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
 	public void			removeThreadPoolConfig( String name );
 
 	/**

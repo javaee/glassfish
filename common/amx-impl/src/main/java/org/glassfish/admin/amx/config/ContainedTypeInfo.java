@@ -72,9 +72,7 @@ private static void cdebug( final String s ) { System.out.println(s); }
          List<Class<? extends ConfigBeanProxy>> result = null;
         try
         {
-        cdebug( "Calling ConfigSupport.getSubElementsTypes" );
             final Class<?>[] subTypes = ConfigSupport.getSubElementsTypes( cb );
-        cdebug( "Calling ConfigSupport.getSubElementsTypes DONE" );
             result = new ArrayList();
             for( final Class<?> theClass : subTypes )
             {

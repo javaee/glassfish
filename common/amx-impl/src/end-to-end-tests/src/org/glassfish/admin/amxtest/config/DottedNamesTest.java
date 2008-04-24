@@ -36,8 +36,6 @@
 package org.glassfish.admin.amxtest.config;
 
 import com.sun.appserv.management.base.DottedNames;
-import com.sun.appserv.management.config.ConfigDottedNames;
-import com.sun.appserv.management.monitor.MonitoringDottedNames;
 import org.glassfish.admin.amxtest.AMXTestBase;
 
 import javax.management.Attribute;
@@ -108,7 +106,7 @@ public final class DottedNamesTest
     public void
     testGetAllConfigDottedNames() {
         final long start = now();
-        final ConfigDottedNames dottedNames = getDomainRoot().getConfigDottedNames();
+        final DottedNames dottedNames = getDomainRoot().getDottedNames();
 
         final String[] names = getAllNames(dottedNames);
 
@@ -118,7 +116,7 @@ public final class DottedNamesTest
         printElapsed("testGetAllConfigDottedNames", start);
     }
 
-    public void
+/*    public void
     testGetAllMonitoringDottedNames() {
         if (checkNotOffline("testMonitoringRefresh")) {
             final MonitoringDottedNames dottedNames = getDomainRoot().getMonitoringDottedNames();
@@ -130,17 +128,18 @@ public final class DottedNamesTest
             checkResultsFromGet(names, results);
             printElapsed("testGetAllMonitoringDottedNames", start);
         }
-    }
+    }*/
 
     public void
-    testWildGetAllConfigDottedNames() {
+    testWildGetAllDottedNames() {
         final long start = now();
-        final ConfigDottedNames dottedNames = getDomainRoot().getConfigDottedNames();
+        final DottedNames dottedNames = getDomainRoot().getDottedNames();
 
         final Attribute[] results = (Attribute[]) dottedNames.dottedNameGet("*");
         checkResultsFromWildGet(results);
         printElapsed("testWildGetAllConfigDottedNames", start);
     }
+/*
 
 
     public void
@@ -153,15 +152,16 @@ public final class DottedNamesTest
             printElapsed("testWildGetAllMonitoringDottedNames", start);
         }
     }
+*/
 
     /**
      Test that we can set (change) a dotted name.
      */
     public void
-    testConfigDottedNameSet() {
+    testDottedNameSet() {
         final long start = now();
 
-        final ConfigDottedNames dottedNames = getDomainRoot().getConfigDottedNames();
+        final DottedNames dottedNames = getDomainRoot().getDottedNames();
 
         final String target = "domain.locale";
         final Object result = dottedNames.dottedNameGet(target);
@@ -201,15 +201,17 @@ public final class DottedNamesTest
         return (results.length);
     }
 
-    public void
-    testRecursiveConfigDottedNameList() {
+        public void
+    testRecursiveDottedNameList() {
         final long start = now();
-        final ConfigDottedNames dottedNames = getDomainRoot().getConfigDottedNames();
+        final DottedNames dottedNames = getDomainRoot().getDottedNames();
 
         final int numFound = testList(dottedNames, "domain");
         assert (numFound >= 4);    // should be at least 4.
         printElapsed("testRecursiveConfigDottedNameList", start);
     }
+
+    /*
 
     public void
     testRecursiveMonitoringDottedNameList() {
@@ -225,7 +227,7 @@ public final class DottedNamesTest
 
             printElapsed("testRecursiveMonitoringDottedNameList", start);
         }
-    }
+    }*/
 }
 
 

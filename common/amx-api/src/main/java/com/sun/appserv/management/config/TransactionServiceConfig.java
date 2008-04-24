@@ -49,8 +49,8 @@ public interface TransactionServiceConfig extends ConfigElement, PropertiesAcces
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.TRANSACTION_SERVICE_CONFIG;
 
-	public boolean	getAutomaticRecovery();
-	public void	setAutomaticRecovery( boolean value );
+	public String	getAutomaticRecovery();
+	public void	setAutomaticRecovery( String value );
 
 	public String	getHeuristicDecision();
 	public void	setHeuristicDecision( String value );

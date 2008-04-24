@@ -36,15 +36,10 @@
 package org.glassfish.admin.amx.mbean;
 
 import static com.sun.appserv.management.base.SystemInfo.*;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
 
-import javax.management.JMException;
-import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.util.Set;
+
+import org.glassfish.admin.amx.util.Issues;
 
 /**
     Single-use utility class to contain the  details of initializing various
@@ -61,6 +56,8 @@ final class SystemInfoIniter
     {
         mServer     = mbeanServer;
         mSystemInfo = systemInfo;
+        Issues.getAMXIssues().notDone( "How to implement supportsClusters()" );
+        Issues.getAMXIssues().notDone( "How to implement isRunningInDomainAdminServer()" );
     }
     
         public void
@@ -76,62 +73,14 @@ final class SystemInfoIniter
     		private final boolean
 	supportsClusters( )
 	{
-		final ObjectName	serversObjectName	= getOldServersMBeanObjectName();
-		
-		boolean	supportsClusters	= false;
-		if ( serversObjectName != null )
-		{
-			// see if the 'servers' MBean supports listing unclustered instances
-			try
-			{
-				final MBeanInfo				info	= mServer.getMBeanInfo( serversObjectName );
-				
-				final String	operationName	= "listUnclusteredServerInstancesAsString";
-				final Set	operations	= JMXUtil.findInfoByName( info.getOperations(), operationName );
-				supportsClusters	= operations.size() != 0;
-				
-			}
-			catch( JMException e )
-			{
-				// should never happen...
-				throw new RuntimeException( "problem with 'servers' MBean: " + serversObjectName, e );
-			}
-		}
-		else
-		{
-			// presumably, we're in another instance, which implies multiple instances.
-			// assume this also means clustering is possible
-			supportsClusters	= true;
-		}
-		
-		return( supportsClusters );
-	}
-    
-    /**
-		Get the ObjectName of the "type=servers" MBean, which only exists in the DAS.
-	 */
-		private ObjectName
-	getOldServersMBeanObjectName()
-	{
-		// if we find the old "servers" MBean, it should only be running in the DAS.
-		final ObjectName	pattern		=
-				Util.newObjectName( "com.sun.appserv", "category=config,type=servers" );
-		final Set<ObjectName> serversSet	= JMXUtil.queryNames( mServer, pattern, null );
-		
-		final ObjectName	objectName	= serversSet.size() == 0 ? 
-					null : (ObjectName)GSetUtil.getSingleton( serversSet );
-					
-		return( objectName );
+        return false;
 	}
 	
 		private boolean
 	isRunningInDomainAdminServer()
 	{
-		return( getOldServersMBeanObjectName() != null );
+		return true;
 	}
-
-    
-
 }
 
 

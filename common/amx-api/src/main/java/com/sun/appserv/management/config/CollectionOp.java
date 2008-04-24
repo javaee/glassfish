@@ -33,69 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * DeploymentSource.java
- *
- * Created on April 8, 2004, 9:13 AM
- */
-
-package com.sun.appserv.management.deploy;
-
-import com.sun.appserv.management.base.MapCapable;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.jar.JarInputStream;
+package com.sun.appserv.management.config;
 
 /**
-	Abstraction for archives delivery for a deployment operation
-
-	This interface may be instantiated by using routines in
-	{@link com.sun.appserv.management.deploy.DeploymentSupport}
- */
-public interface DeploymentSource extends MapCapable
+    For anonymous non-singleton attributes like &lt;jvm-options>, a command may be
+    inserted when setting the values; the first String of the String[] is the
+    command. If not included, then the default command is {@link #COLLECTION_OP_ADD}.
+    <p>
+    Examples:<br>
+    <pre>
+    setJVMOptions( new String[] { COLLECTION_OP_REPLACE, "-client", "-Xmx" } // replaces all with these
+    setJVMOptions( new String[] { "-client", "-Xmx" }   // adds these 
+    setJVMOptions( new String[] { COLLECTION_OP_REMOVE, "-client", "-Xmx" }   // removes these
+    </pre>
+*/
+public final class CollectionOp
 {
-	/**
-		Value of the MAP_CAPABLE_TYPE_KEY when turned into a Map.
-	 */
-	public final static String	DEPLOYMENT_SOURCE_CLASS_NAME	= 
-			"com.sun.appserv.management.deploy.DeploymentSource";
-			
-    /** 
-     * (Optional)
-     * @return the archive as a file handle if possible 
-     * otherwise return null.
-     */
-    public File getArchive();
-       
-    /** 
-     * @return a JarInputStream on the archive. 
-     */
-    public JarInputStream getArchiveAsStream()
-    	throws IOException;
+    private CollectionOp() {}
     
-    /** 
-     * @return true if this archive is complete or false
-     * if it is a partial delivery (redeploy).
-     */
-    public boolean isCompleteArchive();
+    public static final String COLLECTION_CMD_PREFIX = "###";
+    public static final String COLLECTION_CMD_SUFFIX = "###";
     
-    /**
-     * In case of a partial delivery.
-     * @return entries added iterator
-     */
-    public String[] getEntriesAdded();
+    /** indicates that the values are to be replaced with the new ones */
+    public static final String COLLECTION_OP_REPLACE = COLLECTION_CMD_PREFIX + "replace" + COLLECTION_CMD_SUFFIX;
     
-    /**
-     * In case of a partial archive delivery.
-     * @return entries removed iterator
-     */
-    public String[] getEntriesRemoved();
+    /** indicates that the values are to be added to the existing ones */
+    public static final String COLLECTION_OP_ADD     = COLLECTION_CMD_PREFIX + "add" + COLLECTION_CMD_SUFFIX;
     
-    /**
-     * In case of a partial delivery.
-     * @return entries deleted iterator
-     */
-    public String[] getEntriesDeleted();
+    /** indicates that the values are to be remove from the existing ones */
+    public static final String COLLECTION_OP_REMOVE  = COLLECTION_CMD_PREFIX + "remove" + COLLECTION_CMD_SUFFIX;
 }
+

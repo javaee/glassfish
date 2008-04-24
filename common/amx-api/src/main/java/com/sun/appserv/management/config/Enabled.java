@@ -51,10 +51,10 @@ public interface Enabled
 	/**
 		Return true if the item is enabled, false otherwise.
 	 */
-	public boolean	getEnabled();
+	public String	getEnabled();
 	
 	/**
 		Mark the item as enabled.
 	 */
-	public void		setEnabled( boolean enabled );
+	public void		setEnabled( String enabled );
 }

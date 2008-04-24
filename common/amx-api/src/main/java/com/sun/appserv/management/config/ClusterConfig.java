@@ -64,7 +64,7 @@ public interface ClusterConfig
 	/**
 		Get the name of the config element referenced by this cluster.
 	 */
-	public String	getReferencedConfigName();
+	public String	getConfigRef();
 
 	/**
 		Calls Container.getContaineeMap( XTypes.SERVER_REF_CONFIG ).
@@ -117,11 +117,11 @@ public interface ClusterConfig
 	/**
 	 * @since AppServer 9.0
 	*/
-	public boolean getHeartbeatEnabled();
+	public String getHeartbeatEnabled();
 	/**
 	 * @since AppServer 9.0
 	*/
-	public void setHeartbeatEnabled(final boolean enabled);
+	public void setHeartbeatEnabled(final String enabled);
 
 	/**
 	 * @since AppServer 9.0

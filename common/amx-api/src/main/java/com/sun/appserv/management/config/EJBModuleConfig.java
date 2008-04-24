@@ -72,12 +72,12 @@ public interface EJBModuleConfig
 		Finer-grained control exists at lower level inside each bean.
 		@see #setAvailabilityEnabled
 	 */
-	public boolean	getAvailabilityEnabled();
+	public String	getAvailabilityEnabled();
 
 	/**
 		@see #getAvailabilityEnabled
 	*/       
-	public void		setAvailabilityEnabled( boolean enabled );
+	public void		setAvailabilityEnabled( String enabled );
 	
 	
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();

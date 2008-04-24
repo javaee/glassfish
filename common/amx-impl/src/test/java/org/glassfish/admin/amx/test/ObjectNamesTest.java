@@ -33,58 +33,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.deploy;
+package org.glassfish.admin.amx.test;
 
-import java.io.Serializable;
-import java.util.Map;
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.util.ObjectNames;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
+import org.junit.Before;
 
-/**
-	Routines to convert to/from Map and Deployment types.
-
-	{link com.sun.appserv.management.deploy.DeploymentMgr}
- */
-
-public final class DeploymentSupport
+public final class ObjectNamesTest extends TestBase
 {
-	/**
-		Create a DeploymentSource represented by a Map.
-		
-		@param m a Map representing a DeploymentSource.
-		@return an implementation of DeploymentSource
-	 */
-		public static <T extends Serializable> DeploymentSource
-	mapToDeploymentSource( final Map<String,T> m )
-	{
-		return( new DeploymentSourceImpl( m ) );
-	}
-	
-	
-	/**
-		Create a DeploymentProgress represented by a Map.
-		
-		@param m a Map representing a DeploymentProgress.
-		@return an implementation of DeploymentProgress
-	 */
-		public static <T extends Serializable> DeploymentProgress
-	mapToDeploymentProgress( final Map<String,T> m )
-	{
-		return( new DeploymentProgressImpl( m ) );
-	}
-	
-	
-	/**
-		Create a DeploymentProgress represented by a Map.
-		
-		@param m a Map representing a DeploymentStatus.
-		@return a DeploymentStatus
-	 */
-		public static <T extends Serializable> DeploymentStatus
-	mapToDeploymentStatus( final Map<String,T> m )
-	{
-		return( new DeploymentStatusImpl( m ) );
-	}
+    public ObjectNamesTest() {
+    }
+
+    private ObjectNames get() { return ObjectNames.getInstance(); }
+    
+    @Before
+    public void setUp() {
+        initBootUtil();
+    }
+    
+    @Test
+    public void testCreate() {
+        final ObjectNames objectNames = get();
+    }
+    
+    @Test
+    public void testMisc() {
+        get().getJMXDomain();
+        final ObjectName objectName = get().getDomainRootObjectName();
+        
+        get().getSingletonName( "X-FooBar" );
+    }
 }
+
+
+
 
 
 

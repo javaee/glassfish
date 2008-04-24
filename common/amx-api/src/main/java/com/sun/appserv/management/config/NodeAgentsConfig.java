@@ -39,18 +39,28 @@ package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.config.NodeAgentConfig;
 
+import java.util.Map;
 
 /**
-    Configuration for the &lt;resources&gt; element; it is an internal "node" which
-    groups all resources under itself.  The AMX API "hides" such MBeans, and while they
-    can be used, they can be bypassed by most users.
+    Configuration for the &lt;node-agents&gt; element; it is an internal "node" which
+    groups all resources under itself.
+    @since Glassfish V3
 */
 public interface NodeAgentsConfig
 	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.NODE_AGENTS_CONFIG;
+    
+
+	/**
+		Calls Container.getContaineeMap( XTypes.NODE_AGENT_CONFIG ).
+		@return Map of items, keyed by name.
+		@see com.sun.appserv.management.base.Container#getContaineeMap
+	 */
+	public Map<String,NodeAgentConfig>		getNodeAgentConfigMap();
 }
 
 

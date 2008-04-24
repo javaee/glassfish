@@ -65,8 +65,8 @@ public final class ClusteredServerConfigTest
     sanityCheck(final ClusteredServerConfig csc) {
         assert XTypes.CLUSTERED_SERVER_CONFIG.equals(csc.getJ2EEType());
 
-        final String configName = csc.getReferencedConfigName();
-        final String nodeAgentName = csc.getReferencedNodeAgentName();
+        final String configName = csc.getConfigRef();
+        final String nodeAgentName = csc.getConfigRef();
 
         final Map<String, DeployedItemRefConfig> deployedItems =
                 csc.getDeployedItemRefConfigMap();

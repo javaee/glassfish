@@ -33,72 +33,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.test;
 
-/*
- * DeploymentProgress.java
- *
- * Created on April 8, 2004, 9:35 AM
- */
+import org.glassfish.admin.amx.util.ObjectNames;
+import org.glassfish.admin.amx.loader.BootUtil;
 
-package com.sun.appserv.management.deploy;
+import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.After;
 
-import com.sun.appserv.management.base.MapCapable;
+@Ignore
+class TestBase extends junit.framework.TestCase {
 
-import java.util.Locale;
-
-
-
-/**
-	Interface to provide deployment feedback while deployment 
-	is executing in the server backend.
-
-	This interface may be instantiated by using routines in
-	{@link com.sun.appserv.management.deploy.DeploymentSupport}
- */
-public interface DeploymentProgress extends MapCapable
-{
-	/**
-		Value of the MAP_CAPABLE_TYPE_KEY when turned into a Map.
-	 */
-	public final static String	DEPLOYMENT_PROGRESS_CLASS_NAME	=
-			"com.sun.appserv.management.deploy.DeploymentProgress";
-
-
-	/**
-		Key for the progress percent as returned by getProgressPercent().
-	 */
-	public static final String	PROGRESS_PERCENT_KEY	= "ProgressPercent";
-	
-	/**
-		Key for the Description as returned by getDescription().
-	 */
-	public static final String	DESCRIPTION_KEY	= "Description";
-	
-	/**
-		Key prefix for the Description as returned by getDescription().  The key for
-		a given locale is LOCALIZED_DESCRIPTION_KEY_BASE + "_" + Locale.toString()
-	 */
-	public static final String	LOCALIZED_DESCRIPTION_KEY_BASE	= "LocalizedDescription";
+    /** some tests might need this */
+    protected static void initBootUtil() {
+        System.setProperty( "com.sun.aas.instanceRoot", "/tmp/amx-test" );
+        BootUtil.init( true );
+        BootUtil.getInstance();
+    }
 
     
-    /**
-     * @return the deployment progress number between 0 and 
-     * 100 (deployment finished). This number is purely 
-     * indicative and cannot be used to calculate actual 
-     * remaining time
-     * @return number from 0 to 100 indicating status
-     */
-    public byte getProgressPercent();
-    
-    /**
-     * @return the last meaningful description of the current
-     * deployment operation
-     */
-    public String getDescription();
-    
-    /**
-     * @return the last meaningful localized description of 
-     * the current deployment operation.
-     */
-    public String getLocalizedDescription(Locale locale);
+    protected void
+    checkAssertsOn() {
+        try {
+            assert false;
+            throw new Error("Assertions must be enabled for unit tests");
+        }
+        catch (AssertionError a) {
+            // OK, this is the desired outcome
+        }
+    }
+
+
+    public TestBase() {
+        checkAssertsOn();
+    }
 }
+
+
+
+
+
+

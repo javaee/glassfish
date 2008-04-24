@@ -33,24 +33,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.config;
+package org.glassfish.admin.amx.test;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 
-/**
-  @see org.glassfish.api.amx.AMXConfigInfo
-  @see AMXCreateInfo
-*/
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface AMXForwardTo
+import org.glassfish.admin.amx.util.SingletonEnforcer;
+
+public final class SingletonEnforcerTest extends TestBase
 {
-    /**
-        Forward the request to a singleton child of the specified j2eeType
-     */
-    public String containeeJ2EEType() default "";
+    public SingletonEnforcerTest() {
+    }
+
+    private static final class Dummy {}
+    
+    @Test
+    public void testForNull() {
+        assertTrue( SingletonEnforcer.get( Dummy.class ) == null );
+    }
+
+    @Test
+    public void testVariety() {
+        SingletonEnforcer.register( String.class, "hello" );
+        assertNotNull( SingletonEnforcer.get( String.class ) );
+        
+        SingletonEnforcer.register( Boolean.class, Boolean.TRUE );
+        assertNotNull( SingletonEnforcer.get( Boolean.class ) );
+        
+        SingletonEnforcer.register( Integer.class, new Integer(0) );
+        assertNotNull( SingletonEnforcer.get( Integer.class ) );
+    }
+    
+    /*
+    @Test(expected=IllegalArgumentException.class)
+    public void testForBrokenJUnit() {
+        throw new IllegalArgumentException( "expected" );
+    }
+    */
+
+
+    private static final class Dummy2 {}
+    @Test
+    public void testForDuplicates() {
+        final String s = "";
+        SingletonEnforcer.register( Dummy2.class, this );
+        try {
+            SingletonEnforcer.register( Dummy2.class, this );
+        }
+        catch( IllegalArgumentException e) { /*OK*/ }
+    }
 }
+
+
+
+
+
+

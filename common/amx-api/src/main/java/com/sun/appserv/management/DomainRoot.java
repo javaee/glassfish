@@ -37,15 +37,12 @@
 package com.sun.appserv.management;
 
 import com.sun.appserv.management.base.*;
-import com.sun.appserv.management.config.ConfigDottedNames;
 import com.sun.appserv.management.config.DomainConfig;
-import com.sun.appserv.management.deploy.DeploymentMgr;
 import com.sun.appserv.management.ext.lb.LoadBalancer;
 import com.sun.appserv.management.ext.update.UpdateStatus;
 import com.sun.appserv.management.ext.wsmgmt.WebServiceMgr;
 import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.monitor.JMXMonitorMgr;
-import com.sun.appserv.management.monitor.MonitoringDottedNames;
 import com.sun.appserv.management.monitor.MonitoringRoot;
 
 import java.util.Map;
@@ -165,19 +162,6 @@ public interface DomainRoot extends Container
     public UploadDownloadMgr		getUploadDownloadMgr();
 
     /**
-        @return the singleton {@link ConfigDottedNames}.
-        @deprecated soon to go away, use getDottedNames
-     */
-    public ConfigDottedNames		getConfigDottedNames() ;
-
-    /**
-        @return the singleton {@link MonitoringDottedNames}
-        @deprecated soon to go away, use getDottedNames
-     */
-    public MonitoringDottedNames	getMonitoringDottedNames() ;
-    
-
-    /**
         @return the singleton {@link DottedNames}.
      */
     public DottedNames		getDottedNames() ;
@@ -186,11 +170,6 @@ public interface DomainRoot extends Container
         @return the singleton {@link MonitoringRoot}.
      */
     public MonitoringRoot		getMonitoringRoot() ;
-
-    /**
-        @return the singleton {@link DeploymentMgr}.
-     */
-    public DeploymentMgr		getDeploymentMgr() ;
 
     /**
         Get all the {@link LoadBalancer} instances

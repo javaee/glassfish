@@ -53,8 +53,8 @@ public interface EJBContainerAvailabilityConfig extends ConfigElement, Propertie
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EJB_CONTAINER_AVAILABILITY_CONFIG;
 
-	public boolean	getAvailabilityEnabled();
-	public void	setAvailabilityEnabled( final boolean value );
+	public String	getAvailabilityEnabled();
+	public void	setAvailabilityEnabled( final String value );
 
 	public String	getSFSBHAPersistenceType();
 	/**

@@ -33,34 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/enterprise/management/deploy/DeploymentCallback.java,v 1.2 2007/05/05 05:31:15 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:15 $
- */
-package com.sun.enterprise.management.deploy;
+package com.sun.appserv.management.client.prefs;
 
-import com.sun.appserv.management.deploy.DeploymentProgress;
-import com.sun.appserv.management.deploy.DeploymentStatus;
-
-/**
-	Intended for implementing code to make note of the relevant
-	deployment events.
+/** An exception class to communicate the error in accessing or mutating the store.
+ * @since Appserver 9.0
  */
-public interface DeploymentCallback
-{
-	/**
-		Deployment has finished.  This callback should only be made once when
-		the deployment has finished.
-	 */
-	public void	deploymentDone( DeploymentStatus finalStatus );
-	
-	/**
-		New progress information is available.  This callback may be called
-		an arbitrary number of times, but may not be called after deploymentDone()
-		has been called.
-	 */
-	public void	deploymentProgress( DeploymentProgress progress );
+public class StoreException extends Exception {
+ static final long serialVersionUID = 8911126457304139178L;
+    
+    /**
+     * Creates a new instance of <code>StoreException</code> without detail message.
+     */
+    public StoreException() {
+    }
+    
+    
+    /**
+     * Constructs an instance of <code>StoreException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public StoreException(final String msg) {
+        super(msg);
+    }
+    
+    public StoreException(final Throwable t) {
+        super(t);
+    }
+    
+    public StoreException(final String msg, final Throwable t) {
+        super (msg, t);
+    }
 }
-

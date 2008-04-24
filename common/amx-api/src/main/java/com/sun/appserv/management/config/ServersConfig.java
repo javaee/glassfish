@@ -45,9 +45,9 @@ import java.util.Map;
 
 
 /**
-    Configuration for the &lt;resources&gt; element; it is an internal "node" which
-    groups all resources under itself.  The AMX API "hides" such MBeans, and while they
-    can be used, they can be bypassed by most users.
+    Configuration for the &lt;servers&gt; element; it is an internal "node" which
+    groups all resources under itself.
+    @since Glassfish V3
 */
 public interface ServersConfig
 	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement, Singleton

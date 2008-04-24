@@ -50,7 +50,7 @@ public interface JMSAvailabilityConfig extends ConfigElement, PropertiesAccess
 	public static final String	J2EE_TYPE	= XTypes.JMS_AVAILABILITY_CONFIG;
 	
 	/**                      
-        This boolean flag controls whether the MQ cluster associated  
+        This String flag controls whether the MQ cluster associated  
         with the application server cluster is HA enabled or not. If  
         this attribute is "false", then the MQ cluster pointed to by  
         the jms-service element is considered non-HA. JMS Messages    
@@ -66,12 +66,12 @@ public interface JMSAvailabilityConfig extends ConfigElement, PropertiesAccess
         turned off by default [i.e. the MQ cluster associated with    
         the AS cluster would behave as a non-HA cluster]
 	 */
-	public boolean	getAvailabilityEnabled();
+	public String	getAvailabilityEnabled();
 	
 	/**
 	    @see #getAvailabilityEnabled
 	 */
-	public void	setAvailabilityEnabled( boolean value );
+	public void	setAvailabilityEnabled( String value );
 
     /**                             
         This is the jndi-name for the JDBC Connection Pool used by    

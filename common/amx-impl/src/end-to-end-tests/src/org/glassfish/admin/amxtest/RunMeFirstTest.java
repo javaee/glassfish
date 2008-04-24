@@ -67,7 +67,8 @@ public final class RunMeFirstTest
         final Map<String, ConfigConfig> configs = getDomainConfig().getConfigsConfig().getConfigConfigMap();
         for (final ConfigConfig config : configs.values()) {
             final JavaConfig jc = config.getJavaConfig();
-            final Set<String> jvmOptions = GSetUtil.newStringSet(jc.getJVMOptions());
+            final String[] opt = jc.getJVMOptions();
+            final Set<String> jvmOptions = GSetUtil.newStringSet(opt == null ? new String[0] : opt );
 
             if (!(jvmOptions.contains(AMX_DEBUG) || jvmOptions.contains(AMX_DEBUG2))) {
                 jvmOptions.add(AMX_DEBUG);

@@ -70,10 +70,10 @@ public interface EventConfig
         or not. By default this would be true. If no action is        
         specified, the event would be recorded.                    
 	 */
-	public boolean  getRecordEvent();
+	public String  getRecordEvent();
 	
 	/* @see #getRecordEvent */
-	public void     setRecordEvent( boolean recordIt );
+	public void     setRecordEvent( String recordIt );
 	
 	/**           
         Specifies at what level to record the event occurance in      

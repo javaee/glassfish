@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
 
 public final class ListUtil
@@ -66,7 +67,33 @@ public final class ListUtil
 			list.add( array[ i ] );
 		}
 	}
-	
+        
+        public static  List<String>
+    asStringList( final Object value )
+    {
+        List<String> values = null;
+        
+        if ( value instanceof String )
+        {
+            values = Collections.singletonList( (String)value );
+        }
+        else if ( value instanceof String[] )
+        {
+            values = ListUtil.newListFromArray( (String[])value );
+        }
+        else if ( value instanceof List )
+        {
+            values = new ArrayList( TypeCast.checkList( TypeCast.asList(value), String.class ) );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "" + value );
+        }
+        
+        return values;
+    }
+
+
 	/**
 		Convert a List to a String[]
 	 */

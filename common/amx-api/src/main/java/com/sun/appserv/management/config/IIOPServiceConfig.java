@@ -75,9 +75,9 @@ public interface IIOPServiceConfig
 	 */
 	public SSLConfig	getIIOPSSLClientConfig();
 
-	public boolean		getClientAuthenticationRequired();
+	public String		getClientAuthenticationRequired();
 
-	public void		setClientAuthenticationRequired( final boolean value );
+	public void		setClientAuthenticationRequired( final String value );
 
 
 

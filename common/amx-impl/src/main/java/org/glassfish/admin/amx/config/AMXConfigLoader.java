@@ -73,9 +73,7 @@ import java.util.logging.Logger;
 public final class AMXConfigLoader extends MBeanImplBase
     implements AMXConfigLoaderMBean, TransactionListener
 {
-    private static void debug( final String s ) {
-        Logger.getAnonymousLogger().fine(s);
-    }
+    private static void debug( final String s ) { System.out.println(s); }
     
     private volatile MBeanServer mMBeanServer;
     
@@ -624,9 +622,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             objectName = buildObjectName( cb, resolver );
         
             objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
-            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
-                " AMXConfigInfo = " + amxConfigInfo.toString() +
-                ", AMXMBeanMetaData = " + metadata + "\n");
+            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
+                //" ===> USING " +  " AMXConfigInfo = " + amxConfigInfo.toString() + ", AMXMBeanMetaData = " + metadata + "\n" );
         }
         
         return objectName;

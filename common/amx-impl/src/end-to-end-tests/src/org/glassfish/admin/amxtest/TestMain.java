@@ -45,6 +45,7 @@ import com.sun.appserv.management.client.HandshakeCompletedListenerImpl;
 import com.sun.appserv.management.client.TLSParams;
 import com.sun.appserv.management.config.JMXConnectorConfig;
 import com.sun.appserv.management.config.NodeAgentConfig;
+import com.sun.appserv.management.config.NodeAgentsConfig;
 import com.sun.appserv.management.config.OfflineConfigIniter;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
@@ -278,7 +279,7 @@ public final class TestMain
         println("Connecting: " + info + "...");
 
         final AppserverConnectionSource conn =
-                new AppserverConnectionSource(AppserverConnectionSource.PROTOCOL_RMI,
+                new AppserverConnectionSource(AppserverConnectionSource.PROTOCOL_JMXMP,
                                               host, port, user, password, tlsParams, null);
 
         conn.getJMXConnector(false);
@@ -555,8 +556,9 @@ public final class TestMain
     getNodeAgentConnections(
             final DomainRoot domainRoot,
             final PropertyGetter getter) {
-        final Map<String, NodeAgentConfig> nodeAgentConfigs =
-                domainRoot.getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap();
+        final NodeAgentsConfig nacs = domainRoot.getDomainConfig().getNodeAgentsConfig();
+        if ( nacs == null )  return null;
+        final Map<String, NodeAgentConfig> nodeAgentConfigs = nacs.getNodeAgentConfigMap();
 
         final Map<String, AppserverConnectionSource> nodeAgentConnections =
                 new HashMap<String, AppserverConnectionSource>();
@@ -670,7 +672,6 @@ public final class TestMain
 
         return included;
     }
-
 
     /**
      */
