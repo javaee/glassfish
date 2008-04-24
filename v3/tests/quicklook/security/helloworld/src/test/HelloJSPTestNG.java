@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.web.jsp.hello;
+package test.security.hellojsp;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
