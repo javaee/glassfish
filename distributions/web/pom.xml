@@ -188,6 +188,12 @@
             <artifactId>gf-web-connector</artifactId>
             <version>${project.version}</version>
         </dependency>        
+         <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-plugin-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+
         
     </dependencies>
 </project>
