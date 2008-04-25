@@ -359,11 +359,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         byte[] bytes;
         try {
             try {
-                String hp = req.getHeader("Host");
-                if (hp == null)
-                    hp = this.getMyUrl(req).toString();
-                else 
-                    hp = "http://" + hp.replace("/", "") + contextRoot;
+		String hp = (contextRoot.startsWith("/")) ? "" : "/";
+		hp += contextRoot + "/";
                 visitorId = System.currentTimeMillis(); //sufficiently unique
                 bytes = initHtml.replace(MYURL_TOKEN, hp).replace(VISITOR_TOKEN, visitorId+"").getBytes();           
             } catch(Exception e) {
@@ -417,6 +414,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         String sn = env.getInstanceName();
         ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(domain, sn, ADMIN_APP_NAME);
         habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
+	try {
+	    sendStatusPage(res);
+	    res.finishResponse();
+	}catch (java.io.IOException ex){
+	    //TODO : Fix me
+	    ex.printStackTrace();
+	}
     }
     
     private void handleLoadedState() {
