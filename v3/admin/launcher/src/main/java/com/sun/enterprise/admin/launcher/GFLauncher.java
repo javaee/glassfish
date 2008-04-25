@@ -130,6 +130,7 @@ public abstract class GFLauncher {
         
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
+        pb.directory(getInfo().getConfigDir());
         
         //run the process and attach Stream Drainers
         Process process;

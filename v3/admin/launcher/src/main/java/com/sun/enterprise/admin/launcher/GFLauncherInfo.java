@@ -143,6 +143,12 @@ public class GFLauncherInfo {
     public GFLauncherFactory.ServerType getType() {
         return type;
     }
+
+    public File getConfigDir() {
+        return SmartFile.sanitize(configDir);
+    }
+            
+    
     public File getInstanceRootDir() throws GFLauncherException {
         if (!valid) {
             throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
