@@ -126,13 +126,14 @@ public class StopDomainCommand extends S1ASCommand {
         //adds the option to list as "--option" followed by its value iff value is non-null
         // "value" is higher precedence than "defaultValue"
         String value = getOption(option);
+
+        if(value == null) {
+            value = defaultValue;
+        }
+        
         if ( value != null) {
             cmd.add("--" + option); //get it as long option, a suitable method is not available :(
             cmd.add(value);
-        }
-        else if(defaultValue != null) {
-            cmd.add("--" + option); //get it as long option, a suitable method is not available :(
-            cmd.add(defaultValue);
         }
     }
     private void getDomainRootDir() throws CommandValidationException {
