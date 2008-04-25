@@ -14,12 +14,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 
 /**
@@ -57,14 +56,19 @@ public class DomainXml implements Populator {
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
-        parseDomainXml(parser, getDomainXml(env), getInstanceName());
+        try {
+            parseDomainXml(parser, getDomainXml(env), getInstanceName());
+        } catch (IOException e) {
+            // TODO: better exception handling scheme
+            throw new RuntimeException("Failed to parse domain.xml",e);
+        }
     }
 
     /**
      * Determines the location of <tt>domain.xml</tt> to be parsed.
      */
-    protected File getDomainXml(ServerEnvironment env) {
-        return new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName);
+    protected URL getDomainXml(ServerEnvironment env) throws IOException {
+        return new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName).toURI().toURL();
     }
 
     /**
@@ -82,7 +86,7 @@ public class DomainXml implements Populator {
     /**
      * Parses <tt>domain.xml</tt>
      */
-    protected void parseDomainXml(ConfigParser parser, final File domainXml, final String serverName) {
+    protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
             DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
             parser.parse(xsr, new GlassFishDocument(habitat));
@@ -90,6 +94,7 @@ public class DomainXml implements Populator {
             if(!xsr.foundConfig)
                 throw new RuntimeException("No <config> seen for name="+xsr.configName);
         } catch (XMLStreamException e) {
+            // TODO: better exception handling scheme
             throw new RuntimeException("Failed to parse "+domainXml,e);
         }
     }
@@ -103,7 +108,7 @@ public class DomainXml implements Populator {
          * Once we find that out, it'll be set here.
          */
         private String configName;
-        private final File domainXml;
+        private final URL domainXml;
         private final String serverName;
 
         /**
@@ -116,17 +121,17 @@ public class DomainXml implements Populator {
          * Because {@link XMLStreamReader} doesn't close the underlying stream,
          * we need to do it by ourselves. So much for the "easy to use" API.
          */
-        private FileInputStream stream;
+        private InputStream stream;
 
-        public DomainXmlReader(File domainXml, String serverName) throws XMLStreamException {
+        public DomainXmlReader(URL domainXml, String serverName) throws XMLStreamException {
             try {
-                stream = new FileInputStream(domainXml);
-            } catch (FileNotFoundException e) {
+                stream = domainXml.openStream();
+                setParent(xif.createXMLStreamReader(domainXml.toExternalForm(), stream));
+                this.domainXml = domainXml;
+                this.serverName = serverName;
+            } catch (IOException e) {
                 throw new XMLStreamException(e);
             }
-            setParent(xif.createXMLStreamReader(domainXml.toURI().toString(), stream));
-            this.domainXml = domainXml;
-            this.serverName = serverName;
         }
 
         public void close() throws XMLStreamException {
@@ -165,8 +170,8 @@ public class DomainXml implements Populator {
         private void parse2ndTime() throws XMLStreamException {
             logger.info("Forced to parse "+ domainXml +" twice because we didn't see <server> before <config>");
             try {
-                InputStream stream = new FileInputStream(domainXml);
-                XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toURI().toString(),stream);
+                InputStream stream = domainXml.openStream();
+                XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toExternalForm(),stream);
                 while(configName==null) {
                     switch(xsr.next()) {
                     case START_ELEMENT:
