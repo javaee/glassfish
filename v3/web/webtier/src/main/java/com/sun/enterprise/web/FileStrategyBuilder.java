@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -38,66 +38,53 @@ package com.sun.enterprise.web;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ArrayList;
 import org.apache.catalina.Context;
-import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.session.FileStore;
+import org.apache.catalina.session.PersistentManager;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.util.uuid.UuidGenerator;
 
-public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
+public class FileStrategyBuilder extends BasePersistenceStrategyBuilder {
     
     /**
      * Constructor.
      */
-    public MemoryStrategyBuilder(ServerConfigLookup serverConfigLookup) {
+    public FileStrategyBuilder(ServerConfigLookup serverConfigLookup) {
         super(serverConfigLookup);
     }
-      
+    
     public void initializePersistenceStrategy(Context ctx,
                                               SessionManager smBean) {
         super.initializePersistenceStrategy(ctx, smBean);
-        String persistenceType = "memory";        
-        String ctxPath = ctx.getPath();
-        if(ctxPath != null && !ctxPath.equals("")) {    
-            Object[] params = { ctx.getPath(), persistenceType };
-            _logger.log(Level.FINE, "webcontainer.noPersistence", params); 
-        }
-        StandardManager mgr = new StandardManager();
-        if (sessionFilename == null) {
-            mgr.setPathname(sessionFilename);
-        } else {
-            mgr.setPathname(prependContextPathTo(sessionFilename, ctx));
-        }
+        
+        Object[] params = { ctx.getPath() };
+        _logger.log(Level.INFO, "webcontainer.filePersistence", params);
+        PersistentManager mgr = new PersistentManager();
+        mgr.setMaxActiveSessions(maxSessions);
+
+        mgr.setMaxIdleBackup(0);     // FIXME: Make configurable
+
+        FileStore store = new FileStore();
+        store.setDirectory(directory);
+        mgr.setStore(store);
+        
+        // For intra-vm session locking
         StandardContext sctx = (StandardContext) ctx;
         sctx.restrictedSetPipeline(new PESessionLockingStandardPipeline(sctx));
 
-        mgr.setMaxActiveSessions(maxSessions);
-
-        // START OF 6364900
+        // Special code for Java Server Faces
+        if (ctx.findParameter(JSF_HA_ENABLED) == null) {
+            ctx.addParameter(JSF_HA_ENABLED, "true");
+        }   
+     
+        //START OF 6364900
         mgr.setSessionLocker(new PESessionLocker(ctx));
-        // END OF 6364900        
+        //END OF 6364900        
 
-        ctx.setManager(mgr);
-
-        // START CR 6275709
-        if (sessionIdGeneratorClassname != null) {
-            try {
-                UuidGenerator generator = (UuidGenerator)
-                    Class.forName(sessionIdGeneratorClassname).newInstance();
-                mgr.setUuidGenerator(generator);
-            } catch (Exception ex) {
-                _logger.log(Level.SEVERE,
-                            "Unable to load session uuid generator "
-                            + sessionIdGeneratorClassname,
-                            ex);
-            }
-        }
-        // END CR 6275709
+        ctx.setManager(mgr); 
         
-        if (!sctx.isSessionTimeoutOveridden()) {
+        if(!sctx.isSessionTimeoutOveridden()) {
             mgr.setMaxInactiveInterval(sessionMaxInactiveInterval); 
         }        
-    }    
+    }
 }

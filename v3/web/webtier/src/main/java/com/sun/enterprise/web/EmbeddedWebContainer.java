@@ -245,8 +245,6 @@ public final class EmbeddedWebContainer extends Embedded {
         context.setManagerChecksFrequency(1);
         context.setComponentId(compEnvId);
         context.setServerContext(serverContext);
-        //XXX memory support only at this point
-        context.setManager(new StandardManager());
 
         if (configFile.exists()) {
             context.setConfigFile(configFile.getAbsolutePath());

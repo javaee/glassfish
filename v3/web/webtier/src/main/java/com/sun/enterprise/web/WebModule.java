@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
 import javax.servlet.ServletException;
-//import com.sun.enterprise.config.ConfigBean;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionConfig;
@@ -57,17 +56,18 @@ import com.sun.enterprise.deployment.runtime.web.SessionProperties;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.config.serverbeans.J2eeApplication;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.logging.LogDomains;
 //import com.sun.enterprise.webservice.ClientPipeCloser;
 //import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.Container;
@@ -130,6 +130,14 @@ public class WebModule extends PwcWebModule {
     protected Object[] cachedFinds;
     
     private com.sun.enterprise.config.serverbeans.WebModule bean;
+
+    /**
+     * The bean corresponding to the j2ee-application element in domain.xml
+     * representing the application (EAR file) in which this web module has
+     * been embedded
+     */
+    protected J2eeApplication appBean = null;
+
     private WebBundleDescriptor webBundleDescriptor;
 
     private boolean hasStarted = false;
@@ -862,6 +870,29 @@ public class WebModule extends PwcWebModule {
     }
 
     /**
+     * Sets the bean corresponding to the j2ee-application element in
+     * domain.xml representing the application (EAR file) in which this
+     * web module has been embedded.
+     *
+     * @param appBean The application bean
+     */
+    void setApplicationBean(J2eeApplication appBean) {
+        this.appBean = appBean;
+    }
+
+    /**
+     * Gets the bean corresponding to the j2ee-application element in
+     * domain.xml representing the application (EAR file) in which this
+     * web module has been embedded.
+     *
+     * @return The application bean, or null if this web module 
+     * is standalone
+     */
+    public J2eeApplication getApplicationBean() {
+        return appBean;
+    }
+
+    /**
      * Sets the WebBundleDescriptor (web.xml) for this WebModule.
      *
      * @param wbd The WebBundleDescriptor
@@ -1036,7 +1067,6 @@ public class WebModule extends PwcWebModule {
         configureCookieProperties(cookieBean);        
     } 
 
-
     /**
      * Configure the session manager according to the persistence-type
      * specified in the <session-manager> element and the related 
@@ -1051,12 +1081,14 @@ public class WebModule extends PwcWebModule {
         String frequency = null;
         String scope = null;
         
-        /*SessionManagerConfigurationHelper configHelper = 
-            new SessionManagerConfigurationHelper(this, smBean, wbd, wmInfo);
+        SessionManagerConfigurationHelper configHelper = 
+            new SessionManagerConfigurationHelper(
+                this, smBean, wbd, wmInfo,
+                webContainer.getServerConfigLookup());
         
         persistence = configHelper.getPersistenceType();
         frequency = configHelper.getPersistenceFrequency();
-        scope = configHelper.getPersistenceScope();*/
+        scope = configHelper.getPersistenceScope();
 
         if (logger.isLoggable(Level.FINEST)) {        
             logger.finest("IN WebContainer>>ConfigureSessionManager before builder factory");
@@ -1066,8 +1098,9 @@ public class WebModule extends PwcWebModule {
             logger.finest("FINAL_PERSISTENCE_SCOPE IS = " + scope);          
         }
 
-	/*PersistenceStrategyBuilderFactory factory = 
-            new PersistenceStrategyBuilderFactory();
+        PersistenceStrategyBuilderFactory factory = 
+            new PersistenceStrategyBuilderFactory(
+                webContainer.getServerConfigLookup());
         PersistenceStrategyBuilder builder = 
             factory.createPersistenceStrategyBuilder(persistence.getType(),
                                                      frequency, scope, this);
@@ -1076,11 +1109,8 @@ public class WebModule extends PwcWebModule {
                           + builder.getClass().getName());
         }
 
-        builder.setLogger(logger);
         builder.initializePersistenceStrategy(this, smBean);
-         */
     }
-
 
     /**
      * Configure the properties of the session, such as the timeout,
