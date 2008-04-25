@@ -4,8 +4,13 @@
  Use is subject to license terms.
 -->
 
+<!-- Note that package-glassfishv3-ejb should come before -web because
+  the ips steps depend on unzipped directories left behind by the later 
+  packaging targets.
+-->
 <target name="package" 
         depends="
+		 package-glassfishv3-ejb,
 		 package-glassfishv3-nucleus,
 		 package-glassfishv3-web,
 		 package-glassfishv3-common,
@@ -64,6 +69,50 @@
 
     <delete dir="${basedir}/build"/>
 </target>
+
+<target name="package-glassfishv3-ejb" 
+        depends="publish-init,package-install-init"
+        description="Package glassfishv3-ejb">
+
+    <echo message="Creating package glassfishv3-ejb..."/>
+
+    <!-- Resolve glassfish...zip file name not to have it hardcoded here -->
+    <path id="zipfile">
+        <fileset dir="${basedir}/../distributions/glassfish/target">
+            <include name="glassfish-*.zip"/>
+        </fileset>
+    </path>
+    <property name="zipname" refid="zipfile"/>
+
+    <mkdir dir="${basedir}/build" />
+
+    <unzip src="${zipname}"
+           dest="${basedir}/build"/>
+
+    <antcall target="create-prototype-com">
+        <param name="component.package" value="glassfishv3-ejb"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="repo.home" value="${zipname}"/>
+        <param name="pkgname" value="modules/ejb"/>
+    </antcall>
+
+    <antcall target="build-solaris-package">	
+        <param name="component.package" value="glassfishv3-ejb"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="component.publish.home" 
+               value="${install.tmp.dir}"/>
+    </antcall>
+
+    <antcall target="package-common">
+        <param name="component.package" value="glassfishv3-ejb"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="publish.package.home" value="${tools.package.home}"/>
+        <param name="component.publish.home" value="${install.dir}/.."/>
+    </antcall>
+
+    <delete dir="${basedir}/build"/>
+</target>
+
 
 <target name="package-glassfishv3-web" 
         depends="publish-init,package-install-init"
@@ -230,4 +279,32 @@
     <antcall target="install-package">
         <param name="pkgname" value="javadb"/>
     </antcall>
+</target>
+
+<target name="push-ejb-to-repository" 
+        depends="publish-init"
+        description="Publishing EJB package to IPS Repository ${REPO_URL}">
+    <antcall target="push-package">
+        <param name="pkgname" value="glassfishv3-ejb"/>
+        <param name="pkg.dir" value="${pkgs.home}"/>
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+</target>
+
+<target name="create-ejb-ips-image" 
+        depends="publish-init"
+        description="Creating IPS Image for EJB">
+    <antcall target="create-local-image">
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+    <antcall target="update-cfg-cache">
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+    <antcall target="install-package">
+        <param name="pkgname" value="glassfishv3-ejb"/>
+    </antcall>
+    <zip destfile="${image.dir}/../V3EJBIPSImage_GF.zip">
+            <fileset dir="${image.dir}" includes="**/*" />
+    </zip>
+    <delete dir="${image.dir}"/>
 </target>
