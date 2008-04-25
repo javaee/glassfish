@@ -48,6 +48,6 @@
     </scm>
     
     <properties>
-      <hk2.version>0.2</hk2.version>
+      <hk2.version>0.3.0</hk2.version>
     </properties>
 </project>
