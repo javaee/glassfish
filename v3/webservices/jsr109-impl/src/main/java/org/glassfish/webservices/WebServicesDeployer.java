@@ -26,23 +26,18 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.web.WebDeployer;
-import com.sun.enterprise.web.WebApplication;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.spi.WSToolsObjectFactory;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.container.Container;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.SimpleDeployer;
-import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -56,11 +51,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.servlet.ServletException;
 import java.io.*;
 import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -127,6 +119,8 @@ public class WebServicesDeployer extends WebDeployer {
                 super.generateArtifacts(dc);
             } else {
                 generateArtifacts(dc);
+                doWebServicesDeployment(app,dc) ;
+                saveAppDescriptor(dc);
             }
             return true;
         } catch (Exception ex) {
@@ -196,7 +190,7 @@ public class WebServicesDeployer extends WebDeployer {
                     // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
                     if (ws.getWsdlFileUri().startsWith("http")) {
                         try {
-                            downloadWsdlsAndSchemas(ws, new URL(ws.getWsdlFileUri()), wsdlDir);
+                            downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
                         } catch(Exception e) {
                             throw new DeploymentException(e.toString(), e);
                         }
@@ -362,7 +356,7 @@ public class WebServicesDeployer extends WebDeployer {
 
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
     }
-    private void downloadWsdlsAndSchemas(WebService ws, URL httpUrl, File wsdlDir) throws Exception {
+    private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
         wsdlDir.mkdirs();
         String fileName = httpUrl.toString().substring(httpUrl.toString().lastIndexOf("/")+1);
@@ -370,10 +364,10 @@ public class WebServicesDeployer extends WebDeployer {
         downloadFile(httpUrl, toFile);
 
         // Get a list of wsdl and schema relative imports in this wsdl
-        Collection<Import> wsdlRelativeImports = new HashSet();
-        Collection<Import> schemaRelativeImports = new HashSet();
-        Collection<Import> wsdlIncludes = new HashSet();
-        Collection<Import> schemaIncludes = new HashSet();
+        HashSet<Import> wsdlRelativeImports = new HashSet<Import>();
+        HashSet<Import> schemaRelativeImports = new HashSet<Import>();
+        HashSet<Import> wsdlIncludes = new HashSet<Import>();
+        HashSet<Import> schemaIncludes = new HashSet<Import>();
         parseRelativeImports(httpUrl, wsdlRelativeImports, wsdlIncludes,
                 schemaRelativeImports, schemaIncludes);
         wsdlRelativeImports.addAll(wsdlIncludes);
@@ -404,9 +398,9 @@ public class WebServicesDeployer extends WebDeployer {
             } else {
                 newWsdlDir = wsdlDir;
             }
-            downloadWsdlsAndSchemas(ws, new URL(urlWithoutFileName+"/"+next.getLocation()), newWsdlDir);
+            downloadWsdlsAndSchemas( new URL(urlWithoutFileName+"/"+next.getLocation()), newWsdlDir);
         }
-        return;
+
     }
     // If catalog file is present, get the mapped WSDL for given WSDL and replace the value in
     // the given WebService object
@@ -497,11 +491,13 @@ public class WebServicesDeployer extends WebDeployer {
     /**
      * Collect all relative imports from a web service's main wsdl document.
      *
-     *@param wsdlRelativeImports outupt param in which wsdl relative imports
+     *@param wsdlFileUrl
+     * @param wsdlRelativeImports outupt param in which wsdl relative imports
      * will be added
      *
      *@param schemaRelativeImports outupt param in which schema relative
      * imports will be added
+     * @param schemaIncludes output param in which schema includes will be added
      */
     public void parseRelativeImports(URL wsdlFileUrl,
                                       Collection wsdlRelativeImports,
@@ -548,28 +544,28 @@ public class WebServicesDeployer extends WebDeployer {
     }
 
     private void procesSchemaImports(Document document, Collection schemaImportCollection) throws SAXException,
-            ParserConfigurationException, IOException, SAXParseException {
+            ParserConfigurationException, IOException {
         NodeList schemaImports =
                 document.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "import");
         addImportsAndIncludes(schemaImports, schemaImportCollection, "namespace", "schemaLocation");
     }
 
     private void procesWsdlImports(Document document, Collection wsdlImportCollection) throws SAXException,
-            ParserConfigurationException, IOException, SAXParseException {
+            ParserConfigurationException, IOException {
         NodeList wsdlImports =
                 document.getElementsByTagNameNS("http://schemas.xmlsoap.org/wsdl/", "import");
         addImportsAndIncludes(wsdlImports, wsdlImportCollection, "namespace", "location");
     }
 
     private void procesSchemaIncludes(Document document, Collection schemaIncludeCollection) throws SAXException,
-            ParserConfigurationException, IOException, SAXParseException {
+            ParserConfigurationException, IOException {
         NodeList schemaIncludes =
                 document.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "include");
         addImportsAndIncludes(schemaIncludes, schemaIncludeCollection, null, "schemaLocation");
     }
 
     private void procesWsdlIncludes(Document document, Collection wsdlIncludesCollection) throws SAXException,
-            ParserConfigurationException, IOException, SAXParseException {
+            ParserConfigurationException, IOException {
         NodeList wsdlIncludes =
                 document.getElementsByTagNameNS("http://schemas.xmlsoap.org/wsdl/", "include");
         addImportsAndIncludes(wsdlIncludes, wsdlIncludesCollection, null, "location");
@@ -577,7 +573,7 @@ public class WebServicesDeployer extends WebDeployer {
 
     private void addImportsAndIncludes(NodeList list, Collection result,
                         String namespace, String location) throws SAXException,
-                        ParserConfigurationException, IOException, SAXParseException {
+                        ParserConfigurationException, IOException {
         for(int i=0; i<list.getLength(); i++) {
             String givenLocation = null;
             Node element = list.item(i);
@@ -600,7 +596,7 @@ public class WebServicesDeployer extends WebDeployer {
             }
             result.add(imp);
         }
-        return;
+
     }
 
     private String getWsgenClassPath(File classesDir, String webinfLibDir,
@@ -661,10 +657,7 @@ public class WebServicesDeployer extends WebDeployer {
                     }
                 }
             }
-            ClassLoader classloader = dc.getClassLoader()   ;
-            if (classloader instanceof URLClassLoader) {
-               URL[] urls =((URLClassLoader)classloader).getURLs();
-            }
+
         } catch (Exception e) {
             throw new DeploymentException(localStrings.getLocalString("exception.manifest",
                     "Exception : {0} when trying to process MANIFEST file under {1}",e.getMessage() , moduleDir));
@@ -720,7 +713,7 @@ public class WebServicesDeployer extends WebDeployer {
 
 
         Thread.currentThread().setContextClassLoader(dc.getClassLoader())      ;
-        ArrayList argsList = new ArrayList();
+        ArrayList<String> argsList = new ArrayList<String>();
         argsList.add("-cp");
         argsList.add(classPath);
         argsList.add("-keep");
@@ -740,7 +733,7 @@ public class WebServicesDeployer extends WebDeployer {
         argsList.add("-Xdonotoverwrite");
         argsList.add(implClass);
         WSToolsObjectFactory wsTools = WSToolsObjectFactory.newInstance();
-        String[] wsgenargs = (String[]) argsList.toArray(new String[0]);
+        String[] wsgenargs = argsList.toArray(new String[0]);
         try {
             return wsTools.wsgen(System.out, wsgenargs);
         } catch (Exception e ) {
@@ -751,5 +744,73 @@ public class WebServicesDeployer extends WebDeployer {
         }
     }
 
-   
+    public void doWebServicesDeployment(Application app, DeploymentContext dc)throws Exception{
+
+        Collection webBundles = new HashSet();
+        Collection webServices = new HashSet();
+
+
+        // First collect all web applications and web service descriptors.
+        webBundles.addAll( app.getWebBundleDescriptors() );
+        webServices.addAll( app.getWebServiceDescriptors() );
+
+
+        // swap the deployment descriptors context-root with the one
+        // provided in the deployment request.
+        if (dc.getProps().get("context-root") !=null ) {
+            if (app.isVirtual()) {
+                String contextRoot = ((String)dc.getProps().get("context-root"));
+                ((WebBundleDescriptor) webBundles.iterator().next()).setContextRoot(contextRoot);
+
+            }
+        }
+        // Swap the application written servlet implementation class for
+        // one provided by the container.  The original class is stored
+        // as runtime information since it will be used as the servant at
+        // dispatch time.
+
+        for(Iterator<WebBundleDescriptor> iter = webBundles.iterator(); iter.hasNext(); ) {
+            doWebServiceDeployment(iter.next());
+        }
+    }
+
+    public void doWebServiceDeployment(WebBundleDescriptor web) throws DeploymentException{
+        Collection endpoints = web.getWebServices().getEndpoints();
+
+        for(Iterator endpointIter = endpoints.iterator();endpointIter.hasNext();) {
+
+            WebServiceEndpoint nextEndpoint = (WebServiceEndpoint)endpointIter.next();
+            WebComponentDescriptor webComp = nextEndpoint.getWebComponentImpl();
+
+            if( !nextEndpoint.hasServletImplClass() ) {
+                throw new DeploymentException( localStrings.getLocalString(
+                        "enterprise.deployment.backend.cannot_find_servlet",
+                        "Runtime settings error.  Cannot find servlet-impl-class for endpoint {0} ",
+                        nextEndpoint.getEndpointName()));
+
+            }
+
+
+            /*if( !nextEndpoint.getWebService().hasFilePublishing() ) {
+            // @@@ add security attributes as well????
+                String publishingUri = nextEndpoint.getPublishingUri();
+                String publishingUrlPattern =publishingUri.charAt(0) == '/') ?publishingUri : "/" + publishingUri + "*//*";
+                webComp.addUrlPattern(publishingUrlPattern);
+
+             }*/
+
+            String containerServlet = "org.glassfish.webservices.JAXWSServlet";
+            webComp.setWebComponentImplementation(containerServlet);
+
+            //Ommitting the part of generating the wsdl for now
+            
+
+        }
+
+    }
+
+
 }
+
+   
+
