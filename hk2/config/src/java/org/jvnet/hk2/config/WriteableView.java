@@ -189,13 +189,28 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                     if (event.getOldValue()==null) {
                         originalList.add(event.getNewValue());
                     } else {
-                        final Dom toBeRemoved = Dom.unwrap((ConfigBeanProxy) event.getOldValue());
-                        for (int index=0;index<originalList.size();index++) {
-                            Object element = originalList.get(index);
-                            Dom dom = Dom.unwrap((ConfigBeanProxy) element);
-                            if (dom==toBeRemoved) {
-                                originalList.remove(index);
+                        final Object toBeRemovedObj = event.getOldValue();
+                        if ( toBeRemovedObj instanceof ConfigBeanProxy ) {
+                            final Dom toBeRemoved = Dom.unwrap((ConfigBeanProxy)toBeRemovedObj);
+                            for (int index=0;index<originalList.size();index++) {
+                                Object element = originalList.get(index);
+                                Dom dom = Dom.unwrap((ConfigBeanProxy) element);
+                                if (dom==toBeRemoved) {
+                                    originalList.remove(index);
+                                }
                             }
+                        }
+                        else if ( toBeRemovedObj instanceof String ) {
+                            final String toBeRemoved = (String)toBeRemovedObj;
+                            for (int index=0;index<originalList.size();index++) {
+                                final String item = (String)originalList.get(index);
+                                if (item.equals(toBeRemoved)) {
+                                    originalList.remove(index);
+                                }
+                            }
+                        }
+                        else {
+                            throw new IllegalArgumentException();
                         }
                     }
                     appliedChanges.add(event);
@@ -326,6 +341,40 @@ private class ProtectedList extends AbstractList {
         }
         changeEvents.add(new PropertyChangeEvent(readView, id, null, param));
         return proxied.add(object);
+    }
+
+    @Override
+    public synchronized void clear() {
+        // make a temporary list, iterating while removing doesn't work
+        final List allItems = new ArrayList( proxied );
+        for( final Object item : allItems ) {
+            remove( item );
+        }
+    }
+    
+    @Override
+    public synchronized boolean retainAll( final Collection keepers ) {
+        final List toRemoveList = new ArrayList();
+        for( final Object iffy : proxied ) {
+            if ( ! keepers.contains(iffy) ) {
+                toRemoveList.add(iffy);
+            }
+        }
+        final boolean changed = removeAll(toRemoveList);
+        
+        return changed;
+    }
+    
+    @Override
+    public synchronized boolean removeAll( final Collection goners ) {
+        boolean listChanged = false;
+        for( final Object goner : goners ) {
+            if ( remove(goner) ) {
+                listChanged = true;
+            }
+        }
+        
+        return listChanged;
     }
 
     @Override
