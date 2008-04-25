@@ -100,6 +100,9 @@ public class GroovyDeployer implements Deployer<GroovyContainer, GroovyApplicati
         String path = context.getCommandParameters().getProperty("path");
         if (path == null) {
             path = context.getCommandParameters().getProperty("location");
+            if ((path != null) && (path.startsWith("file:/"))) {
+                path = path.substring(5);
+            }
         }
         adapter.setRootFolder(path);
         adapter.setContextRoot(contextRoot);
