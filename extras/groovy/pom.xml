@@ -104,6 +104,12 @@
             <scope>compile</scope>
         </dependency>         
         <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-optionals</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>compile</scope>
+        </dependency>         
+        <dependency>
           <groupId>org.codehaus.groovy</groupId>
           <artifactId>groovy-all</artifactId>
           <version>${groovy.version}</version>

@@ -42,6 +42,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.CookedModuleDefinition;
 import com.sun.enterprise.v3.deployment.GenericSniffer;
+import com.sun.hk2.component.Which;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -124,18 +125,19 @@ public class GroovySniffer extends GenericSniffer implements Sniffer {
             throw e;
         }
 
+        // create a new module that contains all the Grails classes.
         Module m = registry.add(groovy);
-        
-        Module groovyModule = registry.makeModuleFor(groovy.getName(), null);
-        if (groovyModule==null) {
-            logger.log(Level.SEVERE, "Cannot find module " + groovy.getName());
-            throw new IOException("cannot find module " + groovy.getName());
+
+        // ... then add that to our own dependency, so that when we deploy
+        // we can resolve Groovy classes.
+        Module thisModule = registry.find(getClass());
+        if (thisModule==null) {
+            logger.log(Level.SEVERE, "Cannot find module for" + Which.which(getClass()));
+            throw new IOException("cannot find module for " + Which.which(getClass()));
         }
-        
-        if (m != null) {
-            groovyModule.addImport(m);
-        }
-        Module[] modules = { groovyModule};
+        thisModule.addImport(m);
+
+        Module[] modules = {thisModule};
         return modules;
         
     }
