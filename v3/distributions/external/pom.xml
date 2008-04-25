@@ -64,6 +64,7 @@
         <module>sysnet-registration</module>
         <module>commons-codec</module>
         <module>ldapbp</module>
+        <module>asm-all</module>
     </modules>
 </project>
 

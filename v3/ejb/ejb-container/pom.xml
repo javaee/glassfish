@@ -101,9 +101,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>3.1</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
