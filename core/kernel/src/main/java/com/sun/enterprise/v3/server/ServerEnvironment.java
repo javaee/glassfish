@@ -79,7 +79,9 @@ public class ServerEnvironment implements PostConstruct {
     }
 
     public ServerEnvironment(File root) {
-        this.root = root;
+        // the getParentFile() that we do later fails to work correctly if
+        // root is for example "new File(".")
+        this.root = root.getAbsoluteFile();
     }
 
     /**
