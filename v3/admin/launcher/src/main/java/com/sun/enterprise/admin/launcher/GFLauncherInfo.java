@@ -24,6 +24,7 @@ package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.admin.launcher.GFLauncherFactory.ServerType;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.*;
 
@@ -196,7 +197,7 @@ public class GFLauncherInfo {
         }
 
         Map<String, String> map = new HashMap<String, String>();
-        map.put("-domaindir", domainRootDir.getPath());
+        map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
         map.put("-verbose", Boolean.toString(verbose));
         map.put("-embedded", Boolean.toString(embedded));
         map.put("-debug", Boolean.toString(debug));
