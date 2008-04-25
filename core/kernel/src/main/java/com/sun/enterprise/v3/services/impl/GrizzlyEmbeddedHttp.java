@@ -35,10 +35,12 @@ import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Adapter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 
 /**
@@ -47,7 +49,8 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * @author Jeanfrancois Arcand
  * @author Alexey Stashok
  */
-public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMapper<Adapter> {
+public class GrizzlyEmbeddedHttp extends SelectorThread 
+        implements EndpointMapper<Adapter>  {
     
     
     private final static String ROOT = "/";
@@ -64,6 +67,9 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
     protected volatile Collection<ProtocolFilter> defaultHttpFilters;
             
     protected boolean isHttpSecured = false;
+    
+    private UDPSelectorHandler udpSelectorHandler;
+
     // ---------------------------------------------------------------------/.
 
     public GrizzlyEmbeddedHttp() {
@@ -119,14 +125,48 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
             public boolean offer(ProtocolChain instance) {
                 return chains.offer(instance);
             }
-            };
+        };
         controller.setProtocolChainInstanceHandler(instanceHandler);
 
         controller.setReadThreadsCount(readThreadsCount);
         // TODO: Do we want to support UDP all the time?
         controller.addSelectorHandler(createUDPSelectorHandler());
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                stopEndpoint();
+            }
+        });
     }
  
+    
+    @Override
+    public void stopEndpoint(){
+        try{
+            super.stopEndpoint();
+        } catch (Throwable t){
+            logger.log(Level.SEVERE,"Unable to stop properly",t);
+        } finally {
+            // Force the Selector(s) to be closed in case an unexpected 
+            // exception occured during shutdown.
+            try{
+                if (selectorHandler != null 
+                        && selectorHandler.getSelector() != null){
+                    selectorHandler.getSelector().close();
+                }
+            } catch (IOException ex){}
+            
+            try{
+                if (udpSelectorHandler != null 
+                        && udpSelectorHandler.getSelector() != null){
+                    udpSelectorHandler.getSelector().close();
+                }
+            } catch (IOException ex){}
+        }
+        
+    }
+    
     
     /**
      * Adds and configures <code>ProtocolChain</code>'s filters
@@ -236,9 +276,11 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
      * Create <code>TCPSelectorHandler</code>
      */
     protected UDPSelectorHandler createUDPSelectorHandler() {
-        UDPSelectorHandler udpSelectorHandler = new UDPSelectorHandler();
-        udpSelectorHandler.setPort(port);
-        udpSelectorHandler.setPipeline(processorPipeline);
+        if (udpSelectorHandler == null){
+            udpSelectorHandler = new UDPSelectorHandler();
+            udpSelectorHandler.setPort(port);
+            udpSelectorHandler.setPipeline(processorPipeline);
+        }
         return udpSelectorHandler;
     }
 
