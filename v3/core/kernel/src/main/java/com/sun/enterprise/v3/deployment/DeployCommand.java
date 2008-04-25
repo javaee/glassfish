@@ -29,6 +29,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -82,7 +83,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Inject
     CommandRunner commandRunner;
-
 
     @Param(name = NAME, optional=true)
     String name = null;
@@ -197,7 +197,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 parameters.put(NAME, name);
             }
             
-            handleRedeploy(name, report);
+            handleRedeploy(name, report, parameters);
 
             // clean up any left over repository files
             FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
@@ -314,7 +314,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
      *  @param report ActionReport, report object to send back to client.
      *
      */
-    private void handleRedeploy(final String name, final ActionReport report) 
+    private void handleRedeploy(final String name, final ActionReport report,
+                                Properties parameters) 
         throws Exception {
         boolean isRegistered = isRegistered(name);
         if (isRegistered && !force) {
@@ -325,12 +326,40 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         }
         else if (isRegistered && force) 
         {
+            //preserve settings first before undeploy
+            settingsFromDomainXML(parameters);
             //if applicaiton is already deployed and force=true,
             //then undeploy the application first.
             Properties undeployParam = new Properties();
             undeployParam.put(NAME, name);
             ActionReport subReport = report.addSubActionsReport();
             commandRunner.doCommand("undeploy", undeployParam, subReport);
+        }
+    }
+
+    
+    /**
+     *  Get settings from domain.xml and preserve the values.
+     *  This is a private api and its invoked when --force=true and if the app is registered.
+     *
+     *  @param parameters 
+     *
+     */
+    private void settingsFromDomainXML(Properties parameters) {
+            //if name is null then cannot get the application's setting from domain.xml
+        if (name != null) {
+            if (contextRoot == null) {            
+                contextRoot = ConfigBeansUtilities.getContextRoot(name);
+                if (contextRoot != null) {
+                    parameters.put(CONTEXT_ROOT, contextRoot);
+                }
+            }
+            if (libraries == null) {
+                libraries = ConfigBeansUtilities.getLibraries(name);
+                if (libraries != null) {
+                    parameters.put(LIBRARIES, libraries);
+                }
+            }
         }
     }
 }
