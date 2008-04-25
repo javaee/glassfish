@@ -76,6 +76,11 @@
        <class name="test.jpa.jpainjectemf.JpaInjectEMFTestNG" />
     </classes>
   </test>
+  <test name="security_hello_jsp">
+    <classes>
+       <class name="test.security.hellojsp.HelloJSPTestNG" />
+    </classes>
+  </test>
    <!--<test name="ejb30_session_hello">
     <classes>
        <class name="ejb30.session.hello.test.TestClient" />
