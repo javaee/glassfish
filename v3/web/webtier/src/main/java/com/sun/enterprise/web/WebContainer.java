@@ -4423,7 +4423,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         AdHocWebModule wm = new AdHocWebModule(this);
 
-        //wm.restrictedSetPipeline(new WebPipeline(wm));
+        wm.restrictedSetPipeline(new WebPipeline(wm));
 
         // The Parent ClassLoader of the AdhocWebModule was null
         // [System ClassLoader]. With the new hierarchy, the thread context
