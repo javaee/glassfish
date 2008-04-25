@@ -77,6 +77,7 @@ public abstract class AbstractCommand extends Command {
     public final static String DISPLAY_TYPE = "displaytype";
     public final static String PROPERTY = "property.";
     public final static String DOMAIN = "domain";
+    public final static String FORCE = "force";
     private final static String ASADMINENV = "asadminenv.conf";
     protected final static String ENV_PREFIX = "AS_ADMIN_";
     protected static final String DEFAULT_NOT_DEPRECATED_PASSWORDFILE_OPTIONS =

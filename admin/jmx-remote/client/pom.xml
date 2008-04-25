@@ -158,7 +158,7 @@
 
             <artifactId>grizzly-module</artifactId>
 
-            <version>${grizzly.version}</version>
+            <version>${project.version}</version>
 
         </dependency>
 

@@ -73,7 +73,8 @@ import java.util.logging.Logger;
 public final class AMXConfigLoader extends MBeanImplBase
     implements AMXConfigLoaderMBean, TransactionListener
 {
-    private static void debug( final String s ) { System.out.println(s); }
+    private static void debug( final String s ) { //System.out.println(s);
+         }
     
     private volatile MBeanServer mMBeanServer;
     

@@ -26,16 +26,25 @@ package org.glassfish.ejb.startup;
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
+import com.sun.hk2.component.InhabitantsParser;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.File;
 import java.util.logging.Logger;
 import java.lang.annotation.Annotation;
 
@@ -47,6 +56,12 @@ import java.lang.annotation.Annotation;
 @Service(name="Ejb")
 @Scoped(Singleton.class)
 public class EjbSniffer  extends GenericSniffer implements Sniffer {
+
+    @Inject
+    ModulesRegistry modulesRegistry;
+
+    @Inject
+    Habitat habitat;    
 
     private static final Class[]  ejbAnnotations = new Class[] {
             javax.ejb.Stateless.class, javax.ejb.Stateful.class};
@@ -65,7 +80,51 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         
     public String[] getContainersNames() {
         return containers;
-    }    
+    }
+
+        @Override
+     public Module[] setup(String containerHome, Logger logger) throws IOException {
+
+        Module[] modules = new Module[1];
+        Module m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
+        // done...
+/*        if (m==null) {
+
+            // let's see if I have a ejb directory since we started the VM
+            File ejbLib=null;
+            if (containerHome!=null) {
+                ejbLib = new File(containerHome);
+            }
+            //if (ejbLib==null || !ejbLib.exists()) {
+                // TO DO dochez : replace with KK env's APIs
+                //ejbLib = new File(new File("/Users/dochez/glassfish"), "modules/ejb");
+                if (!ejbLib.exists()) {
+                    // I am throwing the towel here
+                    throw new IOException("EJB Container not installed");
+                }
+            //}
+            DirectoryBasedRepository ejb = new DirectoryBasedRepository("ejb", ejbLib);
+            ejb.initialize();
+            modulesRegistry.addRepository(ejb);
+
+            InhabitantsParser parser = new InhabitantsParser(habitat);
+            for (ModuleDefinition md : ejb.findAll()) {
+                Module module = modulesRegistry.makeModuleFor(md.getName(), md.getVersion());
+                if (module!=null) {
+                    ((AbstractModulesRegistryImpl) modulesRegistry).parseInhabitants(module, "default", parser);
+                }
+            }
+
+            m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
+        }
+        */
+        if (m!=null) {
+            modules[0] = m;
+            return modules;
+        } else {
+            throw new IOException("Cannot find ejb module from the module's repositories");
+        }
+    }
 
     /**
      * Returns true if the passed file or directory is recognized by this

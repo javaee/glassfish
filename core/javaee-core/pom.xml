@@ -125,12 +125,12 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-optionals</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

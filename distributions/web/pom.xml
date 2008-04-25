@@ -116,11 +116,6 @@
 	    <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>gf-phobos-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.connectors.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
             <version>${jdbc-ra.version}</version>

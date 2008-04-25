@@ -115,6 +115,7 @@ public class StopDomainCommand extends AbstractCommand {
         addOption(cmd, PORT);
         addOption(cmd, USER);
         addOption(cmd, PASSWORDFILE);
+        addOption(cmd, FORCE);
         String[] holdingArray = new String[cmd.size()];
         return ((String[])cmd.toArray(holdingArray));
     }

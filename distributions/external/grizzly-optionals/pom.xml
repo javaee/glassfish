@@ -48,7 +48,6 @@
     <!-- Don't change packaging to bundle as there are issues
          using both hk2 and bundle plugin -->
     <packaging>jar</packaging>
-    <version>${grizzly.version}</version>
     <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly Optionals Module for GlassFish</description>
     <build>

@@ -18,6 +18,8 @@
 	<Option name="echo" type="boolean" value-required="false" default="false">
             <shortoption>e</shortoption>
 	</Option>
+    <Option name="force" type="boolean" value-required="false">
+    </Option>
 	<Option name="user" type="string" value-required="true">
 	    <shortoption>u</shortoption>
 	</Option>
@@ -110,6 +112,7 @@
              <ValidOption name="echo"/>
              <ValidOption name="user"/>
              <ValidOption name="passwordfile"/>
+             <ValidOption name="force"/>
         </Command>
         <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
                 <ValidOption name="domaindir"/>
