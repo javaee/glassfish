@@ -292,6 +292,13 @@
     <antcall target="install-package">
         <param name="pkgname" value="javadb"/>
     </antcall>
+    <mkdir dir="${image.dir}/bin"/>
+    <copy todir="${image.dir}/bin"
+	    file="${basedir}/misc/asadmin.bat"/>
+    <copy todir="${image.dir}/bin"
+	    file="${basedir}/misc/asadmin"/>
+
+
 </target>
 
 <target name="push-ejb-to-repository" 
