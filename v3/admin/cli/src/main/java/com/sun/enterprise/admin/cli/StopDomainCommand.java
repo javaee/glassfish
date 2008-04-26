@@ -44,6 +44,8 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
+import java.net.*;
+import java.net.Socket;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -74,10 +76,17 @@ public class StopDomainCommand extends S1ASCommand {
 
         // TODO -- it would be nice to know if it worked!  
         // If so use other port numbers
+
+        int adminPort = ports[0];
+
+        // Verify that the DAS is running and reachable
+        if(!RemoteCommand.pingDAS(adminPort))
+            throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
         
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            new RemoteCommand(getCmd(ports[0].toString()));
+            new RemoteCommand(getCmd("" + adminPort));
+            waitForDeath(adminPort);
         }
         finally {
             CLILogger.getInstance().popAndUnlockLevel();
@@ -190,6 +199,54 @@ public class StopDomainCommand extends S1ASCommand {
         return files[0];
     }
 
+    private void waitForDeath(int adminPort) throws CommandException {
+        long startWait = System.currentTimeMillis();
+        Log.info("StopDomain.WaitDASDeath", domainName);
+        boolean alive = true;
+
+        while(!timedOut(startWait)) {
+            if(!pingPort(adminPort)) {
+                alive = false;
+                break;
+            }
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException ex) {
+                // don't care
+            }
+        }
+
+        if(alive) {
+            throw new CommandException(strings.get("StopDomain.DASNotDead", 
+                    domainName, (WAIT_FOR_DAS_TIME_MS / 1000)));
+        }
+    }
+
+    /** 
+     * This is no substitute for RemoteCommand.pingDAS() -- that command guarantees
+     * that DAS is at the other end of the port.  This is a quick check that can
+     * be used after verifying DAS is in fact listening on the port.
+     * I ran into a problem where stop-domain hangs on pingDAS() after it shuts down,
+     * waiting on a network timeout.  This ping is fast!
+     * @param port the port to ping
+     * @return true if the server socket is reachable
+     */
+    private boolean pingPort(int port) {
+        try {
+            String host = null;
+            Socket s = new Socket(host, port);
+            return true;
+        } catch (Exception ex) {
+            Log.finer("pingPort got Exception: " + ex);
+            return false;
+        }
+    }
+
+    private boolean timedOut(long startTime) {
+        return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
+    }
+
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
@@ -198,4 +255,5 @@ public class StopDomainCommand extends S1ASCommand {
     private String domainName;
     private File domainXml;
     private final static LocalStringsImpl strings = new LocalStringsImpl(StopDomainCommand.class);
+    private final static long WAIT_FOR_DAS_TIME_MS = 15000;
 }

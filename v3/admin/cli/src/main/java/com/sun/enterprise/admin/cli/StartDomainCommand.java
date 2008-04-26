@@ -50,57 +50,62 @@ public class StartDomainCommand extends S1ASCommand {
                 info.setDomainParentDir(parent);
             }
 
-            info.setVerbose(getBooleanOption("verbose"));
+            boolean verbose = getBooleanOption("verbose");
+            info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
             info.setEmbedded(getBooleanOption("embedded"));
             launcher.launch();
-            // don't allow RemoteCommand to chnge CLI log level!
-            // but do it here -- not in pingDAS() so we don't have to do it more
-            // than once
-            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            waitForDAS(info.getAdminPorts());
+            
+            // if we are in verbose mode, we definitely do NOT want to wait for DAS --
+            // since it already ran and is now dead!!
+            if(!verbose)
+                waitForDAS(info.getAdminPorts());
         }
         catch(GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
-        }
-        finally {
-            CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
     
     private void waitForDAS(Set<Integer> ports) throws CommandException {
-        if(ports == null || ports.size() <= 0) {
-            String msg = getLocalizedString("noPorts");
-            throw new CommandException(
-                    getLocalizedString("CommandUnSuccessfulWithArg", new Object[]{name, msg}));
-            }
-        long startWait = System.currentTimeMillis();
-        CLILogger.getInstance().printMessage(getLocalizedString("WaitDAS"));
+        try {
+            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
+            if(ports == null || ports.size() <= 0) {
+                String msg = getLocalizedString("noPorts");
+                throw new CommandException(
+                        getLocalizedString("CommandUnSuccessfulWithArg", new Object[]{name, msg}));
+                }
+            long startWait = System.currentTimeMillis();
+            Log.info("WaitDAS");
 
-        boolean alive = false;
+            boolean alive = false;
 
-        while(!timedOut(startWait) && !alive) {
-            for (int port : ports) {
-                if (RemoteCommand.pingDAS(port)) {
-                    alive = true;
-                    break;
+            pinged:
+            while(!timedOut(startWait)) {
+                for (int port : ports) {
+                    if (RemoteCommand.pingDAS(port)) {
+                        alive = true;
+                        break pinged;
+                    }
+                }
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException ex) {
+                    // don't care
                 }
             }
-            try {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException ex) {
-                // don't care
-            }
-        }
 
-        if(!alive) {
-            Object[] objs = new Object[] {info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000)};            
-            String msg = getLocalizedString("dasNoStart", objs);
-            throw new CommandException(msg);
+            if(!alive) {
+                Object[] objs = new Object[] {info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000)};            
+                String msg = getLocalizedString("dasNoStart", objs);
+                throw new CommandException(msg);
+            }
         }
+        finally{
+            CLILogger.getInstance().popAndUnlockLevel();
+        }                
     }
     
     private boolean timedOut(long startTime) {
