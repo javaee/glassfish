@@ -74,6 +74,7 @@ import java.util.logging.*;
 import com.sun.logging.*;
 //END OF IASRI 4660742
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * This class implements the Tomcat InstanceListener interface and
@@ -89,8 +90,8 @@ public final class J2EEInstanceListener implements InstanceListener {
     // END OF IASRI 4660742
     protected static ResourceBundle _rb = _logger.getResourceBundle();
 
-    private static final HashSet beforeEvents = new HashSet(4);
-    private static final HashSet afterEvents = new HashSet(4);
+    private static final HashSet<String> beforeEvents = new HashSet<String>(4);
+    private static final HashSet<String> afterEvents = new HashSet<String>(4);
     
     
     static {
@@ -105,12 +106,19 @@ public final class J2EEInstanceListener implements InstanceListener {
         afterEvents.add(InstanceEvent.AFTER_DESTROY_EVENT);
     }
 
-    private InvocationManager im;
-    private JavaEETransactionManager tm;
-    private InjectionManager injectionMgr;
+    @Inject
+    InvocationManager im;
+
+    @Inject
+    JavaEETransactionManager tm;
+
+    @Inject
+    InjectionManager injectionMgr;
+
     private boolean initialized = false;
-    
-    private AppServSecurityContext securityContext;
+
+    @Inject(optional=true)
+    AppServSecurityContext securityContext;
     
     public J2EEInstanceListener() {
     }
@@ -141,18 +149,11 @@ public final class J2EEInstanceListener implements InstanceListener {
         ServerContext serverContext = wm.getServerContext();
         if (serverContext == null) {
             String msg = _rb.getString("webmodule.noservercontext");
-            msg = MessageFormat.format(msg, new Object[] { wm.getName() });
+            msg = MessageFormat.format(msg, wm.getName());
             throw new IllegalStateException(msg);
         }
-        im = serverContext.getDefaultHabitat().getByContract(
-                InvocationManager.class);
-        tm = serverContext.getDefaultHabitat().getByContract(
-                JavaEETransactionManager.class);
-        injectionMgr = serverContext.getDefaultHabitat().getByContract(
-                InjectionManager.class);
         initialized = true;
         
-        securityContext = serverContext.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         if (securityContext != null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Obtained securityContext implementation class " + securityContext);
@@ -171,7 +172,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
         WebModule wm = (WebModule)context;
 
-        Object instance = null;
+        Object instance;
         if (eventType.equals(InstanceEvent.BEFORE_FILTER_EVENT)) {
 
             instance = event.getFilter();
@@ -203,8 +204,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         // START OF IASRI 4713234
         if (ra != null) {
 
-            ServletRequest request = 
-		(ServletRequest) event.getRequest();
+            ServletRequest request = event.getRequest();
             if (request != null && request instanceof HttpServletRequest) {
 
                 HttpServletRequest hreq = (HttpServletRequest)request;
@@ -215,7 +215,7 @@ public final class J2EEInstanceListener implements InstanceListener {
 		
 		boolean wrapped = false;
 
-		while (prin != null && base != null) {
+		while (prin != null) {
 		    
 		    if (base instanceof ServletRequestWrapper) {
 			// unwarp any wrappers to find the base object
@@ -280,7 +280,7 @@ public final class J2EEInstanceListener implements InstanceListener {
             im.preInvoke(inv);
             if (eventType.equals(InstanceEvent.BEFORE_SERVICE_EVENT)) {
                 // enlist resources with TM for service method
-                Transaction tran = null;
+                Transaction tran;
                 if ((tran = tm.getTransaction()) != null) {
                     inv.setTransaction(tran);
                 }
@@ -344,7 +344,7 @@ public final class J2EEInstanceListener implements InstanceListener {
 
         WebModule wm = (WebModule)context;
         
-        Object instance = null;
+        Object instance;
         if (eventType.equals(InstanceEvent.AFTER_FILTER_EVENT)) {
             instance = event.getFilter();
         } else {
