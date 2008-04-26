@@ -72,7 +72,6 @@ import org.apache.catalina.util.StringManagerTemp;
 import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
-import org.apache.naming.resources.FileDirContext;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
@@ -595,8 +594,7 @@ public class WebappClassLoader
 
         // Add this repository to our underlying class loader
         try {
-            URL url = new URL(repository);
-            super.addURL(url);
+            addRepository(new URL(repository));
             hasExternalRepositories = true;
         } catch (MalformedURLException e) {
             IllegalArgumentException iae = new IllegalArgumentException
@@ -605,6 +603,11 @@ public class WebappClassLoader
             throw iae;
         }
 
+    }
+
+    public void addRepository(URL url) {
+        super.addURL(url);
+        hasExternalRepositories = true;
     }
 
 
