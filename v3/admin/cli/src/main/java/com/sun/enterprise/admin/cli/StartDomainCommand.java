@@ -104,13 +104,7 @@ public class StartDomainCommand extends S1ASCommand {
     }
     
     private boolean pingDAS(int port) {
-        try {
-            RemoteCommand.pingDAS(port);
-            return true;
-        }
-        catch (Exception ex) {
-            return false;
-        }
+        return RemoteCommand.pingDAS(port);
     }
     
     private boolean timedOut(long startTime) {
