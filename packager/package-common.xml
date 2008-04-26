@@ -109,11 +109,11 @@
     <echo message="Updating cfg_cache in local IPS image with ${REPO_URL}"/>
     <available file="${image_cache}" property="cache.present"/>
     <fail message="${image_cache} File NOT present, call create-local-image target first" unless="cache.present"/>
-    <echo file="${image_cache}" append="true">origin-for-windows-i386 = ${REPO_HOST}:10004${line.separator}</echo>
-    <echo file="${image_cache}" append="true">origin-for-sunos-i386 = ${REPO_HOST}:10003${line.separator}</echo>
-    <echo file="${image_cache}" append="true">origin-for-sunos-sparc = ${REPO_HOST}:10000${line.separator}</echo>
-    <echo file="${image_cache}" append="true">origin-for-linux-i386 = ${REPO_HOST}:10001${line.separator}</echo>
-    <echo file="${image_cache}" append="true">origin-for-darwin-universal = ${REPO_HOST}:10002${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-windows-i386 = ${REPO_HOST}/dev/windows/gf3000_2000/${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-sunos-i386 = ${REPO_HOST}/dev/solaris-x86/gf3000_2000/${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-sunos-sparc = ${REPO_HOST}/dev/solaris-sparc/gf3000_2000/${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-linux-i386 = ${REPO_HOST}/dev/linux/gf3000_2000/${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-darwin-universal = ${REPO_HOST}/dev/mac/gf3000_2000/${line.separator}</echo>
 </target>
 
 <target name="create-local-image" depends="check-ips"

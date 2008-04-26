@@ -73,6 +73,13 @@
 <target name="post-bootstrap-solaris" depends="publish-init" if="solaris" >
 </target>
 
+<target name="extract-uc-bootstrap" depends="publish-init">
+    <!-- uc bootstrap files -->
+    <mkdir dir="${uc.bootstrap.home}"/>
+    <unzip src="${maven.repo.local}/${uc.bootstrap.dir}/${uc.bootstrap.version}/ucbootstrap-${uc.bootstrap.version}.zip" 
+            dest="${uc.bootstrap.home}"/>
+</target>
+
 
 <target name="package-install-init" if="unix">     
     <exec  executable="rm" failonerror="false">
