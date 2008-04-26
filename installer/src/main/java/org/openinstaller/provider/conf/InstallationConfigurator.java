@@ -169,6 +169,8 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             Runtime.getRuntime().exec("/bin/chmod a+x " +
                                installDir + "/glassfish/bin/" + CLInames[i]);
 		}
+	Runtime.getRuntime().exec("/bin/chmod a+x " +
+			installDir + "/bin/asadmin");
     }
 
     //create domain startup/shutdown wrapper scripts used by program
@@ -232,8 +234,8 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             wrapperWriter.close();
             wrapperWriter = null;
 
-	    Runtime.getRuntime().exec("/bin/chmod ugo+rx " + stopWrapperFile.getAbsolutePath());
-	    Runtime.getRuntime().exec("/bin/chmod ugo+rx " + startWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + stopWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
 	}
     } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());

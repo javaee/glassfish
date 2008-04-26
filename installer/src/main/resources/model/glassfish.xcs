@@ -48,11 +48,6 @@
          <if:location path="GlassFish V3 TP2" relative="USER_START_MENU"/>
 	 <if:icon path="glassfish/icons/stopAppserv.ico" relative="INSTALL_HOME"/>
    </if:shortcut> 
-   <if:shortcut name="Quick Start Guide" type="URL"
-	   runInTerminal="false">
-         <if:target path="http://docs.sun.com/doc/820-4836"/>
-         <if:location path="GlassFish V3 TP2" relative="USER_START_MENU"/>
-	 <if:icon path="glassfish/icons/onlinedoc.ico" relative="INSTALL_HOME"/>
-    </if:shortcut>
+   
   </if:desktop>
 </oor:component-schema>
