@@ -83,7 +83,7 @@ public class StartDomainCommand extends S1ASCommand {
 
         while(!timedOut(startWait) && !alive) {
             for (int port : ports) {
-                if (pingDAS(port)) {
+                if (RemoteCommand.pingDAS(port)) {
                     alive = true;
                     break;
                 }
@@ -101,10 +101,6 @@ public class StartDomainCommand extends S1ASCommand {
             String msg = getLocalizedString("dasNoStart", objs);
             throw new CommandException(msg);
         }
-    }
-    
-    private boolean pingDAS(int port) {
-        return RemoteCommand.pingDAS(port);
     }
     
     private boolean timedOut(long startTime) {
