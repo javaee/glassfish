@@ -26,6 +26,7 @@ package org.glassfish.api.deployment.archive;
 import org.glassfish.api.deployment.DeploymentContext;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.net.URI;
