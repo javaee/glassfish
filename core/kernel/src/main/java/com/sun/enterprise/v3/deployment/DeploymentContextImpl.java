@@ -116,11 +116,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     }
 
     /**
-     * Returns the directory where the original applications bits should be
-     * stored. This is useful when users deploy an archive file that need to
-     * be unzipped somewhere for the container to work with.
-     *
-     * @return the source directory for this application
+     * {@inheritDoc}
      */
     public File getSourceDir() {
 
