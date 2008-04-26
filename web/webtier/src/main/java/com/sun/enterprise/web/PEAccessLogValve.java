@@ -794,7 +794,7 @@ public final class PEAccessLogValve
         // defined under http-service.
         String acWriteInterval = accessLogWriteInterval;
         if (vsBean.getProperty(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY) != null){
-            acWriteInterval = vsBean.getProperty(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY).getValue();
+            acWriteInterval = vsBean.getPropertyValue(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY);
         }
         if (acWriteInterval != null){
             try{
