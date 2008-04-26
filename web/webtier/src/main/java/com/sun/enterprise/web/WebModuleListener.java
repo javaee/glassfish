@@ -49,6 +49,7 @@ import java.net.URLClassLoader;
 import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Globals;
@@ -109,7 +110,7 @@ final class WebModuleListener
      * The exploded location for this web module.
      * Note this is not the generated location.
      */
-    private String explodedLocation;
+    private File explodedLocation;
     
     private ServerContext serverContext;
 
@@ -121,7 +122,7 @@ final class WebModuleListener
      * @param wbd descriptor for this module.
      */
     public WebModuleListener(ServerContext serverContext,
-                             String explodedLocation,
+                             File explodedLocation,
                              WebBundleDescriptor wbd) {
         this.serverContext = serverContext;
         this.wbd = wbd;
@@ -157,7 +158,7 @@ final class WebModuleListener
             if (wbd != null && wbd.getApplication() != null && 
                 wbd.getApplication().isVirtual()) {
                 wbd.setClassLoader(webModule.getLoader().getClassLoader());
-                wbd.visit((WebBundleVisitor) new WebValidatorWithCL());
+                wbd.visit(new WebValidatorWithCL());
             }
             
             //loadPersistenceUnits(webModule);

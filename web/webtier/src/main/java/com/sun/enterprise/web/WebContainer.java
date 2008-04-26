@@ -2758,14 +2758,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.FINEST, "webcontainer.loadModule", params);
         }
 
-        String docBase = null;
+        File docBase = null;
         if (JWS_APPCLIENT_MODULE_NAME.equals(wmName)) {
-            File installRootFile = new File(System.getProperty("com.sun.aas.installRoot"));
-            String path = installRootFile.toURI().getPath();
-            if (OS.isWindows()) {
-                path = path.substring(1); // On Windows, skip the slash before the device
-            }
-            docBase = path;
+            docBase = new File(System.getProperty("com.sun.aas.installRoot"));
         } else {
             docBase = wmInfo.getLocation();
         }

@@ -124,7 +124,7 @@ public final class EmbeddedWebContainer extends Embedded {
      *
      * @param vsID Virtual server id
      * @param vsBean Bean corresponding to virtual-server element in domain.xml
-     * @param vsDocRoot Virtual server docroot
+     * @param vsDocroot Virtual server docroot
      * @param vsMimeMap Virtual server MIME mappings
      *
      * @return The generated virtual server instance
@@ -215,7 +215,7 @@ public final class EmbeddedWebContainer extends Embedded {
      * @param location Absolute pathname to the web module directory
      * @param defaultWebXmlLocation Location of default-web.xml
      */
-    public Context createContext(String ctxPath, String location,
+    public Context createContext(String ctxPath, File location,
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
@@ -225,10 +225,10 @@ public final class EmbeddedWebContainer extends Embedded {
         WebModule context = new WebModule(webContainer);
         context.setDebug(debug);
         context.setPath(ctxPath);
-        context.setDocBase(location);
+        context.setDocBase(location.getAbsolutePath());
         context.setCrossContext(true);
         context.setUseNaming(isUseNaming());
-        context.setHasWebXml(wbd == null ? false : true);
+        context.setHasWebXml(wbd != null);
         context.setWebBundleDescriptor(wbd);
         context.setManagerChecksFrequency(1);
         context.setComponentId(compEnvId);

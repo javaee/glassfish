@@ -77,7 +77,7 @@ public class WebModuleConfig {
     /**
      * The source directory for the web application
      */
-    private String _dir = null;
+    private File _dir = null;
     
     /**
      * The objectType property
@@ -180,14 +180,14 @@ public class WebModuleConfig {
     /**
      * Set the directory in which the web application is deployed.
      */
-    public void setLocation(String sourceDir) {
+    public void setLocation(File sourceDir) {
         _dir = sourceDir;
     }
 
     /**
      * Return the directory in which the web application is deployed.
      */
-    public String getLocation() {
+    public File getLocation() {
         return _dir;
     }
 
@@ -273,7 +273,7 @@ public class WebModuleConfig {
     /**
      * Sets the base directory of this web application's stub path.
      *
-     * @param stubPath Stub path
+     * @param stubBaseDir Stub path
      */
     public void setStubBaseDir(String stubBaseDir) {
         this.stubBaseDir = stubBaseDir;

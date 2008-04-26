@@ -31,38 +31,28 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
-import org.apache.catalina.Container;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardHost;
-import com.sun.grizzly.tcp.Adapter;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.*;
 import org.glassfish.web.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.beans.PropertyVetoException;
 import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Web module deployer.
@@ -85,8 +75,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     @Inject
     GrizzlyService grizzlyAdapter;
-
-    private static final String ADMIN_VS = "__asadmin";
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
@@ -185,7 +173,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
         try {
             ReadableArchive source = dc.getSource();
-            final String docBase = source.getURI().getSchemeSpecificPart();
             Properties params = dc.getCommandParameters();
             String virtualServers = params.getProperty(DeployCommand.VIRTUAL_SERVERS);
         
@@ -202,7 +189,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);
-            wmInfo.setLocation(dc.getSourceDir().getAbsolutePath());
+            wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
             wmInfo.setWorkDir(dc.getScratchDir(env.kCompileJspDirName).getAbsolutePath());
         } catch (Exception ex) {
