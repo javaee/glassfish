@@ -325,8 +325,7 @@ public class StandardWrapper
             this.available = available;
         else
             this.available = 0L;
-        support.firePropertyChange("available", Long.valueOf(oldAvailable),
-                                   Long.valueOf(this.available));
+        support.firePropertyChange("available", oldAvailable, this.available);
 
     }
 
@@ -362,8 +361,8 @@ public class StandardWrapper
 
         int oldDebug = this.debug;
         this.debug = debug;
-        support.firePropertyChange("debug", Integer.valueOf(oldDebug),
-                                   Long.valueOf(this.debug));
+        support.firePropertyChange("debug", oldDebug,
+                (long) this.debug);
 
     }
 
@@ -647,7 +646,7 @@ public class StandardWrapper
             return DEFAULT_SERVLET_METHODS;
         }
 
-        HashSet allow = new HashSet();
+        HashSet<String> allow = new HashSet<String>();
         allow.add("TRACE");
         allow.add("OPTIONS");
 	
@@ -668,7 +667,7 @@ public class StandardWrapper
         }
 
         String[] methodNames = new String[allow.size()];
-        return (String[]) allow.toArray(methodNames);
+        return allow.toArray(methodNames);
 
     }
 
@@ -704,7 +703,7 @@ public class StandardWrapper
      */
     public static Throwable getRootCause(ServletException e) {
         Throwable rootCause = e;
-        Throwable rootCauseCheck = null;
+        Throwable rootCauseCheck;
         // Extra aggressive rootCause finding
         do {
             try {
@@ -1044,11 +1043,11 @@ public class StandardWrapper
                     actualClass = jspWrapper.getServletClass();
                     // Merge init parameters
                     String paramNames[] = jspWrapper.findInitParameters();
-                    for (int i = 0; i < paramNames.length; i++) {
-                        if (parameters.get(paramNames[i]) == null) {
+                    for (String paramName : paramNames) {
+                        if (parameters.get(paramName) == null) {
                             parameters.put
-                                (paramNames[i], 
-                                 jspWrapper.findInitParameter(paramNames[i]));
+                                    (paramName,
+                                            jspWrapper.findInitParameter(paramName));
                         }
                     }
                 }
@@ -1393,7 +1392,7 @@ public class StandardWrapper
             while ((nRetries < 21) && (countAllocated > 0)) {
                 if ((nRetries % 10) == 0) {
                     log.debug(sm.getString("standardWrapper.waiting",
-                                           Integer.valueOf(countAllocated),
+                            countAllocated,
                                            instance.getClass().getName()));
                 }
                 try {
