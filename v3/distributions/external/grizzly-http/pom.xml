@@ -63,7 +63,12 @@
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
                         <Export-Package>com.sun.grizzly.*;-split-package:=merge-first</Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <!-- Import everything but this. This is a temporary
+                             change needed until we separate comet stuff
+                             to grizzly-optionals module. Remove this after
+                             tp2 branch is merged.
+                        -->
+                        <Import-Package>!com.sun.grizzly.standalone.servlet,*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,

@@ -81,16 +81,7 @@ public class ASMainKnopflerFish extends ASMainOSGi {
         // Refere to http://www.knopflerfish.org/running.html for more details about
         // options and properties used here
         File cacheProfileDir = new File(fwDir, "fwdir");
-        if (cacheProfileDir.exists() && cacheProfileDir.isDirectory()) {
-            // remove this
-            logger.info("Removing KnopflerFish cache profile dir " + cacheProfileDir+ " left from a previous run");
-            boolean deleted = deleteRecurssive(cacheProfileDir);
-            if (!deleted) {
-                logger.warning("Not able to delete " + cacheProfileDir);
-            }
-        }
-        cacheProfileDir.mkdirs();
-        cacheProfileDir.deleteOnExit();
+        helper.setUpOSGiCache(glassfishDir, cacheProfileDir);
         System.setProperty("org.osgi.framework.dir", cacheProfileDir.getCanonicalPath());
         String jars = new File(fwDir, "jars/").toURI().toString();
         System.setProperty("org.knopflerfish.gosg.jars", jars);
