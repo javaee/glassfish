@@ -111,8 +111,8 @@ public class StopDomainCommand extends AbstractCommand {
     private String[] getCmd(String port) {
         List<String> cmd = new ArrayList<String>();
         cmd.add("stop-domain");
-        addOption(cmd, HOST);
-        addOption(cmd, PORT);
+        cmd.add("--port");
+        cmd.add(port);
         addOption(cmd, USER);
         addOption(cmd, PASSWORDFILE);
         addOption(cmd, FORCE);

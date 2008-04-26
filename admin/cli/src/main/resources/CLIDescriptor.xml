@@ -106,7 +106,7 @@
         <Command name="stop-domain" 
               classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
               numberofoperands="?" 
-              usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [domain_name]">
+              usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [--force true] [domain_name]">
              <ValidOption name="domaindir"/>
              <ValidOption name="terse"/>
              <ValidOption name="echo"/>
