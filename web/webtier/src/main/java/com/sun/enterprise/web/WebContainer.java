@@ -1022,8 +1022,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         vs_id,
                         vsBean.getDefaultWebModule());
 
-        VirtualServer vs = createVS(vs_id, vsBean, docroot,
-                                    vsBean.getLogFile(), mm,
+        VirtualServer vs = createVS(vs_id, vsBean, docroot, mm,
                                     httpService.getHttpProtocol());
 
         // cache control
@@ -2249,7 +2248,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public VirtualServer createVS(String vsID,
             com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
             String docroot,
-            String logFile,
             MimeMap mimeMap,
             HttpProtocol httpProtocol) {
 
@@ -2257,7 +2255,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         VirtualServer vs = (VirtualServer) _embedded.createHost(vsID,
                 vsBean,
                 docroot,
-                logFile,
+                vsBean.getLogFile(),
                 mimeMap);
 
         //TODO

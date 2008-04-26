@@ -477,8 +477,7 @@ public class PEWebContainer extends WebContainer {
                         vs_id,
                         vse.getDefaultWebModule());
 
-        VirtualServer vs = createVS(vs_id, vse, docroot,
-                                    vse.getLogFile(), mm,
+        VirtualServer vs = createVS(vs_id, vse, docroot, mm,
                                     httpService.getHttpProtocol());
 
         // cache control
