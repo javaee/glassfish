@@ -1309,14 +1309,32 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 			sendAttributeChangeNotification( "", attr.getName(), attrType, System.currentTimeMillis(), oldValue, attr.getValue() );
 		}
 	}
+    
+    /**
+        A subclass may override this any allow any name variant to map to the AMX
+        Attribute name as found in the MBeanInfo.
+     */
+        protected String
+    asAMXAttributeName( final String name )
+    {
+        return name;
+    }
 	
-		protected String
+		protected final String
 	getAttributeType( final String attrName )
 	{
+        final String amxName = asAMXAttributeName(attrName);
+        
 		final MBeanAttributeInfo	info	=
-			JMXUtil.getMBeanAttributeInfo( getMBeanInfo(), attrName );
+			JMXUtil.getMBeanAttributeInfo( getMBeanInfo(), amxName );
 		
-		return( info.getType() );
+        // attributes might be illegal names...
+        if ( info == null )
+        {
+            logWarning( "getAttributeType: unknown attribute: " + attrName );
+        }
+        
+		return( info == null ? String.class.getName() : info.getType() );
 	}
 	
 		protected synchronized void

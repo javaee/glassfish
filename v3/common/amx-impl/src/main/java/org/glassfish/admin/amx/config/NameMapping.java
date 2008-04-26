@@ -48,36 +48,18 @@ import java.util.concurrent.ConcurrentMap;
  */
 final class NameMapping
 {
-    /**
-        One Map for every j2eeType.
-     */
-    private static final ConcurrentMap<String,NameMapping>  INSTANCES = new ConcurrentHashMap<String,NameMapping>();
-    
     private final String mJ2EEType;
     private final ConcurrentMap<String,String>  mAMXToXML = new ConcurrentHashMap<String,String>();
     private final ConcurrentMap<String,String>  mXMLToAMX = new ConcurrentHashMap<String,String>();
     
-    private NameMapping( final String j2eeType )
+    public NameMapping( final String j2eeType )
     {
         mJ2EEType = j2eeType;
     }
     
     private static void debug( final String s ) { System.out.println(s); }
-    
-        public static NameMapping
-    getInstance( final String j2eeType )
-    {
-        NameMapping inst = INSTANCES.get(j2eeType);
-        if ( inst == null )
-        {
-            final NameMapping newInst = new NameMapping(j2eeType) ;
-            final NameMapping existing = INSTANCES.putIfAbsent( j2eeType, newInst);
-            inst = existing != null ? existing : newInst;
-        }
-        
-        return inst;
-    }
-    
+
+    public String getJ2EEType() { return mJ2EEType; }
     
     /**
         Given an AMX name, get the XML name.
@@ -85,7 +67,30 @@ final class NameMapping
         public String
     getXMLName( final String amxName )
     {
-        return mAMXToXML.get( amxName );
+        return getXMLName( amxName, false );
+    }
+    
+    /**
+        Given a name (AMX, XML or equivalent), get the XML name.
+     */
+        public String
+    getXMLName( final String anyName, boolean friendlyMatching )
+    {
+        String xmlName = mAMXToXML.get( anyName );
+        if ( xmlName == null  && friendlyMatching )
+        {
+            // could already be an xml name
+            if ( mXMLToAMX.keySet().contains( anyName ) )
+            {
+                xmlName = anyName;
+            }
+            else
+            {
+                // allow variants that might have the wrong case, dashes or not, etc
+                xmlName = _matchName( anyName, mXMLToAMX.keySet() );
+            }
+        }
+        return xmlName;
     }
     
     /**
@@ -96,7 +101,43 @@ final class NameMapping
     {
         return mXMLToAMX.get( xmlName );
     }
+    
+    /** 
+        Match the AMX attribute name to an XML attribute name.  The match is not added to the
+        cache.
+     */
+        private String
+    _matchName( final String anyName, final Set<String> xmlCandidates )
+    {
+        // the only AMX Attribute that we pass through is ATTR_NAME, which maps to
+        // a real attribute in config. So don't waste time on any AMX attributes
+        // which don't exist in config.
+        if ( AMXAttributes.AMX_ATTR_NAMES.contains(anyName) &&
+            ! AMXAttributes.ATTR_NAME.equalsIgnoreCase(anyName) )
+        {
+            return null;
+        }
+        
+        final String canonical = anyName.toLowerCase();
+        String xmlName = null;
+        
+        for (final String xmlCandidate : xmlCandidates )
+        {
+            final String temp = xmlCandidate.replace( "-", "");
+            if ( canonical.equals(xmlCandidate) ||
+                 canonical.equals(xmlCandidate.replace( "-", "")) )
+            {
+                xmlName = xmlCandidate;
+                break;
+            }
+        }
+        
+        return xmlName;
+    }
 
+    /**
+        Call with caution: overwrites any existing entries.
+     */
         public void
     pairNames( final String amxName, final String xmlName )
     {
@@ -104,35 +145,14 @@ final class NameMapping
         mXMLToAMX.put( xmlName, amxName );
     }
     
-    /** 
-        Match the AMX attribute name to an XML attribute name, adding it to the cache
-        as a side-effect.
+    /**
+       Find a match from the amxName in the xml candidates. If found, pair the names
+       in the internal mapping.
      */
         public String
-    matchAMXName( final String amxName, final Set<String> xmlCandidates )
+    pairNames( final String amxName, final Set<String> xmlCandidates )
     {
-        // the only AMX Attribute that we pass through is ATTR_NAME, which maps to
-        // a real attribute in config. So don't waste time on any AMX attributes
-        // which don't exist in config.
-        if ( AMXAttributes.AMX_ATTR_NAMES.contains(amxName) &&
-            ! AMXAttributes.ATTR_NAME.equalsIgnoreCase(amxName) )
-        {
-            return null;
-        }
-        
-        final String amxCanonical = amxName.toLowerCase();
-        String xmlName = null;
-        
-        for (final String xmlCandidate : xmlCandidates )
-        {
-            final String temp = xmlCandidate.replace( "-", "");
-            if ( temp.equals( amxCanonical ) )
-            {
-                xmlName = xmlCandidate;
-                break;
-            }
-        }
-        
+        final String xmlName = _matchName( amxName, xmlCandidates );
         if ( xmlName != null )
         {
             pairNames( amxName, xmlName );

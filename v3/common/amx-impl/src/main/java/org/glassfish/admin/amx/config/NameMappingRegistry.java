@@ -33,33 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.config;
+package org.glassfish.admin.amx.config;
 
-import com.sun.appserv.management.base.XTypes;
-
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
-	 Configuration for the &lt;profiler&gt; element.
-*/
-
-@AMXCreateInfo( paramNames={"name", "optional"} )
-public interface ProfilerConfig extends NamedConfigElement, PropertiesAccess, Enabled, AnonymousElementList
+    A registry of NameMapping
+ */
+final class NameMappingRegistry
 {
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.PROFILER_CONFIG;
-	
-	public String	getClasspath();
-	public void		setClasspath( String classpath );
-	public String	getNativeLibraryPath();
-	public void		setNativeLibraryPath( String nativeLibraryPath );
-	
-	
-	public String[]	getJVMOptions();
-	/**
-	 * Overwrites existing jvm options with the new options.
-	 * If the intent is to append the new options the caller needs to first get 
-	 * the existing jvm options using <a>#getJVMOptions</a>, append new 
-	 * options and set the resulting whole using this method.
-	 */
-	public void		setJVMOptions( String[] jvmOptions );
-}
+    private NameMappingRegistry() {}
+    
+    /**
+        One NameMapping for each j2eeType.
+     */
+    private static final ConcurrentMap<String,NameMapping>  INSTANCES = new ConcurrentHashMap<String,NameMapping>();
+    
+    private static void debug( final String s ) { System.out.println(s); }
+    
+    /**
+        Return null if no instance yet; createInstance() must be called to create one.
+     */
+        public static NameMapping
+    getInstance( final String j2eeType )
+    {
+        return INSTANCES.get(j2eeType);
+    }
+    
+        public static synchronized void
+    addInstance( final NameMapping mapping )
+    {
+        if ( getInstance(mapping.getJ2EEType()) != null )
+        {
+            throw new IllegalStateException();
+        }
+        INSTANCES.put( mapping.getJ2EEType(), mapping);
+    }
+ }
+
+
+
+
+
+
+
+

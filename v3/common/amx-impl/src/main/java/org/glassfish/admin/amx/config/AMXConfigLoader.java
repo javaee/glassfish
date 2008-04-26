@@ -669,7 +669,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
 
         //debug( "Full type for " + objectNameIn + " = " + fullType );
         
-        final Delegate delegate = new DelegateToConfigBeanDelegate( cb );
+        final DelegateToConfigBeanDelegate delegate = new DelegateToConfigBeanDelegate( cb );
         ObjectName parentObjectName = getActualParentObjectName( cb );
         
         if ( parentObjectName == null  )
@@ -684,7 +684,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
                 throw new IllegalArgumentException( "All AMXConfig MBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
             }
         }
-        
+
         final AMXConfigImplBase impl = new AMXConfigImplBase( j2eeType, fullType, parentObjectName, amxInterface, supplementaryIntf, delegate );
         
         try

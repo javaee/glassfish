@@ -46,7 +46,7 @@ import java.util.Map;
 */
 
 public interface JavaConfig
-	extends ConfigElement, PropertiesAccess, Container, Singleton
+	extends ConfigElement, PropertiesAccess, Container, Singleton, AnonymousElementList
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.JAVA_CONFIG;

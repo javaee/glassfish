@@ -80,11 +80,12 @@ public class AMXConfigImplBase extends AMXImplBase
         final ObjectName    parentObjectName,
 		final Class<? extends AMX> theInterface,
         final  Class<?>     supplementaryInterface,
-		final Delegate		delegate )
+		final DelegateToConfigBeanDelegate		delegate )
 	{
 		super( j2eeType, fullType, parentObjectName, theInterface, delegate );
         
         mSupplementaryInterface = supplementaryInterface;
+        
 	}
     
         private String
@@ -157,7 +158,34 @@ public class AMXConfigImplBase extends AMXImplBase
         return j2eeTypes;
     }
 
-
+    /**
+        A subclass may override this any allow any name variant to map to the AMX
+        Attribute name as found in the MBeanInfo.
+     */
+    @Override
+        protected String
+    asAMXAttributeName( final String name )
+    {
+        String amxName = super.asAMXAttributeName(name);
+        
+cdebug( "asAMXAttributeName: " + name );
+        if ( JMXUtil.getMBeanAttributeInfo( getMBeanInfo(), amxName ) == null )
+        {
+            final AttrInfo info = getConfigDelegate().getAttrInfo_AMX(name);
+        
+            if ( info != null )
+            {
+                amxName = info.amxName();
+cdebug( "asAMXAttributeName: found match: " + info );
+            }
+            else
+            {
+cdebug( "asAMXAttributeName: no match: " + name );
+            }
+        }
+        return name;
+    }
+    
 	    protected boolean
 	supportsProperties()
 	{
@@ -883,7 +911,21 @@ cdebug( "removeConfig: by  j2eeType + name" );
 	    return result;
 	}
 	
-	
+        public String[]
+    getAnonymousElementList( final String elementName )
+    {
+        return getConfigDelegate().getAnonymousElementList(elementName);
+    }
+    
+        public String[]
+    modifyAnonymousElementList(
+        final String   elementName,
+        final String   cmd,
+        final String[] values)
+    {
+        return getConfigDelegate().modifyAnonymousElementList(elementName, cmd, values);
+    }
+    
 	/**
 		Get the name of the config in which this MBean lives.
 		
@@ -918,7 +960,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         
         final Map<String,String> defaultValues = _getDefaultValues( myIntf );
         
-        final String xmlName = NameMapping.getInstance(getJ2EEType()).getXMLName( amxName );
+        final String xmlName = NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( amxName );
         return defaultValues.get( xmlName );
     }
     
@@ -990,11 +1032,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
             final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
             final String[] attrNames = getAttributeNames();
             
-            for( final String attrName : attrNames )
-            {
-                // side effect: causes name mapping
-                delegate.supportsAttribute( attrName );
-            }
+            delegate.initNameMapping( attrNames );
             
             _namesInited = true;
         }
@@ -1027,7 +1065,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         if ( ! _namesInited ) initNames();
         
         String attrType = String.class.getName();
-        String amxAttrName = NameMapping.getInstance(getJ2EEType()).getAMXName( xmlAttrName );
+        String amxAttrName = NameMappingRegistry.getInstance(getJ2EEType()).getAMXName( xmlAttrName );
         if ( amxAttrName == null )
         {
             cdebug( "issueAttributeChangeForXmlAttrName: can't find AMX name for: " + xmlAttrName + ", using xmlName for now" );
@@ -1052,7 +1090,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         protected String
     attributeNameToDottedValueName( final String amxAttrName )
     {
-        final String xmlName = NameMapping.getInstance(getJ2EEType()).getXMLName( amxAttrName );
+        final String xmlName = NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( amxAttrName );
         return xmlName == null ? super.attributeNameToDottedValueName(amxAttrName) : xmlName;
     }
 

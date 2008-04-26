@@ -41,6 +41,8 @@ import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.ListUtil;
+import com.sun.appserv.management.util.misc.StringUtil;
+
 import org.glassfish.admin.amx.mbean.DelegateBase;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.api.amx.AMXConfigInfo;
@@ -56,7 +58,7 @@ import java.lang.reflect.Type;
 import org.jvnet.hk2.config.*;
 
 import com.sun.appserv.management.util.misc.TypeCast;
-import static com.sun.appserv.management.config.CollectionOp.*;
+import static com.sun.appserv.management.config.AnonymousElementList.*;
 
 
 /**
@@ -68,7 +70,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     private final NameMappingHelper mNameMappingHelper;
     
     private static void debug( final String s ) { System.out.println(s); }
-	    
+    
 		public
 	DelegateToConfigBeanDelegate(
         final ConfigBean configBean )
@@ -80,6 +82,12 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         mNameMappingHelper = new NameMappingHelper( configBean );
 	}
     
+		void
+	initNameMapping( final String[] amxAttrNames )
+	{
+        mNameMappingHelper.initNameMapping( amxAttrNames );
+    }
+    
 		public boolean
 	supportsAttribute( final String amxAttrName )
 	{
@@ -87,14 +95,23 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         //debug( "DelegateToConfigBeanDelegate.supportsAttribute: " + attrName + " => " + xmlName );
         return xmlName != null;
 	}
+    
+    /**
+        Name *must* be an AMX attribute name.
+     */
+        public AttrInfo
+    getAttrInfo_AMX( final String attrName )
+    {
+        return mNameMappingHelper.getAttrInfo_AMX(attrName);
+    }
 	
     public ConfigBean getConfigBean() { return mConfigBean; }
                    
 		public final Object
 	getAttribute( final String amxName )
-		throws AttributeNotFoundException
 	{
         final AttrInfo info = mNameMappingHelper.getAttrInfo_AMX( amxName );
+        if ( info == null ) throw new IllegalArgumentException(amxName);
         
         Object result = null;
         final String xmlName = info.xmlName();
@@ -117,6 +134,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
        // debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
+
     
     private static final class MyTransactionListener implements TransactionListener
     {
@@ -211,141 +229,220 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     }
     
     private static Type getCollectionGenericType() 
-        throws NoSuchMethodException
     {
-        return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType();
+        try
+        {
+            return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType();
+        }
+        catch( NoSuchMethodException e )
+        {
+            // not supposed to happen, throw any reasonabl exception
+            throw new IllegalArgumentException();
+        }
     }    
     
     private static boolean isCollectionCmd( final String s )
     {
-        return s != null && s.startsWith(COLLECTION_CMD_PREFIX) && s.endsWith(COLLECTION_CMD_SUFFIX);
+        return s != null &&
+            (s.equals(OP_ADD) || s.equals(OP_REMOVE) || s.equals(OP_REPLACE) );
     }
     
-            
-    private void apply(
-        final ConfigBean cb,
-        final Map<String,Object> changes )
-        throws TransactionFailure
+    
+        public String[]
+    getAnonymousElementList( final String elementName )
     {
-        final Transaction t = new Transaction();
-        final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
-        final ConfigBeanProxy readableView = cb.getProxy( intf );
-        final WriteableView writeable = getWriteableView(readableView, cb );
+        return (String[])getAttribute( elementName );
+    }
+    
+        public String[]
+    modifyAnonymousElementList(
+        final String   elementName,
+        final String   cmd,
+        final String[] values)
+    {
+        //debug( "modifyAnonymousElementList: " + elementName + ", " + cmd + ", {" + StringUtil.toString(values) + "}" );
+        getAnonymousElementList(elementName); // force an error right away if it's a bad name
+        
+        final String xmlName = mNameMappingHelper.getXMLName(elementName, true);
         try
         {
-            joinTransaction( t, writeable);
-                
-            for ( final String xmlName : changes.keySet() )
+            final ModifyCollectionApplyer mca = new ModifyCollectionApplyer( mConfigBean, xmlName, cmd, values );
+            mca.apply();
+            return ListUtil.toStringArray(mca.mResult);
+        }
+        catch( final TransactionFailure e )
+        {
+            throw new RuntimeException( "Could not modify element collection " + elementName, e);
+        }
+    }
+    
+    /**
+        Handle an update to a collection, returning the List<String> that results.
+     */
+        private List<String>
+    handleCollection(
+        final WriteableView writeable,
+        final ConfigModel.Property prop,
+        final String  cmd,
+        final List<String>  argValues )
+    {
+        if ( ! isCollectionCmd(cmd) )
+            throw new IllegalArgumentException(""+cmd);
+            
+        final Object o = writeable.getter(prop, getCollectionGenericType());
+        final List<String> masterList = TypeCast.checkList( TypeCast.asList(o), String.class);
+        
+        //debug( "Existing values: {" + CollectionUtil.toString( masterList ) + "}");
+        //debug( "Arg values: {" + CollectionUtil.toString( argValues ) + "}");
+
+        if ( cmd.equals( OP_REPLACE ) )
+        {
+            masterList.retainAll( argValues );
+            for( final String s : argValues )
             {
-                final Object value = changes.get(xmlName);
+                if ( ! masterList.contains(s) )
+                {
+                    masterList.add(s);
+                }
+            }
+            //debug( "Master list after OP_REMOVE: {" + CollectionUtil.toString( masterList ) + "}");
+        }
+        else if ( cmd.equals( OP_REMOVE ) )
+        {
+            masterList.removeAll( argValues );
+            //debug( "Master list after OP_REMOVE: {" + CollectionUtil.toString( masterList ) + "}");
+        }
+        else if ( cmd.equals( OP_ADD ) )
+        {
+            // eliminate duplicates for now unless there is a good reason to allow them
+            final List<String> temp = new ArrayList<String>(argValues);
+            temp.removeAll(masterList);
+            
+            masterList.addAll(temp);
+            //debug( "Master list after OP_ADD: {" + CollectionUtil.toString( masterList ) + "}");
+        }
+        else
+        {
+            throw new IllegalArgumentException(cmd);
+        }
+        
+        //debug( "Existing values list before commit: {" + CollectionUtil.toString( masterList ) + "}");
+        return new ArrayList<String>(masterList);
+    }
+    
+    private class Applyer
+    {
+        final Transaction   mTransaction;
+        final ConfigBean    mConfigBean;
+        final WriteableView mWriteable;
+        
+        public Applyer( final ConfigBean cb ) throws TransactionFailure { this(cb, new Transaction()); }
+        public Applyer( final ConfigBean cb, final Transaction t)
+            throws TransactionFailure
+        {
+            mConfigBean = cb;
+            mTransaction = t;
+            
+            final ConfigBeanProxy readableView = cb.getProxy( cb.getProxyType() );
+            mWriteable = getWriteableView(readableView, cb );
+        }
+        
+        protected void makeChanges() 
+            throws TransactionFailure  {}
+        
+        final void apply()
+            throws TransactionFailure
+        {
+            try
+            {
+                joinTransaction(mTransaction, mWriteable);
+                
+                makeChanges();
+                
+                commit(mTransaction);
+            }
+            finally
+            {
+                mConfigBean.getLock().unlock();
+            }
+        }
+    }
+    
+    private final class ModifyCollectionApplyer extends Applyer
+    {
+        private volatile List<String> mResult;
+        private final String   mElementName;
+        private final String   mCmd;
+        private final String[] mValues;
+        
+        public ModifyCollectionApplyer(
+            final ConfigBean    cb,
+            final String elementName,
+            final String cmd,
+            final String[] values )
+            throws TransactionFailure
+        {
+            super( cb );
+            mElementName = elementName;
+            mCmd = cmd;
+            mValues = values;
+            mResult = null;
+        }
+        
+        protected void makeChanges()
+            throws TransactionFailure
+        {
+            final ConfigModel.Property prop = mNameMappingHelper.getConfigModel_Property(mElementName);
+            mResult = handleCollection( mWriteable, prop, mCmd, ListUtil.asStringList(mValues));
+        }
+    }
+    
+    private final class MakeChangesApplyer extends Applyer
+    {
+        private final Map<String,Object> mChanges;
+        
+        public MakeChangesApplyer(
+            final ConfigBean cb,
+            final Map<String,Object> changes)
+            throws TransactionFailure
+
+        {
+            super(cb);
+            mChanges = changes;
+        }
+                
+        protected void makeChanges()
+            throws TransactionFailure
+        {
+            for ( final String xmlName : mChanges.keySet() )
+            {
+                final Object value = mChanges.get(xmlName);
                 final ConfigModel.Property prop = mNameMappingHelper.getConfigModel_Property(xmlName);
 
                 if ( prop.isCollection() )
                 {
-                    try
-                    {
-                        final Object o = writeable.getter(prop, getCollectionGenericType());
-                        final List<String> existingValuesList = TypeCast.checkList( TypeCast.asList(o), String.class);
-                        
-        debug( "Existing values: {" + CollectionUtil.toString( existingValuesList ) + "}");
-                        // make a working copy
-                        final List<String> workList = new ArrayList(existingValuesList);
-        debug( "Work list start: {" + CollectionUtil.toString( workList ) + "}");
-                        
-                        // single string or List<String> or String[] are all mapped to a list
-                        final List<String> argValues = ListUtil.asStringList( value );
-                        if ( argValues.size() == 0 ) continue;
-                                                
-                        // check for command on what to do -- first argument could be a command
-                        final String first = argValues.get(0);
-                        String cmd = COLLECTION_OP_ADD;
-                        if ( isCollectionCmd(first) )
-                        {
-                            argValues.remove(0);
-                            cmd = first;
-                        }
-        debug( "Arg values start: {" + CollectionUtil.toString( argValues ) + "}");
-
-                        if ( cmd.equals( COLLECTION_OP_REPLACE ) )
-                        {
-                            workList.clear();
-                            workList.addAll( argValues );
-        debug( "Work list after COLLECTION_OP_REMOVE: {" + CollectionUtil.toString( workList ) + "}");
-                        }
-                        else if ( cmd.equals( COLLECTION_OP_REMOVE ) )
-                        {
-                            workList.removeAll( argValues );
-        debug( "Work list after COLLECTION_OP_REMOVE: {" + CollectionUtil.toString( workList ) + "}");
-                        }
-                        else if ( cmd.equals( COLLECTION_OP_ADD ) )
-                        {
-                            // eliminate duplicates for now unless there is a good reason to allow them
-                            argValues.removeAll( workList );
-        debug( "Arg values after removeAll(workList): {" + CollectionUtil.toString( argValues ) + "}");
-                            
-                            // add in the remaining (non-duplicate) items
-                            workList.addAll( argValues );
-        debug( "Work list after COLLECTION_OP_ADD: {" + CollectionUtil.toString( workList ) + "}");
-                        }
-                        else
-                        {
-                            throw new IllegalArgumentException(cmd);
-                        }
-                        
-                        final boolean IMPAIRED_CONFIG_BEAN_LIST = true;
-                        if ( IMPAIRED_CONFIG_BEAN_LIST  )
-                        {
-                           // Ugly nasty internal 'ProtectedList' is not precious at all,
-                           // it supports only add(Object) and remove(Object), no clear() or removeAll()
-                           // remove all items that aren't supposed to exist anymore
-                           for( final String existing : existingValuesList )
-                           {
-                                if ( ! workList.contains(existing) )
-                                {
-                                    existingValuesList.remove(existing);
-                                }
-                           }
-                           // add in all items that are not present
-                           for( final String keepMe : workList )
-                           {
-                                if ( ! existingValuesList.contains(keepMe) )
-                                {
-                                    existingValuesList.add(keepMe);
-                                }
-                           }
-                        }
-                        else
-                        {
-                            // empty the existing list and add in the new values
-                            existingValuesList.clear();
-                            existingValuesList.addAll( workList );
-                        }
-                        
-        debug( "Existing values list before commit: {" + CollectionUtil.toString( existingValuesList ) + "}");
-                    }
-                    catch ( final NoSuchMethodException e)
-                    {
-                        throw new TransactionFailure("Unknown property name " + xmlName + " on " + intf.getName(), null);                        
-                    }
+                    final List<String> results = handleCollection( mWriteable, prop, OP_REPLACE, ListUtil.asStringList(value) );
                 }
                 else if ( value == null || (value instanceof String) )
                 {
-                    writeable.setter( prop, value, String.class);
+                    mWriteable.setter( prop, value, String.class);
                 }
                 else
                 {
                     throw new TransactionFailure( "Illegal data type for attribute " + xmlName + ": " + value.getClass().getName() );
                 }
             }
-            
-            commit( t );
-        }
-        finally
-        {
-            cb.getLock().unlock();
         }
     }
-
+    
+    private void apply(
+        final ConfigBean cb,
+        final Map<String,Object> changes )
+        throws TransactionFailure
+    {
+        final MakeChangesApplyer mca = new MakeChangesApplyer( mConfigBean, changes );
+        mca.apply();
+    }
 
 		public AttributeList
 	setAttributes( final AttributeList attrsIn, final Map<String,Object> oldValues )
@@ -385,7 +482,9 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             // depending on whether the transaction worked or not
             try
             {
-                apply( mConfigBean, xmlAttrs );
+                final MakeChangesApplyer mca = new MakeChangesApplyer( mConfigBean, xmlAttrs );
+                mca.apply();
+
                 // use 'attrsIn' vs 'attrs' in case not all values are 'String'
                 successfulAttrs.addAll( attrsIn );
             }

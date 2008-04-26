@@ -36,9 +36,8 @@
 package com.sun.appserv.management.config;
 
 /**
-    For anonymous non-singleton attributes like &lt;jvm-options>, a command may be
-    inserted when setting the values; the first String of the String[] is the
-    command. If not included, then the default command is {@link #COLLECTION_OP_ADD}.
+    Mixin interface indicating that there is at least one anonymous non-singleton
+    leaf element present eg a &lt;jvm-options>.  Supports any number of such elements.
     <p>
     Examples:<br>
     <pre>
@@ -47,20 +46,46 @@ package com.sun.appserv.management.config;
     setJVMOptions( new String[] { COLLECTION_OP_REMOVE, "-client", "-Xmx" }   // removes these
     </pre>
 */
-public final class CollectionOp
-{
-    private CollectionOp() {}
-    
-    public static final String COLLECTION_CMD_PREFIX = "###";
-    public static final String COLLECTION_CMD_SUFFIX = "###";
-    
-    /** indicates that all values are to be replaced with the specified ones */
-    public static final String COLLECTION_OP_REPLACE = COLLECTION_CMD_PREFIX + "replace" + COLLECTION_CMD_SUFFIX;
-    
+public interface AnonymousElementList
+{    
     /** indicates that the values are to be added to the existing ones */
-    public static final String COLLECTION_OP_ADD     = COLLECTION_CMD_PREFIX + "add" + COLLECTION_CMD_SUFFIX;
+    public static final String OP_ADD     = "add";
     
     /** indicates that the values are to be remove from the existing ones */
-    public static final String COLLECTION_OP_REMOVE  = COLLECTION_CMD_PREFIX + "remove" + COLLECTION_CMD_SUFFIX;
+    public static final String OP_REMOVE  = "remove";
+    
+    /** indicates that all values are to be replaced with the specified ones */
+    public static final String OP_REPLACE = "replace";
+    
+    /**
+        Return all values of the element list specified by the element name, which must be an
+        anonymous non-singleton simple element eg:
+        <pre>
+        &lt;jvm-options>--client&lt;/jvm-options>
+        &lt;jvm-options>-Dfoo=bar&lt;/jvm-options>
+        
+        &lt;some-elem>-Dfoo=bar&lt;/some-elem>
+        &lt;some-elem>-Dfoo=bar&lt;/some-elem>
+        ...
+        </pre>
+        For example getCollection( "JVMOptions" ) for certain AMXConfig that have &lt;jvm-options> elements.
+        This is the generic operation; an AMXConfig can choose to implement an Attribute as
+        well eg getJVMOptions().  Either the AMX Attribute name (if present) may be used,
+        or the XML element name may be used. It is suggested that all such element names
+        have a String[] getter so they can at least be treated as read-only Attributes.
+     */
+    public String[] getAnonymousElementList( final String elementName );
+    
+    /**
+        Modify the collection as specified.  To perform a set()-style operation, use
+        modifyCollection(name, COLLECTION_OP_REPLACE, new String[] {...}).
+        @param elementName the name of the collection eg "JVMOptions"
+        @param cmd the operation to perform
+        @param args values used by the command
+        @return the entire list
+     */
+    public String[] modifyAnonymousElementList( final String elementName, final String cmd, final String[] args);
 }
+
+
 

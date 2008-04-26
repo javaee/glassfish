@@ -41,6 +41,7 @@ import com.sun.appserv.management.util.misc.ListUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -65,16 +66,58 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 final class NameMappingHelper {
     private static void debug( final String s ) { System.out.println(s); }
     
-    private final NameMapping mNameMapping;
+    private final String      mJ2EEType;
     private final ConfigBean  mConfigBean;
     
     public NameMappingHelper( final ConfigBean configBean ) {
-        mNameMapping = NameMapping.getInstance( getAMXConfigInfoResolver(configBean).j2eeType() );
+        mJ2EEType = getAMXConfigInfoResolver(configBean).j2eeType();
         mConfigBean  = configBean;
     }
-          
+    
+		void
+	initNameMapping( final String[] amxAttrNames )
+	{
+        NameMapping mapping = NameMappingRegistry.getInstance(mJ2EEType);
+        if ( mapping == null )
+        {
+            final Set<String> xmlAttrNames = mConfigBean.getAttributeNames();
+            final Set<String> xmlLeafNames = GSetUtil.newStringSet(ConfigSupport.getElementsNames(mConfigBean));
+            final Set<String> xmlNames = new HashSet<String>( xmlAttrNames );
+            xmlNames.addAll( xmlLeafNames );
+            
+            mapping = new NameMapping(mJ2EEType);
+            
+            final Set<String> amxNames = GSetUtil.newStringSet(amxAttrNames);
+            
+            // special case: the name, look for a hint in the annotation
+            if ( amxNames.contains(AMXAttributes.ATTR_NAME) )
+            {
+                final AMXConfigInfoResolver info = getAMXConfigInfoResolver( mConfigBean );
+                final String hint = info.nameHint();
+                if ( hint != null && hint.length() != 0 )
+                {
+                    //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
+                    amxNames.remove(AMXAttributes.ATTR_NAME);
+                    mapping.pairNames(AMXAttributes.ATTR_NAME, hint);
+                }
+            }
+            
+            // now map all remaining attributes from their AMX name to the xml name
+            for( final String amxAttrName : amxNames )
+            {
+                final String xmlName = mapping.pairNames( amxAttrName, xmlNames );
+                if ( xmlName != null )
+                {
+                    // matched, so reduce the search set size
+                    xmlNames.remove(xmlName);
+                }
+            }
+            NameMappingRegistry.addInstance( mapping );
+        }
+    }
+                        
     public ConfigBean getConfigBean()   { return mConfigBean; }
-    public NameMapping getNameMapping() { return mNameMapping; }
+    public NameMapping getNameMapping() { return NameMappingRegistry.getInstance(mJ2EEType); }
 
         public static AMXConfigInfoResolver
     getAMXConfigInfoResolver( final ConfigBean cb )
@@ -120,69 +163,28 @@ final class NameMappingHelper {
         public AttrInfo
     getAttrInfo_AMX( final String amxName )
     {
-        final String xmlName = getXMLName(amxName);
+        final String xmlName = getXMLName(amxName, true);
 
         final boolean isLeaf       = isLeaf(xmlName);
         final boolean isCollection = isCollection(xmlName);
 
-        return new AttrInfo( amxName, getXMLName( amxName), isLeaf, isCollection );
+        return new AttrInfo( amxName, xmlName, isLeaf, isCollection );
     }
 
-
-    /**
-        Utilize AMXConfigInfo for arbitrary name mappings, at least nameHint()
-     */
-        private String
-    smartAttrNameFind( final String amxName )
+    
+        public final String
+    getXMLName( final String amxName )
     {
-        String xmlName = null;
-        // look for nameHint() in annotation
-       if ( amxName.equals( AMXAttributes.ATTR_NAME ) )
-       {
-            final AMXConfigInfoResolver info = getAMXConfigInfoResolver( mConfigBean );
-            final String hint = info.nameHint();
-            if ( hint != null && hint.length() != 0 )
-            {
-                //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
-                xmlName = hint;
-            }
-        }
-       return xmlName;
+        return getXMLName( amxName, false );
     }
     
     /**
         Get the XML attribute name corresponding to the AMX attribute name.
      */
         public final String
-    getXMLName( final String amxName )
+    getXMLName( final String amxName, final boolean friendlyMatching )
     {
-        String xmlName = mNameMapping.getXMLName( amxName );
-        if ( xmlName == null )
-        {
-            xmlName = smartAttrNameFind( amxName );
-            if ( xmlName == null )
-            {
-                final Set<String> xmlNames = mConfigBean.getAttributeNames();
-                //debug( "matching " + amxName + " against xml Attribute names: {" + CollectionUtil.toString( xmlNames ) + "}");
-                
-                xmlName = mNameMapping.matchAMXName( amxName, xmlNames );
-                if ( xmlName == null )
-                {
-                    //final Set<String> leafNames = mConfigBean.getLeafElementNames();
-                    final Set<String> leafNames = GSetUtil.newStringSet( ConfigSupport.getElementsNames(mConfigBean) );
-                    //debug( "Matching " + amxName + " against xml leaf element names: {" + CollectionUtil.toString(leafNames) + "}" );
-                    xmlName = mNameMapping.matchAMXName( amxName, leafNames );
-                }
-                //debug( "Matched: " + amxName + " => " + xmlName );
-            }
-            else
-            {
-                mNameMapping.pairNames( amxName, xmlName );
-            }
-        }
-        
-        //debug( "getXMLName " + amxName + " => " + xmlName );
-        //debug( "amxAttrNameToConfigBeanName: resolved as : " + xmlName );
+        final String xmlName = getNameMapping().getXMLName( amxName, friendlyMatching);
         return xmlName;
     }
     
@@ -200,6 +202,9 @@ final class NameMappingHelper {
         return result;
     }
     
+    /**
+        Transform a Map keyed by AMX attribute names into one keyed by XML attribute names.
+     */
         public Map<String,Object>
     mapNamesAndValues(
         final Map<String,Object> amxAttrs,
