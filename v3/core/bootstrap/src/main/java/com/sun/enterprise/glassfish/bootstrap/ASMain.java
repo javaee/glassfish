@@ -39,7 +39,7 @@ public class ASMain {
 
     private static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
-    private enum Platform {HK2, Felix, KnopflerFish, Equinox}
+    private enum Platform {HK2, Felix, Knopflerfish, Equinox}
 
     public static void main(final String args[]) {
         Platform platform = Platform.HK2;
@@ -67,7 +67,7 @@ public class ASMain {
                 logger.info("Launching GlassFish on Equinox OSGi platform");
                 new ASMainEquinox(logger, args).run();
                 break;
-            case KnopflerFish:
+            case Knopflerfish:
                 logger.info("Launching GlassFish on Knopflerfish OSGi platform");
                 new ASMainKnopflerFish(logger, args).run();
                 break;
