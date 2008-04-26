@@ -75,7 +75,9 @@ public interface ReadableArchive extends Archive {
      * archive within this archive.
      *
      * @param name is the entry name relative to the root for the archive
-     * @return the Archive instance for this abstraction
+     * @return
+     *      the Archive instance for this abstraction,
+     *      or null if no such entry exists.
      */
     public ReadableArchive getSubArchive(String name) throws IOException;
 
