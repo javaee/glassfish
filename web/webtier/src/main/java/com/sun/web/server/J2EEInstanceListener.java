@@ -74,7 +74,6 @@ import java.util.logging.*;
 import com.sun.logging.*;
 //END OF IASRI 4660742
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 
 /**
  * This class implements the Tomcat InstanceListener interface and
@@ -82,7 +81,6 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Vivek Nagar
  * @author Tony Ng
  */
-@Service
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
@@ -90,10 +88,10 @@ public final class J2EEInstanceListener implements InstanceListener {
     // END OF IASRI 4660742
     protected static ResourceBundle _rb = _logger.getResourceBundle();
 
-    private static final HashSet<String> beforeEvents = new HashSet<String>(4);
-    private static final HashSet<String> afterEvents = new HashSet<String>(4);
-    
-    
+    private static final HashSet beforeEvents = new HashSet(4);
+    private static final HashSet afterEvents = new HashSet(4);
+
+
     static {
         beforeEvents.add(InstanceEvent.BEFORE_SERVICE_EVENT);
         beforeEvents.add(InstanceEvent.BEFORE_FILTER_EVENT);
@@ -106,20 +104,13 @@ public final class J2EEInstanceListener implements InstanceListener {
         afterEvents.add(InstanceEvent.AFTER_DESTROY_EVENT);
     }
 
-    @Inject
-    InvocationManager im;
-
-    @Inject
-    JavaEETransactionManager tm;
-
-    @Inject
-    InjectionManager injectionMgr;
-
+    private InvocationManager im;
+    private JavaEETransactionManager tm;
+    private InjectionManager injectionMgr;
     private boolean initialized = false;
 
-    @Inject(optional=true)
-    AppServSecurityContext securityContext;
-    
+    private AppServSecurityContext securityContext;
+
     public J2EEInstanceListener() {
     }
 
@@ -149,11 +140,18 @@ public final class J2EEInstanceListener implements InstanceListener {
         ServerContext serverContext = wm.getServerContext();
         if (serverContext == null) {
             String msg = _rb.getString("webmodule.noservercontext");
-            msg = MessageFormat.format(msg, wm.getName());
+            msg = MessageFormat.format(msg, new Object[] { wm.getName() });
             throw new IllegalStateException(msg);
         }
+        im = serverContext.getDefaultHabitat().getByContract(
+                InvocationManager.class);
+        tm = serverContext.getDefaultHabitat().getByContract(
+                JavaEETransactionManager.class);
+        injectionMgr = serverContext.getDefaultHabitat().getByContract(
+                InjectionManager.class);
         initialized = true;
-        
+
+        securityContext = serverContext.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         if (securityContext != null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Obtained securityContext implementation class " + securityContext);
@@ -172,13 +170,13 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
         WebModule wm = (WebModule)context;
 
-        Object instance;
+        Object instance = null;
         if (eventType.equals(InstanceEvent.BEFORE_FILTER_EVENT)) {
 
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
-        }            
+        }
 
         // set security context
         // BEGIN IASRI 4688449
@@ -186,13 +184,13 @@ public final class J2EEInstanceListener implements InstanceListener {
         Realm ra = context.getRealm();
         /** IASRI 4713234
         if (ra != null) {
-            HttpServletRequest request = 
+            HttpServletRequest request =
                 (HttpServletRequest) event.getRequest();
             if (request != null && request.getUserPrincipal() != null) {
-                WebPrincipal prin = 
+                WebPrincipal prin =
                     (WebPrincipal) request.getUserPrincipal();
                 // ra.authenticate(prin);
-                
+
                 // It is inefficient to call authenticate just to set
                 // sec.ctx.  Instead, WebPrincipal modified to keep the
                 // previously created secctx, and set it here directly.
@@ -204,22 +202,23 @@ public final class J2EEInstanceListener implements InstanceListener {
         // START OF IASRI 4713234
         if (ra != null) {
 
-            ServletRequest request = event.getRequest();
+            ServletRequest request =
+		(ServletRequest) event.getRequest();
             if (request != null && request instanceof HttpServletRequest) {
 
                 HttpServletRequest hreq = (HttpServletRequest)request;
 		HttpServletRequest base = hreq;
-		
+
 		Principal prin = hreq.getUserPrincipal();
-		Principal basePrincipal = prin; 
-		
+		Principal basePrincipal = prin;
+
 		boolean wrapped = false;
 
-		while (prin != null) {
-		    
+		while (prin != null && base != null) {
+
 		    if (base instanceof ServletRequestWrapper) {
 			// unwarp any wrappers to find the base object
-			ServletRequest sr = 
+			ServletRequest sr =
 			    ((ServletRequestWrapper) base).getRequest();
 
 			if (sr instanceof HttpServletRequest) {
@@ -227,12 +226,12 @@ public final class J2EEInstanceListener implements InstanceListener {
 			    base = (HttpServletRequest) sr;
 			    wrapped = true;
 			    continue;
-			} 
+			}
 		    }
 
 		    if (wrapped) {
 			basePrincipal = base.getUserPrincipal();
-		    } 
+		    }
 
 		    else if (base instanceof CoyoteRequestFacade) {
 			// try to avoid the getUnWrappedCoyoteRequest call
@@ -248,18 +247,18 @@ public final class J2EEInstanceListener implements InstanceListener {
 		    break;
 		}
 
-		if (prin != null && prin == basePrincipal && 
+		if (prin != null && prin == basePrincipal &&
                         prin.getClass().getName().equals(SecurityConstants.WEB_PRINCIPAL_CLASS)) {
                     securityContext.setSecurityContextWithPrincipal(prin);
 		} else if (prin != basePrincipal) {
-		    
+
 		    // the wrapper has overridden getUserPrincipal
 		    // reject the request if the wrapper does not have
 		    // the necessary permission.
 
 		    checkObjectForDoAsPermission(hreq);
                     securityContext.setSecurityContextWithPrincipal(prin);
-                    
+
 		}
 
 	    }
@@ -280,14 +279,14 @@ public final class J2EEInstanceListener implements InstanceListener {
             im.preInvoke(inv);
             if (eventType.equals(InstanceEvent.BEFORE_SERVICE_EVENT)) {
                 // enlist resources with TM for service method
-                Transaction tran;
+                Transaction tran = null;
                 if ((tran = tm.getTransaction()) != null) {
                     inv.setTransaction(tran);
                 }
                 tm.enlistComponentResources();
             } else if (eventType.equals(InstanceEvent.BEFORE_INIT_EVENT)) {
-                
-                // Perform any required resource injection on the servlet 
+
+                // Perform any required resource injection on the servlet
                 // instance.  This needs to be done after the invocation of
                 // preInvoke, but before any of the servlet's application
                 // code is executed.
@@ -315,7 +314,7 @@ public final class J2EEInstanceListener implements InstanceListener {
     private static javax.security.auth.AuthPermission doAsPrivilegedPerm =
  	new javax.security.auth.AuthPermission("doAsPrivileged");
 
- 
+
     private static void checkObjectForDoAsPermission(final Object o)
             throws AccessControlException{
 
@@ -343,8 +342,8 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
 
         WebModule wm = (WebModule)context;
-        
-        Object instance;
+
+        Object instance = null;
         if (eventType.equals(InstanceEvent.AFTER_FILTER_EVENT)) {
             instance = event.getFilter();
         } else {
