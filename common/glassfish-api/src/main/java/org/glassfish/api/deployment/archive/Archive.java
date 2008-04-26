@@ -62,7 +62,7 @@ public interface Archive {
      * @param prefix the prefix of entries to be included
      * @return an enumeration of the archive file entries. 
      */ 
-    public Enumeration entries(String prefix);
+    public Enumeration<String> entries(String prefix);
 
     
     /**
