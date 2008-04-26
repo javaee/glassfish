@@ -110,32 +110,24 @@ public class StopDomainCommand extends S1ASCommand {
     private String[] getCmd(String port) {
         List<String> cmd = new ArrayList<String>();
         cmd.add("stop-domain");
-        addOption(cmd, HOST);
-        addOption(cmd, PORT, port);
+        cmd.add("--" + PORT);
+        cmd.add(port);
         addOption(cmd, USER);
         addOption(cmd, PASSWORDFILE);
-        String[] holdingArray = new String[cmd.size()];
-        return ((String[])cmd.toArray(holdingArray));
+        return cmd.toArray(new String[cmd.size()]);
     }
     
     private void addOption(List<String> cmd, String option) {
-        addOption(cmd, option, null);
-    }
-
-    private void addOption(List<String> cmd, String option, String defaultValue) {
         //adds the option to list as "--option" followed by its value iff value is non-null
         // "value" is higher precedence than "defaultValue"
         String value = getOption(option);
 
-        if(value == null) {
-            value = defaultValue;
-        }
-        
         if ( value != null) {
             cmd.add("--" + option); //get it as long option, a suitable method is not available :(
             cmd.add(value);
         }
     }
+
     private void getDomainRootDir() throws CommandValidationException {
         if (domainsDir == null) {
             domainsDir = new File(getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
