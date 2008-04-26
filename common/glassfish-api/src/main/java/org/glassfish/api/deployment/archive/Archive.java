@@ -23,6 +23,8 @@
 
 package org.glassfish.api.deployment.archive;
 
+import org.glassfish.api.deployment.DeploymentContext;
+
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
@@ -70,6 +72,15 @@ public interface Archive {
     
     /**
      * Returns the path used to create or open the underlying archive
+     *
+     * <p>
+     * TODO: abstraction breakage:
+     * Several callers, most notably {@link DeploymentContext#getSourceDir()}
+     * implementation, assumes that this URI is an URL, and in fact file URL.
+     *
+     * <p>
+     * If this needs to be URL, use of {@link URI} is misleading. And furthermore,
+     * if its needs to be a file URL, this should be {@link File}.
      *
      * @return the path for this archive. 
      */
