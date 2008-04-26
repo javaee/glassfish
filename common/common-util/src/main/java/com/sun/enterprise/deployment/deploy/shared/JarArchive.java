@@ -24,7 +24,6 @@
 package com.sun.enterprise.deployment.deploy.shared;
 
 
-import java.net.URI;
 import org.glassfish.api.deployment.archive.Archive;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -47,11 +46,11 @@ public abstract class JarArchive implements Archive {
      * @param prefix the prefix of entries to be included
      * @return an enumeration of the archive file entries.
      */
-    public Enumeration entries(String prefix) {
-        Enumeration allEntries = entries();
-        Vector entries = new Vector();
+    public Enumeration<String> entries(String prefix) {
+        Enumeration<String> allEntries = entries();
+        Vector<String> entries = new Vector<String>();
         while (allEntries.hasMoreElements()) {
-            String name = (String) allEntries.nextElement();
+            String name = allEntries.nextElement();
             if (name != null && name.startsWith(prefix)) {
                 entries.add(name);
             }

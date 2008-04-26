@@ -163,10 +163,10 @@ public class FileArchive implements ReadableArchive, WritableArchive {
      * @param prefix the prefix of entries to be included
      * @return an enumeration of the archive file entries. 
      */ 
-    public Enumeration entries(String prefix) {
+    public Enumeration<String> entries(String prefix) {
         prefix = prefix.replace('/', File.separatorChar);
         File file = new File(archive, prefix);
-        Vector namesList = new Vector();
+        Vector<String> namesList = new Vector<String>();
         getListOfFiles(file, namesList, null);
         return namesList.elements();
     }
@@ -361,23 +361,22 @@ public class FileArchive implements ReadableArchive, WritableArchive {
      * utility method for getting contents of directory and 
      * sub directories
      */
-    private void getListOfFiles(File directory, Vector files, List embeddedArchives) {
-        File[] list = directory.listFiles();
-        for (int i=0;i<list.length;i++) {
-	    String fileName = list[i].getAbsolutePath().substring(archive.getAbsolutePath().length()+1);
-            if (!list[i].isDirectory()) {                
+    private void getListOfFiles(File directory, Vector<String> files, List embeddedArchives) {
+        for (File aList : directory.listFiles()) {
+            String fileName = aList.getAbsolutePath().substring(archive.getAbsolutePath().length() + 1);
+            if (!aList.isDirectory()) {
                 fileName = fileName.replace(File.separatorChar, '/');
                 if (!fileName.equals(JarFile.MANIFEST_NAME)) {
                     files.add(fileName);
                 }
             } else {
-		if (embeddedArchives!=null) {
-			if (!embeddedArchives.contains(fileName)) {
-				getListOfFiles(list[i], files, null);
-			}            		
-		} else {
-	                getListOfFiles(list[i], files, null);
-		}
+                if (embeddedArchives != null) {
+                    if (!embeddedArchives.contains(fileName)) {
+                        getListOfFiles(aList, files, null);
+                    }
+                } else {
+                    getListOfFiles(aList, files, null);
+                }
             }
         }
     }          
