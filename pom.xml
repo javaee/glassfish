@@ -108,7 +108,7 @@
       <!-- other dependency vesrion constants --> 
         <ant.version>1.7.0</ant.version>
         <glassfish.version>10.0-tp-2-SNAPSHOT</glassfish.version>
-	<amx-api.version>2.0-SNAPSHOT</amx-api.version>
+		<amx-api.version>2.0-tp-2</amx-api.version>
         <jsf-api.version>1.2_08</jsf-api.version>
         <jsf-impl.version>1.2_08</jsf-impl.version>        
         <jaxrpc-api.version>1.1</jaxrpc-api.version>

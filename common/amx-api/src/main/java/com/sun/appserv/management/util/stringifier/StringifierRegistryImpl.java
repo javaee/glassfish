@@ -78,10 +78,10 @@ public class StringifierRegistryImpl implements StringifierRegistry
 		public void
 	add( Class theClass, Stringifier stringifier )
 	{
-		if ( lookup( theClass ) != null )
+		/*if ( lookup( theClass ) != null )
 		{
 			new Exception().printStackTrace();
-		}
+		}*/
 		
 		mLookup.remove( theClass );
 		mLookup.put( theClass, stringifier );
