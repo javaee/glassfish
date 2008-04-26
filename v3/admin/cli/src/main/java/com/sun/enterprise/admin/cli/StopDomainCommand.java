@@ -80,7 +80,7 @@ public class StopDomainCommand extends S1ASCommand {
         int adminPort = ports[0];
 
         // Verify that the DAS is running and reachable
-        if(!RemoteCommand.pingDAS(adminPort))
+        if(!RemoteCommand.pingDASQuietly(adminPort))
             throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
         
         try {

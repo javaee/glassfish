@@ -50,6 +50,7 @@ import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import java.util.jar.*;
+import java.util.logging.Level;
 import sun.misc.BASE64Encoder;
 
 public class CLIRemoteCommand {
@@ -312,7 +313,20 @@ public class CLIRemoteCommand {
         }
     }
 
-
+    /**
+     * Do not print out the results of the version command from the server 
+     * @param port The admin port of DAS
+     * @return true if DAS can be reached and can handle commands, otherwise false.
+     */
+    static boolean pingDASQuietly(int port) {
+        try {
+            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
+            return pingDAS(port);
+        }
+        finally {
+            CLILogger.getInstance().popAndUnlockLevel();
+        }
+    }
 
     private void initialize(final String[] args) throws CommandException {
         try {
