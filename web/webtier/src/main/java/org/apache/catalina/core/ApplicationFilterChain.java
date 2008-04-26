@@ -57,6 +57,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.InstanceEvent;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_SERVICE_EVENT;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
@@ -209,7 +213,7 @@ final class ApplicationFilterChain implements FilterChain {
             Filter filter = null;
             try {
                 filter = filterConfig.getFilter();
-                support.fireInstanceEvent(InstanceEvent.BEFORE_FILTER_EVENT,
+                support.fireInstanceEvent(BEFORE_FILTER_EVENT,
                                           filter, request, response);
                 
                 if( SecurityUtil.isPackageProtectionEnabled() ) {
@@ -230,26 +234,26 @@ final class ApplicationFilterChain implements FilterChain {
                     filter.doFilter(request, response, this);
                 }
 
-                support.fireInstanceEvent(InstanceEvent.AFTER_FILTER_EVENT,
+                support.fireInstanceEvent(AFTER_FILTER_EVENT,
                                           filter, request, response);
             } catch (IOException e) {
                 if (filter != null)
-                    support.fireInstanceEvent(InstanceEvent.AFTER_FILTER_EVENT,
+                    support.fireInstanceEvent(AFTER_FILTER_EVENT,
                                               filter, request, response, e);
                 throw e;
             } catch (ServletException e) {
                 if (filter != null)
-                    support.fireInstanceEvent(InstanceEvent.AFTER_FILTER_EVENT,
+                    support.fireInstanceEvent(AFTER_FILTER_EVENT,
                                               filter, request, response, e);
                 throw e;
             } catch (RuntimeException e) {
                 if (filter != null)
-                    support.fireInstanceEvent(InstanceEvent.AFTER_FILTER_EVENT,
+                    support.fireInstanceEvent(AFTER_FILTER_EVENT,
                                               filter, request, response, e);
                 throw e;
             } catch (Throwable e) {
                 if (filter != null)
-                    support.fireInstanceEvent(InstanceEvent.AFTER_FILTER_EVENT,
+                    support.fireInstanceEvent(AFTER_FILTER_EVENT,
                                               filter, request, response, e);
                 throw new ServletException
                   (sm.getString("filterChain.filter"), e);
@@ -386,7 +390,7 @@ final class ApplicationFilterChain implements FilterChain {
                                Servlet serv, InstanceSupport supp)
         throws IOException, ServletException {
         try {
-            supp.fireInstanceEvent(InstanceEvent.BEFORE_SERVICE_EVENT,
+            supp.fireInstanceEvent(BEFORE_SERVICE_EVENT,
                                    serv, request, response);
             if ((request instanceof HttpServletRequest) &&
                 (response instanceof HttpServletResponse)) {
@@ -414,22 +418,22 @@ final class ApplicationFilterChain implements FilterChain {
             } else {
                 serv.service(request, response);
             }
-            supp.fireInstanceEvent(InstanceEvent.AFTER_SERVICE_EVENT,
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response);
         } catch (IOException e) {
-            supp.fireInstanceEvent(InstanceEvent.AFTER_SERVICE_EVENT,
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
             throw e;
         } catch (ServletException e) {
-            supp.fireInstanceEvent(InstanceEvent.AFTER_SERVICE_EVENT,
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
             throw e;
         } catch (RuntimeException e) {
-            supp.fireInstanceEvent(InstanceEvent.AFTER_SERVICE_EVENT,
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
             throw e;
         } catch (Throwable e) {
-            supp.fireInstanceEvent(InstanceEvent.AFTER_SERVICE_EVENT,
+            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
             throw new ServletException
               (sm.getString("filterChain.servlet"), e);

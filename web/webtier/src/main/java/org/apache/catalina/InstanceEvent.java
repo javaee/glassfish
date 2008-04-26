@@ -64,96 +64,108 @@ public final class InstanceEvent
 
     // ----------------------------------------------------- Manifest Constants
 
+    public enum EventType {
 
-    /**
-     * The event indicating that the <code>init()</code> method is about
-     * to be called for this instance.
-     */
-    public static final String BEFORE_INIT_EVENT = "beforeInit";
-
-
-    /**
-     * The event indicating that the <code>init()</code> method has returned.
-     */
-    public static final String AFTER_INIT_EVENT = "afterInit";
+        /**
+         * The event indicating that the <code>init()</code> method is about
+         * to be called for this instance.
+         */
+        BEFORE_INIT_EVENT("beforeInit"),
 
 
-    /**
-     * The event indicating that the <code>service()</code> method is about
-     * to be called on a servlet.  The <code>servlet</code> property contains
-     * the servlet being called, and the <code>request</code> and
-     * <code>response</code> properties contain the current request and
-     * response being processed.
-     */
-    public static final String BEFORE_SERVICE_EVENT = "beforeService";
+        /**
+         * The event indicating that the <code>init()</code> method has returned.
+         */
+        AFTER_INIT_EVENT("afterInit"),
 
 
-    /**
-     * The event indicating that the <code>service()</code> method has
-     * returned.  The <code>servlet</code> property contains the servlet
-     * that was called, and the <code>request</code> and
-     * <code>response</code> properties contain the current request and
-     * response being processed.
-     */
-    public static final String AFTER_SERVICE_EVENT = "afterService";
+        /**
+         * The event indicating that the <code>service()</code> method is about
+         * to be called on a servlet.  The <code>servlet</code> property contains
+         * the servlet being called, and the <code>request</code> and
+         * <code>response</code> properties contain the current request and
+         * response being processed.
+         */
+        BEFORE_SERVICE_EVENT("beforeService"),
 
 
-    /**
-     * The event indicating that the <code>destroy</code> method is about
-     * to be called for this instance.
-     */
-    public static final String BEFORE_DESTROY_EVENT = "beforeDestroy";
+        /**
+         * The event indicating that the <code>service()</code> method has
+         * returned.  The <code>servlet</code> property contains the servlet
+         * that was called, and the <code>request</code> and
+         * <code>response</code> properties contain the current request and
+         * response being processed.
+         */
+        AFTER_SERVICE_EVENT("afterService"),
 
 
-    /**
-     * The event indicating that the <code>destroy()</code> method has
-     * returned.
-     */
-    public static final String AFTER_DESTROY_EVENT = "afterDestroy";
+        /**
+         * The event indicating that the <code>destroy</code> method is about
+         * to be called for this instance.
+         */
+        BEFORE_DESTROY_EVENT("beforeDestroy"),
 
 
-    /**
-     * The event indicating that the <code>service()</code> method of a
-     * servlet accessed via a request dispatcher is about to be called.
-     * The <code>servlet</code> property contains a reference to the
-     * dispatched-to servlet instance, and the <code>request</code> and
-     * <code>response</code> properties contain the current request and
-     * response being processed.  The <code>wrapper</code> property will
-     * contain a reference to the dispatched-to Wrapper.
-     */
-    public static final String BEFORE_DISPATCH_EVENT = "beforeDispatch";
+        /**
+         * The event indicating that the <code>destroy()</code> method has
+         * returned.
+         */
+        AFTER_DESTROY_EVENT("afterDestroy"),
 
 
-    /**
-     * The event indicating that the <code>service()</code> method of a
-     * servlet accessed via a request dispatcher has returned.  The
-     * <code>servlet</code> property contains a reference to the
-     * dispatched-to servlet instance, and the <code>request</code> and
-     * <code>response</code> properties contain the current request and
-     * response being processed.  The <code>wrapper</code> property will
-     * contain a reference to the dispatched-to Wrapper.
-     */
-    public static final String AFTER_DISPATCH_EVENT = "afterDispatch";
+        /**
+         * The event indicating that the <code>service()</code> method of a
+         * servlet accessed via a request dispatcher is about to be called.
+         * The <code>servlet</code> property contains a reference to the
+         * dispatched-to servlet instance, and the <code>request</code> and
+         * <code>response</code> properties contain the current request and
+         * response being processed.  The <code>wrapper</code> property will
+         * contain a reference to the dispatched-to Wrapper.
+         */
+        BEFORE_DISPATCH_EVENT("beforeDispatch"),
 
 
-    /**
-     * The event indicating that the <code>doFilter()</code> method of a
-     * Filter is about to be called.  The <code>filter</code> property
-     * contains a reference to the relevant filter instance, and the
-     * <code>request</code> and <code>response</code> properties contain
-     * the current request and response being processed.
-     */
-    public static final String BEFORE_FILTER_EVENT = "beforeFilter";
+        /**
+         * The event indicating that the <code>service()</code> method of a
+         * servlet accessed via a request dispatcher has returned.  The
+         * <code>servlet</code> property contains a reference to the
+         * dispatched-to servlet instance, and the <code>request</code> and
+         * <code>response</code> properties contain the current request and
+         * response being processed.  The <code>wrapper</code> property will
+         * contain a reference to the dispatched-to Wrapper.
+         */
+        AFTER_DISPATCH_EVENT("afterDispatch"),
 
 
-    /**
-     * The event indicating that the <code>doFilter()</code> method of a
-     * Filter has returned.  The <code>filter</code> property contains
-     * a reference to the relevant filter instance, and the
-     * <code>request</code> and <code>response</code> properties contain
-     * the current request and response being processed.
-     */
-    public static final String AFTER_FILTER_EVENT = "afterFilter";
+        /**
+         * The event indicating that the <code>doFilter()</code> method of a
+         * Filter is about to be called.  The <code>filter</code> property
+         * contains a reference to the relevant filter instance, and the
+         * <code>request</code> and <code>response</code> properties contain
+         * the current request and response being processed.
+         */
+        BEFORE_FILTER_EVENT("beforeFilter"),
+
+
+        /**
+         * The event indicating that the <code>doFilter()</code> method of a
+         * Filter has returned.  The <code>filter</code> property contains
+         * a reference to the relevant filter instance, and the
+         * <code>request</code> and <code>response</code> properties contain
+         * the current request and response being processed.
+         */
+        AFTER_FILTER_EVENT("afterFilter");
+
+        public final String value;
+        public final boolean isBefore;
+
+        EventType(String value) {
+            this.value = value;
+            isBefore = value.startsWith("before");
+        }
+
+
+    }
 
 
     // ----------------------------------------------------------- Constructors
@@ -167,7 +179,7 @@ public final class InstanceEvent
      * @param filter Filter instance for which this event occurred
      * @param type Event type (required)
      */
-    public InstanceEvent(Wrapper wrapper, Filter filter, String type) {
+    public InstanceEvent(Wrapper wrapper, Filter filter, EventType type) {
 
       super(wrapper);
       this.wrapper = wrapper;
@@ -187,7 +199,7 @@ public final class InstanceEvent
      * @param type Event type (required)
      * @param exception Exception that occurred
      */
-    public InstanceEvent(Wrapper wrapper, Filter filter, String type,
+    public InstanceEvent(Wrapper wrapper, Filter filter, EventType type,
                          Throwable exception) {
 
       super(wrapper);
@@ -210,7 +222,7 @@ public final class InstanceEvent
      * @param request Servlet request we are processing
      * @param response Servlet response we are processing
      */
-    public InstanceEvent(Wrapper wrapper, Filter filter, String type,
+    public InstanceEvent(Wrapper wrapper, Filter filter, EventType type,
                          ServletRequest request, ServletResponse response) {
 
       super(wrapper);
@@ -235,7 +247,7 @@ public final class InstanceEvent
      * @param response Servlet response we are processing
      * @param exception Exception that occurred
      */
-    public InstanceEvent(Wrapper wrapper, Filter filter, String type,
+    public InstanceEvent(Wrapper wrapper, Filter filter, EventType type,
                          ServletRequest request, ServletResponse response,
                          Throwable exception) {
 
@@ -259,7 +271,7 @@ public final class InstanceEvent
      * @param servlet Servlet instance for which this event occurred
      * @param type Event type (required)
      */
-    public InstanceEvent(Wrapper wrapper, Servlet servlet, String type) {
+    public InstanceEvent(Wrapper wrapper, Servlet servlet, EventType type) {
 
       super(wrapper);
       this.wrapper = wrapper;
@@ -279,7 +291,7 @@ public final class InstanceEvent
      * @param type Event type (required)
      * @param exception Exception that occurred
      */
-    public InstanceEvent(Wrapper wrapper, Servlet servlet, String type,
+    public InstanceEvent(Wrapper wrapper, Servlet servlet, EventType type,
                          Throwable exception) {
 
       super(wrapper);
@@ -302,7 +314,7 @@ public final class InstanceEvent
      * @param request Servlet request we are processing
      * @param response Servlet response we are processing
      */
-    public InstanceEvent(Wrapper wrapper, Servlet servlet, String type,
+    public InstanceEvent(Wrapper wrapper, Servlet servlet, EventType type,
                          ServletRequest request, ServletResponse response) {
 
       super(wrapper);
@@ -327,7 +339,7 @@ public final class InstanceEvent
      * @param response Servlet response we are processing
      * @param exception Exception that occurred
      */
-    public InstanceEvent(Wrapper wrapper, Servlet servlet, String type,
+    public InstanceEvent(Wrapper wrapper, Servlet servlet, EventType type,
                          ServletRequest request, ServletResponse response,
                          Throwable exception) {
 
@@ -385,7 +397,7 @@ public final class InstanceEvent
     /**
      * The event type this instance represents.
      */
-    private String type = null;
+    private EventType type = null;
 
 
     /**
@@ -451,7 +463,7 @@ public final class InstanceEvent
     /**
      * Return the event type of this event.
      */
-    public String getType() {
+    public EventType getType() {
 
         return (this.type);
 

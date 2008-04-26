@@ -66,7 +66,6 @@ import javax.management.ObjectName;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerServlet;
 import org.apache.catalina.Context;
-import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
@@ -74,6 +73,10 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Valve;
 // END GlassFish 1343
 import org.apache.catalina.Wrapper;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_DESTROY_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_DESTROY_EVENT;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
@@ -765,7 +768,7 @@ public class StandardWrapper
     /**
      * Add a mapping associated with the Wrapper.
      *
-     * @param pattern The new wrapper mapping
+     * @param mapping The new wrapper mapping
      */
     public void addMapping(String mapping) {
 
@@ -1160,8 +1163,7 @@ public class StandardWrapper
             classLoadTime=(int) (System.currentTimeMillis() -t1);
             // Call the initialization method of this servlet
             try {
-                instanceSupport.fireInstanceEvent(InstanceEvent.BEFORE_INIT_EVENT,
-                                                  servlet);
+                instanceSupport.fireInstanceEvent(BEFORE_INIT_EVENT,servlet);
 
                 // START SJS WS 7.0 6236329
                 //if( System.getSecurityManager() != null) {
@@ -1214,23 +1216,19 @@ public class StandardWrapper
                         servlet.service(req, res);
                     }
                 }
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet);
             } catch (UnavailableException f) {
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 unavailable(f);
                 throw f;
             } catch (ServletException f) {
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 // If the servlet wanted to be unavailable it would have
                 // said so, so do not call unavailable(null).
                 throw f;
             } catch (Throwable f) {
                 getServletContext().log("StandardWrapper.Throwable", f );
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 // If the servlet wanted to be unavailable it would have
                 // said so, so do not call unavailable(null).
                 throw new ServletException
@@ -1418,8 +1416,7 @@ public class StandardWrapper
 
         // Call the servlet destroy() method
         try {
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.BEFORE_DESTROY_EVENT, instance);
+            instanceSupport.fireInstanceEvent(BEFORE_DESTROY_EVENT, instance);
 
             Thread.currentThread().setContextClassLoader(classLoader);
             // START SJS WS 7.0 6236329
@@ -1433,11 +1430,9 @@ public class StandardWrapper
                 instance.destroy();
             }
 
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.AFTER_DESTROY_EVENT, instance);
+            instanceSupport.fireInstanceEvent(AFTER_DESTROY_EVENT, instance);
         } catch (Throwable t) {
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.AFTER_DESTROY_EVENT, instance, t);
+            instanceSupport.fireInstanceEvent(AFTER_DESTROY_EVENT, instance, t);
             instance = null;
             instancePool = null;
             nInstances = 0;
