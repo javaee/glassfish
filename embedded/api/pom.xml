@@ -42,7 +42,7 @@
   <parent>
     <groupId>org.glassfish.embedded</groupId>
     <artifactId>embedded</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
   </parent>
 
   <artifactId>embed</artifactId>

@@ -48,7 +48,7 @@
   <groupId>org.glassfish.embedded</groupId>
   <artifactId>embedded</artifactId>
   <packaging>pom</packaging>
-  <version>1-SNAPSHOT</version>
+  <version>1</version>
   
   <name>Embedding GlassFish</name>
   <scm>
