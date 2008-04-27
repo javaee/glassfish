@@ -107,11 +107,12 @@
               classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
               numberofoperands="?" 
               usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [--force true] [domain_name]">
-            <ValidOption name="domaindir"/>
-            <ValidOption name="terse"/>
-            <ValidOption name="echo"/>
-            <ValidOption name="user"/>
-            <ValidOption name="passwordfile"/>
+             <ValidOption name="domaindir"/>
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="user"/>
+             <ValidOption name="passwordfile"/>
+             <ValidOption name="force"/>
         </Command>
         <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
                 <ValidOption name="domaindir"/>
