@@ -1,0 +1,38 @@
+<domain log-root="${com.sun.aas.instanceRoot}/logs" application-root="${com.sun.aas.instanceRoot}/applications">
+  <system-applications />
+  <applications />
+  <resources>
+    <!--jdbc-resource enabled="true" pool-name="DerbyPool" jndi-name="jdbc/__default" object-type="user" />
+    <jdbc-connection-pool connection-validation-method="auto-commit" steady-pool-size="8" associate-with-thread="false" connection-leak-reclaim="false" idle-timeout-in-seconds="300" validate-atmost-once-period-in-seconds="0" lazy-connection-enlistment="false" connection-creation-retry-interval-in-seconds="10" max-pool-size="32" is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.ClientDataSource" max-connection-usage-count="0" res-type="javax.sql.DataSource" name="DerbyPool" match-connections="false" is-connection-validation-required="false" fail-all-connections="false" allow-non-component-callers="false" statement-timeout-in-seconds="-1" non-transactional-connections="false" lazy-connection-association="false" max-wait-time-in-millis="60000" connection-creation-retry-attempts="0" pool-resize-quantity="2" wrap-jdbc-objects="false" connection-leak-timeout-in-seconds="0">
+      <property name="PortNumber" value="1527" />
+      <property name="Password" value="APP" />
+      <property name="User" value="APP" />
+      <property name="serverName" value="localhost" />
+      <property name="DatabaseName" value="sun-appserv-samples" />
+      <property name="connectionAttributes" value=";create=true" />
+    </jdbc-connection-pool-->
+  </resources>
+  <servers>
+    <server name="server" config-ref="server-config">
+      <resource-ref enabled="true" ref="jdbc/__default" />
+    </server>
+  </servers>
+  <configs>
+    <config name="server-config">
+      <http-service>
+        <http-listener id="http-listener-1" port="8080" address="0.0.0.0" default-virtual-server="server" server-name="" />
+        <virtual-server id="server" hosts="${com.sun.aas.hostName}" http-listeners="http-listener-1" log-file="">
+          <property name="docroot" value="." />
+        </virtual-server>
+        <!--request-processing header-buffer-length-in-bytes="8192" thread-count="20" initial-thread-count="2" request-timeout-in-seconds="30" thread-increment="1" />
+        <keep-alive thread-count="1" timeout-in-seconds="30" max-connections="250" />
+        <connection-pool queue-size-in-bytes="4096" send-buffer-size-in-bytes="8192" receive-buffer-size-in-bytes="4096" max-pending-count="4096" />
+        <http-protocol forced-response-type="text/plain; charset=iso-8859-1" dns-lookup-enabled="false" ssl-enabled="true" default-response-type="text/plain; charset=iso-8859-1" version="HTTP/1.1" />
+        <http-file-cache globally-enabled="false" hash-init-size="0" medium-file-size-limit-in-bytes="537600" small-file-space-in-bytes="1048576" max-age-in-seconds="30" max-files-count="1024" medium-file-space-in-bytes="10485760" file-transmission-enabled="false" small-file-size-limit-in-bytes="2048" file-caching-enabled="false" /-->
+      </http-service>
+      <!--thread-pools>
+        <thread-pool idle-thread-timeout-in-seconds="120" max-thread-pool-size="200" thread-pool-id="thread-pool-1" min-thread-pool-size="0" num-work-queues="1" />
+      </thread-pools-->
+    </config>
+  </configs>
+</domain>
