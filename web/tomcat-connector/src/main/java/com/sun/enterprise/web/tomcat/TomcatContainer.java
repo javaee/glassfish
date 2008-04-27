@@ -87,18 +87,6 @@ public class TomcatContainer implements Container, PostConstruct, PreDestroy {
             logger.info("Using default-web.xml " + defaultWebXml);
         }
 
-        String root = System.getProperty("com.sun.aas.installRoot");
-        File libRoot = new File(root, "lib");
-        File schemas = new File(libRoot, "schemas");
-        File dtds = new File(libRoot, "dtds");
-
-        try {
-            DigesterFactory.setSchemaResourcePrefix(schemas.toURL().toString());
-            DigesterFactory.setDtdResourcePrefix(dtds.toURL().toString());
-        } catch(MalformedURLException e) {
-            logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
-        }
-
         instanceName = sc.getInstanceName();
 
         embedded = new Embedded();
