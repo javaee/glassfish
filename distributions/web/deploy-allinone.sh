@@ -5,4 +5,4 @@
 #
 # in the mean time, separate deploy:deploy-file allows a jar without any non-SNAPSHOT dependency,
 # which enables releases of other artifacts that depend on this.
-mvn deploy:deploy-file -Durl=dav:http://rator.sfbay/maven/repositories/glassfish/ -DrepositoryId=rator.sfbay -Dfile=target/all.jar -DgroupId=org.glassfish.distributions -DartifactId=web-all -Dversion=10.0-SNAPSHOT -Dpackaging=jar
+mvn deploy:deploy-file -Durl=dav:http://rator.sfbay/maven/repositories/glassfish/ -DrepositoryId=rator.sfbay -Dfile=target/all.jar -DgroupId=org.glassfish.distributions -DartifactId=web-all -Dversion=10.0-build-$(date +%Y%m%d) -Dpackaging=jar
