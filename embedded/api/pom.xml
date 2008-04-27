@@ -46,7 +46,7 @@
 
   <artifactId>embed</artifactId>
   <packaging>hk2-jar</packaging>
-  <version>1.0-alpha-1</version>
+  <version>1.0-alpha-2-SNAPSHOT</version>
   <name>API for embedded GFv3</name>
 
   <build>
@@ -154,9 +154,4 @@
       <optional>true</optional>
     </dependency>
   </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/tags/embed-1.0-alpha-1</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/embed-1.0-alpha-1</developerConnection>
-  </scm>
 </project>
