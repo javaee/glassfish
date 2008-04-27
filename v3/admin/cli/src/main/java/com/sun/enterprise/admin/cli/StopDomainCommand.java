@@ -255,5 +255,5 @@ public class StopDomainCommand extends S1ASCommand {
     private String domainName;
     private File domainXml;
     private final static LocalStringsImpl strings = new LocalStringsImpl(StopDomainCommand.class);
-    private final static long WAIT_FOR_DAS_TIME_MS = 15000;
+    private final static long WAIT_FOR_DAS_TIME_MS = 60000;
 }
