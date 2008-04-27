@@ -36,8 +36,7 @@
 * holder. 
 */ 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.glassfish.embedded</groupId>
@@ -47,7 +46,7 @@
 
   <artifactId>embed</artifactId>
   <packaging>hk2-jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha-1</version>
   <name>API for embedded GFv3</name>
 
   <build>
@@ -155,4 +154,9 @@
       <optional>true</optional>
     </dependency>
   </dependencies>
+
+  <scm>
+    <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/tags/embed-1.0-alpha-1</connection>
+    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/embed-1.0-alpha-1</developerConnection>
+  </scm>
 </project>
