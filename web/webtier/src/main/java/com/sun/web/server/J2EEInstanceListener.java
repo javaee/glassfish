@@ -73,6 +73,7 @@ import com.sun.enterprise.web.WebModule;
 import java.util.logging.*;
 import com.sun.logging.*;
 //END OF IASRI 4660742
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class implements the Tomcat InstanceListener interface and
@@ -80,7 +81,8 @@ import com.sun.logging.*;
  * @author Vivek Nagar
  * @author Tony Ng
  */
-public final class J2EEInstanceListener implements InstanceListener {
+@Service
+final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
     protected static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);

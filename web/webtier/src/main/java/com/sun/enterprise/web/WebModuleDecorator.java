@@ -1,10 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
- * Portions Copyright Apache Software Foundation.
- * 
+ *
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -12,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -21,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,26 +32,33 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
-package org.apache.catalina;
+
+package com.sun.enterprise.web;
 
 import org.jvnet.hk2.annotations.Contract;
 
-
 /**
- * Interface defining a listener for significant events related to a
- * specific servlet instance, rather than to the {@link Wrapper} component that
- * is managing that instance.
+ * Used by {@link EmbeddedWebContainer} to give other modules an
+ * opporunity to decorate/configure newly created {@link WebModule}s.
  *
- * @author Craig R. McClanahan
- * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:17 $
+ * <p>
+ * TODO: I don't have enough domain expertise in the webtier to see
+ * if this is how the abstraction should be defined, but this pattern
+ * of hooking into various listeners of {@link WebModule} seem common
+ * enough.
+ *
+ * Note in particular that there's no provision for controlling orders
+ * of listeners.
+ *
+ * @author Kohsuke Kawaguchi
  */
 @Contract
-public interface InstanceListener {
+public interface WebModuleDecorator {
     /**
-     * Acknowledge the occurrence of the specified event.
-     *
-     * @param event InstanceEvent that has occurred
+     * Invoked after the initial configuration of {@link WebModule}
+     * is done. This gives
      */
-    public void instanceEvent(InstanceEvent event);
+    void decorate(WebModule module);
 }

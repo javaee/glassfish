@@ -56,6 +56,7 @@ import org.apache.catalina.logger.FileLogger;
 
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
@@ -91,6 +92,8 @@ public final class EmbeddedWebContainer extends Embedded {
 
     private InjectionManager injectionManager;
 
+    private final Habitat habitat;
+
     /*
      * The value of the 'file' attribute of the log-service element
      */
@@ -108,11 +111,12 @@ public final class EmbeddedWebContainer extends Embedded {
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
         this.serverContext = serverContext;
-        webContainerFeatureFactory = serverContext.getDefaultHabitat().getByContract(
-                WebContainerFeatureFactory.class);      
-        invocationManager = serverContext.getDefaultHabitat().getByContract(
+        habitat = serverContext.getDefaultHabitat();
+        webContainerFeatureFactory = habitat.getByContract(
+                WebContainerFeatureFactory.class);
+        invocationManager = habitat.getByContract(
                 InvocationManager.class);
-        injectionManager = serverContext.getDefaultHabitat().getByContract(
+        injectionManager = habitat.getByContract(
                 InjectionManager.class);
     }
     
@@ -250,16 +254,20 @@ public final class EmbeddedWebContainer extends Embedded {
         
         config.setDefaultContextXml(defaultContextXmlLocation);
         config.setDefaultWebXml(defaultWebXmlLocation);
-        ((Lifecycle) context).addLifecycleListener(config);
+        context.addLifecycleListener(config);
 
-        context.addLifecycleListener(new WebModuleListener(serverContext, 
+        // TODO: should any of those become WebModuleDecorator, too?
+        context.addLifecycleListener(new WebModuleListener(serverContext,
                 location, wbd));
 
-        context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
-        
         context.addContainerListener(
                 new WebContainerListener(invocationManager, injectionManager));
 
+        for( WebModuleDecorator d : habitat.getAllByContract(WebModuleDecorator.class)) {
+            d.decorate(context);
+        }
+
+        // TODO: monitoring should also hook in via WebModuleDecorator
         //context.addInstanceListener(
         //    "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
         
