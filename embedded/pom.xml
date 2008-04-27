@@ -55,6 +55,20 @@
     <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/trunk/v3/embedded</connection>
   </scm>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>java.net2</id>
+      <url>https://maven2-repository.dev.java.net/nonav/repository</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <site>
+      <id>embedded-glassfish-www</id>
+      <url>java-net:/embedded-glassfish/trunk/www/</url>
+    </site>
+  </distributionManagement>
+
   <repositories>
     <repository>
       <id>glassfish-repository</id>
@@ -62,6 +76,16 @@
       <url>http://download.java.net/maven/glassfish</url>
     </repository>
   </repositories>
+  
+  <build>    
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.8</version>
+      </extension>
+    </extensions>
+  </build>
 
   <modules>
     <module>api</module>
