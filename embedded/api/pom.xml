@@ -147,7 +147,7 @@
     <dependency>
       <groupId>org.glassfish.distributions</groupId>
       <artifactId>web-all</artifactId>
-      <version>10.0-20080427.213007-1</version>
+      <version>10.0-build-20080427</version>
       <!--
         the user of this library should choose which bundle of GFv3 to use with this API,
         hence optional.
