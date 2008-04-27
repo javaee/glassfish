@@ -42,6 +42,7 @@
     <groupId>org.glassfish.embedded</groupId>
     <artifactId>embedded</artifactId>
     <version>1</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>gf-embedded-api</artifactId>
