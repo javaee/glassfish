@@ -236,5 +236,15 @@ public class ClassLoaderProxy extends URLClassLoader {
             s.append("\n ref : ").append(surrogate.toString());
         }
         return s.toString();
-    }              
+    }
+
+      /**
+       * Appends the specified URL to the list of URLs to search
+       * for classes and resources.
+       *
+       * @param url the url to append
+       */
+    public void addURL(URL url) {
+        super.addURL(url);
+    }
 }

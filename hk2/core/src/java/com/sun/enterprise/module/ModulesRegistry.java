@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import java.io.PrintStream;
+import java.net.URL;
 
 import com.sun.hk2.component.InhabitantsParser;
 
@@ -257,8 +258,36 @@ public interface ModulesRegistry extends ModuleChangeListener {
 
     ClassLoader getParentClassLoader();
 
-    ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
+    /**
+     * Returns a ClassLoader capable of loading classes from a set of modules identified
+     * by their module definition
+     *
+     * @param parent the parent class loader for the returned class loader instance
+     * @param defs module definitions for all modules this classloader should be
+     *        capable of loading classes from
+     * @return class loader instance
+     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
+     *         definition cannot be resolved
+     */
+    ClassLoader getModulesClassLoader(ClassLoader parent,
+                                      Collection<ModuleDefinition> defs)
         throws ResolveError;
+
+    /**
+     * Returns a ClassLoader capable of loading classes from a set of modules identified
+     * by their module definition and also load new urls.
+     *
+     * @param parent the parent class loader for the returned class loader instance
+     * @param defs module definitions for all modules this classloader should be
+     *        capable of loading
+     * @param urls urls to be added to the module classloader
+     * @return class loader instance
+     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
+     *         definition cannot be resolved
+     */
+    ClassLoader getModulesClassLoader(ClassLoader parent,
+                                      Collection<ModuleDefinition> defs,
+                                      URL[] urls) throws ResolveError;
 
     /**
      * Finds the {@link Module} that owns the given class.

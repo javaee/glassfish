@@ -150,18 +150,22 @@ public class OSGiModulesRegistryImpl
         return Bundle.class.getClassLoader();
     }
 
+    
     /**
-     * Returns a ClassLoader capable of loading classes from a set of modules indentified
-     * by their module definition
+     * Returns a ClassLoader capable of loading classes from a set of modules identified
+     * by their module definition and also load new urls.
      *
      * @param parent the parent class loader for the returned class loader instance
-     * @param mds module definitions for all modules this classloader should be capable of loading
-     * classes from
+     * @param defs module definitions for all modules this classloader should be
+     *        capable of loading
+     * @param urls urls to be added to the module classloader
      * @return class loader instance
-     * @throws com.sun.enterprise.module.ResolveError if one of the provided module definition cannot be resolved
+     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
+     *         definition cannot be resolved
      */
-    public ClassLoader getModulesClassLoader(final ClassLoader parent, Collection<ModuleDefinition> mds)
-        throws ResolveError {
+    public ClassLoader getModulesClassLoader(final ClassLoader parent,
+                                             Collection<ModuleDefinition> mds,
+                                             URL[] urls) throws ResolveError {
         final List<ClassLoader> delegateCLs = new ArrayList<ClassLoader>();
         final List<Module> delegateModules = new ArrayList<Module>();
         for (ModuleDefinition md : mds) {
@@ -169,7 +173,7 @@ public class OSGiModulesRegistryImpl
             delegateModules.add(m);
             delegateCLs.add(m.getClassLoader());
         }
-        return new URLClassLoader(new URL[0], parent) {
+        return new URLClassLoader(urls!=null?urls:new URL[0], parent) {
             /*
              * This is a delegating class loader.
              * This extends URLClassLoader, because web layer (Jasper to be specific)
@@ -277,6 +281,25 @@ public class OSGiModulesRegistryImpl
         };
     }
 
+
+    /**
+     * Returns a ClassLoader capable of loading classes from a set of modules identified
+     * by their module definition
+     *
+     * @param parent the parent class loader for the returned class loader instance
+     * @param defs module definitions for all modules this classloader should be
+     *        capable of loading classes from
+     * @return class loader instance
+     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
+     *         definition cannot be resolved
+     */
+    public ClassLoader getModulesClassLoader(ClassLoader parent,
+                                             Collection<ModuleDefinition> defs)
+        throws ResolveError {
+        return getModulesClassLoader(parent, defs, null);
+    }
+
+    
     public Module find(Class clazz) {
         Bundle b = pa.getBundle(clazz);
         if (b!=null) {
