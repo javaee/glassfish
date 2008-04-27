@@ -41,7 +41,7 @@
 
 package org.glassfish.deployment.client;
 
-import com.sun.enterprise.admin.cli.RemoteCommand;
+import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,10 +61,10 @@ import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
 
 /**
- * Implements DeploymentFacility, currently using the RemoteCommand to work with the
+ * Implements DeploymentFacility, currently using the CLIRemoteCommand to work with the
  * admin back-end.
  * <p>
- * Because RemoteCommand uses the REST interface with the admin back-end it
+ * Because CLIRemoteCommand uses the REST interface with the admin back-end it
  * is connectionless.  Clients of RemoteDeploymentFacility must still
  * {@link #connect} before attempting to use it.
  * 
@@ -73,16 +73,15 @@ import org.glassfish.deployapi.TargetModuleIDImpl;
 public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner {
 
     private ServerConnectionIdentifier targetDAS;
-    private RemoteCommand remoteCommand;
     private File passwordFile;
     private TargetImpl domain;
-    
+    private boolean connected;
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
     private static final String DEFAULT_SERVER_NAME = "server";
     
     public boolean connect(ServerConnectionIdentifier targetDAS) {
+        connected = true;
         this.targetDAS = targetDAS;
-        remoteCommand = new RemoteCommand();
         passwordFile = preparePasswordFile();
         domain = new TargetImpl(this, "domain", localStrings.getLocalString(
                 "enterprise.deployment.client.administrative_domain",
@@ -91,11 +90,11 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
     }
 
     public boolean isConnected() {
-        return (remoteCommand != null);
+        return connected;
     }
 
     public boolean disconnect() {
-        remoteCommand = null;
+        connected = false;
         passwordFile.delete();
         domain = null;
         targetDAS = null;
@@ -147,7 +146,8 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
                     new String[] {tmpFile.getAbsolutePath()}
                     );
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            remoteCommand.handleRemoteCommand(commandArgs, "xml-cli", baos);
+            CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "xml-cli", baos);
+            rc.runCommand();
             DFDeploymentStatus ds = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
@@ -315,7 +315,8 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
                     new String[] {moduleID}
                     );
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            remoteCommand.handleRemoteCommand(commandArgs, "xml-cli", baos);
+            CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "xml-cli", baos);
+            rc.runCommand();
             DFDeploymentStatus ds = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
@@ -376,7 +377,8 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
                     new String[] {moduleID}
                     );
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            remoteCommand.handleRemoteCommand(commandArgs, "xml-cli", baos);
+            CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "xml-cli", baos);
+            rc.runCommand();
             DFDeploymentStatus ds = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
@@ -494,12 +496,12 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
     }
     
     /**
-     * Assembles an argument list suitable for use by RemoteCommand from the
+     * Assembles an argument list suitable for use by CLIRemoteCommand from the
      * command, options, and operand.
      * @param commandName the command to execute
      * @param options Map, with each key an option name and each value (optionally) the corresponding option value
      * @param operands the operands to the command
-     * @return argument list for RemoteCommand
+     * @return argument list for CLIRemoteCommand
      */
     protected String[] prepareRemoteCommandArguments(
             String commandName,
