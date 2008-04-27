@@ -66,7 +66,8 @@ public class CLIRemoteCommand {
      * @param userOut
      * @throws com.sun.enterprise.cli.framework.CommandException
      */
-    public CLIRemoteCommand(String[] args, String responseFormatType, OutputStream userOut) throws CommandException {
+    public CLIRemoteCommand(String[] args, String responseFormatType, OutputStream userOut) 
+                throws CommandException {
         initialize(args);
         this.responseFormatType = responseFormatType;
         this.userOut = userOut;
@@ -143,7 +144,7 @@ public class CLIRemoteCommand {
                 handleResponse(params, in, urlConnection.getResponseCode(),
                         userOut);
             } catch(ConnectException ce) {
-                //this really means none was listening on the remote server end
+                //this really means nobody was listening on the remote server end
                 //implementation note: ConnectException extends IOException and tells us more!
                 String msg = strings.get("ConnectException", hostName, hostPort);
                 throw new CommandException(msg, ce);
@@ -294,7 +295,7 @@ public class CLIRemoteCommand {
         return sb.toString();
     }
 
-    Map<String, String> getMainAtts() {
+    public Map<String, String> getMainAtts() {
         return mainAtts;
     }
 
@@ -303,7 +304,7 @@ public class CLIRemoteCommand {
      * @param port The admin port of DAS
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
-    static boolean pingDAS(int port) {
+    public static boolean pingDAS(int port) {
         try {
             new CLIRemoteCommand("version", "--port", Integer.toString(port));
             return true;
@@ -318,7 +319,7 @@ public class CLIRemoteCommand {
      * @param port The admin port of DAS
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
-    static boolean pingDASQuietly(int port) {
+    public static boolean pingDASQuietly(int port) {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             return pingDAS(port);
@@ -328,6 +329,7 @@ public class CLIRemoteCommand {
         }
     }
 
+    
     private void initialize(final String[] args) throws CommandException {
         try {
             final CLIRemoteCommandParser rcp = new CLIRemoteCommandParser(args);

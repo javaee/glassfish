@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
@@ -84,7 +85,7 @@ public class StartDomainCommand extends S1ASCommand {
             pinged:
             while(!timedOut(startWait)) {
                 for (int port : ports) {
-                    if (RemoteCommand.pingDAS(port)) {
+                    if (CLIRemoteCommand.pingDAS(port)) {
                         alive = true;
                         break pinged;
                     }

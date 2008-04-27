@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -103,7 +104,8 @@ public class AsadminMain {
     }
     private int remote(String[] args) {
         try {
-            new RemoteCommand(args);
+            CLIRemoteCommand rc = new CLIRemoteCommand(args);
+            rc.runCommand();
             return SUCCESS;
         }
         catch (Throwable ex) {

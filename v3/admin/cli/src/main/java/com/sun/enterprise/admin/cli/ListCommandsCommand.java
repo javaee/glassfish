@@ -37,6 +37,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -100,7 +101,8 @@ public class ListCommandsCommand extends S1ASCommand {
     String[] getRemoteCommands() throws CommandException {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            RemoteCommand rc = new RemoteCommand(getRemoteArgs());
+            CLIRemoteCommand rc = new CLIRemoteCommand(getRemoteArgs());
+            rc.runCommand();
             // throw away everything but the main atts
             Map<String,String> mainAtts = rc.getMainAtts();
             String cmds = mainAtts.get("children");

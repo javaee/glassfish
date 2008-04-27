@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
@@ -65,6 +66,7 @@ public class StopDomainCommand extends S1ASCommand {
         Integer[] ports = null;
 
         try {
+            // TODO print time taken
             MiniXmlParser parser = new MiniXmlParser(domainXml);
             Set<Integer> portsSet = parser.getAdminPorts();
             ports = portsSet.toArray(new Integer[portsSet.size()]);
@@ -80,12 +82,13 @@ public class StopDomainCommand extends S1ASCommand {
         int adminPort = ports[0];
 
         // Verify that the DAS is running and reachable
-        if(!RemoteCommand.pingDASQuietly(adminPort))
+        if(!CLIRemoteCommand.pingDASQuietly(adminPort))
             throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
         
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            new RemoteCommand(getCmd("" + adminPort));
+            CLIRemoteCommand rc = new CLIRemoteCommand(getCmd("" + adminPort));
+            rc.runCommand();
             waitForDeath(adminPort);
         }
         finally {
@@ -200,10 +203,14 @@ public class StopDomainCommand extends S1ASCommand {
     }
 
     private void waitForDeath(int adminPort) throws CommandException {
+        // 1) it's impossible to use the logger to print anything without linefeeds
+        // 2) The Logger is set to WARNING right now to kill the version messages
+        // that's why I'm writing to stderr
+        
         long startWait = System.currentTimeMillis();
-        Log.info("StopDomain.WaitDASDeath", domainName);
+        System.err.print(strings.get("StopDomain.WaitDASDeath") + " ");
         boolean alive = true;
-
+        
         while(!timedOut(startWait)) {
             if(!pingPort(adminPort)) {
                 alive = false;
@@ -211,20 +218,23 @@ public class StopDomainCommand extends S1ASCommand {
             }
             try {
                 Thread.sleep(100);
+                System.err.print(".");
             }
             catch (InterruptedException ex) {
                 // don't care
             }
         }
-
+        
+        System.err.println("");
+            
         if(alive) {
             throw new CommandException(strings.get("StopDomain.DASNotDead", 
-                    domainName, (WAIT_FOR_DAS_TIME_MS / 1000)));
+                    (WAIT_FOR_DAS_TIME_MS / 1000)));
         }
     }
 
     /** 
-     * This is no substitute for RemoteCommand.pingDAS() -- that command guarantees
+     * This is no substitute for CLIRemoteCommand.pingDAS() -- that command guarantees
      * that DAS is at the other end of the port.  This is a quick check that can
      * be used after verifying DAS is in fact listening on the port.
      * I ran into a problem where stop-domain hangs on pingDAS() after it shuts down,
