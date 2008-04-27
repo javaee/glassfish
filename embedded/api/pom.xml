@@ -40,29 +40,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.glassfish</groupId>
-    <artifactId>pom</artifactId>
-    <version>2</version>
+    <groupId>org.glassfish.embedded</groupId>
+    <artifactId>embedded</artifactId>
+    <version>1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.glassfish.embed</groupId>
   <artifactId>embed</artifactId>
   <packaging>hk2-jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Testbed for Embedding GlassFish</name>
-  <scm>
-    <connection>
-      scm:svn:https://${java.net.username}@glassfish-svn.dev.java.net/glassfish-svn/gfsvn/trunk/v3/${pom.artifactId}
-    </connection>
-  </scm>
-
-  <repositories>
-    <repository>
-      <id>glassfish-repository</id>
-      <name>Java.net Repository for Glassfish</name>
-      <url>http://download.java.net/maven/glassfish</url>
-    </repository>
-  </repositories>
+  <name>API for embedded GFv3</name>
 
   <build>
     <plugins>
