@@ -44,14 +44,13 @@ public class ComponentEnvManagerImpl
     @Inject
     GlassfishNamingManager namingManager;
 
+    // TODO: container-common shouldn't depend on EJB stuff, right?
+    // this seems like the abstraction design failure.
     @Inject
     private NamingUtils namingUtils;
 
     @Inject
     private InvocationManager invMgr;
-
-    @Inject
-    private JavaEETransactionManager txMgr;
 
     @Inject(optional=true)
     private EjbNamingReferenceManager ejbRefMgr;
