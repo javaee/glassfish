@@ -36,6 +36,8 @@ glassfish.stop();
 
 What jars do I need?
 
+[model.png] Embedded API needs two pieces
+
     To use the embedded GFv3, you need two pieces. One is the API jar
     and the other is the GFv3 jar(s). The former is a jar whose name looks like
     <<<gf-embedded-api-1.0-alpha-2-jar-with-dependencies.jar>>>.
