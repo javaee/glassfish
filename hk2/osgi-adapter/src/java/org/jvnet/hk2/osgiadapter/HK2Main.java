@@ -90,7 +90,8 @@ public class HK2Main extends Main implements
             HK2Main.class.getPackage().getName()+".contextrootdir";
 
     /**
-     * <tt>$GLASSFISH_HOME/modules</tt> directory.
+     * Repository root directory.
+     * e.g., <tt>$GLASSFISH_HOME/modules</tt> directory.
      */
     private File contextRootDir;
 
@@ -104,6 +105,7 @@ public class HK2Main extends Main implements
 
         // Create StartupContext
         contextRootDir = getContextRootDir(context);
+        logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
         StartupContext startupContext = new StartupContext(contextRootDir, new String[0]);
 
         OSGiFactoryImpl.initialize(ctx);
@@ -128,7 +130,6 @@ public class HK2Main extends Main implements
     protected File getContextRootDir(BundleContext context) {
         String prop = context.getProperty(CONTEXT_ROOT_DIR_PROP);
         File f = (prop !=null) ? new File(prop) : new File(System.getProperty("user.home"));
-        logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
         return f;
     }
     
