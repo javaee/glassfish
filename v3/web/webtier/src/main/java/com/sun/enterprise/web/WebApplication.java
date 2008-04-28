@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
-    private static final String ADMIN_VS = "__asadmin";    
+    private static final String ADMIN_VS = "__asadmin";
     final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
 
     final WebContainer container;

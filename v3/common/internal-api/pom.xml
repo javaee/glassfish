@@ -65,6 +65,11 @@
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>          
     </dependencies>
 </project>
 

@@ -51,7 +51,7 @@ import java.io.File;
  *  @author  jane.young@sun.com
  * bnevins -- there is no reason for this to be public
  */
-class CLIProcessExecutor
+public class CLIProcessExecutor
 {
 
     CLIProcessExecutor() {
@@ -65,7 +65,7 @@ class CLIProcessExecutor
      * @param wait if true, wait for process to end.
      * @exception Exception
      */
-    void execute(String name, String[] cmd, boolean wait) throws Exception
+    public void execute(String name, String[] cmd, boolean wait) throws Exception
     {
         process=Runtime.getRuntime().exec(cmd);
         ProcessStreamDrainer.redirect(name, process);
@@ -84,7 +84,7 @@ class CLIProcessExecutor
       if process is null, then there is no process running
       therefore the return value is 0.
     */
-    int exitValue() {
+    public int exitValue() {
         if (process == null) return -1;
         return process.exitValue();
     }

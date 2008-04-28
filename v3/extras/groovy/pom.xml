@@ -69,13 +69,13 @@
         </developer>
 
     </developers>
-    
+
 
     <properties>
         <groovy.version>1.5.4</groovy.version>
         <glassfish-groovy.version>0.1</glassfish-groovy.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -100,7 +100,13 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-optionals</artifactId>
+            <version>${grizzly.version}</version>
             <scope>compile</scope>
         </dependency>         
         <dependency>

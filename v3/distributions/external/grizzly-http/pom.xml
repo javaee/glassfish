@@ -137,18 +137,6 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-cometd</artifactId>
-            <version>${grizzly.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet</artifactId>
-            <version>${grizzly.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-http</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
@@ -176,11 +164,6 @@
             <artifactId>grizzly-framework</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 </project>

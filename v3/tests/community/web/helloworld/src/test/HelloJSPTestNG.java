@@ -129,7 +129,8 @@ public class HelloJSPTestNG {
         boolean result=false;
         String testLine = null;        
         while ((line = input.readLine()) != null) {
-            if(line.indexOf("Your server is up and running!")!=-1){
+        echo(line);
+            if(line.indexOf("Your Application Server is now running")!=-1){
                 result=true;
              testLine = line;
            echo(testLine);

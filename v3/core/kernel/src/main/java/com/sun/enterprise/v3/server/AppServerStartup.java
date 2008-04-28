@@ -70,8 +70,7 @@ public class AppServerStartup implements ModuleStartup {
     
     public void run() {
 
-        logger.fine("GlassFish v3 starting");
-        logger.info("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        logger.fine("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
         }
@@ -86,8 +85,7 @@ public class AppServerStartup implements ModuleStartup {
         // run the init services
         Collection<Init> inits = habitat.getAllByContract(Init.class);
         for (Init init : inits) {
-            logger.fine("Init service : " + init);
-            logger.info(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            logger.fine(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         }
         logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
 
@@ -106,12 +104,11 @@ public class AppServerStartup implements ModuleStartup {
 
         for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
             if (i.type().getAnnotation(Async.class)==null) {
+                i.get();
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Startup service " + i.get());
+                    logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                 }
-                //logger.info("startup service " + i.typeName() + "started at " + System.currentTimeMillis());
-                logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-                //logger.info("startup service " + i.typeName() + "done at " + System.currentTimeMillis());
+
             }
         }
 

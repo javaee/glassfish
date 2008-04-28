@@ -27,6 +27,7 @@ import org.glassfish.internal.api.Init;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Startup;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -49,6 +50,10 @@ public class StopDomainCommand implements AdminCommand {
     
     @Inject
     Habitat habitat;
+
+    @Param(optional=true, defaultValue="true")
+    Boolean force;
+    
 
     /**
      * Shutdown of the application server : 
@@ -78,6 +83,9 @@ public class StopDomainCommand implements AdminCommand {
 
         } catch(ComponentException e) {
             // do nothing.
+        }
+        if (force) {
+            System.exit(0);
         }
     }
 }

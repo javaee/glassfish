@@ -44,17 +44,14 @@
     <version>10.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  
-  <packaging>pom</packaging>
-  <groupId>org.glassfish.distributions</groupId>
+
   <artifactId>gem</artifactId>
-  
+  <packaging>pom</packaging>
   <name>Glassfish JRuby Gem distribution</name>
   <description>This module creates the jruby gem distribution image</description>
-  
+
   <build>
     <plugins>
-    
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -95,8 +92,9 @@
                   <phase>process-resources</phase>
                   <configuration>
                       <tasks>
-                          <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
-                          <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
+                          <filter token="GLASSFISH_VERSION" value="${project.version}"/>
+                          <copy file="glassfish_rails" todir="target/dependency/glassfish/bin" filtering="true"/>
+                          <copy file="glassfish.rb" todir="target/dependency/glassfish/modules" filtering="true"/>
                           <move file="target/dependency/glassfish/domains/domain1/config/domain.xml" toFile="target/dependency/glassfish/domains/domain1/config/domain.xml_ORIG"/>
                           <copy file="domain.xml" todir="target/dependency/glassfish/domains/domain1/config"/>
                       </tasks>
@@ -120,7 +118,7 @@
               <script>
                 require 'rake/gempackagetask'
 
-                spec = Gem::Specification.new do |s| 
+                spec = Gem::Specification.new do |s|
                   s.name = "glassfish"
                   s.version = "0.3.0"
                   s.author = "Vivek Pandey, Pramod Gopinath, Jerome Dochez"
@@ -143,9 +141,9 @@
 
                 # Create the gem distribution package
 
-                Rake::GemPackageTask.new(spec) do |pkg| 
-                  pkg.need_tar = true 
-                end 
+                Rake::GemPackageTask.new(spec) do |pkg|
+                  pkg.need_tar = true
+                end
 
                 task :default => :gem do
                 end
@@ -154,10 +152,10 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>      
+      </plugin>
         </plugins>
     </build>
-  
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.external</groupId>
@@ -196,5 +194,5 @@
         </repository>
         <!-- all the other repositories are inherited -->
     </repositories>
-    
+
 </project>

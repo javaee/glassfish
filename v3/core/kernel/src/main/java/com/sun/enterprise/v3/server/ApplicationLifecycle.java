@@ -87,16 +87,16 @@ abstract public class ApplicationLifecycle {
     private Collection<Sniffer> sniffers=null;
 
     @Inject
-    protected Habitat habitat;
+    Habitat habitat;
 
     @Inject
-    protected ContainerRegistry containerRegistry;
+    ContainerRegistry containerRegistry;
 
     @Inject
-    protected ApplicationRegistry appRegistry;
+    public ApplicationRegistry appRegistry;
 
     @Inject
-    protected ModulesRegistry modulesRegistry;
+    ModulesRegistry modulesRegistry;
 
     @Inject
     protected GrizzlyService adapter;

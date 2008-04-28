@@ -8,6 +8,6 @@
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_LIB=$AS_INSTALL/modules
 
-exec java -jar "$AS_INSTALL_LIB/admin-cli-10.0-SNAPSHOT.jar" "$@"
+exec java -jar "$AS_INSTALL_LIB/admin-cli-@VERSION@.jar" "$@"
 
 

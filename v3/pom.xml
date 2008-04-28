@@ -57,7 +57,7 @@
         <system>IssueTracker</system>
         <url>https://glassfish.dev.java.net/servlets/ProjectIssues</url>
     </issueManagement>
-    
+
     <mailingLists>
         <mailingList>
             <name>dev</name>
@@ -84,31 +84,31 @@
             <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=cvs</archive>
         </mailingList>
     </mailingLists>
-    
+
     <properties>
     	<maven.repo.local>${basedir}/.m2/repository</maven.repo.local>
         <ant.version>1.7.0</ant.version>
         <glassfish.version>10.0-SNAPSHOT</glassfish.version>
         <javaee-api.version>5.0-SNAPSHOT</javaee-api.version>
-        <activation-api.version>1.1</activation-api.version> 
+        <activation-api.version>1.1</activation-api.version>
         <transaction-api.version>1.1</transaction-api.version>
-        <mail-api.version>1.4</mail-api.version>        
+        <mail-api.version>1.4</mail-api.version>
         <mail.version>1.4.1-ea-SNAPSHOT</mail.version>
         <ejb-api.version>3.0</ejb-api.version>
         <persistence-api.version>1.0-rev-1</persistence-api.version>
         <connector-api.version>1.5</connector-api.version>
         <management-api.version>1.1</management-api.version>
-        
+
         <amx-api.version>2.0-SNAPSHOT</amx-api.version>
         <glassfish-mbeanserver.version>1.0</glassfish-mbeanserver.version>
-        
+
         <jms-api.version>1.1</jms-api.version>
         <security-api.version>1.1</security-api.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jsp-api.version>2.1</jsp-api.version>
-        <jstl-api.version>1.2</jstl-api.version>        
+        <jstl-api.version>1.2</jstl-api.version>
         <jsf-api.version>1.2_08</jsf-api.version>
-        <jsf-impl.version>1.2_08</jsf-impl.version>        
+        <jsf-impl.version>1.2_08</jsf-impl.version>
         <deployment-api.version>1.2</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.7.3.1</grizzly.version>
@@ -121,8 +121,8 @@
         <com.sun.commons.logging.version>1.0.4</com.sun.commons.logging.version>
         <com.sun.commons.modeler.version>1.1</com.sun.commons.modeler.version>
         <com.sun.commons.digester.version>1.5</com.sun.commons.digester.version>
-        <com.sun.commons.beanutils.version>1.6.1-20070314</com.sun.commons.beanutils.version> 
-        <com.sun.commons.collections.version>2.1</com.sun.commons.collections.version>  
+        <com.sun.commons.beanutils.version>1.6.1-20070314</com.sun.commons.beanutils.version>
+        <com.sun.commons.collections.version>2.1</com.sun.commons.collections.version>
         <hk2.version>0.3.0</hk2.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
@@ -161,7 +161,7 @@
         <module>registration</module>
         <module>tests</module>
         <module>osgi-platforms</module>
-    </modules> 
+    </modules>
     <repositories>
         <repository>
             <id>glassfish-repository</id>
@@ -182,10 +182,10 @@
         </repository>
         <!-- all the other repositories are inherited -->
     </repositories>
-    
+
     <build>
         <defaultGoal>install</defaultGoal>
-        <sourceDirectory>src/main/java</sourceDirectory>      
+        <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.glassfish.build</groupId>

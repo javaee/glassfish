@@ -137,7 +137,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar backup-10.0-SNAPSHOT.jar amx-api-2.0-SNAPSHOT.jar</Class-Path>
+				<Class-Path>cli-framework-${project.version}.jar cli-optional-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar universal-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-${amx-api.version}.jar</Class-Path>
                         </manifestEntries>
 
                     </archive>
@@ -165,18 +165,8 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>server-mgmt</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -188,21 +178,6 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>universal</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>    
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>    
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>backup</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>    
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-api</artifactId>
-            <version>${amx-api.version}</version>
         </dependency>
     </dependencies>
 </project>

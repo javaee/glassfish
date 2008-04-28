@@ -51,7 +51,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * 
  * @author bnevins
  */
-public class ListCommandsCommand extends S1ASCommand {
+public class ListCommandsCommand extends AbstractCommand {
     @Override
     public void runCommand() throws CommandException, CommandValidationException {
         // WBN weird -- validateOptions is NOT called by the framework?!?

@@ -34,6 +34,10 @@
  * holder.
  */
 
+/*
+ *  $Id: ListDomainsCommand.java,v 1.3 2005/12/25 03:46:31 tcfujii Exp $
+ */
+
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.*;

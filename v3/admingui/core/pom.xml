@@ -5,7 +5,8 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <build>
@@ -29,8 +30,6 @@
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
@@ -55,8 +54,6 @@
             <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>
-
-        
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>

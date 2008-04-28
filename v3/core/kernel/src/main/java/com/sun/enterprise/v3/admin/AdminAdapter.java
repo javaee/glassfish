@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
@@ -36,6 +37,7 @@ import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.internal.api.AdminAuthenticator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -48,12 +50,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
-import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.net.HttpURLConnection;
@@ -83,6 +85,9 @@ public class AdminAdapter implements Adapter, PostConstruct {
 
     @Inject
     ServerEnvironment env;
+
+    @Inject(optional=true)
+    AdminAuthenticator authenticator=null;
 
     ReentrantLock lock = new ReentrantLock();
 
@@ -137,18 +142,14 @@ public class AdminAdapter implements Adapter, PostConstruct {
         if (lock.isLocked()) {
             if (lock.tryLock(20L, TimeUnit.SECONDS)) {
                 lock.unlock();
-                /* Commented out because user name and password not
-                 * supplied yet from .asadminpass 
                 if (!authenticate(req, report, res))
                     return;
-                 */
                 report = doCommand(req, report);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");
             }
         } else {
-
             if (!authenticate(req, report, res))
                 return;
             report = doCommand(req, report);
@@ -166,44 +167,16 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
-    public static boolean authenticate(Request req, ServerEnvironment serverEnviron) 
+    public boolean authenticate(Request req, ServerEnvironment serverEnviron)
             throws Exception {
-        String authHeader = req.getHeader("Authorization");
-        boolean authenticated = false;
-        // the file containing userid and password
-        FileRealm f =
-                new FileRealm(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
 
-        authenticated = authenticateAnonymous(f); // allow anonymous login regardless
-        if (!authenticated && authHeader != null) { // only if anonymous login is allowed.
-            String base64Coded = authHeader.substring(BASIC.length());
-            String decoded = new String(decoder.decodeBuffer(base64Coded));
-            String[] userNamePassword = decoded.split(":");
-            if (userNamePassword == null || userNamePassword.length == 0) {
-                // no username/password in header - try anonymous auth
-                authenticated = authenticateAnonymous(f);
-            } else {
-                String userName = userNamePassword[0];
-                String password = userNamePassword.length > 1 ? userNamePassword[1] : "";
-                authenticated = f.authenticate(userName, password) != null;
-            }
+        File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
+        if (authenticator!=null && realmFile.exists()) {
+           return authenticator.authenticate(req, realmFile);
         }
-        return authenticated;
-    }
-    
-    private static boolean authenticateAnonymous(FileRealm f) throws Exception {
-        Enumeration<String> users = f.getUserNames();
-        if (users.hasMoreElements()) {
-            String userNameInRealm = users.nextElement();
-            // allow anonymous authentication if the only user in the key file is the
-            // default user, with default password
-            if (!users.hasMoreElements() &&
-                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
-                logger.finer("Allowed anonymous access");
-                return true;
-            }
-        }
-        return false;
+        // no authenticator, this is fine.
+        return true;
+
     }
 
     private boolean authenticate(Request req, ActionReport report, Response res)
@@ -216,7 +189,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report.setMessage(msg);
             report.setActionDescription("Authentication error");
             InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
-            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);                
+            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
             res.setHeader("WWW-Authenticate", "BASIC");
             res.setContentType(report.getContentType());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

@@ -53,13 +53,13 @@ public class HelloJSPTestNG {
 
     private static final String TEST_NAME =
         "simple-webapp-jspservlet-noresource";
-   
+
     private String strContextRoot="hellojspsecure";
 
     static String result = "";
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
-           
+
     /*
      *If two asserts are mentioned in one method, then last assert is taken in
      *to account.
@@ -71,9 +71,9 @@ public class HelloJSPTestNG {
     @Test(groups ={ "pulse"} ) // test method
     //public void webtest(String host, String port, String contextroot) throws Exception{
     public void simpleJSPTestPage() throws Exception{
-        
+
         try{
-         
+
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/hello.jsp";
         System.out.println("URL is: "+testurl);
@@ -96,7 +96,7 @@ public class HelloJSPTestNG {
 //
 //        String line = null;
 //        boolean result=false;
-//        String testLine = null;        
+//        String testLine = null;
 //	String EXPECTED_RESPONSE ="JSP Test Page";
 //        while ((line = input.readLine()) != null) {
 //            if(line.indexOf(EXPECTED_RESPONSE)!=-1){
@@ -104,12 +104,12 @@ public class HelloJSPTestNG {
 //             testLine = line;
 //           System.out.println(testLine);
 //            }
-//          
-//        }        
-//                
+//
+//        }
+//
 //        Assert.assertEquals(result, true,"Unexpected HTML");
-//               
-        
+//
+
         }catch(Exception e){
             e.printStackTrace();
             throw new Exception(e);
@@ -134,24 +134,24 @@ public class HelloJSPTestNG {
 
         String line = null;
         boolean result=false;
-        String testLine = null;        
+        String testLine = null;
         while ((line = input.readLine()) != null) {
-            if(line.indexOf("Your server is up and running!")!=-1){
+            if(line.indexOf("Your Application Server is now running")!=-1){
                 result=true;
              testLine = line;
            echo(testLine);
             }
-          
-        }        
-                
+
+        }
+
         Assert.assertEquals(result, true,"Unexpected HTML");
     }
-    
-    
+
+
     @Test(groups ={ "pulse"} ) // test method
     public void staticHTMLPageTest() throws Exception{
          try{
-         
+
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/first.html";
         System.out.println("URL is: "+testurl);
@@ -160,7 +160,7 @@ public class HelloJSPTestNG {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
-        
+
         if (responseCode == 401) {
             //security constraint enforced
             Assert.assertEquals(true, true, "Anonymous Client access Denied");
@@ -176,30 +176,30 @@ public class HelloJSPTestNG {
 //
 //        String line = null;
 //        boolean result=false;
-//        String testLine = null;        
+//        String testLine = null;
 //        while ((line = input.readLine()) != null) {
 //            if(line.indexOf("Welcome to HTML Test Program")!=-1){
 //                result=true;
 //             testLine = line;
 //           System.out.println(testLine);
 //            }
-//          
-//        }        
-//                
+//
+//        }
+//
 //        Assert.assertEquals(result, true,"Unexpected HTML");
-               
-        
+
+
         }catch(Exception e){
             e.printStackTrace();
             throw new Exception(e);
         }
-        
+
     }
-    
+
     @Test(groups ={ "pulse"} ) // test method
     public void simpleServletTest() throws Exception{
          try{
-         
+
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/simpleservlet";
         System.out.println("URL is: "+testurl);
@@ -223,24 +223,24 @@ public class HelloJSPTestNG {
 //
 //        String line = null;
 //        boolean result=false;
-//        String testLine = null;        
+//        String testLine = null;
 //        while ((line = input.readLine()) != null) {
 //            if(line.indexOf("Sample Application Servlet")!=-1){
 //                result=true;
 //             testLine = line;
 //           echo(testLine);
 //            }
-//          
-//        }        
-//                
+//
+//        }
+//
 //        Assert.assertEquals(result, true,"Unexpected HTML");
-               
-        
+
+
         }catch(Exception e){
             e.printStackTrace();
             throw new Exception(e);
         }
-        
+
     }
 
     public static void echo(String msg) {

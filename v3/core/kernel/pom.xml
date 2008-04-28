@@ -117,13 +117,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
-            <version>${project.version}</version>
-        </dependency>        
-        <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>universal</artifactId>
+            <artifactId>dol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

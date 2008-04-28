@@ -123,6 +123,7 @@ public class CreateVirtualServer implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+                    boolean docrootAdded = false;
                     VirtualServer newVirtualServer = ConfigSupport.createChildOf(param, VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
@@ -136,12 +137,20 @@ public class CreateVirtualServer implements AdminCommand {
                         for (java.util.Map.Entry entry : properties.entrySet()) {
                             Property property =
                                 ConfigSupport.createChildOf(newVirtualServer, Property.class);
-                            property.setName((String)entry.getKey());
+                            String pn = (String)entry.getKey();
+                            property.setName(pn);
                             property.setValue((String)entry.getValue());
                             newVirtualServer.getProperty().add(property);
+                            if ("docroot".equals(pn))
+                                docrootAdded = true;
                         }
                     }
-
+                    if (!docrootAdded) {
+                        Property drp = ConfigSupport.createChildOf(newVirtualServer, Property.class);
+                        drp.setName("docroot");
+                        drp.setValue("${com.sun.aas.instanceRoot}/docroot");
+                        newVirtualServer.getProperty().add(drp);
+                    }
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }

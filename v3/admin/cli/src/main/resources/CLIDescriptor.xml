@@ -7,8 +7,6 @@
 	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
     </CommandProperties>
     <Options>
-        <Option name="force" type="boolean" value-required="false">
-        </Option>
 	<Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
@@ -20,6 +18,8 @@
 	<Option name="echo" type="boolean" value-required="false" default="false">
             <shortoption>e</shortoption>
 	</Option>
+    <Option name="force" type="boolean" value-required="false">
+    </Option>
 	<Option name="user" type="string" value-required="true">
 	    <shortoption>u</shortoption>
 	</Option>
@@ -61,7 +61,7 @@
     	<Option name="remoteonly" type="boolean" value-required="false" default="false"/>
     </Options>
     <Commands>
-	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" 
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?"
              usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
 	    <ValidOption name="verbose"/>
             <ValidOption name="domaindir"/>
@@ -70,9 +70,9 @@
 	    <ValidOption name="echo"/>
             <ValidOption name="user"/>
 	    <ValidOption name="interactive"/>
-	    <ValidOption name="passwordfile"/>			
+	    <ValidOption name="passwordfile"/>
 	</Command>
-        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand"  numberofoperands="1" 
+        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand"  numberofoperands="1"
            usage-text="create-domain [--user admin] --adminport port_number | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
                 <ValidOption name="adminport"/>
                 <ValidOption name="adminuser"/>
@@ -103,9 +103,9 @@
                 <ValidOption name="echo"/>
                 <ValidOption name="domaindir"/>
         </Command>
-        <Command name="stop-domain" 
-              classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
-              numberofoperands="?" 
+        <Command name="stop-domain"
+              classname="com.sun.enterprise.admin.cli.StopDomainCommand"
+              numberofoperands="?"
               usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [--force true] [domain_name]">
              <ValidOption name="domaindir"/>
              <ValidOption name="terse"/>
@@ -143,16 +143,16 @@
             <ValidOption name="echo"/>
 	</Command>
         <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
-              numberofoperands="0" 
+              numberofoperands="0"
               usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false] [--user user] [--passwordfile filename]">
-            <ValidOption name="terse"/>
-            <ValidOption name="echo"/>
-            <ValidOption name="host"/>
-            <ValidOption name="port"/>
-            <ValidOption name="localonly"/>
-            <ValidOption name="remoteonly"/>
-            <ValidOption name="user"/>
-            <ValidOption name="passwordfile"/>
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="host"/>
+             <ValidOption name="port"/>
+             <ValidOption name="localonly"/>
+             <ValidOption name="remoteonly"/>
+             <ValidOption name="user"/>
+             <ValidOption name="passwordfile"/>
         </Command>
     </Commands>
 </CommandsAndOptions>

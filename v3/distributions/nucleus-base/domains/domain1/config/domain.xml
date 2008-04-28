@@ -60,7 +60,7 @@
     <http-listener id="http-listener-1" address="0.0.0.0" port="8080" acceptor-threads="1" security-enabled="false" default-virtual-server="server" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false">
 <property name="proxiedProtocols" value="ws/tcp"/>
 </http-listener>
-    <http-listener id="http-listener-2" address="0.0.0.0" port="8181" acceptor-threads="1" security-enabled="true" default-virtual-server="server" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false"/>
+    <http-listener id="http-listener-2" address="0.0.0.0" port="8181" acceptor-threads="1" security-enabled="false" default-virtual-server="server" server-name="" xpowered-by="true" enabled="false" family="inet" blocking-enabled="false"/>
     <http-listener id="admin-listener" address="0.0.0.0" port="4848" acceptor-threads="1" security-enabled="false" default-virtual-server="__asadmin" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false"/>
      <virtual-server id="server" http-listeners="http-listener-1,http-listener-2" hosts="${com.sun.aas.hostName}" state="on" log-file="${com.sun.aas.instanceRoot}/logs/server.log">
       <property name="docroot" value="${com.sun.aas.instanceRoot}/docroot"/>
@@ -96,7 +96,7 @@
      <!-- The JSR 160 "system-jmx-connector" -->
      <das-config dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="true" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
        <property name="adminConsoleContextRoot" value="/admin"/>
-       <property name="adminConsoleDownloadLocation" value="http://download.java.net/maven/glassfish/org/glassfish/admingui/war/1.0-SNAPSHOT/war-1.0-SNAPSHOT.war"/>
+       <property name="adminConsoleDownloadLocation" value="http://download.java.net/glassfish/v3-tp2/admingui/gfv3-preview2-final-admingui.war"/>
        <!-- change this to reflect the correct final download location -->
        <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/lib/install/applications"/>
    </admin-service>

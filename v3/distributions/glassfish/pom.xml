@@ -44,7 +44,6 @@
         <version>10.0-SNAPSHOT</version>
     </parent>    
     <artifactId>glassfish</artifactId>
-    <version>${dist.version}</version>
     <name>Glassfish Full Bundle</name>
     <packaging>distribution-base-zip</packaging>
     <description>GlassFish web bundle + EJB, ACC, and etc.</description>
@@ -68,14 +67,14 @@
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
             <artifactId>web</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <!-- and its dist bundling script -->
             <groupId>org.glassfish.distributions</groupId>
             <artifactId>web</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
             <classifier>build</classifier>
             <type>xml</type>
         </dependency>
@@ -85,7 +84,7 @@
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-all</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
     </dependencies>

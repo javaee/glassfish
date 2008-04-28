@@ -37,8 +37,10 @@ package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.cli.framework.CLILogger;
+import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -49,12 +51,13 @@ import java.net.*;
 import java.net.Socket;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A local StopDomain command
  * @author bnevins
  */
-public class StopDomainCommand extends S1ASCommand {
+public class StopDomainCommand extends AbstractCommand {
 
     @Override
     public void runCommand() throws CommandException, CommandValidationException {
@@ -66,7 +69,6 @@ public class StopDomainCommand extends S1ASCommand {
         Integer[] ports = null;
 
         try {
-            // TODO print time taken
             MiniXmlParser parser = new MiniXmlParser(domainXml);
             Set<Integer> portsSet = parser.getAdminPorts();
             ports = portsSet.toArray(new Integer[portsSet.size()]);
@@ -76,7 +78,7 @@ public class StopDomainCommand extends S1ASCommand {
                     strings.get("StopDomain.parserError", ex), ex);
         }
 
-        // TODO -- it would be nice to know if it worked!  
+        // TODO -- it would be nice to know if it worked!
         // If so use other port numbers
 
         int adminPort = ports[0];
@@ -84,7 +86,7 @@ public class StopDomainCommand extends S1ASCommand {
         // Verify that the DAS is running and reachable
         if(!CLIRemoteCommand.pingDASQuietly(adminPort))
             throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
-        
+
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             CLIRemoteCommand rc = new CLIRemoteCommand(getCmd("" + adminPort));
@@ -117,7 +119,7 @@ public class StopDomainCommand extends S1ASCommand {
 
         return true;
     }
-    
+
     ///// Private Methods /////
     private String[] getCmd(String port) {
         List<String> cmd = new ArrayList<String>();
@@ -128,7 +130,7 @@ public class StopDomainCommand extends S1ASCommand {
         addOption(cmd, PASSWORDFILE);
         return cmd.toArray(new String[cmd.size()]);
     }
-    
+
     private void addOption(List<String> cmd, String option) {
         //adds the option to list as "--option" followed by its value iff value is non-null
         // "value" is higher precedence than "defaultValue"
@@ -206,11 +208,11 @@ public class StopDomainCommand extends S1ASCommand {
         // 1) it's impossible to use the logger to print anything without linefeeds
         // 2) The Logger is set to WARNING right now to kill the version messages
         // that's why I'm writing to stderr
-        
+
         long startWait = System.currentTimeMillis();
         System.err.print(strings.get("StopDomain.WaitDASDeath") + " ");
         boolean alive = true;
-        
+
         while(!timedOut(startWait)) {
             if(!pingPort(adminPort)) {
                 alive = false;
@@ -224,16 +226,16 @@ public class StopDomainCommand extends S1ASCommand {
                 // don't care
             }
         }
-        
+
         System.err.println("");
-            
+
         if(alive) {
-            throw new CommandException(strings.get("StopDomain.DASNotDead", 
+            throw new CommandException(strings.get("StopDomain.DASNotDead",
                     (WAIT_FOR_DAS_TIME_MS / 1000)));
         }
     }
 
-    /** 
+    /**
      * This is no substitute for CLIRemoteCommand.pingDAS() -- that command guarantees
      * that DAS is at the other end of the port.  This is a quick check that can
      * be used after verifying DAS is in fact listening on the port.

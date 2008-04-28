@@ -138,7 +138,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
         StringBuffer classpath = new StringBuffer();
         for (File lib : libDirectory.listFiles()) {
             if (lib.isFile()) {
-                if (lib.getName().equals("jruby.jar")) {
+                if (lib.getName().equals("jruby.jar") || !lib.getName().endsWith(".jar")) {
                     continue;
                 }
 

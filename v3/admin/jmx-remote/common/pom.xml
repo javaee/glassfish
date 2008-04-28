@@ -35,11 +35,9 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-
-
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 
     <parent>
@@ -62,7 +60,6 @@
 
     <description>Common module for HTTP JMX connector client and server infrastructure in GF V3</description>
 
-    
 
     <developers>
 
@@ -90,7 +87,7 @@
 
     <build>
 
-	<resources>
+        <resources>
 
             <resource>
 
@@ -110,7 +107,7 @@
 
     <dependencies>
 
-	<dependency>
+        <dependency>
 
             <groupId>org.glassfish.external</groupId>
 
@@ -118,7 +115,7 @@
 
             <version>${project.version}</version>
 
-        </dependency>         
+        </dependency>
 
         <dependency>
 

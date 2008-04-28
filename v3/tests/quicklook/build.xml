@@ -303,7 +303,7 @@
     <exec executable="cmd" spawn="true">	
         <!-- env key="GlassFish_Platform" value="Felix"/-->
         <arg value="/c"/>
-        <arg value="${glassfish.home}/bin/asadmin.bat"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
 </target>
@@ -337,7 +337,7 @@
     <exec executable="cmd" spawn="true">
         <env key="GlassFish_Platform" value="Felix"/>
         <arg value="/c"/>
-        <arg value="${glassfish.home}/bin/asadmin.bat"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
 </target>
@@ -358,7 +358,7 @@
 <target name="stop-server-windows" if="isWindows">
      <exec executable="cmd">	
          <arg value="/c"/>
-         <arg value="${glassfish.home}/bin/asadmin.bat"/>
+         <arg value="${glassfish.home}\bin\asadmin.bat"/>
          <arg value="stop-domain"/>
      </exec>
 </target>

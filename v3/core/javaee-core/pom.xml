@@ -117,5 +117,20 @@
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>realms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-optionals</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

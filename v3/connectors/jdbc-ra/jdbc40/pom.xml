@@ -18,6 +18,17 @@
         </excludes>
       </resource>
     </resources>
+    <plugins>
+	    <plugin>
+	      <!--
+	        Use JDBC 4.0 API regardless of which JDK we are building with.
+	      -->
+	      <artifactId>maven-compiler-plugin</artifactId>
+	      <configuration>
+	        <compilerArgument>-Xbootclasspath/p:${project.basedir}/jdbc40.jar</compilerArgument>
+	      </configuration>
+	    </plugin>
+	  </plugins>
   </build>
 
   <dependencies>

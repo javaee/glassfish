@@ -20,7 +20,7 @@
  *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.v3.services.impl;
+package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -32,6 +32,7 @@ import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -70,24 +71,11 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-@Service
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
 
     @Inject
-    GrizzlyService adapter;
-
-    @Inject
-    ArchiveFactory archiveFactory;
-
-    @Inject
     ServerEnvironment env;
-
-    @Inject
-    Applications applications;
-
-    @Inject
-    Server server;
 
     /**
      * Retuns the lifecyle of the service.
@@ -108,7 +96,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     public void postConstruct() {
 
         assert env!=null;
-        logger.info("loader service postConstruct started at " + System.currentTimeMillis());
         for (Module m : applications.getModules()) {
             if (m instanceof Application) {
                 Application module = (Application) m;

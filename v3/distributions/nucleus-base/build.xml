@@ -21,13 +21,25 @@
 -->
 <project name="nucleus-base bundle creation" basedir=".">
     <target name="create.bundle">
-        <mkdir dir="target"/>
+        <!-- force resource processing as version could change behind the scene without Ant ever noticing it -->
+	<delete dir="target/resources"/>
+        <mkdir dir="target/resources"/>
+        <copy todir="target/resources">
+            <fileset dir=".">
+                <include name="bin/*" />
+            </fileset>
+            <filterset>
+              <filter token="VERSION" value="${version}"/>
+            </filterset>
+        </copy>
         <zip file="target/nucleus-base.zip">
-            <zipfileset prefix="glassfish" dir="." filemode="755"
+            <zipfileset prefix="glassfish" dir="target/resources" filemode="755"
                     includes="bin/*"
                     excludes="bin/*.bat" />
-            <zipfileset prefix="glassfish" dir=".">
+            <zipfileset prefix="glassfish" dir="target/resources">
                 <include name="bin/*.bat" />
+            </zipfileset>
+            <zipfileset prefix="glassfish" dir=".">
                 <include name="*.txt"/>
                 <include name="config/**"/>
                 <include name="lib/**"/>

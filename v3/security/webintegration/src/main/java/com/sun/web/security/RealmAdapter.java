@@ -725,7 +725,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     /**
      * Invokes WebSecurityManager to perform access control check.
-     * Return <code>true</code> if permission is granted, or <code>false</code> 
+     * Return <code>true</code> if permission is granted, or <code>false</code>
      * otherwise.
      *
      * @param request Request we are processing
@@ -866,7 +866,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
         }
 
         // Only redirect if we are sure the user will be granted.
-        // See bug 4947698 
+        // See bug 4947698
 
         // This method will return:
         // 1  - if granted
@@ -1014,11 +1014,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     //START SJSAS 6232464 6202703
     /**
-     * Returns null 
+     * Returns null
      * 1. if there are no security constrainst defined on any of the web
      * resources within the context, or
      * 2. if the target is a form login related page or target.
-     * 
+     *
      * otherwise return an empty array of SecurityConstraint.
      */
     public SecurityConstraint[] findSecurityConstraints(HttpRequest request,
@@ -1047,7 +1047,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
      * @param constraints Security constraint we are enforcing
      * @param disableProxyCaching whether or not to disable proxy caching for
      *        protected resources.
-     * @param securePagesWithPragma true if we add headers which 
+     * @param securePagesWithPragma true if we add headers which
      * are incompatible with downloading office documents in IE under SSL but
      * which fix a caching problem in Mozilla.
      * @param ssoEnabled true if sso is enabled

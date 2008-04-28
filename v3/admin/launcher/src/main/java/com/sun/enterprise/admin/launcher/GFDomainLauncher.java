@@ -25,7 +25,10 @@ package com.sun.enterprise.admin.launcher;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.*;
+import java.util.regex.Pattern;
+
 import com.sun.enterprise.glassfish.bootstrap.ASMain;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
@@ -65,13 +68,22 @@ class GFDomainLauncher extends GFLauncher {
 
     List<File> getMainClasspath() throws GFLauncherException {
         List<File> list = new ArrayList<File>();
-        File f = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY));
-        f = new File(f, BOOTSTRAP_JAR_RELATIVE_PATH);
+        File dir = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY),"modules");
 
-        if (!f.exists() && !isFakeLaunch())
-            throw new GFLauncherException("nobootjar", f.getPath());
+        File[] matches = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return BOOTSTRAP_JAR.matcher(name).matches();
+            }
+        });
 
-        list.add(SmartFile.sanitize(f));
+        if ((matches==null || matches.length==0) && !isFakeLaunch())
+            throw new GFLauncherException("nobootjar", dir.getPath());
+
+        // TODO: we are not supposed to have matches.length>1 so report that as an error
+        if(matches!=null)
+            for (File m : matches)
+                list.add(SmartFile.sanitize(m));
+
         return list;
     }
 
@@ -80,7 +92,8 @@ class GFDomainLauncher extends GFLauncher {
     }
     
     private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.ASMain";
-    private static final String BOOTSTRAP_JAR_RELATIVE_PATH = "modules/glassfish-10.0-SNAPSHOT.jar";
+
+    private static final Pattern BOOTSTRAP_JAR = Pattern.compile("glassfish-\\d.*\\.jar");
 }
 
 /* sample profiler config

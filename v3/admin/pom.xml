@@ -55,6 +55,7 @@
         <module>admin-core</module>
         <module>server-mgmt</module>
         <module>cli</module>
+	<module>cli-optional</module>
         <module>cli-framework</module>
         <module>jmx-remote</module>
         <module>backup</module>
