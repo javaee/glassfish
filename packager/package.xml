@@ -44,7 +44,15 @@
 
     <mkdir dir="${basedir}/build" />
     <unzip src="${basedir}/../distributions/nucleus/target/nucleus.zip"
-           dest="${basedir}/build"/>
+	    dest="${basedir}/build"/>
+
+    <!-- override asenv files -->
+
+    <copy file="${basedir}/misc/asenv.conf"
+	    todir="${basedir}/build/glassfish/config"/>
+    <copy file="${basedir}/misc/asenv.bat"
+	    todir="${basedir}/build/glassfish/config"/>
+
 
     <antcall target="create-prototype-com">
         <param name="component.package" value="glassfishv3-nucleus"/>
