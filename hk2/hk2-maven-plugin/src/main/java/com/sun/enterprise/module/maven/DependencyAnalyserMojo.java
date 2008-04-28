@@ -133,6 +133,7 @@ public class DependencyAnalyserMojo extends AbstractMojo {
 
         if (!project.getPackaging().equals("hk2-jar")) {
             System.out.println("Skipping this project as it does not use hk2-jar packaging");
+            return;
         }
         try {
             MavenProjectRepository repo = new MavenProjectRepository(
