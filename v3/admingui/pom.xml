@@ -10,7 +10,7 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>admingui</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>10.0-SNAPSHOT</version>
     <name>Admin Console Webapp Packages</name>
 
     <modules>
