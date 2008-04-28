@@ -31,10 +31,15 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.deployment.DeployCommand;
+import com.sun.enterprise.v3.data.ApplicationInfo;
+import com.sun.enterprise.v3.data.ModuleInfo;
+import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
@@ -91,6 +96,9 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     @Inject
     protected ModulesRegistry modulesRegistry;
+
+    @Inject
+    protected ApplicationRegistry appRegistry;
 
     @Inject(name="application_deploy", optional=true)
     protected ApplicationVisitor deploymentVisitor=null;
@@ -294,8 +302,14 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
      * @param context deployment context
      */
     public void clean(DeploymentContext context) {
-        if (undeploymentVisitor!=null) {
-            undeploymentVisitor.accept(context.getModuleMetaData(Application.class));
+        String appName = context.getCommandParameters().getProperty(
+            DeployCommand.NAME);
+        Application app = getApplicationFromApplicationInfo(appName);
+        if (app != null) {
+            context.addModuleMetaData(app);
+            if (undeploymentVisitor!=null) {
+                undeploymentVisitor.accept(app);
+            }
         }
     }
         
@@ -347,6 +361,23 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     }
  
+    protected Application getApplicationFromApplicationInfo(
+        String appName) {
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo == null) {
+            return null;
+        }
+
+        for (ModuleInfo moduleInfo: appInfo.getModuleInfos()) {
+            ApplicationContainer appCtr = moduleInfo.getApplicationContainer();
+            Object descriptor = appCtr.getDescriptor();
+            if (descriptor instanceof BundleDescriptor) {
+                return ((BundleDescriptor)descriptor).getApplication();
+            }
+        }
+        return null;
+    }
+
     abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();
     abstract protected String getModuleType();
 }
