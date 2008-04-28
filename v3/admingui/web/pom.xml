@@ -46,7 +46,6 @@
     </parent>
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-web-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI Web Container Plugin</name>
     <description>Web container  Plugin module for Glassfish V3 Admin Console</description>
@@ -78,19 +77,19 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${glassfish.version}</version>
 	    <optional>true</optional>
 	    <scope>provided</scope>
         </dependency>
