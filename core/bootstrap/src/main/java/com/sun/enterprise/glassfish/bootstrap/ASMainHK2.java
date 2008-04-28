@@ -168,9 +168,12 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
 
 
         List<URL> derbyUrls = new ArrayList<URL>();
-        File derbyLib = new File(glassfishDir.getParent(), "javadb/lib");
-        if (!derbyLib.exists()) {
-            // maybe the jdk...
+        String derbyHome = System.getProperty("AS_DERBY_INSTALL");
+        File derbyLib=null;
+        if (derbyHome!=null) {
+            derbyLib = new File(derbyHome, "lib");
+        }
+        if (derbyLib==null || !derbyLib.exists()) {            // maybe the jdk...
             if (System.getProperty("java.version").compareTo("1.6")>0) {
                 File jdkHome = new File(System.getProperty("java.home"));
                 derbyLib = new File(jdkHome, "db/lib");
