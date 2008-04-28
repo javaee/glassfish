@@ -1,12 +1,27 @@
-Instructions to unbundle and configure GlassFish
+To start the server, please use the following command.
 
-GlasssFish installation requires JDK 5.
+  On windows,
 
-   1. Download one of the bundles
-   2. Run:
-      java -Xmx256m -jar filename.jar
+    <INSTALL_DIR>\glassfish\bin\asadmin start-domain
 
-   3. Run:
-      ant -f setup.xml
+  On Unix platforms,
 
-Ant is included in the GlassFish bundle that was downloaded.
+    <INSTALL_DIR>/glassfish/bin/asadmin start-domain
+
+Where,
+
+<INSTALL_DIR> is the location where GlassFish v3 was installed.
+
+To stop the server, please use the following command.
+
+  On windows,
+
+    <INSTALL_DIR>\glassfish\bin\asadmin stop-domain
+
+  On Unix platforms,
+
+    <INSTALL_DIR>/glassfish/bin/asadmin stop-domain
+
+For more information, please open the following file in your web browser. 
+
+  <INSTALL_DIR>/glassfish/docs/index.html
