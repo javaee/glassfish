@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2-dependency-verifier</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
             <artifactId>test-harness</artifactId>
             <version>${project.version}</version>
         </dependency>

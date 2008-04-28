@@ -176,6 +176,7 @@
         <module>hk2-maven-plugin</module>
         <module>osgi-adapter</module>
         <module>test-harness</module>
+        <module>dependency-verifier</module>
     </modules>
 
     <dependencies>
