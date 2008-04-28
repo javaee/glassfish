@@ -156,8 +156,10 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             buildModule(a, moduleDefs, libraries);
         }
 
-        if(moduleDefs.isEmpty())
-            throw new Error("No modules found");// should this error check be done by the caller of loadModuleDefs?
+        if(moduleDefs.isEmpty()) {
+//            throw new Error("No modules found");// should this error check be done by the caller of loadModuleDefs?
+            logger.warning("No modules found");            
+        }
 
     }
 
