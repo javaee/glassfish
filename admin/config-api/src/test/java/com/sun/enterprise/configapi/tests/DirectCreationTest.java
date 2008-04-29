@@ -95,7 +95,7 @@ public class DirectCreationTest extends ConfigPersistence {
             }
         }
 
-        ConfigSupport.createAndSet(serviceBean, AccessLog.class, null);
+        ConfigSupport.createAndSet(serviceBean, AccessLog.class, (Map)null);
     }
 
     public boolean assertResult(String s) {
