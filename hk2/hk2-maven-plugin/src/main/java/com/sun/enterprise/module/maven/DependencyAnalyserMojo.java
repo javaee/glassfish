@@ -48,6 +48,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.HashSet;
 import java.io.File;
 import java.io.IOException;
 
@@ -121,7 +122,13 @@ public class DependencyAnalyserMojo extends AbstractMojo {
      * By default, we just print a warning and proceed.
      * @parameter default-value = false
      */
-    private boolean failOnError;
+    private boolean failOnVerificationError;
+
+    /**
+     * Patterns excluded from dependency computation.
+     * @parameter
+     */
+    private HashSet<String> excludedPatterns;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         // This is a brute force way of skipping executio of this plugin.
@@ -148,10 +155,13 @@ public class DependencyAnalyserMojo extends AbstractMojo {
                 }
             }
             ModuleDefinition moduleDef = new MavenModuleDefinition(repo, location);
-            ModuleDependencyAnalyser analyser = new ModuleDependencyAnalyser();
-            if (!analyser.analyse(moduleDef, repo)) {
+            ModuleDependencyAnalyser analyser = new ModuleDependencyAnalyser(moduleDef, repo);
+            if (excludedPatterns!=null) {
+                analyser.excludePatterns(excludedPatterns);
+            }
+            if (!analyser.analyse()) {
                 String msg = "Missing dependency. See details below:\n" + analyser.getResultAsString();
-                if (failOnError) {
+                if (failOnVerificationError) {
                     throw new MojoExecutionException(msg);
                 } else {
                     logger.logp(Level.WARNING, "DependencyAnalyserMojo", "execute", msg);

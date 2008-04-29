@@ -63,6 +63,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -74,30 +75,43 @@ public class ModuleDependencyAnalyser {
     Repository moduleRepository;
 
     String[] excludedPatterns = {"java."
-            , "javax."
-            , "org.osgi."
+            // add all HK2 package patterns, because we don't handle reexport yet.
             , "org.jvnet.hk2."
             , "com.sun.hk2."
             , "com.sun.enterprise.module."
     };
+    private File moduleJar;
 
-    public ModuleDependencyAnalyser() {
-    }
-
-    public synchronized boolean analyse(ModuleDefinition moduleDef,
-                                                                Repository moduleRepository)
-            throws IOException {
+    /**
+     * Create a new analyser.
+     * @param moduleDef module whose dependency needs to be analysed
+     * @param moduleRepository repository used to satisfy dependencies
+     * @throws IOException
+     */
+    public ModuleDependencyAnalyser(ModuleDefinition moduleDef,
+                                    Repository moduleRepository) throws IOException {
         this.moduleDef = moduleDef;
         this.moduleRepository = moduleRepository;
+        moduleJar = new File(moduleDef.getLocations()[0]);
         // Make a classpath consisting of only module jar file.
-        File moduleJar = new File(moduleDef.getLocations()[0]);
         String classpath = moduleJar.getAbsolutePath();
         ClassFileLoader cfl = ClassFileLoaderFactory.newInstance(new Object[]{classpath});
         closure = new ClosureCompilerImpl(cfl);
         for (String pattern : excludedPatterns) {
             closure.addExcludedPattern(pattern);
         }
+        excludeImportedPackages();
         excludeExportedClasses();
+    }
+
+    /**
+     * Analyse dependency of a module. It uses the repository to look up
+     * modules that this module depends on.
+     * @return true if all the dependencies are OK, false if something is missing
+     * @throws IOException if there is any failure in reading module information
+     */
+    public synchronized boolean analyse()
+            throws IOException {
         closure.buildClosure(new JarFile(moduleJar));
         if (System.getProperty("debugOutput") != null) {
             Logger.getLogger("apiscan.classfile").setLevel(Level.FINER);
@@ -107,8 +121,53 @@ public class ModuleDependencyAnalyser {
         return closure.getFailed().isEmpty();
     }
 
+    public void excludePatterns(Collection<String> patterns) {
+        for (String p : patterns) {
+            closure.addExcludedPattern(p.trim());
+        }
+    }
+
+    public void excludePackages(Collection<String> packages) {
+        for (String p : packages) {
+            closure.addExcludedPackage(p);
+        }
+    }
+
+    public void excludeClasses(Collection<String> classes) {
+        for (String c : classes) {
+            closure.addExcludedClass(c);
+        }
+    }
+
+    /**
+     * @see com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompiler#getFailed() for
+     * description of the return value.
+     * @return a map of referencing class name to collection of unresolved classes
+     */
     public Map<String, Collection<String>> getResult() {
         return closure.getFailed();
+    }
+
+    /**
+     * This method adds packages imported by this bundle to
+     * to the list of excluded package names.
+     */
+    private void excludeImportedPackages() {
+        Attributes attributes = moduleDef.getManifest().getMainAttributes();
+        String exportedPkgsAttr = attributes.getValue("Import-Package");
+        if (exportedPkgsAttr==null) return;
+        StringTokenizer st = new StringTokenizer(exportedPkgsAttr, ",", false);
+        Set<String> importedPkgs = new HashSet<String>();
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken().trim();
+            int idx = token.indexOf(';');
+            String pkg = (idx == -1) ? token : token.substring(0, idx);
+//            System.out.println("pkg = " + pkg);
+            importedPkgs.add(pkg);
+        }
+        for (String pkg : importedPkgs) {
+            closure.addExcludedPackage(pkg);
+        }
     }
 
     /**
@@ -232,12 +291,35 @@ public class ModuleDependencyAnalyser {
         } else {
             moduleDefs = moduleRepository.findAll();
         }
+        List<URI> badModules = new ArrayList<URI>();
         for (ModuleDefinition moduleDef : moduleDefs) {
-            ModuleDependencyAnalyser analyser = new ModuleDependencyAnalyser();
-            analyser.analyse(moduleDef, moduleRepository);
-            System.out.println("<Module name = " + moduleDef.getLocations()[0] + ">");
-            System.out.println(analyser.getResultAsString());
-            System.out.println("</Module>");
+            ModuleDependencyAnalyser analyser =
+                    new ModuleDependencyAnalyser(moduleDef, moduleRepository);
+            if (System.getProperty("ExcludedPatterns")!=null) {
+                StringTokenizer st = new StringTokenizer(
+                        System.getProperty("ExcludedPatterns"), ",", false);
+                Set<String> patterns = new HashSet<String>();
+                while (st.hasMoreTokens()) {
+                    patterns.add(st.nextToken());
+                }
+                analyser.excludePatterns(patterns);
+            }
+            if (!analyser.analyse()) {
+                URI badModule = moduleRepository.getLocation().relativize(moduleDef.getLocations()[0]);
+                badModules.add(badModule);
+                System.out.println("<Module name = " + badModule + ">");
+                System.out.println(analyser.getResultAsString());
+                System.out.println("</Module>");
+            }
+        }
+        if (badModules.isEmpty()) {
+            System.out.println("All modules are OK");
+        } else {
+            System.out.println("Dependencies are not correctly set up for following modules:");
+            for (URI badModule : badModules) {
+                System.out.print(badModule + " ");
+            }
+            System.out.println("");
         }
     }
 
