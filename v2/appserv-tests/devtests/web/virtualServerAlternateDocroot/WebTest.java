@@ -74,7 +74,7 @@ public class WebTest {
 
     public void doTest() {     
         try { 
-            invoke("/domain.xml", "<domain application-root=");
+            invoke("/domain.xml", "<domain ");
             invoke("/server.policy", "grant codeBase");
             invoke("/config/login.conf", "fileRealm");
             stat.addStatus(TEST_NAME, stat.PASS);
