@@ -28,7 +28,6 @@ import com.sun.org.apache.commons.modeler.Registry;
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
 import org.apache.catalina.LifecycleException;
-import org.apache.coyote.tomcat5.CoyoteConnector;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly
@@ -80,7 +79,9 @@ public class WebConnector extends PECoyoteConnector {
             } catch (MalformedObjectNameException e) {
                 log.info( "Error unregistering mapper ", e);
             }
-        } 
+        }
+        grizzlyMonitor.destroy();
+        // TODO: I think this class deserves an explanation of why it doesn't call super.start()/super.stop() - KK
     }
     
 }

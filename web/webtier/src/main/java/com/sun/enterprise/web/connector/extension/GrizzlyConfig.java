@@ -38,7 +38,6 @@ package com.sun.enterprise.web.connector.extension;
 import javax.management.j2ee.statistics.Stats;
 
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
 import com.sun.enterprise.admin.monitor.registry.MonitoredObjectType;
@@ -122,7 +121,11 @@ public class GrizzlyConfig implements MonitoringLevelListener{
         
         grizzlyConfigList.add(this);
     }
-    
+
+    public void destroy() {
+        unregisterMonitoringLevelEvents();
+        grizzlyConfigList.remove(this);
+    }
     
     public void initConfig(){
         initMonitoringLevel();
@@ -173,7 +176,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     }
 
     
-    public void unregisterMonitoringLevelEvents() {
+    private void unregisterMonitoringLevelEvents() {
         if (WebContainer.getInstance()==null) {
             return;
         }
@@ -222,7 +225,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
             ObjectName objectName = new ObjectName(onStr);
             mBeanServer.invoke(objectName,methodToInvoke,objects,signature);
         } catch ( Exception ex ){
-            logger.log(Level.SEVERE, "Exception while invoking mebean server operation " + methodToInvoke, ex.getMessage());
+            logger.log(Level.SEVERE, "Exception while invoking mebean server operation " + methodToInvoke, ex);
             //throw new RuntimeException(ex);
         }
     }
