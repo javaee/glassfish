@@ -593,7 +593,49 @@ public class VirtualServer extends StandardHost {
 
         return contextRoot;
     }
+    
+    
+    protected WebModuleConfig getDefaultWebModule(Domain domain, 
+            WebDeployer webDeployer) {
 
+        String contextRoot = null;
+        WebModuleConfig wmInfo = null;
+        Applications appsBean = domain.getApplications();
+
+        String wmID = getDefaultWebModuleID();
+        if (wmID != null) {
+            // Check if the default-web-module is part of a
+            // j2ee-application
+            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);
+
+            if (wmInfo == null) {
+                contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
+                String docroot = ConfigBeansUtilities.getLocation(wmID);
+                WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
+                wmInfo = new WebModuleConfig();
+                wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
+                wbd.setContextRoot(contextRoot);
+                wmInfo.setLocation(docroot);            
+                wmInfo.setDescriptor(wbd);
+                wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
+                wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
+            
+            } else {
+                WebModule wm = wmInfo.getBean();
+                contextRoot = wm.getContextRoot();
+            }
+
+            if (contextRoot == null) {
+                Object[] params = { wmID, getID() };
+                _logger.log(Level.SEVERE, "vs.defaultWebModuleNotFound",
+                            params);
+            }
+        }
+
+        return wmInfo;
+    }    
+
+    
     /**
      * If a default web module has not yet been configured and added to this
      * virtual server's list of web modules then return the configuration

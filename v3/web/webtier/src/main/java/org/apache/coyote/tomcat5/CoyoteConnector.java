@@ -1497,7 +1497,7 @@ public class CoyoteConnector
                     encodedAddr = URLEncoder.encode(getAddress());
                 }
                 String addSuffix=(getAddress()==null) ?"": ",address=" + encodedAddr;
-                oname=new ObjectName(cb.getName() + ":type=Connector,port="+
+                oname=new ObjectName(domain + ":type=Connector,port="+
                         getPort() + addSuffix);
                 Registry.getRegistry().registerComponent(this, oname, null);
                 controller=oname;

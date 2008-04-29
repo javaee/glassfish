@@ -46,11 +46,11 @@ import org.apache.coyote.tomcat5.CoyoteConnector;
 public class WebConnector extends PECoyoteConnector {
 
     @Override
-    public void start() throws LifecycleException {        
+    public void start() throws LifecycleException {    
         if( !initialized )
             initialize();
 
-        mapperListener.setDomain("com.sun.appserv");
+        mapperListener.setDomain(this.getDomain());
         mapperListener.setPort(getPort());
         mapperListener.setDefaultHost(getDefaultHost());
         mapperListener.init();

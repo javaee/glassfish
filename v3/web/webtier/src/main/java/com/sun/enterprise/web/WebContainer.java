@@ -519,7 +519,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         engine = _embedded.createEngine();
         engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
         _embedded.addEngine(engine);
-        ((StandardEngine) engine).setDomain("com.sun.appserv");
+        ((StandardEngine) engine).setDomain(_serverContext.getDefaultDomainName());
+        ((StandardEngine) engine).setName(_serverContext.getDefaultDomainName());
 
         /*
          * Set the server name and version.
@@ -1279,7 +1280,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean validateDocroot(String docroot, String vs_id, 
                                       String defaultWebModule){
-        
+       
         // docroot vs default-web-module
         if (docroot != null ) {
             // If the docroot is invalid and there is no default module,
@@ -2452,7 +2453,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void loadDefaultWebModules() {
 
         Engine[] engines =  _embedded.getEngines();
-
+        String defaultPath = null;
+        
         for (int j=0; j<engines.length; j++) {
             Container[] vsArray = engines[j].findChildren();
             for (int i = 0; i < vsArray.length; i++) {
@@ -2460,12 +2462,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     VirtualServer vs = (VirtualServer) vsArray[i];
 
-                    String defaultPath = vs.getDefaultContextPath(domain);
-                    if (defaultPath != null) {
+                    WebModuleConfig wmInfo = vs.getDefaultWebModule(domain, 
+                            _serverContext.getDefaultHabitat().getComponent(
+                            WebDeployer.class) );
+                    if (wmInfo != null) {
+                        defaultPath = wmInfo.getContextPath();
                         // Virtual server declares default-web-module
                         try {
                             updateDefaultWebModule(vs, vs.getPorts(),
-                                    defaultPath);
+                                    wmInfo);
                         } catch (LifecycleException le) {
                             String msg = _rb.getString(
                                     "webcontainer.defaultWebModuleError");
@@ -2479,11 +2484,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     } else {
                         // Create default web module off of virtual
                         // server's docroot if necessary
-                        WebModuleConfig wmInfo =
-                                vs.createSystemDefaultWebModuleIfNecessary(
+                        wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
                                 _serverContext.getDefaultHabitat().getComponent(
                                 WebDeployer.class));
                         if (wmInfo != null) {
+                            defaultPath = wmInfo.getContextPath();
                             loadStandaloneWebModule(vs, wmInfo);
                         }
                         for (int port : vs.getPorts()) {
@@ -3111,12 +3116,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected void updateDefaultWebModule(VirtualServer virtualServer,
             int[] ports,
-            String defaultContextPath)
+            WebModuleConfig wmInfo)
             throws LifecycleException {
-
+        
+        String defaultContextPath = wmInfo.getContextPath();
         if (defaultContextPath != null
                 && !defaultContextPath.startsWith("/")) {
             defaultContextPath = "/" + defaultContextPath;
+            wmInfo.getDescriptor().setContextRoot(defaultContextPath);
         }
 
         Connector[] connectors = _embedded.findConnectors();
@@ -3129,7 +3136,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     try {
                         mapper.setDefaultContextPath(virtualServer.getName(),
                                 defaultContextPath);
-
+                        CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
+                        WebApplication application = new WebApplication(this, 
+                                wmInfo, grizzlyAdapter);
+                        grizzlyAdapter.registerEndpoint("/", adapter, application);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
                     }
