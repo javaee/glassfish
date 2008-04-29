@@ -75,6 +75,7 @@ public class ModuleDependencyAnalyser {
 
     String[] excludedPatterns = {"java."
             , "javax."
+            , "org.osgi."
             , "org.jvnet.hk2."
             , "com.sun.hk2."
             , "com.sun.enterprise.module."
