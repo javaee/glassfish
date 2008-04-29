@@ -3,6 +3,8 @@ package com.sun.enterprise.v3.deployment;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
+import org.jvnet.hk2.config.DuckTyped;
+
 import java.util.Properties;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
@@ -83,6 +85,17 @@ public class ReDeployCommandTest {
         public List<WebServiceEndpoint> getWebServiceEndpoint() {return null;}
         public void setEngines(List<Engine> engines) {}
 
+            @DuckTyped
+            public Property getProperty(String name) {
+                // TODO
+                throw new UnsupportedOperationException();
+            }
+
+            @DuckTyped
+            public String getPropertyValue(String name) {
+                // TODO
+                throw new UnsupportedOperationException();
+            }
         //hk2's Injectable class
         public void injectedInto(Object target){}
     }
