@@ -66,6 +66,15 @@
           </webResources>
          </configuration>
        </plugin>
+
+      <plugin>
+        <groupId>org.glassfish</groupId>
+        <artifactId>maven-glassfish-plugin</artifactId>
+        <configuration>
+          <webXml>web.xml</webXml>
+          <resourcesDirectory>web</resourcesDirectory>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   
