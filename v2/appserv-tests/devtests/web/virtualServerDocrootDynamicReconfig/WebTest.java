@@ -31,7 +31,7 @@ public class WebTest {
 
     public void doTest() {     
         try { 
-            invoke("/domain.xml", "<domain application-root=");
+            invoke("/domain.xml", "<domain ");
             invoke("/server.policy", "grant codeBase");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
