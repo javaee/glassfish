@@ -58,12 +58,9 @@ import java.util.logging.Level;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        GlassFish.setLogLevel(WARNING);
+        GlassFish.setLogLevel(INFO);
 
-        GlassFish glassfish = new GlassFish();
-        // create one HTTP listener and virtual server
-//        GFHttpListener listener = glassfish.createHttpListener(8080);
-//        GFVirtualServer vs = glassfish.createVirtualServer(listener);
+        GlassFish glassfish = new GlassFish(9999);
 
         // deploy(new File("./simple.war"),habitat);
         // deploy(new File("./JSPWiki.war"),habitat);

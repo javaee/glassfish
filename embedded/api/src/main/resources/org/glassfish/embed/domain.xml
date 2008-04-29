@@ -20,10 +20,10 @@
   <configs>
     <config name="server-config">
       <http-service>
-        <http-listener id="http-listener-1" port="8080" address="0.0.0.0" default-virtual-server="server" server-name="" />
+        <!--http-listener id="http-listener-1" port="8080" address="0.0.0.0" default-virtual-server="server" server-name="" />
         <virtual-server id="server" hosts="${com.sun.aas.hostName}" http-listeners="http-listener-1" log-file="">
           <property name="docroot" value="." />
-        </virtual-server>
+        </virtual-server-->
         <!--request-processing header-buffer-length-in-bytes="8192" thread-count="20" initial-thread-count="2" request-timeout-in-seconds="30" thread-increment="1" />
         <keep-alive thread-count="1" timeout-in-seconds="30" max-connections="250" />
         <connection-pool queue-size-in-bytes="4096" send-buffer-size-in-bytes="8192" receive-buffer-size-in-bytes="4096" max-pending-count="4096" />

@@ -35,30 +35,43 @@
  *
  */
 
-package org.glassfish.embed;
+package org.glassfish.embed.impl;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import org.w3c.dom.Document;
+import org.glassfish.embed.GFException;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * HTTP Listener listens on a TCP port for incoming HTTP connection
- * and delivers requests to {@link GFVirtualServer}.
- *
  * @author Kohsuke Kawaguchi
  */
-public final class GFHttpListener {
-    protected final HttpListener core;
-    /**
-     * Work around until we get live {@link HttpListener} addition working.
-     */
-    private final String id;
+public class DomainXmlHolder {
+    public final Document domainXml;
 
-    public GFHttpListener(String id, HttpListener core) {
-        this.core = core;
-        this.id = id;
+    public DomainXmlHolder(Document domainXml) {
+        this.domainXml = domainXml;
     }
 
-    public String getId() {
-//        return core.getId();
-        return id;
+    /**
+     * Write domain.xml to a temporary file. UGLY UGLY UGLY.
+     */
+    File writeDomainXml() {
+        try {
+            File domainXml = File.createTempFile("domain","xml");
+            domainXml.deleteOnExit();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(this.domainXml),new StreamResult(domainXml));
+            return domainXml;
+        } catch (IOException e) {
+            throw new GFException("Failed to write domain XML",e);
+        } catch (TransformerException e) {
+            throw new GFException("Failed to write domain XML",e);
+        }
     }
 }

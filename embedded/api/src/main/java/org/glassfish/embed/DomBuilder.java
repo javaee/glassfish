@@ -37,28 +37,29 @@
 
 package org.glassfish.embed;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import org.w3c.dom.Element;
 
 /**
- * HTTP Listener listens on a TCP port for incoming HTTP connection
- * and delivers requests to {@link GFVirtualServer}.
+ * Make life bearable dealing with W3C DOM.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class GFHttpListener {
-    protected final HttpListener core;
-    /**
-     * Work around until we get live {@link HttpListener} addition working.
-     */
-    private final String id;
+final class DomBuilder {
+    private Element current;
 
-    public GFHttpListener(String id, HttpListener core) {
-        this.core = core;
-        this.id = id;
+    DomBuilder(Element current) {
+        this.current = current;
     }
 
-    public String getId() {
-//        return core.getId();
-        return id;
+    DomBuilder element(String name) {
+        Element e = current.getOwnerDocument().createElement(name);
+        current.appendChild(e);
+        current = e;
+        return this;
+    }
+
+    DomBuilder attribute(String name, Object value) {
+        current.setAttribute(name,value.toString());
+        return this;
     }
 }
