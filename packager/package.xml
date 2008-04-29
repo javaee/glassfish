@@ -49,9 +49,9 @@
     <!-- override asenv files -->
 
     <copy file="${basedir}/misc/asenv.conf"
-	    todir="${basedir}/build/glassfish/config"/>
+	    todir="${basedir}/build/glassfish/config" overwrite="true"/>
     <copy file="${basedir}/misc/asenv.bat"
-	    todir="${basedir}/build/glassfish/config"/>
+	    todir="${basedir}/build/glassfish/config" overwrite="true"/>
 
 
     <antcall target="create-prototype-com">
