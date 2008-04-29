@@ -167,7 +167,8 @@ final class InstallerThread extends Thread {
                 app.setContextRoot(contextRoot);
                 File expFolder = new File(toFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
                 try {
-                    app.setLocation(expFolder.toURL().toURI().toString());
+                    
+                    app.setLocation(expFolder.toURI().toString());
                 }catch(Exception me) { throw new RuntimeException(me);} // can't do anything
                 Engine webe = ConfigSupport.createChildOf(app, Engine.class);
                 webe.setSniffer("web");

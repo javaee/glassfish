@@ -62,8 +62,11 @@ public class StopDomainCommand implements AdminCommand {
      * LookupManager is flushed.
      */
     public void execute(AdminCommandContext context) {
-         
-        context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
+
+        if (force) {
+            System.exit(0);
+        }
+        context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));        
         try {
             for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
                 try {
@@ -81,11 +84,9 @@ public class StopDomainCommand implements AdminCommand {
                 }
             }
 
-        } catch(ComponentException e) {
+        } catch(Exception e) {
             // do nothing.
         }
-        if (force) {
-            System.exit(0);
-        }
+
     }
 }

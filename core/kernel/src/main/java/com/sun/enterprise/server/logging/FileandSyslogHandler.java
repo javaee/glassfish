@@ -62,6 +62,7 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
 
@@ -103,7 +104,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     // Initially the LogRotation will be off until the domain.xml value is read.
     private int limitForFileRotation = 0;
 
-    private BlockingQueue<LogRecord> pendingRecords = new ArrayBlockingQueue<LogRecord>(500);
+    private BlockingQueue<LogRecord> pendingRecords = new ArrayBlockingQueue<LogRecord>(5000);
 
     // Rotation can be done in 3 ways
     // 1. Based on the Size: Rotate when some Threshold number of bytes are 
@@ -518,7 +519,13 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
      */ 
     public void publish( LogRecord record ) {
 
-        pendingRecords.add(record);
+        try {
+            // dochez : we might loose records here. maybe we need to revisit this.
+            // or at least make this configurable in the domain.xml
+            pendingRecords.offer(record, 10, TimeUnit.MILLISECONDS);
+        } catch(InterruptedException e) {
+
+        }
     }
     
     protected String getLogFileName() {

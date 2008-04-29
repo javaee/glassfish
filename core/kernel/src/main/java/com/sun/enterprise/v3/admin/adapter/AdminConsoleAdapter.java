@@ -157,15 +157,23 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
         logRequest(req);
-        handleAuth(req, res); 
-        if (state == AdapterState.APPLICATION_NOT_INSTALLED)
-            handleNotInstalledState(req, res);
-        else if (state == AdapterState.INSTALLING)
-            handleInstallingState(req, res);
-        else if (state == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED)
-            handleInstalledButNotLoadedState(req, res);
-        else          // state has to be APPLICATION_LOADED
+        handleAuth(req, res);
+        if (state==AdapterState.APPLICATION_LOADED) {
             handleLoadedState();
+        } else {
+            synchronized(this) {
+                if (state == AdapterState.APPLICATION_NOT_INSTALLED)
+                    handleNotInstalledState(req, res);
+                else if (state == AdapterState.INSTALLING)
+                    handleInstallingState(req, res);
+                else if (state == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED)
+                    handleInstalledButNotLoadedState(req, res);
+
+                if (state==AdapterState.APPLICATION_LOADED) {
+                    handleLoadedState();
+                }
+            }
+        }
     }
     
     public void postConstruct() {
@@ -258,7 +266,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 log.info("Invalid context root for the admin console application, using default:" + ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT);
                 contextRoot = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
             }
-        }        
+        }                                                                            
     }
     private void setDownloadLocations(Property prop) {
         if (ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION.equals(prop.getName())) {
@@ -414,7 +422,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         String sn = env.getInstanceName();
         ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(domain, sn, ADMIN_APP_NAME);
         habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
-	try {
+        state=AdapterState.APPLICATION_LOADED;
+    try {
 	    sendStatusPage(res);
 	    res.finishResponse();
 	}catch (java.io.IOException ex){
