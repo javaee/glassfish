@@ -47,7 +47,7 @@
 
   <artifactId>gf-embedded-api</artifactId>
   <packaging>hk2-jar</packaging>
-  <version>1.0-alpha-3</version>
+  <version>1.0-alpha-4-SNAPSHOT</version>
   <name>API for embedded GFv3</name>
 
   <build>
@@ -166,9 +166,4 @@
       </plugin>
     </plugins>
   </reporting>
-
-  <scm>
-    <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/tags/gf-embedded-api-1.0-alpha-3</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/gf-embedded-api-1.0-alpha-3</developerConnection>
-  </scm>
 </project>
