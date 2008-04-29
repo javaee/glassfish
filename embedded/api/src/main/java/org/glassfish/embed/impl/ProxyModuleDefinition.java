@@ -102,7 +102,9 @@ public class ProxyModuleDefinition implements ModuleDefinition {
                 in.close();
             }
         } catch (IOException e) {
-            throw new IOException("Failed to read "+url,e);
+            IOException x = new IOException("Failed to read " + url);
+            x.initCause(e);
+            throw x;
         }
     }
 
