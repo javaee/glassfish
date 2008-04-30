@@ -46,24 +46,11 @@
   </parent>
 
   <artifactId>gf-embedded-api</artifactId>
-  <packaging>hk2-jar</packaging>
   <version>1.0-alpha-4-SNAPSHOT</version>
   <name>API for embedded GFv3</name>
 
   <build>
     <plugins>
-      <plugin>
-          <groupId>com.sun.enterprise</groupId>
-          <artifactId>hk2-maven-plugin</artifactId>
-          <extensions>true</extensions>
-          <version>0.3.0</version>
-      </plugin>
-      <plugin>
-        <groupId>org.glassfish.build</groupId>
-        <artifactId>maven-glassfish-plugin</artifactId>
-        <version>10.0-alpha-2</version>
-        <extensions>true</extensions>
-      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -81,13 +68,6 @@
         </executions>      
       </plugin>
     </plugins>
-    <extensions>
-      <extension>
-        <groupId>org.glassfish.build</groupId>
-        <artifactId>maven-glassfish-extension</artifactId>
-        <version>10.0-alpha-2</version>
-      </extension>
-    </extensions>
   </build>
 
   <dependencies>

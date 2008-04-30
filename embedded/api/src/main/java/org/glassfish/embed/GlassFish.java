@@ -71,6 +71,7 @@ import org.glassfish.embed.impl.ServerEnvironment2;
 import org.glassfish.embed.impl.SilentActionReport;
 import org.glassfish.embed.impl.WebDeployer2;
 import org.glassfish.embed.impl.DomainXmlHolder;
+import org.glassfish.embed.impl.ScatteredWarHandler;
 import org.glassfish.internal.api.Init;
 import org.glassfish.web.WebEntityResolver;
 import org.jvnet.hk2.component.Habitat;
@@ -186,6 +187,11 @@ public class GlassFish {
      * differently from normal stand-alone use.
      */
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+        // register scattered web handler before normal WarHandler kicks in.
+        Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
+        parser.habitat.add(swh);
+        parser.habitat.addIndex(swh,ArchiveHandler.class.getName(),null);
+
         // we don't want GFv3 to reconfigure all the loggers
         parser.drop(LogManagerService.class);
 
