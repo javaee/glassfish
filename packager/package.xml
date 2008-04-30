@@ -277,8 +277,8 @@
     <copy todir="${image.dir}/../glassfishv3-tp2">
 	    <fileset dir="${image.dir}" includes="**/*" />
     </copy>
-    <chmod dir="${image.dir}/../glassfishv3-tp2/bin" perm="ugo+rx"/>
-    <chmod dir="${image.dir}/../glassfishv3-tp2/glassfish/bin" perm="ugo+rx"/>
+    <chmod file="${image.dir}/../glassfishv3-tp2/bin/**" perm="ugo+rx"/>
+    <chmod file="${image.dir}/../glassfishv3-tp2/glassfish/bin/**" perm="ugo+rx"/>
   
     <exec dir="${image.dir}/.." executable="zip">
           <arg line= "-r V3IPSImage_GF.zip glassfishv3-tp2"/>
