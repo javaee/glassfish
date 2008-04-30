@@ -272,10 +272,18 @@
     <copy tofile="${image.dir}/bin/pkg"
         file="${uc.bootstrap.home}/ucbootstub.sh"/>  
     <copy tofile="${image.dir}/bin/pkg.bat"
-        file="${uc.bootstrap.home}/ucbootstub.bat"/>
-    <zip destfile="${image.dir}/../V3IPSImage_GF.zip">
-            <fileset dir="${image.dir}" includes="**/*" />
-    </zip>
+	    file="${uc.bootstrap.home}/ucbootstub.bat"/>
+    <mkdir dir="${image.dir}/../glassfishv3-tp2"/>
+    <copy todir="${image.dir}/../glassfishv3-tp2">
+	    <fileset dir="${image.dir}" includes="**/*" />
+    </copy>
+    <chmod dir="${image.dir}/../glassfishv3-tp2/bin" perm="ugo+rx"/>
+    <chmod dir="${image.dir}/../glassfishv3-tp2/glassfish/bin" perm="ugo+rx"/>
+  
+    <exec dir="${image.dir}/.." executable="zip">
+          <arg line= "-r V3IPSImage_GF.zip glassfishv3-tp2"/>
+    </exec>
+    <delete dir="${image.dir}/../glassfishv3-tp2"/>
     <delete dir="${image.dir}"/>
 </target>
 
