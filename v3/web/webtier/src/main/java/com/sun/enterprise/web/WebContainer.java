@@ -228,7 +228,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     //added for monitoring
     private static boolean debugMonitoring=false;
     private static long debugMonitoringPeriodMS = 30000L;
-    private static WebContainerTimer _timer = new WebContainerTimer();
+    private static WebContainerTimer _timer = new WebContainerTimer(true);
     //added for monitoring
     //END HERCULES:add
 

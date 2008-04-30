@@ -38,21 +38,15 @@ package com.sun.enterprise.web;
 
 import java.util.Timer;
 
-public class WebContainerTimer
-	extends Timer
-{
-	public WebContainerTimer() {
-		super("web-container-timer");
-	}
+public class WebContainerTimer extends Timer {
 
-	public WebContainerTimer(boolean isDeamon) {
-		super(isDeamon);
-	}
+    public WebContainerTimer() {
+        this(false);
+    }
 
-/*	public void cancel() {
-		(new Throwable()).printStackTrace();
-	}
-*/
+    public WebContainerTimer(boolean isDeamon) {
+        super("web-container-timer", isDeamon);
+    }
 }
 
 
