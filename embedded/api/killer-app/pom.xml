@@ -77,7 +77,6 @@
       <plugin>
         <groupId>org.glassfish</groupId>
         <artifactId>maven-glassfish-plugin</artifactId>
-        <version>1.0-alpha-3</version>
         <configuration>
           <webXml>web.xml</webXml>
           <resourcesDirectory>web</resourcesDirectory>
