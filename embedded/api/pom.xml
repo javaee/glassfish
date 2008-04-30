@@ -57,6 +57,9 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <descriptors>
+            <descriptor>src/assembly.xml</descriptor>
+          </descriptors>
         </configuration>
         <executions>
           <execution>
@@ -84,12 +87,6 @@
       <version>9.0.2</version>
       <classifier>resources</classifier>
       <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.3.1</version>
-      <scope>test</scope>
     </dependency>
     <!-- let's launch web bundle for testing -->
     <!--dependency>
