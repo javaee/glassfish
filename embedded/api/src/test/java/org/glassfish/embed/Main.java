@@ -67,22 +67,25 @@ public class Main {
 
 //        GFApplication app = glassfish.deploy(new File("./hudson.war"));
 
-        File killerApp = new File("killer-app");
-        ScatteredWar war = new ScatteredWar(
-            "killer-app",
-            new File(killerApp,"web"),
-            new File(killerApp,"web.xml"),
-            Collections.singleton(
-                new File(killerApp,"target/classes").toURI().toURL())
-        );
-        GFApplication app = glassfish.deploy(war);
+        while (true) {
+            File killerApp = new File("killer-app");
+            ScatteredWar war = new ScatteredWar(
+                "killer-app",
+                new File(killerApp,"web"),
+                new File(killerApp,"web.xml"),
+                Collections.singleton(
+                    new File(killerApp,"target/classes").toURI().toURL())
+            );
+            GFApplication app = glassfish.deploy(war);
 
-        System.out.println("Ready!");
+            System.out.println("Ready!");
 
-        // wait for enter
-        new BufferedReader(new InputStreamReader(System.in)).readLine();
+            // wait for enter
+            new BufferedReader(new InputStreamReader(System.in)).readLine();
 
-        app.undeploy();
-        glassfish.stop();
+            app.undeploy();
+        }
+
+//        glassfish.stop();
     }
 }
