@@ -41,14 +41,14 @@
     <parent>
         <groupId>org.glassfish.build</groupId>
         <artifactId>build</artifactId>
-        <version>10.0-alpha-3</version>
+        <version>10.0-alpha-4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.build</groupId>
     <artifactId>maven-glassfish-plugin</artifactId>
-    <version>10.0-alpha-3</version>
+    <version>10.0-alpha-4-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>GlassFish v3 Maven2 plugin</name>
 
