@@ -3,7 +3,7 @@
 
     <groupId>org.glassfish.build</groupId>
     <artifactId>build</artifactId>
-    <version>10.0-alpha-4</version>
+    <version>10.0-alpha-5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
     <modules>
@@ -44,8 +44,8 @@
     </distributionManagement>
     
     <scm>
-        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/tags/build-10.0-alpha-4</connection>
-        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/tags/build-10.0-alpha-4</developerConnection>
+        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</connection>
+        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</developerConnection>
     </scm>
 
     <properties>
