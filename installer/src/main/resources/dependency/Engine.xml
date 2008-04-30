@@ -87,6 +87,24 @@
         <InstallableUnit>Engine.zip</InstallableUnit>
         <InstallableUnit>Resources.zip</InstallableUnit>
       </Realization>
+     <Realization version="0.5.0.0">
+        <OS>
+          <Type>Mac</Type>
+          <Name>MacOS</Name>
+          <OtherName>UNDEFINED</OtherName>
+          <Arch>i386</Arch>
+          <OtherArch>x86_64</OtherArch>
+          <OtherArch>PowerPC</OtherArch>
+          <VersionCertified>
+            <VersionBaseline>10.3</VersionBaseline>
+          </VersionCertified>
+          <RequirementsRealization>
+            <Item type="disk">3Mb</Item>
+          </RequirementsRealization>
+        </OS>
+        <InstallableUnit>Engine.zip</InstallableUnit>
+        <InstallableUnit>Resources.zip</InstallableUnit>
+      </Realization>
     </CompositeUnit>
   </Payload>
 </Component>
