@@ -86,16 +86,20 @@ public class CatalinaListener  implements ContainerListener{
      * @param port the <code>FileCacheFactory</code> port
      * @param contextPath the <code>Context</code> path
      */
-    private void removeContextPath(int port, String contextPath) {        
-        ArrayList<GrizzlyConfig> list = 
-                GrizzlyConfig.getGrizzlyConfigInstances();
-        for(GrizzlyConfig config: list){
-            if (config.getPort() == port){
-                config.invokeGrizzly("removeCacheEntry",
-                        new Object[]{contextPath},
-                        new String[]{"java.lang.String"});
-            }
-        }
+    private void removeContextPath(int port, String contextPath) {
+        // FIXME: I can't spot where Grizzly is registering mbeans, and this code
+        // tries to invoke it and fails during the undeployment.
+        // Commented out for now for the sake of JavaOne demo.
+
+//        ArrayList<GrizzlyConfig> list =
+//                GrizzlyConfig.getGrizzlyConfigInstances();
+//        for(GrizzlyConfig config: list){
+//            if (config.getPort() == port){
+//                config.invokeGrizzly("removeCacheEntry",
+//                        new Object[]{contextPath},
+//                        new String[]{"java.lang.String"});
+//            }
+//        }
     }  
 }
 
