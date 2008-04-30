@@ -46,7 +46,7 @@
   </parent>
 
   <artifactId>gf-embedded-api</artifactId>
-  <version>1.0-alpha-4-SNAPSHOT</version>
+  <version>1.0-alpha-4</version>
   <name>API for embedded GFv3</name>
 
   <build>
@@ -146,4 +146,9 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <scm>
+    <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/tags/gf-embedded-api-1.0-alpha-4</connection>
+    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/gf-embedded-api-1.0-alpha-4</developerConnection>
+  </scm>
 </project>
