@@ -98,7 +98,10 @@ public class JPAApplication implements ApplicationContainer {
     public boolean stop() {
         closeAllEMFs();
         return true;
+    }
 
+    public boolean disable() {
+        return stop();
     }
 
     public ClassLoader getClassLoader() {
