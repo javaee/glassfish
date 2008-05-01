@@ -71,14 +71,6 @@ public class GFLauncherInfo {
     }
 
     /**
-     * Starts the server embedded in the caller's JVM
-     * @param b 
-     */
-    public void setEmbedded(boolean b) {
-        embedded = b;
-    }
-
-    /**
      * Starts the server in debug mode
      * @param b 
      */
@@ -92,13 +84,6 @@ public class GFLauncherInfo {
 
     public boolean isDomain() {
         return type == ServerType.domain;
-    }
-    /**
-     * 
-     * @return true if this is an embedded server
-     */
-    public boolean isEmbedded() {
-        return embedded;
     }
 
     /**
@@ -205,7 +190,6 @@ public class GFLauncherInfo {
         Map<String, String> map = new HashMap<String, String>();
         map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
         map.put("-verbose", Boolean.toString(verbose));
-        map.put("-embedded", Boolean.toString(embedded));
         map.put("-debug", Boolean.toString(debug));
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
@@ -282,10 +266,6 @@ public class GFLauncherInfo {
 
         if ((b = getBoolean("verbose")) != null) {
             verbose = b;
-        }
-
-        if ((b = getBoolean("embedded")) != null) {
-            embedded = b;
         }
     }
 
@@ -418,7 +398,6 @@ public class GFLauncherInfo {
     private ServerType type;
     private boolean verbose = false;
     private boolean debug = false;
-    private boolean embedded = false;
     File installDir;
     private File domainParentDir;
     private File domainRootDir;

@@ -46,12 +46,7 @@ class GFDomainLauncher extends GFLauncher {
 
     void internalLaunch() throws GFLauncherException {
         try {
-            if (getInfo().isEmbedded()) {
-                launchEmbedded();
-            }
-            else {
-                launchInstance();
-            }
+            launchInstance();
         }
         catch (GFLauncherException ex) {
             throw ex;
@@ -59,11 +54,6 @@ class GFDomainLauncher extends GFLauncher {
         catch (Exception ex) {
             throw new GFLauncherException(ex);
         }
-    }
-
-    private void launchEmbedded() throws GFLauncherException, BootException {
-        ASMain.main(getInfo().getArgsAsStringArray());
-        GFLauncherLogger.info("finishedEmbedded", getInfo().getDomainName());
     }
 
     List<File> getMainClasspath() throws GFLauncherException {
