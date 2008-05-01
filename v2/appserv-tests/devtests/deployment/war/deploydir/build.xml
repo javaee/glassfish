@@ -30,6 +30,13 @@
        </copy>
     </target>
 
+    <target name="redeploydir.asadmin" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
+            <param name="arg.list"
+                   value="${build}/${testName}"/>
+        </antcall>
+    </target>
+
     <target name="deploydir.asadmin" depends="prepare">
         <antcall target="common.deploydir.asadmin">
             <param name="arg.list" 
@@ -52,8 +59,8 @@
     </target>
 
 
-    <target name="deploydir.asadmin.foo" depends="prepare">
-        <antcall target="common.deploydir.asadmin">
+    <target name="redeploydir.asadmin.foo" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
             <param name="arg.list"
                    value="--contextroot foo ${build}/${testName}"/>
         </antcall>
@@ -130,7 +137,7 @@
         <antcall target="declare-test">
             <param name="description" value="war/deploydir Test asadmin redeploydir"/>
         </antcall>
-        <antcall target="deploydir.asadmin"/>
+        <antcall target="redeploydir.asadmin"/>
         <antcall target="run.positive"><param name="log.id" value="2"/></antcall>
         <antcall target="declare-test">
             <param name="description" value="war/deploydir Test asadmin v3 redeploydir"/>
@@ -145,12 +152,12 @@
          <antcall target="declare-test">
             <param name="description" value="war/deploydir Test asadmin deploydir with a different context root"/>
         </antcall>
-        <antcall target="deploydir.asadmin.foo"/>
+        <antcall target="redeploydir.asadmin.foo"/>
         <antcall target="run.positive.foo"><param name="log.id" value="5"/></antcall>
          <antcall target="declare-test">
             <param name="description" value="war/deploydir Test asadmin redeploydir preserves context root"/>
         </antcall>        
-        <antcall target="deploydir.asadmin"/>
+        <antcall target="redeploydir.asadmin"/>
         <antcall target="run.positive.foo"><param name="log.id" value="6"/></antcall>
         <antcall target="declare-test">
             <param name="description" value="war/deploydir Test v3 asadmin redeploydir preserves context root"/>
