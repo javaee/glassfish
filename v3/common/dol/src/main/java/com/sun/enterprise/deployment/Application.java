@@ -110,7 +110,11 @@ public class Application extends RootDeploymentDescriptor
 
     // table of EJB2.0 CMP descriptors (EntityBeans) 
     // keyed on their class names
-    private Hashtable cmpDescriptors = null;
+    private HashMap cmpDescriptors = null;
+
+    // use a String object as lock so it can be serialized as part
+    // of the Application object
+    private String cmpDescriptorsLock = new String("cmp descriptors lock");
 
     // flag to indicate that the memory representation of this application 
     // is not in sync with the disk representation
@@ -1175,8 +1179,9 @@ public class Application extends RootDeploymentDescriptor
      * This is called at runtime from the Persistence Manager.
      */
     public EjbCMPEntityDescriptor getCMPDescriptorFor(String className) {
+        synchronized(cmpDescriptorsLock) {
         if (cmpDescriptors == null) {
-            cmpDescriptors = new Hashtable();
+            cmpDescriptors = new HashMap();
             for (EjbBundleDescriptor bundle : getBundleDescriptors(EjbBundleDescriptor.class)) {
                 for (EjbDescriptor ejb : bundle.getEjbs()) {
                     if (ejb instanceof EjbCMPEntityDescriptor)
@@ -1185,6 +1190,7 @@ public class Application extends RootDeploymentDescriptor
             }
         }
         return (EjbCMPEntityDescriptor) cmpDescriptors.get(className);
+        }
     }
 
 
