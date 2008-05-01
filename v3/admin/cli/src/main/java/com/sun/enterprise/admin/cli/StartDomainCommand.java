@@ -54,7 +54,6 @@ public class StartDomainCommand extends AbstractCommand {
             boolean verbose = getBooleanOption("verbose");
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
-            info.setEmbedded(getBooleanOption("embedded"));
             launcher.launch();
             
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
