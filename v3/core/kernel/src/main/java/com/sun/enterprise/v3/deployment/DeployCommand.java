@@ -360,6 +360,13 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     parameters.put(LIBRARIES, libraries);
                 }
             }
+            if (virtualservers == null) {
+                virtualservers = ConfigBeansUtilities.getVirtualServers(
+                    target, name);
+                if (virtualservers != null) {
+                    parameters.put(VIRTUAL_SERVERS, virtualservers);
+                }
+            }
         }
     }
 }
