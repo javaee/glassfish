@@ -308,6 +308,8 @@
     <antcall target="install-package">
         <param name="pkgname" value="javadb"/>
     </antcall>
+    <delete 
+        file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
     <mkdir dir="${image.dir}/bin"/>
     <copy todir="${image.dir}/bin"
 	    file="${basedir}/misc/asadmin.bat"/>
