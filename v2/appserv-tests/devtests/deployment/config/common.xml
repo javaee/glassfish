@@ -142,6 +142,7 @@
     <property name="deploy" value="deploy"/>
     <property name="undeploy" value="undeploy"/>
     <property name="deploydir" value="deploydir"/>
+    <property name="redeploy" value="redeploy"/>
 </target>
 
 <target name="setAsadminArgsWithoutPassword">
@@ -165,6 +166,7 @@
     <property name="deploy" value="deploy"/>
     <property name="undeploy" value="undeploy"/>
     <property name="deploydir" value="deploydir"/>
+    <property name="redeploy" value="redeploy"/>
 </target>
 
 <target name="setHttpPort">
@@ -331,7 +333,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="common.deploy.asadmin" depends="setAsadminArgs">
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
-               value="${deploy} ${ASADMIN-ARGS} ${arg.list}"/>
+               value="${deploy} ${ASADMIN-ARGS} --force true ${arg.list}"/>
     </antcall>
     <antcall target="createAppRef">
         <param name="testName" value="${testName}"/>
@@ -363,6 +365,16 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
+<!-- v3 redeploy using asadmin -->
+<!-- @param ${arg.list} (required) -->
+<target name="common.v3.redeploy.asadmin" depends="setAsadminArgs">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="${redeploy} ${ASADMIN-ARGS} ${arg.list}"/>
+    </antcall>
+</target>
+
+
 <target name="createAppRef" depends="init" if="doCluster">
     <echo message="Create Application Reference for ${testName}"/>
     <antcall target="common.run.asadmin">
@@ -384,9 +396,28 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="common.deploydir.asadmin" depends="setAsadminArgs">
     <antcall target="common.run.asadmin">
         <param name="arg.list"
-               value="${deploydir} ${ASADMIN-ARGS} ${arg.list}"/>
+               value="${deploydir} ${ASADMIN-ARGS} --force true ${arg.list}"/>
     </antcall>
 </target>
+
+<!-- redeploy using asadmin -->
+<!-- @param ${arg.list} (required) -->
+<target name="common.v3redeploy.asadmin" depends="setAsadminArgs">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="${redeploy} ${ASADMIN-ARGS} ${arg.list}"/>
+    </antcall>
+</target>
+
+<!-- redeploydir using asadmin -->
+<!-- @param ${arg.list} (required) -->
+<target name="common.v3redeploydir.asadmin" depends="setAsadminArgs">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="${redeploy} ${ASADMIN-ARGS} ${arg.list}"/>
+    </antcall>
+</target>
+
 
 <!-- @param ${arg.list} (required) -->
 <target name="common.getclientstubs.asadmin" depends="setAsadminArgs">
