@@ -37,6 +37,7 @@
 package org.openinstaller.provider.conf;
 
 
+import java.io.BufferedOutputStream;
 import org.openinstaller.provider.conf.ResultReport;
 import org.openinstaller.provider.conf.Configurator;
 import org.openinstaller.config.PropertySheet;
@@ -46,7 +47,9 @@ import org.openinstaller.util.ClassUtils;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -313,6 +316,7 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             asadminExecuteCommand.setCollectOutput(true);
         
             asadminExecuteCommand.execute();
+            hackAdminKeyfile(installDir);
 
             productError = asadminExecuteCommand.getErrors();
        } catch (Exception e) {
@@ -320,7 +324,33 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
        }
 }
-
+    private void hackAdminKeyfile(String install) { //TODO
+       // Sorry to create this hack probably for the last time -- should go away soon
+       File gd = new File (install, "glassfish");
+       File ddd = new File(gd, "domains");
+       File dd  = new File(ddd, "domain1");
+       File dc  = new File(dd, "config");
+       dc.mkdirs();
+       File akf = new File(dc, "admin-keyfile");
+       BufferedOutputStream bos = null;
+       byte[] line0 = "#Default user: anonymous\n".getBytes();
+       byte[] line1 = "anonymous;{SSHA}jBnM2TF2BglcyR3RtTfEXg0U18nbjwDKCfK9wg==;asadmin".getBytes();
+       try {
+           bos = new BufferedOutputStream(new FileOutputStream(akf));
+           bos.write(line0);
+           bos.write(line1);
+       } catch(IOException ioe) {
+           LOGGER.log(Level.INFO, "Exception while overwriting user in keyfile" + ioe.getMessage());
+       } finally {
+           if (bos != null) {
+               try {
+                   bos.close();
+               } catch(IOException ioe) {
+                   //can't do anything anyway
+               }
+           }
+       }
+    }
 void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
     String proxyHost, String proxyPort) throws Exception {
 
