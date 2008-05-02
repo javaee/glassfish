@@ -39,7 +39,9 @@ public class ASMain {
 
     private static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
-    private enum Platform {HK2, Felix, Knopflerfish, Equinox}
+    // We add both KnopflerFish and Knopflerfish for backward compatibility
+    // between tp2 and v3 trunk.
+    private enum Platform {HK2, Felix, Knopflerfish, KnopflerFish, Equinox}
 
     public static void main(final String args[]) {
         Platform platform = Platform.HK2;
@@ -68,6 +70,7 @@ public class ASMain {
                 new ASMainEquinox(logger, args).run();
                 break;
             case Knopflerfish:
+            case KnopflerFish:
                 logger.info("Launching GlassFish on Knopflerfish OSGi platform");
                 new ASMainKnopflerFish(logger, args).run();
                 break;
