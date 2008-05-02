@@ -1686,6 +1686,10 @@ public class WebappClassLoader
      */
     public void stop() throws LifecycleException {
 
+        if (!started) {
+            return;
+        }
+
         // START GlassFish Issue 587
         purgeELBeanClasses();
         // END GlassFish Issue 587
