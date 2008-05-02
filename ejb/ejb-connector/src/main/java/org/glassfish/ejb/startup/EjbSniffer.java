@@ -88,7 +88,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
             Module[] modules = new Module[1];
             Module m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
             // done...
-            if (m == null) {
+           /* if (m == null) {
 
                 // let's see if I have a ejb directory since we started the VM
                 File ejbLib = null;
@@ -116,7 +116,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
                 }
 
                 m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
-            }
+            }*/
             if (m != null) {
                 modules[0] = m;
                 return modules;
