@@ -100,10 +100,6 @@ public class JPAApplication implements ApplicationContainer {
         return true;
     }
 
-    public boolean disable() {
-        return stop();
-    }
-
     public ClassLoader getClassLoader() {
         //TODO: Check with Jerome. Should this return anything but null? currently it does not seem so.
         return null;
