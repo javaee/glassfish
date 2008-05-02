@@ -3552,7 +3552,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * enabled` on EVERY virtual server.
      */
     public void enableWebModule(WebModuleConfig wmInfo,
-            String j2eeApplication){
+                                String j2eeApplication){
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
         boolean enabledToAll = (vsList == null) || (vsList.size() == 0);
@@ -3585,24 +3585,37 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-
     /**
-     * Disable a web application.
+     * Disables this web application.
+     *
      * @param contextRoot the context's name to undeploy
      * @param appName the J2EE appname used at deployment time
      * @param virtualServers the list of current virtual-server object.
      */
-    public void disableWebModule(String contextRoot,
-            String appName,
-            String virtualServers){
+    public boolean disableWebModule(String contextRoot,
+                                    String appName,
+                                    String virtualServers) {
+        return disableWebModule(contextRoot, appName,
+                                StringUtils.parseStringList(virtualServers,
+                                                            " ,"));
+    }
 
+    /**
+     * Disables this web application.
+     *
+     * @param contextRoot the context's name to undeploy
+     * @param appName the J2EE appname used at deployment time
+     * @param virtualServers the list of current virtual-server object.
+     */
+    public boolean disableWebModule(String contextRoot,
+                                    String appName,
+                                    List<String> hostList) {
         // tomcat contextRoot starts with "/"
         if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
 
         Engine[] engines = _embedded.getEngines();
-        List hostList = StringUtils.parseStringList(virtualServers, " ,");
         boolean disableToAll = (hostList == null) || (hostList.size() == 0);
         boolean hasBeenDisabled = false;
         Container[] hostArray = null;
@@ -3648,6 +3661,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     + contextRoot);
         }
 
+        return hasBeenDisabled;
     }
 
 

@@ -447,7 +447,7 @@ public class StringUtils
      * @return     Returns the list containing the individual strings that
      *             the input string was split into.
      */
-    public static List parseStringList(String line)
+    public static List<String> parseStringList(String line)
     {
         return parseStringList(line, null);
     }
