@@ -276,7 +276,24 @@ public class ModuleDependencyAnalyser {
             return;
         }
         String repoPath = args[0];
-        Repository moduleRepository = new DirectoryBasedRepository("repo", new File(repoPath));
+        File f = new File(repoPath) {
+            @Override public File[] listFiles() {
+                List<File> files = new ArrayList<File>();
+                for (File f : super.listFiles()) {
+                    if (f.isDirectory()) {
+                        for (File f2 : f.listFiles()) {
+                            if (f2.isFile() && f2.getName().endsWith(".jar")) {
+                                files.add(f2);
+                            }
+                        }
+                    } else if (f.isFile() && f.getName().endsWith(".jar")) {
+                        files.add(f);
+                    }
+                }
+                return files.toArray(new File[files.size()]);
+            }
+        };
+        Repository moduleRepository = new DirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
         List<ModuleDefinition> moduleDefs = new ArrayList<ModuleDefinition>();
         if (args.length > 1) {
