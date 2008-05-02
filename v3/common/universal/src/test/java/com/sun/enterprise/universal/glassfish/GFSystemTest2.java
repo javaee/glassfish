@@ -21,10 +21,15 @@ import static org.junit.Assert.*;
 /**
  *
  * @author bnevins
+ * Note -- this UNIT TEST can't be run in the same JVM as GFSystemTest was run from.
+ * To use the rest -- temporarily rename it to GFSystemTest
+ * note also that this unit test will not run as is from maven -- because
+ * the name does not match any class in the normal build area...
+ * 
  */
-public class GFSystemImplTest {
+public class GFSystemTest2 {
 
-    public GFSystemImplTest() {
+    public GFSystemTest2() {
     }
 
     @BeforeClass
@@ -83,7 +88,7 @@ public class GFSystemImplTest {
             t2.join();
             t3.join();
         } catch (InterruptedException ex) {
-            Logger.getLogger(GFSystemImplTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GFSystemTest2.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertTrue(GFSystemTest.failed);
     }

@@ -45,7 +45,6 @@ public class GFSystemTest {
     /**
      * Test of GFSystem for the case where there are multiple instances in a JVM
      */
-    @Ignore
     @Test
     public void threadTest() {
         try {
