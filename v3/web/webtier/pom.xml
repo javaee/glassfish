@@ -115,6 +115,7 @@
                         <manifestEntries>
                             <HK2-Module-Import-Policy>com.sun.enterprise.web.WebImportPolicy</HK2-Module-Import-Policy>
                             <Bundle-Activator>org.glassfish.web.DirContextURLStreamHandlerService</Bundle-Activator>
+                            <Import-Package>org.osgi.framework,org.osgi.service.url</Import-Package>
                         </manifestEntries>
                      </archive>
                 </configuration>
