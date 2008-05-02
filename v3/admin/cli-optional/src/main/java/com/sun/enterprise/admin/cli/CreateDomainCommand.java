@@ -81,9 +81,6 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     private static final int PORTBASE_JMS_SUFFIX = 76;
     private static final int PORTBASE_IIOP_SUFFIX = 37;
     private static final int PORTBASE_JMX_SUFFIX = 86;
-    private static final String DEFAULT_ADMIN_USER = "anonymous";
-    private static final String DEFAULT_ADMIN_PASSWORD = "";
-    private static final String DEFAULT_MASTER_PASSWORD = "changeit";
     public static final String DOMAINDIR_OPTION = "domaindir";
     public static final String PROFILE_OPTION = "profile";
     private static final String SAVELOGIN_OPTION = "savelogin";
@@ -227,11 +224,16 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
 
         adminUser = getAdminUser();
         if (adminUser == null || adminUser.length() == 0) {
-            adminUser = DEFAULT_ADMIN_USER;
-            adminPassword = DEFAULT_ADMIN_PASSWORD;
+            adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
+            adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
         } else {
-            adminPassword = getAdminPassword();
-            validatePassword(adminPassword, ADMIN_PASSWORD);
+            if (adminUser.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER) &&
+                    (adminPassword == null || adminPassword.length() == 0)) {
+                adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
+            } else {                            
+                adminPassword = getAdminPassword();
+                validatePassword(adminPassword, ADMIN_PASSWORD);
+            }
         }
         //masterPassword = getMasterPassword();        
         masterPassword = DEFAULT_MASTER_PASSWORD;
