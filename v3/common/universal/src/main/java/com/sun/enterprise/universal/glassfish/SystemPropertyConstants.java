@@ -114,4 +114,5 @@ public class SystemPropertyConstants {
     public static final String CLUSTER_AWARE_FEATURE_FACTORY_CLASS = "com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl";
     public static final String TEMPLATE_CONFIG_NAME = "default-config";
     public static final String DEFAULT_ADMIN_USER = "anonymous";
+    public static final String DEFAULT_ADMIN_PASSWORD = "";
 }
