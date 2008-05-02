@@ -27,32 +27,21 @@ import java.util.*;
 
 /**
  * A replacement for System Properties
- * An InheritableThreadLocal is used to store the "impl".  This means that the
- * initial thread that uses this class -- and all its sub-threads will get the
- * same System Properties.
- * Make sure that you don't create it from the main Thread -- otherwise all instances
- * will get the same props.
- * E.g.
- * main thread creates instance1-thread and instance2-thread
- * The 2 created threads should each call init() -- but the main thread should not.
- * In the usual case where there is just one instance in the JVM -- this class is also
- * perfectly usable.  Just call any method when you need something.
- * 
+ * This is designed so that each instance in a shared JVM can have its own
+ * System Properties.
  * @author bnevins
  */
-public final class GFSystem {
-    public final static void init() {
-        // forces creation
-        getProperty("java.lang.separator");
-    }
-    
+public final class GFSystemImpl {
     /**
-     * Get the GFSystem Properties
+     * Get the GFSystemImpl Properties
      * @return a snapshot copy of the dcurrent Properties
      */
-    public final static Map<String,String> getProperties()
+    public final Map<String,String> getProperties()
     {
-        return gfsi.get().getProperties();
+        synchronized(props) {
+            // need synchronization because an Iterator is going to be used
+            return new HashMap<String,String>(props);
+        }
     }
     
     /**
@@ -60,9 +49,9 @@ public final class GFSystem {
      * @param key the name of the property
      * @return the value of the property
      */
-    public final static String getProperty(String key)
+    public final String getProperty(String key)
     {
-        return gfsi.get().getProperty(key);
+        return props.get(key);
     }
 
     /**
@@ -70,16 +59,16 @@ public final class GFSystem {
      * @param key the name of the property
      * @param value the value of the property
      */
-    public final static void setProperty(String key, String value)
+    public final void setProperty(String key, String value)
     {
-        gfsi.get().setProperty(key, value);
+        props.put(key, value);
     }
     
-    private static final InheritableThreadLocal<GFSystemImpl> gfsi = 
-         new InheritableThreadLocal<GFSystemImpl>() {
-             @Override 
-             protected GFSystemImpl initialValue() {
-                 return new GFSystemImpl();
-         }
-     };
+    public GFSystemImpl() {
+    }
+    
+    // initial props copy java.lang.System Properties
+    private final Map<String,String> props = Collections.synchronizedMap(
+            new HashMap<String,String>(
+            CollectionUtils.propertiesToStringMap(System.getProperties())));
 }
