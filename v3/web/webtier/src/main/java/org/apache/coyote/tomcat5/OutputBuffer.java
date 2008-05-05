@@ -684,12 +684,7 @@ public class OutputBuffer extends Writer
             Cookie cookie = new Cookie(
                 Globals.SESSION_VERSION_COOKIE_NAME,
                 RequestUtil.makeSessionVersionString(sessionVersions));
-            if (sessionVersions.size() > 1 || ctx == null) {
-                // Cross-context dispatch
-                cookie.setPath("/");
-            } else {
-                cookie.setPath(ctx.getName());
-            }
+            req.configureSessionCookie(cookie);
             response.addHeader(SET_COOKIE_HEADER,
                                coyoteResponse.getCookieString(cookie));
         }
