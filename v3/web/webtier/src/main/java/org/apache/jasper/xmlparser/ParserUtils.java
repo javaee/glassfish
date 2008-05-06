@@ -69,6 +69,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.XMLConstants;
 
+import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.org.apache.commons.logging.Log;
 import com.sun.org.apache.commons.logging.LogFactory;
 import org.apache.jasper.Constants;
@@ -121,6 +122,9 @@ public class ParserUtils {
 
     static String dtdResourcePrefix;
 
+    static boolean isDtdResourcePrefixFileUrl = false;
+    static boolean isSchemaResourcePrefixFileUrl = false;
+
     private static final String SCHEMA_LOCATION_ATTR = "schemaLocation";
 
     private static HashMap<String, Schema> schemaCache =
@@ -171,14 +175,20 @@ public class ParserUtils {
      */
     public static void setSchemaResourcePrefix(String prefix) {
 
-        schemaResourcePrefix = prefix;
+        if (prefix != null && prefix.startsWith("file:")) {
+            schemaResourcePrefix = uencode(prefix);
+            isSchemaResourcePrefixFileUrl = true;
+        } else {
+            schemaResourcePrefix = prefix;
+            isSchemaResourcePrefixFileUrl = false;
+        }
 
         for (int i=0; i<CACHED_SCHEMA_RESOURCE_PATHS.length; i++) {
             String path = DEFAULT_SCHEMA_RESOURCE_PATHS[i];
             int index = path.lastIndexOf('/');
             if (index != -1) {
                 CACHED_SCHEMA_RESOURCE_PATHS[i] =
-                    prefix + path.substring(index+1);
+                    schemaResourcePrefix + path.substring(index+1);
             }
         }
     }
@@ -188,18 +198,36 @@ public class ParserUtils {
      */
     public static void setDtdResourcePrefix(String prefix) {
 
-        dtdResourcePrefix = prefix;
+        if (prefix != null && prefix.startsWith("file:")) {
+            dtdResourcePrefix = uencode(prefix);
+            isDtdResourcePrefixFileUrl = true;
+        } else {
+            dtdResourcePrefix = prefix;
+            isDtdResourcePrefixFileUrl = false;
+        }
 
         for (int i=0; i<CACHED_DTD_RESOURCE_PATHS.length; i++) {
             String path = DEFAULT_DTD_RESOURCE_PATHS[i];
             int index = path.lastIndexOf('/');
             if (index != -1) {
                 CACHED_DTD_RESOURCE_PATHS[i] =
-                    prefix + path.substring(index+1);
+                    dtdResourcePrefix + path.substring(index+1);
             }
         }
     }
     // END PWC 6386258
+
+    private static String uencode(String prefix) {
+        if (prefix != null && prefix.startsWith("file:")) {
+            UEncoder urlEncoder = new UEncoder();
+            urlEncoder.addSafeCharacter('/');
+            String uri = prefix.substring("file:".length());
+            uri = urlEncoder.encodeURL(uri);
+            return "file:" + uri;
+        } else {
+            return prefix;
+        }
+    }
 
 
     // --------------------------------------------------------- Public Methods
@@ -452,15 +480,14 @@ public class ParserUtils {
                     }
 
                     InputStream input = null;
-                    if (schemaResourcePrefix != null &&
-                            schemaResourcePrefix.startsWith("file:")) {
+                    if (isSchemaResourcePrefixFileUrl) {
                         try {
                             File f = new File(new URI(path));
                             if (f.exists()) { 
                                 input = new FileInputStream(f);
                             }
-                        } catch(Exception e) {
-                                 
+                        } catch (Exception e) {
+                            throw new SAXException(e);
                         }
                     } else {
                         input = ParserUtils.class.getResourceAsStream(path);
@@ -502,15 +529,14 @@ class MyEntityResolver implements EntityResolver {
                 String resourcePath = ParserUtils.CACHED_DTD_RESOURCE_PATHS[i];
                 // END PWC 6386258
 		InputStream input = null;
-                if (ParserUtils.dtdResourcePrefix != null &&
-                        ParserUtils.dtdResourcePrefix.startsWith("file:")) {
+                if (ParserUtils.isDtdResourcePrefixFileUrl) {
                     try {
                         File path = new File(new URI(resourcePath));
                         if (path.exists()) {
                             input = new FileInputStream(path);
                         }
                     } catch(Exception e) {
-                    
+                        throw new SAXException(e);
                     }
                 } else {
 		    input = this.getClass().getResourceAsStream(resourcePath);
@@ -524,12 +550,16 @@ class MyEntityResolver implements EntityResolver {
 		return isrc;
 	    }
 	}
-        if (ParserUtils.log.isDebugEnabled())
+
+        if (ParserUtils.log.isDebugEnabled()) {
             ParserUtils.log.debug("Resolve entity failed"  + publicId + " "
                                   + systemId );
+        }
+
 	ParserUtils.log.error(
             Localizer.getMessage("jsp.error.parse.xml.invalidPublicId",
             publicId));
+
         return null;
     }
 }
@@ -575,15 +605,14 @@ class MyLSResourceResolver implements LSResourceResolver {
             (ParserUtils.schemaResourcePrefix + resourceName) :
             resourceName;
 
-        if (ParserUtils.schemaResourcePrefix != null &&
-                ParserUtils.schemaResourcePrefix.startsWith("file:")) {
+        if (ParserUtils.isSchemaResourcePrefixFileUrl) {
             try {
                 File f = new File(new URI(resourcePath));
                 if (f.exists()) { 
                     is = new FileInputStream(f);
                 }
-            } catch(Exception e) {
-                    
+            } catch (Exception e) {
+
             }
         } else {
             is = this.getClass().getResourceAsStream(resourceName);
