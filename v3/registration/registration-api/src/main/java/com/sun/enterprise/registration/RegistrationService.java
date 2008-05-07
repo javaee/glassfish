@@ -73,6 +73,7 @@ public interface RegistrationService {
     public String getPasswordHelpURL();
     public boolean isRegistrationAccountValid(RegistrationAccount account)
             throws RegistrationException, UnknownHostException, ConnectException;
+    public List<RegistrationDescriptor> getRegistrationDescriptors() throws RegistrationException;
     
     enum RegistrationStatus {
         REGISTERED, 

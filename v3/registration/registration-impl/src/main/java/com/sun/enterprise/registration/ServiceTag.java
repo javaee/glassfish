@@ -51,7 +51,7 @@ import java.io.File;
 
 import com.sun.scn.servicetags.SvcTag;
 
-public class ServiceTag {
+public class ServiceTag implements RegistrationDescriptor {
     
     
     public ServiceTag(Element tagData) {
@@ -285,7 +285,7 @@ public class ServiceTag {
     private RepositoryManager getRepositoryManager() throws RegistrationException{
         return new RepositoryManager(new File(SysnetRegistrationService.getRepositoryFile()));
     }
-  */
+  */    
     
     @Override
     public String toString() {
@@ -296,12 +296,7 @@ public class ServiceTag {
         TRANSFERRED,
         NOT_TRANSFERRED
     }
-    
-    public enum RegistrationStatus {
-        REGISTERED,
-        NOT_REGISTERED,
-    }
-
+        
     private final SvcTag svcTag;
     
     // these are not in svcTag but are required by stclient.

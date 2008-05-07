@@ -142,37 +142,29 @@ public class SysnetRegistrationService implements RegistrationService {
     /*  Registers the generated ServiceTags to SunConnection backend */
     public void register(RegistrationAccount account) 
         throws RegistrationException, ConnectException, UnknownHostException {    
-
+        
         
         try {
-            /* authenticate usedID and password */
-/*            AuthenticationCredential auth = 
-                regWrapper.authenticate(userID, password);
- */
+            List<ServiceTag> serviceTags = getRegistrationDescriptors();
+            if (serviceTags.size() == 0)
+                return;
+            
             String hostName = "";    
             try {
                 hostName = InetAddress.getLocalHost().getHostName();
             } catch(Exception ex) {
                 logger.log(Level.WARNING, ex.getMessage());
             }
-            String osName = System.getProperty("os.name");
-            String osVersion = System.getProperty("os.version");
-            String osArchitecture = System.getProperty("os.arch");
-            
-            String systemModel = "";
-            String systemManufacturer = "";
-            String cpuManufacturer = "";
-
             EnvironmentInformation env = new EnvironmentInformation(
-                    hostName, hostName, osName, osVersion, osArchitecture, systemModel,
-                    systemManufacturer, cpuManufacturer, "");
+                    hostName, "", // hostID
+                    System.getProperty("os.name"), 
+                    System.getProperty("os.version"), 
+                    System.getProperty("os.arch"), 
+                    "", //systemModel
+                    "", //systemManuf.
+                    "", //cpuManuf
+                    "");
             
-            RepositoryManager rm = 
-                    new RepositoryManager(localRepositoryFile);
-            // make sure runtime values are generated in RepositoryManager
-            rm.updateRuntimeValues();
-            
-            List<ServiceTag> serviceTags = rm.getServiceTags();
             List<SvcTag> svcTags = ServiceTag.getSvcTags(serviceTags);
             String registryURN = "urn:st:" + UUID.randomUUID().toString();
             
@@ -200,6 +192,14 @@ public class SysnetRegistrationService implements RegistrationService {
         } catch(SvcTagException ex) {
             throw new RegistrationException(ex);
         }
+    }
+    
+    public List getRegistrationDescriptors() throws RegistrationException {
+        RepositoryManager rm = 
+                new RepositoryManager(localRepositoryFile);
+        // make sure runtime values are generated in RepositoryManager
+        rm.updateRuntimeValues();
+        return rm.getServiceTags();
     }
     
     public List<String> getAvailableCountries() {

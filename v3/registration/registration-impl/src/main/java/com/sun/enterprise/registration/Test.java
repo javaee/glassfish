@@ -46,7 +46,7 @@ import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.io.File;
 import java.io.FileOutputStream;
-
+import java.util.Iterator;
 
 public class Test {
     
@@ -84,13 +84,19 @@ public class Test {
     public static void testRegistration() {
         try {
             System.out.println("registering...");
-            Object[] params = { getRepositoryFile(), "webcache.east.sun.com", new Integer(8080), "glassfish:test" };
+            Object[] params = { getRepositoryFile(), "glassfish:test" };
             RegistrationServiceConfig config =
                     new RegistrationServiceConfig("com.sun.enterprise.registration.SysnetRegistrationService",
                         params);
             RegistrationService regService =
                     RegistrationServiceFactory.getInstance().getRegistrationService(config);
 
+            List<RegistrationDescriptor> l = regService.getRegistrationDescriptors();
+            for (Iterator<RegistrationDescriptor> it = l.iterator(); 
+                    it.hasNext();) {
+                RegistrationDescriptor ri = it.next();
+                System.out.println(ri.getProductName() + " " + ri.getInstanceURN());
+            }
             HashMap map = new HashMap();
             map.put(RegistrationAccount.USERID, "replaceme");
             map.put(RegistrationAccount.PASSWORD, "replaceme");

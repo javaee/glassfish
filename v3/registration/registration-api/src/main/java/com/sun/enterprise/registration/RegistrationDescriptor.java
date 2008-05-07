@@ -39,11 +39,20 @@ package com.sun.enterprise.registration;
 public interface RegistrationDescriptor {
     public String getProductName();    
     public String getProductVersion();
+    public String getInstanceURN();
+    public String getProductURN();
+    public String getProductParentURN();
+    public String getProductDefinedInstID();
+    public String getContainer();
+    public String getSource();
+    public String getProductVendor(); 
+    public String getPlatformArch(); 
+    public String getProductParent(); 
+
+    public enum RegistrationStatus {
+        REGISTERED,
+        NOT_REGISTERED,
+    }
     
-    public void setProductName(String name);
-    public void setProductVersion(String version);
-    
-    public void setStatus(String status) throws RegistrationException;
-    public String getStatus() throws RegistrationException;
 
 }
