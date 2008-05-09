@@ -432,6 +432,22 @@ ls the  software and configures it with the defaults.
 CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components with default/custom values.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EMAIL=Email Address
+PASSWORD=Password
+REENTER_PASSWORD=Retype Password
+FIRSTNAME=First Name
+LASTNAME=Last Name
+COUNTRY=Country
+COMPANYNAME=Company Name
+ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}\
+Please enter the following information to create a Sun Online Account.  All fields are required.\
+${BODY_END}
+ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}\
+Click here to view &lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
+${BODY_END}
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

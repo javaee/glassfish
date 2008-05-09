@@ -22,6 +22,7 @@
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
     <property name="gf.zip.dir" value="${basedir}/../packager/build" />
+    <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
       
     <!-- all -->
     <target name="all" depends="extract.oi, extract.uc, compile, assemble, package"  description="Build entire component">
@@ -33,6 +34,11 @@
             dest="${stage.dir}"/>
         <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"
             dest="${stage.dir}"/>
+
+	<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
+  	<copy tofile="${stage.dir}/install/lib/resources/org/openinstaller/resources/ResourceMsgs.properties"
+            file="${javaresources.dir}/ResourceMsgs.properties" overwrite="true"/>
+
         <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
     </target>
 
