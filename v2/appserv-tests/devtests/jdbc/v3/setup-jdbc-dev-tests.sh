@@ -52,6 +52,13 @@ bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.j
 bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-conn-leak-tracing-test-pool jdbc/jdbc-conn-leak-tracing-test-resource
 echo "\n"
 
+#Create Pool/Resource for associate-with-thread test
+echo Creating Pool/Resource Associate With Thread test
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --associatewiththread=false --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-associate-with-thread-test-pool
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-associate-with-thread-test-pool jdbc/jdbc-associate-with-thread-test-resource
+echo "\n"
+
+
 #Create Pool/Resource for Other tests
 echo Creating Pool/Resource for All other tests...
 bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-common-pool

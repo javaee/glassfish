@@ -35,7 +35,10 @@ public class TestResultServlet extends HttpServlet {
     
     @Resource(name="jdbc/jdbc-conn-leak-tracing-test-resource", mappedName="jdbc/jdbc-conn-leak-tracing-test-resource")
     DataSource dsConnLeakTracing;
-    
+
+    @Resource(name="jdbc/jdbc-associate-with-thread-test-resource", mappedName="jdbc/jdbc-associate-with-thread-test-resource")
+    DataSource dsAssocWithThread;
+
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -50,6 +53,7 @@ public class TestResultServlet extends HttpServlet {
         SimpleTest testStmtTimeout = null;
         SimpleTest testMaxConnUsage = null;
         SimpleTest testConnLeakTracing = null;
+        SimpleTest testAssocWithThread = null;
         SimpleTest[] testsOther = null;
         out.println("<html>");
         out.println("<head>");
@@ -65,6 +69,7 @@ public class TestResultServlet extends HttpServlet {
             testStmtTimeout = loadStmtTimeoutTest();
             testMaxConnUsage = loadMaxConnUsageTest();
             testConnLeakTracing = loadConnLeakTracingTest();
+            testAssocWithThread = loadAssocWithThreadTest();
             testsOther = initializeTests();
         } catch (Exception e) {
             HtmlUtil.printException(e, out);
@@ -133,6 +138,19 @@ public class TestResultServlet extends HttpServlet {
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");                
             }
+            
+            //Run Associate With Thread Test
+            Map<String, Boolean> mapAssocWithThread = 
+                    testAssocWithThread.runTest(dsAssocWithThread, out);
+            for (Map.Entry entry : mapAssocWithThread.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");                
+            }
+
 
             //Run Connection Leak Tracing Test
             Map<String, Boolean> mapConnLeakTracing = 
@@ -145,7 +163,7 @@ public class TestResultServlet extends HttpServlet {
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");                
             }
-            
+
             buf.append("</table>");
             out.println(buf.toString());
         } catch (Throwable e) {
@@ -163,6 +181,14 @@ public class TestResultServlet extends HttpServlet {
 
     private SimpleTest loadAppAuthTest() throws Exception {
         String test = "org.glassfish.jdbc.devtests.v3.test.ApplicationAuthTest";
+        Class testClass = Class.forName(test);
+        Constructor c = testClass.getConstructor();
+        SimpleTest testInstance = (SimpleTest) c.newInstance();
+        return testInstance;
+    }
+
+    private SimpleTest loadAssocWithThreadTest() throws Exception {
+        String test = "org.glassfish.jdbc.devtests.v3.test.AssocWithThreadTest";
         Class testClass = Class.forName(test);
         Constructor c = testClass.getConstructor();
         SimpleTest testInstance = (SimpleTest) c.newInstance();

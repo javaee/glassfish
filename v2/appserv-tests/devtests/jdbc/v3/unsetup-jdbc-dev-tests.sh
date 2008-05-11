@@ -12,6 +12,7 @@ bin/asadmin delete-jdbc-resource jdbc/jdbc-common-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-stmt-timeout-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-max-conn-usage-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-conn-leak-tracing-test-resource
+bin/asadmin delete-jdbc-resource jdbc/jdbc-associate-with-thread-test-resource
 echo "\n"
 
 echo deleting jdbc-connection-pools .....
@@ -21,6 +22,7 @@ bin/asadmin delete-jdbc-connection-pool jdbc-common-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-statement-timeout-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-max-conn-usage-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-conn-leak-tracing-test-pool
+bin/asadmin delete-jdbc-connection-pool jdbc-associate-with-thread-test-pool
 echo "\n"
 
 echo Deleting files...
