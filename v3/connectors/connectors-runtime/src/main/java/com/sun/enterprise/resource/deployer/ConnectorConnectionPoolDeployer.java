@@ -240,6 +240,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         ccp.setConnectionReclaim(Boolean.valueOf(domainCcp.getConnectionLeakReclaim()));
 
         ccp.setMatchConnections(Boolean.valueOf(domainCcp.getMatchConnections()));
+        ccp.setAssociateWithThread(Boolean.valueOf(domainCcp.getAssociateWithThread()));
 
         ccp.setMaxConnectionUsage(domainCcp.getMaxConnectionUsageCount());
         ccp.setValidateAtmostOncePeriod(

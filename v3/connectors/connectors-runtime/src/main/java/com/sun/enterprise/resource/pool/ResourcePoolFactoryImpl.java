@@ -39,6 +39,7 @@ package com.sun.enterprise.resource.pool;
 import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
 import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.resource.pool.AssocWithThreadResourcePool;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +55,17 @@ public class ResourcePoolFactoryImpl {
 
     public static ResourcePool newInstance(String poolName, PoolType pt)
             throws PoolingException {
-        ResourcePool pool = new ConnectionPool(poolName);
+
+        ResourcePool pool = null;
+        if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
+            pool = new AssocWithThreadResourcePool( poolName );
+        }/* else if(pt == PoolType.PARTITIONED_POOL){
+            pool = new PartitionedPool(poolName);
+
+        }*/ else {
+            pool = new ConnectionPool( poolName );
+            //pool = new SJSASResourcePool( poolName );
+        }
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Created a pool of type : " + pt);

@@ -640,4 +640,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     public boolean pingConnectionPool(String poolName) throws ResourceException {
         return ccPoolAdmService.testConnectionPool(poolName);
     }
+
+    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException{
+        return ccPoolAdmService.getPoolType(poolName);
+    }
 }

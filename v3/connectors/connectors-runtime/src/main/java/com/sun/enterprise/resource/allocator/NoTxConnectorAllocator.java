@@ -122,7 +122,7 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             ManagedConnection mc =
                     mcf.createManagedConnection(subject, reqInfo);
             ResourceHandle resource =
-                    new ResourceHandle(mc, spec, this, info);
+                    createResourceHandle(mc, spec, this, info);
             ConnectionEventListener l =
                     new ConnectionListenerImpl(resource);
             mc.addConnectionEventListener(l);

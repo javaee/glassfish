@@ -105,7 +105,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private boolean validateAtmostEveryIdleSecs = false;
 
     protected String resourceSelectionStrategyClass;
-    private PoolLifeCycleListener poolLifeCycleListener;
+    protected PoolLifeCycleListener poolLifeCycleListener;
 
     //Gateway used to control the concurrency within the round-trip of resource access.
     protected ResourceGateway gateway;
@@ -895,7 +895,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         setResourceStateToFree(h);  // mark as not busy
         state.touchTimestamp();
 
-        if (state.isUnenlisted() || (poolTxHandler.isNonXAResource(h) && poolTxHandler.isLocalResourceEligibleForReuse(h))) {
+        if (state.isUnenlisted() || (poolTxHandler.isNonXAResource(h)
+                && poolTxHandler.isLocalResourceEligibleForReuse(h))) {
             freeUnenlistedResource(h);
         }
 

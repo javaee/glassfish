@@ -258,7 +258,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setMatchConnections(toBoolean(rp.getValue(), false));
                     logFine("MATCHCONNECTIONS");
 
-                }else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
+                }else if ("ASSOCIATEWITHTHREAD".equals(name.toUpperCase())) {
+                    conConnPool.setAssociateWithThread(toBoolean(rp.getValue(), false));
+                    logFine("ASSOCIATEWITHTHREAD");
+
+                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
 
@@ -465,6 +469,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         //So set them here first and then figure out from the parsing routine
         //if they need to be reset
         ccp.setMatchConnections(Boolean.valueOf(adminPool.getMatchConnections()));
+        ccp.setAssociateWithThread(Boolean.valueOf(adminPool.getAssociateWithThread()));
         ccp.setConnectionLeakTracingTimeout(adminPool.getConnectionLeakTimeoutInSeconds());
         ccp.setConnectionReclaim(Boolean.valueOf(adminPool.getConnectionLeakReclaim()));
 

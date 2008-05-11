@@ -837,7 +837,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     _registry.addManagedConnectionFactory(poolName, pmd);
                 }
 
-                PoolType pt = PoolType.STANDARD_POOL;
+                PoolType pt = getPoolType(connectorConnectionPool);
 
                 createAndAddPool(poolName, pt);
                 return mcf;
@@ -863,6 +863,28 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             }
             throw cre;
         }
+    }
+
+    private PoolType getPoolType(ConnectorConnectionPool connectorConnectionPool) {
+        PoolType pt = PoolType.STANDARD_POOL;
+        if(connectorConnectionPool.isAssociateWithThread() ){
+            pt = PoolType.ASSOCIATE_WITH_THREAD_POOL ;
+        }else if( connectorConnectionPool.isPartitionedPool()){
+            pt = PoolType.PARTITIONED_POOL;
+        }
+        return pt;
+    }
+
+    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException{
+        ConnectorConnectionPool ccp;
+        try{
+             ccp = getConnectorConnectionPool(poolName);
+        }catch(NamingException e){
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+            cre.initCause(e);
+            throw cre;
+        }
+        return getPoolType(ccp);
     }
 
 

@@ -40,8 +40,12 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.AssocWithThreadResourceHandle;
 import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
@@ -183,4 +187,19 @@ public abstract class AbstractConnectorAllocator
         throw new UnsupportedOperationException();
     }
 
+    protected ResourceHandle createResourceHandle(Object resource, ResourceSpec spec,
+                                               ResourceAllocator alloc, ClientSecurityInfo info){
+
+        ConnectorConstants.PoolType pt = ConnectorConstants.PoolType.STANDARD_POOL;
+        try{
+            pt = ConnectorRuntime.getRuntime().getPoolType(spec.getConnectionPoolName());
+        }catch(ConnectorRuntimeException cre){
+            //TODO V3 log cre +  setting default pool type
+        }
+        if(pt == ConnectorConstants.PoolType.ASSOCIATE_WITH_THREAD_POOL){
+            return new AssocWithThreadResourceHandle(resource, spec, alloc, info);
+        }else{
+            return new ResourceHandle(resource, spec, alloc, info);    
+        }
+    }
 }

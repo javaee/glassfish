@@ -71,7 +71,7 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         try {
             ManagedConnection mc = mcf.createManagedConnection(subject, reqInfo);
             
-            ResourceHandle resource =  new ResourceHandle(mc, spec, this, info);
+            ResourceHandle resource =  createResourceHandle(mc, spec, this, info);
             ConnectionEventListener l =  new LocalTxConnectionEventListener(resource);
             mc.addConnectionEventListener(l);
             resource.setListener(l);
