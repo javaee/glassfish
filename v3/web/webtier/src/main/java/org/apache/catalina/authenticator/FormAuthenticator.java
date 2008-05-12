@@ -153,9 +153,19 @@ public class FormAuthenticator
           (HttpServletResponse) response.getResponse();
         Session session = null;
 
+        String contextPath = hreq.getContextPath();
+        String requestURI = request.getDecodedRequestURI();
+        // Is this the action request from the login page?
+        boolean loginAction =
+            requestURI.startsWith(contextPath) &&
+            requestURI.endsWith(Constants.FORM_ACTION);
+
         // Have we already authenticated someone?
         Principal principal = hreq.getUserPrincipal();
-        if (principal != null) {
+        // Treat the first and any subsequent j_security_check requests the
+        // same, by letting them fall through to the j_security_check 
+        // processing section of this method. 
+        if (principal != null && !loginAction) {
             if (log.isDebugEnabled())
                 log.debug("Already authenticated '" +
                     principal.getName() + "'");
@@ -167,7 +177,10 @@ public class FormAuthenticator
         }
 
         // Have we authenticated this user before but have caching disabled?
-        if (!cache) {
+        // Treat the first and any subsequent j_security_check requests the
+        // same, by letting them fall through to the j_security_check 
+        // processing section of this method. 
+        if (!cache && !loginAction) {
             session = getSession(request, true);
             if (log.isDebugEnabled())
                 log.debug("Checking for reauthenticate in session " + session);
@@ -225,14 +238,7 @@ public class FormAuthenticator
         MessageBytes uriMB = MessageBytes.newInstance();
         CharChunk uriCC = uriMB.getCharChunk();
         uriCC.setLimit(-1);
-        String contextPath = hreq.getContextPath();
-        String requestURI = request.getDecodedRequestURI();
         response.setContext(request.getContext());
-
-        // Is this the action request from the login page?
-        boolean loginAction =
-            requestURI.startsWith(contextPath) &&
-            requestURI.endsWith(Constants.FORM_ACTION);
 
         // No -- Save this request and redirect to the form login page
         if (!loginAction) {
@@ -380,7 +386,13 @@ public class FormAuthenticator
         // Retrieve and remove the SavedRequest object from our session
         SavedRequest saved = (SavedRequest)
             session.getNote(Constants.FORM_REQUEST_NOTE);
+        /*
+         * PWC 6463046:
+         * Do not remove the saved request: It will be needed again in case
+         * another j_security_check is sent. The saved request will be
+         * purged when the session expires.
         session.removeNote(Constants.FORM_REQUEST_NOTE);
+         */
         session.removeNote(Constants.FORM_PRINCIPAL_NOTE);
         if (saved == null)
             return (false);
