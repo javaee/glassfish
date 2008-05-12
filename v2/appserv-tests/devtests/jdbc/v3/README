@@ -19,6 +19,9 @@ userName and password. They should correspond to the pool properties. "sun-appse
 used in this file and in the pool configuration. Th requireAuthentication property would be specified inside this
 database.
 
+Make sure that the database (path/directory) specified in this .java file is the one that will be used by appserver
+
+
 setup-jdbc-dev-tests.sh
 -----------------------
 Script used to run the devtests manually. The script does jobs like starting domain, creating
@@ -52,6 +55,7 @@ The JDBC devtests included in the project named "v3_jdbc_dev_tests" include the 
 - NoTx Connection Test
 - Statement Timeout Test
 - UserTx Test
+- Associate with thread connection pool test
 
 TestResultServlet.java is responsible for listing the test results on a html page. 
 HtmlUtil.java prints the exceptions (if any) on the result page.
