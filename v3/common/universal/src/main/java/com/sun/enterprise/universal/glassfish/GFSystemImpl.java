@@ -24,6 +24,8 @@ package com.sun.enterprise.universal.glassfish;
 
 import com.sun.enterprise.universal.collections.CollectionUtils;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * A replacement for System Properties
@@ -34,14 +36,11 @@ import java.util.*;
 public final class GFSystemImpl {
     /**
      * Get the GFSystemImpl Properties
-     * @return a snapshot copy of the dcurrent Properties
+     * @return a snapshot copy of the current Properties
      */
     public final Map<String,String> getProperties()
     {
-        synchronized(props) {
-            // need synchronization because an Iterator is going to be used
-            return new HashMap<String,String>(props);
-        }
+        return Collections.unmodifiableMap(props);
     }
     
     /**
@@ -68,7 +67,6 @@ public final class GFSystemImpl {
     }
     
     // initial props copy java.lang.System Properties
-    private final Map<String,String> props = Collections.synchronizedMap(
-            new HashMap<String,String>(
-            CollectionUtils.propertiesToStringMap(System.getProperties())));
+    private final ConcurrentMap<String,String> props = new ConcurrentHashMap<String, String>(
+            CollectionUtils.propertiesToStringMap(System.getProperties()));
 }
