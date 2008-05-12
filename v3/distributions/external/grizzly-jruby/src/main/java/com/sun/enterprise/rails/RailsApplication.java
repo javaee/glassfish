@@ -61,6 +61,26 @@ public class RailsApplication extends RailsAdapter
     }
 
     /**
+     * Suspends this application container.
+     *
+     * @return true if suspending was successful, false otherwise.
+     */
+    public boolean suspend() {
+        // Not (yet) supported
+        return false;
+    }
+
+    /**
+     * Resumes this application container.
+     *
+     * @return true if resumption was successful, false otherwise.
+     */
+    public boolean resume() {
+        // Not (yet) supported
+        return false;
+    }
+
+    /**
      * Returns the class loader associated with this application
      *
      * @return ClassLoader for this app

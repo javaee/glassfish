@@ -342,7 +342,6 @@ abstract public class ApplicationLifecycle {
         }
     }
 
-
     public void disable(String appName, ActionReport report) {
 
         ApplicationInfo appInfo = appRegistry.get(appName);
@@ -350,6 +349,40 @@ abstract public class ApplicationLifecycle {
         if (appInfo != null) {
             stopModules(Arrays.asList(appInfo.getModuleInfos()), logger);
         }
+    }
+
+    /**
+     * Suspends this application.
+     *
+     * @return true if suspending was successful, false otherwise.
+     */
+    public boolean suspend(String appName, ActionReport report) {
+        boolean isSuccess = true;
+
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo != null) {
+            isSuccess = suspendModules(Arrays.asList(appInfo.getModuleInfos()),
+                                       logger);
+        }
+
+        return isSuccess;
+    }
+
+    /**
+     * Resumes this application.
+     *
+     * @return true if resumption was successful, false otherwise.
+     */
+    public boolean resume(String appName, ActionReport report) {
+        boolean isSuccess = true;
+
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo != null) {
+            isSuccess = resumeModules(Arrays.asList(appInfo.getModuleInfos()),
+                                      logger);
+        }
+
+        return isSuccess;
     }
 
     // set up containers and prepare the sorted ModuleInfos
@@ -716,6 +749,42 @@ abstract public class ApplicationLifecycle {
                         module.getContainerInfo().getSniffer().getModuleType(),e );
             }
         }
+    }
+
+    protected boolean suspendModules(Iterable<ModuleInfo> modules,
+                                     Logger logger) {
+
+        boolean isSuccess = true;
+
+        for (ModuleInfo module : modules) {
+            try {
+                module.getApplicationContainer().suspend();
+            } catch(Exception e) {
+                isSuccess = false;
+                logger.log(Level.SEVERE, "Error suspending module " +
+                           module.getContainerInfo().getSniffer().getModuleType(),e );
+            }
+        }
+
+        return isSuccess;
+    }
+
+    protected boolean resumeModules(Iterable<ModuleInfo> modules,
+                                    Logger logger) {
+
+        boolean isSuccess = true;
+
+        for (ModuleInfo module : modules) {
+            try {
+                module.getApplicationContainer().resume();
+            } catch(Exception e) {
+                isSuccess = false;
+                logger.log(Level.SEVERE, "Error resuming module " +
+                           module.getContainerInfo().getSniffer().getModuleType(),e );
+            }
+        }
+
+        return isSuccess;
     }
 
     protected void unload(Iterable<ModuleInfo> modules, DeploymentContext context) {

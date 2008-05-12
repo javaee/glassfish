@@ -47,6 +47,24 @@ public class DummyApplication implements ApplicationContainer<Object> {
     }
 
     /**
+     * Suspends this application container.
+     *
+     * @return true if suspending was successful, false otherwise.
+     */
+    public boolean suspend() {
+        return false;
+    }
+
+    /**
+     * Resumes this application container.
+     *
+     * @return true if resumption was successful, false otherwise.
+     */
+    public boolean resume() {
+        return false;
+    }
+
+    /**
      * Returns the class loader associated with this application
      *
      * @return ClassLoader for this app

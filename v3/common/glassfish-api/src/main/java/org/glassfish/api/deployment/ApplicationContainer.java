@@ -57,6 +57,20 @@ public interface ApplicationContainer<T> {
     public boolean stop();
 
     /**
+     * Suspends this application container.
+     *
+     * @return true if suspending was successful, false otherwise.
+     */
+    public boolean suspend();
+
+    /**
+     * Resumes this application container.
+     *
+     * @return true if resumption was successful, false otherwise.
+     */
+    public boolean resume();
+
+    /**
      * Returns the class loader associated with this application
      * @return ClassLoader for this app
      */

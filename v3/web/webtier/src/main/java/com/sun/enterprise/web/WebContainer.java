@@ -3586,38 +3586,39 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     /**
-     * Disables this web application.
+     * Suspends the web application with the given appName that has been
+     * deployed at the given contextRoot on the given virtual servers.
      *
-     * @param contextRoot the context's name to undeploy
+     * @param contextRoot the context root
      * @param appName the J2EE appname used at deployment time
-     * @param virtualServers the list of current virtual-server object.
+     * @param hosts the comma- or space-separated list of virtual servers
      */
-    public boolean disableWebModule(String contextRoot,
+    public boolean suspendWebModule(String contextRoot,
                                     String appName,
-                                    String virtualServers) {
-        return disableWebModule(contextRoot, appName,
-                                StringUtils.parseStringList(virtualServers,
-                                                            " ,"));
+                                    String hosts) {
+        return suspendWebModule(contextRoot, appName,
+                                StringUtils.parseStringList(hosts, " ,"));
     }
 
     /**
-     * Disables this web application.
+     * Suspends the web application with the given appName that has been
+     * deployed at the given contextRoot on the given virtual servers.
      *
-     * @param contextRoot the context's name to undeploy
+     * @param contextRoot the context root
      * @param appName the J2EE appname used at deployment time
-     * @param virtualServers the list of current virtual-server object.
+     * @param hosts the list of virtual servers
      */
-    public boolean disableWebModule(String contextRoot,
+    public boolean suspendWebModule(String contextRoot,
                                     String appName,
-                                    List<String> hostList) {
+                                    List<String> hosts) {
         // tomcat contextRoot starts with "/"
         if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
 
         Engine[] engines = _embedded.getEngines();
-        boolean disableToAll = (hostList == null) || (hostList.size() == 0);
-        boolean hasBeenDisabled = false;
+        boolean suspendOnAll = (hosts == null) || (hosts.size() == 0);
+        boolean hasBeenSuspended = false;
         Container[] hostArray = null;
         VirtualServer host = null;
         Context context = null;
@@ -3631,14 +3632,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * Related to Bug: 4904290
                  * Do not unloadload module on ADMIN_VS
                  */
-                if ( disableToAll
+                if (suspendOnAll
                         && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)){
                     continue;
                 }
 
-                if (disableToAll
-                        || hostList.contains(host.getName())
-                        || verifyAlias(hostList,host)){
+                if (suspendOnAll
+                        || hosts.contains(host.getName())
+                        || verifyAlias(hosts,host)){
 
                     context = (Context) host.findChild(contextRoot);
                     if (context != null) {
@@ -3649,19 +3650,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     + contextRoot + " disabled from "
                                     + host);
                         }
-                        hasBeenDisabled = true;
+                        hasBeenSuspended = true;
                     }
                 }
             }
         }
 
-        if (!hasBeenDisabled){
+        if (!hasBeenSuspended){
             _logger.log(Level.WARNING,
-                    "[WebContainer] moduleDisabled fail for context "
-                    + contextRoot);
+                    "[WebContainer] Unable to disable web module at " +
+                    "context root " + contextRoot);
         }
 
-        return hasBeenDisabled;
+        return hasBeenSuspended;
     }
 
 

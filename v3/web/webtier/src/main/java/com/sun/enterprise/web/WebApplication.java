@@ -94,27 +94,35 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         logger.info("Loading application " + wmInfo.getDescriptor().getName()
                 + " at " + wmInfo.getDescriptor().getContextRoot());
         for (Result<com.sun.enterprise.web.WebModule> result : results) {
-            if (result.isSuccess()) {
-                VirtualServer vs = (VirtualServer) result.result().getParent();
-                final Collection<String> c = new HashSet<String>();
-                c.add(vs.getID());
-                if (loadToAll || vsList.contains(vs.getName())
-                        || isAliasMatched(vsList,vs)) {
-                    for (int port : vs.getPorts()) {
-                            CoyoteAdapter adapter = container.adapterMap.get(Integer.valueOf(port));
-                        //@TODO change EndportRegistrationException processing if required
-                        try {
-                            grizzlyAdapter.registerEndpoint(contextRoot, adapter.getPort(), c, adapter, this);
-                        } catch(EndpointRegistrationException e) {
-                            logger.log(Level.WARNING, "Error while deploying", e);
+            // result will be null if the web module was merely resumed
+            if (result != null) { 
+                if (result.isSuccess()) {
+                    VirtualServer vs = (VirtualServer) result.result().getParent();
+                    final Collection<String> c = new HashSet<String>();
+                    c.add(vs.getID());
+                    if (loadToAll || vsList.contains(vs.getName())
+                            || isAliasMatched(vsList,vs)) {
+                        for (int port : vs.getPorts()) {
+                            CoyoteAdapter adapter =
+                                container.adapterMap.get(Integer.valueOf(port));
+                            //@TODO change EndportRegistrationException processing if required
+                            try {
+                                grizzlyAdapter.registerEndpoint(contextRoot,
+                                    adapter.getPort(), c, adapter, this);
+                            } catch(EndpointRegistrationException e) {
+                                logger.log(Level.WARNING,
+                                           "Error while deploying", e);
+                            }
                         }
                     }
+                } else {
+                    logger.log(Level.SEVERE, "Error while deploying",
+                               result.exception());
+                    return false;
                 }
-            } else {
-                logger.log(Level.SEVERE, "Error while deploying", result.exception());
-                return false;
             }
         }
+
         return true;
     }
 
@@ -199,6 +207,42 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      */
     public WebBundleDescriptor getDescriptor() {
         return wmInfo.getDescriptor();
+    }
+
+    /**
+     * Suspends this application on all virtual servers.
+     */
+    public boolean suspend() {
+        return suspend(null);
+    }
+
+    /**
+     * Suspends this application on the specified virtual servers.
+     *
+     * @param the virtual servers on which to suspend this application
+     */
+    public boolean suspend(List<String> vsList) {
+        return container.suspendWebModule(
+            wmInfo.getDescriptor().getContextRoot(), "null", vsList);
+    }
+
+    /**
+     * Resumes this application on all virtual servers.
+     */
+    public boolean resume() {
+        return resume(null);
+    }
+
+    /**
+     * Resumes this application on the specified virtual servers.
+     *
+     * @param the virtual servers on which to suspend this application
+     */
+    public boolean resume(List<String> vsList) {
+        // WebContainer.loadWebModule(), which is called by start(), 
+        // already checks if the web module has been suspended, and if so,
+        // just resumes it and returns
+        return start(vsList);
     }
 
     /*

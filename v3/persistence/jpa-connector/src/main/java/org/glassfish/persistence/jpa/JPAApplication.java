@@ -100,6 +100,26 @@ public class JPAApplication implements ApplicationContainer {
         return true;
     }
 
+    /**
+     * Suspends this application container.
+     *
+     * @return true if suspending was successful, false otherwise.
+     */
+    public boolean suspend() {
+        // Not (yet) supported
+        return false;
+    }
+
+    /**
+     * Resumes this application container.
+     *
+     * @return true if resumption was successful, false otherwise.
+     */
+    public boolean resume() {
+        // Not (yet) supported
+        return false;
+    }
+
     public ClassLoader getClassLoader() {
         //TODO: Check with Jerome. Should this return anything but null? currently it does not seem so.
         return null;
