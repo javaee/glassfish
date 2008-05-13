@@ -144,7 +144,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         }
     }
 
-    protected abstract void parseInhabitants(Module module,
+    public abstract void parseInhabitants(Module module,
                                   String name,
                                   InhabitantsParser inhabitantsParser)
             throws IOException;
