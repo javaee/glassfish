@@ -98,7 +98,7 @@ public class OSGiModulesRegistryImpl
         return null;
     }
 
-    protected void parseInhabitants(
+    public void parseInhabitants(
             Module module, String name, InhabitantsParser inhabitantsParser)
             throws IOException {
         OSGiModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);

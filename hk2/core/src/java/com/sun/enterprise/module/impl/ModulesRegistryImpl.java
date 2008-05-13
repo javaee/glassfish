@@ -75,7 +75,7 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
         return new ModuleImpl(this, moduleDef);
     }
 
-    protected void parseInhabitants(
+    public void parseInhabitants(
             Module module, String name, InhabitantsParser inhabitantsParser)
             throws IOException {
         ModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);
