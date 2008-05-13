@@ -65,9 +65,11 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Locale;
 import java.net.Socket;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.RequestDispatcher;
 import org.apache.catalina.Request;
 import org.apache.catalina.util.StringManager;
@@ -80,7 +82,7 @@ import org.apache.catalina.util.StringManager;
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  * @author Jean-Francois Arcand
- * @version $Revision: 1.3 $ $Date: 2006/08/14 20:45:37 $
+ * @version $Revision: 1.4.6.1 $ $Date: 2008/04/17 18:37:06 $
  */
 
 public class RequestFacade implements ServletRequest {
@@ -440,5 +442,45 @@ public class RequestFacade implements ServletRequest {
                 sm.getString("object.invalidScope"));
         }
         return request.getLocalPort();
+    }
+
+
+    /**
+     * Gets the servlet context to which this servlet request was last
+     * dispatched.
+     *
+     * @return the servlet context to which this servlet request was last
+     * dispatched
+     */
+    public ServletContext getServletContext() {
+        // Disallow operation if the object has gone out of scope
+        if (request == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+        // XXX Uncomment as soon as getServletContext() has been added to
+        // javax.servlet.ServletRequest
+        //return request.getServletContext();
+        return null;
+    }
+
+
+    /**
+     * Gets the servlet response with which this servlet request has been
+     * associated.
+     *
+     * @return the servlet response with which this servlet request has been
+     * associated
+     */
+    public ServletResponse getServletResponse() {
+        // Disallow operation if the object has gone out of scope
+        if (request == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+        // XXX Uncomment as soon as getServletResponse() has been added to
+        // javax.servlet.ServletRequest
+        //return request.getServletResponse();
+        return null;
     }
 }

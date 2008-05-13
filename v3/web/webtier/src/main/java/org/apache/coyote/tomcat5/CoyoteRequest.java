@@ -91,6 +91,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequestAttributeEvent;
 import javax.servlet.ServletRequestAttributeListener;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -152,7 +153,7 @@ import com.sun.appserv.ProxyHandler;
  *
  * @author Remy Maucherat
  * @author Craig R. McClanahan
- * @version $Revision: 1.67 $ $Date: 2007/07/30 19:26:19 $
+ * @version $Revision: 1.67.2.9 $ $Date: 2008/04/17 18:37:34 $
  */
 
 public class CoyoteRequest
@@ -530,7 +531,11 @@ public class CoyoteRequest
 
     private String requestURI = null;
 
-    private String requestedSessionVersionString = null;
+    /**
+     * Associated context.
+     */
+    protected Context context = null;
+    protected ServletContext servletContext = null;
 
 
     // --------------------------------------------------------- Public Methods
@@ -542,6 +547,7 @@ public class CoyoteRequest
     public void recycle() {
         
         context = null;
+        servletContext = null;
         wrapper = null;
 
         dispatcherType = null;
@@ -657,11 +663,6 @@ public class CoyoteRequest
 
 
     /**
-     * Associated context.
-     */
-    protected Context context = null;
-
-    /**
      * Return the Context within which this Request is being processed.
      */
     public Context getContext() {
@@ -679,6 +680,9 @@ public class CoyoteRequest
      */
     public void setContext(Context context) {
         this.context = context;
+        if (context != null) {
+            this.servletContext = context.getServletContext();
+        }
         // START GlassFish 896
         initSessionTracker();
         // END GlassFish 896
@@ -1066,7 +1070,7 @@ public class CoyoteRequest
      */
     public void setSecure(boolean secure) {
         this.secure = secure;
-        
+
         if ( secure ){
             populateSSLAttributes();
         }
@@ -1408,12 +1412,9 @@ public class CoyoteRequest
      */
     public String getRealPath(String path) {
 
-        if (context == null)
-            return (null);
-        ServletContext servletContext = context.getServletContext();
-        if (servletContext == null)
-            return (null);
-        else {
+        if (servletContext == null) {
+            return null;
+        } else {
             try {
                 return (servletContext.getRealPath(path));
             } catch (IllegalArgumentException e) {
@@ -1573,14 +1574,15 @@ public class CoyoteRequest
      */
     public RequestDispatcher getRequestDispatcher(String path) {
 
-        if (context == null)
-            return (null);
+        if (servletContext == null) {
+            return null;
+        }
 
         // If the path is already context-relative, just pass it through
         if (path == null)
             return (null);
         else if (path.startsWith("/"))
-            return (context.getServletContext().getRequestDispatcher(path));
+            return (servletContext.getRequestDispatcher(path));
 
         // Convert a request-relative path to a context-relative one
         String servletPath = (String) getAttribute(Globals.INCLUDE_SERVLET_PATH_ATTR);
@@ -1606,7 +1608,7 @@ public class CoyoteRequest
             relative = RequestUtil.normalize(requestPath + path);
         }
 
-        return (context.getServletContext().getRequestDispatcher(relative));
+        return (servletContext.getRequestDispatcher(relative));
 
     }
 
@@ -1689,8 +1691,8 @@ public class CoyoteRequest
         if ((listeners == null) || (listeners.length == 0))
             return;
         ServletRequestAttributeEvent event =
-          new ServletRequestAttributeEvent(context.getServletContext(),
-                                           getRequest(), name, value);
+            new ServletRequestAttributeEvent(servletContext, getRequest(),
+                                             name, value);
         for (int i = 0; i < listeners.length; i++) {
             if (!(listeners[i] instanceof ServletRequestAttributeListener))
                 continue;
@@ -1753,14 +1755,15 @@ public class CoyoteRequest
         if ((listeners == null) || (listeners.length == 0))
             return;
         ServletRequestAttributeEvent event = null;
-        if (replaced)
-            event =
-                new ServletRequestAttributeEvent(context.getServletContext(),
-                                                 getRequest(), name, oldValue);
-        else
-            event =
-                new ServletRequestAttributeEvent(context.getServletContext(),
-                                                 getRequest(), name, value);
+        if (replaced) {
+            event = new ServletRequestAttributeEvent(servletContext,
+                                                     getRequest(), name,
+                                                     oldValue);
+        } else {
+            event = new ServletRequestAttributeEvent(servletContext,
+                                                     getRequest(), name,
+                                                     value);
+        }
 
         for (int i = 0; i < listeners.length; i++) {
             if (!(listeners[i] instanceof ServletRequestAttributeListener))
@@ -2349,13 +2352,14 @@ public class CoyoteRequest
      */
     public String getPathTranslated() {
 
-        if (context == null)
+        if (servletContext == null) {
             return (null);
+        }
 
         if (getPathInfo() == null) {
             return (null);
         } else {
-            return (context.getServletContext().getRealPath(getPathInfo()));
+            return (servletContext.getRealPath(getPathInfo()));
         }
 
     }
@@ -2679,6 +2683,35 @@ public class CoyoteRequest
     public Session getSessionInternal(boolean create) {
         return doGetSession(create);
     }
+
+
+    /**
+     * Gets the servlet context to which this servlet request was last
+     * dispatched.
+     *
+     * @return the servlet context to which this servlet request was last
+     * dispatched
+     */
+    public ServletContext getServletContext() {
+        return servletContext;
+    }
+
+
+    /**
+     * Gets the servlet response with which this servlet request has been
+     * associated.
+     *
+     * @return the servlet response with which this servlet request has been
+     * associated
+     */
+    public ServletResponse getServletResponse() {
+        if (response != null) {
+            // Return response facade
+            return ((CoyoteResponse) response).getResponse();
+        } else {
+            return null;
+        }
+    }    
 
 
     // ------------------------------------------------------ Protected Methods

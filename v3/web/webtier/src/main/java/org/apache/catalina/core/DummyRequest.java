@@ -92,6 +92,7 @@ import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -122,21 +123,10 @@ import org.apache.catalina.util.StringManager;
  * JSP precompilation.
  *
  * @author Remy Maucherat
- * @version $Revision: 1.5 $ $Date: 2007/05/05 05:31:54 $
+ * @version $Revision: 1.5.6.2 $ $Date: 2008/04/17 18:37:07 $
  */
 
-public class DummyRequest
-    implements HttpRequest, HttpServletRequest {
-
-    public DummyRequest() {
-    }
-
-    public DummyRequest(String contextPath, String decodedURI,
-                        String queryString) {
-        this.contextPath = contextPath;
-        this.decodedURI = decodedURI;
-        this.queryString = queryString;
-    }
+public class DummyRequest implements HttpRequest, HttpServletRequest {
 
     protected String contextPath = null;
     protected String decodedURI = null;
@@ -160,6 +150,19 @@ public class DummyRequest
     // START PWC 4707989
     private String method;
     // END PWC 4707989
+
+
+    public DummyRequest() {
+    }
+
+
+    public DummyRequest(String contextPath, String decodedURI,
+                        String queryString) {
+        this.contextPath = contextPath;
+        this.decodedURI = decodedURI;
+        this.queryString = queryString;
+    }
+
     
     private static Enumeration dummyEnum = new Enumeration(){
         public boolean hasMoreElements(){
@@ -408,5 +411,29 @@ public class DummyRequest
     }
     // END SJSAS 6346226
     
+
+    /**
+     * Gets the servlet context to which this servlet request was last
+     * dispatched.
+     *
+     * @return the servlet context to which this servlet request was last
+     * dispatched
+     */
+    public ServletContext getServletContext() {
+        return null;
+    }
+
+
+    /**
+     * Gets the servlet response with which this servlet request has been
+     * associated.
+     *
+     * @return the servlet response with which this servlet request has been
+     * associated
+     */
+    public ServletResponse getServletResponse() {
+        return null;
+    }    
+
 }
 
