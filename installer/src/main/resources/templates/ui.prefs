@@ -447,6 +447,21 @@ ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}\
 Click here to view &lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
 ${BODY_END}
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+REGISTRATION_OPTIONS_HEADER=${BODY_START}\
+Why register ? Gain convenient access to\
+&lt;UL&gt;\
+&lt;LI&gt;patch information and bug updates&lt;/LI&gt;\
+&lt;LI&gt;screencasts and tutorials,&lt;/LI&gt;\
+&lt;LI&gt;support and training offerings ... and more.&lt;/LI&gt;\
+&lt;/UL&gt;\
+${BODY_END}
+CREATE_NEWACCT=I don't have a Sun Online Account. Sign me up.
+USE_EXISTINGACCT=I already have a Sun Online Account.
+USERNAME=User Name
+USERPASSWORD=User Password
+SKIP_REGISTRATION=Skip Registration.
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
