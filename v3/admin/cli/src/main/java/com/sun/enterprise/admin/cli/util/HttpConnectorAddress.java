@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
-import sun.misc.BASE64Encoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 
 public final class HttpConnectorAddress
 {

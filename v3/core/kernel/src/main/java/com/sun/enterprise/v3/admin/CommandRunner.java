@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
-import sun.misc.BASE64Decoder;
+import com.sun.enterprise.universal.BASE64Decoder;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -425,7 +425,7 @@ public class CommandRunner {
          */
     String getPropertiesValue(final Properties props, final String key,
                               final boolean ignoreCase) {
-        BASE64Decoder base64Decoder = new sun.misc.BASE64Decoder();
+        BASE64Decoder base64Decoder = new BASE64Decoder();
         if (ignoreCase) {
             for (Object propObj : props.keySet()) {
                 final String propName = (String)propObj;

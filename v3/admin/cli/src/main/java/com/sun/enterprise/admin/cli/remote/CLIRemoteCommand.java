@@ -51,7 +51,7 @@ import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import java.util.jar.*;
 import java.util.logging.Level;
-import sun.misc.BASE64Encoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 
 public class CLIRemoteCommand {
     
@@ -473,7 +473,7 @@ public class CLIRemoteCommand {
         if(map == null || map.isEmpty())
             return;
         
-        BASE64Encoder encoder = new sun.misc.BASE64Encoder();
+        BASE64Encoder encoder = new BASE64Encoder();
         
         for(Map.Entry<String,String> entry : map.entrySet()) {
             String val = entry.getValue();

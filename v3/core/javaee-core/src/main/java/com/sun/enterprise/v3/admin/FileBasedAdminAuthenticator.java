@@ -46,7 +46,7 @@ import org.glassfish.internal.api.AdminAuthenticator;
 import com.sun.grizzly.tcp.Request;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import sun.misc.BASE64Decoder;
+import com.sun.enterprise.universal.BASE64Decoder;
 
 /**
  * User: Jerome Dochez

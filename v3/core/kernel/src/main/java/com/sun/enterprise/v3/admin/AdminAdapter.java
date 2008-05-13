@@ -59,7 +59,7 @@ import java.util.Enumeration;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.net.HttpURLConnection;
-import sun.misc.BASE64Decoder;
+import com.sun.enterprise.universal.BASE64Decoder;
 
 /**
  * Listen to admin commands...

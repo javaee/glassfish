@@ -57,7 +57,7 @@ import javax.sql.DataSource;
 //import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
-import sun.misc.BASE64Encoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 import javax.naming.InitialContext;
 import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;

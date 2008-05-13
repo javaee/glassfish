@@ -35,9 +35,9 @@
  */
 package com.sun.appserv.management.client.prefs;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
+import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

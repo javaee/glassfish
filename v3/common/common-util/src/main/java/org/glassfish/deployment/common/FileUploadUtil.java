@@ -36,11 +36,11 @@
 
 package org.glassfish.deployment.common;
 
+import com.sun.enterprise.universal.BASE64Encoder;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import sun.misc.BASE64Encoder;
 
 import com.sun.enterprise.deployment.deploy.shared.Archive;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;

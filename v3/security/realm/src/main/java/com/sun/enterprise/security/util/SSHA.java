@@ -42,10 +42,8 @@ import java.security.*;
 import java.security.spec.*;
 
 import com.sun.enterprise.util.i18n.StringManager;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
+import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 
 /**
  * Util class for salted SHA processing.

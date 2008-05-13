@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-import sun.misc.BASE64Encoder;
+import com.sun.enterprise.universal.BASE64Encoder;
 
 /** This class abstracts the details of URLS from a client. allowing
  * the client to set the host, port, security property and
