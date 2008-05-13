@@ -424,7 +424,13 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         }
 
         Scanner scanner = getScanner();
-        scanner.process(new File(archive.getURI()), bundleDesc, classLoader);
+        if(archive.getURI().getScheme().equals("file")) {
+            // TODO: KK: this shows the abstraction issue of the getURI method.
+            // the contract doesn't require that that is a file, and so this
+            // is broken. For now, I work around that by ignoring this for non-file
+            // URIs.
+            scanner.process(new File(archive.getURI()), bundleDesc, classLoader);
+        }
 
         if (!scanner.getElements().isEmpty()) {
             if (bundleDesc.isDDWithNoAnnotationAllowed()) {

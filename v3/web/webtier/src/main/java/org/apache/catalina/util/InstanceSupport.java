@@ -175,7 +175,7 @@ public final class InstanceSupport {
      * @param type Event type
      * @param filter The relevant Filter for this event
      */
-    public void fireInstanceEvent(String type, Filter filter) {
+    public void fireInstanceEvent(InstanceEvent.EventType type, Filter filter) {
 
         if (listeners.length == 0)
             return;
@@ -209,7 +209,7 @@ public final class InstanceSupport {
      * @param filter The relevant Filter for this event
      * @param exception Exception that occurred
      */
-    public void fireInstanceEvent(String type, Filter filter,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Filter filter,
                                   Throwable exception) {
 
         if (listeners.length == 0)
@@ -248,7 +248,7 @@ public final class InstanceSupport {
      * @param request The servlet request we are processing
      * @param response The servlet response we are processing
      */
-    public void fireInstanceEvent(String type, Filter filter,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Filter filter,
                                   ServletRequest request,
                                   ServletResponse response) {
 
@@ -288,7 +288,7 @@ public final class InstanceSupport {
      * @param response The servlet response we are processing
      * @param exception Exception that occurred
      */
-    public void fireInstanceEvent(String type, Filter filter,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Filter filter,
                                   ServletRequest request,
                                   ServletResponse response,
                                   Throwable exception) {
@@ -326,7 +326,7 @@ public final class InstanceSupport {
      * @param type Event type
      * @param servlet The relevant Servlet for this event
      */
-    public void fireInstanceEvent(String type, Servlet servlet) {
+    public void fireInstanceEvent(InstanceEvent.EventType type, Servlet servlet) {
 
         if (listeners.length == 0)
             return;
@@ -361,7 +361,7 @@ public final class InstanceSupport {
      * @param servlet The relevant Servlet for this event
      * @param exception Exception that occurred
      */
-    public void fireInstanceEvent(String type, Servlet servlet,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Servlet servlet,
                                   Throwable exception) {
 
         if (listeners.length == 0)
@@ -399,7 +399,7 @@ public final class InstanceSupport {
      * @param request The servlet request we are processing
      * @param response The servlet response we are processing
      */
-    public void fireInstanceEvent(String type, Servlet servlet,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Servlet servlet,
                                   ServletRequest request,
                                   ServletResponse response) {
 
@@ -439,7 +439,7 @@ public final class InstanceSupport {
      * @param response The servlet response we are processing
      * @param exception Exception that occurred
      */
-    public void fireInstanceEvent(String type, Servlet servlet,
+    public void fireInstanceEvent(InstanceEvent.EventType type, Servlet servlet,
                                   ServletRequest request,
                                   ServletResponse response,
                                   Throwable exception) {

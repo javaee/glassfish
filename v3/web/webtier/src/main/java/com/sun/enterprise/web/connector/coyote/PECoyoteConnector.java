@@ -598,7 +598,8 @@ public class PECoyoteConnector extends CoyoteConnector{
     public void stop() throws LifecycleException {
         super.stop(); 
         if ( grizzlyMonitor != null ) {
-            grizzlyMonitor.unregisterMonitoringLevelEvents();
+            grizzlyMonitor.destroy();
+            grizzlyMonitor=null;
         }
     }
    //------------------------------------------------- FileCache config -----/
@@ -772,10 +773,9 @@ public class PECoyoteConnector extends CoyoteConnector{
         super.initialize();
         // Set the monitoring.
         grizzlyMonitor = new GrizzlyConfig(domain,getPort());
-
     }
-    
-    
+
+
     /**
      * Set the name of this connector.
      */

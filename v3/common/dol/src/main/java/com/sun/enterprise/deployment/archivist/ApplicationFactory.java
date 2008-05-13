@@ -35,6 +35,7 @@ import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
 import java.io.File;
@@ -55,6 +56,9 @@ public class ApplicationFactory implements ContractProvider {
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    Habitat habitat;
 
     @Inject
     ArchivistFactory archivistFactory;
@@ -151,7 +155,7 @@ public class ApplicationFactory implements ContractProvider {
             }
             ModuleDescriptor newModule = archivist.createModuleDescriptor(aBundle);
             newModule.setArchiveUri(in.getURI().getSchemeSpecificPart());
-            application = Application.createApplication(appName, newModule);
+            application = Application.createApplication(habitat,appName,newModule);
         }
 
         // now read the runtime deployment descriptor

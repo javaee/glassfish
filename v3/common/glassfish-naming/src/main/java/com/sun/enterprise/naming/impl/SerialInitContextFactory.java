@@ -93,7 +93,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
                 // this should force the initialization of the resources providers
                 if (habitat!=null) {
                     for (NamingObjectsProvider provider : habitat.getAllByContract(NamingObjectsProvider.class)) {
-                        System.out.println("Provider " + provider);
+                        // no-op
                     }
                 }
             }

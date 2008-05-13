@@ -81,7 +81,6 @@ import org.jvnet.hk2.annotations.Service;
  * @author Vivek Nagar
  * @author Tony Ng
  */
-@Service
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
@@ -89,29 +88,13 @@ public final class J2EEInstanceListener implements InstanceListener {
     // END OF IASRI 4660742
     protected static ResourceBundle _rb = _logger.getResourceBundle();
 
-    private static final HashSet beforeEvents = new HashSet(4);
-    private static final HashSet afterEvents = new HashSet(4);
-    
-    
-    static {
-        beforeEvents.add(InstanceEvent.BEFORE_SERVICE_EVENT);
-        beforeEvents.add(InstanceEvent.BEFORE_FILTER_EVENT);
-        beforeEvents.add(InstanceEvent.BEFORE_INIT_EVENT);
-        beforeEvents.add(InstanceEvent.BEFORE_DESTROY_EVENT);
-
-        afterEvents.add(InstanceEvent.AFTER_SERVICE_EVENT);
-        afterEvents.add(InstanceEvent.AFTER_FILTER_EVENT);
-        afterEvents.add(InstanceEvent.AFTER_INIT_EVENT);
-        afterEvents.add(InstanceEvent.AFTER_DESTROY_EVENT);
-    }
-
     private InvocationManager im;
     private JavaEETransactionManager tm;
     private InjectionManager injectionMgr;
     private boolean initialized = false;
-    
+
     private AppServSecurityContext securityContext;
-    
+
     public J2EEInstanceListener() {
     }
 
@@ -123,13 +106,13 @@ public final class J2EEInstanceListener implements InstanceListener {
         WebModule wm = (WebModule)context;
         init(wm);
 
-        String eventType = event.getType();
-	if(_logger.isLoggable(Level.FINEST)) {
+        InstanceEvent.EventType eventType = event.getType();
+        if(_logger.isLoggable(Level.FINEST)) {
             _logger.log(Level.FINEST,"*** InstanceEvent: " + eventType);
         }
-        if (beforeEvents.contains(eventType)) {
+        if (eventType.isBefore) {
             handleBeforeEvent(event, eventType);
-        } else if (afterEvents.contains(eventType)) {
+        } else {
             handleAfterEvent(event, eventType);
         }
     }
@@ -141,7 +124,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         ServerContext serverContext = wm.getServerContext();
         if (serverContext == null) {
             String msg = _rb.getString("webmodule.noservercontext");
-            msg = MessageFormat.format(msg, new Object[] { wm.getName() });
+            msg = MessageFormat.format(msg, wm.getName());
             throw new IllegalStateException(msg);
         }
         im = serverContext.getDefaultHabitat().getByContract(
@@ -151,7 +134,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         injectionMgr = serverContext.getDefaultHabitat().getByContract(
                 InjectionManager.class);
         initialized = true;
-        
+
         securityContext = serverContext.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         if (securityContext != null) {
             if (_logger.isLoggable(Level.FINE)) {
@@ -164,34 +147,34 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
     }
 
-    private void handleBeforeEvent(InstanceEvent event, String eventType) {
+    private void handleBeforeEvent(InstanceEvent event, InstanceEvent.EventType eventType) {
         Context context = (Context) event.getWrapper().getParent();
         if (!(context instanceof WebModule)) {
             return;
         }
         WebModule wm = (WebModule)context;
 
-        Object instance = null;
-        if (eventType.equals(InstanceEvent.BEFORE_FILTER_EVENT)) {
+        Object instance;
+        if (eventType==InstanceEvent.EventType.BEFORE_FILTER_EVENT) {
 
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
-        }            
+        }
 
         // set security context
-        // BEGIN IASRI 4688449
+        // BEGIN IAfSRI 4688449
         //try {
         Realm ra = context.getRealm();
         /** IASRI 4713234
         if (ra != null) {
-            HttpServletRequest request = 
+            HttpServletRequest request =
                 (HttpServletRequest) event.getRequest();
             if (request != null && request.getUserPrincipal() != null) {
-                WebPrincipal prin = 
+                WebPrincipal prin =
                     (WebPrincipal) request.getUserPrincipal();
                 // ra.authenticate(prin);
-                
+
                 // It is inefficient to call authenticate just to set
                 // sec.ctx.  Instead, WebPrincipal modified to keep the
                 // previously created secctx, and set it here directly.
@@ -203,23 +186,22 @@ public final class J2EEInstanceListener implements InstanceListener {
         // START OF IASRI 4713234
         if (ra != null) {
 
-            ServletRequest request = 
-		(ServletRequest) event.getRequest();
+            ServletRequest request = event.getRequest();
             if (request != null && request instanceof HttpServletRequest) {
 
                 HttpServletRequest hreq = (HttpServletRequest)request;
 		HttpServletRequest base = hreq;
-		
+
 		Principal prin = hreq.getUserPrincipal();
-		Principal basePrincipal = prin; 
-		
+		Principal basePrincipal = prin;
+
 		boolean wrapped = false;
 
-		while (prin != null && base != null) {
-		    
+		while (prin != null) {
+
 		    if (base instanceof ServletRequestWrapper) {
 			// unwarp any wrappers to find the base object
-			ServletRequest sr = 
+			ServletRequest sr =
 			    ((ServletRequestWrapper) base).getRequest();
 
 			if (sr instanceof HttpServletRequest) {
@@ -227,12 +209,12 @@ public final class J2EEInstanceListener implements InstanceListener {
 			    base = (HttpServletRequest) sr;
 			    wrapped = true;
 			    continue;
-			} 
+			}
 		    }
 
 		    if (wrapped) {
 			basePrincipal = base.getUserPrincipal();
-		    } 
+		    }
 
 		    else if (base instanceof CoyoteRequestFacade) {
 			// try to avoid the getUnWrappedCoyoteRequest call
@@ -248,18 +230,18 @@ public final class J2EEInstanceListener implements InstanceListener {
 		    break;
 		}
 
-		if (prin != null && prin == basePrincipal && 
+		if (prin != null && prin == basePrincipal &&
                         prin.getClass().getName().equals(SecurityConstants.WEB_PRINCIPAL_CLASS)) {
                     securityContext.setSecurityContextWithPrincipal(prin);
 		} else if (prin != basePrincipal) {
-		    
+
 		    // the wrapper has overridden getUserPrincipal
 		    // reject the request if the wrapper does not have
 		    // the necessary permission.
 
 		    checkObjectForDoAsPermission(hreq);
                     securityContext.setSecurityContextWithPrincipal(prin);
-                    
+
 		}
 
 	    }
@@ -278,16 +260,16 @@ public final class J2EEInstanceListener implements InstanceListener {
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
         try {
             im.preInvoke(inv);
-            if (eventType.equals(InstanceEvent.BEFORE_SERVICE_EVENT)) {
+            if (eventType==InstanceEvent.EventType.BEFORE_SERVICE_EVENT) {
                 // enlist resources with TM for service method
-                Transaction tran = null;
+                Transaction tran;
                 if ((tran = tm.getTransaction()) != null) {
                     inv.setTransaction(tran);
                 }
                 tm.enlistComponentResources();
-            } else if (eventType.equals(InstanceEvent.BEFORE_INIT_EVENT)) {
-                
-                // Perform any required resource injection on the servlet 
+            } else if (eventType==InstanceEvent.EventType.BEFORE_INIT_EVENT) {
+
+                // Perform any required resource injection on the servlet
                 // instance.  This needs to be done after the invocation of
                 // preInvoke, but before any of the servlet's application
                 // code is executed.
@@ -315,7 +297,7 @@ public final class J2EEInstanceListener implements InstanceListener {
     private static javax.security.auth.AuthPermission doAsPrivilegedPerm =
  	new javax.security.auth.AuthPermission("doAsPrivileged");
 
- 
+
     private static void checkObjectForDoAsPermission(final Object o)
             throws AccessControlException{
 
@@ -335,7 +317,7 @@ public final class J2EEInstanceListener implements InstanceListener {
 	}
     }
 
-    private void handleAfterEvent(InstanceEvent event, String eventType) {
+    private void handleAfterEvent(InstanceEvent event, InstanceEvent.EventType eventType) {
 
         Context context = (Context) event.getWrapper().getParent();
         if (!(context instanceof WebModule)) {
@@ -343,9 +325,9 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
 
         WebModule wm = (WebModule)context;
-        
-        Object instance = null;
-        if (eventType.equals(InstanceEvent.AFTER_FILTER_EVENT)) {
+
+        Object instance;
+        if (eventType==InstanceEvent.EventType.AFTER_FILTER_EVENT) {
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
@@ -360,7 +342,7 @@ public final class J2EEInstanceListener implements InstanceListener {
                     "web_server.excep_handle_after_event"),
                 ex);
         } finally {
-            if (eventType.equals(InstanceEvent.AFTER_DESTROY_EVENT)) {
+            if (eventType==InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
                 tm.componentDestroyed(instance, inv);                
                 JndiNameEnvironment desc = wm.getWebBundleDescriptor();
                 if (desc != null
@@ -375,8 +357,8 @@ public final class J2EEInstanceListener implements InstanceListener {
                     }
                 }
             }
-            if (eventType.equals(InstanceEvent.AFTER_FILTER_EVENT) ||
-                eventType.equals(InstanceEvent.AFTER_SERVICE_EVENT)) {
+            if (eventType==(InstanceEvent.EventType.AFTER_FILTER_EVENT) ||
+                eventType==(InstanceEvent.EventType.AFTER_SERVICE_EVENT)) {
                 // check it's top level invocation
                 // BEGIN IASRI# 4646060
                 if (im.getCurrentInvocation() == null) {

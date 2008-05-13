@@ -109,22 +109,14 @@ public class DeploymentContextImpl implements DeploymentContext {
      */
     public File getScratchDir(String subDirName) {
         final String appName = parameters.getProperty(DeployCommand.NAME);
-        File rootScratchDir;
-        if (subDirName == null ) {
-            rootScratchDir = new File(env.getApplicationStubPath());
-        } else {
-            rootScratchDir = new File(env.getApplicationStubPath(),
-                subDirName);
-        }
+        File rootScratchDir = env.getApplicationStubPath();
+        if (subDirName != null )
+            rootScratchDir = new File(rootScratchDir, subDirName);
         return new File(rootScratchDir, appName);
     }
 
     /**
-     * Returns the directory where the original applications bits should be
-     * stored. This is useful when users deploy an archive file that need to
-     * be unzipped somewhere for the container to work with.
-     *
-     * @return the source directory for this application
+     * {@inheritDoc}
      */
     public File getSourceDir() {
 

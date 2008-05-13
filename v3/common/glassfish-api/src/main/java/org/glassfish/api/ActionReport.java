@@ -25,6 +25,8 @@ package org.glassfish.api;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * An action report is an interface allowing any type of server side action 
@@ -37,37 +39,59 @@ import java.util.*;
  *
  * @author Jerome Dochez
  */
-public interface ActionReport {
+public abstract class ActionReport {
     
-    enum ExitCode { SUCCESS, WARNING, FAILURE };
+    public enum ExitCode { SUCCESS, WARNING, FAILURE }
     
-    public void setActionDescription(String message);
+    public abstract void setActionDescription(String message);
     
-    public void setFailureCause(Throwable t);
+    public abstract void setFailureCause(Throwable t);
 
-    public Throwable getFailureCause();
+    public abstract Throwable getFailureCause();
 
-    public void setMessage(String message);
+    public abstract void setMessage(String message);
     
-    public void writeReport(OutputStream os) throws IOException;
+    public abstract void writeReport(OutputStream os) throws IOException;
 
-    public void setMessage(InputStream in);
+    public abstract void setMessage(InputStream in);
 
-    public String getMessage();
+    public abstract String getMessage();
     
-    public MessagePart getTopMessagePart();
+    public abstract MessagePart getTopMessagePart();
     
-    public ActionReport addSubActionsReport();
+    public abstract ActionReport addSubActionsReport();
     
-    public void setActionExitCode(ExitCode exitCode);
+    public abstract void setActionExitCode(ExitCode exitCode);
 
-    public ExitCode getActionExitCode();
+    public abstract ExitCode getActionExitCode();
     
-    public String getContentType();
+    public abstract String getContentType();
 
-    public void setContentType(String s);
+    public abstract void setContentType(String s);
 
-    class MessagePart {
+    /**
+     * Report a failure to the logger and {@link ActionReport}.
+     *
+     * This is more of a convenience to the caller.
+     */
+    public final void failure(Logger logger, String message, Throwable e) {
+        logger.log(Level.SEVERE, message ,e);
+        if (e!=null) {
+            setMessage(message + " : "+ e.toString());
+        } else {
+            setMessage(message);
+        }
+        setActionExitCode(ActionReport.ExitCode.FAILURE);
+    }
+
+    /**
+     * Short for {@code failure(logger,message,null)}
+     */
+    public final void failure(Logger logger, String message) {
+        failure(logger,message,null);
+    }
+
+    public static class MessagePart {
 
         Properties props = new Properties();
         String message;

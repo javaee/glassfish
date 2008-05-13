@@ -114,22 +114,22 @@ import com.sun.logging.LogDomains;
 /**
  * Specialized web application class loader.
  * <p>
- * This class loader is a full reimplementation of the 
+ * This class loader is a full reimplementation of the
  * <code>URLClassLoader</code> from the JDK. It is desinged to be fully
  * compatible with a normal <code>URLClassLoader</code>, although its internal
  * behavior may be completely different.
  * <p>
- * <strong>IMPLEMENTATION NOTE</strong> - This class loader faithfully follows 
- * the delegation model recommended in the specification. The system class 
- * loader will be queried first, then the local repositories, and only then 
- * delegation to the parent class loader will occur. This allows the web 
+ * <strong>IMPLEMENTATION NOTE</strong> - This class loader faithfully follows
+ * the delegation model recommended in the specification. The system class
+ * loader will be queried first, then the local repositories, and only then
+ * delegation to the parent class loader will occur. This allows the web
  * application to override any shared class except the classes from J2SE.
  * Special handling is provided from the JAXP XML parser interfaces, the JNDI
- * interfaces, and the classes from the servlet API, which are never loaded 
+ * interfaces, and the classes from the servlet API, which are never loaded
  * from the webapp repository.
  * <p>
- * <strong>IMPLEMENTATION NOTE</strong> - Due to limitations in Jasper 
- * compilation technology, any repository which contains classes from 
+ * <strong>IMPLEMENTATION NOTE</strong> - Due to limitations in Jasper
+ * compilation technology, any repository which contains classes from
  * the servlet API will be ignored by the class loader.
  * <p>
  * <strong>IMPLEMENTATION NOTE</strong> - The class loader generates source
@@ -195,7 +195,7 @@ public class WebappClassLoader
      */
     private static final String[] packageTriggers = {
         "javax",                                     // Java extensions
-        // START PE 4985680 
+        // START PE 4985680
         "sun",                                       // Sun classes
         // END PE 4985680
         "org.xml.sax",                               // SAX 1 & 2
@@ -206,12 +206,12 @@ public class WebappClassLoader
         "com.sun.faces",                             // JSF (Java EE 5)
         "org.apache.commons.logging"                 // Commons logging
     };
-    
-    // START PE 4985680    
+
+    // START PE 4985680
     /**
      * List of packages that may always be overridden, regardless of whether
      * they belong to a protected namespace (i.e., a namespace that may never be
-     * overridden by a webapp)  
+     * overridden by a webapp)
      */
     private ArrayList overridablePackages;
    // END PE 4985680
@@ -251,12 +251,12 @@ public class WebappClassLoader
 
     // START PE 4989455
     /**
-     * Use this variable to invoke the security manager when a resource is 
+     * Use this variable to invoke the security manager when a resource is
      * loaded by this classloader.
      */
-    private boolean packageDefinitionEnabled =  
+    private boolean packageDefinitionEnabled =
          System.getProperty("package.definition") == null ? false : true;
-    // END OF PE 4989455 
+    // END OF PE 4989455
 
     /**
      * Associated directory context giving access to the resources in this
@@ -429,7 +429,7 @@ public class WebappClassLoader
     private boolean useMyFaces;
 
     // ------------------------------------------------------------- Properties
-    
+
     // START PE 4985680
     /**
      * Adds the given package name to the list of packages that may always be
@@ -625,9 +625,7 @@ public class WebappClassLoader
 
         // Add this repository to our underlying class loader
         try {
-            URL url = new URL(repository);
-            super.addURL(url);
-            hasExternalRepositories = true;
+            addURL(new URL(repository));
         } catch (MalformedURLException e) {
             IllegalArgumentException iae = new IllegalArgumentException
                 ("Invalid repository: " + repository);
@@ -637,6 +635,10 @@ public class WebappClassLoader
 
     }
 
+    public void addRepository(URL url) {
+        super.addURL(url);
+        hasExternalRepositories = true;
+    }
 
     /**
      * Add a new repository to the set of places this ClassLoader can look for
@@ -761,7 +763,7 @@ public class WebappClassLoader
     /**
      * Return a String array of the current repositories for this class
      * loader.  If there are no repositories, a zero-length array is
-     * returned.For security reason, returns a clone of the Array (since 
+     * returned.For security reason, returns a clone of the Array (since
      * String are immutable).
      */
     public String[] findRepositories() {
@@ -835,7 +837,7 @@ public class WebappClassLoader
                 }
                 if (enumeration.hasMoreElements()) {
                     while (enumeration.hasMoreElements()) {
-                        NameClassPair ncPair = 
+                        NameClassPair ncPair =
                             (NameClassPair) enumeration.nextElement();
                         String name = ncPair.getName();
                         // Additional non-JAR files are allowed
@@ -915,7 +917,7 @@ public class WebappClassLoader
         // (1) Permission to define this class when using a SecurityManager
         // START PE 4989455
         //if (securityManager != null) {
-        if ( securityManager != null && packageDefinitionEnabled ){    
+        if ( securityManager != null && packageDefinitionEnabled ){
         // END PE 4989455
             int i = name.lastIndexOf('.');
             if (i >= 0) {
@@ -946,7 +948,7 @@ public class WebappClassLoader
                     if (entry.loadedClass == null) {
                         /* START GlassFish [680]
                         clazz = defineClass(name, entry.binaryContent, 0,
-                                entry.binaryContent.length, 
+                                entry.binaryContent.length,
                                 codeSource);
                         */
                         // START GlassFish [680]
@@ -1185,7 +1187,7 @@ public class WebappClassLoader
         // (2) Search local repositories
         url = findResource(name);
         if (url != null) {
-            // Locating the repository for special handling in the case 
+            // Locating the repository for special handling in the case
             // of a JAR
             ResourceEntry entry = (ResourceEntry) resourceEntries.get(name);
             try {
@@ -1335,7 +1337,7 @@ public class WebappClassLoader
         // Don't load classes if class loader is stopped
         if (!started) {
             logger.fine(sm.getString("webappClassLoader.stopped"));
-            throw new ThreadDeath(); 
+            throw new ThreadDeath();
         }
 
         // (0) Check our previously loaded local class cache
@@ -1374,7 +1376,7 @@ public class WebappClassLoader
         // (0.5) Permission to access this class when using a SecurityManager
         // START PE 4989455
         //if (securityManager != null) {
-        if ( securityManager != null && packageDefinitionEnabled){    
+        if ( securityManager != null && packageDefinitionEnabled){
         // END PE 4989455
             int i = name.lastIndexOf('.');
             if (i >= 0) {
@@ -1399,7 +1401,7 @@ public class WebappClassLoader
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Delegating to parent classloader1 " + parent);
             ClassLoader loader = parent;
-            if (loader == null) 
+            if (loader == null)
                 loader = system;
 
             // START PE 4985680
@@ -1413,7 +1415,7 @@ public class WebappClassLoader
             } catch (ClassNotFoundException e) {
                 ;
             }
-            // END PE 4985680    
+            // END PE 4985680
         }
 
         // (2) Search local repositories
@@ -1421,7 +1423,7 @@ public class WebappClassLoader
         boolean filterCoreClasses = filter(name);
         if ( !filterCoreClasses ) {
             // (2) Search local repositories
-        // END PE 4985680    
+        // END PE 4985680
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Searching local repositories");
             try {
@@ -1469,7 +1471,7 @@ public class WebappClassLoader
         }
 
         // START PE 4985680
-        // (4) Delegate to parent finally if the class wasn't found 
+        // (4) Delegate to parent finally if the class wasn't found
         try {
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Delegating to parent classloader " + parent);
@@ -1650,7 +1652,7 @@ public class WebappClassLoader
 
 
     /**
-     * Get the lifecycle listeners associated with this lifecycle. If this 
+     * Get the lifecycle listeners associated with this lifecycle. If this
      * Lifecycle has no listeners registered, a zero-length array is returned.
      */
     public LifecycleListener[] findLifecycleListeners() {
@@ -1748,13 +1750,13 @@ public class WebappClassLoader
 
 
     /**
-     * Used to periodically signal to the classloader to release 
+     * Used to periodically signal to the classloader to release
      * JAR resources.
      */
     public void closeJARs(boolean force) {
         if (jarFiles.length > 0) {
             synchronized (jarFiles) {
-                if (force || (System.currentTimeMillis() 
+                if (force || (System.currentTimeMillis()
                               > (lastJarAccessed + 90000))) {
                     for (int i = 0; i < jarFiles.length; i++) {
                         try {
@@ -1791,7 +1793,7 @@ public class WebappClassLoader
                 }
             }
         }
-        
+
         // Null out any static or final fields from loaded classes,
         // as a workaround for apparent garbage collection bugs
         Iterator loadedClasses = ((HashMap) resourceEntries.clone()).values().
@@ -1805,7 +1807,7 @@ public class WebappClassLoader
                     for (int i = 0; i < fields.length; i++) {
                         Field field = fields[i];
                         int mods = field.getModifiers();
-                        if (field.getType().isPrimitive() 
+                        if (field.getType().isPrimitive()
                                 || (field.getName().indexOf("$") != -1)) {
                             continue;
                         }
@@ -1841,7 +1843,7 @@ public class WebappClassLoader
         }
 
 
-        
+
         // Clear the classloader reference in the VM's bean introspector
         java.beans.Introspector.flushCaches();
 
@@ -1856,7 +1858,7 @@ public class WebappClassLoader
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             int mods = field.getModifiers();
-            if (field.getType().isPrimitive() 
+            if (field.getType().isPrimitive()
                     || (field.getName().indexOf("$") != -1)) {
                 continue;
             }
@@ -1871,10 +1873,10 @@ public class WebappClassLoader
                         Class valueClass = value.getClass();
                             if (logger.isLoggable(Level.FINE))  {
                                 logger.fine("Not setting field " + field.getName() +
-                                        " to null in object of class " + 
+                                        " to null in object of class " +
                                         instance.getClass().getName() +
                                         " because the referenced object was of type " +
-                                        valueClass.getName() + 
+                                        valueClass.getName() +
                                         " which was not loaded by this WebappClassLoader.");
                             }
                         } else {
@@ -1886,14 +1888,14 @@ public class WebappClassLoader
                     }
             } catch (Throwable t) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE,"Could not set field " + field.getName() 
-                            + " to null in object instance of class " 
+                    logger.log(Level.FINE,"Could not set field " + field.getName()
+                            + " to null in object instance of class "
                             + instance.getClass().getName(), t);
                 }
             }
         }
     }
-    
+
 
     /**
      * Determine whether a class was loaded by this class loader or one of
@@ -1909,7 +1911,7 @@ public class WebappClassLoader
             }
         }
         return result;
-    }  
+    }
     // ------------------------------------------------------ Protected Methods
 
 
@@ -2029,10 +2031,10 @@ public class WebappClassLoader
             entry.codeBase = getURL(new File(file, path));
         } catch (MalformedURLException e) {
             return null;
-        }   
+        }
         return entry;
     }
-    
+
 
     /**
      * Attempts to find the specified resource in local repositories.
@@ -2143,7 +2145,7 @@ public class WebappClassLoader
 
                         int j;
 
-                        long[] result2 = 
+                        long[] result2 =
                             new long[lastModifiedDates.length + 1];
                         for (j = 0; j < lastModifiedDates.length; j++) {
                             result2[j] = lastModifiedDates[j];
@@ -2224,9 +2226,9 @@ public class WebappClassLoader
                     if (!resourceFile.exists()) {
                         Enumeration entries = jarFiles[i].entries();
                         while (entries.hasMoreElements()) {
-                            JarEntry jarEntry2 = 
+                            JarEntry jarEntry2 =
                                 (JarEntry) entries.nextElement();
-                            if (!(jarEntry2.isDirectory()) 
+                            if (!(jarEntry2.isDirectory())
                                 && (!jarEntry2.getName().endsWith(".class"))) {
                                 resourceFile = new File
                                     (loaderDir, jarEntry2.getName());
@@ -2319,7 +2321,7 @@ public class WebappClassLoader
 
         entry.binaryContent = binaryContent;
 
-        // The certificates are only available after the JarEntry 
+        // The certificates are only available after the JarEntry
         // associated input stream has been fully read
         if (jarEntry != null) {
             entry.certificates = jarEntry.getCertificates();
@@ -2393,8 +2395,8 @@ public class WebappClassLoader
     protected void refreshPolicy() {
 
         try {
-            // The policy file may have been modified to adjust 
-            // permissions, so we're reloading it when loading or 
+            // The policy file may have been modified to adjust
+            // permissions, so we're reloading it when loading or
             // reloading a Context
             Policy policy = Policy.getPolicy();
             policy.refresh();
@@ -2408,7 +2410,7 @@ public class WebappClassLoader
 
     /**
      * Filter classes.
-     * 
+     *
      * @param name class name
      * @return true if the class should be filtered
      */
@@ -2430,7 +2432,7 @@ public class WebappClassLoader
             packageName = name.substring(0, pos);
         else
             return false;
-        
+
         if (overridablePackages != null){
             for (int i = 0; i < overridablePackages.size(); i++) {
                 if (packageName.
@@ -2450,12 +2452,12 @@ public class WebappClassLoader
 
 
     /**
-     * Validate a classname. As per SRV.9.7.2, we must restict loading of 
-     * classes from J2SE (java.*) and classes of the servlet API 
+     * Validate a classname. As per SRV.9.7.2, we must restict loading of
+     * classes from J2SE (java.*) and classes of the servlet API
      * (javax.servlet.*). That should enhance robustness and prevent a number
      * of user error (where an older version of servlet.jar would be present
      * in /WEB-INF/lib).
-     * 
+     *
      * @param name class name
      * @return true if the name is valid
      */
@@ -2503,7 +2505,7 @@ public class WebappClassLoader
                 logger.fine(" Checking for " + name);
             JarEntry jarEntry = jarFile.getJarEntry(name);
             if (jarEntry != null) {
-                logger.info("validateJarFile(" + jarfile + 
+                logger.info("validateJarFile(" + jarfile +
                     ") - jar not loaded. See Servlet Spec 2.3, "
                     + "section 9.7.2. Offending class: " + name);
                 jarFile.close();
@@ -2636,7 +2638,7 @@ public class WebappClassLoader
             Class mbeanClass = iter.next();
             if (this.equals(mbeanClass.getClassLoader())) {
                 iter.remove();
-            }    
+            }
         }
     }
     // END GlassFish Issue 587

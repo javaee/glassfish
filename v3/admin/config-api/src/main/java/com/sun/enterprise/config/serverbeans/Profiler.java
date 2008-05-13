@@ -59,7 +59,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProfilerConfig")
 @Configured
-public interface Profiler extends ConfigBeanProxy, Injectable  {
+public interface Profiler extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the name property.
@@ -128,9 +128,6 @@ public interface Profiler extends ConfigBeanProxy, Injectable  {
      *              {@link String }
      */
     public void setEnabled(String value) throws PropertyVetoException;
-
-    @Element
-    public List<Property>  getProperty();
 
     @Element
     public List<String> getJvmOptions();

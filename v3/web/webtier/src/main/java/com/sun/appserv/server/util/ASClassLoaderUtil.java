@@ -181,14 +181,13 @@ public class ASClassLoaderUtil {
  
     /**
      * Gets the deploy-time "libraries" attribute specified for module
-     * @param the module type
+     * @param type the module type
      * @param moduleId The module id of the web module
      * @return A comma separated list representing the libraries
      * specified by the deployer.
      */    
     public static <T> String getLibrariesForModule(Class<T> type, String moduleId) {
-        
-        T app = ConfigBeansUtilities.getModule(type, moduleId);
+        T app =  Globals.get(Applications.class).getModule(type, moduleId);
         if (app==null) return null;
         
         String librariesStr=null;

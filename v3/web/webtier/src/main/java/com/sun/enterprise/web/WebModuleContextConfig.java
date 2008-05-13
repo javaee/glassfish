@@ -243,8 +243,7 @@ public class WebModuleContextConfig extends ContextConfig {
             context.setAvailable(false);
             String msg = _rb.getString(
                 "webModuleContextConfig.webModuleDisabled");
-            msg = MessageFormat.format(msg,
-                                       new Object[] { context.getName() });
+            msg = MessageFormat.format(msg,context.getName());
             logger.log(Level.SEVERE, msg, t);
         }
 

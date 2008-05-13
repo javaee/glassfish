@@ -47,15 +47,19 @@ import java.io.File;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
- 
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
+
 /** 
  *  Implementation of jacc PolicyConfigurationFactory class
  * @author Harpreet Singh
  * @author Ron Monzillo
  * @version
  */
-public class PolicyConfigurationFactoryImpl 
-    extends PolicyConfigurationFactory{
+@Service
+@ContractProvided(PolicyConfigurationFactory.class)
+public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 
     // Table of ContextId->PolicyConfiguration 
     static Map polConfTable = new HashMap(); 

@@ -138,4 +138,16 @@
         <!-- this build script will be reused elsewhere -->
         <attachArtifact file="build.xml" classifier="build"/>
     </target>
+
+    <!--
+      Target for building all in one jar. This takes long time,
+      so separated out to its own target to avoid running this on developer's machine.
+     -->
+    <target name="all.jar">
+        <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
+        <rejar destfile="target/all.jar">
+          <zipgroupfileset dir="target/stage/glassfish/modules" includes="**/*.jar" />
+        </rejar>
+        <attachArtifact file="target/all.jar" classifier="all"/>
+    </target>
 </project>

@@ -36,25 +36,33 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.RepositoryChangeListener;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.LineNumberReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.URLClassLoader;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class used by both {@link ASMainHK2} and {@link ASMainOSGi}
@@ -93,35 +101,6 @@ public class ASMainHelper {
         }
 
         return new ExtensibleClassLoader(urls, parent, sharedRepos);
-    }
-
-    private class ExtensibleClassLoader extends URLClassLoader
-            implements RepositoryChangeListener {
-
-        public ExtensibleClassLoader(URL[] urls, ClassLoader parent, List<Repository> repos) {
-            super(urls, parent);
-            for (Repository repo : repos) {
-                repo.addListener(this);
-            }
-        }
-
-        public void jarAdded(URI uri) {
-            try {
-                super.addURL(uri.toURL());
-                logger.info("Added " + uri + " to shared classpath, no need to restart appserver");
-            } catch (MalformedURLException e) {
-                logger.log(Level.SEVERE, "Cannot add new added library to shared classpath", e);
-            }
-
-        }
-        public void jarRemoved(URI uri) {
-        }
-
-        public void moduleAdded(ModuleDefinition moduleDefinition) {
-        }
-
-        public void moduleRemoved(ModuleDefinition moduleDefinition) {
-        }
     }
 
     /*protected*/ void parseAsEnv(File installRoot) {

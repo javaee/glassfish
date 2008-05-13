@@ -120,6 +120,9 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
        ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                 Resource target = null;
+                // TODO: this causes NoSuchElementException but really
+                // it should have caused ConcurrentModificationException, because the iteration
+                // and removal runs at the same time.
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
                         JdbcResource jr = (JdbcResource)resource;

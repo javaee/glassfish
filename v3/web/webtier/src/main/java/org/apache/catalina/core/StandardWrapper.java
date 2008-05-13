@@ -82,7 +82,6 @@ import javax.management.ObjectName;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerServlet;
 import org.apache.catalina.Context;
-import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
@@ -90,6 +89,10 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Valve;
 // END GlassFish 1343
 import org.apache.catalina.Wrapper;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_INIT_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_DESTROY_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_DESTROY_EVENT;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
@@ -340,8 +343,7 @@ public class StandardWrapper
             this.available = available;
         else
             this.available = 0L;
-        support.firePropertyChange("available", Long.valueOf(oldAvailable),
-                                   Long.valueOf(this.available));
+        support.firePropertyChange("available", oldAvailable, this.available);
 
     }
 
@@ -377,8 +379,8 @@ public class StandardWrapper
 
         int oldDebug = this.debug;
         this.debug = debug;
-        support.firePropertyChange("debug", Integer.valueOf(oldDebug),
-                                   Long.valueOf(this.debug));
+        support.firePropertyChange("debug", oldDebug,
+                (long) this.debug);
 
     }
 
@@ -678,7 +680,7 @@ public class StandardWrapper
             return DEFAULT_SERVLET_METHODS;
         }
 
-        HashSet allow = new HashSet();
+        HashSet<String> allow = new HashSet<String>();
         allow.add("TRACE");
         allow.add("OPTIONS");
 	
@@ -699,7 +701,7 @@ public class StandardWrapper
         }
 
         String[] methodNames = new String[allow.size()];
-        return (String[]) allow.toArray(methodNames);
+        return allow.toArray(methodNames);
 
     }
 
@@ -735,7 +737,7 @@ public class StandardWrapper
      */
     public static Throwable getRootCause(ServletException e) {
         Throwable rootCause = e;
-        Throwable rootCauseCheck = null;
+        Throwable rootCauseCheck;
         // Extra aggressive rootCause finding
         do {
             try {
@@ -799,7 +801,7 @@ public class StandardWrapper
     /**
      * Add a mapping associated with the Wrapper.
      *
-     * @param pattern The new wrapper mapping
+     * @param mapping The new wrapper mapping
      */
     public void addMapping(String mapping) {
 
@@ -1075,11 +1077,11 @@ public class StandardWrapper
                     actualClass = jspWrapper.getServletClass();
                     // Merge init parameters
                     String paramNames[] = jspWrapper.findInitParameters();
-                    for (int i = 0; i < paramNames.length; i++) {
-                        if (parameters.get(paramNames[i]) == null) {
+                    for (String paramName : paramNames) {
+                        if (parameters.get(paramName) == null) {
                             parameters.put
-                                (paramNames[i], 
-                                 jspWrapper.findInitParameter(paramNames[i]));
+                                    (paramName,
+                                            jspWrapper.findInitParameter(paramName));
                         }
                     }
                 }
@@ -1194,8 +1196,7 @@ public class StandardWrapper
             classLoadTime=(int) (System.currentTimeMillis() -t1);
             // Call the initialization method of this servlet
             try {
-                instanceSupport.fireInstanceEvent(InstanceEvent.BEFORE_INIT_EVENT,
-                                                  servlet);
+                instanceSupport.fireInstanceEvent(BEFORE_INIT_EVENT,servlet);
 
                 // START SJS WS 7.0 6236329
                 //if( System.getSecurityManager() != null) {
@@ -1248,23 +1249,19 @@ public class StandardWrapper
                         servlet.service(req, res);
                     }
                 }
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet);
             } catch (UnavailableException f) {
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 unavailable(f);
                 throw f;
             } catch (ServletException f) {
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 // If the servlet wanted to be unavailable it would have
                 // said so, so do not call unavailable(null).
                 throw f;
             } catch (Throwable f) {
                 getServletContext().log("StandardWrapper.Throwable", f );
-                instanceSupport.fireInstanceEvent(InstanceEvent.AFTER_INIT_EVENT,
-                                                  servlet, f);
+                instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
                 // If the servlet wanted to be unavailable it would have
                 // said so, so do not call unavailable(null).
                 throw new ServletException
@@ -1429,7 +1426,7 @@ public class StandardWrapper
             while ((nRetries < 21) && (countAllocated > 0)) {
                 if ((nRetries % 10) == 0) {
                     log.debug(sm.getString("standardWrapper.waiting",
-                                           Integer.valueOf(countAllocated),
+                            countAllocated,
                                            instance.getClass().getName()));
                 }
                 try {
@@ -1452,8 +1449,7 @@ public class StandardWrapper
 
         // Call the servlet destroy() method
         try {
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.BEFORE_DESTROY_EVENT, instance);
+            instanceSupport.fireInstanceEvent(BEFORE_DESTROY_EVENT, instance);
 
             Thread.currentThread().setContextClassLoader(classLoader);
             // START SJS WS 7.0 6236329
@@ -1467,11 +1463,9 @@ public class StandardWrapper
                 instance.destroy();
             }
 
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.AFTER_DESTROY_EVENT, instance);
+            instanceSupport.fireInstanceEvent(AFTER_DESTROY_EVENT, instance);
         } catch (Throwable t) {
-            instanceSupport.fireInstanceEvent
-              (InstanceEvent.AFTER_DESTROY_EVENT, instance, t);
+            instanceSupport.fireInstanceEvent(AFTER_DESTROY_EVENT, instance, t);
             instance = null;
             instancePool = null;
             nInstances = 0;

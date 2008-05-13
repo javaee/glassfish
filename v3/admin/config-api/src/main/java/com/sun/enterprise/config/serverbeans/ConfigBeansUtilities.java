@@ -26,8 +26,6 @@ package com.sun.enterprise.config.serverbeans;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,130 +45,39 @@ public final class ConfigBeansUtilities {
     private ConfigBeansUtilities() {
     }
 
-    public static <T> List<T> getModules(Class<T> type) {
-        List<T> modules = new ArrayList<T>();
-        for (Object module : apps.getModules()) {
-            if (module.getClass().getName().equals(type.getClass().getName())) {
-                modules.add((T) module);
-            }
-        }
-        return modules;
-    }
-
-    public static <T> T getModule(Class<T> type, String moduleID) {
-
-        if (moduleID == null) {
-            return null;
-        }
-
-        for (Object module : apps.getModules()) {
-            if (module.getClass().getName().equals(type.getClass().getName())) {
-                Method m;
-                try {
-                    m = type.getMethod("getName");
-                } catch (SecurityException ex) {
-                    return null;
-                } catch (NoSuchMethodException ex) {
-                    return null;
-                }
-                if (m != null) {
-                    try {
-                        if (moduleID.equals(m.invoke(module))) {
-                            return (T) module;
-                        }
-                    } catch (IllegalArgumentException ex) {
-                        return null;
-                    } catch (IllegalAccessException ex) {
-                        return null;
-                    } catch (InvocationTargetException ex) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return null;
-
-    }
-
-    public static Property getPropertyByName(Object bean, String name) {
-        Method m;
-        try {
-            m = bean.getClass().getMethod("getProperty");
-        } catch (SecurityException ex) {
-            return null;
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
-        if (m == null) {
-            return null;
-        }
-        List<Property> properties;
-        try {
-            properties = (List<Property>) m.invoke(bean);
-        } catch (IllegalArgumentException ex) {
-            return null;
-        } catch (IllegalAccessException ex) {
-            return null;
-        } catch (InvocationTargetException ex) {
-            return null;
-        }
-        for (Property prop : properties) {
-            if (prop.getName().equals(name)) {
-                return prop;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
-     *
-     * @param bean the config-api bean
-     * @param name the property name requested
-     * @return the property value of null if not found
-     */
-    public static String getPropertyValueByName(Object bean, String name) {
-        Property prop = getPropertyByName(bean, name);
-        if (prop != null) {
-            return prop.getValue();
-        }
-        return null;
-    }
-
     /**
      * Get the default value of Format from dtd
      */
     public static String getDefaultFormat() {
-        return "%client.name% %auth-user-name% %datetime% %request% %status% %response.length%".trim();
+        return "%client.name% %auth-user-name% %datetime% %request% %status% %response.length%";
     }
 
     /**
      * Get the default value of RotationPolicy from dtd
      */
     public static String getDefaultRotationPolicy() {
-        return "time".trim();
+        return "time";
     }
 
     /**
      * Get the default value of RotationEnabled from dtd
      */
     public static String getDefaultRotationEnabled() {
-        return "true".trim();
+        return "true";
     }
 
     /**
      * Get the default value of RotationIntervalInMinutes from dtd
      */
     public static String getDefaultRotationIntervalInMinutes() {
-        return "1440".trim();
+        return "1440";
     }
 
     /**
      * Get the default value of QueueSizeInBytes from dtd
      */
     public static String getDefaultQueueSizeInBytes() {
-        return "4096".trim();
+        return "4096";
     }
 
     /**
@@ -189,7 +96,7 @@ public final class ConfigBeansUtilities {
                 || v.equals("on")
                 || v.equals("1"));
     }
-    
+
     /** Returns the list of system-applications that are referenced from the given server.
      *  A server references an application, if the server has an element named
      *  &lt;application-ref> in it that points to given application. The given server

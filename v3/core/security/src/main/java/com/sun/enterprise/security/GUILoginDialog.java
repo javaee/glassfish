@@ -42,8 +42,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.security.auth.callback.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.util.logging.*;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -240,7 +242,7 @@ class PassphraseDialog extends JDialog
 	    kpPanel.add (lbl);
 	    kpPanel.add (keystorePassword);
 	    /* get the keystore password */
-	    keystorePass = SSLUtils.getKeyStorePass ();
+	    keystorePass = Globals.getDefaultHabitat().getComponent(SSLUtils.class).getKeyStorePass();
 	    // ok button For keystore password
 	    okForKP = new
 		JButton(localStrings.getLocalString

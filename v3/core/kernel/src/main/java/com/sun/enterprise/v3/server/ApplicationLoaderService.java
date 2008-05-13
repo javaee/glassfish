@@ -105,8 +105,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             Boolean.TRUE))) {
                             // only process the application when the enable
                             // attribute is true
-                            processApplication((Application)module, appRef,
-                                logger);
+                            processApplication(module, appRef, logger);
                         }
                         break;
                     }
@@ -136,7 +135,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             cloader = handler.getClassLoader(null, sourceArchive);
                         }
 
-                        Iterable<Sniffer> appSniffers = getSniffers(sourceArchive, cloader);
+                        Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive, cloader);
                         if (appSniffers!=null) {
                             Properties deploymentProperties = new Properties();
                             deploymentProperties.setProperty(DeployCommand.NAME, sourceFile.getName());
@@ -217,7 +216,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
                     for (String snifferType : snifferTypes) {
-                        Sniffer sniffer = getSniffer(snifferType);
+                        Sniffer sniffer = snifferManager.getSniffer(snifferType);
                         if (sniffer!=null) {
                             sniffers.add(sniffer);
                         } else {

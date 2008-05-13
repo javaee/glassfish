@@ -443,7 +443,7 @@ public final class PEAccessLogValve
     /**
      * Set the log file prefix.
      *
-     * @param prefix The new log file prefix
+     * @param p prefix The new log file prefix
      */
     public void setPrefix(String p) {
 
@@ -494,7 +494,7 @@ public final class PEAccessLogValve
     /**
      * Set the log file suffix.
      *
-     * @param suffix The new log file suffix
+     * @param s suffix The new log file suffix
      */
     public void setSuffix(String s) {
 
@@ -581,8 +581,6 @@ public final class PEAccessLogValve
      *
      * @param request Request being processed
      * @param response Response being processed
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error has occurred
      * @exception ServletException if a servlet error has occurred
@@ -591,8 +589,7 @@ public final class PEAccessLogValve
             throws IOException, ServletException {
 
         if (formatter.needTimeTaken()) {
-            request.setNote(Constants.REQUEST_START_TIME_NOTE,
-                            Long.valueOf(System.currentTimeMillis()));
+            request.setNote(Constants.REQUEST_START_TIME_NOTE, System.currentTimeMillis());
         }
 
         return INVOKE_NEXT;
@@ -646,10 +643,6 @@ public final class PEAccessLogValve
     /**
      * Log the specified message to the log file, switching files if the date
      * has changed since the previous log call.
-     *
-     * @param message Message to be logged
-     * @param date the current Date object (so this method doesn't need to
-     *        create a new one)
      */
     public void log() {
         
@@ -756,10 +749,8 @@ public final class PEAccessLogValve
          *
          * If both have been specified, the latter takes precedence.
          */
-        String accessLog = "access";
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_PROPERTY) != null) {
-            accessLog = ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_PROPERTY).getValue();
-        } else if (vsBean.getHttpAccessLog() != null) {
+        String accessLog = vsBean.getPropertyValue(Constants.ACCESS_LOG_PROPERTY);
+        if (accessLog==null && vsBean.getHttpAccessLog() != null) {
             accessLog = vsBean.getHttpAccessLog().getLogDirectory();
         }
         if (accessLog == null) {
@@ -792,11 +783,8 @@ public final class PEAccessLogValve
 
         // If the property is defined under virtual-server, override the one
         // defined under http-service.
-        String acWriteInterval = accessLogWriteInterval;
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY) != null){
-            acWriteInterval = ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY).getValue();
-        }
-        if (acWriteInterval != null){
+        String acWriteInterval = vsBean.getPropertyValue(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY,accessLogWriteInterval);
+        if (acWriteInterval != null) {
             try{
                 setWriterInterval(Integer.parseInt(acWriteInterval));
             } catch (NumberFormatException ex){
@@ -808,12 +796,9 @@ public final class PEAccessLogValve
          
         // If the property is defined under virtual-server, override the one
         // defined under http-service.
-        String acBufferSize = accessLogBufferSize;
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY) != null){
-            acBufferSize =  ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY).getValue();
-        }
-        if (acBufferSize != null){
-            try{
+        String acBufferSize = vsBean.getPropertyValue(Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY,accessLogBufferSize);
+        if (acBufferSize != null) {
+            try {
                 setBufferSize(Integer.parseInt(acBufferSize));
             } catch (NumberFormatException ex){
                 _logger.log(Level.WARNING,

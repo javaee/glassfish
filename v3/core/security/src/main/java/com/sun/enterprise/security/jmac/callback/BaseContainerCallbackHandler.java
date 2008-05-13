@@ -95,9 +95,11 @@ import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
 
 import sun.security.util.DerValue;
+import org.glassfish.internal.api.Globals;
 
 /**
  * Base Callback Handler for JSR 196
@@ -121,6 +123,10 @@ abstract class BaseContainerCallbackHandler
 
     protected HandlerContext handlerContext = null;
 
+    // TODO: inject them once this class becomes a component
+    protected final SSLUtils sslUtils = Globals.get(SSLUtils.class);
+    protected final SecuritySupport secSup = Globals.get(SecuritySupport.class);
+
     public void setHandlerContext(HandlerContext handlerContext) {
         this.handlerContext = handlerContext;
     }
@@ -141,9 +147,6 @@ abstract class BaseContainerCallbackHandler
      */
     protected abstract boolean isSupportedCallback(Callback callback);
 
-    /**
-     * @param callback
-     */
     protected abstract void handleSupportedCallbacks(Callback[] callbacks)
             throws IOException, UnsupportedCallbackException; 
     
@@ -153,15 +156,14 @@ abstract class BaseContainerCallbackHandler
             return;
         }
 
-        boolean continueProcessing = true;
-        for (int i=0; i < callbacks.length; i++){
-            if (!isSupportedCallback(callbacks[i])) {
+        for (Callback callback : callbacks) {
+            if (!isSupportedCallback(callback)) {
                 if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, 
-                        "JMAC: UnsupportedCallback : "+
-                            callbacks[i].getClass().getName());
+                    _logger.log(Level.FINE,
+                            "JMAC: UnsupportedCallback : " +
+                                    callback.getClass().getName());
                 }
-                throw new UnsupportedCallbackException(callbacks[i]);
+                throw new UnsupportedCallbackException(callback);
             }
         }       
 
@@ -188,7 +190,7 @@ abstract class BaseContainerCallbackHandler
                 _logger.log(Level.FINE, 
                     "JMAC: In TrustStoreCallback Processor");
             }
-            tstoreCallback.setTrustStore (SSLUtils.getMergedTrustStore());
+            tstoreCallback.setTrustStore (sslUtils.getMergedTrustStore());
 
         } else if (callback instanceof CertStoreCallback) {
             processCertStore((CertStoreCallback)callback);
@@ -316,7 +318,7 @@ abstract class BaseContainerCallbackHandler
     }
 
     private void processPrivateKey(PrivateKeyCallback privKeyCallback) {
-        KeyStore[] kstores = SSLUtils.getSecuritySupport().getKeyStores();
+        KeyStore[] kstores = secSup.getKeyStores();
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, 
                 "JMAC: In PrivateKeyCallback Processor");
@@ -330,7 +332,7 @@ abstract class BaseContainerCallbackHandler
         }
 
         String[] passwords =
-            SSLUtils.getSecuritySupport().getKeyStorePasswords();
+            secSup.getKeyStorePasswords();
 
         // get the request type
         PrivateKeyCallback.Request req = privKeyCallback.getRequest();
@@ -345,7 +347,6 @@ abstract class BaseContainerCallbackHandler
                 certs = pke.getCertificateChain();
             }
             privKeyCallback.setKey(privKey, certs);
-            passwords = null;
             return;
         }
 
@@ -356,12 +357,12 @@ abstract class BaseContainerCallbackHandler
                         (PrivateKeyCallback.AliasRequest)req;
 
                 String alias = aReq.getAlias();
-                PrivateKeyEntry privKeyEntry = null;
+                PrivateKeyEntry privKeyEntry;
                 if (alias == null) {
                     // use default key
                     privKeyEntry = getDefaultPrivateKeyEntry(kstores, passwords);
                 } else {
-                    privKeyEntry = SSLUtils.getPrivateKeyEntryFromTokenAlias(alias);
+                    privKeyEntry = sslUtils.getPrivateKeyEntryFromTokenAlias(alias);
                 }
 
                 if (privKeyEntry != null) {
@@ -551,12 +552,12 @@ abstract class BaseContainerCallbackHandler
                 "JMAC: In CertStoreCallback Processor");
         }
 
-        KeyStore certStore = SSLUtils.getMergedTrustStore();
+        KeyStore certStore = sslUtils.getMergedTrustStore();
         if (certStore == null) {// should never happen
-            certStoreCallback.setCertStore((CertStore)null);
+            certStoreCallback.setCertStore(null);
         }
         List list = new ArrayList();
-        CollectionCertStoreParameters ccsp = null;
+        CollectionCertStoreParameters ccsp;
         try{
             Enumeration enu = certStore.aliases();
             while (enu.hasMoreElements()) {

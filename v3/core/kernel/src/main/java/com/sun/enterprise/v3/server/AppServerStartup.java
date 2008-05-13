@@ -125,8 +125,10 @@ public class AppServerStartup implements ModuleStartup {
         }
         // now that we are all done with loading, I can accept administrative commands.
         AdminAdapter admin = habitat.getComponent(AdminAdapter.class);
-        admin.ready();
+        if(admin!=null)
+            admin.ready();
         AdminConsoleAdapter ac = habitat.getComponent(AdminConsoleAdapter.class);
-        ac.ready();
+        if(ac!=null)
+            ac.ready();
     }
 }

@@ -58,7 +58,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerConfig", singleton=true)
 @Configured
-public interface WebContainer extends ConfigBeanProxy, Injectable  {
+public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the sessionConfig property.
@@ -76,30 +76,4 @@ public interface WebContainer extends ConfigBeanProxy, Injectable  {
      *              {@link SessionConfig }
      */
     public void setSessionConfig(SessionConfig value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the property property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the property property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProperty().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Property }
-     */
-    @Element("property")
-    public List<Property> getProperty();
-
-
-
 }

@@ -603,9 +603,8 @@ public final class TldConfig  {
                                            new TldRuleSet());
         */
         // START SJSAS 6384538
-        return DigesterFactory.newDigester(false, 
-                                           tldNamespaceAware, 
-                                           new TldRuleSet());
+        DigesterFactory df = org.glassfish.internal.api.Globals.get(DigesterFactory.class);
+        return df.newDigester(false, tldNamespaceAware, new TldRuleSet());
         // END SJSAS 6384538
     }
 

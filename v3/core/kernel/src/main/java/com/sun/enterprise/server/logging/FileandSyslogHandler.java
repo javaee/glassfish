@@ -37,7 +37,6 @@ package com.sun.enterprise.server.logging;
 
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
@@ -92,7 +91,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     private static final String LOGS_DIR = "logs";
     private String logFileName = "server.log"; 
 
-    private String absoluteFileName = null;
+    private File absoluteFile = null;
 
 
     private static final String LOGGING_MAX_HISTORY_FILES = "com.sun.enterprise.server.logging.max_history_files";
@@ -161,8 +160,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
         if (!serverLog.isAbsolute()) {
             serverLog = new File(env.getDomainRoot(), fileName);
         }
-        fileName = serverLog.getAbsolutePath();
-        changeFileName(fileName);
+        changeFileName(serverLog);
 
         Long rotationTimeLimitValue = 0L;
         try {
@@ -172,7 +170,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                     "Cannot read rotationTimelimitInMinutes property from logging config file");
         }
 
-        if (rotationTimeLimitValue.longValue() != 0) {
+        if (rotationTimeLimitValue != 0) {
 
             Task rotationTask = new Task() {
                 public Object run() {
@@ -187,7 +185,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
 
             LogRotationTimer.getInstance().startTimer(
                     new LogRotationTimerTask(rotationTask,
-                            rotationTimeLimitValue.longValue()));
+                            rotationTimeLimitValue));
             // Disable the Size Based Rotation if the Time Based
             // Rotation is set.
             setLimitForRotation(0);
@@ -203,8 +201,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
             // We set the LogRotation limit here. The rotation limit is the
             // Threshold for the number of bytes in the log file after which
             // it will be rotated.
-            setLimitForRotation(
-                    rotationLimitAttrValue.intValue());
+            setLimitForRotation(rotationLimitAttrValue);
         }
 
         setLevel( Level.ALL );
@@ -255,18 +252,18 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
      *  This method is invoked from LogManager.reInitializeLoggers() to
      *  change the location of the file.
      */
-    void changeFileName( String fileName ) {
+    void changeFileName( File file ) {
         // If the file name is same as the current file name, there
         // is no need to change the filename
-        if( fileName.trim().equals( absoluteFileName ) ) {
+        if( file.equals(absoluteFile) ) {
             return;
         }
         synchronized( this ) { 
             super.flush( );
             super.close();
             try {
-                openFile( fileName );
-                absoluteFileName = fileName;
+                openFile( file );
+                absoluteFile = file;
             } catch( IOException ix ) {
                 new ErrorManager().error( 
                     "FATAL ERROR: COULD NOT OPEN LOG FILE. " +
@@ -275,7 +272,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                     " default server.log", ix, ErrorManager.OPEN_FAILURE );
                 try {
                     // Reverting back to the old server.log
-                    openFile( absoluteFileName );
+                    openFile(absoluteFile);
                 } catch( Exception e ) {
                     new ErrorManager().error( 
                         "FATAL ERROR: COULD NOT RE-OPEN SERVER LOG FILE. ", e,
@@ -287,10 +284,11 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
 
 
     /**
-     * A simple getter to access the complete fileName used by this FileHandler.
+     * A simple getter to access the current log file written by
+     * this FileHandler.
      */
-    String getAbsoluteLogFileName( ) {
-        return absoluteFileName;
+    File getCurrentLogFile( ) {
+        return absoluteFile;
     }
 
     /**
@@ -343,28 +341,16 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     }
 
     /**
-     * Creates the File under the specified instance directory
-     */
-    public String createFileName( ) {
-        String instDir = serverContext.getInstallRoot();
-        String[] names = {instDir, LOGS_DIR, getLogFileName() };
-        // Create an absolute log filename 
-        return StringUtils.makeFilePath(names, false);
-    }
-         
-    /**
      *  Creates the file and initialized MeteredStream and passes it on to
      *  Superclass (java.util.logging.StreamHandler). 
      */
-    private void openFile( String fileName ) throws IOException {
-        File file = new File( fileName );
-        
+    private void openFile( File file ) throws IOException {
         // check that the parent directory exists.
         File parent = file.getParentFile();
         if (!parent.exists()) {
             parent.mkdirs();
         }
-        FileOutputStream fout = new FileOutputStream( fileName, true );
+        FileOutputStream fout = new FileOutputStream( file, true );
         BufferedOutputStream bout = new BufferedOutputStream( fout );
         meter = new MeteredStream( bout, file.length() ); 
         setOutputStream( meter );
@@ -397,7 +383,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
         }
         if (maxHistryFiles<0) return;
 
-        File   dir  = new File(absoluteFileName).getParentFile();
+        File   dir  = absoluteFile.getParentFile();
         if (dir==null) return;
 
         File[] 	fset = dir.listFiles();
@@ -435,16 +421,13 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                 public Object run( ) {
                     thisInstance.flush( );
                     thisInstance.close();
-                    StringBuffer renamedFileName = null;
                     try {
-                        File oldFile = new File( absoluteFileName );
-                        renamedFileName = 
-                            new StringBuffer( absoluteFileName + "_" );
-                                logRotateDateFormatter.format( 
-                                    new Date(), renamedFileName, 
-                                    new FieldPosition( 0 ) );
-                        File rotatedFile = new File( 
-                            renamedFileName.toString() );
+                        File oldFile = absoluteFile;
+                        StringBuffer renamedFileName =  new StringBuffer( absoluteFile + "_" );
+                        logRotateDateFormatter.format(
+                            new Date(), renamedFileName,
+                            new FieldPosition( 0 ) );
+                        File rotatedFile = new File( renamedFileName.toString() );
                         boolean renameSuccess = oldFile.renameTo( rotatedFile );
                         if( !renameSuccess ) {
                             // If we don't succeed with file rename which
@@ -452,17 +435,16 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                             // of multiple file handles opened. We go through
                             // Plan B to copy bytes explicitly to a renamed 
                             // file.
-                            FileUtils.copy(absoluteFileName,
-                                renamedFileName.toString( ) ); 
-                            String freshServerLogFileName = createFileName( );
+                            FileUtils.copy(absoluteFile,rotatedFile);
+                            File freshServerLogFile = getLogFileName();
                             // We do this to make sure that server.log
                             // contents are flushed out to start from a 
                             // clean file again after the rename..
                             FileOutputStream fo = 
-                                new FileOutputStream( freshServerLogFileName );
+                                new FileOutputStream( freshServerLogFile );
                             fo.close( );
                         }
-                        openFile( createFileName( ) );
+                        openFile(getLogFileName());
                         // This will ensure that the log rotation timer
                         // will be restarted if there is a value set
                         // for time based log rotation
@@ -520,9 +502,9 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
 
         pendingRecords.add(record);
     }
-    
-    protected String getLogFileName() {
-        return logFileName;
+
+    protected File getLogFileName() {
+        return new File(new File(serverContext.getInstallRoot(),LOGS_DIR),logFileName);
     }
 }
 

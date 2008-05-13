@@ -36,28 +36,25 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
-import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 
-import java.net.URL;
-import java.net.URI;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM

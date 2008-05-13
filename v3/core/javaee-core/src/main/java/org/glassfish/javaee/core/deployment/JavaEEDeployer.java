@@ -73,7 +73,7 @@ import java.util.jar.Attributes;
  * Convenient superclass for JavaEE Deployer implementations.
  *
  */
-public abstract class JavaEEDeployer<T extends Container, U extends ApplicationContainer>
+public abstract class   JavaEEDeployer<T extends Container, U extends ApplicationContainer>
         implements Deployer<T, U> {
 
     @Inject
@@ -139,7 +139,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     protected String getCommonClassPath() {
         StringBuffer sb = new StringBuffer();
 
-        File libDir = new File(env.getLibPath());
+        File libDir = env.getLibPath();
         String libDirPath = libDir.getAbsolutePath();
 
         // Append domain_root/lib/classes
@@ -204,9 +204,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
-            RuntimeException re = new RuntimeException(ex.getMessage());
-            re.initCause(ex);
-            throw re;
+            throw new RuntimeException(ex.getMessage(),ex);
         }
     }
 
@@ -338,27 +336,15 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     // it is present. Application can be user application or system 
     // appliction.
     protected String getObjectType(DeploymentContext context) {
-        File appDir = context.getSourceDir();
-        FileInputStream fis = null;
         try{
-            File manifestFile = new File(appDir, JarFile.MANIFEST_NAME);
-            fis = new FileInputStream(manifestFile);
-            Manifest manifest = new Manifest(fis);
+            Manifest manifest = context.getSource().getManifest();
+            if(manifest==null)  return null;
             Attributes attrs = manifest.getMainAttributes();
             return attrs.getValue(APPLICATION_TYPE);
-        }catch(Exception e){
+        }catch(IOException e){
             // by default resource-type will be assigned "user".
             return null;
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException ioe) {
-                // ignore ioe
-            }
         }
-
     }
  
     protected Application getApplicationFromApplicationInfo(

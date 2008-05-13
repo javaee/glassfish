@@ -36,27 +36,25 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpProtocol;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.WebModule;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.security.web.SingleSignOn;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
-import org.glassfish.internal.api.Globals;
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.catalina.Container;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
@@ -66,34 +64,13 @@ import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.internal.api.Globals;
 
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Property;
-
-//import com.sun.enterprise.config.serverbeans.VirtualServerClass;
-import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ModuleInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
-import com.sun.enterprise.web.WebDeployer;
-
-import com.sun.enterprise.security.web.SingleSignOn;
-import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.io.FileUtils;
-
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-//import com.sun.enterprise.deployment.backend.DeploymentUtils;
-import com.sun.logging.LogDomains;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.File;
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in
@@ -295,7 +272,7 @@ public class VirtualServer extends StandardHost {
      * Sets the default-context.xml location for web modules deployed on this
      * virtual server.
      *
-     * @param defaultWebXmlLocation default-context.xml location for web modules
+     * @param defaultContextXmlLocation default-context.xml location for web modules
      * deployed on this virtual server
      */
     public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
@@ -564,7 +541,7 @@ public class VirtualServer extends StandardHost {
 
             // Look up the list of standalone web modules
             if (wmInfo == null) {
-                WebModule wm = ConfigBeansUtilities.getModule(WebModule.class, wmID);
+                WebModule wm = appsBean.getModule(WebModule.class, wmID);
                 if (wm != null) {
                     if (isActive(wm, false)) {
                         // Create a copy as we need to change the name
@@ -610,7 +587,7 @@ public class VirtualServer extends StandardHost {
 
             if (wmInfo == null) {
                 contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
-                String docroot = ConfigBeansUtilities.getLocation(wmID);
+                File docroot = new File(ConfigBeansUtilities.getLocation(wmID));
                 WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
                 wmInfo = new WebModuleConfig();
                 wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
@@ -663,12 +640,12 @@ public class VirtualServer extends StandardHost {
             wmInfo = new WebModuleConfig();
             wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
             wbd.setContextRoot("");
-            wmInfo.setLocation(docroot);            
+            wmInfo.setLocation(new File(docroot));
             wmInfo.setDescriptor(wbd);
             wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
             wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
             if ( wbd.getApplication() == null ) {
-                Application application = new Application();
+                Application application = new Application(Globals.getDefaultHabitat());
                 application.setVirtual(true);
                 application.setName(Constants.DEFAULT_WEB_MODULE_NAME);
                 wbd.setApplication(application);
@@ -1399,7 +1376,7 @@ public class VirtualServer extends StandardHost {
 
     /**
      * Utility method to retrieve a virtual server property by its name
-     * @param the property name
+     * @param name the property name
      * @return the property if found
      */
     private Property getPropertyByName(String name) {
@@ -1706,8 +1683,8 @@ public class VirtualServer extends StandardHost {
      * false otherwise.
      */
     boolean isAccessLoggingEnabled(boolean globalAccessLoggingEnabled) {
-        Property prop  = 
-            ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOGGING_ENABLED);
+        Property prop  =
+                vsBean.getProperty(Constants.ACCESS_LOGGING_ENABLED);
         
         if (prop == null || prop.getValue() == null) {
             return globalAccessLoggingEnabled;

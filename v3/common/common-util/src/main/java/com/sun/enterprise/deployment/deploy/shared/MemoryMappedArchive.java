@@ -67,7 +67,7 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
     
     private void read(InputStream is) throws IOException{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchivistUtils.copy(new BufferedInputStream(is), new BufferedOutputStream(baos));
+        ArchivistUtils.copy(is,baos);
         file = baos.toByteArray();
         
     }
@@ -84,7 +84,7 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
     // copy constructor
     public MemoryMappedArchive(ReadableArchive source) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(baos));
+        JarOutputStream jos = new JarOutputStream(baos);
         for (Enumeration elements = source.entries();elements.hasMoreElements();) {
             String elementName = (String) elements.nextElement();
             InputStream is = source.getEntry(elementName);
@@ -185,7 +185,8 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
      * Returns the existence of the given entry name
      * The file name must be relative to the root of the module.
      *
-     * @param name the file name relative to the root of the module.          * @return the existence the given entry name.
+     * @param name the file name relative to the root of the module.
+     * @return the existence the given entry name.
      */
     public boolean exists(String name) throws IOException {
         return (getEntry(name) != null);

@@ -52,6 +52,7 @@ import javax.security.auth.Subject;
 import com.sun.enterprise.deployment.interfaces.*;
 import com.sun.appserv.connectors.spi.ConnectorConstants;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -200,8 +201,7 @@ public class BasicPasswordAuthenticationService
     	String roleName = null;
         String componentId = getCurrentComponentId();
         
-        SecurityRoleMapperFactory securityRoleMapperFactory = 
-                                 SecurityRoleMapperFactoryMgr.getFactory();
+        SecurityRoleMapperFactory securityRoleMapperFactory = Globals.get(SecurityRoleMapperFactory.class);
         SecurityRoleMapper securityRoleMapper= 
             securityRoleMapperFactory.getRoleMapper(componentId);
                

@@ -39,6 +39,8 @@ package com.sun.enterprise.v3.deployment;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
+import org.jvnet.hk2.config.DuckTyped;
+
 import java.util.Properties;
 import com.sun.enterprise.v3.deployment.ListComponentsCommand;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -137,6 +139,25 @@ public class ListComponentsCommandTest {
         public void setEngines(List<Engine> engines) {
             engineList = engines;
         }
+
+        @DuckTyped
+        public Property getProperty(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name, String defaultValue) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
         //hk2's Injectable class
         public void injectedInto(Object target){}
     }
@@ -160,6 +181,23 @@ public class ListComponentsCommandTest {
             return "hello";
         }
         public void setName(String value) throws PropertyVetoException {}
+
+        @DuckTyped
+        public Property getProperty(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name, String defaultValue) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
     }
-    
 }

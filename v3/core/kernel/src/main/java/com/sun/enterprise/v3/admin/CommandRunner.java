@@ -101,7 +101,7 @@ public class CommandRunner {
     /**
      * Executes the provided command object.
      * @param commandName name of the command (used for logging and reporting)
-     * @param handler the command service to execute
+     * @param command the command service to execute
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
      */
@@ -395,24 +395,26 @@ public class CommandRunner {
          *
          * @return Object
          */
-    Object convertStringToObject(String paramName, Class type, String paramValStr)  {
-        Object paramValue = paramValStr;
-        if (type.isAssignableFrom(String.class)) {
-           paramValue = paramValStr;
-        } else if (type.isAssignableFrom(Properties.class)) {
-           paramValue = convertStringToProperties(paramValStr);
-        } else if (type.isAssignableFrom(List.class)) {
-           paramValue = convertStringToList(paramValStr);
-        } else if (type.isAssignableFrom(Boolean.class)) {
-           paramValue = convertStringToBoolean(paramName, paramValStr);
-        } else if (type.isAssignableFrom((new String[]{}).getClass())) {
-           paramValue = convertStringToStringArray(paramValStr);
+        Object convertStringToObject(String paramName, Class type, String paramValStr) {
+            Object paramValue = paramValStr;
+            if (type.isAssignableFrom(String.class)) {
+                paramValue = paramValStr;
+            } else if (type.isAssignableFrom(Properties.class)) {
+                paramValue = convertStringToProperties(paramValStr);
+            } else if (type.isAssignableFrom(List.class)) {
+                paramValue = convertStringToList(paramValStr);
+            } else if (type.isAssignableFrom(Boolean.class)) {
+                paramValue = convertStringToBoolean(paramName, paramValStr);
+            } else if (type.isAssignableFrom(String[].class)) {
+                paramValue = convertStringToStringArray(paramValStr);
+            } else if (type.isAssignableFrom(File.class)) {
+                return new File(paramValStr);
+            }
+            return paramValue;
         }
-        return paramValue;
-    }
 
-    
-        /**
+
+    /**
          *  Searches for the property with the specified key in this property list.
          *  The method returns null if the property is not found.
          *  @see java.util.Properties#getProperty(java.lang.String)

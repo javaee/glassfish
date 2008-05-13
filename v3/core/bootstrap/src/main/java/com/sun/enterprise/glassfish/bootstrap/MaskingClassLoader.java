@@ -36,9 +36,9 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.util.Collection;
-import java.net.URLClassLoader;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collection;
 
 /**
  * {@link ClassLoader} that masks a specified set of classes

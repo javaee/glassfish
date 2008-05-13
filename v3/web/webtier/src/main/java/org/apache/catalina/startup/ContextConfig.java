@@ -669,11 +669,9 @@ public class ContextConfig
      */
     public static Digester createWebXmlDigester(boolean namespaceAware,
                                                 boolean validation) {
-        
-        Digester webDigester =  DigesterFactory.newDigester(xmlValidation,
-                                                            xmlNamespaceAware,
-                                                            webRuleSet);
-        return webDigester;
+
+        DigesterFactory df = org.glassfish.internal.api.Globals.get(DigesterFactory.class);
+        return df.newDigester(xmlValidation,xmlNamespaceAware,webRuleSet);
     }
 
 

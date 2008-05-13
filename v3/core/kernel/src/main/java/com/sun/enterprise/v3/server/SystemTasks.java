@@ -63,10 +63,12 @@ import java.util.logging.Level;
  * @author Jerome Dochez
  * @author Byron Nevins
  */
+// TODO: eventually use CageBuilder so that this gets triggered when JavaConfig enters Habitat.
 @Service
 public class SystemTasks implements Init, PostConstruct {
 
-    @Inject
+    // in embedded environment, JavaConfig is pointless, so make this optional
+    @Inject(optional = true)
     JavaConfig javaConfig;
    
     @Inject
@@ -143,13 +145,15 @@ public class SystemTasks implements Init, PostConstruct {
     }
 
     private void resolveJavaConfig() {
-        Pattern p = Pattern.compile("-D([^=]*)=(.*)");
-        for (String jvmOption : javaConfig.getJvmOptions()) {
-            Matcher m = p.matcher(jvmOption);
-            if (m.matches()) {
-                setSystemProperty(m.group(1), TranslatedConfigView.getTranslatedValue(m.group(2)).toString());
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("Setting " + m.group(1) + " = " + TranslatedConfigView.getTranslatedValue(m.group(2)));
+        if(javaConfig!=null) {
+            Pattern p = Pattern.compile("-D([^=]*)=(.*)");
+            for (String jvmOption : javaConfig.getJvmOptions()) {
+                Matcher m = p.matcher(jvmOption);
+                if (m.matches()) {
+                    setSystemProperty(m.group(1), TranslatedConfigView.getTranslatedValue(m.group(2)).toString());
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("Setting " + m.group(1) + " = " + TranslatedConfigView.getTranslatedValue(m.group(2)));
+                    }
                 }
             }
         }

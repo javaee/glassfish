@@ -49,7 +49,6 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -142,7 +141,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     Domain domain;
 
     @Param(primary=true)
-    String path;
+    File path;
 
     /**
      * Entry point from the framework into the command execution
@@ -155,18 +154,16 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
 
-        File file = new File(path);
+        File file = path;
         if (!file.exists()) {
             report.setMessage(localStrings.getLocalString("fnf","File not found", file.getAbsolutePath()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        if (getSniffers().isEmpty()) {
+        if (snifferManager.hasNoSniffers()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
-            logger.severe(msg);
-            report.setMessage(msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.failure(logger,msg);
             return;
         }
 
@@ -174,9 +171,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         try {
             archive = archiveFactory.openArchive(file);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error opening deployable artifact : " + file.getAbsolutePath(), e);
-            report.setMessage(localStrings.getLocalString("unknownarchiveformat", "Archive format not recognized"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.failure(logger,"Error opening deployable artifact : " + file.getAbsolutePath(),e);
             return;
         }
         File expansionDir=null;
@@ -184,8 +179,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             ArchiveHandler archiveHandler = getArchiveHandler(archive);
             if (archiveHandler==null) {
-                report.setMessage(localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
                 return;
             }
             // get an application name
@@ -209,8 +203,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
                 if (!expansionDir.mkdirs()) {
-                    report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.failure(logger,localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
                     // we don't own it, we don't delete it.
                     expansionDir=null;
                     return;
@@ -221,30 +214,27 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     try {
                         archive.close();
                     } catch(IOException e) {
-                        report.setMessage(localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", file.getAbsolutePath()));
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.failure(logger,localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", file.getAbsolutePath()),e);
                         return;
                     }
                     // Proceed using the expanded directory.
                     file = expansionDir;
                     archive = archiveFactory.openArchive(expansionDir);
                 } catch(IOException e) {
-                    report.setMessage(localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.failure(logger,localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
                     return;
 
                 }
             }
 
             // create the parent class loader
-            ClassLoader parentCL = createSnifferParentCL(null, getSniffers());
+            ClassLoader parentCL = snifferManager.createSnifferParentCL(null);
             // now the archive class loader, this will only be used for the sniffers.handles() method
             final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
 
-            final Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
+            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
             if (appSniffers.size()==0) {
-                report.setMessage(localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
                 return;
             }
 
@@ -277,16 +267,13 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             } 
 
             ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
+            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 // register application information in domain.xml
                 registerAppInDomainXML(appInfo, deploymentContext);
 
             }
         } catch(Exception e) {
-            logger.log(Level.SEVERE, "Error during deployment : ", e);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(e.getMessage());
+            report.failure(logger,"Error during deployment : "+e.getMessage(),e);
         } finally {
             try {
                 archive.close();

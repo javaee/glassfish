@@ -43,5 +43,8 @@ public class Globals implements Init {
     public static Habitat getDefaultHabitat() {
         return defaultHabitat;
     }
-    
+
+    public static <T> T get(Class<T> type) {
+        return defaultHabitat.getComponent(type);
+    }    
 }

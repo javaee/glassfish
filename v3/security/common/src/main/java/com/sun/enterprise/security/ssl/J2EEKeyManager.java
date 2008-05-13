@@ -54,6 +54,9 @@ import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.integration.SecurityConstants;
+import com.sun.enterprise.server.pluggable.SecuritySupport;
+import org.jvnet.hk2.component.Habitat;
+
 import java.util.logging.*;
 import com.sun.logging.*;
 import java.security.PrivilegedAction;
@@ -83,8 +86,11 @@ public final class J2EEKeyManager implements X509KeyManager {
     private Map tokenName2MgrMap = null;
     private boolean supportTokenAlias = false;
 
-    public J2EEKeyManager(X509KeyManager mgr, String alias) {
-	this.mgr = mgr;
+    private final Habitat habitat;
+
+    public J2EEKeyManager(Habitat habitat, X509KeyManager mgr, String alias) {
+        this.habitat = habitat;
+        this.mgr = mgr;
 	this.alias = alias;
 
         if (mgr instanceof UnifiedX509KeyManager) {
@@ -140,7 +146,7 @@ public final class J2EEKeyManager implements X509KeyManager {
                         //TODO V3: LoginContextDriver.doClientLogin(AppContainer.CERTIFICATE,
                         //AppContainer.getCallbackHandler());
                         doClientLogin(SecurityConstants.APPCONTAINER_CERTIFICATE,
-                        SSLUtils.getSecuritySupport().getAppContainerCallbackHandler());
+                        habitat.getComponent(SecuritySupport.class).getAppContainerCallbackHandler());
                         s = ctx.getSubject();
                     }
                     Iterator itr = s.getPrivateCredentials().iterator();

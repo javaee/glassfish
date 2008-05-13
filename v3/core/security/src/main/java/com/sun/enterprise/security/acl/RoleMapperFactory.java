@@ -40,10 +40,13 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import java.util.Map;
 import java.util.HashMap;
+import org.jvnet.hk2.annotations.Service;
+
 /**
  *
  * @author  Jerome Dochez
  */
+@Service
 public class RoleMapperFactory implements SecurityRoleMapperFactory {
     private static Map CONTEXT_TO_APPNAME = new HashMap();
     /** Creates a new instance of RoleMapperFactory */
@@ -51,7 +54,7 @@ public class RoleMapperFactory implements SecurityRoleMapperFactory {
     }
     
     /** Returns a RoleMapper corresponding to the AppName.
-     * @param The Application Name of this RoleMapper.
+     * @param  The Application Name of this RoleMapper.
      *
      */
     public SecurityRoleMapper getRoleMapper(String appName) {

@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.web.integration;
 
-import com.sun.enterprise.security.*;
 import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.enterprise.server.ServerContext;
 import java.security.*;
@@ -52,11 +51,10 @@ import javax.security.jacc.*;
 
 import java.util.logging.*; 
 import java.util.HashMap;
-import java.util.Map;
+
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.security.common.AppservAccessController;
-import com.sun.enterprise.security.authorize.*;
 import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
@@ -69,15 +67,15 @@ import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.config.*;
 //V3:Commented import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 //import org.apache.catalina.Globals;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.internal.api.Globals;
 
 /**
  * The class implements the JSR 115 - JavaTM Authorization Contract for Containers.
@@ -92,14 +90,13 @@ import org.jvnet.hk2.annotations.Service;
  * from this class and EJBSecurityManager class and extend this class from 
  * AbstractSecurityManager
  */
-@Service
-public class WebSecurityManager {
+public class WebSecurityManager implements PostConstruct {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
-    
+
     @Inject
     private  AuditManager auditManager;
- 
+
     /**
      * Request path. Copied from org.apache.catalina.Globals;
      * Required to break dependence on WebTier of Security Module
@@ -129,6 +126,8 @@ public class WebSecurityManager {
     protected Policy policy = Policy.getPolicy();
 
     protected PolicyConfiguration policyConfiguration  = null;
+
+    // if not available in the habitat, delegate to JDK's system-wide factory
     protected PolicyConfigurationFactory policyConfigurationFactory = null;
     protected CodeSource codesource = null;
 
@@ -160,8 +159,7 @@ public class WebSecurityManager {
     private static Set defaultPrincipalSet = 
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
-    private static SecurityRoleMapperFactory factory = 
-	SecurityRoleMapperFactoryMgr.getFactory();
+    SecurityRoleMapperFactory factory;
 
     private ServerContext serverContext = null;
     // WebBundledescriptor
@@ -170,20 +168,18 @@ public class WebSecurityManager {
     public static final String ADMIN_VS = "__asadmin";
     // Create a WebSecurityObject
     public WebSecurityManager(WebBundleDescriptor wbd) throws PolicyContextException {
-        this.wbd = wbd;
-        this.CONTEXT_ID = getContextID(wbd);
-        String appname = getAppId();
-        factory.setAppNameForContext(appname, CONTEXT_ID);
-        initialise();
+        this(wbd,null);
     }
     
     public WebSecurityManager(WebBundleDescriptor wbd,ServerContext svc) throws PolicyContextException {
         this.wbd = wbd;
         this.CONTEXT_ID = getContextID(wbd);
-        String appname = getAppId();
         this.serverContext = svc;
-        factory.setAppNameForContext(appname, CONTEXT_ID);
         initialise();
+    }
+
+    public void postConstruct() {
+        factory.setAppNameForContext(getAppId(), CONTEXT_ID);
     }
 
     private String removeSpaces(String withSpaces){
@@ -202,7 +198,11 @@ public class WebSecurityManager {
    }
       
     private void initialise() throws PolicyContextException {
-       String appName = wbd.getApplication().getRegistrationName();
+        factory = Globals.get(SecurityRoleMapperFactory.class);
+        policyConfigurationFactory = Globals.get(PolicyConfigurationFactory.class);
+        auditManager = Globals.get(AuditManager.class);
+
+        String appName = wbd.getApplication().getRegistrationName();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
         //V3:Commented if(VirtualServer.ADMIN_VS.equals(getVirtualServers(appName))){
            if(ADMIN_VS.equals(getVirtualServers(appName))){
@@ -211,18 +211,17 @@ public class WebSecurityManager {
                 String realmName = lgConf.getRealmName();
                 SunWebApp sunDes = wbd.getSunDescriptor();
                 if(sunDes != null){
-                    SecurityRoleMapping[] sr = sunDes.getSecurityRoleMapping();
-                    if(sr != null){
-                        for(int i=0; i<sr.length; i++){
-                            String[] principal = sr[i].getPrincipalName();
-                            if(principal != null){
-                                for(int plen=0;plen<principal.length; plen++ ){
-                                    ADMIN_PRINCIPAL.put(realmName+principal[plen], new PrincipalImpl(principal[plen]));
+                    SecurityRoleMapping[] srms = sunDes.getSecurityRoleMapping();
+                    if(srms != null){
+                        for (SecurityRoleMapping srm : srms) {
+                            String[] principals = srm.getPrincipalName();
+                            if (principals != null) {
+                                for (String principal : principals) {
+                                    ADMIN_PRINCIPAL.put(realmName + principal, new PrincipalImpl(principal));
                                 }
                             }
-                            List<String> groups = sr[i].getGroupNames();
-                            for(int glen = 0; glen < groups.size(); glen++ ){
-                                ADMIN_GROUP.put(realmName+groups.get(glen), new Group(groups.get(glen))) ;
+                            for (String group : srm.getGroupNames()) {
+                                ADMIN_GROUP.put(realmName + group, new Group(group));
                             }
                         }
                     }

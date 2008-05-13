@@ -32,7 +32,6 @@ import com.sun.grizzly.standalone.DynamicContentAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.enterprise.util.StringUtils;
 
@@ -218,7 +217,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
         String docRoot = virtualServer.getDocroot();
         if (docRoot==null) {
             // look for the properties...
-            return ConfigBeansUtilities.getPropertyValueByName(virtualServer, "docroot");
+            return virtualServer.getPropertyValue("docroot");
         }
         return "/";
     }

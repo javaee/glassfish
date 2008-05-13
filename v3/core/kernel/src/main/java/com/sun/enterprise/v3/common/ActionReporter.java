@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author Jerome Dochez
  */
-public abstract class ActionReporter implements ActionReport {
+public abstract class ActionReporter extends ActionReport {
 
     protected Throwable exception = null;
     protected String actionDescription = null;

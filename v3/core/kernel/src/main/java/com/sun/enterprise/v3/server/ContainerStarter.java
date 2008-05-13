@@ -32,6 +32,8 @@ import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import java.io.*;
 import java.nio.channels.Channels;
@@ -48,23 +50,23 @@ import java.util.logging.Logger;
 
 /**
  * This class is responsible for starting containers, it will look for the container
- * installation location, will eventually download the container and install it locally
+ * installation location, will eventually download the container and install it locally.
  *
  * @author Jerome Dochez
  */
+@Service
 public class ContainerStarter {
-
+    @Inject
     ModulesRegistry modulesRegistry;
 
+    @Inject
     Habitat habitat;
 
+    @Inject
     Logger logger;
 
-    public ContainerStarter(ModulesRegistry modulesRegistry, Habitat habitat, Logger logger) {
-        this.habitat = habitat;
-        this.modulesRegistry = modulesRegistry;
-        this.logger = logger;
-    }
+    @Inject
+    ServerEnvironment env;
 
     public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
@@ -74,28 +76,22 @@ public class ContainerStarter {
         // version is null so far...
         String version = null;
         
-        // now we need to find the glue code which can be packaged inside
-        // our glassfish lib directory or within the container implementation
-        String bundleName = "gf-" + containerName + "-connector";
-        String jarFileName = bundleName + ".jar";
-
         // get the container installation
         String containerHome = StringUtils.getProperty(containerName + ".home");
         if (containerHome==null) {
             // the container could be installed at the default location
             // which is in <Root Installation>/modules/containerName
             String root = System.getProperty("com.sun.aas.installRoot");
-            File location = new File(root);
-            location = new File(location, "modules");
-            location = new File(location, containerName);
-            containerHome = location.getAbsolutePath();
-            System.setProperty(containerName + ".home", containerHome);
+            if(root!=null) {
+                File location = new File(root);
+                location = new File(location, "modules");
+                location = new File(location, containerName);
+                containerHome = location.getAbsolutePath();
+                System.setProperty(containerName + ".home", containerHome);
+            }
         }
 
-        assert containerHome!=null;
-
-
-        Module[] modules = null;
+        Module[] modules;
         ClassLoader containerClassLoader;
         // I do the container setup first so the code has a chance to set up
         // repositories which would allow access to the connector module.
@@ -125,7 +121,7 @@ public class ContainerStarter {
                 Inhabitant<? extends Container> provider = habitat.getInhabitant(Container.class, name);
                 if (provider==null) {
                     try {
-                        Class<? extends Container> containerClass = (Class<? extends Container>) containerClassLoader.loadClass(name);
+                        Class<? extends Container> containerClass = containerClassLoader.loadClass(name).asSubclass(Container.class);
                         if (containerClass!=null) {
                             provider = habitat.getInhabitant(containerClass, null);
                         }

@@ -38,16 +38,16 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXCreatorInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -66,7 +66,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
      * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModuleorApplication property.
      * Objects of the following type(s) are allowed in the list
      * {@link LifecycleModule }
-     * {@link J2EeApplication }
+     * {@link J2eeApplication }
      * {@link EjbModule }
      * {@link WebModule }
      * {@link ConnectorModule }
@@ -78,4 +78,37 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
     @Element("*")
     public List<Module> getModules();
 
+    /**
+     * Gets a subset of {@link #getModules()} that has the given type.
+     */
+    @DuckTyped
+    <T> List<T> getModules(Class<T> type);
+    
+    @DuckTyped
+    <T> T getModule(Class<T> type, String moduleID);
+    
+    public class Duck {
+        public static <T> List<T> getModules(Applications apps, Class<T> type) {
+            List<T> modules = new ArrayList<T>();
+            for (Object module : apps.getModules()) {
+                if (type.isInstance(module)) {
+                    modules.add(type.cast(module));
+                }
+            }
+            return modules;
+        }
+
+        public static <T> T getModule(Applications apps, Class<T> type, String moduleID) {
+            if (moduleID == null) {
+                return null;
+            }
+
+            for (Module module : apps.getModules())
+                if (type.isInstance(module) && module.getName().equals(moduleID))
+                    return type.cast(module);
+
+            return null;
+
+        }
+    }
 }

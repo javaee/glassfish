@@ -24,8 +24,6 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.deployment.common.DeploymentException;
@@ -54,17 +52,13 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> {
 
-    private static Logger _logger = null;
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     @Inject
     private ServerContext serverContext;
 
     @Inject 
     private PolicyLoader policyLoader;
-    static {
-        _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
-        //initRoleMapperFactory();
-        
-    }
+
     // creates security policy if needed
     @Override
     protected void generateArtifacts(DeploymentContext dc)

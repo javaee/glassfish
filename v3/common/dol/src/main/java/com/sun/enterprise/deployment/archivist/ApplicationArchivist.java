@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
@@ -82,6 +83,9 @@ public class ApplicationArchivist extends Archivist<Application> {
 
     @Inject
     ArchivistFactory archivistFactory;
+
+    @Inject
+    Habitat habitat;
 
     /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
@@ -201,7 +205,7 @@ public class ApplicationArchivist extends Archivist<Application> {
      */
     @Override
     public Application getDefaultBundleDescriptor() {
-        return new Application();
+        return new Application(habitat);
     }
     
     /**

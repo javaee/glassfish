@@ -90,13 +90,6 @@ public final class Constants {
     public static final String DEFAULT_WEB_MODULE_PREFIX = "__default-";
 
     /**
-     * Name of the class that implements invocation/security/transaction
-     * manager hooks for web application events.
-     */
-    public static final String J2EE_INSTANCE_LISTENER =
-        "com.sun.web.server.J2EEInstanceListener";
-
-    /**
      * The Apache Jasper JSP servlet class name.
      */
     public static final String APACHE_JSP_SERVLET_CLASS =

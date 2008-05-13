@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.security.ssl.SSLUtils;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,8 +51,6 @@ import com.sun.enterprise.J2EESecurityManager;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.Realm;
@@ -145,11 +142,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             LoginContextDriver.AUDIT_MANAGER = auditManager;
             
             secServUtil.initSecureSeed();
-            // init SSL store
-            // need this for jaxr https for PE
-            // need this for webcore, etc for SE
-            //TODO:V3 try creating a Service and injecting it here.
-            SSLUtils.initStoresAtStartup();
 
             //jmac
             initializeJMAC();
@@ -224,33 +216,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     public void preDestroy() {
         //DO Nothing ?
         //TODO:V3 need to see if something needs cleanup
-    }
-    
-    /** register the RoleMapperFactory that should be used on the server side
-     */
-    private void initRoleMapperFactory() throws Exception
-    {    
-        Object o = null;
-        Class c=null;
-        // this should never fail.
-        try {
-            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
-            if (c!=null) {
-                o = c.newInstance();  
-                if (o!=null && o instanceof SecurityRoleMapperFactory) {
-                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
-                }
-            }
-            if (o==null) {
-                _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", 
-								     "Cannot instantiate the SecurityRoleMapperFactory"));
-            }
-        } catch(Exception cnfe) {
-            _logger.log(Level.SEVERE,
-			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
-			cnfe);
-            throw  cnfe;
-        } 
     }
     
      /**

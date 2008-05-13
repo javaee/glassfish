@@ -57,7 +57,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminServiceConfig", singleton=true)
 @Configured
-public interface AdminService extends ConfigBeanProxy, Injectable  {
+public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  {
 
     /**
      * Gets the value of the type property.
@@ -117,15 +117,4 @@ public interface AdminService extends ConfigBeanProxy, Injectable  {
      *              {@link DasConfig }
      */
     public void setDasConfig(DasConfig value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the property property.
-     * Objects of the following type(s) are allowed in the list
-     * {@link Property }
-     */
-    @Element("property")
-    public List<Property> getProperty();
-
-
-
 }

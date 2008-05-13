@@ -62,7 +62,7 @@ public interface HttpAccessLog extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="access")
     public String getLogDirectory();
 
     /**

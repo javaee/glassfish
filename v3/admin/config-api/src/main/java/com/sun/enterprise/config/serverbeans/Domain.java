@@ -38,18 +38,17 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-
-import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *
@@ -69,7 +68,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
-public interface Domain extends ConfigBeanProxy, Injectable  {
+public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
 
     /**
      * Gets the value of the applicationRoot property.
@@ -291,29 +290,119 @@ public interface Domain extends ConfigBeanProxy, Injectable  {
     @Element
     public List<SystemProperty> getSystemProperty();
 
+    @DuckTyped
+    List<Application> getAllDefinedSystemApplications();
+
+    @DuckTyped
+    ApplicationRef getApplicationRefInServer(String sn, String name);
+
     /**
-     * Gets the value of the property property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the property property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProperty().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Property }
+     * Returns the list of system-applications that are referenced from the given server.
+     * A server references an application, if the server has an element named
+     * &lt;application-ref> in it that points to given application. The given server
+     * is a &lt;server> element inside domain.
+     *
+     * @param sn the string denoting name of the server
+     * @return List of system-applications for that server, an empty list in case there is none
      */
-    @Element("property")
-    public List<Property> getProperty();
+    @DuckTyped
+    List<Application> getSystemApplicationsReferencedFrom(String sn);
 
+    @DuckTyped
+    Application getSystemApplicationReferencedFrom(String sn, String appName);
 
+    @DuckTyped
+    boolean isNamedSystemApplicationReferencedFrom(String appName, String serverName);
 
+    @DuckTyped
+    Server getServerNamed(String name);
+
+    public class Duck {
+        public static List<Application> getAllDefinedSystemApplications(Domain me) {
+            List<Application> allSysApps = new ArrayList<Application>();
+            SystemApplications sa = me.getSystemApplications();
+            if (sa != null) {
+                for (Module m : sa.getModules()) {
+                    if (m instanceof Application)
+                        allSysApps.add((Application)m);
+                }
+            }
+            return ( allSysApps );
+        }
+
+        public static ApplicationRef getApplicationRefInServer(Domain me, String sn, String name) {
+            Servers ss = me.getServers();
+            List<Server> list = ss.getServer();
+            Server theServer = null;
+            for (Server s : list) {
+                if (s.getName().equals(sn)) {
+                    theServer = s;
+                    break;
+                }
+            }
+            ApplicationRef aref = null;
+            if (theServer != null) {
+                List <ApplicationRef> arefs = theServer.getApplicationRef();
+                for (ApplicationRef ar : arefs) {
+                    if (ar.getRef().equals(name)) {
+                        aref = ar;
+                        break;
+                    }
+                }
+            }
+            return ( aref );
+        }
+
+        public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
+            if (d == null || sn == null)
+                throw new IllegalArgumentException("Null argument");
+            List<Application> allApps = d.getAllDefinedSystemApplications();
+            if (allApps.size() == 0)
+                return (allApps); //if there are no sys-apps, none can reference one :)
+            //allApps now contains ALL the system applications
+            Server s = getServerNamed(d,sn);
+            List<Application> referencedApps = new ArrayList<Application>();
+            List<ApplicationRef> appsReferenced = s.getApplicationRef();
+            for (ApplicationRef ref : appsReferenced) {
+                for (Application app : allApps) {
+                    if (ref.getRef().equals(app.getName())) {
+                        referencedApps.add(app);
+                    }
+                }
+            }
+            return ( referencedApps );
+        }
+
+        public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {
+            //returns null in case there is none
+            List<Application> allApps = getSystemApplicationsReferencedFrom(d, sn);
+            for (Application app : allApps) {
+                if (app.getName().equals(appName)) {
+                    return ( app );
+                }
+            }
+            return ( null );
+        }
+
+        public static boolean isNamedSystemApplicationReferencedFrom(Domain d, String appName, String serverName) {
+            List <Application> referencedApps = getSystemApplicationsReferencedFrom(d, serverName);
+            for (Application app : referencedApps) {
+                if (app.getName().equals(appName))
+                    return ( true );
+            }
+            return ( false );
+        }
+
+        public static Server getServerNamed(Domain d, String name) {
+            if (d.getServers() == null || name == null)
+                throw new IllegalArgumentException ("no <servers> element");
+            List<Server> servers = d.getServers().getServer();
+            for (Server s : servers) {
+                if (name.equals(s.getName().trim())) {
+                    return ( s );
+                }
+            }
+            return ( null );
+        }
+    }
 }

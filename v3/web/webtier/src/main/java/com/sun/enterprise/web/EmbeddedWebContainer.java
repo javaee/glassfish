@@ -37,43 +37,32 @@
 package com.sun.enterprise.web;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import org.apache.catalina.Connector;
-import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.Engine;
-import org.apache.catalina.InstanceListener;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.mbeans.MBeanUtils;
-import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.logger.FileLogger;
-import org.apache.tomcat.util.IntrospectionUtils;
 
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.web.server.WebContainerListener;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 
@@ -103,6 +92,8 @@ public final class EmbeddedWebContainer extends Embedded {
 
     private InjectionManager injectionManager;
 
+    private final Habitat habitat;
+
     /*
      * The value of the 'file' attribute of the log-service element
      */
@@ -120,11 +111,12 @@ public final class EmbeddedWebContainer extends Embedded {
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
         this.serverContext = serverContext;
-        webContainerFeatureFactory = serverContext.getDefaultHabitat().getByContract(
-                WebContainerFeatureFactory.class);      
-        invocationManager = serverContext.getDefaultHabitat().getByContract(
+        habitat = serverContext.getDefaultHabitat();
+        webContainerFeatureFactory = habitat.getByContract(
+                WebContainerFeatureFactory.class);
+        invocationManager = habitat.getByContract(
                 InvocationManager.class);
-        injectionManager = serverContext.getDefaultHabitat().getByContract(
+        injectionManager = habitat.getByContract(
                 InjectionManager.class);
     }
     
@@ -136,7 +128,7 @@ public final class EmbeddedWebContainer extends Embedded {
      *
      * @param vsID Virtual server id
      * @param vsBean Bean corresponding to virtual-server element in domain.xml
-     * @param vsDocRoot Virtual server docroot
+     * @param vsDocroot Virtual server docroot
      * @param vsMimeMap Virtual server MIME mappings
      *
      * @return The generated virtual server instance
@@ -168,19 +160,19 @@ public final class EmbeddedWebContainer extends Embedded {
             state = vsBean.getState();
 
             //Begin EE: 4920692 Make the default-web.xml be relocatable
-            Property prop = ConfigBeansUtilities.getPropertyByName(vsBean, "default-web-xml");
+            Property prop = vsBean.getProperty("default-web-xml");
             if (prop != null) {
                 defaultWebXmlLocation = prop.getValue();
             }
             //End EE: 4920692 Make the default-web.xml be relocatable
 
             // allowLinking
-            prop = ConfigBeansUtilities.getPropertyByName(vsBean, "allowLinking");
+            prop = vsBean.getProperty("allowLinking");
             if (prop != null) {
                 allowLinking = Boolean.parseBoolean(prop.getValue());
             }
 
-            prop = ConfigBeansUtilities.getPropertyByName(vsBean, "contextXmlDefault");
+            prop = vsBean.getProperty("contextXmlDefault");
             if (prop != null) {
                 defaultContextXmlLocation = prop.getValue();
             }
@@ -227,7 +219,7 @@ public final class EmbeddedWebContainer extends Embedded {
      * @param location Absolute pathname to the web module directory
      * @param defaultWebXmlLocation Location of default-web.xml
      */
-    public Context createContext(String ctxPath, String location,
+    public Context createContext(String ctxPath, File location,
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
@@ -237,10 +229,10 @@ public final class EmbeddedWebContainer extends Embedded {
         WebModule context = new WebModule(webContainer);
         context.setDebug(debug);
         context.setPath(ctxPath);
-        context.setDocBase(location);
+        context.setDocBase(location.getAbsolutePath());
         context.setCrossContext(true);
         context.setUseNaming(isUseNaming());
-        context.setHasWebXml(wbd == null ? false : true);
+        context.setHasWebXml(wbd != null);
         context.setWebBundleDescriptor(wbd);
         context.setManagerChecksFrequency(1);
         context.setComponentId(compEnvId);
@@ -260,16 +252,20 @@ public final class EmbeddedWebContainer extends Embedded {
         
         config.setDefaultContextXml(defaultContextXmlLocation);
         config.setDefaultWebXml(defaultWebXmlLocation);
-        ((Lifecycle) context).addLifecycleListener(config);
+        context.addLifecycleListener(config);
 
-        context.addLifecycleListener(new WebModuleListener(serverContext, 
+        // TODO: should any of those become WebModuleDecorator, too?
+        context.addLifecycleListener(new WebModuleListener(serverContext,
                 location, wbd));
 
-        context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
-        
         context.addContainerListener(
                 new WebContainerListener(invocationManager, injectionManager));
 
+        for( WebModuleDecorator d : habitat.getAllByContract(WebModuleDecorator.class)) {
+            d.decorate(context);
+        }
+
+        // TODO: monitoring should also hook in via WebModuleDecorator
         //context.addInstanceListener(
         //    "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
         

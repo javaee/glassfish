@@ -37,15 +37,11 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -67,14 +63,8 @@ public class ASMainKnopflerFish extends ASMainOSGi {
         }
     }
 
-
-    protected URL[] getFWJars() {
-        try {
-            File file = new File(fwDir, "framework.jar");
-            return new URL[]{file.toURI().toURL()};
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e); // TODO: Proper Exception Handling
-        }
+    protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
+        cpb.addJar(new File(fwDir, "framework.jar"));
     }
 
     protected void launchOSGiFW() throws Exception {

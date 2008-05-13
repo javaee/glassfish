@@ -53,29 +53,25 @@
  */
 
 
-
-
 package org.apache.catalina;
+
+import org.jvnet.hk2.annotations.Contract;
 
 
 /**
  * Interface defining a listener for significant events related to a
- * specific servlet instance, rather than to the Wrapper component that
+ * specific servlet instance, rather than to the {@link Wrapper} component that
  * is managing that instance.
  *
  * @author Craig R. McClanahan
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:17 $
  */
-
+@Contract
 public interface InstanceListener {
-
-
     /**
      * Acknowledge the occurrence of the specified event.
      *
      * @param event InstanceEvent that has occurred
      */
     public void instanceEvent(InstanceEvent event);
-
-
 }

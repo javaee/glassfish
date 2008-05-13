@@ -54,7 +54,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     @Inject
     Habitat habitat;
 
-    String instanceRoot;
+    File instanceRoot;
     final String instanceName = "server"; // weird
     String[] args;
 
@@ -69,7 +69,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
         }
     }
     
-    public String getInstanceRoot() {
+    public File getInstanceRoot() {
         return instanceRoot;
     }
 
@@ -77,9 +77,9 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
         return args;
     }
 
-
-    public String getInstallRoot() {
-        return new File(instanceRoot).getParentFile().getParent();
+    public File getInstallRoot() {
+        // $instanceRoot/../..
+        return instanceRoot.getParentFile().getParentFile();
     }
 
     public String getInstanceName() {

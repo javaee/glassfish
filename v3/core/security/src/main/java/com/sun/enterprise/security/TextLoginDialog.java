@@ -47,6 +47,7 @@ import javax.security.auth.callback.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -149,7 +150,7 @@ public final class TextLoginDialog implements LoginDialog {
 		    String lbl = (localStrings.getLocalString
 				  ("enterprise.security.keystore",
 				   "Enter the KeyStore Password "));
-		    String keystorePass = SSLUtils.getKeyStorePass ();
+		    String keystorePass = Globals.getDefaultHabitat().getComponent(SSLUtils.class).getKeyStorePass();
 		    System.out.println (lbl+
 					" : (max 3 tries)"); 
 		    int cnt=0;

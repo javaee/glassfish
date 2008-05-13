@@ -38,17 +38,13 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.Which;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,8 +81,8 @@ public abstract class ASMainOSGi {
      * These are the prefixes of the jar names (to avoid hard-coding versions),
      * and so for entry "foo", we'll find "foo*.jar"
      */
-    private String[] additionalJarPrefixes = {
-        "wstx-asl" // needed by config module in HK2
+    private String[] additionalJars = {
+        "wstx-asl-*.jar" // needed by config module in HK2
     };
 
     private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
@@ -110,15 +106,13 @@ public abstract class ASMainOSGi {
     protected abstract void setFwDir();
 
     public ASMainOSGi(String... args) {
-        this(Logger.getAnonymousLogger());
+        this(Logger.getAnonymousLogger(),args);
     }
 
     /**
-     * Returns the list of Jar files that comprise the OSGi platform
-     *
-     * @return
+     * Adds the jar files of the OSGi platform to the given {@link ClassPathBuilder}
      */
-    protected abstract URL[] getFWJars() throws Exception;
+    protected abstract void addFrameworkJars(ClassPathBuilder cpb) throws IOException;
 
     protected abstract void launchOSGiFW() throws Exception;
 
@@ -144,47 +138,54 @@ public abstract class ASMainOSGi {
      * framework class loader (For loading OSGi framework classes)
      */
     private void setupLauncherClassLoader() throws Exception {
-        ClassLoader commonCL = createCommonClassLoader();
-        //ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
-        final List<URL> urls = new ArrayList<URL>();
-        Collections.addAll(urls, getFWJars());
-        File moduleDir = context.getRootDirectory().getParentFile();
-        helper.addPaths(moduleDir, additionalJarPrefixes, urls);
-        this.launcherCL = helper.setupSharedCL(commonCL, urls,getSharedRepos());
-        //this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
+        ClassLoader commonCL = createCommonClassLoader(ClassLoader.getSystemClassLoader().getParent());
+        // ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
+
+        try {
+            ClassPathBuilder cpb = new ClassPathBuilder(commonCL);
+            addFrameworkJars(cpb);
+
+            File moduleDir = context.getRootDirectory().getParentFile();
+            cpb.addGlob(moduleDir,additionalJars);
+
+            this.launcherCL = cpb.createExtensible(getSharedRepos());
+        } catch (IOException e) {
+            throw new IOError(e);
+        }
         Thread.currentThread().setContextClassLoader(launcherCL);
     }
 
-    private ClassLoader createCommonClassLoader() {
+    /**
+     * Creates a class loader from JavaEE API and tools.jar.
+     */
+    protected ClassLoader createCommonClassLoader(ClassLoader parent) {
         try {
-            List<URL> urls = new ArrayList<URL>();
-            helper.addPaths(new File(glassfishDir,"modules"), new String[]{"javax.javaee-"}, urls);
+            ClassPathBuilder cpb = new ClassPathBuilder(parent);
+
+            File modulesDir = new File(glassfishDir, "modules");
+            cpb.addGlob(modulesDir, "javax.javaee-*.jar");
 
             // on jdk 1.5, I need stax apis, might be duplicated if javax.javaee is present.
-            if (System.getProperty("java.version").compareTo("1.6")<0) {
-                helper.addPaths(new File(glassfishDir, "modules"), new String[]{"stax-api"}, urls);
-            }
+            if (System.getProperty("java.version").compareTo("1.6")<0)
+                cpb.addGlob(modulesDir, "stax-api-*.jar");
 
-            // javadb
-            findDerbyClient(urls);
+            findDerbyClient(cpb);
 
             File jdkToolsJar = helper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
-                urls.add(jdkToolsJar.toURI().toURL());
+                cpb.addJar(jdkToolsJar);
             } else {
                 // on the mac, it happens all the time
                 logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
             }
-            ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
-            return new URLClassLoader(urls.toArray(new URL[urls.size()]), extCL);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+
+            return cpb.create();
+        } catch (IOException e) {
+            throw new IOError(e);
         }
     }
 
-    private void findDerbyClient(List<URL> urls) throws MalformedURLException {
-
-        List<URL> derbyUrls = new ArrayList<URL>();
+    private void findDerbyClient(ClassPathBuilder cpb) throws IOException {
         File derbyLib = new File(glassfishDir, "javadb/lib");
         if (!derbyLib.exists()) {
             // maybe the jdk...
@@ -197,31 +198,15 @@ public abstract class ASMainOSGi {
             logger.info("Cannot find javadb client jar file, jdbc driver not available");
             return;
         }
-        helper.addPaths(derbyLib, new String[] {"derbyclient"}, derbyUrls);
-        if (derbyUrls.size()>0) {
-            urls.addAll(derbyUrls);
-        }
+        cpb.addGlob(derbyLib,"derbyclient*.jar");
     }
 
     private void findBootstrapFile() {
-        String resourceName = getClass().getName().replace(".", "/") + ".class";
-        URL resource = getClass().getClassLoader().getResource(resourceName);
-        if (resource == null) {
+        try {
+            bootstrapFile = Which.jarFile(getClass());
+        } catch (IOException e) {
             throw new RuntimeException("Cannot get bootstrap path from "
-                    + resourceName + " class location, aborting");
-        }
-        if (resource.getProtocol().equals("jar")) {
-            try {
-                JarURLConnection c = (JarURLConnection) resource.openConnection();
-                URL jarFile = c.getJarFileURL();
-                bootstrapFile = new File(jarFile.toURI());
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot open bootstrap jar file", e);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Incorrect bootstrap class URI", e);
-            }
-        } else {
-            throw new RuntimeException("Don't support packaging " + resource + " , please contribute !");
+                    + getClass() + " class location, aborting");
         }
     }
 

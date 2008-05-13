@@ -54,9 +54,12 @@
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
-                  <tasks>
-                    <ant dir="." antfile="build.xml" target="create.bundle"/>
-                  </tasks>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.bundle"/>
+                        <if test="${build.all.jar}">
+                            <ant dir="." antfile="build.xml" target="all.jar"/>
+                        </if>
+                    </tasks>
                 </configuration>
                 <dependencies>
                     <!-- TODO: add installer builder jars -->
@@ -65,6 +68,15 @@
              </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile><!-- activate this profile to build all-in-one jar -->
+            <id>all.jar</id>
+            <properties>
+                <build.all.jar>true</build.all.jar>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- base distribution image -->

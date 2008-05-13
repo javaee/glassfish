@@ -48,6 +48,11 @@ import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import java.net.InetAddress;
+import java.security.SecureRandom;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
 
 
 /**
@@ -61,33 +66,30 @@ import java.net.InetAddress;
  * @see com.sun.enterprise.security.auth.realm.ldap.LDAPRealm
  *
  */
-public class CustomSocketFactory extends SocketFactory implements Comparator<SocketFactory>{
-    private static SocketFactory socketFactory = null;
+@Service
+public class CustomSocketFactory extends SocketFactory implements Comparator<SocketFactory>, PostConstruct {
+    private SocketFactory socketFactory;
+
+    @Inject
+    SSLUtils sslUtils;
+
     public static final String SSL = "SSL";
     protected static final Logger _logger =
         LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     //TODO:V3, make sure second argument is correct
     protected static final StringManager sm =
         StringManager.getManager("com.sun.enterprise.security.auth.realm", Thread.currentThread().getContextClassLoader());
-    
-    static {
+
+    public void postConstruct() {
         SSLContext sc = null;
         try {
             sc = SSLContext.getInstance(SSL);
-            sc.init(SSLUtils.getKeyManagers(), SSLUtils.getTrustManagers(), new java.security.SecureRandom());
+            sc.init(sslUtils.getKeyManagers(), sslUtils.getTrustManagers(), new SecureRandom());
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "security.exception", ex);
         }        
         socketFactory = sc.getSocketFactory();
     }
-    
-    /**
-     * @see javax.net.SocketFactory#getDefault()
-     */
-    public static SocketFactory getDefault() {
-        return new CustomSocketFactory();
-    }
-    
     
     /**
      * @see javax.net.SocketFactory#createSocket(java.lang.String, int)

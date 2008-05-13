@@ -31,35 +31,27 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
-import org.apache.catalina.Container;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardHost;
-import com.sun.grizzly.tcp.Adapter;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.*;
 import org.glassfish.web.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.beans.PropertyVetoException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -83,8 +75,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     @Inject
     GrizzlyService grizzlyAdapter;
-
-    private static final String ADMIN_VS = "__asadmin";
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
@@ -152,15 +142,18 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         // 1. User specified value through DeployCommand
         // 2. Context root value specified through sun-web.xml
         // 3. The default context root
-        String contextRoot;
+        // 4. archive name
         Properties params = dc.getCommandParameters();
-        if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
-            contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
-        } else if (wbd.getContextRoot() != null && wbd.getContextRoot().length()>0) {
+        String contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
+        if(contextRoot==null) {
             contextRoot = wbd.getContextRoot();
-        } else {
-            contextRoot = params.getProperty(DeployCommand.NAME);
+            if("".equals(contextRoot))
+                contextRoot = null;
         }
+        if(contextRoot==null)
+            contextRoot = params.getProperty(DeployCommand.NAME);
+        if(contextRoot==null)
+            contextRoot = dc.getSource().getName();
 
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
@@ -181,7 +174,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
         try {
             ReadableArchive source = dc.getSource();
-            final String docBase = source.getURI().getSchemeSpecificPart();
             Properties params = dc.getCommandParameters();
             String virtualServers = params.getProperty(DeployCommand.VIRTUAL_SERVERS);
         
@@ -198,7 +190,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);
-            wmInfo.setLocation(dc.getSourceDir().getAbsolutePath());
+            wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
             wmInfo.setWorkDir(dc.getScratchDir(env.kCompileJspDirName).getAbsolutePath());
         } catch (Exception ex) {
@@ -262,19 +254,17 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             return;
         }
 
-        FileInputStream fis = null;
+        InputStream fis = null;
 
         try {
             // parse default-web.xml contents 
-            String defaultWebXMLPath = env.getConfigDirPath() +
-                File.separator + DEFAULT_WEB_XML;
-            File file = new File(defaultWebXMLPath);
-            if (file.exists()) {
-                fis = new FileInputStream(file);
+            URL defaultWebXml = getDefaultWebXML();
+            if (defaultWebXml!=null)  {
+                fis = defaultWebXml.openStream();
                 WebDeploymentDescriptorFile wddf =
                     new WebDeploymentDescriptorFile();
                 wddf.setXMLValidation(false);
-                defaultWebXMLWbd = (WebBundleDescriptor) wddf.read(fis);
+                defaultWebXMLWbd = wddf.read(fis);
             }
         } catch (Exception e) {
             LogDomains.getLogger(LogDomains.WEB_LOGGER).
@@ -288,6 +278,22 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 // do nothing
             }
         }
+    }
+
+    /**
+     * Obtains the location of <tt>default-web.xml</tt>.
+     * This allows subclasses to load the file from elsewhere.
+     *
+     * @return
+     *      null if not found, in which case the default web.xml will not be read
+     *      and <tt>web.xml</tt> in the applications need to have everything.
+     */
+    protected URL getDefaultWebXML() throws IOException {
+        File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
+        if (file.exists())
+            return file.toURI().toURL();
+        else
+            return null;
     }
 
     /**

@@ -37,15 +37,11 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.File;
-import java.io.FileFilter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 /**
  * Main class to launch GlassFish on Equinox (non-embedded)
@@ -70,28 +66,10 @@ public class ASMainEquinox extends ASMainOSGi {
         }
     }
 
-    /**
-     * Returns the list of Jar files that comprise the OSGi platform
-     *
-     * @return
-     */
-    protected URL[] getFWJars() {
+    protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
         // Add all the jars to classpath for the moment, since the jar name
         // is not a constant.
-        final List<URL> urls = new ArrayList<URL>();
-        fwDir.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                if (pathname.getName().endsWith(".jar")) {
-                    try {
-                        urls.add(pathname.toURI().toURL());
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return true;
-            }
-        });
-        return urls.toArray(new URL[0]);
+        cpb.addJarFolder(fwDir);
     }
 
     protected void launchOSGiFW() throws Exception {

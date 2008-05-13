@@ -53,9 +53,26 @@ public interface ArchiveHandler {
      * @return the default name for identifying the specified archive
      */
     public String getDefaultApplicationName(ReadableArchive archive);
-    
-    public boolean handles(ReadableArchive archive);
 
+    /**
+     * Returns true if thie handler understands the specified archive and
+     * can process it.
+     *
+     * @throws IOException
+     *      The implementation of this method is expected to interact with
+     *      the given archive, and if methods on {@link ReadableArchive}
+     *      throws an {@link IOException}, it can be simply tunneled to the caller.
+     */
+    public boolean handles(ReadableArchive archive) throws IOException;
+
+    /**
+     * Creates a classloader that can load code from inside the archive.
+     *
+     * @param parent
+     *      The newly created classloader to be returned must eventually delegate to this classloader.
+     *      (This classloader is capable of resolving APIs and other things that the container
+     *      is expected to provide.)
+     */
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive);
     
     /**

@@ -36,6 +36,7 @@ import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Security container service
@@ -48,6 +49,10 @@ public class SecurityContainer implements Container, PostConstruct{
     private PolicyLoader policyLoader;
     @Inject
     private ServerContext serverContext;
+
+    @Inject
+    private Habitat habitat;
+
     static {
         initRoleMapperFactory();
     }
@@ -71,7 +76,7 @@ public class SecurityContainer implements Container, PostConstruct{
     public void postConstruct() {
         //Generate Policy for the Dummy Module
         WebBundleDescriptor wbd = new WebBundleDescriptor();
-        Application application = new Application();
+        Application application = new Application(habitat);
         application.setVirtual(true);
         application.setName(DEFAULT_WEB_MODULE_NAME);
         application.setRegistrationName(DEFAULT_WEB_MODULE_NAME);

@@ -81,9 +81,7 @@ public abstract class AbstractArchiveHandler implements ArchiveHandler {
                 if (os!=null) {
                     target.closeEntry();
                 }
-                if (is!=null) {
-                    is.close();
-                }
+                is.close();
             }
         }
 

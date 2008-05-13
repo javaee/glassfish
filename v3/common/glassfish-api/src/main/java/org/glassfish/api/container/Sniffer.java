@@ -23,7 +23,6 @@
 
 package org.glassfish.api.container;
 
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -33,15 +32,16 @@ import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * A sniffer implementation is responsible for identifying a particular
  * application type and/or a particular file type.
  *
+ * <p>
+ * For clients who want to work with Sniffers, see <tt>SnifferManager</tt> in the kernel.
+ *
  * @author Jerome Dochez
  */
-
 @Contract
 public interface Sniffer {
 
@@ -84,7 +84,7 @@ public interface Sniffer {
      * Sets up the container libraries so that any imported bundle from the
      * connector jar file will now be known to the module subsystem
      *
-     * This method returns a {@link ModuleDefinition} for the module containing
+     * This method returns a {@link Module}s for the module containing
      * the core implementation of the container. That means that this module
      * will be locked as long as there is at least one module loaded in the
      * associated container.

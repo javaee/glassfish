@@ -46,6 +46,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Arrays;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.HttpsURLConnection;
@@ -64,6 +65,10 @@ import com.sun.enterprise.server.pluggable.SecuritySupport;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  *  Handy class containing static functions.
@@ -71,7 +76,8 @@ import com.sun.logging.*;
  * @author Vivek Nagar
  * @author Shing Wai Chan
  */
-public final class SSLUtils {
+@Service
+public final class SSLUtils implements PostConstruct {
     private static final String DEFAULT_KEYSTORE_PASS = "changeit";
     private static final String DEFAULT_TRUSTSTORE_PASS = "changeit";
 
@@ -79,29 +85,33 @@ public final class SSLUtils {
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
 
-    private static Logger _logger=null;
-    private static SecuritySupport secSupp = null;
-    private static boolean hasKey = false;
-    private static KeyManager keyManager = null;
-    private static TrustManager trustManager = null;
-    private static KeyStore mergedTrustStore = null;
-    private static final Date initDate;
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
-    static{
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    @Inject
+    SecuritySupport secSupp;
 
-        secSupp = getSecuritySupport();
+    @Inject
+    Habitat habitat;
+    
+    private boolean hasKey = false;
+    private KeyManager keyManager = null;
+    private TrustManager trustManager = null;
+    private KeyStore mergedTrustStore = null;
+    private Date initDate;
+
+    //V3:Commented private static Ssl appclientSsl = null
+    public void postConstruct() {
         try {
             initDate = new Date();
             KeyStore[] keyStores = getKeyStores();
             initKeyManagers(keyStores, secSupp.getKeyStorePasswords());
             initTrustManagers(getTrustStores());
-            if (keyStores != null && keyStores.length > 0) {
-                for (int i = 0; i < keyStores.length; i++) {
-                    Enumeration aliases = keyStores[i].aliases();
+            if (keyStores != null) {
+                for (KeyStore keyStore : keyStores) {
+                    Enumeration aliases = keyStore.aliases();
                     while (aliases.hasMoreElements()) {
-                        String alias = (String)aliases.nextElement();
-                        if (keyStores[i].isKeyEntry(alias)) {
+                        String alias = (String) aliases.nextElement();
+                        if (keyStore.isKeyEntry(alias)) {
                             hasKey = true;
                             break;
                         }
@@ -118,52 +128,43 @@ public final class SSLUtils {
             }
             throw new IllegalStateException(ex);
         }
-    }
 
-    //XXX initStoresAtStartup may call more than once, should clean up later
-    private static boolean initialized = false;
+        try {
+            //V3:Commented to break dependency on WebTier.
+            //The SSLSocketFactory CTOR will now take care of setting the kmgr and tmgr
+            //SSLSocketFactory.setManagers(getKeyManagers(), getTrustManagers());
 
-    //V3:Commented private static Ssl appclientSsl = null
-    public static synchronized void initStoresAtStartup()
-	throws Exception
-    {
-        if (initialized) {
-            return;
-        }
-        //V3:Commented to break dependency on WebTier.
-        //The SSLSocketFactory CTOR will now take care of setting the kmgr and tmgr
-	//SSLSocketFactory.setManagers(getKeyManagers(), getTrustManagers());
-        
-        // Creating a default SSLContext and HttpsURLConnection for clients 
-        // that use Https
-        SSLContext ctx = SSLContext.getInstance("TLS");
-        String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
-        KeyManager[] kMgrs = getKeyManagers();
-        if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
-            for (int i = 0; i < kMgrs.length; i++) {
-                kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], keyAlias);
+            // Creating a default SSLContext and HttpsURLConnection for clients
+            // that use Https
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
+            KeyManager[] kMgrs = getKeyManagers();
+            if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
+                for (int i = 0; i < kMgrs.length; i++) {
+                    kMgrs[i] = new J2EEKeyManager(habitat,(X509KeyManager)kMgrs[i], keyAlias);
+                }
             }
+            ctx.init(kMgrs, getTrustManagers(), null);
+
+            HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+        } catch (Exception e) {
+            throw new Error(e);
         }
-	ctx.init(kMgrs, getTrustManagers(), null);
-
-        HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
-
-        initialized = true;
     }
 
-    public static KeyStore[] getKeyStores() throws Exception{
+    public KeyStore[] getKeyStores() throws Exception{
         return secSupp.getKeyStores();
     }
 
-    public static KeyStore getKeyStore() throws Exception{
+    public KeyStore getKeyStore() throws Exception{
         return getKeyStores()[0];
     }
 
-    public static KeyStore[] getTrustStores() throws Exception{
+    public KeyStore[] getTrustStores() throws Exception{
         return secSupp.getTrustStores();
     }
 
-    public static KeyStore getTrustStore() throws Exception{
+    public KeyStore getTrustStore() throws Exception{
         return getTrustStores()[0];
     }
 
@@ -171,15 +172,15 @@ public final class SSLUtils {
      * This API is for temporary purpose.  It will be removed once JSR 196
      * is updated.
      */
-    public static KeyStore getMergedTrustStore() {
+    public KeyStore getMergedTrustStore() {
         return mergedTrustStore;
     }
 
-    public static KeyManager[] getKeyManagers() throws Exception{
+    public KeyManager[] getKeyManagers() throws Exception{
         return new KeyManager[] { keyManager };
     } 
 
-    public static TrustManager[] getTrustManagers() throws Exception{
+    public TrustManager[] getTrustManagers() throws Exception{
         return new TrustManager[] { trustManager };
     }
 
@@ -205,7 +206,7 @@ public final class SSLUtils {
     /**
      * This method checks whether a private key is available or not.
      */
-    public static boolean isKeyAvailable() {
+    public boolean isKeyAvailable() {
         return hasKey;
     }
 
@@ -215,7 +216,7 @@ public final class SSLUtils {
      * @param certNickname
      * @return boolean
      */ 
-    public static boolean isTokenKeyAlias(String certNickname) throws Exception {
+    public boolean isTokenKeyAlias(String certNickname) throws Exception {
         boolean isTokenKeyAlias = false;
         if (certNickname != null) {
             int ind = certNickname.indexOf(':');
@@ -236,8 +237,8 @@ public final class SSLUtils {
             if (count != -1) {
                 isTokenKeyAlias = kstores[count].isKeyEntry(aliasName);
             } else {
-                for (int i = 0; i < kstores.length; i++) {
-                    if (kstores[i].isKeyEntry(certNickname)) {
+                for (KeyStore kstore : kstores) {
+                    if (kstore.isKeyEntry(certNickname)) {
                         isTokenKeyAlias = true;
                         break;
                     }
@@ -253,7 +254,7 @@ public final class SSLUtils {
      * @param certNickname
      * @return PrivateKeyEntry
      */ 
-    public static PrivateKeyEntry getPrivateKeyEntryFromTokenAlias(
+    public PrivateKeyEntry getPrivateKeyEntryFromTokenAlias(
             String certNickname) throws Exception {
         PrivateKeyEntry privKeyEntry = null;
         if (certNickname != null) {
@@ -296,61 +297,44 @@ public final class SSLUtils {
                     }
                 }
             }
-            passwords = null;
         }
 
         return privKeyEntry;
     }
 
-    public static SecuritySupport getSecuritySupport() {
-        //TODO:V3 Add logic to differentiate between PE and EE cases ?
-        //if EE Impl class is in a different module then we can remove
-        // the named injection above.\
-        //TODO:V3
-        SecuritySupport peSecSupport = null;//habitat.getComponent(SecuritySupport.class, "PE");
-        //if the above does not work then create the default explicitly
-        if (peSecSupport == null) {
-            peSecSupport = new SecuritySupportImpl();
-        }
-        return peSecSupport;
+    public SecuritySupport getSecuritySupport() {
+        return secSupp;
     }
 
-    private static void initKeyManagers(KeyStore[] kstores, String[] pwds) 
+    private void initKeyManagers(KeyStore[] kstores, String[] pwds)
             throws Exception {
 
-        ArrayList keyManagers = new ArrayList();
+        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
         for (int i = 0; i < kstores.length; i++) {
             checkCertificateDates(kstores[i]);
 	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
                     KeyManagerFactory.getDefaultAlgorithm());
 	    kmf.init(kstores[i], pwds[i].toCharArray());
             KeyManager[] kmgrs = kmf.getKeyManagers();
-            if (kmgrs != null) {
-                for (int j = 0; j < kmgrs.length; j++) {
-                     keyManagers.add(kmgrs[j]);
-                }
-            }
+            if (kmgrs != null)
+                keyManagers.addAll(Arrays.asList(kmgrs));
         }
 
         keyManager = new UnifiedX509KeyManager(
-            (X509KeyManager [])keyManagers.toArray(
-                new X509KeyManager[keyManagers.size()]),
+                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
             secSupp.getTokenNames());
     }
     
-    private static void initTrustManagers(KeyStore[] tstores) throws Exception {
+    private void initTrustManagers(KeyStore[] tstores) throws Exception {
         ArrayList trustManagers = new ArrayList();
-        for (int i = 0; i < tstores.length; i++) {
-            checkCertificateDates(tstores[i]);
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+        for (KeyStore tstore : tstores) {
+            checkCertificateDates(tstore);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm());
-	    tmf.init(tstores[i]);
+            tmf.init(tstore);
             TrustManager[] tmgrs = tmf.getTrustManagers();
-            if (tmgrs != null) {
-                for (int j = 0; j < tmgrs.length; j++) {
-                     trustManagers.add(tmgrs[j]);
-                }
-            }
+            if (tmgrs != null)
+                trustManagers.addAll(Arrays.asList(tmgrs));
         }
         if (trustManagers.size() == 1) {
             trustManager = (TrustManager)trustManagers.get(0);
@@ -359,10 +343,10 @@ public final class SSLUtils {
         }
     }
 
-    private static KeyStore mergingTrustStores(KeyStore[] trustStores)
+    private KeyStore mergingTrustStores(KeyStore[] trustStores)
             throws IOException, KeyStoreException,
             NoSuchAlgorithmException, CertificateException {
-        KeyStore mergedStore = null;
+        KeyStore mergedStore;
         try {
             mergedStore = KeyStore.getInstance("CaseExactJKS");
         } catch(KeyStoreException ex) {
@@ -384,7 +368,7 @@ public final class SSLUtils {
 
                 String alias3 = alias2;
                 boolean alreadyInStore = false;
-                Certificate aCert = null;
+                Certificate aCert;
                 int count = 1;
                 while ((aCert = mergedStore.getCertificate(alias3)) != null) {
                     if (aCert.equals(cert)) {
@@ -404,7 +388,7 @@ public final class SSLUtils {
     /*
      * Check X509 certificates in a store for expiration.
      */
-    private static void checkCertificateDates(KeyStore store)
+    private void checkCertificateDates(KeyStore store)
         throws KeyStoreException {
         
         Enumeration<String> aliases = store.aliases();

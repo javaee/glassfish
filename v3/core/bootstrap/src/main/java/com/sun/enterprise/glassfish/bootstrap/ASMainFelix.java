@@ -36,12 +36,11 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.lang.reflect.Method;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.lang.reflect.Method;
 import java.net.URI;
-import java.io.*;
 import java.util.logging.Logger;
 
 /**
@@ -49,7 +48,7 @@ import java.util.logging.Logger;
  */
 public class ASMainFelix extends ASMainOSGi {
 
-    public ASMainFelix(Logger logger, String[] args) {
+    public ASMainFelix(Logger logger, String... args) {
         super(logger, args);
     }
 
@@ -64,11 +63,8 @@ public class ASMainFelix extends ASMainOSGi {
         }
     }
 
-    protected URL[] getFWJars() throws Exception {
-        // Calculate path to glassfish/felix/bin/felix.jar
-        File felixJar = new File(glassfishDir, "felix/bin/felix.jar");
-        URL felixJarURL = felixJar.toURI().toURL();
-        return new URL[]{felixJarURL};
+    protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
+        cpb.addJar(new File(glassfishDir, "felix/bin/felix.jar"));
     }
 
     protected void launchOSGiFW() throws Exception {
