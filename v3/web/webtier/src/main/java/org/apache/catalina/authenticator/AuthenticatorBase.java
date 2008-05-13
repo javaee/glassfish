@@ -136,7 +136,7 @@ import org.apache.catalina.Auditor; // IASRI 4823322
  * requests.  Requests of any other type will simply be passed through.
  *
  * @author Craig R. McClanahan
- * @version $Revision: 1.16 $ $Date: 2007/04/18 17:27:23 $
+ * @version $Revision: 1.17.6.3 $ $Date: 2008/04/17 18:37:04 $
  */
 
 
@@ -988,7 +988,15 @@ public abstract class AuthenticatorBase
                 (HttpServletRequest) request.getRequest();
         HttpServletResponse hres =
                 (HttpServletResponse) response.getResponse();
-        String value = generateSessionId();
+
+        // Use the connector's random number generator (if any) for
+        // generating the session ID. If none, then fall back to the default
+        // session ID generator.
+        String value = request.generateSessionId();
+        if (value == null) {
+            value = generateSessionId();
+        }
+
         Cookie cookie = new Cookie(Constants.SINGLE_SIGN_ON_COOKIE, value);
         cookie.setMaxAge(-1);
         cookie.setPath("/");

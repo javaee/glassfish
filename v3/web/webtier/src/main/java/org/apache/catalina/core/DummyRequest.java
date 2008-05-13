@@ -413,6 +413,17 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     
 
     /**
+     * This object does not implement a session ID generator. Provide
+     * a dummy implementation so that the default one will be used.
+     */
+    public String generateSessionId() {
+
+        return null;
+
+    }
+
+
+    /**
      * Gets the servlet context to which this servlet request was last
      * dispatched.
      *

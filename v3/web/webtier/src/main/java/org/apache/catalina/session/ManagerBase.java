@@ -116,7 +116,7 @@ import com.sun.enterprise.util.uuid.UuidGenerator;
  * be subclassed to create more sophisticated Manager implementations.
  *
  * @author Craig R. McClanahan
- * @version $Revision: 1.22 $ $Date: 2007/05/05 05:32:18 $
+ * @version $Revision: 1.23.2.3 $ $Date: 2008/04/17 18:37:20 $
  */
 
 public abstract class ManagerBase implements Manager, MBeanRegistration {
@@ -279,15 +279,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * The property change support for this component.
      */
     protected PropertyChangeSupport support = new PropertyChangeSupport(this);
-
     
-    //START OF RIMOD# 5056989 -- Support for iWS6.0 style session ids
-    private boolean prefixSessionID_ = false;
-
-    private String prefix_ = null;
-    //END OF RIMOD# 5056989
-
-
     /**
      * Utility class used to call into services from
      * com.sun.ejb.base.io.IOUtils, which provides object input and output
@@ -306,7 +298,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     }
 
 
-    // ------------------------------------------------------------- Security classes
+    // ------------------------------------------------------- Security classes
     private class PrivilegedSetRandomFile implements PrivilegedAction{
         
         public Object run(){               
@@ -778,19 +770,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         this.expiredSessions = expiredSessions;
     }
 
-
-    //START OF RIMOD# 5056989 -- Support for iWS6.0 style session ids
-    /**
-     * Enable/Disable prefixing the MD5 session id with a user specified
-     * string
-     */
-    public void setSessionIDPrefix(String prefix) {
-        prefixSessionID_ = (prefix != null);
-        if (prefixSessionID_)
-            prefix_ = prefix;
-    }
-    //END OF RIMOD# 5056989
-
     //START OF 6364900
     /**
      * set the pluggable sessionLocker for this manager
@@ -926,13 +905,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         session.setCreationTime(System.currentTimeMillis());
         session.setMaxInactiveInterval(this.maxInactiveInterval);
 
-        synchronized (sessions) {
-            if (sessions.get(sessionId) != null) {
-                // Session with requested id already exists
-                return null;
-            }
-        }
-        
         //START OF 6364900
         StandardSession sess = (StandardSession) session;
         //always lock
@@ -1115,13 +1087,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * Hercules:added
      */
     protected synchronized String generateSessionId(Object obj) {
-        String result = uuidGenerator.generateUuid(obj);
-        //START OF RIMOD# 5056989 -- Support for iWS6.0 style session ids
-        if (prefixSessionID_) {
-            result = prefix_ + result;
-        }
-        //END OF RIMOD# 5056989
-        return result;
+        return uuidGenerator.generateUuid(obj);
     }   
     
     /**

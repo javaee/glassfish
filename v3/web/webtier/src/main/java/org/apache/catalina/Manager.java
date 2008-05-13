@@ -503,13 +503,6 @@ public interface Manager {
     public void update(HttpSession session) throws Exception;
     //END OF RIMOD# 4820359
 
-    //START OF RIMOD# 5056989 -- Support for iWS6.0 style session ids
-    /**
-     * Allow the caller to add a prefix to the session id.
-     */
-    public void setSessionIDPrefix(String prefix);
-    //END OF RIMOD# 5056989
-    
     //START OF 6364900
     public boolean lockSession(ServletRequest request) throws ServletException;
     public void unlockSession(ServletRequest request);

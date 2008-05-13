@@ -98,7 +98,7 @@ import org.apache.catalina.security.SecurityUtil;
  *
  * @author Craig R. McClanahan
  * @author Jean-Francois Arcand
- * @version $Revision: 1.13 $ $Date: 2007/01/04 01:31:58 $
+ * @version $Revision: 1.14.6.2 $ $Date: 2008/04/17 18:37:20 $
  */
 
 public class StandardManager
@@ -327,7 +327,7 @@ public class StandardManager
     public Session createSession() {
 
         if ((maxActiveSessions >= 0) &&
-          (sessions.size() >= maxActiveSessions)) {
+                (sessions.size() >= maxActiveSessions)) {
             rejectedSessions++;
             throw new IllegalStateException
                 (sm.getString("standardManager.createSession.ise"));
@@ -337,6 +337,36 @@ public class StandardManager
 
     }
 
+    // START S1AS8PE 4817642
+    /**
+     * Construct and return a new session object, based on the default
+     * settings specified by this Manager's properties, using the specified
+     * session id.
+     *
+     * IMPLEMENTATION NOTE: This method must be kept in sync with the
+     * createSession method that takes no arguments.
+     *
+     * @param sessionId the session id to assign to the new session
+     *
+     * @exception IllegalStateException if a new session cannot be
+     *  instantiated for any reason
+     *
+     * @return the new session, or <code>null</code> if a session with the
+     * requested id already exists
+     */
+    public Session createSession(String sessionId) {
+
+        if ((maxActiveSessions >= 0) &&
+                (sessions.size() >= maxActiveSessions)) {
+            rejectedSessions++;
+            throw new IllegalStateException
+                (sm.getString("standardManager.createSession.ise"));
+        }
+
+        return (super.createSession(sessionId));
+
+    }
+    // END S1AS8PE 4817642
 
     /*
      * Releases any resources held by this session manager.

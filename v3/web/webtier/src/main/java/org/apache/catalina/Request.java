@@ -410,4 +410,12 @@ public interface Request {
     public String getJrouteId();
     // END SJSAS 6346226
 
+
+    /**
+     * Generate and return a new session ID.
+     *
+     * This hook allows connectors to provide their own scalable session
+     * ID generators.
+     */
+    public String generateSessionId();
 }
