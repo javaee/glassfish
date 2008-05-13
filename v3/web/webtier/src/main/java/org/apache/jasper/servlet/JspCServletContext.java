@@ -66,6 +66,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.net.URL;
@@ -474,5 +475,27 @@ public class JspCServletContext implements ServletContext {
     }
 
 
+    /*
+     * Adds the servlet with the given name, description, class name,
+     * init parameters, and loadOnStartup, to this servlet context.
+     */
+    public void addServlet(String servletName,
+                           String description,
+                           String className,
+                           Map<String, String> initParameters,
+                           int loadOnStartup) {
+        // Do nothing
+        return;
+    }
 
+
+    /**
+     * Adds servlet mappings from the given url patterns to the servlet
+     * with the given servlet name to this servlet context.
+     */
+    public void addServletMapping(String servletName,
+                                  String[] urlPatterns) {
+        // Do nothing
+        return;
+    }
 }

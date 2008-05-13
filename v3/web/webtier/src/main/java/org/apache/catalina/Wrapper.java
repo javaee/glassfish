@@ -83,7 +83,7 @@ import javax.servlet.UnavailableException;
  * <code>IllegalArgumentException</code>.
  *
  * @author Craig R. McClanahan
- * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:22 $
+ * @version $Revision: 1.3.6.1 $ $Date: 2008/04/17 18:37:01 $
  */
 
 public interface Wrapper extends Container {
@@ -188,6 +188,18 @@ public interface Wrapper extends Container {
      * Is this servlet currently unavailable?
      */
     public boolean isUnavailable();
+
+
+    /**
+     * Sets the description of this servlet.
+     */
+    public void setDescription(String description);
+
+
+    /**
+     * Gets the description of this servlet.
+     */
+    public String getDescription();
 
 
     // --------------------------------------------------------- Public Methods

@@ -104,7 +104,7 @@ import com.sun.org.apache.commons.modeler.Registry;
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
- * @version $Revision: 1.11 $ $Date: 2007/05/05 05:31:54 $
+ * @version $Revision: 1.12.2.1 $ $Date: 2008/04/17 18:37:09 $
  */
 public class StandardWrapper
     extends ContainerBase
@@ -289,6 +289,8 @@ public class StandardWrapper
     private long loadTime=0;
     private int classLoadTime=0;
 
+    private String description;
+
     /**
      * Static class array used when the SecurityManager is turned on and 
      * <code>Servlet.init</code> is invoked.
@@ -472,7 +474,6 @@ public class StandardWrapper
     }
 
 
-
     /**
      * Set the load-on-startup order value from a (possibly null) string.
      * Per the specification, any missing or non-numeric value is converted
@@ -490,8 +491,25 @@ public class StandardWrapper
         }
     }
 
+
     public String getLoadOnStartupString() {
         return Integer.toString( getLoadOnStartup());
+    }
+
+
+    /**
+     * Sets the description of this servlet.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
+    /**
+     * Gets the description of this servlet.
+     */
+    public String getDescription() {
+        return description;
     }
 
 

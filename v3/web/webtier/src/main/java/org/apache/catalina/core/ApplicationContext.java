@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 // START PWC 1.2
 import java.security.SecurityPermission;
@@ -103,7 +104,7 @@ import com.sun.grizzly.util.http.mapper.MappingData;
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
- * @version $Revision: 1.15 $ $Date: 2007/07/03 18:05:00 $
+ * @version $Revision: 1.15.2.1 $ $Date: 2008/04/17 18:37:06 $
  */
 
 public class ApplicationContext
@@ -988,6 +989,30 @@ public class ApplicationContext
             }
         }
 
+    }
+
+
+    /*
+     * Adds the servlet with the given name, description, class name,
+     * init parameters, and loadOnStartup, to this servlet context.
+     */
+    public void addServlet(String servletName,
+                           String description,
+                           String className,
+                           Map<String, String> initParameters,
+                           int loadOnStartup) {
+        context.addServlet(servletName, description, className,
+                           initParameters, loadOnStartup);
+    }
+
+
+    /**
+     * Adds servlet mappings from the given url patterns to the servlet
+     * with the given servlet name to this servlet context.
+     */
+    public void addServletMapping(String servletName,
+                                  String[] urlPatterns) {
+        context.addServletMapping(servletName, urlPatterns);
     }
 
 

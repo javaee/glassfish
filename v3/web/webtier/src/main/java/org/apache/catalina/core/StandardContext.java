@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
@@ -2857,6 +2858,48 @@ public class StandardContext
         if (notifyContainerListeners) {
             fireContainerEvent("addServletMapping", pattern);
         }
+    }
+
+
+    /**
+     * Adds servlet mappings from the given url patterns to the servlet
+     * with the given servlet name to this servlet context.
+     */
+    public void addServletMapping(String servletName,
+                                  String[] urlPatterns) {
+        if (urlPatterns != null) {
+            for (String urlPattern : urlPatterns) {
+                addServletMapping(servletName, urlPattern);
+            }
+        }
+    }
+
+
+    /*
+     * Adds the servlet with the given name, description, class name,
+     * init parameters, and loadOnStartup, to this servlet context.
+     */
+    public void addServlet(String servletName,
+                           String description,
+                           String className,
+                           Map<String, String> initParameters,
+                           int loadOnStartup) {
+
+        Wrapper wrapper = createWrapper();
+
+        wrapper.setName(servletName);
+        wrapper.setDescription(description);
+        wrapper.setServletClass(className);
+
+        if (initParameters != null) {
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                wrapper.addInitParameter(e.getKey(), e.getValue());
+            }
+        }
+
+        wrapper.setLoadOnStartup(loadOnStartup);
+
+        addChild(wrapper);
     }
 
 
