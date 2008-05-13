@@ -2543,6 +2543,31 @@ public class StandardContext
 
 
     /**
+     * Adds the filter with the given name, description, and class name to
+     * this servlet context.
+     */
+    public void addFilter(String filterName,
+                          String description,
+                          String className,
+                          Map<String, String> initParameters) {
+
+        FilterDef filterDef = new FilterDef();
+
+        filterDef.setFilterName(filterName);
+        filterDef.setDescription(description);
+        filterDef.setFilterClass(className);
+
+        if (initParameters != null) {
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                filterDef.addInitParameter(e.getKey(), e.getValue());
+            }
+        }
+
+        addFilterDef(filterDef);
+    }
+
+
+    /**
      * Add the classname of an InstanceListener to be added to each
      * Wrapper appended to this Context.
      *

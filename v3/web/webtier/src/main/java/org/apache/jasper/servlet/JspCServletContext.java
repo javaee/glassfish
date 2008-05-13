@@ -498,4 +498,18 @@ public class JspCServletContext implements ServletContext {
         // Do nothing
         return;
     }
+
+
+    /**
+     * Adds the filter with the given name, description, and class name to
+     * this servlet context.
+     */
+    public void addFilter(String filterName,
+                          String description,
+                          String className,
+                          Map<String, String> initParameters) {
+        // Do nothing
+        return;
+    }
+
 }

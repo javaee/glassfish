@@ -1016,6 +1016,18 @@ public class ApplicationContext
     }
 
 
+    /**
+     * Adds the filter with the given name, description, and class name to
+     * this servlet context.
+     */
+    public void addFilter(String filterName,
+                          String description,
+                          String className,
+                          Map<String, String> initParameters) {
+        context.addFilter(filterName, description, className, initParameters);
+    }
+
+
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this ApplicationContext is
