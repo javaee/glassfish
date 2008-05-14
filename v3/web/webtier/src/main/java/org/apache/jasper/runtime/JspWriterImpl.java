@@ -238,6 +238,10 @@ public class JspWriterImpl extends JspWriter {
         }
         // START 6426898
         else {
+            // Set the default character encoding if there isn't any present,
+            // see CR 6699416
+            response.setCharacterEncoding(response.getCharacterEncoding());
+
             // Cause response headers to be sent
             response.flushBuffer();
         }
