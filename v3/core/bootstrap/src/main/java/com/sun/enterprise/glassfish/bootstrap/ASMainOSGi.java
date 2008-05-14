@@ -42,7 +42,6 @@ import com.sun.enterprise.module.bootstrap.Which;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +149,7 @@ public abstract class ASMainOSGi {
 
             this.launcherCL = cpb.createExtensible(getSharedRepos());
         } catch (IOException e) {
-            throw new IOError(e);
+            throw new Error(e);
         }
         Thread.currentThread().setContextClassLoader(launcherCL);
     }
@@ -181,19 +180,23 @@ public abstract class ASMainOSGi {
 
             return cpb.create();
         } catch (IOException e) {
-            throw new IOError(e);
+            throw new Error(e);
         }
     }
 
     private void findDerbyClient(ClassPathBuilder cpb) throws IOException {
-        File derbyLib = new File(glassfishDir, "javadb/lib");
-        if (!derbyLib.exists()) {
+        String derbyHome = System.getProperty("AS_DERBY_INSTALL");
+        File derbyLib=null;
+        if (derbyHome!=null) {
+            derbyLib = new File(derbyHome, "lib");
+        }
+        if (derbyLib==null || !derbyLib.exists()) {
             // maybe the jdk...
             if (System.getProperty("java.version").compareTo("1.6")>0) {
                 File jdkHome = new File(System.getProperty("java.home"));
                 derbyLib = new File(jdkHome, "db/lib");
             }
-        }
+        } 
         if (!derbyLib.exists()) {
             logger.info("Cannot find javadb client jar file, jdbc driver not available");
             return;
