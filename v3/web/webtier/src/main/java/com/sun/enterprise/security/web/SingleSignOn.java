@@ -585,7 +585,8 @@ public class SingleSignOn
         }
         //S1AS8 6155481 END
         synchronized (cache) {
-            cache.put(ssoId, new SingleSignOnEntry(principal, 
+            cache.put(ssoId, new SingleSignOnEntry(ssoId,
+                                                   principal, 
                                                    authType,
                                                    username, 
                                                    password, 

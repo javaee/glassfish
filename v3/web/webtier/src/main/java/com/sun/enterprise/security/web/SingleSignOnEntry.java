@@ -68,6 +68,8 @@ import org.apache.catalina.Realm;
  */
 public class SingleSignOnEntry {
 
+    public String id = null;
+
     public String authType = null;
 
     public String password = null;
@@ -82,15 +84,24 @@ public class SingleSignOnEntry {
 
     public long lastAccessTime;
 
-    public SingleSignOnEntry(Principal principal, String authType,
-                             String username, String password, String realmName) {
+    public SingleSignOnEntry(String id, Principal principal, String authType,
+                             String username, String password,
+                             String realmName) {
         super();
+        this.id = id;
         this.principal = principal;
         this.authType = authType;
         this.username = username;
         this.password = password;
         this.realmName = realmName;
         this.lastAccessTime = System.currentTimeMillis();
+    }
+
+    /**
+     * Gets the id of this SSO entry.
+     */
+    public String getId() {
+        return id;
     }
 
     /**
