@@ -104,7 +104,7 @@
                             <scope level="compile,runtime" />
                             <groupId value="org.jvnet" />
                         </resolveAll>
-                        <zip destfile="target/${artifactId}-${version}-sources.jar">
+                        <zip destfile="target/${pom.artifactId}-${pom.version}-sources.jar">
                             <zipgroupfileset dir="target/source-jars" includes="*.jar" />
                         </zip>
                     </tasks>
