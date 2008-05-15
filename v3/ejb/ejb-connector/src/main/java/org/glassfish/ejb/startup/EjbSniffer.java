@@ -85,46 +85,42 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         @Override
      public Module[] setup(String containerHome, Logger logger) throws IOException {
 
-        Module[] modules = new Module[1];
-        Module m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
-        // done...
-/*        if (m==null) {
+            Module[] modules = new Module[1];
+            Module m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
+            if (m == null) {
 
-            // let's see if I have a ejb directory since we started the VM
-            File ejbLib=null;
-            if (containerHome!=null) {
-                ejbLib = new File(containerHome);
-            }
-            //if (ejbLib==null || !ejbLib.exists()) {
-                // TO DO dochez : replace with KK env's APIs
-                //ejbLib = new File(new File("/Users/dochez/glassfish"), "modules/ejb");
+                // let's see if I have a ejb directory since we started the VM
+                File ejbLib = null;
+                if (containerHome != null) {
+                    ejbLib = new File(containerHome);
+                }
                 if (!ejbLib.exists()) {
                     // I am throwing the towel here
                     throw new IOException("EJB Container not installed");
                 }
-            //}
-            DirectoryBasedRepository ejb = new DirectoryBasedRepository("ejb", ejbLib);
-            ejb.initialize();
-            modulesRegistry.addRepository(ejb);
+                //}
+                DirectoryBasedRepository ejb = new DirectoryBasedRepository("ejb", ejbLib);
+                ejb.initialize();
+                modulesRegistry.addRepository(ejb);
 
-            InhabitantsParser parser = new InhabitantsParser(habitat);
-            for (ModuleDefinition md : ejb.findAll()) {
-                Module module = modulesRegistry.makeModuleFor(md.getName(), md.getVersion());
-                if (module!=null) {
-                    ((AbstractModulesRegistryImpl) modulesRegistry).parseInhabitants(module, "default", parser);
+                InhabitantsParser parser = new InhabitantsParser(habitat);
+                for (ModuleDefinition md : ejb.findAll()) {
+                    Module module = modulesRegistry.makeModuleFor(md.getName(), md.getVersion());
+                    if (module != null) {
+                        ((AbstractModulesRegistryImpl) modulesRegistry).parseInhabitants(module, "default", parser);
+                    }
                 }
+
+                m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
+            }
+            if (m != null) {
+                modules[0] = m;
+                return modules;
+            } else {
+                throw new IOException("Cannot find ejb module from the module's repositories");
             }
 
-            m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
         }
-        */
-        if (m!=null) {
-            modules[0] = m;
-            return modules;
-        } else {
-            throw new IOException("Cannot find ejb module from the module's repositories");
-        }
-    }
 
     /**
      * Returns true if the passed file or directory is recognized by this

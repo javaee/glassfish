@@ -51,9 +51,7 @@
     <name>GlassFish Core modules</name>  
     <modules>
         <module>bootstrap</module>
-	<module>kernel</module>
-        <module>shared</module>
-        <module>javaee-core</module>
+		<module>kernel</module>
         <module>security</module>
         <module>deployment-client</module>
         <module>jta</module>

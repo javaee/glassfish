@@ -144,19 +144,9 @@
 
         <dependency>
 
-            <groupId>org.glassfish.core</groupId>
+            <groupId>org.glassfish.common</groupId>
 
-            <artifactId>kernel</artifactId>
-
-            <version>${project.version}</version>
-
-        </dependency>
-
-        <dependency>
-
-            <groupId>org.glassfish.core</groupId>
-
-            <artifactId>javaee-core</artifactId>
+            <artifactId>container-common</artifactId>
 
             <version>${project.version}</version>
 

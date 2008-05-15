@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-mbeanserver</artifactId>
-            <version>${glassfish-mbeanserver.version}</version>
+            <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -71,11 +71,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>javaee-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>dol</artifactId>
             <version>${pom.parent.version}</version>

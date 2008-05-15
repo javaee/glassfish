@@ -47,22 +47,9 @@
             <version>${project.version}</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>javaee-core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-ee-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
@@ -99,12 +86,6 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

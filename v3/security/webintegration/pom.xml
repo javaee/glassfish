@@ -97,6 +97,16 @@
         </dependency>   
         <dependency>
             <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -126,11 +136,6 @@
             <artifactId>war-util</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>            
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>

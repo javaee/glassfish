@@ -376,7 +376,7 @@ public class ComponentEnvManagerImpl
         }
     }
 
-    private static class EjbReferenceProxy
+    private class EjbReferenceProxy
         implements NamingObjectProxy {
         
         private EjbNamingReferenceManager ejbRefMgr;
@@ -393,6 +393,10 @@ public class ComponentEnvManagerImpl
                 throws NamingException {
 
             Object result = null;
+
+            if (ejbRefMgr==null) {
+                ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
+            }
 
             if (ejbRefMgr != null) {
                 if (ejbRefMgr.isEjbReferenceCacheable(ejbRef)) {

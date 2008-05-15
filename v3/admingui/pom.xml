@@ -181,7 +181,6 @@
 		<hk2.version>0.3.0</hk2.version>
 		<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 		<amx-api.version>2.0-SNAPSHOT</amx-api.version>
-		<glassfish-mbeanserver.version>1.0</glassfish-mbeanserver.version>
 		<jsp-api.version>2.1</jsp-api.version>
 	</properties>
 </project>

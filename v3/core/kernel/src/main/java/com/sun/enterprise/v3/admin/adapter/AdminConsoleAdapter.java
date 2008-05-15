@@ -227,7 +227,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private Application getConfig() {
         //no application-ref logic here -- that's on purpose for now
         Application app = domain.getSystemApplicationReferencedFrom(env.getInstanceName(), ADMIN_APP_NAME);
-        
+
         return ( app );
     }
     private void logRequest(GrizzlyRequest req) {

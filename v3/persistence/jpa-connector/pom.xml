@@ -86,8 +86,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>javaee-core</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>container-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -96,13 +96,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-api</artifactId>
+            <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

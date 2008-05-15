@@ -145,11 +145,6 @@
         </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
-           <artifactId>shared-components</artifactId>
-           <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.core</groupId>
            <artifactId>jta</artifactId>
            <version>${project.version}</version>
         </dependency>
