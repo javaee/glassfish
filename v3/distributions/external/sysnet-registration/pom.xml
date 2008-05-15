@@ -69,13 +69,13 @@
                          other than what is specified above -->
                         <Private-Package>!*</Private-Package>
                         <!-- Make it a HK2 bundle -->
-                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
                         <!-- We need this dependency to be set, because
                              sysnet depends on commons-codec. Although
                              OSGi can do pacage wiring, HK2 only works with
                              module wiring.
                         -->
-                        <HK2-Import-Bundles>${groupId}:commons-codec-repackaged</HK2-Import-Bundles>
+                        <HK2-Import-Bundles>${pom.groupId}:commons-codec-repackaged</HK2-Import-Bundles>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against

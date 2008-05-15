@@ -72,7 +72,7 @@
                         <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
                          This is needed because we don't want to change the packaging type to
                          hk2-jar. -->
-                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
 						<HK2-Import-Bundles>org.glassfish.external:grizzly-module,org.glassfish:javax.javaee</HK2-Import-Bundles>                        
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>        
     </dependencies>
 </project>
