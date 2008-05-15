@@ -119,14 +119,20 @@ public interface Container extends AMX
 	
 	/**
 		@return all containees having one of the specified types
-		and the specified name.
+		and the specified name.  If all types are desired, pass the result of
+        getContaineeJ2EETypes() for 'j2eeTypes'.
 		@see com.sun.appserv.management.base.Util#getNamesSet
 	 */
 	public <T extends AMX> Set<T> 	getByNameContaineeSet(
 	                                final Set<String> j2eeTypes, final String name );
 	
 	/**
-		Get a singleton containee having the specified j2eeType and name.
+		Get a singleton containee having the specified j2eeType and name. 
+        <p>
+        If 'j2eeType' is null, uniqueness is assumed and either null or a
+        Containee with the specified name will be returned.
+        An IllegalArgumentException will be thrown if there is more than one Containee with the
+        specified name.
 		@param j2eeType	the j2eeType of the contained 
 		@param name		the name of the contained  (as found in "name" property)
 		@return AMX or null if not found
