@@ -94,7 +94,7 @@
                             <scope level="compile,runtime" />
                             <groupId not="${project.groupId}" />
                         </resolveAll>
-                        <zip destfile="target/${artifactId}-${version}-sources.jar">
+                        <zip destfile="target/${pon.artifactId}-${pom.version}-sources.jar">
                             <zipgroupfileset dir="target/source-jars" includes="*.jar" />
                         </zip>
                     </tasks>
