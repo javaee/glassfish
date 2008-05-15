@@ -35,12 +35,14 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import org.jvnet.hk2.annotations.FactoryFor;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Factory;
-
 import javax.management.MBeanServer;
+import java.lang.management.ManagementFactory;
+
+import org.jvnet.hk2.annotations.Extract;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+
+import org.glassfish.internal.api.Init;
 
 
 /**
@@ -49,7 +51,7 @@ import javax.management.MBeanServer;
     need the MBeanServer.
     <p>�the PlatformMBeanServer as returned
     by ManagementFactory.getPlatformMBeanServer(), this is <em>not</em> guaranteed.  Glassfish
-    modules that require the MBeanServer should obtain it here. 
+    modules that require the MBeanServer should obtain it here.
     It might be that a single-server Glassfish would use
     the PlatformMBeanServer, but a clustered Glassfish might use a "wrapped" version to implement
     additional functionality, such as virtualization.  That "wrapped" version might not be the
@@ -57,17 +59,17 @@ import javax.management.MBeanServer;
     incompatibilities.
  */
 @Service
-@FactoryFor(MBeanServer.class)
-public final class AppserverMBeanServerFactory implements Factory {
+public final class AppserverMBeanServerFactory implements Init {
+    // we'd ideally like to name things, but @Extract is not working
+    public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
+
+    @Extract(name=OFFICIAL_MBEANSERVER)
     private MBeanServer officialMBeanServer;
-    
-    public AppserverMBeanServerFactory() {
+
+    public AppserverMBeanServerFactory()
+    {
         //officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
         officialMBeanServer = AppserverMBeanServer.getInstance();
-    }
-
-    public MBeanServer getObject() throws ComponentException {
-        return officialMBeanServer;
     }
 }
 
