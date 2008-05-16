@@ -82,8 +82,13 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependencies/>
-    </dependencies>
+   <dependencies>
+        <dependency>
+           <groupId>com.sun.pkg.client</groupId>
+           <artifactId>ucbootstrap</artifactId>
+           <version>0.0.0.4</version>
+           <type>zip</type>
+        </dependency>
+    </dependencies> 
 </project>
 

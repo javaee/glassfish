@@ -1,10 +1,10 @@
 /^VERSION=[^=]*$/ {
-      sub(/\=[^=]*$/,"=\"2008.04.03.18.24\"")
+      sub(/\=[^=]*$/,"=\"2008.05.16.14.09\"")
       print
       next
    }
 /^VERSION=[^=]*=.*$/ {
-      sub(/\=[^=]*$/,"=2008.04.03.18.24\"")
+      sub(/\=[^=]*$/,"=2008.05.16.14.09\"")
       sub(/IASVERS/,"91.01")
       print
       next
@@ -14,7 +14,7 @@
       next
    }
 /ARCH=\"ISA\"/ {
-      printf "ARCH=\"%s\"\n", "i386"
+      printf "ARCH=\"%s\"\n", "sparc"
       next
    }
 /ASCONFDIR=OPTCONFDIR/ {
