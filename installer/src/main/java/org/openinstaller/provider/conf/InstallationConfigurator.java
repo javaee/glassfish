@@ -193,7 +193,10 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             wrapperWriter.write ("REM\n");
 	    wrapperWriter.write ("REM Use is subject to License Terms\n");
 	    wrapperWriter.write ("REM\n");
-	    wrapperWriter.write ("\"" + installDir + "\\glassfish\\bin\\asadmin\" start-domain domain1\n");
+	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("call \"" + installDir + "\\glassfish\\bin\\asadmin\" start-domain domain1\n");
+	    wrapperWriter.write ("pause\n");
+ 	    wrapperWriter.write ("endlocal\n");
             wrapperWriter.close();
             wrapperWriter = null;
 
@@ -206,7 +209,10 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             wrapperWriter.write ("REM\n");
 	    wrapperWriter.write ("REM Use is subject to License Terms\n");
 	    wrapperWriter.write ("REM\n");
-	    wrapperWriter.write ("\"" + installDir + "\\glassfish\\bin\\asadmin\" stop-domain domain1\n");
+ 	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("call \"" + installDir + "\\glassfish\\bin\\asadmin\" stop-domain domain1\n");
+ 	    wrapperWriter.write ("pause\n");
+ 	    wrapperWriter.write ("endlocal\n");
             wrapperWriter.close();
             wrapperWriter = null;
 	}
