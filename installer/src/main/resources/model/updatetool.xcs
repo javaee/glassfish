@@ -50,8 +50,8 @@
      </group>
  </component>
  <if:desktop>
-    <if:shortcut name="Start Updatetool" type="APPLICATION" runInTerminal="true">
-	    <if:target path="updatetool/bin/updatetool.bat" relative="INSTALL_HOME"/>
+    <if:shortcut name="Start Update Tool" type="APPLICATION" runInTerminal="false">
+	    <if:target path="updatetool/bin/updatetool" relative="INSTALL_HOME"/>
          <if:location path="GlassFish V3 TP2" relative="USER_START_MENU"/>
 	 <if:icon path="updatetool/vendor-packages/updatetool/images/application-update-tool.ico" relative="INSTALL_HOME"/>
     </if:shortcut>    
