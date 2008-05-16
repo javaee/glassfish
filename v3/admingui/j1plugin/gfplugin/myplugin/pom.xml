@@ -66,14 +66,14 @@
 	    <plugin>
 		<groupId>com.sun.enterprise</groupId>
 		<artifactId>hk2-maven-plugin</artifactId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.2.1</version>
 		<extensions>true</extensions>
 		<configuration>
 		    <processors>
 			<processor>
 			    <groupId>com.sun.jsftemplating</groupId>
 			    <artifactId>jsftemplating-dt</artifactId>
-			    <version>1.2-SNAPSHOT</version>
+			    <version>1.2-GFv3-tp2</version>
 			</processor>
 		    </processors>
 		</configuration>
@@ -180,9 +180,6 @@
             <checksumPolicy>fail</checksumPolicy>
         </snapshots>
     </repository>
-
-
-
     </repositories>
 
     <pluginRepositories>
@@ -204,13 +201,13 @@
 	<dependency>
 	    <groupId>org.glassfish.common</groupId>
 	    <artifactId>glassfish-api</artifactId>
-	    <version>10.0-SNAPSHOT</version>
+	    <version>10.0-tp-2-SNAPSHOT</version>
 	    <scope>provided</scope>
 	</dependency>
 	<dependency>
 	    <groupId>com.sun.jsftemplating</groupId>
 	    <artifactId>jsftemplating-dt</artifactId>
-	    <version>1.2-SNAPSHOT</version>
+	    <version>1.2-GFv3-tp2</version>
 	    <scope>provided</scope>
 	</dependency>
     </dependencies>
