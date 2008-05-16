@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
@@ -36,29 +36,21 @@
 * holder. 
 */ 
 --> 
+<oor:component-schema oor:version="1.1" oor:name="RegistrationInfo" oor:package="org.openinstaller.progress"
+ xsi:schemaLocation="http://openoffice.org/2001/registry"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:oor="http://openoffice.org/2001/registry"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xml:lang='en-US'>
+ <component>
+     <group oor:name="regprogress">
+	<prop oor:name="REG_STATUS" oor:type="xs:int" oor:transient="true">
+          <value>0</value>
+          <info>
+            <desc xml:lang="en-US">Registration Status</desc>
+          </info>
+        </prop>
 
-<sequence xmlns="http://openinstaller.org/pagesequence/V1">
-  <flow name="INSTALL">
-    <page name="Welcome">
-      <when>!FOOBAR</when>
-    </page>
-    <page name="License"/>
-    <page name="InstallHome"/>
-  
-    <page name="glassfish"/>
-    <page name="updatetool"/>
-    <page name="ReadyToInstall"/>
-    <page name="Progress"/>
-    <page name="RegistrationOptions"/>
-    <page name="SOAccountCreation">
-	<when><![CDATA[ CREATE_NEWACCT ]]></when>
-    </page>
-    <page name="RegistrationInfo"/>
-    <page name="Summary"/>
-  </flow>
-  <flow name="REMOVE">
-    <page name="ReadyToUninstall"/>
-    <page name="Progress"/>
-    <page name="Summary"/>
-  </flow>
-</sequence>
+     </group>
+ </component>
+</oor:component-schema>

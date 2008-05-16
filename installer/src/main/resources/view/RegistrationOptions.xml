@@ -293,9 +293,8 @@ return theAL;
       wizard.enableBack(false);
 
       setRegOption("CREATE_NEWACCT");
-      handleUsernamePasswdFields();
-
-      dummyProp = getComponentByName(content, "DUMMY_PROP");
+ 
+     dummyProp = getComponentByName(content, "DUMMY_PROP");
       if (dummyProp != null)  {
 	dummyProp.setVisible(false);
 	dummyProp.setText("");
