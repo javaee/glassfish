@@ -145,7 +145,19 @@
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-compat</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>        
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-messagesbus</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>        
