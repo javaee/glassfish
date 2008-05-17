@@ -84,7 +84,7 @@ import com.sun.enterprise.registration.RegistrationException;
 
  
  /* Validates the given SDN credentials and Register the product*/
-    validateAccountAndRegister(String username, String passwd, String localRegistryPath)
+    validateAccountAndRegister(String username, String passwd, String localRegistryPath, String proxyHost, int proxyPort)
     throws ClassNotFoundException, NoSuchMethodException,
             IllegalAccessException, InstantiationException,
             InvocationTargetException, RegistrationException,
@@ -92,8 +92,11 @@ import com.sun.enterprise.registration.RegistrationException;
         boolean valid = false;
         
        	File regPath = new File(localRegistryPath);
-        SysnetRegistrationService rs =
-                new SysnetRegistrationService(regPath);
+        SysnetRegistrationService rs = null;
+   	if (proxyHost.trim() == null || proxyHost.length() == 0 || proxyPort == 0) 
+		rs = new SysnetRegistrationService(regPath);	
+	else
+                rs = new SysnetRegistrationService(regPath,proxyHost, proxyPort);
 
         /* validate account */
         HashMap map = new HashMap();
@@ -111,15 +114,18 @@ import com.sun.enterprise.registration.RegistrationException;
 
    /* Creates the SDN Account */
     createSDNAccount(String email, String passwd,
-            String country, String firstname, String lastname, String companyname, String localRegistryPath)
+            String country, String firstname, String lastname, String companyname, String localRegistryPath, String proxyHost, int proxyPort)
             throws RegistrationException, ConnectException, UnknownHostException,
             NoSuchMethodException, ClassNotFoundException,
             InstantiationException, IllegalAccessException,
             InvocationTargetException {
         
 	File regPath = new File(localRegistryPath);
-        SysnetRegistrationService rs =
-                new SysnetRegistrationService(regPath);
+        SysnetRegistrationService rs = null;
+	if (proxyHost.trim() == null || proxyHost.length() == 0 || proxyPort == 0) 
+		rs = new SysnetRegistrationService(regPath);	
+	else
+                rs = new SysnetRegistrationService(regPath,proxyHost, proxyPort);
         Map map = new HashMap();
         map.put(RegistrationAccount.EMAIL, email);
         map.put(RegistrationAccount.PASSWORD, passwd);
@@ -155,10 +161,19 @@ run() {
      String regFilePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
 			File.separator + "registration" + File.separator + "servicetag-registry.xml";
 	
-      try  {
+     String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
+     String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
+
+     int proxyPort;
+     if (proxyPortString.trim() == null || proxyPortString.length() == 0)
+		proxyPort = 0;
+     else
+     		proxyPort = Integer.parseInt(proxyPortString.trim());
+
+     try  {
 
 	// validate and register
-	validateAccountAndRegister(email, password, regFilePath);
+	validateAccountAndRegister(email, password, regFilePath,proxyHost, proxyPort);
 
         JOptionPane.showMessageDialog(frame,
 	      Msg.get("REGISTRATION_USE_EXISTING_SUCCESSFUL", null),
@@ -183,7 +198,7 @@ run() {
       try  {
 
 	// validate and register
-	createSDNAccount(email, password, country, firstName, lastName, company,regFilePath);
+	createSDNAccount(email, password, country, firstName, lastName, company,regFilePath,proxyHost, proxyPort);
 
         JOptionPane.showMessageDialog(frame,
 	      Msg.get("REGISTRATION_CREATE_NEWACCT_SUCCESSFUL", null),
