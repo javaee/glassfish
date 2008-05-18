@@ -87,6 +87,7 @@ public class SmartFileTest {
     private static final String[] FILENAMES = new String[]
     {
         "c:/",
+        "c:",
         "",
         "\\foo",
         "/",
@@ -99,5 +100,4 @@ public class SmartFileTest {
 		"/./../.././../",
 		"/::::/x/yy",
     };
-
 }

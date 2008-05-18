@@ -41,8 +41,11 @@
 
 package com.sun.enterprise.universal.io;
 
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class for sanitizing Files.
@@ -52,6 +55,10 @@ import java.util.*;
  * The Absolute will be the link file itself.
  * This method will give you the benefits of Canonical -- but will always point
  * at the link file itself. 
+ * Windows is horribly complex compared to "everything else".  Windows does not have
+ * the symbolic link issue -- so use getCanonicalXXX to do the work on Windows.
+ * Windows will return paths with all forward slashes -- no backward slashes unless it
+ * is the special Windows network address that starts with "\\"
  * <p>
  * I.e. It is just like getAbsoluteXXX -- but it removes all relative path 
  * elements from the path.
@@ -103,8 +110,31 @@ public class SmartFile {
     }
 
     private void convert(String oldPath) {
-        // guarantee -- the beginning will not have "." or ".."
-        oldPath = oldPath.replace('\\', '/');
+        if(GFLauncherUtils.isWindows())
+            convertWindows(oldPath);
+        else
+            convertNix(oldPath);
+    }
+    
+    /*
+     * There is no symlink issue with getCanonical vs getAbsolute
+     * so we do it the EASY way here...
+     */
+    private void convertWindows(String oldPath) {
+        try {
+            path = new File(oldPath).getCanonicalPath();
+            if(!path.startsWith("\\")) // network address...
+                path = path.replace('\\', '/');
+        } catch (IOException ex) {
+            // what to do?  This has never happened to me and I use File I/O
+            //** a lot **
+            path = oldPath.replace('\\', '/');
+        }
+    }
+    
+    private void convertNix(String oldPath) {
+        // guarantee -- the beginning will not have "." or ".." 
+        // (because of getAbsolutePath()...)
         String[] elemsArray = oldPath.split(SLASH);
         List<String> elems = new ArrayList<String>();
         
@@ -112,23 +142,7 @@ public class SmartFile {
             elems.add(s);
         }
             
-        // 4 possibilities
-        // 1. (Windows) //x
-        // 2. (Windows) X:/
-        // 3. / (UNIX)
-        // 4. /x (UNIX)
-        
-        // Windows -->  \\computer\x\y\z
-        if(oldPath.startsWith("//")) { // 1.
-            path = "//";
-        }
-        else if(!oldPath.startsWith(SLASH)) { // 2.
-            path = elems.get(0) + SLASH;
-            elems.remove(0);
-        }
-        else if(oldPath.startsWith(SLASH)) { //3,4
-            path = SLASH;
-        }
+        path = SLASH;
         
         // remove empty elems
             for(Iterator<String> it = elems.iterator(); it.hasNext(); ) {
@@ -167,30 +181,13 @@ public class SmartFile {
             path += s + SLASH;
         }
         // get rid of trailing slash
-        if(path.length() > 1 && !path.equals("//"))
+        if(path.length() > 1)
             path = path.substring(0, path.length() - 1);
-
-        // Finally -- make it OS-friendly
-        if(File.separatorChar != '/') {
-            doWindows();
-        }            
-    }
-
-    private void doWindows() {
-        path = path.replace('/', File.separatorChar);
-        
-        // make the drive letter uppercase
-        String drive = path.substring(0, 2);
-        if(drive.endsWith(":")) {
-            drive = drive.toUpperCase();
-            path = drive + path.substring(2);
-        }
     }
 
     private boolean hasDots(List<String> elems) {
         return elems.contains(".") || elems.contains("..");
     }
-
 
     private String path;
     private static final String SLASH = "/";
