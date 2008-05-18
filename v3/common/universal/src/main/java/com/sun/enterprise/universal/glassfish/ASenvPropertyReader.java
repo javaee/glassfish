@@ -72,8 +72,8 @@ public class ASenvPropertyReader {
     public ASenvPropertyReader(File installDir)
     {
         try {
-            this.installDir = installDir;
-            configDir = new File(installDir, "config");
+            this.installDir = SmartFile.sanitize(installDir);
+            configDir = SmartFile.sanitize(new File(installDir, "config"));
             getBusy();
         }
         catch(Exception e)
