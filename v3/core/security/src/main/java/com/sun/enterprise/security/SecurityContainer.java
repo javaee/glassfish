@@ -31,7 +31,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

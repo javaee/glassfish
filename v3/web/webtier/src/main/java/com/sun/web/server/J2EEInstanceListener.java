@@ -56,6 +56,7 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.coyote.tomcat5.CoyoteRequestFacade;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.ServerContext;
 
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
@@ -65,7 +66,6 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.security.integration.SecurityConstants;
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.WebComponentInvocation;
 import com.sun.enterprise.web.WebModule;
 
@@ -73,7 +73,6 @@ import com.sun.enterprise.web.WebModule;
 import java.util.logging.*;
 import com.sun.logging.*;
 //END OF IASRI 4660742
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class implements the Tomcat InstanceListener interface and

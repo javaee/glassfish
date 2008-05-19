@@ -26,6 +26,7 @@ import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DummyApplication;
@@ -34,8 +35,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.security.util.IASSecurityException;
-import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 
 
@@ -82,7 +82,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     protected void generatePolicy(DeploymentContext dc)
             throws DeploymentException {
         Properties params = dc.getCommandParameters();
-        String appName = params.getProperty(DeployCommand.NAME);
+        String appName = params.getProperty(ParameterNames.NAME);
         try {
             policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
@@ -115,7 +115,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private void removePolicy(DeploymentContext dc) throws
             DeploymentException {
         Properties params = dc.getCommandParameters();
-        String appName = params.getProperty(DeployCommand.NAME);
+        String appName = params.getProperty(ParameterNames.NAME);
 
         try {
             WebSecurityManagerFactory wsmf =

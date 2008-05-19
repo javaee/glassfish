@@ -41,7 +41,7 @@
  * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
  * All rights reserved.
  */
-package com.sun.enterprise.server;
+package org.glassfish.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;

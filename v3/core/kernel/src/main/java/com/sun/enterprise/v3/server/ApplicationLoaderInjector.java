@@ -51,6 +51,7 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct {
         service.modulesRegistry = habitat.getComponent(ModulesRegistry.class);
         service.containerRegistry = habitat.getComponent(ContainerRegistry.class);
         service.env = habitat.getComponent(ServerEnvironment.class);
+        service.snifferManager = habitat.getComponent(SnifferManager.class);
         habitat.add(new ExistingSingletonInhabitant<ApplicationLoaderService>(service));
         service.postConstruct();
     }

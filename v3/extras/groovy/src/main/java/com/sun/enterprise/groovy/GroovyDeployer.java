@@ -85,12 +85,12 @@ public class GroovyDeployer implements Deployer<GroovyContainer, GroovyApplicati
     }
 
     private String getContextRoot(DeploymentContext context) {
-        String contextRoot = context.getCommandParameters().getProperty(DeployCommand.CONTEXT_ROOT);
+        String contextRoot = context.getCommandParameters().getProperty(ParameterNames.CONTEXT_ROOT);
         if (contextRoot == null) {
             contextRoot = env.getStartupContext().getArguments().get("--contextroot");
         }
         if (contextRoot == null || contextRoot.length() == 0) {
-            contextRoot = "/" + context.getCommandParameters().getProperty(DeployCommand.NAME);
+            contextRoot = "/" + context.getCommandParameters().getProperty(ParameterNames.NAME);
         }
         return contextRoot;
     }
@@ -107,7 +107,7 @@ public class GroovyDeployer implements Deployer<GroovyContainer, GroovyApplicati
         adapter.setRootFolder(path);
         adapter.setContextRoot(contextRoot);
         context.getLogger().info("Loading application " + 
-                context.getCommandParameters().getProperty(DeployCommand.NAME) 
+                context.getCommandParameters().getProperty(ParameterNames.NAME)
                 + " at " + contextRoot + " at " + path);
         grizzlyAdapter.registerEndpoint(contextRoot, adapter, adapter);
         return adapter;

@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.deployment;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -129,7 +130,7 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
  
             parameters.putAll(commandParams);
             URI uri = new URI(parameters.getProperty(
-                DeployCommand.LOCATION));
+                ParameterNames.LOCATION));
             file = new File(uri);
 
             if (!file.exists()) {

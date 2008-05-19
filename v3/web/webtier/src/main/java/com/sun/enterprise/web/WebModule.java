@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
-import javax.servlet.ServletException;
+
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionConfig;
@@ -56,14 +56,13 @@ import com.sun.enterprise.deployment.runtime.web.SessionProperties;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor; 
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -83,7 +82,6 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappClassLoader;
-import org.apache.catalina.loader.WebappLoader;
 
 /**
  * Class representing a web module for use by the Application Server.

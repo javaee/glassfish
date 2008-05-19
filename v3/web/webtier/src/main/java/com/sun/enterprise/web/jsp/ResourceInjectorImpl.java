@@ -47,10 +47,10 @@ import javax.servlet.jsp.tagext.JspTag;
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.catalina.core.StandardContext;
 import org.apache.jasper.runtime.ResourceInjector;
+import org.glassfish.internal.api.ServerContext;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.WebModule;
 import com.sun.logging.LogDomains; 
 

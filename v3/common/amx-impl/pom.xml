@@ -111,18 +111,18 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>  		
+        
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>  		        
 		
 		<dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>jmxremote_optional-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>     
-
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.glassfish.common</groupId>

@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import java.util.Collection;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.container.EndpointRegistrationException;
 
 /**
  * registration interface to use with the Mapper classes. 

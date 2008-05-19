@@ -41,8 +41,8 @@
 package com.sun.enterprise.security;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
 import java.io.File;

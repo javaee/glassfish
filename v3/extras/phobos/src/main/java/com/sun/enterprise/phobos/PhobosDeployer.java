@@ -28,6 +28,7 @@ import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ParameterNames;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -93,7 +94,7 @@ public class PhobosDeployer implements Deployer<PhobosContainer, GlassFishPhobos
 
         // so far context root is application name`
         Properties parameters = context.getCommandParameters();
-        String contextRoot = "/" + parameters.getProperty(DeployCommand.NAME);
+        String contextRoot = "/" + parameters.getProperty(ParameterNames.NAME);
 
         Properties envProp = new Properties();
         envProp.put("phobos.applicationDir", source.getURI().getSchemeSpecificPart() + File.separator + "application");

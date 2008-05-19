@@ -23,26 +23,31 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Bunch of utility methods for the new serverbeans config api based on jaxb
  */
+@Service
 public final class ConfigBeansUtilities {
-    private static Applications apps = 
-        Globals.getDefaultHabitat().getComponent(Applications.class);
-    private static Domain domain = 
-        Globals.getDefaultHabitat().getComponent(Domain.class);
+
+    @Inject
+    private static Applications apps;
+
+    @Inject
+    private static Domain domain;
     
-    // static methods only
-    private ConfigBeansUtilities() {
+    // dochez : this class needs to be killed but I have no time to do it now
+    // I am making it a singleton, will force its initialization early enough so
+    // users can continue using the static method. Eventually all these methods will
+    // need to be moved to @DuckTyped methods on the interfaces directory.
+    public ConfigBeansUtilities() {
     }
 
     /**

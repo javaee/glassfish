@@ -61,13 +61,14 @@ import com.sun.enterprise.config.serverbeans.ElementProperty;
 import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.ApplicationServer;
  */
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
+
 /**
  *
  * @author  Harpreet Singh

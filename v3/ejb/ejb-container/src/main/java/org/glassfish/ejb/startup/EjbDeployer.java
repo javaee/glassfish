@@ -30,14 +30,14 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.EjbInWarArchivist;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.annotations.Inject;
@@ -191,7 +191,7 @@ public class EjbDeployer
 
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader());
 
-        String appName = dc.getCommandParameters().getProperty(DeployCommand.NAME);
+        String appName = dc.getCommandParameters().getProperty(ParameterNames.NAME);
         ejbApps.put(appName, ejbApp);
 
         /*
@@ -216,7 +216,7 @@ public class EjbDeployer
      */
     public void clean(DeploymentContext dc) {
 
-        String appName = dc.getCommandParameters().getProperty(DeployCommand.NAME);
+        String appName = dc.getCommandParameters().getProperty(ParameterNames.NAME);
         EjbApplication ejbApp = ejbApps.get(appName);
         if (ejbApp != null) {
             ejbApp.undeploy();

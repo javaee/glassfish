@@ -25,7 +25,7 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.ejb.containers.EjbContainerUtil;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

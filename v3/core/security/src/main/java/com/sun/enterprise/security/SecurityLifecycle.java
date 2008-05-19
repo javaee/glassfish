@@ -57,7 +57,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.util.List;

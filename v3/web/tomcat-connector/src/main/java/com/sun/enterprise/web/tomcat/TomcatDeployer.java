@@ -24,30 +24,23 @@
 package com.sun.enterprise.web.tomcat;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.archivist.ApplicationFactory;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
-import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
+import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
-import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import com.sun.grizzly.tcp.Adapter;
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ParameterNames;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -117,9 +110,9 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
         String docBase = source.getURI().getSchemeSpecificPart();
 
         Properties params = dc.getCommandParameters();
-        String ctxtRoot = "/" + params.getProperty(DeployCommand.NAME);
+        String ctxtRoot = "/" + params.getProperty(ParameterNames.NAME);
         List<String> targets = StringUtils.parseStringList(
-            params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
+            params.getProperty(ParameterNames.VIRTUAL_SERVERS), " ,");
         boolean loadToAll = (targets == null) || (targets.size() == 0);
 
         TomcatApplication webApplication = null;
@@ -167,7 +160,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     public void unload(TomcatApplication webApplication, DeploymentContext dc) {
 
         Properties params = dc.getCommandParameters();
-        String ctxtRoot = params.getProperty(DeployCommand.NAME);
+        String ctxtRoot = params.getProperty(ParameterNames.NAME);
         if (!ctxtRoot.equals("") && !ctxtRoot.startsWith("/") ) {
             ctxtRoot = "/" + ctxtRoot;
         } else if ("/".equals(ctxtRoot)) {
@@ -181,7 +174,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
         }
 
         List<String> targets = StringUtils.parseStringList(
-            params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
+            params.getProperty(ParameterNames.VIRTUAL_SERVERS), " ,");
         boolean unloadFromAll = (targets == null) || (targets.size() == 0);
 
         Container[] hosts = webApplication.getContainer().engine.findChildren();

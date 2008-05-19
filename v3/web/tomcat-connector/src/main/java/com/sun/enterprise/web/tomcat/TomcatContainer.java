@@ -24,8 +24,7 @@
 package com.sun.enterprise.web.tomcat;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.logging.LogDomains;
@@ -33,7 +32,6 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
 import org.glassfish.api.container.Container;
@@ -45,7 +43,6 @@ import org.jvnet.hk2.component.PreDestroy;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;

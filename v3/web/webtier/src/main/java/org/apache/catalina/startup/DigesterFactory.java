@@ -57,7 +57,7 @@
 
 package org.apache.catalina.startup;
 
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 import com.sun.org.apache.commons.digester.Digester;
 import com.sun.org.apache.commons.digester.RuleSet;

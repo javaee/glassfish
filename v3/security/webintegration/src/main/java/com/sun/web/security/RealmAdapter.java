@@ -36,7 +36,6 @@
 package com.sun.web.security;
 
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
-import com.sun.enterprise.security.auth.digest.impl.HttpDigestParamGenerator;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebPrincipal;
@@ -84,6 +83,7 @@ import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.util.StringManager;
 
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
@@ -111,7 +111,6 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
-import com.sun.enterprise.server.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import org.jvnet.hk2.component.PerLookup;

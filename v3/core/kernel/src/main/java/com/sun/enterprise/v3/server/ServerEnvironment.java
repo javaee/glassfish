@@ -40,7 +40,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Jerome Dochez
  */
 @Service
-public class ServerEnvironment implements PostConstruct {
+public class ServerEnvironment implements org.glassfish.api.admin.ServerEnvironment, PostConstruct {
     @Inject
     StartupContext startupContext;
 
@@ -127,6 +127,7 @@ public class ServerEnvironment implements PostConstruct {
     public File getDomainRoot() {
         return root;
     }
+
 
     public StartupContext getStartupContext() {
         return startupContext;

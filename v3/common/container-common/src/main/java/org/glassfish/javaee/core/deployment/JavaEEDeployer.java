@@ -30,6 +30,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.admin.ParameterNames;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.data.ApplicationInfo;
@@ -301,7 +302,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      */
     public void clean(DeploymentContext context) {
         String appName = context.getCommandParameters().getProperty(
-            DeployCommand.NAME);
+            ParameterNames.NAME);
         Application app = getApplicationFromApplicationInfo(appName);
         if (app != null) {
             context.addModuleMetaData(app);

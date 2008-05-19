@@ -24,7 +24,7 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;

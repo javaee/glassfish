@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.JaccProvider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.List;
 import org.jvnet.hk2.annotations.Inject;

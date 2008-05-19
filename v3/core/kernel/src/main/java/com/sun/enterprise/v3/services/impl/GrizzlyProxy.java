@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.container.EndpointRegistrationException;
 
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;

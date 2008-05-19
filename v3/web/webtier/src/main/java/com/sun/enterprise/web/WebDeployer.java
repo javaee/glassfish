@@ -30,8 +30,7 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
-import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -41,6 +40,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -144,14 +144,14 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         // 3. The default context root
         // 4. archive name
         Properties params = dc.getCommandParameters();
-        String contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
+        String contextRoot = params.getProperty(ParameterNames.CONTEXT_ROOT);
         if(contextRoot==null) {
             contextRoot = wbd.getContextRoot();
             if("".equals(contextRoot))
                 contextRoot = null;
         }
         if(contextRoot==null)
-            contextRoot = params.getProperty(DeployCommand.NAME);
+            contextRoot = params.getProperty(ParameterNames.NAME);
         if(contextRoot==null)
             contextRoot = dc.getSource().getName();
 
@@ -159,7 +159,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             contextRoot = "/" + contextRoot;
         }
         wbd.setContextRoot(contextRoot);
-        wbd.setName(params.getProperty(DeployCommand.NAME));
+        wbd.setName(params.getProperty(ParameterNames.NAME));
 
         // set the context root to deployment context props so this value
         // will be persisted in domain.xml
@@ -175,7 +175,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         try {
             ReadableArchive source = dc.getSource();
             Properties params = dc.getCommandParameters();
-            String virtualServers = params.getProperty(DeployCommand.VIRTUAL_SERVERS);
+            String virtualServers = params.getProperty(ParameterNames.VIRTUAL_SERVERS);
         
             wmInfo = new WebModuleConfig();
             
@@ -205,7 +205,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     protected void generateArtifacts(DeploymentContext dc) 
         throws DeploymentException {
         final Properties params = dc.getCommandParameters();
-        final boolean precompileJSP = Boolean.parseBoolean(params.getProperty(DeployCommand.PRECOMPILE_JSP));
+        final boolean precompileJSP = Boolean.parseBoolean(params.getProperty(ParameterNames.PRECOMPILE_JSP));
         if (precompileJSP) {
             //call JSPCompiler... 
             runJSPC(dc);

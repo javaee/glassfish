@@ -46,7 +46,7 @@ import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.common.Result;
-import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
+import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 

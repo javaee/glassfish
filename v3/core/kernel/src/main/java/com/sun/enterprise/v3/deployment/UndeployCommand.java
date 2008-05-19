@@ -37,6 +37,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -63,7 +64,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     @Inject
     ServerEnvironment env;
 
-    @Param(primary = true, name=DeployCommand.NAME)
+    @Param(primary = true, name=ParameterNames.NAME)
     String name=null;
 
     @Param(optional=true)
@@ -80,7 +81,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
          * user passed the path to the original directory.
          */
         name = (new File(name)).getName();
-        parameters.setProperty(DeployCommand.NAME, name);
+        parameters.setProperty(ParameterNames.NAME, name);
 
         ApplicationInfo info = appRegistry.get(name);
 

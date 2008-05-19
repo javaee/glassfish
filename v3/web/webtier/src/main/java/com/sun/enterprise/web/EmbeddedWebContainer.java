@@ -46,23 +46,21 @@ import org.apache.catalina.ContainerListener;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.logger.FileLogger;
 
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.web.server.WebContainerListener;
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 

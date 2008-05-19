@@ -67,8 +67,8 @@ import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.runtime.web.JspConfig;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.deployment.backend.DeploymentLogger;
-import com.sun.enterprise.server.ServerContext;
 
 public final class JSPCompiler {
     private ServerContext serverContext;

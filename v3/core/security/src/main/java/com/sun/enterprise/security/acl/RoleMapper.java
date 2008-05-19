@@ -58,7 +58,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 //import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.server.ApplicationServer;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
 import com.sun.logging.*;
 import org.jvnet.hk2.annotations.Inject;

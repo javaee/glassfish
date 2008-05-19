@@ -25,14 +25,14 @@
 
 package com.sun.enterprise.rails;
 
-import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.grizzly.arp.DefaultAsyncHandler;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.ParameterNames;
+import com.sun.grizzly.arp.DefaultAsyncHandler;
 import com.sun.grizzly.jruby.RubyObjectPool;
 import com.sun.grizzly.jruby.RubyRuntimeAsyncFilter;
 import java.util.Iterator;
@@ -56,7 +56,7 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
     ServerEnvironment env;
     
     @Inject
-    GrizzlyService grizzlyAdapter;
+    RequestDispatcher dispatcher;
     
     private static final String contextRootStr = "--contextRoot";
     private static final String numberOfRuntimeStr = "--jruby.runtime";
@@ -110,18 +110,24 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
     }
 
     public void unload(RailsApplication container, DeploymentContext context) {
+
+        try {
+            dispatcher.unregisterEndpoint(container.getContextRoot());
+        } catch (EndpointRegistrationException e) {
+            context.getLogger().log(Level.SEVERE, "Exception while unloading ruby application", e);
+        }
     }
     
     public void clean(DeploymentContext context) {
     }
 
     private String getContextRoot(DeploymentContext context) {
-        String contextRoot = context.getCommandParameters().getProperty(DeployCommand.CONTEXT_ROOT);
+        String contextRoot = context.getCommandParameters().getProperty(ParameterNames.CONTEXT_ROOT);
         if (contextRoot == null) {
             contextRoot = env.getStartupContext().getArguments().get("--contextroot");
         }
         if (contextRoot == null || contextRoot.length() == 0) {
-            contextRoot = "/" + context.getCommandParameters().getProperty(DeployCommand.NAME);
+            contextRoot = "/" + context.getCommandParameters().getProperty(ParameterNames.NAME);
         }
         return contextRoot;
     }
@@ -132,11 +138,11 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
         adapter.setContextRoot(contextRoot);
         pool.setAsyncEnabled(true);
         context.getLogger().info("Loading application " + 
-                context.getCommandParameters().getProperty(DeployCommand.NAME) 
+                context.getCommandParameters().getProperty(ParameterNames.NAME)
                 + " at " + contextRoot);
         //@TODO change EndportRegistrationException processing if required
         try {
-            grizzlyAdapter.registerEndpoint(contextRoot, null, adapter, adapter);
+            dispatcher.registerEndpoint(contextRoot, null, adapter, adapter);
         } catch (EndpointRegistrationException e) {
             context.getLogger().log(Level.WARNING, "Error registering RailsAdapter", e);
         }

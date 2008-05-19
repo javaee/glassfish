@@ -37,10 +37,9 @@
 package com.sun.enterprise.security.web.integration;
 
 import com.sun.enterprise.security.web.integration.WebPrincipal;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import java.security.*;
 import java.util.Set;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Collections;
@@ -74,7 +73,6 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -171,7 +169,7 @@ public class WebSecurityManager implements PostConstruct {
         this(wbd,null);
     }
     
-    public WebSecurityManager(WebBundleDescriptor wbd,ServerContext svc) throws PolicyContextException {
+    public WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc) throws PolicyContextException {
         this.wbd = wbd;
         this.CONTEXT_ID = getContextID(wbd);
         this.serverContext = svc;

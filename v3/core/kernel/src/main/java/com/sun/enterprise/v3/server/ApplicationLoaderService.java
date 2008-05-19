@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -138,8 +139,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive, cloader);
                         if (appSniffers!=null) {
                             Properties deploymentProperties = new Properties();
-                            deploymentProperties.setProperty(DeployCommand.NAME, sourceFile.getName());
-                            deploymentProperties.setProperty(DeployCommand.ENABLED, "True");
+                            deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
+                            deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
                             DeploymentContextImpl depContext = new DeploymentContextImpl(
                                     logger,
                                     sourceArchive,
@@ -344,7 +345,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             }
             Iterable<ApplicationInfo> apps = containerInfo.getApplications();
             for (ApplicationInfo appInfo : apps) {
-                props.put(DeployCommand.NAME, appInfo.getName());
+                props.put(ParameterNames.NAME, appInfo.getName());
 
                 DeploymentContextImpl depContext = new DeploymentContextImpl(
                     logger,appInfo.getSource() , props, env);

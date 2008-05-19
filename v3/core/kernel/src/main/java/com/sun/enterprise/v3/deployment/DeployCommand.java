@@ -38,6 +38,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -65,14 +66,6 @@ import java.util.logging.Level;
 public class DeployCommand extends ApplicationLifecycle implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
-    public static final String NAME = "name";
-    public static final String VIRTUAL_SERVERS = "virtualservers";
-    public static final String CONTEXT_ROOT = "contextroot";
-    public static final String LIBRARIES = "libraries";
-    public static final String DIRECTORY_DEPLOYED = "directorydeployed";
-    public static final String LOCATION = "location";
-    public static final String ENABLED = "enabled";
-    public static final String PRECOMPILE_JSP = "precompilejsp";
     
     @Inject
     ServerEnvironment env;
@@ -83,23 +76,23 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     CommandRunner commandRunner;
 
-    @Param(name = NAME, optional=true)
+    @Param(name = ParameterNames.NAME, optional=true)
     String name = null;
 
-    @Param(name = CONTEXT_ROOT, optional=true)
+    @Param(name = ParameterNames.CONTEXT_ROOT, optional=true)
     String contextRoot = null;
 
-    @Param(optional=true)
+    @Param(name = ParameterNames.VIRTUAL_SERVERS, optional=true)
     @I18n("virtualservers")
     String virtualservers = null;
 
-    @Param(name=LIBRARIES, optional=true)
+    @Param(name=ParameterNames.LIBRARIES, optional=true)
     String libraries = null;
 
     @Param(optional=true, defaultValue="false")
     Boolean force;
 
-    @Param(optional=true, defaultValue="false")
+    @Param(name=ParameterNames.PRECOMPILE_JSP, optional=true, defaultValue="false")
     Boolean precompilejsp;
 
     @Param(optional=true, defaultValue="false")
@@ -125,7 +118,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(optional=true)
     String deploymentplan = null;
 
-    @Param(optional=true, defaultValue="true")
+    @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
     Boolean enabled;
     
     @Param(optional=true, defaultValue="false")
@@ -188,14 +181,14 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 name = archiveHandler.getDefaultApplicationName(archive);
                 // For the autodeployer in particular the name must be set in the
                 // command context parameters for later use.
-                parameters.put(NAME, name);
+                parameters.put(ParameterNames.NAME, name);
             }
             
             handleRedeploy(name, report, parameters);
 
             // clean up any left over repository files
             FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
-            parameters.put(ENABLED, enabled.toString());
+            parameters.put(ParameterNames.ENABLED, enabled.toString());
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;
@@ -318,7 +311,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             //if applicaiton is already deployed and force=true,
             //then undeploy the application first.
             Properties undeployParam = new Properties();
-            undeployParam.put(NAME, name);
+            undeployParam.put(ParameterNames.NAME, name);
             ActionReport subReport = report.addSubActionsReport();
             commandRunner.doCommand("undeploy", undeployParam, subReport);
         }
@@ -338,20 +331,20 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (contextRoot == null) {            
                 contextRoot = ConfigBeansUtilities.getContextRoot(name);
                 if (contextRoot != null) {
-                    parameters.put(CONTEXT_ROOT, contextRoot);
+                    parameters.put(ParameterNames.CONTEXT_ROOT, contextRoot);
                 }
             }
             if (libraries == null) {
                 libraries = ConfigBeansUtilities.getLibraries(name);
                 if (libraries != null) {
-                    parameters.put(LIBRARIES, libraries);
+                    parameters.put(ParameterNames.LIBRARIES, libraries);
                 }
             }
             if (virtualservers == null) {
                 virtualservers = ConfigBeansUtilities.getVirtualServers(
                     target, name);
                 if (virtualservers != null) {
-                    parameters.put(VIRTUAL_SERVERS, virtualservers);
+                    parameters.put(ParameterNames.VIRTUAL_SERVERS, virtualservers);
                 }
             }
         }

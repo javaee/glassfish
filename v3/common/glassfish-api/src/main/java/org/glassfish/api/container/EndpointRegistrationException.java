@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.services.impl;
+package org.glassfish.api.container;
 
 /**
  * Exception, which will be thrown on endpoint registration problems.

@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import java.util.logging.*;
 import com.sun.logging.LogDomains;
 import java.util.List;

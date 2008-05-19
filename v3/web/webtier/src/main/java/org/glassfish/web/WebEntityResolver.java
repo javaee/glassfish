@@ -46,12 +46,12 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.PostConstruct;
 import org.apache.catalina.startup.Constants;
+import org.glassfish.internal.api.ServerContext;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.Map;
 
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.MapBuilder;
 
 /**

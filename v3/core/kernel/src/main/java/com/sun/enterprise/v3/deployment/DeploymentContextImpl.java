@@ -27,6 +27,7 @@ import java.lang.instrument.ClassFileTransformer;
 import org.glassfish.api.deployment.DeploymentContext;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ParameterNames;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -108,7 +109,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      *         passed in value is null.
      */
     public File getScratchDir(String subDirName) {
-        final String appName = parameters.getProperty(DeployCommand.NAME);
+        final String appName = parameters.getProperty(ParameterNames.NAME);
         File rootScratchDir = env.getApplicationStubPath();
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);

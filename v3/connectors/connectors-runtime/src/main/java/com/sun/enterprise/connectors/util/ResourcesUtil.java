@@ -40,7 +40,7 @@ import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;

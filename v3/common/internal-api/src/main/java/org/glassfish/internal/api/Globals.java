@@ -28,6 +28,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.internal.api.Init;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 
 /**
  * Very sensitive class, anything stored here cannot be garbage collected
@@ -39,6 +40,10 @@ public class Globals implements Init {
 
     @Inject
     static Habitat defaultHabitat;
+
+    // dochez : remove this once we can get rid of ConfigBeanUtilities class
+    @Inject
+    ConfigBeansUtilities utilities;
 
     public static Habitat getDefaultHabitat() {
         return defaultHabitat;

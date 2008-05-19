@@ -47,10 +47,11 @@ import com.sun.enterprise.v3.data.ModuleInfo;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.EnableCommand;
-import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
+import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
@@ -255,7 +256,7 @@ public class ApplicationLifecycle {
             // if enable attribute is set to true
             // we start the application
             if (Boolean.valueOf(context.getCommandParameters().getProperty(
-                DeployCommand.ENABLED))) {
+                ParameterNames.ENABLED))) {
                 startModules(appInfo, context, report, tracker);
             }
 
@@ -566,7 +567,7 @@ public class ApplicationLifecycle {
         }
 
         final String appName = context.getCommandParameters().getProperty(
-            DeployCommand.NAME);
+            ParameterNames.NAME);
 
         ApplicationInfo appInfo = new ApplicationInfo(context.getSource(),
             appName, tracker.get(ModuleInfo.class).toArray(
@@ -625,7 +626,7 @@ public class ApplicationLifecycle {
 
         if (appInfo == null) {
             String appName = context.getCommandParameters().getProperty(
-                DeployCommand.NAME);
+                ParameterNames.NAME);
             appInfo = new ApplicationInfo(context.getSource(),
                 appName, tracker.get(ModuleInfo.class).toArray(
                 new ModuleInfo[tracker.get(ModuleInfo.class).size()]));
@@ -1063,22 +1064,22 @@ public class ApplicationLifecycle {
             return new Properties();
         }
         Properties deploymentParams = new Properties();
-        deploymentParams.setProperty(DeployCommand.NAME, app.getName());
-        deploymentParams.setProperty(DeployCommand.LOCATION, app.getLocation());
-        deploymentParams.setProperty(DeployCommand.ENABLED, app.getEnabled());
+        deploymentParams.setProperty(ParameterNames.NAME, app.getName());
+        deploymentParams.setProperty(ParameterNames.LOCATION, app.getLocation());
+        deploymentParams.setProperty(ParameterNames.ENABLED, app.getEnabled());
         if (app.getContextRoot() != null) {
-            deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT,
+            deploymentParams.setProperty(ParameterNames.CONTEXT_ROOT,
                 app.getContextRoot());
         }
         if (app.getLibraries() != null) {
-            deploymentParams.setProperty(DeployCommand.LIBRARIES,
+            deploymentParams.setProperty(ParameterNames.LIBRARIES,
                 app.getLibraries());
         }
-        deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED,
+        deploymentParams.setProperty(ParameterNames.DIRECTORY_DEPLOYED,
             app.getDirectoryDeployed());
 
         if (appRef.getVirtualServers() != null) {
-            deploymentParams.setProperty(DeployCommand.VIRTUAL_SERVERS,
+            deploymentParams.setProperty(ParameterNames.VIRTUAL_SERVERS,
                 appRef.getVirtualServers());
         }
 

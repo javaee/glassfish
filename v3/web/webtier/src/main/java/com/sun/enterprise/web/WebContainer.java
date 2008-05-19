@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -70,9 +69,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
@@ -114,15 +111,12 @@ import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
-import com.sun.enterprise.deployment.util.WebBundleVisitor;
 //import com.sun.enterprise.instance.WebModulesManager;
 //import com.sun.enterprise.instance.AppsManager;
 //import com.sun.enterprise.management.util.J2EEModuleUtil;
 //import com.sun.enterprise.server.StandaloneWebModulesManager;
-import com.sun.enterprise.server.ServerContext;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
@@ -180,9 +174,9 @@ import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.Method;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
+import org.glassfish.api.container.EndpointRegistrationException;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.v3.services.impl.EndpointRegistrationException;
 
 /**
  * Web container service

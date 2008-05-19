@@ -31,6 +31,8 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.Startup;
+import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpListener;
@@ -38,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.Controller;
+import com.sun.grizzly.tcp.Adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +58,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
-public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
+public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy {
 
     @Inject(name="server-config") // for now
     Config config;
@@ -150,7 +153,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
-    public void registerEndpoint(String contextRoot, com.sun.grizzly.tcp.Adapter endpointAdapter,
+    public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
         registerEndpoint(contextRoot, null, endpointAdapter, container);
@@ -164,7 +167,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * @param endpointAdapter servicing requests.
      */
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
-            com.sun.grizzly.tcp.Adapter endpointAdapter,
+            Adapter endpointAdapter,
             ApplicationContainer container) throws EndpointRegistrationException {
 
         for (NetworkProxy proxy : proxies) {
@@ -180,7 +183,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     public void registerEndpoint(String contextRoot,
                                  int port,
                                  Collection<String> vsServers,
-                                 com.sun.grizzly.tcp.Adapter endpointAdapter,
+                                 Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
             if (proxy.getPort() == port) {
