@@ -37,13 +37,7 @@
 package org.glassfish.webservices;
 
 //import com.sun.enterprise.Switch;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-/*import com.sun.enterprise.deployment.backend.DeployableObjectType;
-import com.sun.enterprise.deployment.phasing.DeploymentServiceUtils;
-import com.sun.enterprise.util.InjectionManagerImpl;
-import com.sun.enterprise.webservice.monitoring.Endpoint;
-import com.sun.enterprise.webservice.monitoring.WebServiceEngineImpl;
-import com.sun.enterprise.webservice.monitoring.WebServiceTesterServlet;*/
+
 import com.sun.logging.LogDomains;
 
 import javax.servlet.ServletConfig;
@@ -52,9 +46,41 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.File;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.Collection;
 
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.jvnet.hk2.annotations.Inject;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.Invoker;
+
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.MTOMFeature;
+
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.Adapter;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ServiceDefinition;
+import com.sun.xml.ws.api.server.WSEndpoint.PipeHead;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.InstanceResolver;
+import com.sun.xml.ws.developer.Stateful;
 
 /**
  * The JAX-WS dispatcher servlet.
@@ -189,21 +215,24 @@ public class JAXWSServlet extends HttpServlet {
             throw se;
         } 
     }*/
-     private void doInit(ServletConfig servletConfig) throws ServletException {
-       //TODO BM move code from commented method back here
-   }
-    
-    /*private void doInit1(ServletConfig servletConfig) throws ServletException {
+
+    private void doInit(ServletConfig servletConfig) throws ServletException {
         String servletName = "unknown";
         
         try {
-            InvocationManager invManager = 
-                Switch.getSwitch().getInvocationManager();
-            ComponentInvocation inv = invManager.getCurrentInvocation();
-            Object containerContext = inv.getContainerContext();
 
-            WebBundleDescriptor webBundle = (WebBundleDescriptor)
-                Switch.getSwitch().getDescriptorFor(containerContext);
+           
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            ComponentEnvManager compEnvManager = wscImpl.getComponentEnvManager();
+            JndiNameEnvironment jndiNameEnv = compEnvManager.getCurrentJndiNameEnvironment();
+            WebBundleDescriptor webBundle = null;
+            if (jndiNameEnv != null && jndiNameEnv instanceof WebBundleDescriptor){
+                webBundle = ((WebBundleDescriptor)jndiNameEnv);
+            } else {
+                throw new WebServiceException("Cannot intialize the JAXWSServlet for " + jndiNameEnv);
+            }
+
+
             classLoader = Thread.currentThread().getContextClassLoader();
             servletName = servletConfig.getServletName();
             contextRoot = webBundle.getContextRoot();
@@ -212,11 +241,11 @@ public class JAXWSServlet extends HttpServlet {
 
             if( webComponent != null ) {
                 WebServicesDescriptor webServices = webBundle.getWebServices();
-                Collection endpoints =                     
+                Collection<WebServiceEndpoint> endpoints =
                     webServices.getEndpointsImplementedBy(webComponent);
                 // Only 1 endpoint per servlet is supported, even though
                 // data structure implies otherwise. 
-                endpoint = (WebServiceEndpoint) endpoints.iterator().next();
+                endpoint =  endpoints.iterator().next();
 
                 // need to invoke the endpoint lifecylcle 
                 if(!(HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding()))) {
@@ -230,193 +259,160 @@ public class JAXWSServlet extends HttpServlet {
         } catch(Throwable t) {
             logger.log(Level.WARNING, "Servlet web service endpoint '" +
                        servletName + "' failure", t);
-	    t.printStackTrace();
+	        t.printStackTrace();
             ServletException se = new ServletException();
             se.initCause(t);
             throw se;
         }        
-    }*/
+    }
 
-   /* private void registerEndpoint() throws Exception {
 
-        WsUtil wsu = new WsUtil();
-        // Complete all the injections that are required
-        Class serviceEndpointClass = 
-                Class.forName(endpoint.getServletImplClass(), true, classLoader);
-        *//*
-        Object serviceEndpoint = serviceEndpointClass.newInstance();
-        new InjectionManagerImpl().injectInstance(serviceEndpoint);
+    private void registerEndpoint() throws Exception {
 
-        // Set webservice context here
-        // If the endpoint has a WebServiceContext with @Resource then
-        // that has to be used
-        WebServiceContextImpl wsc = null;
-        WebBundleDescriptor bundle = (WebBundleDescriptor)endpoint.getBundleDescriptor();
-        Iterator<ResourceReferenceDescriptor> it = bundle.getResourceReferenceDescriptors().iterator();
-        while(it.hasNext()) {
-            ResourceReferenceDescriptor r = it.next();            
-            if(r.isWebServiceContext()) {
-                Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
-                boolean matchingClassFound = false;
-                while(iter.hasNext()) {
-                    InjectionTarget target = iter.next();
-                    if(endpoint.getServletImplClass().equals(target.getClassName())) {
-                        matchingClassFound = true;
-                        break;
-                    }
-                }
-                if(!matchingClassFound) {
-                    continue;
-                }
-                try {
-                    javax.naming.InitialContext ic = new javax.naming.InitialContext();
-                    wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
-                } catch (Throwable t) {
-                    // Swallowed intentionally
-                }
-            }
-        }
-        if(wsc == null) {
-            wsc = new WebServiceContextImpl();
-        }
-         *//*
+            WsUtil wsu = new WsUtil();
+            // Complete all the injections that are required
+            Class serviceEndpointClass =
+                    Class.forName(endpoint.getServletImplClass(), true, classLoader);
 
-        // Get the proper binding using BindingID
-        String givenBinding = endpoint.getProtocolBinding();
+            // Get the proper binding using BindingID
+            String givenBinding = endpoint.getProtocolBinding();
 
-        // Get list of all wsdls and schema
-        SDDocumentSource primaryWsdl = null;
-        Collection docs = null;
-        if(endpoint.getWebService().hasWsdlFile()) {
-            BaseManager mgr;
-            if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.WEB);
-            } else {
-                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
-            }
-            String deployedDir = 
-                mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
-            File pkgedWsdl = null;
-            if(deployedDir != null) {
+            // Get list of all wsdls and schema
+            SDDocumentSource primaryWsdl = null;
+            Collection docs = null;
+            if(endpoint.getWebService().hasWsdlFile()) {
+
+                //TODO BM figure way for WEB or APP
+               /* BaseManager mgr;
                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                                endpoint.getWebService().getWsdlFileUri());
+                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.WEB);
                 } else {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
-                            File.separator + endpoint.getWebService().getWsdlFileUri());
+                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
+                }*/
+                /**
+                 * TODO BM figure deployeddir
+                 */
+                String deployedDir = null;
+                    //mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+                File pkgedWsdl = null;
+                if(deployedDir != null) {
+                    if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
+                        pkgedWsdl = new File(deployedDir+File.separator+
+                                    endpoint.getWebService().getWsdlFileUri());
+                    } else {
+                        pkgedWsdl = new File(deployedDir+File.separator+
+                                endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+                                File.separator + endpoint.getWebService().getWsdlFileUri());
+                    }
+                } else {
+                    pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
                 }
-            } else {
-                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
-            }
-            if(pkgedWsdl.exists()) {
-                //Canonicalize the filename.  Since getWsdlsAndSchemas canonicalizes
-                //the filenames of the metatdata documents, JAXWS might get into have
-                //trouble detecting common root paths.
-                //ie C://foo.wsdl and c://schema.wsdl
-                pkgedWsdl = pkgedWsdl.getCanonicalFile();
-                
-                primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
-                docs = wsu.getWsdlsAndSchemas(pkgedWsdl);
-                
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.INFO, "Creating endpoint with packaged WSDL " + 
-                            primaryWsdl.getSystemId().toString());
-                    logger.log(Level.FINE, "Metadata documents:");
-                    for (Object source: docs) {
-                        logger.log(Level.FINE, ((SDDocumentSource)source).getSystemId().toString());
+                if(pkgedWsdl.exists()) {
+                    //Canonicalize the filename.  Since getWsdlsAndSchemas canonicalizes
+                    //the filenames of the metatdata documents, JAXWS might get into have
+                    //trouble detecting common root paths.
+                    //ie C://foo.wsdl and c://schema.wsdl
+                    pkgedWsdl = pkgedWsdl.getCanonicalFile();
+
+                    primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
+                    docs = wsu.getWsdlsAndSchemas(pkgedWsdl);
+
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.INFO, "Creating endpoint with packaged WSDL " +
+                                primaryWsdl.getSystemId().toString());
+                        logger.log(Level.FINE, "Metadata documents:");
+                        for (Object source: docs) {
+                            logger.log(Level.FINE, ((SDDocumentSource)source).getSystemId().toString());
+                        }
                     }
                 }
             }
-        }
 
-        // Create a Container to pass ServletContext and also inserting the pipe
-        JAXWSContainer container = new JAXWSContainer(getServletContext(),
-                endpoint);
-        
-        // Get catalog info
-        java.net.URL catalogURL = null;
-        File catalogFile = new File(endpoint.getBundleDescriptor().getDeploymentDescriptorDir() +
-                File.separator + "jax-ws-catalog.xml");
-        if(catalogFile.exists()) {
-            catalogURL = catalogFile.toURL();
-        }
+            // Create a Container to pass ServletContext and also inserting the pipe
+            JAXWSContainer container = new JAXWSContainer(getServletContext(),
+                    endpoint);
 
-        // Create Binding and set service side handlers on this binding
-        boolean mtomEnabled = wsu.getMtom(endpoint);
-        WSBinding binding = null;
-        // Only if MTOm is enabled create the Binding with the MTOMFeature
-        if (mtomEnabled) {
-            MTOMFeature mtom = new MTOMFeature(true);
-            binding = BindingID.parse(givenBinding).createBinding(mtom);
-        } else {
-            binding = BindingID.parse(givenBinding).createBinding();
-        }
-             
-        wsu.configureJAXWSServiceHandlers(endpoint, givenBinding, 
-                binding);
-
-        // Create the jaxws2.1 invoker and use this
-        Invoker inv;
-	if (serviceEndpointClass.getAnnotation(Stateful.class) == null) {
-		//use our own InstanceResolver that does not call @PostConstuct method before
-		//@Resource injections have happened.
-		inv = (new InstanceResolverImpl(serviceEndpointClass)).createInvoker();
-	} else {
-		//let JAX-WS handle the Stateful WebService case
-		//TODO - Implement 109 StatefulInstanceResolver
-		inv = null;
-	}
-        
-         
-        WSEndpoint wsep = WSEndpoint.create(
-                serviceEndpointClass, // The endpoint class
-                false, // we do not want JAXWS to process @HandlerChain
-                inv, 
-                endpoint.getServiceName(), // the service QName
-                endpoint.getWsdlPort(), // the port
-                container, // Our container with info on security/monitoring pipe 
-                binding, // Derive binding
-                primaryWsdl, // primary WSDL
-                docs, // Collection of imported WSDLs and schema
-                catalogURL
-                );
-        
-        container.addEndpoint(wsep);
-
-        // For web components, this will be relative to the web app
-        // context root.  Make sure there is a leading slash.
-        String uri = endpoint.getEndpointAddressUri();
-        urlPattern = uri.startsWith("/") ? uri : "/" + uri;
-
-        // The whole web app should have a single adapter list 
-        // This is to enable JAXWS publish WSDLs with proper addresses
-        ServletAdapter adapter;
-        synchronized(this) {
-            ServletAdapterList list = 
-                (ServletAdapterList) getServletContext().getAttribute("ADAPTER_LIST");
-            if(list == null) {
-                list = new ServletAdapterList();
-                getServletContext().setAttribute("ADAPTER_LIST", list);
+            // Get catalog info
+            java.net.URL catalogURL = null;
+            File catalogFile = new File(endpoint.getBundleDescriptor().getDeploymentDescriptorDir() +
+                    File.separator + "jax-ws-catalog.xml");
+            if(catalogFile.exists()) {
+                catalogURL = catalogFile.toURL();
             }
-            adapter = 
-                list.createAdapter(endpoint.getName(), urlPattern, wsep);
+
+            // Create Binding and set service side handlers on this binding
+      /*      boolean mtomEnabled = wsu.getMtom(endpoint);
+            WSBinding binding = null;
+            // Only if MTOm is enabled create the Binding with the MTOMFeature
+            if (mtomEnabled) {
+                MTOMFeature mtom = new MTOMFeature(true);
+                binding = BindingID.parse(givenBinding).createBinding(mtom);
+            } else {
+                binding = BindingID.parse(givenBinding).createBinding();
+            }
+
+            wsu.configureJAXWSServiceHandlers(endpoint, givenBinding,
+                    binding);
+
+            // Create the jaxws2.1 invoker and use this
+            Invoker inv;
+        if (serviceEndpointClass.getAnnotation(Stateful.class) == null) {
+            //use our own InstanceResolver that does not call @PostConstuct method before
+            //@Resource injections have happened.
+            inv = (new InstanceResolverImpl(serviceEndpointClass)).createInvoker();
+        } else {
+            //let JAX-WS handle the Stateful WebService case
+            //TODO - Implement 109 StatefulInstanceResolver
+            inv = null;
         }
 
-        registerEndpointUrlPattern(adapter);
 
-        *//*
-        wsu.doPostConstruct(wsep.getImplementationClass(),
-                serviceEndpoint);
-         *//*
-    }   */
+            WSEndpoint wsep = WSEndpoint.create(
+                    serviceEndpointClass, // The endpoint class
+                    false, // we do not want JAXWS to process @HandlerChain
+                    inv,
+                    endpoint.getServiceName(), // the service QName
+                    endpoint.getWsdlPort(), // the port
+                    container, // Our container with info on security/monitoring pipe
+                    binding, // Derive binding
+                    primaryWsdl, // primary WSDL
+                    docs, // Collection of imported WSDLs and schema
+                    catalogURL
+                    );
 
-   /* private void registerEndpointUrlPattern(Adapter info) {
+            container.addEndpoint(wsep);
+
+            // For web components, this will be relative to the web app
+            // context root.  Make sure there is a leading slash.
+            String uri = endpoint.getEndpointAddressUri();
+            urlPattern = uri.startsWith("/") ? uri : "/" + uri;
+
+            // The whole web app should have a single adapter list
+            // This is to enable JAXWS publish WSDLs with proper addresses
+            ServletAdapter adapter;
+            synchronized(this) {
+                ServletAdapterList list =
+                    (ServletAdapterList) getServletContext().getAttribute("ADAPTER_LIST");
+                if(list == null) {
+                    list = new ServletAdapterList();
+                    getServletContext().setAttribute("ADAPTER_LIST", list);
+                }
+                adapter =
+                    list.createAdapter(endpoint.getName(), urlPattern, wsep);
+            }
+
+            registerEndpointUrlPattern(adapter);
+       */
+            
+        }
+
+
+   private void registerEndpointUrlPattern(Adapter info) {
         JAXWSAdapterRegistry.getInstance().addAdapter(contextRoot, urlPattern,info);
     }
     
     private Adapter getEndpointFor(HttpServletRequest request) {
         String path = request.getRequestURI().substring(request.getContextPath().length());
         return JAXWSAdapterRegistry.getInstance().getAdapter(contextRoot, urlPattern, path);
-    }*/
+    }
 }
