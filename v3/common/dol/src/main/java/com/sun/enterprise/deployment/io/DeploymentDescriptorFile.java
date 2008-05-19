@@ -463,7 +463,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
     * @return the default schema source for this deployment descriptors
     */
     protected String getDefaultSchemaSource() {
-	RootXMLNode node = getRootXMLNode(null);
+	RootXMLNode<?> node = getRootXMLNode(null);
 	if (node!=null) {
 	    List<String> systemIDs = node.getSystemIDs();
             if (systemIDs != null) {
