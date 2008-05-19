@@ -270,8 +270,8 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
         String error = (errorReportingString == null)? errorReportingString:new File(errorReportingString).getName();
         String errorReporting = localStrings.getLocalString(
 			"enterprise.deployment.io.errorcontext",
-			"archive {0} and deployment descriptor file {1}", 
-			new Object []{ error, getDeploymentDescriptorPath()});
+			"archive {0} and deployment descriptor file {1}",
+                        error, getDeploymentDescriptorPath());
         
         SAXParser sp = getSAXParser(getXMLValidation());
         SaxParserHandler dh = SaxParserHandlerFactory.newInstance();
@@ -318,15 +318,13 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             // 2. If the user does intend to use the system id to go outside.
             //    We need to ask them to check whether they have proper 
             //    access to the internet (proxy setting etc).      
-            StackTraceElement[] stElements = e.getStackTrace();
-            for (int i = 0; i < stElements.length; i++) {
-                StackTraceElement stElement = stElements[i];
+            for (StackTraceElement stElement : e.getStackTrace()) {
                 if (stElement.getClassName().equals("java.net.Socket") &&
-                    stElement.getMethodName().equals("connect")) {
+                        stElement.getMethodName().equals("connect")) {
                     String msg = localStrings.getLocalString(
-                        "enterprise.deployment.can_not_locate_dtd", 
-			"Unable to locate the DTD to validate your deployment descriptor file [{1}] in archive [{0}]. Please make sure the DOCTYPE is correct (no typo in public ID or system ID) and you have proper access to the Internet.", 
-			 new Object []{ error, getDeploymentDescriptorPath()});
+                            "enterprise.deployment.can_not_locate_dtd",
+                            "Unable to locate the DTD to validate your deployment descriptor file [{1}] in archive [{0}]. Please make sure the DOCTYPE is correct (no typo in public ID or system ID) and you have proper access to the Internet.",
+                            error, getDeploymentDescriptorPath());
                     IOException ioe = new IOException(msg);
                     ioe.initCause(e);
                     throw ioe;
@@ -335,7 +333,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
 
             IOException ioe = new IOException(localStrings.getLocalString(
                     "enterprise.deployment.backend.error_parsing_descr",
-                    "Error parsing descriptor: {0}", new Object[] {errorReporting}));
+                    "Error parsing descriptor: {0}", errorReporting));
             ioe.initCause(e);
             throw ioe;
         }
@@ -468,17 +466,15 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
 	RootXMLNode node = getRootXMLNode(null);
 	if (node!=null) {
 	    List<String> systemIDs = node.getSystemIDs();
-        if (systemIDs != null) {
-            String path = null;
-            for (int i = 0; i < systemIDs.size(); i++) {
-                if (path == null) {
-                    path = systemIDs.get(i) + " ";
-                } else {
-                    path = path + systemIDs.get(i) + " ";
+            if (systemIDs != null) {
+                StringBuilder path = new StringBuilder();
+                for (String systemID : systemIDs) {
+                    if (path.length()>0)
+                        path.append(' ');
+                    path.append(systemID);
                 }
+                return path.toString();
             }
-            return path.trim();
-        }
 	}
 	return null;
     }
