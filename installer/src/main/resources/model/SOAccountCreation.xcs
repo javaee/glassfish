@@ -122,11 +122,6 @@ checkForNullValues(thisProperty);
           <info>
             <desc xml:lang="en-US">Company Name</desc>
           </info>
-        <actions>
-          <onSet><![CDATA[
-checkForNullValues(thisProperty);
-          ]]></onSet>
-        </actions>
         </prop>
 
         <prop oor:name="COUNTRY" oor:type="xs:string" oor:transient="true" oor:nillable="false">
