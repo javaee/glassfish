@@ -91,8 +91,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-ee-api</artifactId>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
