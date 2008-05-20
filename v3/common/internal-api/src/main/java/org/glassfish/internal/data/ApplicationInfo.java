@@ -21,10 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.data;
-
-import com.sun.enterprise.v3.data.ContainerInfo;
-import org.glassfish.api.deployment.ApplicationContainer;
+package org.glassfish.internal.data;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;

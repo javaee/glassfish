@@ -29,7 +29,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
+import org.glassfish.internal.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;

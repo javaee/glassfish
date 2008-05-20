@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.module;
 
-import com.sun.enterprise.v3.deployment.GenericSniffer;
+import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.Module;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;

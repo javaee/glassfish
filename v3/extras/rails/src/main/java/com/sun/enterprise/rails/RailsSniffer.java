@@ -36,18 +36,14 @@
  */
 package com.sun.enterprise.rails;
 
-import com.sun.enterprise.v3.deployment.GenericSniffer;
+import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.impl.CookedModuleDefinition;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.Logger;
@@ -55,12 +51,9 @@ import java.util.logging.Level;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
-import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.net.URL;
 
 /**
  * JRuby sniffer

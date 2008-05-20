@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.common;
+package com.sun.enterprise.util;
 
 /**
  * Used to carry a result or an exception justifying why a result could not be produced

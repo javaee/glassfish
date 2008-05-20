@@ -57,8 +57,6 @@ public class ServerEnvironment implements org.glassfish.api.admin.ServerEnvironm
     public static final String kConfigDirName = "config";
     /** init file name */
     public static final String kInitFileName = "init.conf";
-    /** folder where the compiled JSP pages reside */
-    public static final String kCompileJspDirName = "jsp";
 
     public static final String DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT = "/admin";
     public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "__admingui"; //same as folder

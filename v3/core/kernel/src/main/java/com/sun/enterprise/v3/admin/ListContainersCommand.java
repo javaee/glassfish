@@ -24,12 +24,11 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ContainerInfo;
-import com.sun.enterprise.v3.data.ContainerRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;

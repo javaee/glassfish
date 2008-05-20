@@ -36,20 +36,18 @@
  */
 package com.sun.enterprise.security;
 
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import java.util.regex.Pattern;
 import java.util.logging.Logger;
 import java.io.IOException;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.v3.deployment.GenericSniffer;
 
 /**
  * SecuritySniffer for security related activities

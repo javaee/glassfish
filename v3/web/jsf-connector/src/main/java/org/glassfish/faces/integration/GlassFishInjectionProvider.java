@@ -38,7 +38,6 @@ package org.glassfish.faces.integration;
 
 import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.InjectionProviderException;
-import com.sun.faces.util.Util;
 import com.sun.faces.util.FacesLogger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +50,6 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.deployment.InjectionInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;

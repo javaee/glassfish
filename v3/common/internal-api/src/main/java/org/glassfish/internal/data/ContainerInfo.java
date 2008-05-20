@@ -21,16 +21,14 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.data;
+package org.glassfish.internal.data;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.jvnet.hk2.component.Inhabitant;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
 
 
 import java.util.*;

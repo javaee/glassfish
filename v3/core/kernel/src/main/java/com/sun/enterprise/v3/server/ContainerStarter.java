@@ -24,8 +24,8 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.v3.data.ContainerInfo;
-import com.sun.enterprise.v3.data.ContainerRegistry;
+import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;

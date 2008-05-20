@@ -117,6 +117,7 @@ import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
 //import com.sun.enterprise.server.StandaloneWebModulesManager;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
@@ -160,9 +161,6 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.common.Result;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -175,6 +173,9 @@ import java.lang.reflect.Method;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
+
+import org.glassfish.api.admin.ServerEnvironment;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
 
@@ -248,7 +249,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     DasConfig dasConfig;
     
     @Inject
-    GrizzlyService grizzlyAdapter;
+    RequestDispatcher dispatcher;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, CoyoteAdapter> adapterMap = new HashMap<Integer, CoyoteAdapter>();
@@ -2476,10 +2477,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         for (int port : vs.getPorts()) {
                             CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
                             WebApplication application = new WebApplication(this, 
-                                    wmInfo, grizzlyAdapter);
+                                    wmInfo, dispatcher);
                             //@TODO change EndportRegistrationException processing if required
                             try {
-                                grizzlyAdapter.registerEndpoint(wmInfo.getContextPath(),
+                                dispatcher.registerEndpoint(wmInfo.getContextPath(),
                                         adapter, application);
                             } catch(EndpointRegistrationException e) {
                                 String msg = _rb.getString(
@@ -3114,8 +3115,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 defaultContextPath);
                         CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
                         WebApplication application = new WebApplication(this, 
-                                wmInfo, grizzlyAdapter);
-                        grizzlyAdapter.registerEndpoint("/", adapter, application);
+                                wmInfo, dispatcher);
+                        dispatcher.registerEndpoint("/", adapter, application);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
                     }

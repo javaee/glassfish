@@ -45,9 +45,9 @@ import org.apache.catalina.LifecycleException;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.v3.common.Result;
+import com.sun.enterprise.util.Result;
 import org.glassfish.api.container.EndpointRegistrationException;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import org.glassfish.api.container.RequestDispatcher;
 import com.sun.logging.LogDomains;
 
 import java.util.List;
@@ -63,12 +63,12 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     final WebContainer container;
     final WebModuleConfig wmInfo;
-    final GrizzlyService grizzlyAdapter;
+    final RequestDispatcher dispatcher;
 
-    public WebApplication(WebContainer container, WebModuleConfig config, GrizzlyService grizzlyAdapter) {
+    public WebApplication(WebContainer container, WebModuleConfig config, RequestDispatcher dispatcher) {
         this.container = container;
         this.wmInfo = config;
-        this.grizzlyAdapter = grizzlyAdapter;
+        this.dispatcher = dispatcher;
     }
 
 
@@ -107,7 +107,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                                 container.adapterMap.get(Integer.valueOf(port));
                             //@TODO change EndportRegistrationException processing if required
                             try {
-                                grizzlyAdapter.registerEndpoint(contextRoot,
+                                dispatcher.registerEndpoint(contextRoot,
                                     adapter.getPort(), c, adapter, this);
                             } catch(EndpointRegistrationException e) {
                                 logger.log(Level.WARNING,
@@ -164,7 +164,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                     // ToDo : dochez : not good, we unregister from everywhere...
                     //@TODO change EndportRegistrationException processing if required
                     try {
-                        grizzlyAdapter.unregisterEndpoint(ctxtRoot, this);
+                        dispatcher.unregisterEndpoint(ctxtRoot, this);
                     } catch (EndpointRegistrationException e) {
                         logger.log(Level.WARNING, "Error while undeploying", e);
                     }
@@ -219,7 +219,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     /**
      * Suspends this application on the specified virtual servers.
      *
-     * @param the virtual servers on which to suspend this application
+     * @param vsList the virtual servers on which to suspend this application
      */
     public boolean suspend(List<String> vsList) {
         return container.suspendWebModule(
@@ -236,7 +236,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     /**
      * Resumes this application on the specified virtual servers.
      *
-     * @param the virtual servers on which to suspend this application
+     * @param vsList the virtual servers on which to suspend this application
      */
     public boolean resume(List<String> vsList) {
         // WebContainer.loadWebModule(), which is called by start(), 

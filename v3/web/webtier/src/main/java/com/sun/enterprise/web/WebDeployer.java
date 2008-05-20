@@ -31,8 +31,6 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
@@ -41,6 +39,8 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -74,7 +74,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     ServerEnvironment env;
 
     @Inject
-    GrizzlyService grizzlyAdapter;
+    RequestDispatcher dispatcher;
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
@@ -217,7 +217,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
 
-        return new WebApplication(container, wmInfo, grizzlyAdapter);
+        return new WebApplication(container, wmInfo, dispatcher);
     }
 
     

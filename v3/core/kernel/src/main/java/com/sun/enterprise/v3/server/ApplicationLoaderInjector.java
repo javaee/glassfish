@@ -7,13 +7,12 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
-import com.sun.enterprise.v3.data.ContainerRegistry;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.hk2.component.SingletonInhabitant;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**

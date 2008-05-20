@@ -34,50 +34,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.data;
+package org.glassfish.internal.data;
 
-import com.sun.enterprise.v3.data.ContainerInfo;
-import org.glassfish.api.deployment.ApplicationContainer;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Information about a module in a container. There is a one to one mapping
- * from module to containers. Containers running a module are accessible
- * through the ApplicationContainer interface.
- *
- * @author Jerome Dochez
+ * Registry for deployed Applications
  */
-public class ModuleInfo<T> {
+@Service
+@Scoped(Singleton.class)
+public class ApplicationRegistry {
 
-    final private ContainerInfo ctrInfo;
-    private ApplicationContainer appCtr;
+    private Map<String, ApplicationInfo> apps = new HashMap<String, ApplicationInfo>();
 
-    public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr) {
-        this.ctrInfo = container;
-        this.appCtr = appCtr;
+    public synchronized void add(String name, ApplicationInfo info) {
+        apps.put(name, info);
+        for (ModuleInfo module : info.getModuleInfos()) {
+            module.getContainerInfo().add(info);    
+        }
     }
 
-    /**
-     * Returns the container associated with this application
-     *
-     * @return the container for this application
-     */
-    public ContainerInfo getContainerInfo() {
-        return ctrInfo;
+    public ApplicationInfo get(String name) {
+        return apps.get(name);
     }
 
-    /**
-     * Set the contaier associated with this application
-     * @param the container for this application
-     */
-    public void setApplicationContainer(ApplicationContainer appCtr) {
-        this.appCtr = appCtr;
+    public synchronized void remove(String name) {
+
+        ApplicationInfo oldApp = apps.remove(name);
+        for (ModuleInfo module : oldApp.getModuleInfos()) {
+            module.getContainerInfo().remove(name);
+        }
+
     }
 
-    /**
-     * Returns the contaier associated with this application
-     * @return the container for this application
-     */
-    public ApplicationContainer getApplicationContainer() {
-        return appCtr;
-    }    
 }

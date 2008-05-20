@@ -63,6 +63,7 @@ import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import com.sun.enterprise.web.accesslog.AccessLogFormatter;
 import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
@@ -74,7 +75,6 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 import com.sun.logging.LogDomains;

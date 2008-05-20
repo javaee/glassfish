@@ -23,7 +23,7 @@
 
 package org.glassfish.ejb.startup;
 
-import com.sun.enterprise.v3.deployment.GenericSniffer;
+import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.module.Module;
@@ -42,7 +42,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Habitat;
 
-import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import java.util.logging.Logger;

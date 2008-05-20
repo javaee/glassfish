@@ -31,11 +31,10 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ParameterNames;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ModuleInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -60,14 +59,12 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.jar.Manifest;
-import java.util.jar.JarFile;
 import java.util.jar.Attributes;
 
 /**

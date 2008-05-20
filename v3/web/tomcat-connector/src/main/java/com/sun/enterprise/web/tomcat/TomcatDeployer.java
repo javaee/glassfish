@@ -27,12 +27,11 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
@@ -41,6 +40,7 @@ import com.sun.grizzly.tcp.Adapter;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -72,7 +72,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     ServerEnvironment env;
 
     @Inject
-    GrizzlyService grizzlyAdapter;
+    RequestDispatcher dispatcher;
 
     
     private static final String ADMIN_VS = "__asadmin";
@@ -147,7 +147,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
                     Adapter adapter = container.adapterMap.get(Integer.valueOf(port));
                     //@TODO change EndportRegistrationException processing if required
                     try {
-                        grizzlyAdapter.registerEndpoint(ctxtRoot, c, adapter, webApplication);
+                        dispatcher.registerEndpoint(ctxtRoot, c, adapter, webApplication);
                     } catch (EndpointRegistrationException e) {
                         dc.getLogger().log(Level.WARNING, "Error while deploying", e);
                     }
@@ -168,7 +168,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
         }
         //@TODO change EndportRegistrationException processing if required
         try {
-            grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+            dispatcher.unregisterEndpoint(ctxtRoot, webApplication);
         } catch (EndpointRegistrationException e) {
             dc.getLogger().log(Level.WARNING, "Error while undeploying", e);
         }
@@ -207,7 +207,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
                     // ToDo : dochez : not good, we unregister from everywhere.
                     //@TODO change EndportRegistrationException processing if required
                     try {
-                        grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
+                        dispatcher.unregisterEndpoint(ctxtRoot, webApplication);
                     } catch (EndpointRegistrationException e) {
                         dc.getLogger().log(Level.WARNING, "Error while undeploying", e);
                     }

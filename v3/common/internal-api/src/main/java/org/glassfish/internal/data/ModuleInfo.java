@@ -34,32 +34,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.contract;
+package org.glassfish.internal.data;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeploymentContext;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-
-import java.io.File;
-import java.util.Properties;
+import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.api.deployment.ApplicationContainer;
 
 /**
- * Interface to define behaviour associated with storing meta data
- * pertinent to deployed applications. This meta data is used upon
- * server restart to reload previously deployed applications.
- *
- * It can also be used for any types of administrative tasks related
- * to deployed application like undeployement.
+ * Information about a module in a container. There is a one to one mapping
+ * from module to containers. Containers running a module are accessible
+ * through the ApplicationContainer interface.
  *
  * @author Jerome Dochez
- *
  */
-@Contract
-public interface ApplicationMetaDataPersistence {
+public class ModuleInfo<T> {
 
-    public void save(String name, Properties props);
+    final private ContainerInfo ctrInfo;
+    private ApplicationContainer appCtr;
 
-    public Properties load(String appName);
+    public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr) {
+        this.ctrInfo = container;
+        this.appCtr = appCtr;
+    }
 
+    /**
+     * Returns the container associated with this application
+     *
+     * @return the container for this application
+     */
+    public ContainerInfo getContainerInfo() {
+        return ctrInfo;
+    }
+
+    /**
+     * Set the contaier associated with this application
+     * @param the container for this application
+     */
+    public void setApplicationContainer(ApplicationContainer appCtr) {
+        this.appCtr = appCtr;
+    }
+
+    /**
+     * Returns the contaier associated with this application
+     * @return the container for this application
+     */
+    public ApplicationContainer getApplicationContainer() {
+        return appCtr;
+    }    
 }

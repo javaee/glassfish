@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.data;
+package org.glassfish.internal.data;
 
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;

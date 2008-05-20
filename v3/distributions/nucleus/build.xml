@@ -31,6 +31,12 @@ own identifying information: Portions Copyright [yyyy]
        </resolveAll>
 
        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
+        
+        <graphDef id="generate-picture">
+            <visualize file="modules.png">
+                <scope level="compile,runtime"/>
+            </visualize>
+        </graphDef>
 
        <zip file="target/nucleus.zip" basedir="target/stage">
            <zipgroupfileset file="${nucleus-base.zip}"/>

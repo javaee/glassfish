@@ -24,7 +24,7 @@
 package org.glassfish.persistence.jpa;
 
 
-import com.sun.enterprise.v3.deployment.GenericSniffer;
+import org.glassfish.internal.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;

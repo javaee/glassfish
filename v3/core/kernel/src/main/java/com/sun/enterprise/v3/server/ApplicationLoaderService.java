@@ -22,28 +22,18 @@
  */
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
-import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ContainerInfo;
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ContainerInfo;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
@@ -54,8 +44,6 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
