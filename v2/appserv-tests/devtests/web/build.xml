@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="298"/>
+    <property name="TOTAL_EXPECTED" value="299"/>
 
     &commonSetup;
     &commonBuild;
@@ -249,6 +249,7 @@
         <ant dir="webappAlternateDocroot" target="all"/>
         <ant dir="webappAlternateDocrootTagFile" target="all"/>
         <ant dir="virtualServerDefaultWebModule" target="all"/>
+        <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
         <!-- v3
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
