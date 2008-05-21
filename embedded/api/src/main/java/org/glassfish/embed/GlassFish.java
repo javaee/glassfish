@@ -381,6 +381,11 @@ public class GlassFish {
      *
      * @return
      *      always non-null. Represents the deployed application.
+     * @throws GFException
+     *      General error that represents a deployment failure.
+     * @throws IOException
+     *      If the given archive reports {@link IOException} from one of its methods,
+     *      that exception will be passed through.
      */
     public GFApplication deploy(File archive) throws IOException {
         start();
@@ -401,6 +406,27 @@ public class GlassFish {
         return deploy(a);
     }
 
+    /**
+     * Deploys a {@link ReadableArchive} to this GlassFish.
+     *
+     * <p>
+     * This overloaded version of the deploy method is for advanced users.
+     * It allows the caller to deploy an application in a non-standard layout.
+     *
+     * <p>
+     * The deployment uses the {@link ReadableArchive#getName() archive name}
+     * as the context path.
+     *
+     * @return
+     *      The object that represents a deployed application.
+     *      Never null.
+     *
+     * @throws GFException
+     *      General error that represents a deployment failure.
+     * @throws IOException
+     *      If the given archive reports {@link IOException} from one of its methods,
+     *      that exception will be passed through.
+     */
     public GFApplication deploy(ReadableArchive a) throws IOException {
         start();
 
