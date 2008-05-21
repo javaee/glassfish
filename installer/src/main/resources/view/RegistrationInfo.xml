@@ -82,6 +82,7 @@ import com.sun.enterprise.registration.*;
 import com.sun.enterprise.registration.RegistrationException;
 
 
+
  
  /* Validates the given SDN credentials and Register the product*/
     validateAccountAndRegister(String username, String passwd, String localRegistryPath, String proxyHost, int proxyPort)
@@ -143,7 +144,59 @@ import com.sun.enterprise.registration.RegistrationException;
         rs.register(soAccount);
 
     }
+      /** Code Reused/Copied from ExceptionUtil in "common"
+		Get the chain of exceptions via getCause(). The first element is the
+		Exception passed.
+		
+		@param start	the Exception to traverse
+		@return		a Throwable[] or an Exception[] as appropriate
+	 */
+	public static Throwable[]
+	getCauses(Throwable start)
+	{
 
+                ArrayList list = new ArrayList();
+	
+		boolean	haveNonException	= false;
+		
+		Throwable t	= start;
+		while ( t != null )
+		{
+			list.add( t );
+			
+			if ( ! ( t instanceof Exception ) )
+			{
+				haveNonException	= true;
+			}
+			
+			Throwable temp	= t.getCause();
+			if ( temp == null )
+				break;
+			t	= temp;
+		}
+		
+		Throwable[]	results	= haveNonException ?
+			new Throwable[ list.size() ] : new Exception[ list.size() ];
+		
+		list.toArray( results );
+		
+		return( results );
+	}
+	
+	
+	/**
+		Code Reused/Copied from ExceptionUtil in "common"
+		Get the original troublemaker.
+		@param e	the Exception to dig into
+		@return		the original Throwable that started the problem
+	 */
+	public static Throwable
+	getRootCause( Throwable e )
+	{
+		Throwable[]	causes	= getCauses( e );
+		
+		return( causes[ causes.length - 1 ] );
+	}
 
 run() {
   int regStatus = 0; // 0 = success, -1 = failure
@@ -158,8 +211,7 @@ run() {
      String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
      String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
 
-  wizard.enableNext(true);
-  wizard.setNextButtonText(Msg.get("next", null));
+  wizard.enableNext(false);
    if (regOption.equals("USE_EXISTINGACCT")) {
      String email = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERNAME");
      String password = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERPASSWORD");
@@ -182,8 +234,9 @@ run() {
       } 
       catch(Exception e)  {
 	  regStatus = -1;
+      Throwable rootException = getRootCause(e);
           JOptionPane.showMessageDialog(frame,
-		Msg.get("REGISTRATION_FAILURE", new String[] { e.getMessage() }),
+		rootException.getMessage(),
 		Msg.get("INSTALLATION_TITLE", null),
 	        JOptionPane.ERROR_MESSAGE);
      }
@@ -212,8 +265,9 @@ run() {
       } 
       catch(Exception e)  {
 	  regStatus = -1;
-          JOptionPane.showMessageDialog(frame,
-		Msg.get("REGISTRATION_FAILURE", new String[] { e.getMessage() }),
+ 	   Throwable rootException = getRootCause(e);
+           JOptionPane.showMessageDialog(frame,
+		rootException.getMessage(),
 		Msg.get("INSTALLATION_TITLE", null),
 	        JOptionPane.ERROR_MESSAGE);
      }
