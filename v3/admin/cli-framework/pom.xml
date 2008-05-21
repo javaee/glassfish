@@ -113,8 +113,8 @@
     <dependencies>
         <dependency>    
             <groupId>org.glassfish.common</groupId>
-            <artifactId>universal</artifactId>
-            <version>${project.parent.version}</version>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

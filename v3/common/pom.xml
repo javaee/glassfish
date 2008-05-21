@@ -61,6 +61,5 @@
         <module>dol</module>
         <module>container-common</module>
         <module>glassfish-naming</module>        
-        <module>universal</module>        
     </modules>
 </project>

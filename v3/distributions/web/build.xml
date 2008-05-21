@@ -126,7 +126,11 @@
 
         <graphDef id="generate-picture">
             <visualize file="modules.png">
-                <scope level="compile,runtime"/>
+                <scope level="compile,runtime">
+                            <excludeArtifactsTransitively>
+                                <artifact groupId="com.sun.enterprise" artifactId="hk2" />
+                            </excludeArtifactsTransitively>
+                </scope>
                 <subGraph color="red">
                     <graphRef refid="web-modules"/>
                 </subGraph>

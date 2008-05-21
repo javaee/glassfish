@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>universal</artifactId>
+            <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

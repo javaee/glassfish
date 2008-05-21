@@ -161,7 +161,7 @@
 
             <groupId>org.glassfish.common</groupId>
 
-            <artifactId>universal</artifactId>
+            <artifactId>common-util</artifactId>
 
             <version>${project.version}</version>
 
