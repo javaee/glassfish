@@ -8,9 +8,9 @@
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PRODUCT_NAME=GlassFish V3 Technology Preview 2
+PRODUCT_NAME=GlassFish v3 Technology Preview 2
 
-app_title=GlassFish V3 Technology Preview 2
+app_title=GlassFish v3 Technology Preview 2
 
 # Text for Buttons
 btnCancel_text=Cancel
@@ -46,7 +46,7 @@ title2_color=BLACK
 
 # Text for titles
 title1_text=Welcome to
-title2_text=GlassFish V3
+title2_text=GlassFish v3
 # Colors for content panel
 contentpanel_bordercolor=587993
 contentpanel_bgcolor=FFFFFF
@@ -60,7 +60,7 @@ button_font=Arial Narrow-PLAIN-11
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
             Welcome to the ${PRODUCT_NAME} installation.&lt;BR&gt;&lt;BR&gt;\
-            Select &quot;Next&quot; to install the entire ${PRODUCT_NAME} &lt;BR&gt;&lt;BR&gt;\
+            To install the entire ${PRODUCT_NAME}, click Next. &lt;BR&gt;&lt;BR&gt;\
                         &lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -337,44 +337,44 @@ As a special exception, the copyright holders of this library give you permissio
 License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
              Have you read, and do you accept, all of the terms of the preceding&lt;BR&gt;\
              Software License Agreement? If you click &lt;B&gt;Cancel&lt;/B&gt; the installer&lt;BR&gt;\
-             will exit without installing any product.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+             will exit without installing any product files.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
-LICENSE_CHECKBOX_TOOLTIP=Click to accept or reject the license
+LICENSE_CHECKBOX_TOOLTIP=Click to accept or reject the license.
 
 LICENSE_CHECKBOX_TEXT=I Accept
 
-LICENSE_ACCEPT_TOOLTIP=Click this if you accept the agreement
+LICENSE_ACCEPT_TOOLTIP=Select this option if you accept the agreement.
 
-LICENSE_ACCEPT_TEXT=I accept the terms in the license agreement
+LICENSE_ACCEPT_TEXT=I accept the terms in the license agreement.
 
-LICENSE_DECLINE_TOOLTIP=Click this if you do not accept the agreement
+LICENSE_DECLINE_TOOLTIP=Select this option if you do not accept the agreement.
 
-LICENSE_DECLINE_TEXT=I do not accept the terms in the license agreement
+LICENSE_DECLINE_TEXT=I do not accept the terms in the license agreement.
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #DEFAULT_INSTALL_HOME=C:\Program Files\Sun
 INSTALL_HOME_LABEL=Installation Directory
 INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-Specify the installation directory that will serve as the default install location \
-on the target system for the ${PRODUCT_NAME} product.&lt;BR&gt;\
+Specify the directory where ${PRODUCT_NAME} is to be installed \
+on the target system.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
-SPECIFY_HOME_MSG=Specify installation directory for installation.
+SPECIFY_HOME_MSG=Specify the installation directory.
 INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-If you specify a non-existent installation directory, this installation \
-program will automatically create it for you.\
+If the installation directory that you specify does not exist, the \
+installation program automatically creates the directory for you.\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~C O N F I G   M O D E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  L10N SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-Choose an option from the following.\
+Select an option from the following list:\
 &lt;/BODY&gt;&lt;/HTML&gt;
 L10N_CHOICE_TEXT=Install languages for the selected products.
-INSTALL_L10N_TOOLTIP=Select this to install languages for the selected products.
+INSTALL_L10N_TOOLTIP=Select this option to install languages for the selected products.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-Choose an option from the following.\
+Select an option from the following list:\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 
@@ -384,52 +384,50 @@ The selected JDK is \
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 JDK_FROM_MEDIA_CHOICE_TEXT=Install and use the default version of the Java(TM) SDK.
-JDK_FROM_LIST_CHOICE_TEXT=Choose a Java(TM) SDK from the list below.
-JDK_TYPED_IN_CHOICE_TEXT=Type in a Java(TM) SDK location below.
+JDK_FROM_LIST_CHOICE_TEXT=Select a Java(TM) SDK from the list.
+JDK_TYPED_IN_CHOICE_TEXT=Type the location of the Java(TM) SDK.
 
-JDK_LIST_TOOLTIP=Choose a Java(TM) SDK from the drop-down list.
-JDK_TYPE_IN_TOOLTIP=You can type a Java(TM) SDK location here.
+JDK_LIST_TOOLTIP=Select a Java(TM) SDK from the drop-down list.
+JDK_TYPE_IN_TOOLTIP=Type the location of a Java(TM) SDK in this text box.
 
 AVAILABLE_JDK=Available Java(TM) SDKs
-ALTERNATE_JDK=Alternate Java(TM) SDK location
+ALTERNATE_JDK=Alternate Java(TM) SDK Location
 
 UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-If connection is available, installer will attempt to download and configure update client for this \
-installation.&lt;BR&gt;\
+If a connection is available, the installer will attempt to download and configure the Update Tool \
+for this installation.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-Updatecenter client will periodically check for available updates and collect some \
-system data. For more information on data collection see \
-http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3\
+The Update Tool periodically checks for available updates and collects some \
+system data. For more information about the data that is collected, see the \
+&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; page.\
 &lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-Please configure the administration settings for the server.&lt;BR&gt;\
+Configure the administration settings for the server.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADD_BUTTON_LABEL=Add >
-ADD_ALL_BUTTON_LABEL=Add all >>
+ADD_ALL_BUTTON_LABEL=Add All >>
 REMOVE_BUTTON_LABEL=< Remove
 REMOVE_ALL_BUTTON_LABEL=<< Remove All
-PSP_INTRO_TEXT=Please select the products to install
+PSP_INTRO_TEXT=Select the products to install.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PAGE FLOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CONFIGURE_SELECT_MSG=Configures the selected software components with default/cu
-stom values.
+CONFIGURE_SELECT_MSG=Configures the selected software components with default or custom values.
 EXPRESS=Express
 CUSTOM=Custom
 SELECT_DESIRED_MODE_TEXT=&lt;HTML&gt;&lt;BODY&gt;
-            Select the desired mode of configuration.
+            Select the mode of configuration.
             &lt;/BODY&gt;&lt;/HTML&gt;
 CUSTOM_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Custom&lt;/B&gt; mode installs
  the  software  and configures it with the values
 that you specify in the configuration pages that follow.&lt;BR&gt;
           &lt;/BODY&gt;&lt;/HTML&gt;
-EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; mode instal
-ls the  software and configures it with the defaults.
-CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components with default/custom values.
+EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; mode installs the  software and configures it with default values.
+CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components with default or custom values.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -441,20 +439,20 @@ LASTNAME=Last Name
 COUNTRY=Country
 COMPANYNAME=Company Name
 ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}\
-Please enter the following information to create a Sun Online Account.  All fields except Company Name are required.\
+Provide the following information to create a Sun Online Account. All fields are required.\
 ${BODY_END}
 ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}\
-Click here to view &lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
+&lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
 ${BODY_END}
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 REGISTRATION_OPTIONS_HEADER=${BODY_START}\
-Why register ? Gain convenient access to\
+Why register? Gain convenient access to benefits such as:\
 &lt;UL&gt;\
-&lt;LI&gt;patch information and bug updates&lt;/LI&gt;\
-&lt;LI&gt;screencasts and tutorials,&lt;/LI&gt;\
-&lt;LI&gt;support and training offerings ... and more.&lt;/LI&gt;\
+&lt;LI&gt;Patch information and bug updates&lt;/LI&gt;\
+&lt;LI&gt;Screencasts and tutorials,&lt;/LI&gt;\
+&lt;LI&gt;Support and training offerings&lt;/LI&gt;\
 &lt;/UL&gt;\
 ${BODY_END}
 CREATE_NEWACCT=I don't have a Sun Online Account. Sign me up.
@@ -466,11 +464,11 @@ SKIP_REGISTRATION=Skip Registration.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME} : Upgrade Software&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME}: Upgrade Software&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 UPGRADE_ALLOW_TEXT=Upgrade
-UPGRADE_DECLINE_TEXT=Do not upgrade
-UPGRADE_ALLOW_TOOLTIP=Click this to upgrade software
-UPGRADE_DECLINE_TOOLTIP=Click this to not upgrade software
+UPGRADE_DECLINE_TEXT=Do Not Upgrade
+UPGRADE_ALLOW_TOOLTIP=Select this option to upgrade the software.
+UPGRADE_DECLINE_TOOLTIP=Select this option not to upgrade the software.
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # L10n: only translate the "Please wait" string.  leave the rest unchanged.
