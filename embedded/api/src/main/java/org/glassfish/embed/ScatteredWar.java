@@ -79,6 +79,9 @@ public class ScatteredWar implements ReadableArchive {
 
     /**
      *
+     * @param name
+     *      Application name. Among other things, this is used by default as the context path
+     *      when you deploy this scattered war file.
      * @param webXml
      *      if null, defaults to {@code WEB-INF/web.xml} under {@code resources}.
      */
