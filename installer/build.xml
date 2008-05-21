@@ -109,9 +109,20 @@
          <copy todir="${stage.dir}">
                <fileset dir="${resources.dir}/wrappers" excludes=".svn,wrapper.sh,engine-wrapper"/>               
          </copy>
-	 <copy todir="${stage.dir}/install/bin"
-		 file="${resources.dir}/wrappers/engine-wrapper">
-         </copy>
+
+         <echo message="Staging registration jar files"/>
+
+	 <copy tofile="${stage.dir}/registration-api.jar"
+             file="${maven.repo.local}/org/glassfish/registration/registration-api/10.0-tp-2-SNAPSHOT/registration-api-10.0-tp-2-SNAPSHOT.jar"/>
+
+	 <copy tofile="${stage.dir}/registration-impl.jar"
+		 file="${maven.repo.local}/org/glassfish/registration/registration-impl/10.0-tp-2-SNAPSHOT/registration-impl-10.0-tp-2-SNAPSHOT.jar"/>
+
+	 <copy tofile="${stage.dir}/sysnet-registration-repackaged.jar"
+		 file="${maven.repo.local}/org/glassfish/external/sysnet-registration-repackaged/10.0-tp-2-SNAPSHOT/sysnet-registration-repackaged-10.0-tp-2-SNAPSHOT.jar"/>
+
+	 <copy tofile="${stage.dir}/commons-codec-repackaged.jar"
+		 file="${maven.repo.local}/org/glassfish/external/commons-codec-repackaged/10.0-tp-2-SNAPSHOT/commons-codec-repackaged-10.0-tp-2-SNAPSHOT.jar"/>
 
          <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
 
@@ -164,14 +175,14 @@
 
          <zip destfile="${basedir}/target/installer_distro.zip"
              basedir="${stage.dir}" />
-         <copy tofile="${basedir}/target/setup-windows" file="${resources.dir}/wrappers/setup.exe"/>
+         <copy tofile="${basedir}/target/setup-windows" file="${resources.dir}/wrappers/setup.exe" overwrite="true"/>
          <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-windows">
             <fileset dir="${basedir}/target" includes="installer_distro.zip"/>
         </concat>
         <jar jarfile="${basedir}/target/installer_distro.jar"
             basedir="${stage.dir}">            
         </jar>
-        <copy tofile="${basedir}/target/setup-unix" file="${resources.dir}/wrappers/wrapper.sh"/>
+        <copy tofile="${basedir}/target/setup-unix" file="${resources.dir}/wrappers/wrapper.sh" overwrite="true"/>
         <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-unix">
            <fileset dir="${basedir}/target" includes="installer_distro.jar"/>
         </concat>
