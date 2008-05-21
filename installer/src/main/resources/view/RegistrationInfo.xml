@@ -151,19 +151,19 @@ run() {
    String regOption = (String)ConfigHelper.getValue(
 		"RegistrationOptions.regoptions.REGISTRATION_MODE");
 
- 
-  wizard.enableNext(true);
-  wizard.setNextButtonText(Msg.get("next", null));
-   if (regOption.equals("USE_EXISTINGACCT")) {
-     String email = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERNAME");
-     String password = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERPASSWORD");
-     String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
+    String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
      String regFilePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
 			File.separator + "registration" + File.separator + "servicetag-registry.xml";
 	
      String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
      String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
 
+  wizard.enableNext(true);
+  wizard.setNextButtonText(Msg.get("next", null));
+   if (regOption.equals("USE_EXISTINGACCT")) {
+     String email = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERNAME");
+     String password = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERPASSWORD");
+  
      int proxyPort;
      if (proxyPortString.trim() == null || proxyPortString.length() == 0)
 		proxyPort = 0;
@@ -195,9 +195,14 @@ run() {
       String lastName = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.LASTNAME");
       String company = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COMPANYNAME");
       String country = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COUNTRY");
+     int proxyPort;
+     if (proxyPortString.trim() == null || proxyPortString.length() == 0)
+		proxyPort = 0;
+     else
+     		proxyPort = Integer.parseInt(proxyPortString.trim());
       try  {
 
-	// validate and register
+	// create and register
 	createSDNAccount(email, password, country, firstName, lastName, company,regFilePath,proxyHost, proxyPort);
 
         JOptionPane.showMessageDialog(frame,
