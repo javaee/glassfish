@@ -201,18 +201,19 @@ import com.sun.enterprise.registration.RegistrationException;
 run() {
   int regStatus = 0; // 0 = success, -1 = failure
 
-   String regOption = (String)ConfigHelper.getValue(
+     String regOption = (String)ConfigHelper.getValue(
 		"RegistrationOptions.regoptions.REGISTRATION_MODE");
 
-    String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
+     String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
      String regFilePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
 			File.separator + "registration" + File.separator + "servicetag-registry.xml";
+
+    wizard.enableNext(false);
+   if (regOption.equals("USE_EXISTINGACCT")) {
 	
      String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
      String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
 
-  wizard.enableNext(false);
-   if (regOption.equals("USE_EXISTINGACCT")) {
      String email = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERNAME");
      String password = (String)ConfigHelper.getValue("RegistrationOptions.regoptions.USERPASSWORD");
   
@@ -248,6 +249,10 @@ run() {
       String lastName = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.LASTNAME");
       String company = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COMPANYNAME");
       String country = (String)ConfigHelper.getValue("SOAccountCreation.accountinfo.COUNTRY");
+	
+     String proxyHost = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_HOST");
+     String proxyPortString = (String)ConfigHelper.getValue("updatetool.Configuration.PROXY_PORT");
+
      int proxyPort;
      if (proxyPortString.trim() == null || proxyPortString.length() == 0)
 		proxyPort = 0;
@@ -274,6 +279,7 @@ run() {
     }
 
     if (regOption.equals("SKIP_REGISTRATION") || (regStatus == 0))  {
+        wizard.enableNext(true);
         wizard.clickNext();
     } else  {
         wizard.enableBack(true);
