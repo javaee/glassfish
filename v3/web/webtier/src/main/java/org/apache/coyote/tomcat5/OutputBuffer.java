@@ -717,7 +717,12 @@ public class OutputBuffer extends Writer
         Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME,
                                    sess.getIdInternal() + "." +
                                    ctx.getJvmRoute());
-        cookie.setPath(ctx.getName());
+        String ctxName = ctx.getName();
+        if (ctxName != null && ctxName.length() > 0) {
+            cookie.setPath(ctxName);
+        } else {
+            cookie.setPath("/");
+        }
         response.addHeader(SET_COOKIE_HEADER,
                            coyoteResponse.getCookieString(cookie));
     }
