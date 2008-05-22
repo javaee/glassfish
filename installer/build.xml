@@ -118,10 +118,10 @@
 	 <copy tofile="${stage.dir}/registration-impl.jar"
 		 file="${maven.repo.local}/org/glassfish/registration/registration-impl/10.0-tp-2-SNAPSHOT/registration-impl-10.0-tp-2-SNAPSHOT.jar"/>
 
-	 <copy tofile="${stage.dir}/sysnet-registration-repackaged.jar"
+	 <copy tofile="${stage.dir}/sysnet-registration.jar"
 		 file="${maven.repo.local}/org/glassfish/external/sysnet-registration-repackaged/10.0-tp-2-SNAPSHOT/sysnet-registration-repackaged-10.0-tp-2-SNAPSHOT.jar"/>
 
-	 <copy tofile="${stage.dir}/commons-codec-repackaged.jar"
+	 <copy tofile="${stage.dir}/commons-codec-1.3.jar"
 		 file="${maven.repo.local}/org/glassfish/external/commons-codec-repackaged/10.0-tp-2-SNAPSHOT/commons-codec-repackaged-10.0-tp-2-SNAPSHOT.jar"/>
 
          <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
