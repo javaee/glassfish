@@ -38,6 +38,8 @@ package org.jvnet.hk2.config;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -204,17 +206,21 @@ public final class Transactions {
                             e.printStackTrace();
                         }
                     }
-                    
+
+                    Set<ConfigListener> notifiedListeners = new HashSet<ConfigListener>();
                     for ( final PropertyChangeEvent evt : events) {
                         final Dom dom = (Dom)((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
                         if (dom.getListeners() != null) {
                             for ( final ConfigListener listener : dom.getListeners()) {
-                                try {
-                                    // create a new array each time to avoid any potential array changes?
-                                    listener.changed(events.toArray(new PropertyChangeEvent[events.size()]));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                if (!notifiedListeners.contains(listener)) {
+                                    try {
+                                        // create a new array each time to avoid any potential array changes?
+                                        listener.changed(events.toArray(new PropertyChangeEvent[events.size()]));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                                notifiedListeners.add(listener);
                             }
                         }
                     }
