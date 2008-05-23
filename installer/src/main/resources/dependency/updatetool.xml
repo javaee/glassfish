@@ -86,10 +86,13 @@
       <Realization version="0.5.0.0">
         <OS>
           <Type>windows</Type>
-          <Name>Windows XP</Name>
+         <Name>Windows XP</Name>
+          <OtherName>Windows 2000</OtherName>
+          <OtherName>Windows 2003</OtherName>
           <OtherName>UNDEFINED</OtherName>
           <Arch>i386</Arch>
-          <OtherArch>x86_64</OtherArch>
+	  <OtherArch>x86_64</OtherArch>
+	  <OtherArch>UNDEFINED</OtherArch>
 
           <VersionCertified><VersionBaseline>5.1</VersionBaseline></VersionCertified>
           <RequirementsRealization>

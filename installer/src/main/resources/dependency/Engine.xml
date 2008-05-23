@@ -76,7 +76,8 @@
           <OtherName>Windows 2003</OtherName>
           <OtherName>UNDEFINED</OtherName>
           <Arch>i386</Arch>
-          <OtherArch>x86_64</OtherArch>
+	  <OtherArch>x86_64</OtherArch>
+	  <OtherArch>UNDEFINED</OtherArch>
           <VersionCertified>
             <VersionBaseline>5.1</VersionBaseline>
           </VersionCertified>
