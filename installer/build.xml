@@ -30,9 +30,9 @@
 
     <target name="extract.oi"  description="Extracting openInstaller files">
         <mkdir dir="${stage.dir}"/>
-	<unzip src="${maven.repo.local}/org/openinstaller/engine/0.9.4/engine-0.9.4.zip"
+	<unzip src="${maven.repo.local}/org/openinstaller/engine/0.9.4.1/engine-0.9.4.1.zip"
             dest="${stage.dir}"/>
-        <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"
+        <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4.1/resources-0.9.4.1.zip"
             dest="${stage.dir}"/>
 
 	<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
@@ -44,7 +44,7 @@
 
     <target name="extract.uc"  description="Extracting UC bootstrap files">
         <mkdir dir="${uc.stage.dir}"/>
-	<unzip src="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.4/ucbootstrap-0.0.0.4.zip" 
+	<unzip src="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.5/ucbootstrap-0.0.0.5.zip" 
             dest="${uc.stage.dir}"/>
     </target>
 
@@ -136,10 +136,10 @@
          <echo message="Copying openInstaller zip files"/>
  
          <copy tofile="${stage.dir}/Product/Packages/Engine.zip"
-               file="${maven.repo.local}/org/openinstaller/engine/0.9.4/engine-0.9.4.zip"/>
+               file="${maven.repo.local}/org/openinstaller/engine/0.9.4.1/engine-0.9.4.1.zip"/>
 
          <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
-               file="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"/>
+               file="${maven.repo.local}/org/openinstaller/resources/0.9.4.1/resources-0.9.4.1.zip"/>
                
          <echo message="Creating icons zip file"/>
 
