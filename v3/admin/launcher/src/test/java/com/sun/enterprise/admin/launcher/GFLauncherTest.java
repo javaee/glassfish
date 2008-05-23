@@ -97,14 +97,17 @@ public class GFLauncherTest {
         launcher.launch();
     }
     /**
-     * Let's fake-launch domain1
+     * Let's fake-launch domain1  -- which DOES have the jvm logging args
      */
     @Test
     public void test2() throws GFLauncherException {
         info.setDomainName("domain1");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
-
+        
+        assertTrue(cmdline.contains("-XX:+UnlockDiagnosticVMOptions"));
+        // 0 --> java, 1 --> "-cp" 2 --> the classpath, 3 -->first arg
+        assertEquals(cmdline.get(3), "-XX:+UnlockDiagnosticVMOptions");
         /* Too noisy, todo figure out how to get it into the test report
         System.out.println("COMMANDLINE:");
         for(String s : cmdline) {
@@ -113,13 +116,14 @@ public class GFLauncherTest {
          */
     }
     /**
-     * Let's fake-launch domain2
+     * Let's fake-launch domain2 -- which does NOT have the jvm logging args
      */
     @Test
     public void test3() throws GFLauncherException {
         info.setDomainName("domain2");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
+        assertFalse(cmdline.contains("-XX:+UnlockDiagnosticVMOptions"));
 
         /*
         System.out.println("COMMANDLINE:");

@@ -160,16 +160,19 @@ class JvmOptions {
         xxProps.put(nv.name, nv.value);
     }
 
-    void addJvmLogging() {
+    @Deprecated
+     void addJvmLogging() {
         xxProps.put(":+UnlockDiagnosticVMOptions", null);
         xxProps.put(":+LogVMOutput", null);
         xxProps.put(":LogFile", "${com.sun.aas.instanceRoot}/logs/jvm.log");
     }
+    @Deprecated
     void removeJvmLogging() {
         xxProps.remove(":+UnlockDiagnosticVMOptions");
         xxProps.remove(":+LogVMOutput");
         xxProps.remove(":LogFile");
     }
+
     private void postProcessOrdering(List<String> ss) {
         /*
          * (1)

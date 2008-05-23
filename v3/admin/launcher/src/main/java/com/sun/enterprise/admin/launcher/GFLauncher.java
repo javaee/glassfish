@@ -213,7 +213,10 @@ public abstract class GFLauncher {
         logFilename = parser.getLogFilename();
         
         // TODO temporary until we define a domain.xml attribute for setting this
-        jvmOptions.addJvmLogging();
+        // I'm pulling this out and putting the options into the default domain.xml
+        // There are problems when you use a non-Sun JVM -- like the JVM won't start!
+        // The user needs to be able to see & delete these args from domain.xml
+        //jvmOptions.addJvmLogging();
         
         
         resolveAllTokens();
