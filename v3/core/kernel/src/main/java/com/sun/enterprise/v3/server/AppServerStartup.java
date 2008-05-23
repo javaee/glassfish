@@ -31,6 +31,10 @@ import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.api.event.EventFactory;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.EventType;
+
 import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -39,6 +43,9 @@ import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,7 +74,10 @@ public class AppServerStartup implements ModuleStartup {
     public void setStartupContext(StartupContext context) {
         this.context = context;
     }
-    
+
+    @Inject
+    ExecutorService executor;
+
     public void run() {
 
         logger.fine("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
@@ -90,7 +100,7 @@ public class AppServerStartup implements ModuleStartup {
         logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
 
         // run the startup services
-        Thread t = new Thread(new Runnable() {
+        Future<?> result = executor.submit(new Runnable() {
             public void run() {
                 for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
                     if (i.type().getAnnotation(Async.class)!=null) {
@@ -99,8 +109,7 @@ public class AppServerStartup implements ModuleStartup {
                     }
                 }
             }
-        }, "AppServerStartup");
-        t.start();        
+        });
 
         for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
             if (i.type().getAnnotation(Async.class)==null) {
@@ -119,10 +128,11 @@ public class AppServerStartup implements ModuleStartup {
 
         // wait for async services
         try {
-            t.join(1000);
-        } catch (InterruptedException e) {
+            result.get(1000, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
             // do nothing, we are probably shutting down
         }
+
         // now that we are all done with loading, I can accept administrative commands.
         AdminAdapter admin = habitat.getComponent(AdminAdapter.class);
         if(admin!=null)
