@@ -278,7 +278,7 @@ run() {
      }
     }
 
-    if (regOption.equals("SKIP_REGISTRATION") || (regStatus == 0))  {
+    if (regStatus == 0)  {
         wizard.enableNext(true);
         wizard.clickNext();
     } else  {
