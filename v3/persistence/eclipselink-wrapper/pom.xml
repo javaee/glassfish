@@ -60,7 +60,7 @@
                              artifactId=eclipselink.*
                         -->
                         <Embed-Dependency>
-                            *;groupId=org.eclipse.persistence;artifactId=eclipselink.*;inline=true
+                            *;groupId=org.eclipse.persistence;artifactId=org.eclipse.persistence.*;inline=true
                         </Embed-Dependency>
                         <!-- There are some spurious split-package WARNINGs.
                              I don't think there are any split packages. 
@@ -141,21 +141,33 @@
         -->
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
-          <artifactId>eclipselink.core</artifactId>
-          <version>1.0-M6.1</version>
-          <optional>true</optional>
+          <artifactId>org.eclipse.persistence.core</artifactId>
+          <version>1.0-M7</version>
+          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
-          <artifactId>eclipselink.jpa</artifactId>
-          <version>1.0-M6.1</version>
-          <optional>true</optional>
+          <artifactId>org.eclipse.persistence.jpa</artifactId>
+          <version>1.0-M7</version>
+          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
-          <artifactId>eclipselink.extension.oracle</artifactId>
-          <version>1.0-M6.1</version>
-          <optional>true</optional>
+          <artifactId>org.eclipse.persistence.oracle</artifactId>
+          <version>1.0-M7</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>org.eclipse.persistence.antlr</artifactId>
+          <version>1.0-M7</version>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>org.eclipse.persistence.asm</artifactId>
+          <version>1.0-M7</version>
+          <scope>compile</scope>
         </dependency>
     </dependencies>
   <repositories>
