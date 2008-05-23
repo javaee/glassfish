@@ -58,7 +58,7 @@
               apt:type="xs:boolean">
             <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:checkBox apt:labelPost="Install Update Client" apt:toolTip="Requires Online Installation" />
+                <apt:checkBox apt:labelPost="Install Update Tool" apt:toolTip="Requires Online Installation" />
             </apt:visual>
            </apt:property>
           <apt:property apt:name="PROXY_HOST"
@@ -91,7 +91,7 @@
               apt:type="xs:boolean">
             <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:checkBox apt:labelPost="Enable Updatecenter Client" apt:toolTip="" />
+                <apt:checkBox apt:labelPost="Enable Update Tool" apt:toolTip="" />
             </apt:visual>
            </apt:property>                   
         </apt:section>        

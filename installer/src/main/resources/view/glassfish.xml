@@ -53,7 +53,7 @@
          </apt:visual>
         </apt:property> 
           <apt:property apt:name="A_ADMIN_PORT"
-              apt:label="Admin Port"
+              apt:label="Administration Port"
               apt:dataPath="Administration.A_ADMIN_PORT"
               apt:type="xs:int">
             <apt:visual>
