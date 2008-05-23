@@ -40,33 +40,12 @@ import java.util.Iterator;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.WebService;
-import com.sun.enterprise.deployment.ContainerTransaction;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.RoleReference;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.QueryDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.InjectionCapable;
-import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
+import com.sun.enterprise.deployment.web.UserDataConstraint;
+import org.glassfish.deployment.common.DeploymentException;
 
 /**
  * Default implementation of all the DOL visitor interface for convenience

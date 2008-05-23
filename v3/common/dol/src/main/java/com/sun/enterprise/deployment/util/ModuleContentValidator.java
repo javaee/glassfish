@@ -36,16 +36,21 @@
 
 package com.sun.enterprise.deployment.util;
 
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.WebService;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
+import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Allows validation of module content that might involve actually
@@ -139,7 +144,7 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
 
     public void accept(WebService webService) {
         
-        try {
+        /*try {
             
             String wsdlFileUri = webService.getWsdlFileUri();
             if (!webService.hasWsdlFile()) {
@@ -186,8 +191,39 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                     DOLUtils.getDefaultLogger().severe(msg);
                     throw new RuntimeException(msg);           
                 }
-            } 
-        } catch(IOException ioe) {
+            }*/
+            //TODO BM connect with ModuleContentLinkers accept
+            try {
+                 if("1.1".compareTo(webService.getWebServicesDescriptor().getSpecVersion())<0) {
+
+                    Collection<WebServiceEndpoint> endpoints = webService.getEndpoints();
+                    for(WebServiceEndpoint ep : endpoints) {
+                        if( ep.implementedByWebComponent() ) {
+                            updateServletEndpointRuntime(ep);
+                        } else {
+                            //TODO BM this is the case where this is an ejb endpoint
+                            //should not reach here
+                            String msg = localStrings.getLocalString("enterprise.deployment.unexpectedEJBEndpoint",
+                                    "Unexpected EJB endpoint{0}",new Object []{ep.getEndpointName()});
+                            throw new DeploymentException(msg);
+                            //wsUtil.validateEjbEndpoint(ep);
+                        }
+                    }
+
+                 } else {
+                     String msg = localStrings.getLocalString("enterprise.deployment.unexpectedJAXRPCEndpoint",
+                             "Unexpected JAXRPC endpoint , this version is not supported",
+                             new Object[] { webService.getWebServicesDescriptor().getSpecVersion()});
+                     throw new DeploymentException(msg);
+
+                }
+            } catch(Exception e) {
+                RuntimeException ge =new RuntimeException(e.getMessage());
+                ge.initCause(e);
+                throw ge;
+            }
+
+       /* } catch(IOException ioe) {
                     String msg = localStrings.getLocalString(
 		    	   "enterprise.deployment.util.servicewsdlfilenotreadable",
                            "wsdl file {0}  for service-ref {1} cannot be opened : {2}",
@@ -223,8 +259,75 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                            new Object[] {webService.getMappingFileUri(), webService.getName(), ioe});
                     DOLUtils.getDefaultLogger().severe(msg);
                     throw new RuntimeException(ioe);                
-        }
+        }*/
     }
+
+    public void updateServletEndpointRuntime(WebServiceEndpoint endpoint) {
+
+            // Copy the value of the servlet impl bean class into
+            // the runtime information.  This way, we'll still
+            // remember it after the servlet-class element has been
+            // replaced with the name of the container's servlet class.
+            endpoint.saveServletImplClass();
+
+            WebComponentDescriptor webComp =
+                (WebComponentDescriptor) endpoint.getWebComponentImpl();
+
+            WebBundleDescriptor bundle = webComp.getWebBundleDescriptor();
+            WebServicesDescriptor webServices = bundle.getWebServices();
+            Collection endpoints =
+                webServices.getEndpointsImplementedBy(webComp);
+
+            if( endpoints.size() > 1 ) {
+                String msg = "Servlet " + endpoint.getWebComponentLink() +
+                    " implements " + endpoints.size() + " web service endpoints " +
+                    " but must only implement 1";
+                throw new IllegalStateException(msg);
+            }
+
+            if( endpoint.getEndpointAddressUri() == null ) {
+                Set urlPatterns = webComp.getUrlPatternsSet();
+                if( urlPatterns.size() == 1 ) {
+
+                    // Set endpoint-address-uri runtime info to uri.
+                    // Final endpoint address will still be relative to context root
+                    String uri = (String) urlPatterns.iterator().next();
+                    endpoint.setEndpointAddressUri(uri);
+
+                    // Set transport guarantee in runtime info if transport
+                    // guarantee is INTEGRAL or CONDIFIDENTIAL for any
+                    // security constraint with this url-pattern.
+                    Collection constraints =
+                        bundle.getSecurityConstraintsForUrlPattern(uri);
+                    for(Iterator i = constraints.iterator(); i.hasNext();) {
+                        SecurityConstraint next = (SecurityConstraint) i.next();
+
+                        UserDataConstraint dataConstraint =
+                            next.getUserDataConstraint();
+                        String guarantee = (dataConstraint != null) ?
+                            dataConstraint.getTransportGuarantee() : null;
+
+                        if( (guarantee != null) &&
+                            ( guarantee.equals
+                              (UserDataConstraint.INTEGRAL_TRANSPORT) ||
+                              guarantee.equals
+                              (UserDataConstraint.CONFIDENTIAL_TRANSPORT) ) ) {
+                            endpoint.setTransportGuarantee(guarantee);
+                            break;
+                        }
+                    }
+                } else {
+                    String msg = localStrings.getLocalString(
+		    	   "enterprise.deployment.unassignedaddress",
+                           "Endpoint {0} has not been assigned an endpoint address\\n " +
+                           "and is associated with servlet {1} , which has  {2} urlPatterns",
+                           new Object[] {endpoint.getEndpointName(), webComp.getCanonicalName(), urlPatterns.size()});
+                    DOLUtils.getDefaultLogger().severe(msg);
+                    throw new IllegalStateException(msg);
+                }
+            }
+        }
+    
 
     /**
      * All wsdl files and wsdl imported files live under a well-known
