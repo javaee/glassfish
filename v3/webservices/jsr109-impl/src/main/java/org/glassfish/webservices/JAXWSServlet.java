@@ -52,9 +52,11 @@ import java.util.logging.Level;
 import java.util.Collection;
 
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
+import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.jvnet.hk2.annotations.Inject;
+import org.apache.catalina.Loader;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.xml.ws.api.server.SDDocumentSource;
@@ -127,11 +129,11 @@ public class JAXWSServlet extends HttpServlet {
         }*/
     }
 
-    /*protected void doPost1(HttpServletRequest request,
+    protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
         throws ServletException {
 
-       *//* if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
+       /* if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
              (!(HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding())))) {
             Endpoint endpt = wsEngine_.getEndpoint(request.getServletPath());
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
@@ -139,7 +141,7 @@ public class JAXWSServlet extends HttpServlet {
                         endpt.getDescriptor());
                 return;
             }
-        }        *//*
+        }        */
         
         // lookup registered URLs and get the appropriate adapter;
         // pass control to the adapter
@@ -156,15 +158,10 @@ public class JAXWSServlet extends HttpServlet {
             throw se;
         } 
     }
-    */
-     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-        throws ServletException, IOException {
-        
-     }
 
 
-   /* protected void doGet1(HttpServletRequest request,
+
+    protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
         throws ServletException, IOException {
         if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
@@ -176,7 +173,7 @@ public class JAXWSServlet extends HttpServlet {
                 endpoint.hasSecurePipeline())) {
                 String message = endpt.getDescriptor().getWebService().getName() +
                     "is a secured web service; Tester feature is not supported for secured services";
-                (new WsUtil()).writeInvalidMethodType(response, message);                
+                //TODOBM fixnew WsUtil()).writeInvalidMethodType(response, message);
                 return;
             }
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
@@ -185,19 +182,22 @@ public class JAXWSServlet extends HttpServlet {
                     endpt.getDescriptor().getBundleDescriptor().setClassLoader(loader.getClassLoader());
                     endpt.getDescriptor().getBundleDescriptor().removeExtraAttribute("WEBLOADER");
                 }
-                WebServiceTesterServlet.invoke(request, response,
+                //TODO BM fixe me
+                /*WebServiceTesterServlet.invoke(request, response,
                         endpt.getDescriptor());
+                        */
                 return;
             }
         }
         
         // If it is not a "Tester request" and it is not a WSDL request,
         // this might be a restful service
-        if (!("WSDL".equalsIgnoreCase(request.getQueryString())) && 
+       /* TODO BM fix me
+       if (!("WSDL".equalsIgnoreCase(request.getQueryString())) &&
               (HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding()))) {
             doPost(request, response);
             return;
-        }
+        }*/
         
         // normal WSDL retrieval invocation
         try {
@@ -207,14 +207,14 @@ public class JAXWSServlet extends HttpServlet {
             } else {
                 String message = 
                 "Invalid wsdl request " +  request.getRequestURL();
-                (new WsUtil()).writeInvalidMethodType(response, message);
+                //(new WsUtil()).writeInvalidMethodType(response, message);
             }
         } catch(Throwable t) {
             ServletException se = new ServletException();
             se.initCause(t);
             throw se;
         } 
-    }*/
+    }
 
     private void doInit(ServletConfig servletConfig) throws ServletException {
         String servletName = "unknown";
@@ -341,7 +341,7 @@ public class JAXWSServlet extends HttpServlet {
             }
 
             // Create Binding and set service side handlers on this binding
-      /*      boolean mtomEnabled = wsu.getMtom(endpoint);
+          boolean mtomEnabled = wsu.getMtom(endpoint);
             WSBinding binding = null;
             // Only if MTOm is enabled create the Binding with the MTOMFeature
             if (mtomEnabled) {
@@ -402,7 +402,7 @@ public class JAXWSServlet extends HttpServlet {
             }
 
             registerEndpointUrlPattern(adapter);
-       */
+       
             
         }
 

@@ -36,19 +36,33 @@
 package org.glassfish.webservices;
 
 import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.WebServiceHandlerChain;
+import com.sun.enterprise.deployment.WebServiceHandler;
+import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import javax.xml.parsers.*;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.namespace.QName;
+
 import org.w3c.dom.*;
 import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -66,7 +80,7 @@ public class WsUtil {
       "com.sun.enterprise.webservice.client.transport.log";
 
     // xslt processing parameters for final wsdl transformation
-    public static final String ENDPOINT_ADDRESS_PARAM_NAME = 
+   /* public static final String ENDPOINT_ADDRESS_PARAM_NAME =
         "endpointAddressParam";
 
     public final String WSDL_IMPORT_NAMESPACE_PARAM_NAME = 
@@ -81,7 +95,7 @@ public class WsUtil {
     public static final String SCHEMA_IMPORT_LOCATION_PARAM_NAME = 
         "schemaImportLocationParam";    
     public static final String SCHEMA_INCLUDE_LOCATION_PARAM_NAME = 
-        "schemaIncludeLocationParam";    
+        "schemaIncludeLocationParam";    */
 
     // @@@ These are jaxrpc-implementation specific MessageContextProperties 
     // that should be added to jaxrpc spi
@@ -2173,16 +2187,16 @@ public class WsUtil {
         return Wrapper._generate(loader, null, props);
 
     }
-
-    *//*
+    */
+    /*
      * Calls @PostConstruct method in the implementor
-     *//*
+     */
     public void doPostConstruct(Class impl, Object implObj) {
         invokeServiceMethod(javax.annotation.PostConstruct.class, impl,
                 implObj);
     }
     
-    *//*
+    /*
      * Calls @PreDestroy method in the implementor
      *//*
     public void doPreDestroy(WebServiceEndpoint ep, ClassLoader loader) {
@@ -2220,9 +2234,10 @@ public class WsUtil {
         }        
     }
 
-    *//*
+    */
+    /*
      * Calls the PostConstruct / PreDestroy method
-     *//*
+     */
     private void invokeServiceMethod(Class annType, Class impl, final Object implObj) {
         Method[] methods = impl.getDeclaredMethods();
         // Only one method can have @PostConstruct / @PreDestroy
@@ -2232,7 +2247,7 @@ public class WsUtil {
                 try {
                     AccessController.doPrivileged(new PrivilegedExceptionAction() {
                         public Object run() throws IllegalAccessException,
-                        InvocationTargetException {
+                                InvocationTargetException {
                             if (!method.isAccessible()) {
                                 method.setAccessible(true);
                             }
@@ -2248,7 +2263,7 @@ public class WsUtil {
                 break;
             } 
         }
-    }    
+    }
     
     private boolean matchQNamePatterns(QName cfgQName, QName givenPattern) {
         if (givenPattern.getNamespaceURI().equals(cfgQName.getNamespaceURI())) {
@@ -2310,7 +2325,7 @@ public class WsUtil {
         }
         return true;
     }
-
+     
     private List<Handler> processConfiguredHandlers(List<WebServiceHandler> handlersList, Set<String> roles) {
         List<Handler> handlerChain = new ArrayList<Handler>();
         for(WebServiceHandler h : handlersList) {
@@ -2331,7 +2346,8 @@ public class WsUtil {
             
             // perform injection
             try {
-                new InjectionManagerImpl().injectInstance(handler);            
+                //TODO BM this should be@Inject with InjectionManager
+                new InjectionManagerImpl().injectInstance(handler);
             } catch(InjectionException e) {
                 logger.severe("Handler " + h.getHandlerClass() + 
                             " instance injection failed : " + e.getMessage());
@@ -2349,7 +2365,7 @@ public class WsUtil {
             handlerChain.add(handler);
         }
         return handlerChain;
-    }
+    }            
     
     public void configureJAXWSServiceHandlers(WebServiceEndpoint ep, 
             String bindingId, WSBinding bindingObj) {
@@ -2361,7 +2377,7 @@ public class WsUtil {
         List<Handler> finalHandlerList = new ArrayList<Handler>();
         Set<String> roles = new HashSet();
         for(Iterator<WebServiceHandlerChain> i = handlerChainList.iterator(); i.hasNext();) {
-            WebServiceHandlerChain hc = i.next();            
+            WebServiceHandlerChain hc = i.next();
             // Apply the serviceName / portName / bindings filter to ensure
             // that the handlers are for this endpoint
             if(!patternsMatch(hc, ep.getServiceName(), ep.getWsdlPort(), bindingId)) {
@@ -2380,7 +2396,7 @@ public class WsUtil {
             ((javax.xml.ws.soap.SOAPBinding)bindingObj).setRoles(roles);
         }        
     }
-    
+     /*
     public void configureJAXWSClientHandlers(javax.xml.ws.Service svcClass, ServiceReferenceDescriptor desc) {
 
         // Create a resolver and get all ports for the Service
@@ -2465,9 +2481,9 @@ public class WsUtil {
         svcClass.setHandlerResolver(resolver);
         
         //XXX TODO : What to do with soap roles on client side ?
-    }
+    }*/
 
-    *//* This util is to implement the jaxws table that defines how MTOM is set
+    /* This util is to implement the jaxws table that defines how MTOM is set
     *  
     *   BindingType                        -  enable-mtom in DD  - final MTOM value
     *
@@ -2477,7 +2493,7 @@ public class WsUtil {
     *   SOAPXX_MTOM_BINDING               none                         true
     *   SOAPXX_MTOM_BINDING               false                         false
     *   SOAPXX_MTOM_BINDING               true                          true
-    *//*
+    */
     public boolean getMtom(WebServiceEndpoint ep) {
         String currentBinding = ep.getProtocolBinding();
         if((ep.getMtomEnabled() == null) &&
@@ -2495,7 +2511,7 @@ public class WsUtil {
         return false;
     }
     
-    // Used by the message layer security subsystem to get an efficient
+   /* // Used by the message layer security subsystem to get an efficient
     // representation of the contained message from the SOAPMessageContext. 
     // when called by jaxrpc Hander or SystemHandlerDelegate
     public static SOAPMessage getMessage

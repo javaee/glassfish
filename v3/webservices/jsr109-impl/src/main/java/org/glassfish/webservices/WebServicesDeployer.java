@@ -803,6 +803,11 @@ public class WebServicesDeployer extends WebDeployer {
             webComp.setWebComponentImplementation(containerServlet);
 
             //Ommitting the part of generating the wsdl for now
+            //I think we need that to set the endpointAddressURL of WebServiceEndpoint
+          /*  logger.log(Level.INFO,
+                                 "enterprise.deployment.endpoint.registration",
+                       new Object[] { nextEndpoint,
+                               nextEndpoint.getEndpointName(), actualAddress });*/
             
 
         }
