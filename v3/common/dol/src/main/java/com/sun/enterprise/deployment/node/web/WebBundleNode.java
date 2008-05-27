@@ -375,10 +375,10 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
         // listener*
         Vector appListeners = webBundleDesc.getAppListenerDescriptors();
         if (appListeners!=null && !appListeners.isEmpty()) {
+            ListenerNode listenerNode = new ListenerNode();
             for (Enumeration e = appListeners.elements();e.hasMoreElements();) {
-                AppListenerDescriptorImpl listener = (AppListenerDescriptorImpl) e.nextElement();
-                Node listenerNode = appendChild(jarNode, WebTagNames.LISTENER);
-                appendTextChild(listenerNode, WebTagNames.LISTENER_CLASS, listener.getListener());
+                listenerNode.writeDescriptor(jarNode, WebTagNames.LISTENER,
+                        (AppListenerDescriptorImpl) e.nextElement());
             }
         }
         
