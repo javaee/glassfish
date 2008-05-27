@@ -49,43 +49,38 @@ public class JarURLPattern {
     /**
      * This method is used to extract URL of jar entries that match
      * a given pattern.
-     * @param urlPaths
+     * @param url
      * @param pattern
      */
-    public static List<URL> getJarEntryURLs(URL[] urls, Pattern pattern) {
-        List<URL> results = new ArrayList<URL>();   
+    public static List<String> getJarEntries(URL url, Pattern pattern) {
+        List<String> results = new ArrayList<String>();   
 
-        if (urls != null && urls.length > 0) {
-            for (URL url : urls) {
-                File file = null;
-                try {
-                    file = new File(url.toURI());
-                } catch(Exception ex) {
-                    // ignore
-                }
-                if (file == null && file.isDirectory()) {
-                    continue;
-                } 
+        File file = null;
+        try {
+            file = new File(url.toURI());
+        } catch(Exception ex) {
+            // ignore
+        }
+        if (file == null && file.isDirectory()) {
+            return results;
+        } 
 
-                String fileName = file.getName();
+        String fileName = file.getName();
 
-                // only look at jar files
-                if (fileName != null && fileName.endsWith(".jar")) {
-                    try {
-                        JarFile jarFile = new JarFile(new File(url.toURI()));
-                        Enumeration<JarEntry> entries = jarFile.entries();
-                        while (entries.hasMoreElements()) {
-                            JarEntry entry = (JarEntry)entries.nextElement();
-                            String entryName = entry.getName();
-                            if (pattern.matcher(entryName).matches()) {
-                                results.add(new URL("jar:" +
-                                    url.toString() + "!/" + entryName));
-                            }
-                        }
-                    } catch(Exception ex) {
-                        throw new RuntimeException(ex);
+        // only look at jar file
+        if (fileName != null && fileName.endsWith(".jar")) {
+            try {
+                JarFile jarFile = new JarFile(new File(url.toURI()));
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = (JarEntry)entries.nextElement();
+                    String entryName = entry.getName();
+                    if (pattern.matcher(entryName).matches()) {
+                        results.add(entryName);
                     }
                 }
+            } catch(Exception ex) {
+                throw new RuntimeException(ex);
             }
         }
 

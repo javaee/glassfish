@@ -40,7 +40,9 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.net.URL;
 import java.io.File;
 import javax.servlet.ServletContext;
@@ -262,17 +264,15 @@ final class WebModuleListener
         Collection<TldProvider> tldProviders =
                 serverContext.getDefaultHabitat().getAllByContract(
                 TldProvider.class);
-        List<URL> tldURLs = new ArrayList<URL>();
+        Map<URL, List<String>> tldMap = new HashMap<URL, List<String>>();
         for (TldProvider tldProvider : tldProviders) {
-            URL[] urls = tldProvider.getTldURLs();
-            if (urls != null && urls.length > 0) {
-                for (URL url : urls) {
-                    tldURLs.add(url);
-                }
+            Map<URL, List<String>> tmap = tldProvider.getTldMap();
+            if (tmap != null) {
+                tldMap.putAll(tmap);
             }
         }
         webModule.getServletContext().setAttribute(
-                "com.sun.appserv.tld.urls", tldURLs);
+                "com.sun.appserv.tld.map", tldMap);
 
         // set habitat for jsf injection
         webModule.getServletContext().setAttribute(

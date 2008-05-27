@@ -37,10 +37,13 @@
 package org.glassfish.api.web;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * The TldProvider provides an interface to get tld files of the component. 
+ * The TldProvider provides an interface to get jar URL with tlds
+ * and corresponding tld entries.
  *
  * @author Shing Wai Chan
  */
@@ -48,8 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface TldProvider {
 
     /**
-     * Get a list of URL that corresponding to Tld entries.
-     * Each URL should correspond to an tld entry inside a jar.
+     * Get a Map with key URL and value as a list of tld entries.
      */
-    public URL[] getTldURLs();
+    public Map<URL, List<String>> getTldMap();
 }

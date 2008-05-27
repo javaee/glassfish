@@ -41,8 +41,9 @@ import java.net.URLClassLoader;
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.glassfish.api.web.TldProvider;
@@ -68,15 +69,15 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     @Inject
     ModulesRegistry registry;
 
-    private List<URL> tldList = Collections.emptyList();
- 
-    /**
-     * Get a list of URL that corresponding to Tld entries
-     */
-    public URL[] getTldURLs() {
-        return tldList.toArray(new URL[tldList.size()]);
-    }
+    private Map<URL, List<String>> tldMap = new HashMap<URL, List<String>>();
 
+    /**
+     * Get a Map with key URL and value as a list of tld entries.
+     */
+    public Map<URL, List<String>> getTldMap() {
+        return (Map<URL, List<String>>)((HashMap)tldMap).clone();
+    }
+ 
     public void postConstruct() {
         URL[] urls = null;
         Module m = registry.find(getClass());
@@ -102,9 +103,15 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
                         "] is not of type URLClassLoader");
             }
         }
-        if (urls!=null) {
+
+        if (urls != null) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
-            tldList =  JarURLPattern.getJarEntryURLs(urls, pattern);
+            for (URL url : urls) {
+                List entries =  JarURLPattern.getJarEntries(url, pattern);
+                if (entries != null && entries.size() > 0) {
+                    tldMap.put(url, entries);
+                }
+            }
         }
     }
 }

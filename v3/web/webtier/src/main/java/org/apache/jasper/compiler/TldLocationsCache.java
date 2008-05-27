@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -448,6 +449,23 @@ public class TldLocationsCache {
     private void scanJar(JarURLConnection conn, boolean ignore)
             throws JasperException {
 
+        scanJar(conn, ignore, null);
+    }
+
+    /**
+     * Scans the given JarURLConnection for TLD files located in META-INF
+     * (or a subdirectory of it), adding an implicit map entry to the taglib
+     * map for any TLD that has a <uri> element.
+     *
+     * @param conn The JarURLConnection to the JAR file to scan
+     * @param ignore true if any exceptions raised when processing the given
+     * @param tldNames the list of tld element to scan. The null value
+     *         indicates all the tlds in this case.
+     * JAR should be ignored, false otherwise
+     */
+    private void scanJar(JarURLConnection conn, boolean ignore,
+            List<String> tldNames) throws JasperException {
+
         JarFile jarFile = null;
         String resourcePath = conn.getJarFileURL().toString();
         try {
@@ -455,14 +473,22 @@ public class TldLocationsCache {
                 conn.setUseCaches(false);
             }
             jarFile = conn.getJarFile();
-            Enumeration entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = (JarEntry) entries.nextElement();
-                String name = entry.getName();
-                if (!name.startsWith("META-INF/")) continue;
-                if (!name.endsWith(".tld")) continue;
-                InputStream stream = jarFile.getInputStream(entry);
-                scanTld(resourcePath, name, stream);
+            if (tldNames != null) {
+                for (String tldName : tldNames) {
+                    JarEntry entry = jarFile.getJarEntry(tldName);
+                    InputStream stream = jarFile.getInputStream(entry);
+                    scanTld(resourcePath, tldName, stream);
+                }
+            } else {
+                Enumeration entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = (JarEntry) entries.nextElement();
+                    String name = entry.getName();
+                    if (!name.startsWith("META-INF/")) continue;
+                    if (!name.endsWith(".tld")) continue;
+                    InputStream stream = jarFile.getInputStream(entry);
+                    scanTld(resourcePath, name, stream);
+                }
             }
         } catch (Exception ex) {
             if (!redeployMode) {
@@ -655,17 +681,14 @@ public class TldLocationsCache {
             loader = loader.getParent();
         }
 
-        List<URL> tldURLs = (List<URL>)ctxt.getAttribute(
-                "com.sun.appserv.tld.urls");
-        // Scan system impl TLD directly
-        if (tldURLs != null) {
-            for (URL tldURL : tldURLs) {
-                JarURLConnection juConn =
-                        (JarURLConnection)tldURL.openConnection();
-                String resourcePath = juConn.getJarFileURL().toString();
-                String entryName = juConn.getEntryName();
-                InputStream is = juConn.getInputStream();
-                scanTld(resourcePath, entryName, is);
+        Map<URL, List<String>> tldMap = (Map<URL, List<String>>)ctxt.getAttribute(
+                "com.sun.appserv.tld.map");
+        // Scan system impl jars with tlds
+        if (tldMap != null) {
+            for (URL url : tldMap.keySet()) {
+                URL jarURL = new URL("jar:" + url.toString() + "!/");
+                scanJar((JarURLConnection)jarURL.openConnection(),
+                        true, tldMap.get(url));
             }
         }
     }
