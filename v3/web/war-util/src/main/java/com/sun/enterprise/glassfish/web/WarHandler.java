@@ -41,7 +41,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.apache.catalina.loader.WebappClassLoader;
-import org.apache.catalina.LifecycleException;
 import org.apache.naming.resources.FileDirContext;
 
 import java.io.*;
@@ -115,7 +114,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
         try {
             cloader.start();
-        } catch (LifecycleException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return cloader;

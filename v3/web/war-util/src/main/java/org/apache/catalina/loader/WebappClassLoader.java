@@ -94,9 +94,6 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
 import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.Resource;
@@ -149,7 +146,7 @@ import com.sun.logging.LogDomains;
  */
 public class WebappClassLoader
     extends URLClassLoader
-    implements Reloader, Lifecycle, InstrumentableClassLoader
+    implements Reloader, InstrumentableClassLoader
  {
 
      private static Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -1642,38 +1639,11 @@ public class WebappClassLoader
 
 
     /**
-     * Add a lifecycle event listener to this component.
-     *
-     * @param listener The listener to add
-     */
-    public void addLifecycleListener(LifecycleListener listener) {
-    }
-
-
-    /**
-     * Get the lifecycle listeners associated with this lifecycle. If this
-     * Lifecycle has no listeners registered, a zero-length array is returned.
-     */
-    public LifecycleListener[] findLifecycleListeners() {
-        return new LifecycleListener[0];
-    }
-
-
-    /**
-     * Remove a lifecycle event listener from this component.
-     *
-     * @param listener The listener to remove
-     */
-    public void removeLifecycleListener(LifecycleListener listener) {
-    }
-
-
-    /**
      * Start the class loader.
      *
      * @exception LifecycleException if a lifecycle error occurs
      */
-    public void start() throws LifecycleException {
+    public void start() throws Exception {
 
         started = true;
 
@@ -1685,7 +1655,7 @@ public class WebappClassLoader
      *
      * @exception LifecycleException if a lifecycle error occurs
      */
-    public void stop() throws LifecycleException {
+    public void stop() throws Exception {
 
         if (!started) {
             return;
