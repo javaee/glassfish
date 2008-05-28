@@ -40,7 +40,7 @@ package com.sun.enterprise.deployment.node.runtime.application;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;

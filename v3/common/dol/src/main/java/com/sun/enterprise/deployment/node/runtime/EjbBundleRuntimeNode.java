@@ -47,7 +47,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
 import com.sun.enterprise.deployment.node.XMLElement;

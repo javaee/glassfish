@@ -33,72 +33,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment;
+package org.glassfish.security.common;
 
-import java.security.Principal;
+import com.sun.enterprise.deployment.*;
 
 /**
- * This class implements the principal interface.
- *
+ * This class implements the EJB concept of a Group. A Group is
+ * a privilege attribute that several Principals share. Or, in
+ * in other words, several Principals belong to a same group.
+ * 
  * @author Harish Prabandham
  */
-public class PrincipalImpl implements Principal, java.io.Serializable {
-
-    /**
-     * @serial
-     */
-    private String name;
-
-     /**
-     * Construct a principal from a string user name.
-     * @param user The string form of the principal name.
-     */
-    public PrincipalImpl(String user) {
-	this.name = user;
+public class Group extends PrincipalImpl {
+    /** Creates a new Group attribute */
+    public Group(String name) {
+	super(name);
     }
 
-    /**
-     * This function returns true if the object passed matches 
-     * the principal represented in this implementation
-     * @param another the Principal to compare with.
-     * @return true if the Principal passed is the same as that 
-     * encapsulated in this object, false otherwise
-     */
-    public boolean equals(Object another) {
-        // XXX for bug 4889642: if groupA and userA have
-        // the same name, then groupA.equals(userA) return false
-        // BUT userA.equals(groupA) return "true"
-        if (another instanceof Group) {
-            return false;
-        } else if (another instanceof PrincipalImpl) {
-	    Principal p = (Principal) another;
-	    return getName().equals(p.getName());
-	} else
+    public boolean equals(Object other) {
+	if(other instanceof Group) {
+	    return getName().equals(((Group)other).getName());
+	} else {
 	    return false;
+	}
     }
-    
-    /**
-     * Prints a stringified version of the principal.
-     * @return A java.lang.String object returned by the method getName()
-     */
-    public String toString() {
-	return getName();
-    }
-
-    /**
-     * Returns the hashcode for this Principal object
-     * @return a hashcode for the principal.
-     */
-    public int hashCode() {
-	return name.hashCode();
-    }
-
-    /**
-     * Gets the name of the Principal as a java.lang.String
-     * @return the name of the principal.
-     */
-    public String getName() {
-	return name;
-    }
-
 }

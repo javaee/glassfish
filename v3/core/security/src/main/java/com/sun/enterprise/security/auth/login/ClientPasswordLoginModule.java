@@ -41,7 +41,7 @@ import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
 import javax.security.auth.spi.*;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
-import com.sun.enterprise.deployment.PrincipalImpl;
+import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.*;
 import com.sun.logging.*;

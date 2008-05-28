@@ -80,8 +80,8 @@ import javax.security.auth.message.callback.TrustStoreCallback;
 import javax.security.auth.x500.X500Principal;
 
 //V3:Commented import com.sun.enterprise.Switch;
-import com.sun.enterprise.deployment.Group;
-import com.sun.enterprise.deployment.PrincipalImpl;
+import org.glassfish.security.common.Group;
+import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;

@@ -33,26 +33,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment;
+
+package com.sun.enterprise.deployment.node.runtime;
+
+import org.xml.sax.Attributes;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.glassfish.security.common.Group;
+
 
 /**
- * This class implements the EJB concept of a Group. A Group is
- * a privilege attribute that several Principals share. Or, in
- * in other words, several Principals belong to a same group.
- * 
- * @author Harish Prabandham
+ * This node handles the group definition in the runtime DDs
+ *
+ * @author Jerome Dochez
+ * @version 
  */
-public class Group extends PrincipalImpl {
-    /** Creates a new Group attribute */
-    public Group(String name) {
-	super(name);
-    }
+public class GroupNode extends DeploymentDescriptorNode {
 
-    public boolean equals(Object other) {
-	if(other instanceof Group) {
-	    return getName().equals(((Group)other).getName());
-	} else {
-	    return false;
-	}
+    Group group=null;
+        
+   /**
+    * @return the descriptor instance to associate with this XMLNode
+    */    
+    public Object getDescriptor() {
+        return group;
     }
+    
+    /**
+     * SAX Parser API implementation, we don't really care for now.
+     */
+    public void startElement(XMLElement element, Attributes attributes) {
+
+        if (RuntimeTagNames.GROUP.equals(element.getQName())) {
+            for (int i=0; i<attributes.getLength();i++) {
+                if (RuntimeTagNames.NAME.equals(attributes.getQName(i))) {
+                    group = new Group(attributes.getValue(i));
+                }
+            }
+        }
+    }
+    
+   /**
+     * write the descriptor class to a DOM tree and return it
+     *
+     * @param parent node for the DOM tree
+     * @param node name 
+     * @param the descriptor to write
+     * @return the DOM tree top node
+     */    
+    public Node writeDescriptor(Node parent, String nodeName, Group descriptor) {      
+        Element principal = appendChild(parent, nodeName);     
+	setAttribute(principal, RuntimeTagNames.NAME, descriptor.getName());
+        return principal;
+        
+    }    
 }

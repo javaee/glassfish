@@ -44,7 +44,7 @@ import java.security.*;
 import javax.security.auth.login.*;
 import javax.security.auth.Subject;
 
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 //import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;

@@ -48,7 +48,7 @@ import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
-import com.sun.enterprise.deployment.PrincipalImpl;
+import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 //V3:Comment import com.sun.enterprise.server.ApplicationServer;

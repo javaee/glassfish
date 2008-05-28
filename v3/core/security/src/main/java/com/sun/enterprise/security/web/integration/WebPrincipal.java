@@ -38,7 +38,7 @@ package com.sun.enterprise.security.web.integration;
 import com.sun.enterprise.security.*;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import com.sun.enterprise.deployment.PrincipalImpl;
+import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.security.SecurityContext;
 
 public class WebPrincipal extends PrincipalImpl {

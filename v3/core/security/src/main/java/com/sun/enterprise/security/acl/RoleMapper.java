@@ -49,10 +49,10 @@ import java.util.Set;
 import java.util.logging.*;
 import javax.security.auth.Subject;
 
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.PrincipalImpl;
+import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 //import com.sun.enterprise.config.ConfigContext;

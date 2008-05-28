@@ -34,7 +34,7 @@
  * holder.
  */
 package com.sun.enterprise.security.auth.login;
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 import com.sun.enterprise.security.auth.login.common.*;
 import java.util.Set;
 import java.util.Iterator;
@@ -216,8 +216,8 @@ public class LoginContextDriver  {
         
         final Subject s = new Subject();
 
-        final com.sun.enterprise.deployment.PrincipalImpl p 
-            = new com.sun.enterprise.deployment.PrincipalImpl(username);
+        final org.glassfish.security.common.PrincipalImpl p 
+            = new org.glassfish.security.common.PrincipalImpl(username);
 
         final GSSUPName name = new GSSUPName(username, realmName);
 

@@ -47,7 +47,7 @@ import org.xml.sax.Attributes;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.Group;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.node.runtime.*;

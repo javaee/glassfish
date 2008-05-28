@@ -42,8 +42,8 @@
 
 package com.sun.enterprise.security.web.integration;
 
-import com.sun.enterprise.deployment.PrincipalImpl;
-import com.sun.enterprise.deployment.Group;
+import org.glassfish.security.common.PrincipalImpl;
+import org.glassfish.security.common.Group;
 /**
  *
  * @author  Harpreet Singh
