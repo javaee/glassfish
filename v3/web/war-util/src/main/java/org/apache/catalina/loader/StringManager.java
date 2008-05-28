@@ -52,10 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
-package org.apache.catalina.util;
+package org.apache.catalina.loader;
 
 import java.text.MessageFormat;
 import java.util.Hashtable;
@@ -87,7 +84,7 @@ import java.util.ResourceBundle;
  * @author James Todd [gonzo@eng.sun.com]
  */
 
-public class StringManagerTemp {
+public class StringManager {
 
     // START SJSAS 6412710
     private final HashMap<Locale, ResourceBundle> bundles =
@@ -105,7 +102,7 @@ public class StringManagerTemp {
      * @param packageName Name of package to create StringManager for.
      */
 
-    private StringManagerTemp(String packageName) {
+    private StringManager(String packageName) {
         /* 6412710
         String bundleName = packageName + ".LocalStrings";
         */
@@ -368,7 +365,7 @@ public class StringManagerTemp {
     // STATIC SUPPORT METHODS
     // --------------------------------------------------------------
 
-    private static Hashtable<String,StringManagerTemp> managers = new Hashtable<String,StringManagerTemp>();
+    private static Hashtable<String,StringManager> managers = new Hashtable<String,StringManager>();
 
     /**
      * Get the StringManager for a particular package. If a manager for
@@ -378,11 +375,11 @@ public class StringManagerTemp {
      * @param packageName
      */
 
-    public synchronized static StringManagerTemp getManager(String packageName) {
-        StringManagerTemp mgr = managers.get(packageName);
+    public synchronized static StringManager getManager(String packageName) {
+        StringManager mgr = managers.get(packageName);
 
         if (mgr == null) {
-            mgr = new StringManagerTemp(packageName);
+            mgr = new StringManager(packageName);
             managers.put(packageName, mgr);
         }
         return mgr;
