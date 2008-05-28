@@ -42,9 +42,14 @@ import com.sun.enterprise.deployment.runtime.web.SessionManager;
 
 public interface PersistenceStrategyBuilder {
     
-    public void initializePersistenceStrategy(Context ctx,
-                                              SessionManager smBean);
+    public void initializePersistenceStrategy(
+            Context ctx,
+            SessionManager smBean,
+            ServerConfigLookup serverConfigLookup);
+
     public void setPersistenceFrequency(String persistenceFrequency);
+
     public void setPersistenceScope(String persistenceScope);
+
     public void setPassedInPersistenceType(String persistenceType);
 }

@@ -46,16 +46,12 @@ import com.sun.enterprise.deployment.runtime.web.SessionManager;
 
 public class FileStrategyBuilder extends BasePersistenceStrategyBuilder {
     
-    /**
-     * Constructor.
-     */
-    public FileStrategyBuilder(ServerConfigLookup serverConfigLookup) {
-        super(serverConfigLookup);
-    }
-    
-    public void initializePersistenceStrategy(Context ctx,
-                                              SessionManager smBean) {
-        super.initializePersistenceStrategy(ctx, smBean);
+    public void initializePersistenceStrategy(
+            Context ctx,
+            SessionManager smBean,
+            ServerConfigLookup serverConfigLookup) {
+
+        super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
         
         Object[] params = { ctx.getPath() };
         _logger.log(Level.INFO, "webcontainer.filePersistence", params);

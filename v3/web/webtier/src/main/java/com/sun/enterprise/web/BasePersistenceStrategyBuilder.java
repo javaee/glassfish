@@ -75,21 +75,15 @@ public abstract class BasePersistenceStrategyBuilder
     protected int maxIdleBackup = DEFAULT_MAX_IDLE_BACKUP;
     protected final int DEFAULT_SESSION_TIMEOUT = 1800;   // 30 minute
     protected int sessionMaxInactiveInterval = DEFAULT_SESSION_TIMEOUT;
-    protected ServerConfigLookup serverConfigLookup;
 
     // Special constant for Java Server Faces
     protected static final String JSF_HA_ENABLED = "com.sun.appserver.enableHighAvailability";    
 
-	    /**
-     * Constructor
-     */
-    public BasePersistenceStrategyBuilder(
+    public void initializePersistenceStrategy(
+            Context ctx,
+            SessionManager smBean,
             ServerConfigLookup serverConfigLookup) {
-        this.serverConfigLookup = serverConfigLookup;
-    } 
-    
-    public void initializePersistenceStrategy(Context ctx,
-                                              SessionManager smBean) {
+
         /*
          * This method sets default values.
          * It may be extended in builder subclasses which will have their
@@ -104,7 +98,7 @@ public abstract class BasePersistenceStrategyBuilder
          * This method may be extended in builder subclasses which will have
          * their own inst vars for additional params.
          */
-        readInstanceLevelParams();
+        readInstanceLevelParams(serverConfigLookup);
         
         /*
          * This method reads web app parameter values from sun-web.xml.
@@ -134,7 +128,8 @@ public abstract class BasePersistenceStrategyBuilder
     }
     
     
-    public void readInstanceLevelParams() {
+    public void readInstanceLevelParams(ServerConfigLookup serverConfigLookup) {
+
         com.sun.enterprise.config.serverbeans.SessionManager smBean =
             serverConfigLookup.getInstanceSessionManager();
      

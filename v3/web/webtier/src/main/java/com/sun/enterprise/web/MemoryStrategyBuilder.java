@@ -48,16 +48,12 @@ import com.sun.enterprise.util.uuid.UuidGenerator;
 
 public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
     
-    /**
-     * Constructor.
-     */
-    public MemoryStrategyBuilder(ServerConfigLookup serverConfigLookup) {
-        super(serverConfigLookup);
-    }
-      
-    public void initializePersistenceStrategy(Context ctx,
-                                              SessionManager smBean) {
-        super.initializePersistenceStrategy(ctx, smBean);
+    public void initializePersistenceStrategy(
+            Context ctx,
+            SessionManager smBean,
+            ServerConfigLookup serverConfigLookup) {
+
+        super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
         String persistenceType = "memory";        
         String ctxPath = ctx.getPath();
         if(ctxPath != null && !ctxPath.equals("")) {    
