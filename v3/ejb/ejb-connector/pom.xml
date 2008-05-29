@@ -66,8 +66,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -80,6 +80,11 @@
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
         </dependency>
     </dependencies>
 </project>

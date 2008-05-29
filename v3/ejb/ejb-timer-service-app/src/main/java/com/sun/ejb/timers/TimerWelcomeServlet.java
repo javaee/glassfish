@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.sun.ejb.containers;
+package com.sun.ejb.timers;
 
 import java.io.*;
 import java.net.*;
@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.servlet.*;
 import javax.ejb.*;
 import javax.servlet.http.*;
+
+import com.sun.ejb.containers.TimerLocal;
 
 /**
  *

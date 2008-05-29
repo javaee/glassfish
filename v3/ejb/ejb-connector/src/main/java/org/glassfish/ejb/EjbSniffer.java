@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package org.glassfish.ejb.startup;
+package org.glassfish.ejb;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.deployment.util.AnnotationDetector;
