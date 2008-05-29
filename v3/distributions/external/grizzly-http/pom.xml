@@ -39,17 +39,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.external</groupId>
-        <artifactId>external</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.external</groupId>    
     <artifactId>grizzly-module</artifactId>
     <!-- Don't change packaging to bundle as there are issues
          using both hk2 and bundle plugin -->
     <packaging>jar</packaging>
+    <version>${grizzly.version}</version>
     <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
+    <properties>
+        <grizzly.version>1.7.3.3-rev1</grizzly.version>    
+        <grizzly.original-version>1.7.3.3</grizzly.original-version>    
+    </properties>      
     <build>
         <plugins>
             <plugin>
@@ -167,31 +173,31 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-http</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-portunif</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-rcm</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-http-utils</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
