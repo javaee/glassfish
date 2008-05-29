@@ -1644,9 +1644,7 @@ public class WebappClassLoader
      * @exception LifecycleException if a lifecycle error occurs
      */
     public void start() throws Exception {
-
         started = true;
-
     }
 
 

@@ -40,8 +40,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
+import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
@@ -175,12 +174,12 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         }
 
         if ((unloadFromAll || !isLeftOver)
-                && (getClassLoader() instanceof Lifecycle)) {
+                && (getClassLoader() instanceof WebappClassLoader)) {
             try {
-                ((Lifecycle) getClassLoader()).stop();
-            } catch (LifecycleException le) {
+                ((WebappClassLoader) getClassLoader()).stop();
+            } catch (Exception e) {
                 logger.log(Level.WARNING,
-                           "Unable to stop classloader for " + this, le);
+                           "Unable to stop classloader for " + this, e);
             }
         }
 
