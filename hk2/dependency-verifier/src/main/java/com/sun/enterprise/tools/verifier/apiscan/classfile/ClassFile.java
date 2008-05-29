@@ -154,4 +154,8 @@ public interface ClassFile {
      */
     boolean isInterface();
 
+    /**
+     * @return true if this is a public class, else false
+     */
+    boolean isPublic();
 }

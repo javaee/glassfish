@@ -201,6 +201,10 @@ class BCELClassFile implements ClassFile {
         return !jc.isClass();
     }
 
+    public boolean isPublic() {
+        return jc.isPublic();
+    }
+
     public String toString() {
         return
                 "External Name: " + getName() + "\n" + // NOI18N
