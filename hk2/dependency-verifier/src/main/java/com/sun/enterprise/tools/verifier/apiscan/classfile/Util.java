@@ -78,4 +78,17 @@ public class Util {
         logger.exiting(myClassName, "isPrimitive", result); // NOI18N
         return result;
     }
+
+    /**
+     * @param className name of class in external format (i.e. java.util.Set).
+     * @return package name in dotted format, e.g. java.lang for java.lang.void
+     */
+    public static String getPackageName(String className) {
+        int idx = className.lastIndexOf('.');
+        if (idx != -1) {
+            return className.substring(0, idx);
+        } else
+            return "";
+    }
+
 }

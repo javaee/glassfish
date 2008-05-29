@@ -45,6 +45,7 @@ import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoader;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClosureCompilerImpl;
+import com.sun.enterprise.tools.verifier.apiscan.classfile.Util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -203,32 +204,15 @@ public class ModuleDependencyAnalyser {
         while (moduleEntries.hasMoreElements()) {
             String entry = moduleEntries.nextElement().getName();
             if (entry.endsWith(".class")) {
-                String clsName = convertToExternalName(entry);
-                String pkgName = getPackageName(clsName);
+                String clsName = Util.convertToExternalClassName(
+                        entry.substring(0, entry.length() - ".class".length()));
+                String pkgName = Util.getPackageName(clsName);
                 if (exportedPkgs.contains(pkgName)) {
                     exportedClasses.add(clsName);
                 }
             }
         }
         return exportedClasses;
-    }
-
-    private static String convertToExternalName(String internalName) {
-        assert (internalName.endsWith(".class"));
-        String s = internalName.substring(0, internalName.length() - ".class".length());
-        return s.replaceAll("/", ".");
-    }
-
-    /**
-     * @param className name of class in external format (i.e. java.util.Set).
-     * @return package name in dotted format, e.g. java.lang for java.lang.void
-     */
-    private static String getPackageName(String className) {
-        int idx = className.lastIndexOf('.');
-        if (idx != -1) {
-            return className.substring(0, idx);
-        } else
-            return "";
     }
 
     public String getResultAsString() {
