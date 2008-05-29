@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${project.version}</version>
+            <version>${glassfish-api.version}</version>
         </dependency>   
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -140,7 +140,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${project.version}</version>
+            <version>${grizzly.version}</version>
         </dependency>
     </dependencies>
 </project>

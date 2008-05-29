@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${glassfish-api.version}</version>
         </dependency>
 
         <dependency>

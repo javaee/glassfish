@@ -44,9 +44,9 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>war-util</artifactId>
+    <artifactId>web-naming</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Web Container Common Utilities</name>
+    <name>Web Container Naming Utilities</name>
 
     <developers>
         <developer>
@@ -80,26 +80,16 @@
             </resource>
         </resources>
 	</build>
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
+	<dependencies>
+	    <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-api</artifactId>
-            <version>${glassfish-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-naming</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-   </dependencies>
+        </dependency>        
+	</dependencies>
 </project>
