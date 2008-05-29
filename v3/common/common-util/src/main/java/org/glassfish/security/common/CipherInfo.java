@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.common;
+package org.glassfish.security.common;
 
 import java.util.HashMap;
 import java.util.Map;
