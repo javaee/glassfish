@@ -39,11 +39,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>common</artifactId>
-        <version>10.0-SNAPSHOT</version>
-    </parent>    
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>2</version>
+    </parent>  
+    <groupId>org.glassfish.common</groupId>
     <artifactId>glassfish-api</artifactId>
+    <version>${glassfish-api.version}</version>
     <packaging>hk2-jar</packaging>
     <name>Public APIs of Glassfish V3</name>
 
@@ -59,6 +61,21 @@
             </roles>
         </developer>
     </developers>
+    <properties>
+    	<glassfish-api.version>10.0.0-rev1</glassfish-api.version>
+        <grizzly.version>1.7.3.3-rev1</grizzly.version>    
+        <hk2.version>0.3.1</hk2.version>    
+    </properties>
+    <build>
+    	<plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -68,7 +85,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${project.version}</version>
+            <version>${grizzly.version}</version>
         </dependency>       
     </dependencies>
 </project>
