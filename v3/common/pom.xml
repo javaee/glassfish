@@ -52,7 +52,6 @@
         <module>mbeanserver</module>
         <module>amx-api</module>
         <module>amx-impl</module>
-        <module>glassfish-api</module>
         <module>glassfish-ee-api</module>
     	<module>internal-api</module>
     	<module>internal-ee-api</module>
