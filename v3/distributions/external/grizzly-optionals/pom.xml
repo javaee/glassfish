@@ -39,17 +39,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.external</groupId>
-        <artifactId>external</artifactId>
-        <version>10.0-SNAPSHOT</version>
-    </parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>2</version>
+    </parent>   
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-optionals</artifactId>
+    <groupId>org.glassfish.external</groupId>    
     <!-- Don't change packaging to bundle as there are issues
          using both hk2 and bundle plugin -->
     <packaging>jar</packaging>
+    <version>${grizzly.version}</version>
     <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly Optionals Module for GlassFish</description>
+    <properties>
+        <grizzly.version>1.7.3.3-rev1</grizzly.version>    
+        <grizzly.original-version>1.7.3.3</grizzly.original-version>    
+        <servlet-api.version>2.5</servlet-api.version>    
+    </properties>    
     <build>
         <plugins>
             <plugin>
@@ -134,42 +141,43 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-cometd</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-comet</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-compat</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-messagesbus</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${project.version}</version>
+            <version>${grizzly.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet-api.version}</version>
+            <scope>provided</scope>
         </dependency>        
     </dependencies>
 </project>
