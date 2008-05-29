@@ -122,7 +122,6 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.enterprise.security.CipherInfo;
 import com.sun.appserv.ProxyHandler;
 //import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
@@ -176,6 +175,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.security.common.CipherInfo;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
 
