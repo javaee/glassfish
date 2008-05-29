@@ -108,7 +108,8 @@
         <jsf-impl.version>1.2_08</jsf-impl.version>
         <deployment-api.version>1.2</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.7.3.3</grizzly.version>
+        <grizzly.version>1.7.3.3-rev1</grizzly.version>
+        <grizzly.original-version>1.7.3.3</grizzly.original-version>        
         <jasper-jsr199.version>9.1</jasper-jsr199.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
@@ -136,6 +137,7 @@
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
         <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
         <glassfish-jruby.version>0.1.2</glassfish-jruby.version>
+    	<glassfish-api.version>10.0.0-rev1</glassfish-api.version>        
     </properties>
     <modules>
       	<module>build</module>
