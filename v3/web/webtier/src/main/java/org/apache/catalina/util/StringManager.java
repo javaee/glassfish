@@ -181,7 +181,7 @@ public class StringManager {
             synchronized (bundles) {
                 bundle = bundles.get(locale);
                 if (bundle == null) {
-                    bundle = ResourceBundle.getBundle(this.bundleName, locale);
+                    bundle = ResourceBundle.getBundle(this.bundleName, locale, this.getClass().getClassLoader());
                     bundles.put(locale, bundle);
                 }
             }
