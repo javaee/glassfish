@@ -34,7 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
+
+import com.sun.enterprise.registration.RegistrationService;
+import com.sun.enterprise.registration.RegistrationException;
+import com.sun.enterprise.registration.RegistrationAccount;
+import com.sun.enterprise.registration.RegistrationServiceConfig;
 
 import com.sun.scn.servicetags.EnvironmentInformation;
 import com.sun.scn.servicetags.SvcTag;

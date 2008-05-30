@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
 
+import com.sun.enterprise.registration.RegistrationDescriptor;
 import java.util.Date;
 import java.util.UUID;
 import java.util.Map;

@@ -34,10 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
+
+import com.sun.enterprise.registration.RegistrationAccount;
+import com.sun.enterprise.registration.RegistrationAccountConfig;
 
 import java.util.Map;
-import java.util.HashMap;
 import com.sun.scn.servicetags.SunOnlineAccount;
 
 public class SOAccount implements RegistrationAccount {

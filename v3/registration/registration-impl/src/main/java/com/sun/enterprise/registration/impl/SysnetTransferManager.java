@@ -33,7 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
+
+//import com.sun.enterprise.registration.*;
+import com.sun.enterprise.registration.RegistrationException;
 
 import java.io.BufferedInputStream;
 import java.io.File;

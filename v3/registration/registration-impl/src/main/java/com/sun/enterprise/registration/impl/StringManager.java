@@ -35,38 +35,29 @@
  * holder.
  */
 /*
- * ServiceTagException.java
- *
- * Created on October 17, 2007, 12:35 PM
- *
- * To change this template, choose Tools | Template Manager
+ * StringManager.java
+ * 
+ * Created on Oct 29, 2007, 2:05:52 PM
+ * 
+ * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
+
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  *
- * @author msiraj
+ * @author tjquinn
  */
-public class ServiceTagException extends Exception {
+public class StringManager {
+    private static final ResourceBundle resourceBundle = 
+            ResourceBundle.getBundle(StringManager.class.getPackage().getName() + ".LocalStrings");
     
-    private static final String LINE_SEP = System.getProperty("line.separator");
-
-    /** Creates a new instance of ServiceTagException */
-    public ServiceTagException(Throwable t) {        
-        super(t.getMessage(), t);
+    public static String getString(String messageKey, Object... args) {
+        String message = resourceBundle.getString(messageKey);
+        return MessageFormat.format(message, args);
     }
-
-    public ServiceTagException(String message, Throwable t) {        
-        super((message == null) ? "" : message + LINE_SEP + 
-                "cause: " + (t==null ? "unknown" : t.getMessage()), t);
-    }
-
- /*    
-    public String getMessage() {
-        return (getCause() != null) ? getCause().getMessage() : getMessage();
-    }
- */
-    
 }

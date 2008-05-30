@@ -40,7 +40,7 @@
  * Created on November 7, 2007, 1:15 PM
  *
  */
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
 
 /**
 *
@@ -49,6 +49,7 @@ package com.sun.enterprise.registration;
 * particular installation.
 *
 */
+import com.sun.enterprise.registration.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;

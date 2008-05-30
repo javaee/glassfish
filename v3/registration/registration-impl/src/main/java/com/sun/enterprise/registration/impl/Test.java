@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.registration;
+package com.sun.enterprise.registration.impl;
 
+import com.sun.enterprise.registration.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +104,7 @@ public class Test {
 
             Object[] accountParams = { map };
             RegistrationAccountConfig accountConfig =
-                    new RegistrationAccountConfig("com.sun.enterprise.registration.SOAccount",
+                    new RegistrationAccountConfig("com.sun.enterprise.registration.impl.SOAccount",
                         accountParams);
             
             RegistrationAccount account = 
@@ -132,7 +133,7 @@ public class Test {
            Object[] params = { getRepositoryFile()};
             
             RegistrationServiceConfig config =
-                    new RegistrationServiceConfig("com.sun.enterprise.registration.SysnetRegistrationService",
+                    new RegistrationServiceConfig("com.sun.enterprise.registration.impl.SysnetRegistrationService",
                         params);
             RegistrationService regService =
                     RegistrationServiceFactory.getInstance().getRegistrationService(config);
@@ -142,7 +143,7 @@ public class Test {
             map.put(RegistrationAccount.PASSWORD, "replaceme");
             Object[] accountParams = { map };
             RegistrationAccountConfig accountConfig =
-                    new RegistrationAccountConfig("com.sun.enterprise.registration.SOAccount",
+                    new RegistrationAccountConfig("com.sun.enterprise.registration.impl.SOAccount",
                         accountParams);
             
         
