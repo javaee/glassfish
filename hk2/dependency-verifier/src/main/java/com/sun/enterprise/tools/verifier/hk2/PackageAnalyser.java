@@ -38,35 +38,32 @@
 package com.sun.enterprise.tools.verifier.hk2;
 
 import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFile;
-import com.sun.enterprise.tools.verifier.apiscan.classfile.Util;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoader;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
+import com.sun.enterprise.tools.verifier.apiscan.classfile.Util;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Collection;
-import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.FileOutputStream;
 import java.text.Collator;
-
-import org.apache.bcel.generic.InstructionList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * A class that inspects module definitions of a bundle and processes them
@@ -101,6 +98,7 @@ public class PackageAnalyser {
          * List of all the required bundles.
          */
         Set<Bundle> requiredBundles = new HashSet<Bundle>();
+
         Bundle(ModuleDefinition md) {
             this.md = md;
         }
@@ -116,6 +114,10 @@ public class PackageAnalyser {
                 return this.md.equals(Bundle.class.cast(obj).md);
             }
             return false;
+        }
+
+        public String getName() {
+            return md.getName();
         }
     }
 
@@ -145,6 +147,18 @@ public class PackageAnalyser {
         }
 
 
+        public String getPkg() {
+            return pkg;
+        }
+
+        public Bundle getExporter() {
+            return exporter;
+        }
+
+        public Bundle getImporter() {
+            return importer;
+        }
+
         @Override
         public int hashCode() {
             return pkg.hashCode();
@@ -157,16 +171,16 @@ public class PackageAnalyser {
                 Wire other = Wire.class.cast(obj);
                 b = pkg.equals(other.pkg);
                 if (b) {
-                    if (exporter!=null) {
+                    if (exporter != null) {
                         b = exporter.equals(other.exporter);
                     } else {
-                        b = other.exporter==null;
+                        b = other.exporter == null;
                     }
                     if (b) {
-                        if (importer!=null) {
+                        if (importer != null) {
                             b = importer.equals(other.importer);
                         } else {
-                            b = other.importer==null;
+                            b = other.importer == null;
                         }
                     }
                 }
@@ -176,7 +190,7 @@ public class PackageAnalyser {
 
         @Override
         public String toString() {
-            return "Wire [Package = " + pkg + ", Importer = " + importer.md.getName()+ ", Exporter = " + exporter.md.getName() + "]";
+            return "Wire [Package = " + pkg + ", Importer = " + importer.md.getName() + ", Exporter = " + exporter.md.getName() + "]";
         }
     }
 
@@ -226,7 +240,7 @@ public class PackageAnalyser {
         public String toString() {
             StringBuilder sb = new StringBuilder("name " + name + " (" + exporters.size() + " times):\n");
             for (Bundle b : exporters) {
-                sb.append(b.md.getName()+"\n");
+                sb.append(b.md.getName() + "\n");
             }
             return sb.toString();
         }
@@ -240,6 +254,7 @@ public class PackageAnalyser {
 
     /**
      * Analyse the dependency of a bundle and updates it in the given bundle object.
+     *
      * @param bundle to be analysed
      */
     public void analyse(Bundle bundle) throws IOException {
@@ -260,7 +275,7 @@ public class PackageAnalyser {
             if (je.getName().endsWith(classExt)) {
                 String className = Util.convertToExternalClassName(je.getName().substring(0, je.getName().length() - classExt.length()));
                 ClassFile cf = cfl.load(className);
-                for(String c : cf.getAllReferencedClassNames()) {
+                for (String c : cf.getAllReferencedClassNames()) {
                     requiredPkgs.add(Util.getPackageName(c));
                 }
             }
@@ -271,7 +286,7 @@ public class PackageAnalyser {
     private Set<String> computeExportedPackages(Bundle bundle) {
         Set<String> exportedPkgs = new HashSet<String>();
         String exportedPkgsAttr = bundle.md.getManifest().getMainAttributes().getValue("Export-Package");
-        if(exportedPkgsAttr==null) return exportedPkgs;
+        if (exportedPkgsAttr == null) return exportedPkgs;
         // The string looks like
         // Export-Package: p1;p2;version=1.4;uses:="q1,q2...,qn",p3;uses:="q1,q2";p4;p5;version=...
 
@@ -283,10 +298,10 @@ public class PackageAnalyser {
         while (true) {
             int i1 = exportedPkgsAttr.indexOf('\"');
             if (i1 == -1) break;
-            int i2 = exportedPkgsAttr.indexOf('\"', i1+1);
+            int i2 = exportedPkgsAttr.indexOf('\"', i1 + 1);
             StringBuilder sb = new StringBuilder();
             sb.append(exportedPkgsAttr.substring(0, i1));
-            sb.append(exportedPkgsAttr.substring(i2+1));
+            sb.append(exportedPkgsAttr.substring(i2 + 1));
             exportedPkgsAttr = sb.toString();
         }
         StringTokenizer st = new StringTokenizer(exportedPkgsAttr, ",", false);
@@ -296,7 +311,7 @@ public class PackageAnalyser {
             StringTokenizer st2 = new StringTokenizer(pkgGroups, ";", false);
             while (st2.hasMoreTokens()) {
                 String pkg = st2.nextToken();
-                if (pkg.indexOf('=')!= -1) break;
+                if (pkg.indexOf('=') != -1) break;
                 exportedPkgs.add(pkg);
             }
         }
@@ -307,7 +322,7 @@ public class PackageAnalyser {
         Set<Bundle> requiredBundles = new HashSet<Bundle>();
         for (ModuleDependency dep : bundle.md.getDependencies()) {
             ModuleDefinition md = moduleRepository.find(dep.getName(), dep.getVersion());
-            if (md!=null) {
+            if (md != null) {
                 requiredBundles.add(new Bundle(md));
             } else {
                 System.out.println("WARNING: Missing dependency: [" + dep + "] for module [" + md + "]");
@@ -316,9 +331,9 @@ public class PackageAnalyser {
         return requiredBundles;
     }
 
-    public Set<Wire> analyseWirings() throws IOException {
+    public Collection<Wire> analyseWirings() throws IOException {
         List<ModuleDefinition> moduleDefs =
-            moduleDefs = moduleRepository.findAll();
+                moduleDefs = moduleRepository.findAll();
         bundles = new HashSet<Bundle>();
         for (ModuleDefinition moduleDef : moduleDefs) {
             Bundle bundle = new Bundle(moduleDef);
@@ -336,22 +351,31 @@ public class PackageAnalyser {
                 }
             }
         }
-        return wires;
+        List<Wire> sorted = new ArrayList<Wire>(wires);
+        Collections.sort(sorted, new Comparator<Wire>() {
+            Collator collator = Collator.getInstance();
+
+            public int compare(Wire o1, Wire o2) {
+                return collator.compare(o1.pkg, o2.pkg);
+            }
+        });
+        return sorted;
     }
 
     /**
      * Inspects bundles and reports spli-packages.
      * Before calling this method, you must call {@link this#analyseWirings()}
      * The colection is already sorted.
+     *
      * @return set of split-packages, en empty set if none is found.
      */
     public Collection<SplitPackage> findSplitPackages() {
-        assert(bundles!=null);
+        assert (bundles != null);
         Map<String, Set<Bundle>> packages = new HashMap<String, Set<Bundle>>();
         for (Bundle b : bundles) {
             for (String p : b.exportedPkgs) {
                 Set<Bundle> exporters = packages.get(p);
-                if (exporters==null) {
+                if (exporters == null) {
                     exporters = new HashSet<Bundle>();
                     packages.put(p, exporters);
                 }
@@ -360,12 +384,12 @@ public class PackageAnalyser {
         }
         Set<SplitPackage> splitPkgs = new HashSet<SplitPackage>();
         for (Map.Entry<String, Set<Bundle>> entry : packages.entrySet()) {
-            if (entry.getValue().size()>1) {
+            if (entry.getValue().size() > 1) {
                 splitPkgs.add(new SplitPackage(entry.getKey(), entry.getValue()));
             }
         }
         List<SplitPackage> sortedSplitPkgs = new ArrayList<SplitPackage>(splitPkgs);
-        Collections.sort(sortedSplitPkgs, new Comparator<SplitPackage>(){
+        Collections.sort(sortedSplitPkgs, new Comparator<SplitPackage>() {
             Collator collator = Collator.getInstance();
 
             public int compare(SplitPackage o1, SplitPackage o2) {
@@ -376,18 +400,57 @@ public class PackageAnalyser {
         return sortedSplitPkgs;
     }
 
-    public Set<String> findAllExportedPackages() {
+    public Collection<String> findAllExportedPackages() {
         Set<String> packages = new HashSet<String>();
         for (Bundle b : bundles) {
             packages.addAll(b.exportedPkgs);
         }
-        return packages;
+        List<String> sorted = new ArrayList<String>(packages);
+        Collections.sort(sorted, new Comparator<String>() {
+            Collator collator = Collator.getInstance();
+
+            public int compare(String o1, String o2) {
+                return collator.compare(o1, o2);
+            }
+        });
+        return sorted;
     }
 
     public Set<Bundle> findAllBundles() {
         return bundles;
     }
-    
+
+    public void generateWiringReport(Collection<String> exportedPkgs, Collection<PackageAnalyser.Wire> wires, PrintStream out) {
+        out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        out.println("<?xml-stylesheet type=\"text/xsl\" href=\"wires.xsl\"?>");
+        out.println("<Wires>");
+        for (String p : exportedPkgs) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("\t<Package name = \"" + p + "\">\n");
+            sb.append("\t\t<Exporters>\n");
+            Set<String> exporters = new HashSet<String>();
+            for (PackageAnalyser.Wire w : wires) {
+                if (w.getPkg().equals(p)) {
+                    exporters.add(w.getExporter().getName());
+                }
+            }
+            for (String e : exporters) {
+                sb.append(e + " ");
+            }
+            sb.append("\n\t\t</Exporters>\n");
+            sb.append("\t\t<Importers>\n");
+            for (PackageAnalyser.Wire w : wires) {
+                if (w.getPkg().equals(p)) {
+                    sb.append(w.getImporter().getName() + " ");
+                }
+            }
+            sb.append("\n\t\t</Importers>\n");
+            sb.append("\t</Package>");
+            out.println(sb);
+        }
+        out.println("</Wires>");
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
             System.out.println("Usage: java " + PackageAnalyser.class.getName() +
@@ -403,7 +466,8 @@ public class PackageAnalyser {
         PrintStream wireOut = new PrintStream(new FileOutputStream(args[1]));
         PrintStream spOut = new PrintStream(new FileOutputStream(args[2]));
         File f = new File(repoPath) {
-            @Override public File[] listFiles() {
+            @Override
+            public File[] listFiles() {
                 List<File> files = new ArrayList<File>();
                 for (File f : super.listFiles()) {
                     if (f.isDirectory()) {
@@ -421,22 +485,22 @@ public class PackageAnalyser {
         };
         Repository moduleRepository = new DirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
+
         PackageAnalyser analyser = new PackageAnalyser(moduleRepository);
-        Set<Wire> wires = analyser.analyseWirings();
-        wireOut.println("****** Package Dependencies (total = " + wires.size()+ " numbers) among modules are listed below: ******");
-        for (Wire w : wires) {
-            wireOut.println(w);
-        }
+        Collection<Wire> wires = analyser.analyseWirings();
+        Collection<String> exportedPkgs = analyser.findAllExportedPackages();
+
+        analyser.generateWiringReport(exportedPkgs, wires, wireOut);
         Collection<SplitPackage> splitPkgs = analyser.findSplitPackages();
-        for (SplitPackage p : splitPkgs) spOut.println(p+"\n");
+
+        for (SplitPackage p : splitPkgs) spOut.println(p + "\n");
         spOut.println("Total number of Split Packages = " + splitPkgs.size());
 
         System.out.println("******** GROSS STATISTICS *********");
         System.out.println("Total number of bundles in this repository: " + analyser.findAllBundles().size());
         System.out.println("Total number of wires = " + wires.size());
-        System.out.println("Total number of exported packages = " + analyser.findAllExportedPackages().size());
+        System.out.println("Total number of exported packages = " + exportedPkgs.size());
         System.out.println("Total number of split-packages = " + splitPkgs.size());
-
     }
 
 }
