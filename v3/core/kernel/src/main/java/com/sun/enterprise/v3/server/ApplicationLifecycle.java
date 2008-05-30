@@ -46,6 +46,7 @@ import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.EnableCommand;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
@@ -88,6 +89,8 @@ import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -136,6 +139,9 @@ public class ApplicationLifecycle {
 
     @Inject
     protected Server server;
+
+    @Inject
+    ServerEnvironment env;
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -216,7 +222,13 @@ public class ApplicationLifecycle {
         // now maybe the deployer's have added extra APIs...
         defs.addAll(context.getPublicAPIs());
 
-        return modulesRegistry.getModulesClassLoader(parent, defs);
+        final String libraries = context.getProps().getProperty(ServerTags.LIBRARIES);
+        URL[] urls = null;
+        if (libraries != null) {
+            urls = convertToURL(libraries);
+        }
+        return modulesRegistry.getModulesClassLoader(parent, defs, urls);
+
     }
 
     public ApplicationInfo deploy(Iterable<Sniffer> sniffers, final DeploymentContextImpl context, ActionReport report) {
@@ -1125,4 +1137,43 @@ public class ApplicationLifecycle {
         // recursively delete...
         FileUtils.whack(generatedJspRoot);
     }
+
+
+    /**
+     * converts libraries specified via the --libraries deployment option to
+     * URL[].  The library JAR files are specified by either relative or
+     * absolute paths.  The relative path is relative to instance-root/lib/applibs.
+     * The libraries  are made available to the application in the order specified.
+     *
+     * @param libraries is a comma-separated list of library JAR files
+     * @return array of URL
+     */
+    private URL[] convertToURL(String librariesStr) {
+        if(librariesStr == null)
+            return null;
+        String [] librariesStrArray = librariesStr.split(",");
+        if(librariesStrArray == null)
+            return null;
+        final URL [] urls = new URL[librariesStrArray.length];
+        //Using the string from lib and applibs requires admin which is
+        //built after appserv-core.
+        final String appLibsDir = env.getLibPath()
+                                  + File.separator  + "applibs";
+        int i=0;
+        for(final String libraryStr:librariesStrArray){
+            try {
+                File f = new File(libraryStr);
+                if(!f.isAbsolute())
+                    f = new File(appLibsDir, libraryStr);
+                URL url = f.toURL();
+                urls[i++] = url;
+            } catch (MalformedURLException malEx) {
+                logger.log(Level.WARNING, "Cannot convert classpath to URL",
+                        libraryStr);
+                logger.log(Level.WARNING, malEx.getMessage(), malEx);
+            }
+        }
+        return urls;
+    }
 }
+
