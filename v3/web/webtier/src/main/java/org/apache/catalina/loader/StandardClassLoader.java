@@ -82,7 +82,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import org.apache.naming.JndiPermission;
-
+import org.glassfish.web.loader.Reloader;
 
 /**
  * Subclass implementation of <b>java.net.URLClassLoader</b> that knows how

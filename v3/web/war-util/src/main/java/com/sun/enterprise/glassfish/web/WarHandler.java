@@ -39,8 +39,8 @@ package com.sun.enterprise.glassfish.web;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.web.loader.WebappClassLoader;
 import org.jvnet.hk2.annotations.Service;
-import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.naming.resources.FileDirContext;
 
 import java.io.*;

@@ -61,10 +61,10 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.web.loader.WebappClassLoader;
 
 import java.util.List;
 import java.util.ResourceBundle;

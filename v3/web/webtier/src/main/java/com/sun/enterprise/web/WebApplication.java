@@ -36,18 +36,18 @@
 
 package com.sun.enterprise.web;
 
-import org.glassfish.api.deployment.ApplicationContainer;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
-import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
-import com.sun.logging.LogDomains;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.web.loader.WebappClassLoader;
 
 import java.util.List;
 import java.util.Collection;

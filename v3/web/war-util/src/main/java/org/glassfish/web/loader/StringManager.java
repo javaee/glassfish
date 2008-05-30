@@ -52,7 +52,7 @@
  * limitations under the License.
  */
 
-package org.apache.catalina.loader;
+package org.glassfish.web.loader;
 
 import java.text.MessageFormat;
 import java.util.Hashtable;

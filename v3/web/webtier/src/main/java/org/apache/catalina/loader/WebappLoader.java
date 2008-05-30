@@ -86,6 +86,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 
+import com.sun.org.apache.commons.modeler.Registry;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.DefaultContext;
@@ -99,11 +101,11 @@ import org.apache.catalina.Logger;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.modeler.Registry;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
 import org.apache.naming.resources.Resource;
 
+import org.glassfish.web.loader.WebappClassLoader;
 
 /**
  * Classloader implementation which is specialized for handling web

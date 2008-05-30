@@ -55,47 +55,63 @@
 
 
 
-package org.apache.catalina.loader;
+package org.glassfish.web.loader;
 
+import java.net.URL;
+import java.security.cert.Certificate;
+import java.util.jar.Manifest;
 
 /**
- * Internal interface that <code>ClassLoader</code> implementations may
- * optionally implement to support the auto-reload functionality of
- * the classloader associated with the context.
+ * Resource entry.
  *
- * @author Craig R. McClanahan
+ * @author Remy Maucherat
  * @version $Revision: 1.1.2.1 $ $Date: 2007/08/17 15:46:27 $
  */
-
-public interface Reloader {
-
-
-    /**
-     * Add a new repository to the set of places this ClassLoader can look for
-     * classes to be loaded.
-     *
-     * @param repository Name of a source of classes to be loaded, such as a
-     *  directory pathname, a JAR file pathname, or a ZIP file pathname
-     *
-     * @exception IllegalArgumentException if the specified repository is
-     *  invalid or does not exist
-     */
-    public void addRepository(String repository);
+public class ResourceEntry {
 
 
     /**
-     * Return a String array of the current repositories for this class
-     * loader.  If there are no repositories, a zero-length array is
-     * returned.
+     * The "last modified" time of the origin file at the time this class
+     * was loaded, in milliseconds since the epoch.
      */
-    public String[] findRepositories();
+    public long lastModified = -1;
 
 
     /**
-     * Have one or more classes or resources been modified so that a reload
-     * is appropriate?
+     * Binary content of the resource.
      */
-    public boolean modified();
+    public byte[] binaryContent = null;
+
+
+    /**
+     * Loaded class.
+     */
+    public Class loadedClass = null;
+
+
+    /**
+     * URL source from where the object was loaded.
+     */
+    public URL source = null;
+
+
+    /**
+     * URL of the codebase from where the object was loaded.
+     */
+    public URL codeBase = null;
+
+
+    /**
+     * Manifest (if the resource was loaded from a JAR).
+     */
+    public Manifest manifest = null;
+
+
+    /**
+     * Certificates (if the resource was loaded from a JAR).
+     */
+    public Certificate[] certificates = null;
 
 
 }
+

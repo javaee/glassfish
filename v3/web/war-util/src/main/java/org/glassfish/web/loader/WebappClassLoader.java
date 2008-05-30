@@ -55,7 +55,7 @@
 
 
 
-package org.apache.catalina.loader;
+package org.glassfish.web.loader;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
