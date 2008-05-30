@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.web;
+package org.glassfish.web.sniffer;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.ModulesRegistry;
