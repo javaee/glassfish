@@ -112,4 +112,7 @@ public final class Constants {
     public static final String ACCESS_LOGGING_ENABLED = "accessLoggingEnabled";
 
     public static final String SSO_ENABLED = "sso-enabled";
+
+    // habitat attribute in ServletContext
+    public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
 }

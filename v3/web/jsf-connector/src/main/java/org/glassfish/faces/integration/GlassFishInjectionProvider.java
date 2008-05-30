@@ -61,8 +61,8 @@ import org.glassfish.api.invocation.ComponentInvocation;
 public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
 
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
-    private static final String JSF_HABITAT_ATTRIBUTE =
-            "com.sun.appserv.jsf.habitat";
+    private static final String HABITAT_ATTRIBUTE =
+            "org.glassfish.servlet.habitat";
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
 
@@ -73,7 +73,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
      */
     public GlassFishInjectionProvider(ServletContext servletContext) {
         Habitat defaultHabitat = (Habitat)servletContext.getAttribute(
-                JSF_HABITAT_ATTRIBUTE);
+                HABITAT_ATTRIBUTE);
         invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
         injectionManager = defaultHabitat.getByContract(InjectionManager.class);
     }

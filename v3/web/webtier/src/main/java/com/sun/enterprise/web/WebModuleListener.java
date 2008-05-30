@@ -60,6 +60,7 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
+import com.sun.enterprise.web.Constants;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
@@ -85,12 +86,6 @@ final class WebModuleListener
      * This indicates whether debug logging is on or not
      */
     private static boolean _debugLog;
-
-    /**
-     * ServletContext attribute constant used for JSF injection integration.
-     */
-    private static final String JSF_HABITAT_ATTRIBUTE =
-            "com.sun.appserv.jsf.habitat";
 
     /**
      * Descriptor object associated with this web application.
@@ -276,7 +271,7 @@ final class WebModuleListener
 
         // set habitat for jsf injection
         webModule.getServletContext().setAttribute(
-                JSF_HABITAT_ATTRIBUTE,
+                Constants.HABITAT_ATTRIBUTE,
                 serverContext.getDefaultHabitat());
 
         SunWebApp bean  = webModule.getIasWebAppConfigBean();
