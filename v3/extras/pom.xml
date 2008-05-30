@@ -49,7 +49,6 @@
     <packaging>pom</packaging>
     <name>GlassFish Extras modules</name>  
     <modules>
-        <module>rails</module>
         <module>phobos</module>
         <!--module>php</module-->
     </modules>

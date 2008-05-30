@@ -57,8 +57,7 @@
     <modules>
         <module>ant</module>
         <module>jaxb</module>
-        <module>javadb</module>
-        <module>grizzly-jruby</module>        
+        <module>javadb</module>    
         <module>apache-commons</module>
         <module>jmxremote_optional</module>
         <module>sysnet-registration</module>
