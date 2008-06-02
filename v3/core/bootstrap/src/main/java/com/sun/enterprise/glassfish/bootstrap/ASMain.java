@@ -44,7 +44,7 @@ public class ASMain {
     private enum Platform {HK2, Felix, Knopflerfish, KnopflerFish, Equinox}
 
     public static void main(final String args[]) {
-        Platform platform = Platform.HK2;
+        Platform platform = Platform.Felix; // default is Felix
 
         // first check the system props
         String temp = System.getProperty(PLATFORM_PROPERTY_KEY);
