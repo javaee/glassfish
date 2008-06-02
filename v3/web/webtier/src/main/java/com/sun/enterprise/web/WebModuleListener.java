@@ -64,7 +64,7 @@ import com.sun.enterprise.web.Constants;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
-import com.sun.appserv.server.util.ASClassLoaderUtil;
+import org.glassfish.web.loader.util.ASClassLoaderUtil;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 //import com.sun.enterprise.config.ConfigException;

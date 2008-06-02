@@ -33,7 +33,7 @@ import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
-import com.sun.appserv.server.util.ASClassLoaderUtil;
+import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;

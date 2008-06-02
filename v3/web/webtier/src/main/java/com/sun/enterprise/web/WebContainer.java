@@ -124,7 +124,7 @@ import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.appserv.ProxyHandler;
 //import com.sun.appserv.server.ServerLifecycleException;
-import com.sun.appserv.server.util.ASClassLoaderUtil;
+import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
