@@ -78,8 +78,8 @@ public class EjbFactory
     implements ObjectFactory {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( EjbFactory.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( EjbFactory.class );
 
     // ----------------------------------------------------------- Constructors
 

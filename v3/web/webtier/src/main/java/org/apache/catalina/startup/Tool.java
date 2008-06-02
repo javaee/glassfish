@@ -141,8 +141,8 @@ public final class Tool {
     private static boolean debug = false;
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( Tool.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( Tool.class );
 
     /**
      * Include server classes in the repositories?

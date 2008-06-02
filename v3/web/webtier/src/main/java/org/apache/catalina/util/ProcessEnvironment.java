@@ -102,8 +102,8 @@ import org.apache.catalina.Wrapper;
 public class ProcessEnvironment {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-    com.sun.org.apache.commons.logging.LogFactory.getLog( ProcessEnvironment.class );
+    private static org.apache.commons.logging.Log log=
+    org.apache.commons.logging.LogFactory.getLog( ProcessEnvironment.class );
 
     /** context of the enclosing servlet */
     private ServletContext context = null;

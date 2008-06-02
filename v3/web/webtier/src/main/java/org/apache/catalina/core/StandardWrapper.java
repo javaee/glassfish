@@ -98,7 +98,7 @@ import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.tomcat.util.log.SystemLogHandler;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 
 /**
  * Standard implementation of the <b>Wrapper</b> interface that represents
@@ -113,8 +113,8 @@ public class StandardWrapper
     extends ContainerBase
     implements ServletConfig, Wrapper {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( StandardWrapper.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( StandardWrapper.class );
 
     private static final String[] DEFAULT_SERVLET_METHODS = new String[] {
                                                     "GET", "HEAD", "POST" };

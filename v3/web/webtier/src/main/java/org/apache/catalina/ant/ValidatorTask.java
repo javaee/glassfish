@@ -67,7 +67,7 @@ import java.net.URL;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import com.sun.org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Digester;
 import org.xml.sax.InputSource;
 
 import org.apache.catalina.startup.Constants;

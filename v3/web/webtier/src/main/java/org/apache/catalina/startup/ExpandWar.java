@@ -70,8 +70,8 @@ import java.util.jar.JarFile;
 
 import org.apache.catalina.Host;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Expand out a WAR in a Host's appBase.

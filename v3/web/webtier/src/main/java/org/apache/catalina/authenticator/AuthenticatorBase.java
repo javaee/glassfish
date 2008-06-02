@@ -112,8 +112,8 @@ import org.apache.catalina.util.StringManager;
 //import org.apache.catalina.util.DateTool;
 //END SJSAS 6202703
 import org.apache.catalina.valves.ValveBase;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.Auditor; // IASRI 4823322

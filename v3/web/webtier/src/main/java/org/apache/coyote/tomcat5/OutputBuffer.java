@@ -89,8 +89,8 @@ import com.sun.grizzly.util.buf.C2BConverter;
 public class OutputBuffer extends Writer
     implements ByteChunk.ByteOutputChannel {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( OutputBuffer.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( OutputBuffer.class );
 
     // -------------------------------------------------------------- Constants
 

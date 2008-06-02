@@ -91,8 +91,8 @@ import org.apache.naming.resources.Resource;
  */
 public final class ExtensionValidator {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog(ExtensionValidator.class);
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog(ExtensionValidator.class);
 
     /**
      * The string resources for this package.

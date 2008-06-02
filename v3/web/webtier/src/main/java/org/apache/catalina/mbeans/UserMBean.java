@@ -68,9 +68,9 @@ import org.apache.catalina.Group;
 import org.apache.catalina.Role;
 import org.apache.catalina.User;
 import org.apache.catalina.UserDatabase;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
-import com.sun.org.apache.commons.modeler.ManagedBean;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.ManagedBean;
+import org.apache.commons.modeler.Registry;
 
 
 /**

@@ -68,9 +68,9 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
-import com.sun.org.apache.commons.modeler.Registry;
-import com.sun.org.apache.commons.modeler.ManagedBean;
+import org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.ManagedBean;
 
 
 /**

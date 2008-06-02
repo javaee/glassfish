@@ -66,7 +66,7 @@ import java.io.StringWriter;
 
 import java.util.*;
 
-import com.sun.org.apache.commons.logging.*;
+import org.apache.commons.logging.*;
 
 /**
  *  Log using common-logging.
@@ -92,7 +92,7 @@ public  class CommonLogHandler extends LogHandler {
     {
         if( prefix==null ) prefix="tomcat";
 
-        com.sun.org.apache.commons.logging.Log l=(com.sun.org.apache.commons.logging.Log)loggers.get( prefix );
+        org.apache.commons.logging.Log l=(org.apache.commons.logging.Log)loggers.get( prefix );
         if( l==null ) {
             l=LogFactory.getLog( prefix );
             loggers.put( prefix, l );

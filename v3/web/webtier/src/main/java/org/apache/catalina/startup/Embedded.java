@@ -91,8 +91,8 @@ import org.apache.catalina.util.StringManager;
 // START SJSAS 6340446
 import org.apache.catalina.util.ServerInfo;
 // END SJSAS 6340446
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.IntrospectionUtils;
 
 

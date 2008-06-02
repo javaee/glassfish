@@ -89,10 +89,10 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.LifecycleSupport;
 // END CR 6411114
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 // START CR 6411114
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 // END CR 6411114
 
 

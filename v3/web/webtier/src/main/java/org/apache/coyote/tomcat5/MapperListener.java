@@ -72,10 +72,10 @@ import javax.management.NotificationFilter;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;

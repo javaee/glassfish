@@ -61,7 +61,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.ObjectName;
 
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.sun.grizzly.util.net.SSLImplementation;

@@ -100,7 +100,7 @@ import java.util.*;
  * @author Alex Chaffee [alex@jguru.com]
  * @author Costin Manolache
  **/
-public class Log implements com.sun.org.apache.commons.logging.Log {
+public class Log implements org.apache.commons.logging.Log {
 
     /**
      * Verbosity level codes.

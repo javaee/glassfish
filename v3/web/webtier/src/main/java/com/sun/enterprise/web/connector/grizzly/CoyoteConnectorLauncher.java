@@ -56,7 +56,7 @@ import java.io.OutputStream;
 import org.apache.tomcat.util.res.StringManager;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Enumeration;
@@ -741,8 +741,8 @@ public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistrati
         }
     }
 
-    protected static final com.sun.org.apache.commons.logging.Log log 
-        = com.sun.org.apache.commons.logging.LogFactory.getLog(CoyoteConnectorLauncher.class);
+    protected static final org.apache.commons.logging.Log log 
+        = org.apache.commons.logging.LogFactory.getLog(CoyoteConnectorLauncher.class);
 
     // -------------------- Various implementation classes --------------------
 

@@ -98,7 +98,7 @@ public class AntJavaCompiler implements JavaCompiler {
     private boolean nolog;
     private StringBuffer info = new StringBuffer();
         // For collecting Java compilation enviroment
-    private com.sun.org.apache.commons.logging.Log log;
+    private org.apache.commons.logging.Log log;
 
     // Use a threadpool and force it to 1 to simulate serialization
     private static ExecutorService threadPool = null;
@@ -161,8 +161,8 @@ public class AntJavaCompiler implements JavaCompiler {
         this.errDispatcher = errDispatcher;
         options = ctxt.getOptions();
         log = suppressLogging?
-            new com.sun.org.apache.commons.logging.impl.NoOpLog():
-            com.sun.org.apache.commons.logging.LogFactory.getLog(
+            new org.apache.commons.logging.impl.NoOpLog():
+            org.apache.commons.logging.LogFactory.getLog(
                 AntJavaCompiler.class);
         getProject();
         javac = (Javac) project.createTask("javac");

@@ -68,8 +68,8 @@ import java.util.*;
  */
 public final class IntrospectionUtils {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( IntrospectionUtils.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( IntrospectionUtils.class );
 
     /** Call execute() - any ant-like task should work
      */

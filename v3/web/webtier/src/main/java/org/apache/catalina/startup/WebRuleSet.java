@@ -62,9 +62,9 @@ import java.lang.reflect.Method;
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.deploy.SecurityConstraint;
-import com.sun.org.apache.commons.digester.Digester;
-import com.sun.org.apache.commons.digester.Rule;
-import com.sun.org.apache.commons.digester.RuleSetBase;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Rule;
+import org.apache.commons.digester.RuleSetBase;
 import org.xml.sax.Attributes;
 
 

@@ -94,10 +94,10 @@ import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.SchemaResolver;
-import com.sun.org.apache.commons.digester.Digester;
-import com.sun.org.apache.commons.digester.RuleSet;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.RuleSet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -1280,7 +1280,7 @@ class DigesterLogger implements Log {
     public String contextMsg = null;
 
     public DigesterLogger(String contextName) {
-        log = LogFactory.getLog("com.sun.org.apache.commons.digester.Digester");
+        log = LogFactory.getLog("org.apache.commons.digester.Digester");
         contextMsg = "In context [" + contextName + "]: ";
     }
     

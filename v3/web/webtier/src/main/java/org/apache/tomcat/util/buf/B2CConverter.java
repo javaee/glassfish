@@ -74,8 +74,8 @@ import java.io.*;
  */
 public class B2CConverter {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( B2CConverter.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( B2CConverter.class );
 
     private IntermediateInputStream iis;
     private ReadConvertor conv;

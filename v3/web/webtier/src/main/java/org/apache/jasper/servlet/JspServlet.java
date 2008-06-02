@@ -83,8 +83,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.tagext.TagLibraryInfo;
 // END GlassFish 750
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.jasper.Constants;
 import org.apache.jasper.EmbeddedServletOptions;

@@ -113,8 +113,8 @@ public class StandardClassLoader
     implements Reloader {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( StandardClassLoader.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( StandardClassLoader.class );
 
     // ----------------------------------------------------------- Constructors
 

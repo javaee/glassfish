@@ -24,7 +24,7 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
 import org.apache.catalina.LifecycleException;

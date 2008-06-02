@@ -57,7 +57,7 @@
 
 package org.apache.catalina.startup;
 
-import com.sun.org.apache.commons.digester.Rule;
+import org.apache.commons.digester.Rule;
 import org.xml.sax.Attributes;
 
 import org.apache.tomcat.util.IntrospectionUtils;

@@ -78,8 +78,8 @@ import org.apache.tomcat.util.collections.MultiMap;
  */
 public final class Parameters extends MultiMap {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog(Parameters.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog(Parameters.class );
 
     // Transition: we'll use the same Hashtable( String->String[] )
     // for the beginning. When we are sure all accesses happen through

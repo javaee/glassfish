@@ -72,8 +72,8 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.coyote.tomcat5.CoyoteResponseFacade;
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class responsible for processing the result of a RD.forward() invocation

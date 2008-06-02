@@ -73,8 +73,8 @@ package org.apache.tomcat.util.buf;
 public final class Base64 {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( Base64.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( Base64.class );
 
     static private final int  BASELENGTH         = 255;
     static private final int  LOOKUPLENGTH       = 63;

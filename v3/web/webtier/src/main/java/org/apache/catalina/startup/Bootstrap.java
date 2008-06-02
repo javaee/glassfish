@@ -99,8 +99,8 @@ public final class Bootstrap {
      */
     private static Bootstrap daemon = null;
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( Bootstrap.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( Bootstrap.class );
 
     // -------------------------------------------------------------- Variables
 

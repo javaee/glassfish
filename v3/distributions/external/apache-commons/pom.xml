@@ -49,7 +49,7 @@
     <!-- Don't use bundle packaging. There are issues in using
          maven-bundle-plugin and hk2-maven-plugin together -->
     <packaging>jar</packaging> 
-    <name>com.sun Apache commons library repackaged as OSGi and HK2 bundle</name>
+    <name>Apache commons library repackaged as OSGi and HK2 bundle</name>
     <description>Module repackaging of the Apache commons library</description>
 
     <developers>
@@ -80,9 +80,9 @@
                 <configuration>
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
-                        <Embed-Dependency>*;groupId=com.sun.commons;inline=true</Embed-Dependency>
-                        <Export-Package>com.sun.org.apache.commons.*</Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*;groupId=commons-collections;inline=true,*;groupId=commons-digester;inline=true,*;groupId=commons-logging;inline=true,*;groupId=commons-modeler;inline=true</Embed-Dependency>
+                        <Export-Package>org.apache.commons.*</Export-Package>
+                        <Import-Package>!org.apache.log4j,*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,
@@ -122,33 +122,33 @@
              this wrapper, we don't have to distribute these jars. 
         -->
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>modeler</artifactId>
-            <version>${com.sun.commons.modeler.version}</version>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons.beanutils.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${commons.collections.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>digester</artifactId>
-            <version>${com.sun.commons.digester.version}</version>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>${commons.digester.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>collections</artifactId>
-            <version>${com.sun.commons.collections.version}</version>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons.logging.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>beanutils</artifactId>
-            <version>${com.sun.commons.beanutils.version}</version>
+            <groupId>commons-modeler</groupId>
+            <artifactId>commons-modeler</artifactId>
+            <version>${commons.modeler.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

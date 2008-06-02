@@ -209,8 +209,8 @@ public class CoyoteProcessor implements Processor, ActionHook {
     /**
      * Logger.
      */
-    protected static final com.sun.org.apache.commons.logging.Log log 
-        = com.sun.org.apache.commons.logging.LogFactory.getLog(CoyoteProcessor.class);
+    protected static final org.apache.commons.logging.Log log 
+        = org.apache.commons.logging.LogFactory.getLog(CoyoteProcessor.class);
 
 
     /**

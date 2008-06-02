@@ -102,9 +102,9 @@ import org.apache.catalina.util.StringManager;
 //START SJSAS 6202703
 import org.apache.catalina.util.DateTool;
 //END SJSAS 6202703
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.modeler.Registry;
 // START SJSWS 6324431
 import org.apache.catalina.core.StandardContext;
 // END SJSWS 6324431

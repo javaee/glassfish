@@ -70,8 +70,8 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.XMLConstants;
 
 import com.sun.grizzly.util.buf.UEncoder;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jasper.Constants;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.compiler.Localizer;

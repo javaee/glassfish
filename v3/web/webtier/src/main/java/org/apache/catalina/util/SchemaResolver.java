@@ -58,7 +58,7 @@ package org.apache.catalina.util;
 
 import java.util.HashMap;
 
-import com.sun.org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Digester;
 import org.xml.sax.InputSource;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;

@@ -139,9 +139,9 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.apache.catalina.security.SecurityUtil;
-import com.sun.org.apache.commons.logging.Log;
+import org.apache.commons.logging.Log;
 // START CR 6309511
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.LogFactory;
 // END CR 6309511
 
 // START S1AS 6170450

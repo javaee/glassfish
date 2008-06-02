@@ -131,8 +131,8 @@ public final class ApplicationContextFacade
     private HashMap objectCache;
     
     
-    private static com.sun.org.apache.commons.logging.Log sysLog=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( ApplicationContextFacade.class );
+    private static org.apache.commons.logging.Log sysLog=
+        org.apache.commons.logging.LogFactory.getLog( ApplicationContextFacade.class );
 
         
     // ----------------------------------------------------------- Constructors

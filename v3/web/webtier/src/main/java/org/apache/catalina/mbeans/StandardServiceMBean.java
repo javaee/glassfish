@@ -63,7 +63,7 @@ import javax.management.ObjectName;
 import javax.management.RuntimeOperationsException;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Service;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.BaseModelMBean;
 
 
 /**

@@ -68,8 +68,8 @@ import org.apache.tomcat.util.buf.*;
 public final class Expirer  implements ThreadPoolRunnable
 {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog(Expirer.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog(Expirer.class );
 
     // We can use Event/Listener, but this is probably simpler
     // and more efficient

@@ -69,7 +69,7 @@ import javax.management.RuntimeOperationsException;
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.NamingResources;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.BaseModelMBean;
 
 
 /**

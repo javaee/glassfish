@@ -98,8 +98,8 @@ import org.apache.naming.resources.ResourceAttributes;
 public class HostConfig
     implements LifecycleListener {
     
-    private static com.sun.org.apache.commons.logging.Log log=
-         com.sun.org.apache.commons.logging.LogFactory.getLog( HostConfig.class );
+    private static org.apache.commons.logging.Log log=
+         org.apache.commons.logging.LogFactory.getLog( HostConfig.class );
 
     // ----------------------------------------------------- Instance Variables
 

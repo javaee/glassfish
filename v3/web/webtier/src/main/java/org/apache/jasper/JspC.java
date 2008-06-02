@@ -77,9 +77,9 @@ import java.util.*;
 import javax.servlet.jsp.tagext.TagLibraryInfo;
 // END GlassFish 750
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
-import com.sun.org.apache.commons.logging.LogConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.LogConfigurationException;
 import org.apache.jasper.compiler.Compiler;
 import org.apache.jasper.compiler.JspConfig;
 import org.apache.jasper.compiler.JspRuntimeContext;
@@ -1369,7 +1369,8 @@ public class JspC implements Options {
         } finally {
             // START S1AS 5032338
             if (loader != null) {
-                LogFactory.release(loader);
+                // XXX APACHE-COMMONS-LOGGING-PATCH
+                // LogFactory.release(loader);
                 // START SJSAS 6258619
                 ClassLoaderUtil.releaseLoader(loader);
                 // END SJSAS 6258619

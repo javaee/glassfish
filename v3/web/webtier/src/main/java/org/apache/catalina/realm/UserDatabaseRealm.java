@@ -80,7 +80,7 @@ import org.apache.catalina.UserDatabase;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Digester;
 
 
 /**

@@ -59,7 +59,7 @@ package org.apache.catalina.mbeans;
 
 import javax.management.MBeanException;
 import javax.management.RuntimeOperationsException;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.BaseModelMBean;
 
 
 /**

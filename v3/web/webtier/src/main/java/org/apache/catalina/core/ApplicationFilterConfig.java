@@ -86,8 +86,8 @@ import org.apache.tomcat.util.log.SystemLogHandler;
 
 final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( ApplicationFilterConfig.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( ApplicationFilterConfig.class );
  
     // ----------------------------------------------------------- Constructors
 

@@ -86,7 +86,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -1357,8 +1357,8 @@ public class WebappLoader
     }
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( WebappLoader.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( WebappLoader.class );
 
     private ObjectName oname;
     private MBeanServer mserver;

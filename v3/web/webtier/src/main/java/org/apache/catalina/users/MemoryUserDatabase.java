@@ -71,8 +71,8 @@ import org.apache.catalina.Role;
 import org.apache.catalina.User;
 import org.apache.catalina.UserDatabase;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.digester.Digester;
-import com.sun.org.apache.commons.digester.ObjectCreationFactory;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.ObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 

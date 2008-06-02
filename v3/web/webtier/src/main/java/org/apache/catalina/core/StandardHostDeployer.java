@@ -79,7 +79,7 @@ import org.apache.catalina.startup.ContextRuleSet;
 import org.apache.catalina.startup.ExpandWar;
 import org.apache.catalina.startup.NamingRuleSet;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXParseException;
 
 
@@ -93,8 +93,8 @@ import org.xml.sax.SAXParseException;
 
 public class StandardHostDeployer implements Deployer {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( StandardHostDeployer.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( StandardHostDeployer.class );
 
     // ----------------------------------------------------------- Constructors
 

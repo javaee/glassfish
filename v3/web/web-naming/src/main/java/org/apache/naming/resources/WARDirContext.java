@@ -99,8 +99,8 @@ import org.apache.naming.NamingContextEnumeration;
 public class WARDirContext extends BaseDirContext {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( WARDirContext.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( WARDirContext.class );
 
     // ----------------------------------------------------------- Constructors
 

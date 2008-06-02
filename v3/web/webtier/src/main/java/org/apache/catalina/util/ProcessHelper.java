@@ -122,8 +122,8 @@ import org.apache.catalina.Wrapper;
      */
 public class ProcessHelper {
 
-private static com.sun.org.apache.commons.logging.Log log=
-    com.sun.org.apache.commons.logging.LogFactory.getLog( ProcessHelper.class );
+private static org.apache.commons.logging.Log log=
+    org.apache.commons.logging.LogFactory.getLog( ProcessHelper.class );
 
 /** script/command to be executed */
 private String command = null;

@@ -102,8 +102,8 @@ import javax.el.FunctionMapper;
 import javax.el.MethodExpression;
 import javax.el.ExpressionFactory;
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jasper.Constants;
 import org.apache.jasper.compiler.Localizer;
 import org.apache.jasper.security.SecurityUtil;

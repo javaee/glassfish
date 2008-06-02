@@ -33,7 +33,7 @@ import com.sun.logging.LogDomains;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
-import com.sun.org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;

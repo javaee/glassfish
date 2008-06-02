@@ -82,10 +82,10 @@ import org.apache.jasper.servlet.JspServletWrapper;
  */
 
 public class Compiler {
-    private static com.sun.org.apache.commons.logging.Log commonsLog =
-        com.sun.org.apache.commons.logging.LogFactory.getLog(Compiler.class);
-    private static com.sun.org.apache.commons.logging.Log noOpLog =
-        new com.sun.org.apache.commons.logging.impl.NoOpLog();
+    private static org.apache.commons.logging.Log commonsLog =
+        org.apache.commons.logging.LogFactory.getLog(Compiler.class);
+    private static org.apache.commons.logging.Log noOpLog =
+        new org.apache.commons.logging.impl.NoOpLog();
 
     // ----------------------------------------------------------------- Static
 
@@ -99,7 +99,7 @@ public class Compiler {
     private TagFileProcessor tfp;
     private JavaCompiler javaCompiler;
     private boolean jspcMode;
-    private com.sun.org.apache.commons.logging.Log log;
+    private org.apache.commons.logging.Log log;
     private SmapUtil smapUtil;
     private Options options;
     private Node.Nodes pageNodes;

@@ -92,8 +92,8 @@ public final class ClassLoaderFactory {
     // ------------------------------------------------------- Static Variables
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( ClassLoaderFactory.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( ClassLoaderFactory.class );
 
     /**
      * Debugging detail level for processing the startup.

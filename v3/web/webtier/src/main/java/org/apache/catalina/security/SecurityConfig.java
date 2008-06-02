@@ -67,8 +67,8 @@ import org.apache.catalina.startup.CatalinaProperties;
 public final class SecurityConfig{
     private static SecurityConfig singleton = null;
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( SecurityConfig.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( SecurityConfig.class );
 
     
     private final static String PACKAGE_ACCESS =  "sun.,"

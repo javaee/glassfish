@@ -69,8 +69,8 @@ import java.util.TreeMap;
 public class StringCache {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( StringCache.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( StringCache.class );
     
     
     // ------------------------------------------------------- Static Variables

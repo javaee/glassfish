@@ -107,8 +107,8 @@ import org.apache.catalina.Wrapper;
 public class CGIProcessEnvironment extends ProcessEnvironment {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( CGIProcessEnvironment.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( CGIProcessEnvironment.class );
 
     /** cgi command's query parameters */
     private Hashtable queryParameters = null;

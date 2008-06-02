@@ -58,9 +58,9 @@
 package org.apache.catalina.realm;
 
 
-import com.sun.org.apache.commons.digester.Digester;
-import com.sun.org.apache.commons.digester.Rule;
-import com.sun.org.apache.commons.digester.RuleSetBase;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.Rule;
+import org.apache.commons.digester.RuleSetBase;
 import org.xml.sax.Attributes;
 
 

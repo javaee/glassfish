@@ -80,8 +80,8 @@ public class InputBuffer extends Reader
     implements ByteChunk.ByteInputChannel, CharChunk.CharInputChannel,
                CharChunk.CharOutputChannel {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( InputBuffer.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( InputBuffer.class );
 
     // -------------------------------------------------------------- Constants
 

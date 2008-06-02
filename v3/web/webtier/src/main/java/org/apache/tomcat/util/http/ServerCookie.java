@@ -78,8 +78,8 @@ import java.net.URLEncoder;
  */
 public class ServerCookie implements Serializable {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog(ServerCookie.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog(ServerCookie.class );
 
     // START PWC 6392327
     /**

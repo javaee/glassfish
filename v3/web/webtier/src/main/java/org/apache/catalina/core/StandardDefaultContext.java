@@ -91,8 +91,8 @@ import org.apache.catalina.deploy.ResourceParams;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.modeler.ManagedBean;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.ManagedBean;
+import org.apache.commons.modeler.Registry;
 import org.apache.naming.ContextAccessController;
 
 /**

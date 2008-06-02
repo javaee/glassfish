@@ -74,8 +74,8 @@ import java.nio.charset.CodingErrorAction;
 
 public class C2BConverter {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog(C2BConverter.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog(C2BConverter.class );
 
     protected ByteChunk bb;
     protected String enc;

@@ -97,7 +97,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.logger.LoggerBase;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.Registry;
 import org.apache.naming.resources.ProxyDirContext;
 
 
@@ -164,8 +164,8 @@ import org.apache.naming.resources.ProxyDirContext;
 public abstract class ContainerBase
     implements Container, Lifecycle, Pipeline, MBeanRegistration, Serializable {
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( ContainerBase.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( ContainerBase.class );
 
     /**
      * Perform addChild with the permissions of this class.

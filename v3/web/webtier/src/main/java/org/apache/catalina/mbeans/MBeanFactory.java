@@ -97,9 +97,9 @@ import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.apache.catalina.valves.RequestDumperValve;
 import org.apache.catalina.valves.ValveBase;
-import com.sun.org.apache.commons.modeler.BaseModelMBean;
-import com.sun.org.apache.commons.modeler.ManagedBean;
-import com.sun.org.apache.commons.modeler.Registry;
+import org.apache.commons.modeler.BaseModelMBean;
+import org.apache.commons.modeler.ManagedBean;
+import org.apache.commons.modeler.Registry;
 import org.apache.coyote.tomcat5.CoyoteConnector;
 
 

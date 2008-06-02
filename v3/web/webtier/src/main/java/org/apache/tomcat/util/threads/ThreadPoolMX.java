@@ -57,8 +57,8 @@
 package org.apache.tomcat.util.threads;
 
 import java.util.*;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Manageable thread pool. 

@@ -71,8 +71,8 @@ import java.io.Reader;
 public class UCSReader extends Reader {
 
 
-    private static com.sun.org.apache.commons.logging.Log log=
-        com.sun.org.apache.commons.logging.LogFactory.getLog( UCSReader.class );
+    private static org.apache.commons.logging.Log log=
+        org.apache.commons.logging.LogFactory.getLog( UCSReader.class );
 
     //
     // Constants

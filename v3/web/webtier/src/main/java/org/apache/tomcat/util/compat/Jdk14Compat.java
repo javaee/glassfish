@@ -62,8 +62,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**

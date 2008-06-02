@@ -64,9 +64,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.util.StringManager;
-import com.sun.org.apache.commons.digester.Digester;
-import com.sun.org.apache.commons.logging.Log;
-import com.sun.org.apache.commons.logging.LogFactory;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
