@@ -204,7 +204,7 @@ public class BulkAccessImpl extends AMXImplBase
 			for( int i = 0; i < objectNames.length; ++i )
 			{
 				// copy names, in case an MBean messes with the array
-				final String[]	attributesCopy	= (String[])attributeNames.clone();
+				final String[]	attributesCopy	= attributeNames.clone();
 				
 				try
 				{

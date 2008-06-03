@@ -155,7 +155,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXNonConfigImplBase
 		protected String
 	getConfigPeerJ2EEType()
 	{
-		final String	configPeerJ2EEType	= (String)ToConfigMap.get( getSelfJ2EEType() );
+		final String	configPeerJ2EEType	= ToConfigMap.get( getSelfJ2EEType() );
 
 		return( configPeerJ2EEType );
 	}
@@ -182,7 +182,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXNonConfigImplBase
 		protected String
 	getMonitoringPeerJ2EEType()
 	{
-		final String	monPeerJ2EEType	= (String)MON_MAP.get( getSelfJ2EEType() );
+		final String	monPeerJ2EEType	= MON_MAP.get( getSelfJ2EEType() );
 
 		return( monPeerJ2EEType );
 	}
@@ -199,7 +199,7 @@ public abstract class J2EEManagedObjectImplBase extends AMXNonConfigImplBase
 		
 		for( final String j2eeType : MON_MAP.keySet() )
 		{
-			final String	j2eeMonType	= (String)MON_MAP.get( j2eeType );
+			final String	j2eeMonType	= MON_MAP.get( j2eeType );
 			
 			final String	name	= getKeyProperty( j2eeType );
 			if ( name != null )

@@ -232,7 +232,7 @@ public final class TestDummy
 	    
         if ( "addAttribute".equals( methodName ) && numArgs == 2 )
 	    {
-	        addAttribute( (String)args[ 0 ], (Object)args[ 1 ] );
+	        addAttribute( (String)args[ 0 ], args[ 1 ] );
 	    }
 	    else if ( "removeAttribute".equals( methodName ) && numArgs == 1 )
 	    {
