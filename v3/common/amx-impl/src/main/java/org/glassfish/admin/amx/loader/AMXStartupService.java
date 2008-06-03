@@ -127,8 +127,8 @@ public final class AMXStartupService
         
         if ( mbs.isRegistered( OBJECT_NAME ) )
         {
-            ss = (AMXStartupServiceMBean)
-                MBeanServerInvocationHandler.newProxyInstance( mbs, OBJECT_NAME, AMXStartupServiceMBean.class, false);
+            ss = AMXStartupServiceMBean.class.cast(
+                MBeanServerInvocationHandler.newProxyInstance( mbs, OBJECT_NAME, AMXStartupServiceMBean.class, false));
         }
         return ss;
     }
