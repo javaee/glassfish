@@ -72,7 +72,7 @@ public interface ManagementRulesConfig
 
 	/**
         <b>DO NOT USE; ignored if used.</b>
-        @deprecated
+        @Deprecated ignored
      */
 	public static final String EVENT_PROPERTIES_KEY  = "EventProperties";
 	
@@ -81,7 +81,7 @@ public interface ManagementRulesConfig
 
     /**
         Use the newer method to be able to specify event properties.
-        @deprecated
+        @Deprecated use the new variant
      */
 	    public ManagementRuleConfig createManagementRuleConfig(
                 String  ruleName,
