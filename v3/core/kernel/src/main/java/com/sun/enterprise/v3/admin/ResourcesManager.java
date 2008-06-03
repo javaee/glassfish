@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.resource.common.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;

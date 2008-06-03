@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package org.glassfish.resource.common;
 
 /**
  * A constants class housing all the resource related constants

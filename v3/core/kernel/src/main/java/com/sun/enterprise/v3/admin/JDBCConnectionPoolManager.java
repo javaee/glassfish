@@ -49,7 +49,7 @@ import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import static com.sun.enterprise.v3.admin.ResourceConstants.*;
+import static org.glassfish.resource.common.ResourceConstants.*;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Property;

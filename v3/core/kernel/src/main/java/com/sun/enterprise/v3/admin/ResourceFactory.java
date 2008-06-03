@@ -36,9 +36,10 @@
 
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.resource.common.Resource;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import static com.sun.enterprise.v3.admin.ResourceConstants.*;
 
+import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.api.I18n;
 
 /**

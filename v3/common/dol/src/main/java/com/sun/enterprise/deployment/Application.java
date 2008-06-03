@@ -49,7 +49,7 @@ import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.resource.Resource;
+import org.glassfish.resource.common.Resource;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;

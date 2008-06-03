@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.resource.common.ResourceConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;

@@ -34,30 +34,28 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package org.glassfish.resource.common;
 
 import java.util.Properties;
 import java.util.HashMap;
 
-import com.sun.enterprise.config.serverbeans.ServerTags;
-
-import static com.sun.enterprise.v3.admin.ResourceConstants.*;
+import static  org.glassfish.resource.common.ResourceConstants.*;
 
 /**
  * Class which represents the Resource.
  */
 public class Resource {
-    protected static final String CUSTOM_RESOURCE          = ServerTags.CUSTOM_RESOURCE;
-    protected static final String JDBC_CONNECTION_POOL     = ServerTags.JDBC_CONNECTION_POOL;
-    protected static final String CONNECTOR_RESOURCE       = ServerTags.CONNECTOR_RESOURCE;
-    protected static final String ADMIN_OBJECT_RESOURCE    = ServerTags.ADMIN_OBJECT_RESOURCE;
-    protected static final String JDBC_RESOURCE            = ServerTags.JDBC_RESOURCE;
-    protected static final String RESOURCE_ADAPTER_CONFIG  = ServerTags.RESOURCE_ADAPTER_CONFIG;
-    protected static final String MAIL_RESOURCE            = ServerTags.MAIL_RESOURCE;
-    protected static final String EXTERNAL_JNDI_RESOURCE   = ServerTags.EXTERNAL_JNDI_RESOURCE;
-    protected static final String CONNECTOR_CONNECTION_POOL = ServerTags.CONNECTOR_CONNECTION_POOL;
-    protected static final String PERSISTENCE_MANAGER_FACTORY_RESOURCE = ServerTags.PERSISTENCE_MANAGER_FACTORY_RESOURCE;
-    protected static final String CONNECTOR_SECURITY_MAP    = ServerTags.SECURITY_MAP;
+    public static final String CUSTOM_RESOURCE          = "custom-resource";
+    public static final String JDBC_CONNECTION_POOL     = "jdbc-connection-pool";
+    public static final String CONNECTOR_RESOURCE       = "connector-resource";
+    public static final String ADMIN_OBJECT_RESOURCE    = "admin-object-resource";
+    public static final String JDBC_RESOURCE            = "jdbc-resource";
+    public static final String RESOURCE_ADAPTER_CONFIG  = "resource-adapter-config";
+    public static final String MAIL_RESOURCE            = "mail-resource";
+    public static final String EXTERNAL_JNDI_RESOURCE   = "external-jndi-resource"; 
+    public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
+    public static final String PERSISTENCE_MANAGER_FACTORY_RESOURCE = "persistence-manager-factory-resource";
+    public static final String CONNECTOR_SECURITY_MAP    = "security-map";
     
     private String resType;
     private HashMap attrList = new HashMap();

@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.resource.common.Resource;
 import javax.xml.parsers.DocumentBuilder; 
 import javax.xml.parsers.DocumentBuilderFactory;  
 import javax.xml.parsers.ParserConfigurationException;
@@ -71,7 +72,7 @@ import java.util.HashMap;
 import org.xml.sax.ext.LexicalHandler;
 
 import org.glassfish.api.I18n;
-import static com.sun.enterprise.v3.admin.ResourceConstants.*;
+import static org.glassfish.resource.common.ResourceConstants.*;
 
 /**
  * This Class reads the Properties (resources) from the xml file supplied 
