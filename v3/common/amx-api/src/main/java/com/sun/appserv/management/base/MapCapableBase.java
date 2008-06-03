@@ -398,7 +398,7 @@ public abstract class MapCapableBase implements MapCapable
         protected final Map<String,Serializable>
     getMap( final String key )
     {
-        return (Map<String,Serializable>)getObject( key );
+        return TypeCast.asMap( getObject(key) );
     }
 
 		protected final File

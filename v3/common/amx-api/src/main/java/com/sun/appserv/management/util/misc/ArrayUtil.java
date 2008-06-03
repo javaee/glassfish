@@ -118,6 +118,7 @@ public final class ArrayUtil
 	}
 	
 
+	@SuppressWarnings("unchecked")  // inherent/unavoidable for this method
         public static <T> T[]
     newArray( final Class<T> theClass, int numItems )
     {

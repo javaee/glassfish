@@ -832,7 +832,7 @@ LOAD_BALANCER_MONITORING
 	public final static String	CONNECTOR_CONNECTION_POOL_MONITOR	=  P + "ConnectorConnectionPoolMonitor";
 	/**
 		Deprecated, use {@link #CONNECTOR_CONNECTION_POOL_MONITOR} instead.
-		@deprecated
+		@Deprecated
 	 */
 	public final static String	CONNNECTOR_CONNECTION_POOL_MONITOR	=  CONNECTOR_CONNECTION_POOL_MONITOR;
         

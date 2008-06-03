@@ -50,7 +50,7 @@ public final class TimingDelta
     }
     
     /**
-        @deprecated use elapsedNanos
+        @Deprecated use elapsedNanos
      */
         public long
     elapsed()

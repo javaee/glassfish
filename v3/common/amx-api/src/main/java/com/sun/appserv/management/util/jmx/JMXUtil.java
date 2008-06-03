@@ -64,9 +64,9 @@ public final class JMXUtil
         public static MBeanServerDelegateMBean
     getMBeanServerDelegateMBean( final MBeanServerConnection server )
     {
-        final MBeanServerDelegateMBean delegate = (MBeanServerDelegateMBean)
+        final MBeanServerDelegateMBean delegate = MBeanServerDelegateMBean.class.cast(
             MBeanServerInvocationHandler.newProxyInstance( server,
-                newObjectName(MBEAN_SERVER_DELEGATE), MBeanServerDelegateMBean.class, true );
+                newObjectName(MBEAN_SERVER_DELEGATE), MBeanServerDelegateMBean.class, true ));
         return delegate;
     }
     
@@ -1361,10 +1361,10 @@ public final class JMXUtil
 					getters.containsKey( attrName ) &&
 					setters.containsKey( attrName ) )
 			{
-				final Method	getter	= (Method)getters.get( attrName );
+				final Method	getter	= getters.get( attrName );
 					
 				final Class	getterType	= getter.getReturnType();
-				final Class	setterType	= ((Method)setters.get( attrName )).getParameterTypes()[ 0 ];
+				final Class	setterType	= setters.get( attrName ).getParameterTypes()[ 0 ];
 				
 				if ( getterType == setterType )
 				{

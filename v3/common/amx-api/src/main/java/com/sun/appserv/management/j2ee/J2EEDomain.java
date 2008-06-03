@@ -91,7 +91,7 @@ public interface J2EEDomain
 
 	/**
 		@return a Map keyed by server name of J2EEServer
-		@deprecated used {@link #getJ2EEServerMap}
+		@Deprecated use {@link #getJ2EEServerMap}
 	 */
 	public Map<String,J2EEServer>		getServerMap();
 	
@@ -103,13 +103,13 @@ public interface J2EEDomain
 	
 	/**
 		@return the ObjectNames of the J2EEClusters, as Strings
-		@deprecated use {@link #getJ2EEClusterMap}
+		@Deprecated use {@link #getJ2EEClusterMap}
 	 */
 	public String[]	getclusters();
 	
 	 /**
        @return a Map keyed by cluster name of J2EECluster
-	   @deprecated use {@link #getJ2EEClusterMap}
+	   @Deprecated use {@link #getJ2EEClusterMap}
     */
    public Map<String,J2EECluster>        getClusterMap(); 
    

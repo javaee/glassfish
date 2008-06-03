@@ -104,7 +104,7 @@ public interface AdminServiceConfig
 		String port, String authRealmName, Map<String,String> optional );
 		
     /**
-        @deprecated
+        @Deprecated do not use
      */
 	public JMXConnectorConfig	createJMXConnectorConfig( String name, String address, 
 		int port, String authRealmName, Map<String,String> optional );

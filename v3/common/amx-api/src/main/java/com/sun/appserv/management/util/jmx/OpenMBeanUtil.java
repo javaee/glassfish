@@ -263,8 +263,8 @@ public final class OpenMBeanUtil
 			
 			if ( value instanceof Collection )
 			{
-				Object[]	newValue	=
-					IteratorUtil.toArray( ((Collection<Serializable>)value).iterator() );
+                final Collection<Serializable> c = TypeCast.asCollection(value);
+				Object[]	newValue	=  IteratorUtil.toArray( c.iterator() );
 				newValue	= ArrayConversion.specializeArray( newValue );
 				
 				result.put( key, newValue );

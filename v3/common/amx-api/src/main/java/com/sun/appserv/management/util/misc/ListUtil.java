@@ -83,7 +83,8 @@ public final class ListUtil
         }
         else if ( value instanceof List )
         {
-            values = new ArrayList( TypeCast.checkList( TypeCast.asList(value), String.class ) );
+            final List<String> checkedList = TypeCast.checkList( TypeCast.asList(value), String.class );
+            values = new ArrayList<String>( checkedList );
         }
         else
         {

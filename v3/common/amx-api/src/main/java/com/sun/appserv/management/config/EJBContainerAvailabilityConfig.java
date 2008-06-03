@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/EJBContainerAvailabilityConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
 
 package com.sun.appserv.management.config;
 
@@ -71,9 +64,9 @@ public interface EJBContainerAvailabilityConfig extends ConfigElement, Propertie
 	public String	getSFSBStorePoolName();
 	public void	setSFSBStorePoolName( final String value );
 	
-	/** @deprecated */
+	/** @Deprecated do not use */
 	public String  getSFSBQuickCheckpointEnabled();
 	
-	/** @deprecated */
+	/** @Deprecated do not use */
 	public String  getSFSBCheckpointEnabled();
 }

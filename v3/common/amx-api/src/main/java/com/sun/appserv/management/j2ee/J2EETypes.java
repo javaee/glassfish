@@ -96,7 +96,7 @@ public final class J2EETypes
 	 */
 	public final static String	WEB_SERVICE_ENDPOINT	="WebServiceEndpoint";
 	
-	/** @deprecated */
+	/** @Deprecated do not use */
 	public final static String	WEB_SERVICE				= WEB_SERVICE_ENDPOINT;
 	
 	/**

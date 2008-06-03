@@ -81,18 +81,18 @@ public interface ConfigConfig
 	public ThreadPoolsConfig         getThreadPoolsConfig();
 	
 	/**
-        @deprecated used {@link ThreadPoolsConfig#getThreadPoolConfigMap}
+        @Deprecated use {@link ThreadPoolsConfig#getThreadPoolConfigMap}
 	 */
 	public Map<String,ThreadPoolConfig>	getThreadPoolConfigMap();
     
     
 	/**
-        @deprecated used {@link ThreadPoolsConfig#createThreadPoolConfig}
+        @Deprecated use {@link ThreadPoolsConfig#createThreadPoolConfig}
 	 */
 	public ThreadPoolConfig	createThreadPoolConfig( String name, Map<String,String> optional );
 
 	/**
-        @deprecated used {@link ThreadPoolsConfig#removeThreadPoolConfig}
+        @Deprecated use {@link ThreadPoolsConfig#removeThreadPoolConfig}
 	 */
 	public void			removeThreadPoolConfig( String name );
 

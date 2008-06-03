@@ -156,7 +156,7 @@ public final class LBConfigHelper {
         }
         
         String[] targetArr = new String[targetSet.size()];
-        return (String[]) targetSet.toArray(targetArr);
+        return targetSet.toArray(targetArr);
     }
     
     /**
@@ -179,7 +179,7 @@ public final class LBConfigHelper {
             return null;
         }
         
-        LoadBalancerConfig lb = (LoadBalancerConfig) lbMap.get(lbName);
+        LoadBalancerConfig lb = lbMap.get(lbName);
         if (lb == null) {
             return null;
         }
@@ -189,7 +189,7 @@ public final class LBConfigHelper {
         if ((lbConfigMap == null) || (lbConfigName == null) ){
             return null;
         }
-        LBConfig lbConfig = (LBConfig) lbConfigMap.get(lbConfigName);
+        LBConfig lbConfig = lbConfigMap.get(lbConfigName);
         if (lbConfig == null) {
             return null;
         }
@@ -208,7 +208,7 @@ public final class LBConfigHelper {
         
         String [] targetArr = new String[targetSet.size()];
         
-        return (String[]) targetSet.toArray(targetArr);
+        return targetSet.toArray(targetArr);
         
     }
     
@@ -824,7 +824,7 @@ public final class LBConfigHelper {
         if (cConfigMap == null) {
             return false;
         }
-        ClusterConfig cConfig = (ClusterConfig) cConfigMap.get(name);
+        ClusterConfig cConfig = cConfigMap.get(name);
         if ( cConfig == null) {
             return false;
         } else {
@@ -839,8 +839,7 @@ public final class LBConfigHelper {
         if (ssConfigMap == null) {
             return false;
         }
-        StandaloneServerConfig ssConfig = (StandaloneServerConfig)
-        ssConfigMap.get(name);
+        final StandaloneServerConfig ssConfig =  ssConfigMap.get(name);
         if ( ssConfig == null) {
             return false;
         } else {

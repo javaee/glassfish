@@ -399,8 +399,10 @@ public final class NotificationEmitterSupport
         /**
             A fake Notification to used for waitSentAll()
          */
-        final class CountDownLatchNofication extends Notification
+        static final class CountDownLatchNofication extends Notification
         {
+            private static final long serialVersionUID = 0xDEADBEEF; // never serialized
+            
             final CountDownLatch mLatch = new CountDownLatch(1);
             CountDownLatchNofication( final Object source)
             {
