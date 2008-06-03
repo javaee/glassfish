@@ -222,13 +222,20 @@
     <!-- Generate the TestNG report -->
     <target name="report" depends="initprops">        
         <echo message="Generating report at ${test.report}"/>
-        <junitreport todir="${basedir}/test-output-hk2">
-            <fileset dir=".">
-                <include name="**/test-output-hk2/**/*.xml"/>
-                <!--<exclude name="**/testng-failed.xml"/>-->
-            </fileset>
-            <report format="noframes" todir="${basedir}/test-output-hk2"/>
-        </junitreport>
+        <macrodef name="gen-report">
+            <attribute name="name" />
+            <sequential>
+                <junitreport todir="${basedir}/test-output-@{name}">
+                    <fileset dir=".">
+                        <include name="**/test-output-@{name}/**/*.xml"/>
+                        <!--<exclude name="**/testng-failed.xml"/>-->
+                    </fileset>
+                    <report format="noframes" todir="${basedir}/test-output-@{name}"/>
+                </junitreport>
+            </sequential>
+        </macrodef>
+        <gen-report name="hk2" />
+        <gen-report name="felix" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
     
