@@ -304,12 +304,4 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     public List<String> getJvmOptions();
     
     public void setJvmOptions(List<String> options) throws PropertyVetoException;
-
-    /**
-     * Backward compatibility API
-     */
-    public List<Object> getJvmOptionsOrProperty();
-
-
-
 }
