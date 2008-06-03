@@ -283,7 +283,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     handleCollection(
         final WriteableView writeable,
         final ConfigModel.Property prop,
-        final String  cmd,
+        final String        cmd,
         final List<String>  argValues )
     {
         if ( ! isCollectionCmd(cmd) )
@@ -463,15 +463,6 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         if ( xmlAttrs.size() != 0 )
         {
-            /*
-            SAMPLE CODE, but what method to use?
-            List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
-            String[] values = { "-Xmx512m", "-RFtrq", "-Xmw24" };
-            ConfigSupport.MultipleAttributeChanges multipleChanges = new ConfigSupport.MultipleAttributeChanges("jvm-options", values );
-            profilerChanges.add(multipleChanges);
-            ConfigSupport.createAndSet( mConfigBean, mConfigBean.getProxyType(), changes);
-            */
-            
             debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
                 CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
             

@@ -55,7 +55,6 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 	private final Object	        mUserData;
 	
 	private final Map<ObjectName,NotificationFilter> mIncludePatterns;
-	private final Map<ObjectName,NotificationFilter> mExcludePatterns;
 	
 	private final Map<Object,NotificationBuffer>		mBuffers;
 	
@@ -79,7 +78,6 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 		mBuffers		= Collections.synchronizedMap( new HashMap<Object,NotificationBuffer>() );
 		
 		mIncludePatterns	= new HashMap<ObjectName,NotificationFilter>();
-		mExcludePatterns	= new HashMap<ObjectName,NotificationFilter>();
 	}
 	
 		public final Object
@@ -138,7 +136,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 		private NotificationBuffer
 	getBuffer( final Object	bufferID )
 	{
-		return( (NotificationBuffer)mBuffers.get( bufferID ) );
+		return mBuffers.get( bufferID );
 	}
 	
 	private final class OverflowHandlerImpl implements OverflowHandler
@@ -180,8 +178,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 		public void
 	removeBuffer( final Object	bufferID )
 	{
-		final NotificationBuffer	buffer	=
-			(NotificationBuffer)mBuffers.remove( bufferID );
+		final NotificationBuffer	buffer	= mBuffers.remove( bufferID );
 	}
 
 		public Map
@@ -229,8 +226,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 			{
 				if ( JMXUtil.matchesPattern( defaultDomain, pattern, objectName ) )
 				{
-					final NotificationFilter	filter	=
-						(NotificationFilter)mIncludePatterns.get( pattern );
+					final NotificationFilter	filter	=mIncludePatterns.get( pattern );
 				
 					listenToSingle( objectName, filter );
 				}

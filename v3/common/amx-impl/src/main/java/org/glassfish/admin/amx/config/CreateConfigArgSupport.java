@@ -52,7 +52,9 @@ import java.util.Set;
 final class ConfigCreateArgSupport
 {
     private final String   mOperationName;
-    private final Map<String,String> mAttrs;
+    
+    /** values are 'Objectt'; must support both String and String[] */
+    private final Map<String,Object> mAttrs;
     private final Map<String,String> mProperties;
     private final Map<String,String> mSystemProperties;
     private final Object[] mArgs;
@@ -104,13 +106,12 @@ final class ConfigCreateArgSupport
         mProperties = extractProperties( attrs, PropertiesAccess.PROPERTY_PREFIX);
         mSystemProperties = extractProperties( attrs, SystemPropertiesAccess.SYSTEM_PROPERTY_PREFIX);
         
-        rejectBadAttrs( attrs );
         mAttrs = stringifyMap( attrs );
     }
     
     public int numArgs() { return mArgs.length; }
     
-    public Map<String,String> getAttrs() { return mAttrs; }
+    public Map<String,Object> getAttrs() { return mAttrs; }
     public Map<String,String> getProperties() { return mProperties; }
     public Map<String,String> getSystemProperties() { return mSystemProperties; }
     
@@ -125,7 +126,7 @@ final class ConfigCreateArgSupport
                 throw new IllegalArgumentException();
             }
             
-            mAttrs.put( names[i], stringifyAttr( mArgs[i] ) );
+            mAttrs.put( names[i], NameMappingHelper.asStringType( mArgs[i] ) );
         }
     }
     
@@ -164,53 +165,23 @@ final class ConfigCreateArgSupport
         }
         return result;
     }
-
-
-    /** convert to a String ensureing that null remains null */
-    private String stringifyAttr( final Object value )
-    {
-        return value == null ? null: "" + value;
-    }
-
+    
     /** 
-       Ensure that all arguments are String.
+       Ensure that all arguments are String or String[]
     */
-        private Map<String,String>
+        private Map<String,Object>
     stringifyMap( final Map<String,Object> m )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String,Object> result = new HashMap<String,Object>();
         if ( m != null )
         {
             for ( final String attrName : m.keySet() )
             {
-                final Object value = m.get(attrName);
-                result.put( attrName, stringifyAttr( value ) );
+                final Object value = NameMappingHelper.asStringType(m.get(attrName));
+                result.put( attrName, value );
             }
         }
         return result;
-    }
-    
-    /**
-        Check attributes for only a few legal types.
-     */
-        private static void
-    rejectBadAttrs( 
-        final Map<String,Object> attrs )
-    {     
-        for( final String key : attrs.keySet() )
-        {
-            final Object value = attrs.get(key);
-            // is null legal?
-            if ( value != null )
-            {
-                final Class<?> theClass = value.getClass();
-                if ( theClass != String.class && theClass != Boolean.class &&
-                    theClass != Integer.class && theClass != Long.class )
-                {
-                    throw new IllegalArgumentException( "Illegal attribute class: " + theClass.getName() );
-                }
-            }
-        }
     }
 }
 

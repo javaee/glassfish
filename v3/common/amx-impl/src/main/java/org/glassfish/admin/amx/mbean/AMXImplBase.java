@@ -1236,7 +1236,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		}
 		catch( RuntimeException e )
 		{
-			throw (RuntimeException)e;
+			throw e;
 		}
 		catch( Exception e )
 		{
@@ -1875,7 +1875,6 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 	
 	protected final static Set<String>  EMPTY_STRING_SET    = Collections.emptySet();
 	
-    private ContainerSupport mContainerSupport = null;
         
   	
 	/**
@@ -2547,12 +2546,15 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         getContainerSupport().removeContainee( objectName );
     }
 
+    private volatile ContainerSupport mContainerSupport = null;
         protected ContainerSupport
     getContainerSupport()
     {
+        // requires mContainerSupport be 'volatile'
+        if ( mContainerSupport != null ) return mContainerSupport;
+        
 		if ( ! isContainer() )
 		{
-    System.out.println("NOT A CONTAINER: " + getObjectName() );
 			throw new UnsupportedOperationException("MBean " + StringUtil.quote(getObjectName()) + " is not an AMX 'Container'");
 		}
         

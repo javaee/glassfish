@@ -142,12 +142,18 @@ final class NameMappingHelper {
      */
         protected ConfigModel.Property
     getConfigModel_Property( final String xmlName ) {
-        final ConfigModel.Property cmp = mConfigBean.model.findIgnoreCase(xmlName);
+        return getConfigModel_Property( mConfigBean, xmlName );
+    }
+    
+        public static ConfigModel.Property
+    getConfigModel_Property( final ConfigBean cb, final String xmlName ) {
+        final ConfigModel.Property cmp = cb.model.findIgnoreCase(xmlName);
         if (cmp == null) {
             throw new IllegalArgumentException( "Illegal name: " + xmlName );
         }
         return cmp;
     }
+    
     
     public boolean isLeaf( final String xmlName ) {
         return getConfigModel_Property(xmlName).isLeaf();
@@ -188,15 +194,29 @@ final class NameMappingHelper {
         return xmlName;
     }
     
-        private Object
-    autoStringify( final Object o )
+    /**
+        Be 'friendly' for a few types like Boolean, Integer, Long.
+        Leave String[] and null alone.
+     */
+        public static Object
+    asStringType( final Object o )
     {
         Object result = o;
         
-        if ( o != null &&
-            ((o instanceof Boolean) || (o instanceof Integer) || (o instanceof Long)) )
+        if ( o != null )
         {
-            result = "" + o;
+            if ( o == null || (o instanceof String) )
+            {
+                result = o;
+            }
+            else if ( (o instanceof Boolean) || (o instanceof Integer) || (o instanceof Long) )
+            {
+                result = "" + o;
+            }
+            else if ( ! (o instanceof String[]) )
+            {
+                throw new IllegalArgumentException( "Illegal value: " + o + " of class " + o.getClass().getName() );
+            }
         }
         
         return result;
@@ -218,14 +238,14 @@ final class NameMappingHelper {
             final String xmlName = getXMLName(amxAttrName);
             if ( xmlName != null )
             {
-                final Object value   = autoStringify( valueIn );
+                final Object value   = asStringType( valueIn );
                 if ( value != valueIn )
                 {
                     debug( "Attribute " + amxAttrName + " auto converted from " +
                         valueIn.getClass().getName() + " to " + value.getClass().getName() );
                 }
                 
-                // We accept only Strings or null values
+                // We accept only Strings, String[] or null
                 if ( valueIn == null || (value instanceof String))
                 {
                     xmlAttrs.put( xmlName, (String)value);

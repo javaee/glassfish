@@ -70,5 +70,15 @@
             <version>${management-api.version}</version>
             <scope>provided</scope>
         </dependency>
+<!--
+
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.javaee</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+-->
+
     </dependencies>
 </project>

@@ -45,7 +45,7 @@ import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-import org.glassfish.admin.amx.loader.AMXConfigVoid;
+import com.sun.appserv.management.annotation.AMXConfigVoid;
 import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
@@ -149,7 +149,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         private void
     issueAttributeChange(
         final ConfigBean cb,
-        final String     attrName,
+        final String     xmlAttrName,
         final Object     oldValue,
         final Object     newValue,
         final long       whenChanged )
@@ -159,11 +159,24 @@ public final class AMXConfigLoader extends MBeanImplBase
         {
             throw new IllegalArgumentException( "Can't issue attribute change for null ObjectName for ConfigBean " + cb.getProxyType().getName() );
         }
-    
-        debug( "issueAttributeChange: " + attrName + ": {" + oldValue + " => " + newValue + "}");
         
-        final AMXConfigImplBase amx = AMXConfigImplBase.class.cast( AMXImplBase.__getObjectRef__(mMBeanServer, objectName) );
-        amx.issueAttributeChangeForXmlAttrName( attrName, oldValue, newValue, whenChanged );
+        boolean changed = false;
+        if ( oldValue != null )
+        {
+            changed = ! oldValue.equals(newValue);
+        }
+        else if ( newValue != null )
+        {
+            changed = ! newValue.equals(oldValue);
+        }
+        
+        if ( changed )
+        {
+            debug( "issueAttributeChange: " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
+            
+            final AMXConfigImplBase amx = AMXConfigImplBase.class.cast( AMXImplBase.__getObjectRef__(mMBeanServer, objectName) );
+            amx.issueAttributeChangeForXmlAttrName( xmlAttrName, oldValue, newValue, whenChanged );
+        }
     }
     
     private void sortAndDispatch(

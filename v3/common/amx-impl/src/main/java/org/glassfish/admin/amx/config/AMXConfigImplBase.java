@@ -52,10 +52,7 @@ import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.amx.util.UnregistrationListener;
 import org.glassfish.admin.amx.util.Issues;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.*;
 
 import javax.management.*;
 import java.lang.reflect.InvocationTargetException;
@@ -63,6 +60,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
@@ -584,6 +583,28 @@ cdebug( "asAMXAttributeName: no match: " + name );
         }
     }
     
+    
+        static private List<ConfigSupport.AttributeChanges>
+    toAttributeChanges(Map<String, Object> values)
+    {
+        final List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
+        
+        for( final String name : values.keySet() ) {
+            final Object value = values.get(name);
+            
+            if ( value == null || (value instanceof String) )
+            {
+                changes.add( new ConfigSupport.SingleAttributeChange(name, (String)value) );
+            }
+            else
+            {
+                changes.add( new ConfigSupport.MultipleAttributeChanges(name, (String[])value) );
+            }
+        }
+        return changes;
+    }
+
+
         protected ObjectName
    createConfig(
         final String operationName,
@@ -630,9 +651,12 @@ cdebug( "asAMXAttributeName: no match: " + name );
   
         cdebug( "calling ConfigSupport.createAndSet() " );
         ConfigBean newConfigBean = null;
+        
+        final List<ConfigSupport.AttributeChanges> changes = toAttributeChanges(argSpt.getAttrs());
+        final PropertiesCallback  callback = new PropertiesCallback( argSpt.getProperties(), argSpt.getSystemProperties() );
         try
         {
-            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, argSpt.getAttrs() );
+            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, changes, callback);
         }
         catch( Throwable t )
         {
@@ -669,6 +693,62 @@ cdebug( "asAMXAttributeName: no match: " + name );
     
         return objectName;
    }
+   
+    private static final class PropertiesCallback implements ConfigSupport.TransactionCallBack<WriteableView>
+    {
+        private final Map<String,String> mProperties;
+        private final Map<String,String> mSystemProperties;
+        
+        public PropertiesCallback( 
+            final Map<String,String> properties, 
+            final Map<String,String> systemProperties )
+        {
+            mProperties         = properties;
+            mSystemProperties   = systemProperties;
+        }
+        
+        public void performOn(final WriteableView item) throws TransactionFailure
+        {
+            if ( false ) {
+                // code in progress
+                /*
+                if ( mProperties.keySet().size() != 0 )
+                {
+                    Class<ConfigBeanProxy> propClass = null;
+                    
+                    try {
+                        propClass = (Class<ConfigBeanProxy>)Class.forName("com.sun.enterprise.config.serverbeans.Property");
+                    }
+                    catch( final ClassNotFoundException e )
+                    {
+                        throw new TransactionFailure("Can't find com.sun.enterprise.config.serverbeans.Property");
+                    }
+                        
+                    for( final String propertyName : mProperties.keySet() )
+                    {
+                        final String propertyValue = mProperties.get(propertyName);
+                        
+                        final ConfigBeanProxy propChild = item.allocateProxy(propClass);
+                        final ConfigBean child = (ConfigBean)Dom.unwrap(propChild);
+                        final ConfigBeanProxy childW = ConfigSupport.getWriteableView(propChild);
+                        
+                        //ConfigModel.Property modelProp = NameMappingHelper.getConfigModel_Property( child, "name");
+                        childW.setter( modelProp, propertyName, String.class);
+                        
+                        //modelProp = NameMappingHelper.getConfigModel_Property( child, "value");
+                        childW.setter( modelProp, propertyValue, String.class);
+                    }
+                }
+                
+                if ( mSystemProperties.keySet().size() != 0 )
+                {
+                    // figure out plain properties first
+                }
+                */
+            
+            }
+        }
+    }
 
     
     /**
@@ -686,7 +766,15 @@ cdebug( "asAMXAttributeName: no match: " + name );
             for( final String propName : properties.keySet() )
             {
                 final String propValue = properties.get(propName);
-                pa.createPropertyConfig( propName, propValue );
+                cdebug ("################## Creating property " + propName + " = " + propValue );
+                try
+                {
+                    pa.createPropertyConfig( propName, propValue );
+                }
+                catch ( Throwable t )
+                {
+                    cdebug( ExceptionUtil.toString(ExceptionUtil.getRootCause(t)));
+                }
             }
         }
         
@@ -696,6 +784,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
             for( final String propName : systemProperties.keySet() )
             {
                 final String propValue = systemProperties.get(propName);
+                debug ("################## Creating System property " + propName + " = " + propValue );
                 pa.createSystemPropertyConfig( propName, propValue );
             }
         }
@@ -986,7 +1075,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
                     
                     // don't put null values into defaults (see @Attribute annotation)
                     final boolean emptyDefault = value.equals( "\u0000" );
-                    cdebug( "Method " + m + " has default value of " + (emptyDefault ? "\\u0000" : value) );
+                    //cdebug( "Method " + m + " has default value of " + (emptyDefault ? "\\u0000" : value) );
                     if ( ! emptyDefault )
                     {
                         result.put( attrName, "" + attrAnn.defaultValue() );

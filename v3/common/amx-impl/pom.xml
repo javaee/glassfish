@@ -81,6 +81,7 @@
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>javax.management.j2ee</groupId>
             <artifactId>management-api</artifactId>

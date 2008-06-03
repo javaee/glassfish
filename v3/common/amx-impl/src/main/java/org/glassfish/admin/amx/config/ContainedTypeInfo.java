@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.config;
 
 import com.sun.appserv.management.util.misc.CollectionUtil;
-import org.glassfish.admin.amx.loader.AMXConfigVoid;
+import com.sun.appserv.management.annotation.AMXConfigVoid;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;

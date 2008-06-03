@@ -160,7 +160,7 @@ public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 		final byte[]	bytes)
 		throws IOException
 	{
-		final UploadInfo	info	= (UploadInfo)mUploadInfos.get( uploadID );
+		final UploadInfo	info	= mUploadInfos.get( uploadID );
 		
 		if ( info == null )
 		{
@@ -181,7 +181,7 @@ public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	takeUpload( final Object uploadID )
 	{
 		// don't remove it until we find out it's done
-		final UploadInfo	info	= (UploadInfo)mUploadInfos.get( uploadID );
+		final UploadInfo	info	= mUploadInfos.get( uploadID );
 		
 		if ( info == null )
 		{
@@ -269,7 +269,7 @@ public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	   	private DownloadInfo
 	getDownloadInfo( Object downloadID )
 	{
-		final DownloadInfo	info	= (DownloadInfo)mDownloadInfos.get( downloadID );
+		final DownloadInfo	info	= mDownloadInfos.get( downloadID );
 		if ( info == null )
 		{
 			throw new IllegalArgumentException( "" + downloadID );

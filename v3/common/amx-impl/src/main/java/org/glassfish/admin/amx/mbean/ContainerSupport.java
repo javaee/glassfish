@@ -183,7 +183,10 @@ public final class ContainerSupport
 		final String	j2eeType,
 		final String	name)
 	{
-		final Set<ObjectName>	candidates	= getContaineeObjectNameSet( j2eeType );
+        if ( name == null ) throw new IllegalArgumentException();
+        
+		final Set<ObjectName>	candidates	= (j2eeType == null) ?
+            getContaineeObjectNameSet() : getContaineeObjectNameSet( j2eeType );
 		
 		final Set<ObjectName> matching	=
 		    JMXUtil.findByProperty( candidates, AMX.NAME_KEY, name );
