@@ -328,7 +328,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
  		boolean permitted = false;
  
  		try {
-		    SecurityManager sm = System.getSecurityManager();
+		    java.lang.SecurityManager sm = System.getSecurityManager();
 		    if (sm != null) {
 			if(_logger.isLoggable(Level.FINE)){
 			    _logger.fine("permission check done to set SecurityContext");

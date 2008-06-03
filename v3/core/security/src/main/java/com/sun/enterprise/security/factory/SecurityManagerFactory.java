@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.security.factory;
 
-import com.sun.enterprise.SecurityManager;
+import com.sun.enterprise.security.SecurityManager;
 import com.sun.enterprise.deployment.Descriptor;
 /**
  * Factory For SecurityManager objects, can return a Web/EJB SecurityManager 

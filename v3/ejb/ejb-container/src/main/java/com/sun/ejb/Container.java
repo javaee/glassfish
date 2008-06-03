@@ -248,7 +248,7 @@ public interface Container {
     /**
      * @return A SecurityManager object for this container. 
      */
-    com.sun.enterprise.SecurityManager getSecurityManager();
+    com.sun.enterprise.security.SecurityManager getSecurityManager();
 
     /**
      * EJB spec makes a distinction between access to the UserTransaction

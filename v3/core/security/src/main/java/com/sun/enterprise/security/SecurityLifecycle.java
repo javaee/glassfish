@@ -47,7 +47,6 @@ import javax.security.jacc.PolicyContextHandler;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
-import com.sun.enterprise.J2EESecurityManager;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
@@ -104,7 +103,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             
             // security manager is set here so that it can be accessed from
             // other lifecycles, like PEWebContainer
-            SecurityManager secMgr = System.getSecurityManager();
+            java.lang.SecurityManager secMgr = System.getSecurityManager();
             if (secMgr != null &&
                     !(J2EESecurityManager.class.equals(secMgr.getClass()))) {
                 J2EESecurityManager mgr = new J2EESecurityManager();

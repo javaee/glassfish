@@ -41,9 +41,6 @@ import java.security.Policy;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.sun.enterprise.J2EESecurityManager;
-
-
 /**
  * This class is the factory for creating and managing PermissionCache.
  * @author Shing Wai Chan
@@ -213,7 +210,7 @@ public class PermissionCacheFactory {
 
 	supportsReuse = true;
 
-	SecurityManager sm = System.getSecurityManager();
+	java.lang.SecurityManager sm = System.getSecurityManager();
 	if (sm != null && sm instanceof J2EESecurityManager) {
 	    if (!((J2EESecurityManager)sm).cacheEnabled()) {
 		((J2EESecurityManager)sm).enablePermissionCache

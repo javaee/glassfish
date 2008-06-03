@@ -33,12 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise;
+package com.sun.enterprise.security;
 
 import java.net.SocketPermission;
 import java.util.PropertyPermission;
-import com.sun.enterprise.security.CachedPermissionImpl;
-import com.sun.enterprise.security.PermissionCache;
 
 import java.util.*;
 // IASRI 4660742 START

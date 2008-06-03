@@ -380,7 +380,7 @@ public abstract class EJBContextImpl
 
         checkAccessToCallerSecurity();
 
-        com.sun.enterprise.SecurityManager sm = container.getSecurityManager();
+        com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
         return sm.getCallerPrincipal();
     }
     
@@ -412,7 +412,7 @@ public abstract class EJBContextImpl
                 "No mapping available for role reference " + roleRef);
         }
         
-        com.sun.enterprise.SecurityManager sm = container.getSecurityManager();
+        com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
 	return sm.isCallerInRole(roleRef);
     }
     

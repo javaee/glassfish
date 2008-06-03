@@ -308,7 +308,7 @@ public abstract class BaseContainer
 
     protected EJBMetaData metadata = null;
 
-    protected com.sun.enterprise.SecurityManager securityManager;
+    protected com.sun.enterprise.security.SecurityManager securityManager;
     
     protected boolean isSession;
     protected boolean isStatelessSession;
@@ -841,11 +841,11 @@ public abstract class BaseContainer
         return ejbClass;
     }
     
-    public final com.sun.enterprise.SecurityManager getSecurityManager() {
+    public final com.sun.enterprise.security.SecurityManager getSecurityManager() {
         return securityManager;
     }
     
-    public final void setSecurityManager(com.sun.enterprise.SecurityManager sm)
+    public final void setSecurityManager(com.sun.enterprise.security.SecurityManager sm)
         throws Exception
     {
         securityManager = sm;
@@ -3045,7 +3045,7 @@ public abstract class BaseContainer
     }
     
     Object invokeTargetBeanMethod(Method beanClassMethod, EjbInvocation inv, Object target,
-            Object[] params, com.sun.enterprise.SecurityManager mgr)
+            Object[] params, com.sun.enterprise.security.SecurityManager mgr)
             throws Throwable {
         try {
             onEjbMethodStart();

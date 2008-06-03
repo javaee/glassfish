@@ -45,8 +45,7 @@ package com.sun.enterprise.security.factory;
 import java.util.Map;
 import java.util.HashMap;
 
-import com.sun.enterprise.SecurityManager;
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
+import com.sun.enterprise.security.SecurityManager;
 import com.sun.enterprise.deployment.Descriptor;
 import java.util.logging.*; 
 import com.sun.logging.LogDomains;

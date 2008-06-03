@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise;
+package com.sun.enterprise.security;
 
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;

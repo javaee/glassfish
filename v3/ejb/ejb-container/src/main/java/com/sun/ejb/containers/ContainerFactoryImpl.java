@@ -50,7 +50,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 
     public Container createContainer(EjbDescriptor ejbDescriptor,
 				     ClassLoader loader, 
-				     com.sun.enterprise.SecurityManager sm,
+				     com.sun.enterprise.security.SecurityManager sm,
 				     DeploymentContext dynamicConfigContext)
 	     throws Exception 
     {
