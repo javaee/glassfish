@@ -46,7 +46,7 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.util.ConnectorClassLoader;
+import com.sun.enterprise.connectors.util.ConnectorClassLoader;
 
 import javax.naming.NamingException;
 import java.util.logging.Level;
@@ -177,7 +177,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-        ConnectorClassLoader.getInstance().removeResourceAdapter(moduleName);
+        com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().removeResourceAdapter(moduleName);
 
         /* TODO V3 handle resource destroy later
         if (errrorOccured == true) {
@@ -235,7 +235,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 + moduleName + " at " + moduleDir + " loader :: " + loader);
         if (loader == null) {
             if (environment == SERVER) {
-                ConnectorClassLoader.getInstance().addResourceAdapter(moduleName, moduleDir);
+                com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().addResourceAdapter(moduleName, moduleDir);
                 loader = ConnectorClassLoader.getInstance();
                 if (loader == null) {
                     ConnectorRuntimeException cre =

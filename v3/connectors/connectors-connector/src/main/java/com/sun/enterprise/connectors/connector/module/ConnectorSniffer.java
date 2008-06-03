@@ -33,40 +33,74 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.connectors.module;
 
-import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.deployment.archive.ReadableArchive;
+package com.sun.enterprise.connectors.connector.module;
+
+import org.glassfish.internal.deployment.GenericSniffer;
+import com.sun.enterprise.module.Module;
+import org.glassfish.api.container.Sniffer;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
-import java.io.InputStream;
-
-
+import java.util.logging.Logger;
 
 /**
- * Archive handler for resource-adapters
+ * Sniffer for detecting resource-adapter modules
  *
- * @author Jagadish Ramu 
+ * @author Jagadish Ramu
  */
-@Service
-public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveHandler {
+@Service(name = "connectors")
+@Scoped(Singleton.class)
+public class ConnectorSniffer extends GenericSniffer implements Sniffer {
 
-    public String getArchiveType() {
-        return "rar";
+    public ConnectorSniffer() {
+        super("connectors", "META-INF/ra.xml", null);
     }
 
-    public boolean handles(ReadableArchive archive) throws IOException {
-        return archive.exists("META-INF/ra.xml");
+    final String[] containerNames = {"com.sun.enterprise.connectors.module.ConnectorContainer"};
+
+    /**
+     * Sets up the container libraries so that any imported bundle from the
+     * connector jar file will now be known to the module subsystem
+     *
+     * @param containerHome is where the container implementation resides
+     * @param logger        the logger to use
+     * @throws java.io.IOException exception if something goes sour
+     */
+    @Override
+    public Module[] setup(String containerHome, Logger logger) throws IOException {
+        // do nothing, we are embedded in GFv3 for now
+        return null;
     }
 
-    //TODO V3 should this be connector-class-loader ? Purpose of this method ? Who uses this classloader ?
-    //TODO V3 guess: purpose is for deploymentContext & Sniffer.handles() purpose only 
+    /**
+     * Returns the list of Containers that this Sniffer enables.
+     * <p/>
+     * The runtime will look up each container implementing
+     * using the names provided in the habitat.
+     *
+     * @return list of container names known to the habitat for this sniffer
+     */
+    public String[] getContainersNames() {
+        return containerNames;
+    }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
-        //TODO V3 temp
-        // return ConnectorClassLoader.getInstance(parent);
-        return Thread.currentThread().getContextClassLoader();
+    /**
+     * Returns the Module type
+     *
+     * @return the container name
+     */
+    public String getModuleType() {
+        return "connectors";
+    }
+
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
     }
 }

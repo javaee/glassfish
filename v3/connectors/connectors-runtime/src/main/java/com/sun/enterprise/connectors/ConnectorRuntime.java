@@ -48,7 +48,7 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.util.ConnectorClassLoader;
+import com.sun.enterprise.connectors.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;

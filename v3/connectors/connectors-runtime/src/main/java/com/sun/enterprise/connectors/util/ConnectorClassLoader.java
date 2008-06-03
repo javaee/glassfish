@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.util;
+package com.sun.enterprise.connectors.util;
 
 import com.sun.enterprise.loader.EJBClassLoader;
 import com.sun.logging.LogDomains;
