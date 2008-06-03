@@ -124,7 +124,7 @@ public class StringifiedList
 		public String []
 	toArray()
 	{
-		return( (String [])mItems.toArray( new String[ mItems.size() ] ) );
+		return mItems.toArray( new String[ mItems.size() ] );
 	}
 	
 		public boolean
