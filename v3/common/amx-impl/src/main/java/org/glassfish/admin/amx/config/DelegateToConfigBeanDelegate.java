@@ -232,7 +232,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     {
         try
         {
-            return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType();
+            return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", (Class[])null).getGenericReturnType();
         }
         catch( NoSuchMethodException e )
         {

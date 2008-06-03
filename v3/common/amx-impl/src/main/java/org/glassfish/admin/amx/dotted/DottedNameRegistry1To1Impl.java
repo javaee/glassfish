@@ -80,7 +80,7 @@ public final class DottedNameRegistry1To1Impl implements DottedNameRegistry
 	}
 	
 		private <T> Set<T>
-	copySet( Set input )
+	copySet( Set<T> input )
 	{
 		final Set<T>	newSet	= new HashSet<T>();
 		

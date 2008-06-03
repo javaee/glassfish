@@ -504,7 +504,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
     {
         final Class[] signature = ClassUtil.signatureFromClassnames(types);
         
-        final Class<? extends AMXConfig> myInterface = getInterface();
+        final Class<AMXConfig> myInterface = TypeCast.asClass(getInterface());
         final Method m = ClassUtil.findMethod( myInterface, operationName, signature );
         
         if ( m == null )
@@ -624,7 +624,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
         final ConfigCreateArgSupport argSpt = new ConfigCreateArgSupport( operationName, args, types );
         
         final Method m = getCreateMethod( operationName, types );
-        final Class<? extends AMXConfig> returnType = (Class<? extends AMXConfig>)m.getReturnType();
+        final Class<? extends AMXConfig> returnType = TypeCast.asClass(m.getReturnType());
         checkPropertiesSupported( returnType, argSpt );
         
         final String j2eeType = Util.getJ2EEType( returnType );

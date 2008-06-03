@@ -72,7 +72,7 @@ public class DottedNameAliasedQuery implements DottedNameQuery
 		public Set<String>
 	allDottedNameStrings(  )
 	{
-		Set<String>	result	= Collections.EMPTY_SET;
+		Set<String>	result	= Collections.emptySet();
 		
 		try
 		{

@@ -139,7 +139,7 @@ public final class DottedName
         public static String
     toString(final String domain,
              final String scope,
-             final List parts,
+             final List<String> parts,
              final boolean needsEscaping )
     {
         if(needsEscaping){
@@ -310,7 +310,7 @@ public final class DottedName
 			scope		= tokens[ 0 ];
 		}
 		
-		final ArrayList	parts	= new ArrayList();
+		final ArrayList<String>	parts	= new ArrayList<String>();
 		for( int i = 1; i < tokens.length; ++i )
 		{
 			parts.add( tokens[ i ] );

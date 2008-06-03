@@ -55,7 +55,7 @@ public final class SingletonEnforcer
         public static <T> T
     get( final Class<T> theClass )
     {
-        return (T)mItems.get( theClass );
+        return theClass.cast(mItems.get( theClass ));
     }
     
         public static void

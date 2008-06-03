@@ -47,10 +47,10 @@ import java.util.regex.Pattern;
  
 public class DottedNameWildcardMatcherImpl implements DottedNameWildcardMatcher
 {
-	final Set		mSearchSet;
+	final Set<String>		mSearchSet;
 	
 		public
-	DottedNameWildcardMatcherImpl( final Set	searchSet )
+	DottedNameWildcardMatcherImpl( final Set<String>	searchSet )
 	{
 		mSearchSet		= searchSet;
 	}
@@ -59,16 +59,16 @@ public class DottedNameWildcardMatcherImpl implements DottedNameWildcardMatcher
 	/*
 		Return the set of all dotted names that match the specified wildcarded dotted name
 	 */
-		Set
-	resolveAll( final String wildcardedName, final Iterator iter )
+		Set<String>
+	resolveAll( final String wildcardedName, final Iterator<String> iter )
 	{
-		final HashSet	resolvedSet	= new HashSet();
+		final Set<String>	resolvedSet	= new HashSet<String>();
 		
 		final Pattern	pattern	= Pattern.compile( wildcardedName );
 		
 		while ( iter.hasNext() )
 		{
-			final String	candidate	= (String)iter.next();
+			final String	candidate	= iter.next();
 			
 			if ( pattern.matcher( candidate ).matches() )
 			{
@@ -84,15 +84,15 @@ public class DottedNameWildcardMatcherImpl implements DottedNameWildcardMatcher
 		
 		@param dottedNameString	a string using java.util.regex format
 	 */
-		public Set
+		public Set<String>
 	matchDottedNames( String dottedNameString )
 	{
-		Set	resolvedSet	= null;
+		Set<String>	resolvedSet	= null;
 		
 		if ( dottedNameString.equals( ".*" ) )
 		{
 			// optimization; match all
-			resolvedSet	= new HashSet();
+			resolvedSet	= new HashSet<String>();
 			resolvedSet.addAll( mSearchSet );
 		}
 		else

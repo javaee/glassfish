@@ -46,6 +46,7 @@ public interface DottedNameServerInfo
 {
 	public static final class UnavailableException extends Exception
 	{
+        private static final long serialVersionUID = 0xDEADBEEF; // not important
 		public UnavailableException( Throwable cause)	{ super( cause.getMessage(), cause ); }
 		public UnavailableException( String msg )		{ super( msg ); }
 	}

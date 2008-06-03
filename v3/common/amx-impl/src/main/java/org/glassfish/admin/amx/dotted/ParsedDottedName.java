@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 /*
  */
-final class ParsedDottedName implements java.io.Serializable
+final class ParsedDottedName
 {
 	public final String         mDomain;
 	public final String         mScope;

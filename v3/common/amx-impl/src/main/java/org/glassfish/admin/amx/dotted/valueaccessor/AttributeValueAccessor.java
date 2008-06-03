@@ -53,11 +53,11 @@ public class AttributeValueAccessor extends ValueAccessorBase
 	/*
 		Return a Set of String of the names of all attributes within the MBean
 	 */
-		public static Set
+		public static Set<String>
 	getAllAttributeNames( final MBeanServerConnection conn, final ObjectName objectName )
 		throws java.io.IOException, ReflectionException, InstanceNotFoundException, IntrospectionException
 	{
-		final Set		allNames	= new HashSet();
+		final Set<String>		allNames	= new HashSet<String>();
 	
 		// add the Attribute names
 		final MBeanInfo					info		= conn.getMBeanInfo( objectName );

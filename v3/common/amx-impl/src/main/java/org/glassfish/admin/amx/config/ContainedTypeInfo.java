@@ -46,6 +46,8 @@ import org.jvnet.hk2.config.ConfigSupport;
 
 import java.util.*;
 
+import com.sun.appserv.management.util.misc.TypeCast;
+
 
 /**
     Gets information about available contained types (interfaces)
@@ -69,14 +71,15 @@ private static void cdebug( final String s ) { System.out.println(s); }
         private static List<Class<? extends ConfigBeanProxy>>
     getSubTypes( final ConfigBean cb )
     {
-         List<Class<? extends ConfigBeanProxy>> result = null;
+        List<Class<? extends ConfigBeanProxy>> result = null;
         try
         {
             final Class<?>[] subTypes = ConfigSupport.getSubElementsTypes( cb );
-            result = new ArrayList();
+            result = new ArrayList<Class<? extends ConfigBeanProxy>>();
             for( final Class<?> theClass : subTypes )
             {
-                result.add( (Class<? extends ConfigBeanProxy>)theClass );
+                final Class<? extends ConfigBeanProxy> c = TypeCast.asClass(theClass);
+                result.add( c );
             }
         }
         catch( Exception e )

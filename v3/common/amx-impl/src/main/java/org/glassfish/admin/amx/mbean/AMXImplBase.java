@@ -92,7 +92,7 @@ public class AMXImplBase extends MBeanImplBase
 	/**
 		The interface this MBean implements
 	*/
-	private final Class			mInterface;
+	private final Class<? extends AMX>			mInterface;
 	
 	/**
 		The MBeanInfo from the supplied AMX interface.  Additional info
@@ -659,7 +659,7 @@ public class AMXImplBase extends MBeanImplBase
 		return( pat );
 	}
 		
-		public final Class
+		public final Class<? extends AMX>
 	getInterface()
 	{
 		return( mInterface );
