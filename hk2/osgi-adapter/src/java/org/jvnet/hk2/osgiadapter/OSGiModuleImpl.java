@@ -257,13 +257,18 @@ public final class OSGiModuleImpl implements Module {
                             logger.logp(Level.INFO, "OSGiModuleImpl",
                                     "loadClass", "Started bundle {0}", bundle);
                         }
-                        final Class aClass = bundle.loadClass(name);
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
-                                name+".class.getClassLoader() = {0}",
-                                aClass.getClassLoader());
+                        try {
+                            final Class aClass = bundle.loadClass(name);
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
+                                    name+".class.getClassLoader() = {0}",
+                                    aClass.getClassLoader());
+                            }
+                            return aClass;
+                        } catch(Throwable e) {
+                            logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
+                            throw new ClassNotFoundException(e.getMessage());
                         }
-                        return aClass;
                     }
                 };
             }
