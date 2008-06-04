@@ -49,8 +49,8 @@
  */
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;

@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 /**
  * This is a factory class for the connector admin services classes.

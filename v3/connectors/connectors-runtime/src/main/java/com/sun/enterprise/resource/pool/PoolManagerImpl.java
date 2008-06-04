@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.resource.pool;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
@@ -248,7 +248,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
         }
     }
 
-    public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.spi.ResourceHandle h)
+    public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.internal.api.ResourceHandle h)
             throws IllegalStateException {
         ResourceHandle res = (ResourceHandle)h;
 

@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.auth.realm.jdbc;
 
-import org.jvnet.hk2.annotations.Inject;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -51,14 +50,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.sql.DataSource;
 //import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import com.sun.enterprise.universal.BASE64Encoder;
-import javax.naming.InitialContext;
+
 import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
@@ -69,8 +67,6 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Realm for supporting JDBC authentication.

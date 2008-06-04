@@ -50,7 +50,7 @@ import javax.security.auth.Subject;
 
 
 import com.sun.enterprise.deployment.interfaces.*;
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.Globals;
 

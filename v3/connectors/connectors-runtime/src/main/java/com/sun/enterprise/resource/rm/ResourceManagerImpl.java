@@ -42,7 +42,7 @@ import javax.transaction.*;
 import com.sun.logging.*;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.*;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -67,7 +67,7 @@ public class ResourceManagerImpl implements ResourceManager {
      * @return Handle to the <code>Transaction</code> object.
      * @exception <code>PoolingException<code>
      */
-    public Transaction getTransaction() throws PoolingException{
+    public Transaction getTransaction() throws PoolingException {
         InvocationManager invmgr = ConnectorRuntime.getRuntime().getInvocationManager();
 
         ComponentInvocation inv = invmgr.getCurrentInvocation();

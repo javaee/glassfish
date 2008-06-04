@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.connectors.module;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;

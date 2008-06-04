@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;

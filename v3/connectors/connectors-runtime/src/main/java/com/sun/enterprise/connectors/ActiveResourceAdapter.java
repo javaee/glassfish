@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 
 import javax.resource.spi.ManagedConnectionFactory;

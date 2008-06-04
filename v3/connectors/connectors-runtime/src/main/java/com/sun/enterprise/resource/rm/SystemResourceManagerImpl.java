@@ -43,7 +43,7 @@ import javax.transaction.SystemException;
 import com.sun.logging.*;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.*;
 
 /**
@@ -67,7 +67,7 @@ public class SystemResourceManagerImpl implements ResourceManager {
      * @exception <code>PoolingException<code> If exception is thrown
      *         while getting the transaction.
      */
-    public Transaction getTransaction() throws PoolingException{
+    public Transaction getTransaction() throws PoolingException {
         try {
             return ConnectorRuntime.getRuntime().getTransaction();
         } catch (Exception ex) {

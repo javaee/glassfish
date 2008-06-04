@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.spi.TransactionSupport;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorRuntime;

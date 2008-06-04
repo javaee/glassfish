@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.spi;
 
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ConnectionRequestInfo;

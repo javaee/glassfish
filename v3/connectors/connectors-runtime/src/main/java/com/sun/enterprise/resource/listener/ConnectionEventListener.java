@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.resource.listener;
 
-import com.sun.appserv.connectors.spi.BadConnectionEventListener;
+import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 
 import javax.resource.spi.ConnectionEvent;
 

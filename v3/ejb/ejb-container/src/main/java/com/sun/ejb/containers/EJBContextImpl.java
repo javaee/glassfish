@@ -35,7 +35,7 @@
  */
 package com.sun.ejb.containers;
 
-import com.sun.appserv.connectors.spi.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.Container;
 import com.sun.ejb.EjbInvocation;

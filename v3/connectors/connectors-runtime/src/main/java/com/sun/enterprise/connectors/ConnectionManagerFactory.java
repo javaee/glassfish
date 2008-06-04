@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
 import javax.resource.spi.ConnectionManager;
 import java.util.logging.Level;

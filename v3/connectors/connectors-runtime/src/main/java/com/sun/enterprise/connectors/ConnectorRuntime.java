@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
@@ -91,7 +91,7 @@ import java.util.logging.Level;
 
 @Service
 @Scoped(Singleton.class)
-public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.spi.ConnectorRuntime,
+public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 
     /* TODO V3 environment set to server as of today
@@ -646,7 +646,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return ccPoolAdmService.testConnectionPool(poolName);
     }
 
-    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException{
+    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException {
         return ccPoolAdmService.getPoolType(poolName);
     }
 }

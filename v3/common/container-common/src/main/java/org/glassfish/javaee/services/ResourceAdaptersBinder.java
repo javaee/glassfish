@@ -39,12 +39,11 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.naming.NamingException;
 import java.util.logging.Logger;

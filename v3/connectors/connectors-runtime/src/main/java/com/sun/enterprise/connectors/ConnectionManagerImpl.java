@@ -35,10 +35,10 @@
  */
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.ConnectionManager;
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.spi.ConnectionManager;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;

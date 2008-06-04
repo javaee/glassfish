@@ -36,7 +36,7 @@
 
 package com.sun.gjc.spi;
 
-import com.sun.appserv.connectors.spi.BadConnectionEventListener;
+import com.sun.appserv.connectors.internal.spi.BadConnectionEventListener;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.base.ConnectionHolder;
@@ -630,7 +630,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         ce.setConnectionHandle(connHolder30Object);
 
         if (markedForRemoval && !transactionInProgress) {
-            BadConnectionEventListener bcel = (BadConnectionEventListener) listener;
+            com.sun.appserv.connectors.internal.spi.BadConnectionEventListener bcel = (BadConnectionEventListener) listener;
             bcel.badConnectionClosed(ce);
             _logger.log(Level.INFO, "jdbc.markedForRemoval_conClosed");
             markedForRemoval = false;

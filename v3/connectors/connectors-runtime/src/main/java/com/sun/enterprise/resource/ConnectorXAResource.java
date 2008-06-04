@@ -42,7 +42,7 @@ import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.listener.ConnectionEventListener;
 import com.sun.enterprise.resource.listener.LocalTxConnectionEventListener;

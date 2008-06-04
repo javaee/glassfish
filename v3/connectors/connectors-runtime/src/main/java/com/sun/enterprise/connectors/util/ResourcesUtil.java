@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import org.glassfish.internal.api.ServerContext;

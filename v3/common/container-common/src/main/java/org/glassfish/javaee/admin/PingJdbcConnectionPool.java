@@ -45,7 +45,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 /**
  * Ping JDBC Connection Pool Command

@@ -43,7 +43,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transaction;
 import java.util.Set;
 
-import com.sun.appserv.connectors.spi.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
 
 @Contract
 public interface JavaEETransaction

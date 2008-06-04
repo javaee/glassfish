@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+
 
 
 /**

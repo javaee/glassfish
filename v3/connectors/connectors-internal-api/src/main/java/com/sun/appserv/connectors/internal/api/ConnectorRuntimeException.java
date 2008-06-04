@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.api;
 
 /**
  * This is an Exception class. Connector module uses this class to

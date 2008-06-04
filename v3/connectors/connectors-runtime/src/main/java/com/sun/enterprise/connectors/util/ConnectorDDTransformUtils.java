@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.deploy.shared.FileArchive;
@@ -52,8 +52,6 @@ import org.xml.sax.SAXParseException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;

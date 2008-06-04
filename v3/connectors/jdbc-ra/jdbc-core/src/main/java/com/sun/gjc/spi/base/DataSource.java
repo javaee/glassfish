@@ -36,10 +36,10 @@
 
 package com.sun.gjc.spi.base;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.gjc.spi.ConnectionRequestInfo;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -168,7 +168,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
     public Connection getNonTxConnection() throws SQLException {
         try {
             ConnectionHolder con = (ConnectionHolder)
-                    ((com.sun.appserv.connectors.spi.ConnectionManager)
+                    ((com.sun.appserv.connectors.internal.spi.ConnectionManager)
                             cm).allocateNonTxConnection(mcf, null);
             setConnectionType(con, true);
 
@@ -196,7 +196,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
         try {
             ConnectionRequestInfo cxReqInfo = new ConnectionRequestInfo(user, password);
             ConnectionHolder con = (ConnectionHolder)
-                    ((com.sun.appserv.connectors.spi.ConnectionManager)
+                    ((com.sun.appserv.connectors.internal.spi.ConnectionManager)
                             cm).allocateNonTxConnection(mcf, cxReqInfo);
 
             setConnectionType(con, true);
@@ -288,15 +288,15 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
         ConnectionHolder.ConnectionType cmType = ConnectionHolder.ConnectionType.STANDARD;
 
         if (cm instanceof javax.resource.spi.LazyAssociatableConnectionManager) {
-            if (!((com.sun.appserv.connectors.spi.ConnectionManager) cm).
+            if (!((com.sun.appserv.connectors.internal.spi.ConnectionManager) cm).
                     getJndiName().endsWith(ConnectorConstants.PM_JNDI_SUFFIX)) {
                 cmType = ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE;
             }
         } else if (cm instanceof
                 javax.resource.spi.LazyEnlistableConnectionManager) {
-            if (!((com.sun.appserv.connectors.spi.ConnectionManager) cm).
+            if (!((com.sun.appserv.connectors.internal.spi.ConnectionManager) cm).
                     getJndiName().endsWith(ConnectorConstants.PM_JNDI_SUFFIX) &&
-                    !((com.sun.appserv.connectors.spi.ConnectionManager) cm).
+                    !((com.sun.appserv.connectors.internal.spi.ConnectionManager) cm).
                             getJndiName().endsWith(ConnectorConstants.NON_TX_JNDI_SUFFIX)) {
                 cmType = ConnectionHolder.ConnectionType.LAZY_ENLISTABLE;
             }

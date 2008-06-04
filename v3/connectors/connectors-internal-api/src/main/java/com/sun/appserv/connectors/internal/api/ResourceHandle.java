@@ -33,11 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.api;
 
 import javax.transaction.xa.XAResource;
-
-import com.sun.appserv.connectors.spi.PoolingException;
 
 /**
  * ResourceHandle interface to be used by transaction manager components

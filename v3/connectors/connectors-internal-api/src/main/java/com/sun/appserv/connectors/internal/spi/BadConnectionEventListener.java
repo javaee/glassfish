@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,66 +33,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/*
- *
- * Copyright 1999, 2000 Sun Microsystems, Inc. All Rights Reserved.
- * 
- * This software is the proprietary information of Sun Microsystems, Inc.  
- * Use is subject to license terms.
- * 
- */
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.spi;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import javax.resource.spi.ConnectionEvent;
 
 /**
- * Generic exception class to indicate exceptions pertaining to pooling infrastructure
+ * Inteface for resource adapters to signal that the connection being closed is bad.
+ * <i>Custom api</i>
+ * @author  Jagadish Ramu
  */
-public class PoolingException extends Exception {
-
-    private Exception ex;
-
-    public PoolingException() {
-    }
-
-    public PoolingException(String s) {
-        super(s);
-    }
-
-    public PoolingException(Exception ex) {
-        super(ex.getMessage());
-        this.ex = ex;
-    }
-
-    public PoolingException(String s, Exception ex) {
-        super(s);
-        this.ex = ex;
-    }
-
-    public Exception getNestedException() {
-        return ex;
-    }
-
-    public void printStackTrace() {
-        super.printStackTrace();
-        if (ex != null) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void printStackTrace(PrintStream ps) {
-        super.printStackTrace(ps);
-        if (ex != null) {
-            ex.printStackTrace(ps);
-        }
-    }
-
-    public void printStackTrace(PrintWriter pw) {
-        super.printStackTrace(pw);
-        if (ex != null) {
-            ex.printStackTrace(pw);
-        }
-    }
-
+public interface BadConnectionEventListener {
+    /**
+     * Resource adapters will signal that the connection being closed is bad.
+     * <i>Custom api</i>
+     * @param evt ConnectionEvent
+     */
+    public void badConnectionClosed(ConnectionEvent evt);
 }

@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.resource;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.PoolMetaData;
 
 import java.io.Serializable;
@@ -68,7 +68,7 @@ public class ResourceSpec implements Serializable {
             nonTxResource = true;
         }
 
-        if (resourceId.endsWith(com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX) ) {
+        if (resourceId.endsWith(ConnectorConstants.PM_JNDI_SUFFIX) ) {
             pmResource = true;
         }
 

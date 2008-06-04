@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.BootstrapContext;

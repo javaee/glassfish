@@ -38,7 +38,7 @@ package com.sun.enterprise.resource.pool;
 
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.resource.ResourceException;
 import java.util.Set;

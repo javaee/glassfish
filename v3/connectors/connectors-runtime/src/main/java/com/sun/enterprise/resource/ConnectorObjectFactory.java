@@ -37,8 +37,9 @@ package com.sun.enterprise.resource;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.ConnectionManagerImpl;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.NamingObjectProxy;
 
@@ -100,7 +101,7 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
 
             boolean forceNoLazyAssoc = false;
 
-            if (jndiName.endsWith(com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX)) {
+            if (jndiName.endsWith(ConnectorConstants.PM_JNDI_SUFFIX)) {
                 forceNoLazyAssoc = true;
             }
 

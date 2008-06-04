@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.connectors.module;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.javaee.services.ResourceManager;
 

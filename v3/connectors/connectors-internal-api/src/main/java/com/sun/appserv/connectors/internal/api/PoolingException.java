@@ -33,26 +33,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.connectors.spi;
+/*
+ *
+ * Copyright 1999, 2000 Sun Microsystems, Inc. All Rights Reserved.
+ * 
+ * This software is the proprietary information of Sun Microsystems, Inc.  
+ * Use is subject to license terms.
+ * 
+ */
+package com.sun.appserv.connectors.internal.api;
 
-import org.jvnet.hk2.annotations.Contract;
-
-import javax.transaction.Transaction;
-
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
- * TransactedPoolManager manages jdbc and connector connection pool
- * @author Jagadish Ramu
+ * Generic exception class to indicate exceptions pertaining to pooling infrastructure
  */
-@Contract
-public interface TransactedPoolManager {
+public class PoolingException extends Exception {
 
-    /**
-     * Indicate that a resource is enlisted.
-     * @param tran Transaction to which the resource is enlisted
-     * @param res Resource that is enlisted
-     * @throws IllegalStateException when unable to enlist the resource
-     */
-    void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
+    private Exception ex;
+
+    public PoolingException() {
+    }
+
+    public PoolingException(String s) {
+        super(s);
+    }
+
+    public PoolingException(Exception ex) {
+        super(ex.getMessage());
+        this.ex = ex;
+    }
+
+    public PoolingException(String s, Exception ex) {
+        super(s);
+        this.ex = ex;
+    }
+
+    public Exception getNestedException() {
+        return ex;
+    }
+
+    public void printStackTrace() {
+        super.printStackTrace();
+        if (ex != null) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void printStackTrace(PrintStream ps) {
+        super.printStackTrace(ps);
+        if (ex != null) {
+            ex.printStackTrace(ps);
+        }
+    }
+
+    public void printStackTrace(PrintWriter pw) {
+        super.printStackTrace(pw);
+        if (ex != null) {
+            ex.printStackTrace(pw);
+        }
+    }
+
 }
-

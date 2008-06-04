@@ -45,7 +45,7 @@ import org.jvnet.hk2.component.PerLookup;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 /**
  * Holder for a resource adapter configuration that gets registered in the naming manager.

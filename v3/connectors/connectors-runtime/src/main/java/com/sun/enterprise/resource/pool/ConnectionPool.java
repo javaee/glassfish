@@ -50,7 +50,7 @@ import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueueFactory;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.naming.Context;
 import javax.naming.NamingException;

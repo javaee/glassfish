@@ -38,7 +38,7 @@ package com.sun.enterprise.resource.pool.datastructure;
 
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 /**
  * Represents a pool datastructure. Helps to plug-in various implementations

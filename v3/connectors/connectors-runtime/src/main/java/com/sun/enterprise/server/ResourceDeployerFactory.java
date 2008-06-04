@@ -50,8 +50,8 @@
 package com.sun.enterprise.server;
 
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.resource.deployer.ConnectorConnectionPoolDeployer;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.resource.deployer.JdbcConnectionPoolDeployer;

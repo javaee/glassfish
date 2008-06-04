@@ -37,8 +37,8 @@ package com.sun.enterprise.resource;
 
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.allocator.LocalTxConnectorAllocator;
-import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.resource.spi.ConnectionEventListener;
 import javax.security.auth.Subject;
@@ -53,7 +53,7 @@ import java.util.logging.Level;
  *
  * @author Tony Ng
  */
-public class ResourceHandle implements com.sun.appserv.connectors.spi.ResourceHandle {
+public class ResourceHandle implements com.sun.appserv.connectors.internal.api.ResourceHandle {
 
     // unique ID for resource handles
     static private long idSequence;

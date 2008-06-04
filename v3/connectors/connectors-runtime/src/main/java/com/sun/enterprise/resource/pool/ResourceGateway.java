@@ -37,7 +37,7 @@
 package com.sun.enterprise.resource.pool;
 
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;

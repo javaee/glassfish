@@ -35,7 +35,7 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.management.base.SystemStatus;
 import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 import com.sun.appserv.management.util.misc.ExceptionUtil;

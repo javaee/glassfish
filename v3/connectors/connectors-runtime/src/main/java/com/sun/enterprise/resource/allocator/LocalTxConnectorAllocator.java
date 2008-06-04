@@ -47,7 +47,7 @@ import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.*;
 import com.sun.enterprise.resource.listener.ConnectionEventListener;
 import com.sun.enterprise.resource.listener.LocalTxConnectionEventListener;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 /**
  * @author Tony Ng

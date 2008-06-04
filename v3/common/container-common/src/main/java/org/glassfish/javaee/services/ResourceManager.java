@@ -44,7 +44,6 @@ import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.internal.api.Init;
 import org.glassfish.api.naming.NamingObjectsProvider;
 
 import java.beans.PropertyChangeEvent;
@@ -52,8 +51,8 @@ import java.util.logging.Logger;
 import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 
 @Service

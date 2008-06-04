@@ -46,10 +46,8 @@ import javax.persistence.EntityManager;
 import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.appserv.connectors.spi.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.logging.LogDomains;
-
-import org.jvnet.hk2.annotations.Inject;
 
 /**
  * This class implements the JTA Transaction API for the J2EE RI.

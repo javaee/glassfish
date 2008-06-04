@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.logging.LogDomains;
 

@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.resource.pool.waitqueue;
 
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.logging.LogDomains;
 
 import java.security.AccessController;

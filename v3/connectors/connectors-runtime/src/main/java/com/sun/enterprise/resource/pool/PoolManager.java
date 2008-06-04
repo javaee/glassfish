@@ -35,9 +35,9 @@
  */
 package com.sun.enterprise.resource.pool;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
-import com.sun.appserv.connectors.spi.TransactedPoolManager;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.internal.api.TransactedPoolManager;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;

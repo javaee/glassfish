@@ -36,14 +36,14 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.resource.ConnectorObjectFactory;
 
 import javax.naming.Context;

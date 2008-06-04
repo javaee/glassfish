@@ -50,7 +50,7 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.server.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;

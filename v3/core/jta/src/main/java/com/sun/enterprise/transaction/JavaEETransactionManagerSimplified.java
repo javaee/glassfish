@@ -49,9 +49,9 @@ import com.sun.appserv.util.cache.BaseCache;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.ComponentContext;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.appserv.connectors.spi.ResourceHandle;
-import com.sun.appserv.connectors.spi.TransactedPoolManager;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.TransactedPoolManager;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Inject;

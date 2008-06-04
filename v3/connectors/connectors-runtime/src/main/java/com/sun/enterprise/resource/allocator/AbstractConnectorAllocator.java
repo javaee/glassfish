@@ -43,9 +43,9 @@ import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.AssocWithThreadResourceHandle;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.appserv.connectors.spi.PoolingException;
-import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
-import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;

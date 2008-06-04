@@ -36,10 +36,10 @@
 package com.sun.enterprise.resource.pool;
 
 
-import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.resource.pool.AssocWithThreadResourcePool;
+
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

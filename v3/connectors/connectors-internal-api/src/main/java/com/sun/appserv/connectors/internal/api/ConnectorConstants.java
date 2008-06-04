@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.connectors.spi;
+package com.sun.appserv.connectors.internal.api;
 
 import java.util.Collections;
 import java.util.List;

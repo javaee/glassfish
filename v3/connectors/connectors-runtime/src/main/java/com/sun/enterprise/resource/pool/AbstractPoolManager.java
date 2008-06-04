@@ -43,7 +43,7 @@ import javax.resource.spi.ManagedConnection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.appserv.connectors.internal.api.PoolingException;
 
 /**
  * Abstract Pool manager for unimplemented features. Throws UnsupportedOperationException when invoked.
