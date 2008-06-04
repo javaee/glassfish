@@ -72,7 +72,7 @@
 	    <ValidOption name="interactive"/>
 	    <ValidOption name="passwordfile"/>
 	</Command>
-        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand"  numberofoperands="1"
+        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.optional.CreateDomainCommand"  numberofoperands="1"
            usage-text="create-domain [--user admin] --adminport port_number | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
                 <ValidOption name="adminport"/>
                 <ValidOption name="adminuser"/>
@@ -93,12 +93,12 @@
                 <ValidOption name="savemasterpassword"/>
                 <ValidOption name="savelogin"/>
         </Command>
-        <Command name="list-domains" classname="com.sun.enterprise.admin.cli.ListDomainsCommand" numberofoperands="0" usage-text="list-domains [--terse=false] [--echo=false] [--domaindir domain_directory]">
+        <Command name="list-domains" classname="com.sun.enterprise.admin.cli.optional.ListDomainsCommand" numberofoperands="0" usage-text="list-domains [--terse=false] [--echo=false] [--domaindir domain_directory]">
                 <ValidOption name="terse"/>
                 <ValidOption name="echo"/>
                 <ValidOption name="domaindir"/>
         </Command>
-        <Command name="delete-domain" classname="com.sun.enterprise.admin.cli.DeleteDomainCommand" numberofoperands="1" usage-text="delete-domain [--terse=false] [--echo=false] [--domaindir domain_directory] domain_name">
+        <Command name="delete-domain" classname="com.sun.enterprise.admin.cli.optional.DeleteDomainCommand" numberofoperands="1" usage-text="delete-domain [--terse=false] [--echo=false] [--domaindir domain_directory] domain_name">
                 <ValidOption name="terse"/>
                 <ValidOption name="echo"/>
                 <ValidOption name="domaindir"/>
@@ -114,14 +114,14 @@
              <ValidOption name="passwordfile"/>
              <ValidOption name="force"/>
         </Command>
-        <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
+        <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.optional.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
                 <ValidOption name="domaindir"/>
                 <ValidOption name="description"/>
                 <ValidOption name="terse"/>
                 <ValidOption name="verbose"/>
                 <ValidOption name="echo"/>
         </Command>
-        <Command name="restore-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]">
+        <Command name="restore-domain" classname="com.sun.enterprise.admin.cli.optional.BackupCommands" numberofoperands="?" usage-text="restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]">
                 <ValidOption name="domaindir"/>
                 <ValidOption name="filename"/>
                 <ValidOption name="description"/>
@@ -129,14 +129,14 @@
                 <ValidOption name="echo"/>
                 <ValidOption name="verbose"/>
         </Command>
-        <Command name="start-database" classname="com.sun.enterprise.admin.cli.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
+        <Command name="start-database" classname="com.sun.enterprise.admin.cli.optional.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
 	    <ValidOption name="dbhost"/>
             <ValidOption name="dbport"/>
             <ValidOption name="dbhome"/>
             <ValidOption name="echo"/>
             <ValidOption name="terse"/>
 	</Command>
-        <Command name="stop-database" classname="com.sun.enterprise.admin.cli.StopDatabaseCommand" numberofoperands="0" usage-text="stop-database [--dbhost 0.0.0.0] [--dbport 1527]">
+        <Command name="stop-database" classname="com.sun.enterprise.admin.cli.optional.StopDatabaseCommand" numberofoperands="0" usage-text="stop-database [--dbhost 0.0.0.0] [--dbport 1527]">
 	    <ValidOption name="dbhost"/>
             <ValidOption name="dbport"/>
             <ValidOption name="terse"/>
