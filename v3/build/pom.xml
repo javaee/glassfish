@@ -43,6 +43,16 @@
         </repository>
     </distributionManagement>
     
+    <build>
+        <extensions>
+             <extension>
+                  <groupId>org.apache.maven.wagon</groupId>
+                  <artifactId>wagon-webdav</artifactId>
+                  <version>1.0-beta-2</version>
+             </extension>
+        </extensions>
+    </build>
+       
     <scm>
         <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</connection>
         <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</developerConnection>
