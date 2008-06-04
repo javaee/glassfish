@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
+import com.sun.enterprise.admin.cli.CLIProcessExecutor;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CLILogger;
@@ -87,7 +88,7 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 "-Dderby.storage.fileSyncTransactionLog=True",
                 "-cp",
                 sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.DerbyControl",
+                "com.sun.enterprise.admin.cli.optional.DerbyControl",
                 "start",
                 dbHost, dbPort, "true", dbHome
             };
@@ -98,7 +99,7 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 "-Djava.library.path="+sInstallRoot+File.separator+"lib",
                 "-cp",
                 sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.DerbyControl",
+                "com.sun.enterprise.admin.cli.optional.DerbyControl",
                 "start",
                 dbHost, dbPort, "true", dbHome
             };
@@ -120,7 +121,7 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 "-Dderby.storage.fileSyncTransactionLog=True",
                 "-cp",
                 sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.DerbyControl",
+                "com.sun.enterprise.admin.cli.optional.DerbyControl",
                 "sysinfo",
                dbHost, dbPort, "false"
             };
@@ -131,7 +132,7 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 "-Djava.library.path="+sInstallRoot+File.separator+"lib",
                 "-cp",
                 sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.DerbyControl",
+                "com.sun.enterprise.admin.cli.optional.DerbyControl",
                 "sysinfo",
                 dbHost, dbPort, "false"
             };

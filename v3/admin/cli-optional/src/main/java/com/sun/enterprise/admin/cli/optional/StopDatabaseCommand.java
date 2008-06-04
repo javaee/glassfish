@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
+import com.sun.enterprise.admin.cli.CLIProcessExecutor;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
@@ -79,7 +80,7 @@ public final class StopDatabaseCommand extends DatabaseCommand
                 "-Dderby.storage.fileSyncTransactionLog=True",
                 "-cp",
                 sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.DerbyControl",
+                "com.sun.enterprise.admin.cli.optional.DerbyControl",
                 "shutdown",
                 dbHost, dbPort, "false"
              };
@@ -89,7 +90,7 @@ public final class StopDatabaseCommand extends DatabaseCommand
             "-Djava.library.path="+sInstallRoot+File.separator+"lib",
             "-cp",
             sClasspath + File.pathSeparator + sDatabaseClasspath,
-            "com.sun.enterprise.admin.cli.DerbyControl",
+            "com.sun.enterprise.admin.cli.optional.DerbyControl",
             "shutdown",
             dbHost, dbPort, "false"
        };

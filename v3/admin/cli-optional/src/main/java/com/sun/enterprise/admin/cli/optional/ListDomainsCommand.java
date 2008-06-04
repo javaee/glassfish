@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,73 +35,76 @@
  */
 
 /*
- *  $Id: DeleteDomainCommand.java,v 1.4 2006/02/02 00:21:45 pa100654 Exp $
+ *  $Id: ListDomainsCommand.java,v 1.3 2005/12/25 03:46:31 tcfujii Exp $
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.admin.servermgmt.DomainsManager;
+
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
+import com.sun.enterprise.admin.servermgmt.DomainsManager;
 
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 
+// jdk imports
+
 /**
- * Deletes a domain of the Application server
+ *  This is a local command that creates a new domain
+ *  @version  $Revision: 1.3 $
  */
-public class DeleteDomainCommand extends BaseLifeCycleCommand 
+public class ListDomainsCommand extends BaseLifeCycleCommand
 {
 
-
-    /** Creates new DeleteDomainCommand */
-    public DeleteDomainCommand() 
+    /** Creates new CreateDomainCommand */
+    public ListDomainsCommand()
     {
     }
 
+
     /**
-     * Validates the Options for correctness
-     * @return boolean returns true if validation is succesful else false
+     *  An abstract method that validates the options 
+     *  on the specification in the xml properties file
+     *  @return true if successfull
      */
-    public boolean validateOptions() throws CommandValidationException 
+    public boolean validateOptions() throws CommandValidationException
     {
         return super.validateOptions();
     }
+
     
     /**
-     * Executes the command
-     * @throws CommandException
+     *  An abstract method that executes the command
+     *  @throws CommandException
      */
-    public void runCommand() throws CommandException, CommandValidationException 
+    public void runCommand() 
+            throws CommandException, CommandValidationException
     {
-        validateOptions();
-	
-	String domainName = null;
-        try
-        {            
-	    domainName = (String)operands.firstElement();
-            DomainConfig domainConfig = getDomainConfig(domainName);
+        if (!validateOptions())
+           throw new CommandValidationException("Validation failed");
+        try {
+            DomainConfig domainConfig = new DomainConfig(null, 
+                getDomainsRoot());
             DomainsManager manager = new PEDomainsManager();
-            manager.deleteDomain(domainConfig);
-            deleteLoginInfo();
+            String[] domainsList = manager.listDomains(domainConfig);
+            if (domainsList.length > 0) {
+                //*bug fix for #6158809*
+                //CLILogger.getInstance().printDetailMessage(
+                //    getLocalizedString("ListOfDomains"));
+                //*end of bug fix*
+                for (int i = 0; i < domainsList.length; i++) {
+                    CLILogger.getInstance().printMessage(domainsList[i]);
+                }
+            } else {
+                CLILogger.getInstance().printDetailMessage(
+                   getLocalizedString("NoDomainsToList"));
+            }
+        } catch (Exception ex) {
+            CLILogger.getInstance().printDetailMessage(ex.getLocalizedMessage());
+            throw new CommandException(getLocalizedString("CommandUnSuccessful",
+						     new Object[] {name} ), ex);
         }
-        catch (Exception e)
-        {
-	    CLILogger.getInstance().printDetailMessage(e.getLocalizedMessage());
-	    throw new CommandException(getLocalizedString("CouldNotDeleteDomain",
-							  new Object[] {domainName}));
-        }
-
-	CLILogger.getInstance().printDetailMessage(getLocalizedString("DomainDeleted",
-                                             new Object[] {domainName}));
     }
 
 
-    /**
-     * This method will delete the entry in the .asadminpass file if exists
-     */
-    private void deleteLoginInfo() throws CommandValidationException 
-    {
-        return;
-    }
-    
 }

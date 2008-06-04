@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
+import com.sun.enterprise.admin.cli.ClassPathBuilder;
 import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
@@ -152,7 +153,7 @@ public abstract class DatabaseCommand extends S1ASCommand
                     "-Djava.library.path=" + sInstallRoot + File.separator +
                     "lib", "-Dderby.storage.fileSyncTransactionLog=True", "-cp",
                     sClasspath + File.pathSeparator + sDatabaseClasspath,
-                    "com.sun.enterprise.admin.cli.DerbyControl", "ping",
+                    "com.sun.enterprise.admin.cli.optional.DerbyControl", "ping",
                     dbHost, dbPort, Boolean.valueOf(bRedirect).toString()};
         }
         else {
@@ -160,7 +161,7 @@ public abstract class DatabaseCommand extends S1ASCommand
                     "-Djava.library.path=" + sInstallRoot + File.separator +
                     "lib", "-cp",
                     sClasspath + File.pathSeparator + sDatabaseClasspath,
-                    "com.sun.enterprise.admin.cli.DerbyControl", "ping",
+                    "com.sun.enterprise.admin.cli.optional.DerbyControl", "ping",
                     dbHost, dbPort, Boolean.valueOf(bRedirect).toString()};
         }
     }

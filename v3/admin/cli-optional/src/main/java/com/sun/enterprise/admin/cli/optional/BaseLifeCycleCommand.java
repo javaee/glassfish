@@ -37,7 +37,7 @@
 /*
  * $Id: BaseLifeCycleCommand.java,v 1.11 2007/05/01 05:36:54 ne110415 Exp $
  */
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.cli.framework.*;
 

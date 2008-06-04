@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
 import java.util.*;
