@@ -46,6 +46,10 @@ import java.util.concurrent.CountDownLatch;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -53,22 +57,88 @@ import java.lang.reflect.Proxy;
  *
  * @author Jerome Dochez
  */
+
+@Service
 public final class Transactions {
-    final private static Transactions t = new Transactions();
+    
+    private static final Transactions singleton = new Transactions();
     
     // NOTE: synchronization on the object itself
-    final List<TransactionListener> listeners = new ArrayList<TransactionListener>();
-    
-    // Use a blocking queue out of conveniene, in fact the synchornization is done with the Lock and condition below
-    final private BlockingQueue<Job> pendingJobs = new ArrayBlockingQueue<Job>(5);
-    final Thread mNotififierThread;
+    final List<ListenerInfo<TransactionListener>> listeners = new ArrayList<ListenerInfo<TransactionListener>>();
 
+    final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+
+        public Thread newThread(Runnable r) {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
+        }
+        
+    });
+        
+    final private ListenerInfo<Object> configListeners = new ListenerInfo<Object>(null);
+    
+    private final class ListenerInfo<T> {
+        
+        private final T listener;
+        
+        private final BlockingQueue<Job> pendingJobs = new ArrayBlockingQueue<Job>(50);
+        private CountDownLatch latch = new CountDownLatch(1);
+        
+        public ListenerInfo(T listener) {
+            this.listener = listener;
+            start();
+        }
+        
+        public void addTransaction(Job job) {
+                
+            // NOTE that this is put() which blocks, *not* add() which will not block and will
+            // throw an IllegalStateException if the queue is full.
+            try {
+                pendingJobs.put(job);
+            } catch (InterruptedException e ) {
+                throw new RuntimeException(e);
+            }            
+            
+        }
+        
+        private void start() {
+
+            executor.submit(new Runnable() {
+
+                public void run() {
+                    while (latch.getCount()>0) {
+                        try {
+                            final Job job  = pendingJobs.take();
+                            try {
+                                if ( job.mEvents.size() != 0 ) {
+                                    job.process(listener);
+                                }
+                            } finally {
+                                job.releaseLatch();
+                            }
+                        }
+                        catch (InterruptedException e) {
+                            // do anything here?
+                        }
+                    }
+                }
+                
+            });
+        }
+
+        void stop() {
+            latch.countDown();
+            // last event to force the close
+            pendingJobs.add(new TransactionListenerJob(new ArrayList<PropertyChangeEvent>(), null));
+        }
+    }
     /**
         A job contains an optional CountdownLatch so that a caller can learn when the
         transaction has "cleared" by blocking until that time.
      */
-    private static final class Job {
-        final List<PropertyChangeEvent> mEvents;
+    private abstract static class Job<T> {
+        protected final List<PropertyChangeEvent> mEvents;
         private final CountDownLatch mLatch;
         
         public Job( final List<PropertyChangeEvent> events, final CountDownLatch latch ) {
@@ -87,16 +157,52 @@ public final class Transactions {
                 mLatch.countDown();
             }
         }
+        
+        public abstract void process(T target);
     }
+    
+    private static class TransactionListenerJob extends Job<TransactionListener> {
 
+        public TransactionListenerJob(List<PropertyChangeEvent> events, CountDownLatch latch) {
+            super(events, latch);
+        }
+        
+        @Override
+        public void process(TransactionListener listener) {
+            try {
+                listener.transactionCommited(mEvents);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }            
+        }
+    }
+    
+    private static class ConfigListenerJob extends Job<Object> {
 
-    /**
-     * Returns the singleton service
-     *
-     * @return  the singleton service
-     */
-    public static Transactions get() {
-        return t;
+        public ConfigListenerJob(List events, CountDownLatch latch) {
+            super(events, latch);
+        }
+
+        @Override
+        public void process(Object target) {
+            Set<ConfigListener> notifiedListeners = new HashSet<ConfigListener>();
+            for (final PropertyChangeEvent evt : mEvents) {
+                final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
+                if (dom.getListeners() != null) {
+                    for (final ConfigListener listener : dom.getListeners()) {
+                        if (!notifiedListeners.contains(listener)) {
+                            try {
+                                // create a new array each time to avoid any potential array changes?
+                                listener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        notifiedListeners.add(listener);
+                    }
+                }
+            }
+        }        
     }
 
     /**
@@ -106,7 +212,7 @@ public final class Transactions {
      */
     public void addTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            listeners.add(listener);
+            listeners.add(new ListenerInfo(listener));
         }
     }
 
@@ -117,17 +223,23 @@ public final class Transactions {
      */
     public boolean removeTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            return listeners.remove(listener);
+            for (ListenerInfo info : listeners) {
+                if (info.listener==listener) {
+                    info.stop();
+                    return listeners.remove(info);
+                }
+            }
         }
+        return false;
     }
     
-    /**
-        To make a copy of the list, we must hold the lock while we copy it:
-        what happens if add/removeTransactionsListener is called while copying?!
-     */
     public List<TransactionListener> currentListeners() {
-        synchronized(listeners) {
-            return new ArrayList<TransactionListener>(listeners);
+        synchronized(listeners) {            
+            List<TransactionListener> l = new ArrayList<TransactionListener>();
+            for (ListenerInfo<TransactionListener> info : listeners) {
+                l.add(info.listener);
+            }
+            return l;
         }
     }
 
@@ -147,35 +259,28 @@ public final class Transactions {
         final List<PropertyChangeEvent> events,
         final boolean waitTillCleared ) {
         
-        // create a CountDownLatch to implement waiting for events to actually be sent
-        final CountDownLatch latch = waitTillCleared ? new CountDownLatch(1) : null;
+        final List<ListenerInfo> listInfos = new ArrayList<ListenerInfo>();
+        listInfos.addAll(listeners);
         
-        final Job job = new Job( events, latch );
+        // create a CountDownLatch to implement waiting for events to actually be sent
+        final CountDownLatch latch = waitTillCleared ? new CountDownLatch(listInfos.size()+1) : null;
+        
+        final Job job = new TransactionListenerJob( events, latch );
         
         // NOTE that this is put() which blocks, *not* add() which will not block and will
         // throw an IllegalStateException if the queue is full.
         try {
-            pendingJobs.put(job);
+            for (ListenerInfo listener : listInfos) {
+                listener.addTransaction(job);
+            }
+            // the config listener job
+            configListeners.addTransaction(new ConfigListenerJob(events, latch));
+            
             job.waitForLatch();
         } catch (InterruptedException e ) {
             throw new RuntimeException(e);
         }
     }
-
-    
-    /**
-        Returns true if there are transaction events yet to be received by listeners
-        <p>
-        The return value is meaningless in a threaded environment
-        unless  all events queued prior to this call have *actually been
-        sent to all listeners*, as opposed to having been pulled off the queue and about to be sent,
-        partially sent, etc.  This method should be removed, since waitForDrain() does what is needed.
-     * @return true if the are pending events notifications.
-    public boolean pendingTransactionEvents() {
-        waitForDrain();
-        return false;
-    }
-     */
 
     public void waitForDrain() {
         // insert a dummy Job and block until is has been processed.  This guarantees
@@ -183,71 +288,12 @@ public final class Transactions {
         addTransaction( new ArrayList<PropertyChangeEvent>(), true );
         // at this point all prior transactions are guaranteed to have cleared
     }
-
-    public void shutdown() {
-        mNotififierThread.interrupt();
-    }
-
-    private final class ListenerNotifierThread extends Thread {
-        public ListenerNotifierThread() {}
-        
-        private void processJob( final Job job ) {
-            try {
-                final List<PropertyChangeEvent> events = job.mEvents;
-                if ( events.size() != 0 ) {
-                    // copy the 'listeners' list so as to avoid concurrency issues
-                    final List<TransactionListener> curListeners = currentListeners();
-                    
-                    for ( final TransactionListener listener : curListeners ) {
-                        try {
-                            listener.transactionCommited(events);
-                        } 
-                        catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    Set<ConfigListener> notifiedListeners = new HashSet<ConfigListener>();
-                    for ( final PropertyChangeEvent evt : events) {
-                        final Dom dom = (Dom)((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
-                        if (dom.getListeners() != null) {
-                            for ( final ConfigListener listener : dom.getListeners()) {
-                                if (!notifiedListeners.contains(listener)) {
-                                    try {
-                                        // create a new array each time to avoid any potential array changes?
-                                        listener.changed(events.toArray(new PropertyChangeEvent[events.size()]));
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                notifiedListeners.add(listener);
-                            }
-                        }
-                    }
-                }
-            }
-            finally {
-                job.releaseLatch();
-            }
-        }
-        
-        public void run() {
-            while (true) {
-                try {
-                    final Job job  = pendingJobs.take();
-                    processJob(job);
-                }
-                catch (InterruptedException e)
-                {
-                    // do anything here?
-                }
-            }
-        }
+    
+    private Transactions() {        
     }
     
-    private Transactions() {
-        mNotififierThread = new ListenerNotifierThread(); 
-        mNotififierThread.start();
+    public static final Transactions get() {
+        return singleton;
     }
 }
 
