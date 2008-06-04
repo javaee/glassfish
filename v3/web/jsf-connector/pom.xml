@@ -117,7 +117,7 @@
                          which depends on following APIs that are not needed while running in
                          GlassFish. So excluding them. See the negative pattern(!) used below
                          -->
-                        <Import-Package>javax.faces,!org.mortbay.jetty.*,!com.sun.faces.config.beans,!org.apache,!javax.portlet,*</Import-Package>
+                        <Import-Package>javax.faces,!com.sun.enterprise,!org.mortbay.jetty.*,!com.sun.faces.config.beans,!org.apache,!javax.portlet,*</Import-Package>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,
                          other than what is specified above -->
                         <Private-Package>!*</Private-Package>
