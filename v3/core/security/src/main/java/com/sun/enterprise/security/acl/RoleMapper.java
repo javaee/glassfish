@@ -56,14 +56,12 @@ import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 //import com.sun.enterprise.config.ConfigContext;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.server.ApplicationServer;
 import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
 import com.sun.logging.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
 
 
 /** This Object maintains  a mapping of users and groups to application
@@ -73,10 +71,8 @@ import org.jvnet.hk2.component.PostConstruct;
  * RoleMapper for JACC related changes.
  * @author Harpreet Singh
  */
-@Service
-public class RoleMapper implements Serializable, SecurityRoleMapper, PostConstruct {
+public class RoleMapper implements Serializable, SecurityRoleMapper {
 
-    @Inject
     private  ServerContext serverContext;
     
     private static Map ROLEMAPPER = new HashMap();
@@ -124,6 +120,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper, PostConstru
     private RoleMapper(String appName) {
         this.appName = appName;
         defaultP2RMappingClassName = getDefaultP2RMappingClassName();
+        postConstruct();
     }
    
     private  synchronized void initDefaultRole() {
@@ -755,6 +752,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper, PostConstru
     }
 
     public void postConstruct() {
+        serverContext = SecurityServicesUtil.getInstance().getHabitat().getComponent(ServerContext.class);
        initDefaultRole();
     }
 

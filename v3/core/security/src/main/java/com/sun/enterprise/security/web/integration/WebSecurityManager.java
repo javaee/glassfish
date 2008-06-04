@@ -71,8 +71,6 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -88,11 +86,10 @@ import org.glassfish.internal.api.Globals;
  * from this class and EJBSecurityManager class and extend this class from 
  * AbstractSecurityManager
  */
-public class WebSecurityManager implements PostConstruct {
+public class WebSecurityManager {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
 
-    @Inject
     private  AuditManager auditManager;
 
     /**
@@ -174,9 +171,10 @@ public class WebSecurityManager implements PostConstruct {
         this.CONTEXT_ID = getContextID(wbd);
         this.serverContext = svc;
         initialise();
+        postConstruct();
     }
 
-    public void postConstruct() {
+    private void postConstruct() {
         factory.setAppNameForContext(getAppId(), CONTEXT_ID);
     }
 
