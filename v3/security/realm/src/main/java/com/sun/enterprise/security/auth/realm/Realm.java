@@ -37,13 +37,7 @@ package com.sun.enterprise.security.auth.realm;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
-import java.security.Principal;
-import java.security.acl.Group;
-import com.sun.logging.*;
-import com.sun.enterprise.*;
 import com.sun.enterprise.util.*;
-import com.sun.enterprise.security.auth.realm.IASRealm;
 
 
 /**
