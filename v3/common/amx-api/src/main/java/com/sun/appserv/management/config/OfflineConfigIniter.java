@@ -97,8 +97,8 @@ public final class OfflineConfigIniter
             // We want this feature to work only if the requisite classes are present,
             // but we can't include them.
             //
-            final Class         loaderClass = Class.forName( LOADER_CLASSNAME );
-            final Constructor   constructor =
+            final Class<?>         loaderClass = Class.forName( LOADER_CLASSNAME );
+            final Constructor<?>   constructor =
                 loaderClass.getConstructor( LOADER_CONSTRUCTOR_SIG );
             
             final Object    loader      = constructor.newInstance( mServer, mDomainXML );

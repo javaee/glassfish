@@ -232,7 +232,7 @@ public class CompositeDataHelper
 		openTypes[ 0 ]	= SimpleType.STRING;
 		openTypes[ 1 ]	= cause == null ?
 			getEmptyCompositeType() : throwableToCompositeData( cause ).getCompositeType();
-		openTypes[ 2 ]	= new ArrayType( t.getStackTrace().length,
+		openTypes[ 2 ]	= OpenMBeanUtil.newArrayType( t.getStackTrace().length,
 							getStackTraceElementCompositeType() );
 		
 		

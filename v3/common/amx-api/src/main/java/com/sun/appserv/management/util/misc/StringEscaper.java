@@ -255,7 +255,7 @@ public final class StringEscaper
 		
 		while ( hasMoreChars() )
 		{
-			final char	c	= (char)nextChar();
+			final char	c	= nextChar();
 			assert ( c != mCharIter.DONE );
 			
 			if ( c == mEscapeChar )

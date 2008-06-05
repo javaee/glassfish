@@ -162,7 +162,7 @@ public final class TokenizerImpl implements Tokenizer
 			resultList.add( "" );
 		}
 		
-		return( (String[])resultList.toArray( new String[ resultList.size() ] ) );
+		return resultList.toArray( new String[ resultList.size() ] );
 	}
 	
 		public String []

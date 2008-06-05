@@ -241,7 +241,7 @@ public class AttributeNameMapperImpl implements AttributeNameMapper
 		public String
 	originalToDerived( String originalName )
 	{
-		String	derivedName	= (String)mOriginalToDerived.get( originalName );
+		String	derivedName	= mOriginalToDerived.get( originalName );
 		
 		if ( derivedName == null )
 		{
@@ -254,7 +254,7 @@ public class AttributeNameMapperImpl implements AttributeNameMapper
 		public String
 	derivedToOriginal( String derivedName )
 	{
-		String	original	= (String)mDerivedToOriginal.get( derivedName );
+		String	original	= mDerivedToOriginal.get( derivedName );
 		
 		if ( original == null )
 		{

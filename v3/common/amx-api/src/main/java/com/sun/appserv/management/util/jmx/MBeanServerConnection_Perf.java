@@ -133,7 +133,7 @@ public class MBeanServerConnection_Perf
 		printTime( final long id, final String methodName, final Object[] args )
 		{
 			final long	curTime	= System.currentTimeMillis();
-			final Long	start	= (Long)mTimers.remove( new Long( id ) );
+			final Long	start	= mTimers.remove( new Long( id ) );
 			if ( start != null )
 			{
 				mOutput.println( getInvocationString( methodName, args ) + ": " +

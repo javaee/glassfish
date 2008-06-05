@@ -84,7 +84,7 @@ public final class CompositeDataStats implements Stats
 	{
 		final Set<String>	nameSet	= mItems.keySet();
 		
-		return( (String[])nameSet.toArray( new String[ nameSet.size() ] ) );
+		return nameSet.toArray( new String[ nameSet.size() ] );
 	}
 	
 		public Statistic[]

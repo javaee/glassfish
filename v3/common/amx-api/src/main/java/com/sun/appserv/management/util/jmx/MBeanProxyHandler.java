@@ -602,7 +602,7 @@ public class MBeanProxyHandler extends MBeanServerInvocationHandler
 	   		else if ( JMXUtil.isGetAttributes( method ) )
 	   		{
 	   			final String[]	attrNames	= (String[])args[ 0 ];
-	   			result	= (AttributeList)getAttributes( attrNames );
+	   			result	= getAttributes( attrNames );
 	   		}
 	   		else if ( JMXUtil.isSetAttribute( method ) )
 	   		{
@@ -612,7 +612,7 @@ public class MBeanProxyHandler extends MBeanServerInvocationHandler
 	   		else if ( JMXUtil.isSetAttributes( method ) )
 	   		{
 	   			final AttributeList	requested	= (AttributeList)args[ 0 ];
-	   			result	= (AttributeList)setAttributes( requested );
+	   			result	= setAttributes( requested );
 	   		}
 	   		else
 	   		{

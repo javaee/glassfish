@@ -91,7 +91,7 @@ public class StringifierRegistryImpl implements StringifierRegistry
 		public Stringifier
 	lookup( Class theClass )
 	{
-		Stringifier		stringifier	= (Stringifier)mLookup.get( theClass );
+		Stringifier		stringifier	= mLookup.get( theClass );
 		
 		if ( stringifier == null && mNextRegistry != null )
 		{

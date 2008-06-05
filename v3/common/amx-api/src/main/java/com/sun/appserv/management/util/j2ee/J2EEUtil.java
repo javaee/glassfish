@@ -367,7 +367,7 @@ public class J2EEUtil
 	{
 		final String[]	statisticNames	= stats.getStatisticNames();
 		
-		final Class			statsClass	= stats.getClass();
+		final Class<? extends Stats>	statsClass	= stats.getClass();
 		final Method[]		methods		= new Method[ statisticNames.length ];
 		
 		final Set<String>   missing = new HashSet<String>();
@@ -417,7 +417,7 @@ public class J2EEUtil
 			}
 		}
 	
-		return (Method[])results.toArray( new Method[ results.size() ] );
+		return results.toArray( new Method[ results.size() ] );
 	}
 
     /**

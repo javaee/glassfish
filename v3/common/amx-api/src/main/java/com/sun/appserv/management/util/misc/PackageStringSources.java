@@ -50,14 +50,14 @@ import java.util.ResourceBundle;
  */
 public class PackageStringSources
 {
-	static final Map<Class,StringSource> mSources	= new HashMap<Class,StringSource>();
+	static final Map<Class<? extends StringSource>,StringSource> mSources	= new HashMap<Class<? extends StringSource>,StringSource>();
 	
 	/**
 		Get a string source for the specified class, using the specified
 		StringSource as its delegate.
 	 */
 		public static StringSource
-	get( final Class theClass, final StringSource delegate )
+	get( final Class<? extends StringSource> theClass, final StringSource delegate )
 	{
 		StringSource	source	= mSources.get( theClass );
 		if ( source == null )
@@ -72,7 +72,7 @@ public class PackageStringSources
 	private PackageStringSources()	{}
 	
 		private static StringSource
-	init( final Class theClass,  final StringSource delegate )
+	init( final Class<? extends StringSource> theClass,  final StringSource delegate )
 	{
 		StringSource	source	= null;
 		final String	packageName	= theClass.getPackage().getName();
@@ -81,11 +81,11 @@ public class PackageStringSources
 		{
 			final String	classname	= packageName + ".PackageStrings";
 			
-			final Class	packageStringSourceClass	= ClassUtil.getClassFromName( classname );
+			final Class<? extends StringSource>	packageStringSourceClass	= ClassUtil.getClassFromName( classname ).asSubclass( StringSource.class );
 			
-			final Constructor	c	= packageStringSourceClass.getConstructor( new Class[] { StringSource.class } );
+			final Constructor<? extends StringSource>	c	= packageStringSourceClass.getConstructor( new Class[] { StringSource.class } );
 			
-			source	= (StringSource)c.newInstance( new Object[] { delegate } );
+			source	= c.newInstance( new Object[] { delegate } );
 		}
 		catch( Exception e )
 		{
@@ -101,7 +101,7 @@ public class PackageStringSources
 			source	= new ResourceBundleStringSource( bundle, delegate );
 		}
 		
-		return( source );
+		return source;
 	}
 };
 

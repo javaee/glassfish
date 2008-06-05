@@ -238,7 +238,7 @@ public final class AMXDebug
     {
         final java.util.Properties    props   = System.getProperties();
         
-        final String[]  keys    = (String[])props.keySet().toArray( new String[0] );
+        final String[]  keys    = props.keySet().toArray( new String[0] );
         java.util.Arrays.sort( keys );
         for( final String key : keys )
         {
@@ -697,7 +697,7 @@ public final class AMXDebug
         public static String
     methodString( final String name, final Object... args )
     {
-        return DebugOutImpl.methodString( name, (Object[])args );
+        return DebugOutImpl.methodString( name, args );
     }
 }
 

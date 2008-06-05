@@ -66,13 +66,13 @@ public final class OpenMBeanUtil
 {
 	private OpenMBeanUtil()		{}
 	
-	private static Map<Class,SimpleType>	SIMPLETYPES_MAP	= null;
-		private static Map<Class,SimpleType>
+	private static Map<Class<?>,SimpleType>	SIMPLETYPES_MAP	= null;
+		private static Map<Class<?>,SimpleType>
 	getSimpleTypesMap()
 	{
 		if ( SIMPLETYPES_MAP == null )
 		{
-			final Map<Class,SimpleType> m	= new HashMap<Class,SimpleType>();
+			final Map<Class<?>,SimpleType> m	= new HashMap<Class<?>,SimpleType>();
 			
 			m.put( Byte.class, SimpleType.BYTE );
 			m.put( Short.class, SimpleType.SHORT );
@@ -101,9 +101,9 @@ public final class OpenMBeanUtil
 		Get the SimpleType for a class which can be so-represented.
 	 */
 		static public SimpleType
-	getSimpleType( final Class c )
+	getSimpleType( final Class<?> c )
 	{
-		final SimpleType	type	= (SimpleType)(getSimpleTypesMap().get( c ));
+		final SimpleType	type	= getSimpleTypesMap().get( c );
 		
 		return( type );
 
@@ -164,7 +164,21 @@ public final class OpenMBeanUtil
 		return( dim );
 	}
 	
-	
+	/**
+        Exists to avoid warnings from multiple call sites.
+        
+        JMX in JDK 1.5 does not have generic types for JMX, but does in JDK 1.6. 
+        This makes it impossible to use generics so long as we're compiling with 1.5.
+        It also means we'll get warnings in JDK 1.6!
+     */
+    @SuppressWarnings("unchecked")  // no way to deal with them
+        public static ArrayType
+    newArrayType( final int numItems, final OpenType type ) 
+        throws OpenDataException
+    {
+        return new ArrayType( numItems, type );
+    }
+    
 	/**
 		Get the OpenType of an Object, which must conform to OpenType requirements.
 	 */
@@ -182,18 +196,18 @@ public final class OpenMBeanUtil
 		
 		if ( type == null )
 		{
-			final Class	theClass	= o.getClass();
+			final Class<?>	theClass	= o.getClass();
 			
 			if ( theClass.isArray() )
 			{
 				final int		length		= Array.getLength( o );
 				final int		dimensions	= getArrayDimensions( theClass );
-				final Class		elementClass	= theClass.getComponentType();
+				final Class<?>	elementClass	= theClass.getComponentType();
 				
-				final SimpleType	simpleType	= getSimpleType( elementClass );
+				final SimpleType simpleType	= getSimpleType( elementClass );
 				if ( simpleType != null )
 				{
-					type	= new ArrayType( dimensions, simpleType );
+					type	= newArrayType( dimensions, simpleType );
 				}
 				else
 				{
@@ -207,7 +221,7 @@ public final class OpenMBeanUtil
 						}
 						else
 						{
-							type	= new ArrayType( dimensions, ((CompositeData)element).getCompositeType() );
+							type	= newArrayType( dimensions, ((CompositeData)element).getCompositeType() );
 						}
 					}
 					else if ( TabularData.class.isAssignableFrom( elementClass ) )
@@ -218,7 +232,7 @@ public final class OpenMBeanUtil
 						}
 						else
 						{
-							type	= new ArrayType( dimensions, ((TabularData)element).getTabularType() );
+							type	= newArrayType( dimensions, TabularData.class.cast(element).getTabularType() );
 						}
 					}
 				}
@@ -259,7 +273,7 @@ public final class OpenMBeanUtil
 		
 		for( final String key : orig.keySet() )
 		{
-			final Serializable	value	= (Serializable)orig.get( key );
+			final Serializable	value	= orig.get( key );
 			
 			if ( value instanceof Collection )
 			{
@@ -432,7 +446,7 @@ public final class OpenMBeanUtil
 		
 		openTypes[ 0 ]	= SimpleType.STRING;
 		openTypes[ 1 ]	= t.getCause() == null ? SimpleType.VOID : getThrowableOpenType( t.getCause() );
-		openTypes[ 2 ]	= new ArrayType( t.getStackTrace().length,
+		openTypes[ 2 ]	= newArrayType( t.getStackTrace().length,
 							getStackTraceElementOpenType() );
 		
 		

@@ -70,7 +70,7 @@ public class AttributeNameManglerImpl implements AttributeNameMangler
 		{
 			if ( mOverrides.containsKey( name ) )
 			{
-				result	= (String)mOverrides.get( name );
+				result	= mOverrides.get( name );
 			}
 			/*
 			else

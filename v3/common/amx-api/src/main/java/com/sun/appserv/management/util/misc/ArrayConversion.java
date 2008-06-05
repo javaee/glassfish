@@ -88,7 +88,7 @@ public final class ArrayConversion
 		public static Object []
 	toAppropriateType( Object array)
 	{
-		return( (Object [])convert( array ) );
+		return convert( array );
 	}
 	
 	

@@ -274,7 +274,7 @@ public class StatsImpl
 	{
 		try
 		{
-			return( (Statistic)getValue( statisticName ) );
+			return getValue( statisticName );
 		}
 		catch( Exception e )
 		{
@@ -298,7 +298,7 @@ public class StatsImpl
 		final Collection<Statistic>	values	= getMap().values();
 		final Statistic[]	statistics	= new Statistic[ values.size() ];
 		
-		return( (Statistic[])values.toArray( statistics ) );
+		return values.toArray( statistics );
 	}
 	
 		public String

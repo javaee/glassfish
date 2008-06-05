@@ -158,11 +158,11 @@ public final class ObjectNameStringifier implements Stringifier
 		ordered.retainAll( props.keySet() );
 		
 		// go through each ordered property, and if it exists, emit it
-		final Iterator	iter	= ordered.iterator();
+		final Iterator<String>	iter	= ordered.iterator();
 		while ( iter.hasNext() && props.keySet().size() >= 2 )
 		{
-			final String	key		= (String)iter.next();
-			final String	value	= (String)props.get( key );
+			final String	key		= iter.next();
+			final String	value	= props.get( key );
 			if ( value != null )
 			{
 				buf.append( makeProp( key, value ) + "," );
@@ -179,7 +179,7 @@ public final class ObjectNameStringifier implements Stringifier
 		for( int i = 0; i < remaining.length; ++i )
 		{
 			final String	key		= remaining[ i ];
-			final String	value	= (String)props.get( key );
+			final String	value	= props.get( key );
 			buf.append( makeProp( key, value )  + "," );
 		}
 		

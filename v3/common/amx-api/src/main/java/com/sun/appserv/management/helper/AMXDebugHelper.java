@@ -138,7 +138,7 @@ public final class AMXDebugHelper
             }
             else
             {
-                msg = StringUtil.toString( "", (Object[])items );
+                msg = StringUtil.toString( "", items );
             }
             printlnWithTime( msg );
         }

@@ -33,12 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/misc/ClassUtil.java,v 1.2 2007/05/05 05:31:05 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:05 $
- */
 
 package com.sun.appserv.management.util.misc;
 
@@ -361,11 +355,11 @@ public final class ClassUtil
 		@param classname	classname string
 		@return			the classname for the array element
 	 */
-		public static Class
+		public static Class<?>
 	getClassFromName( final String classname )
 		throws ClassNotFoundException
 	{
-		Class	theClass	= null;
+		Class<?>	theClass	= null;
 		
 		if ( classname.startsWith( "[L" ))
 		{
@@ -812,9 +806,9 @@ public final class ClassUtil
 	 */
 		public static final Method
 	findMethod(
-		final Class		theClass,
-		final String	methodName,
-		final Class[]	sig )
+		final Class<?>		theClass,
+		final String	    methodName,
+		final Class<?>[]	sig )
 	{
 		Method	m	= null;
 		try
@@ -859,8 +853,8 @@ public final class ClassUtil
 		@param theClass	the Class of the desired Object
 		@param args		the argument list for the constructor
 	 */
-		public static Object
-	InstantiateObject( final Class theClass, final Object [] args )
+		public static <T> T
+	InstantiateObject( final Class<T> theClass, final Object [] args )
 		throws Exception
 	{
 		final Class []		signature	= new Class [ args.length ];
@@ -870,7 +864,7 @@ public final class ClassUtil
 			signature[ i ]	= args[ i ].getClass();
 		}
 		
-		Constructor	constructor	= null;
+		Constructor<T> constructor	= null;
 		try
 		{
 			// this will fail if a constructor takes an interface;
@@ -879,12 +873,12 @@ public final class ClassUtil
 		}
 		catch( NoSuchMethodException e )
 		{
-			final Constructor []	constructors	= theClass.getConstructors();
+			final Constructor<T> []	constructors	= TypeCast.asArray(theClass.getConstructors());
 			
 			int	numMatches	= 0;
 			for( int i = 0; i < constructors.length; ++i )
 			{
-				final Constructor	tempConstructor	= constructors[ i ];
+				final Constructor<T>	tempConstructor	= constructors[ i ];
 				
 				final Class [] tempSignature	= tempConstructor.getParameterTypes();
 				
@@ -903,7 +897,7 @@ public final class ClassUtil
 			}
 		}
 		
-		Object	result	= null;
+		T	result	= null;
 		try
 		{
 			result	= constructor.newInstance( args );
@@ -935,14 +929,14 @@ public final class ClassUtil
 		@param theString	the string for a String constructor
 		@return the resulting Object
 	 */
-		public static Object
-	InstantiateObject( final Class theClass, final String theString )
+		public static <T> T
+	InstantiateObject( final Class<T> theClass, final String theString )
 		throws Exception
 	{
 		final Class []		signature	= new Class [] { String.class };
-		final Constructor	constructor	= theClass.getConstructor( signature );
+		final Constructor<T>	constructor	= theClass.getConstructor( signature );
 		
-		Object	result	= null;
+		T	result	= null;
 		try
 		{
 			result	= constructor.newInstance( new Object[] { theString } );
@@ -1011,7 +1005,7 @@ public final class ClassUtil
 		@return the resulting Object
 	 */
 		public static Object
-	InstantiateFromString( final Class theClass, final String theString )
+	InstantiateFromString( final Class<?> theClass, final String theString )
 		throws Exception
 	{
 		Object result	= null;
@@ -1038,8 +1032,7 @@ public final class ClassUtil
 		}
 		else
 		{
-			
-			final Class			objectClass	= PrimitiveClassToObjectClass( theClass );
+			final Class<?>			objectClass	= PrimitiveClassToObjectClass( theClass );
 			
 			result	= InstantiateObject( objectClass, theString );
 		}
@@ -1057,12 +1050,12 @@ public final class ClassUtil
 		@return the resulting Object
 	 */
 		public static Object
-	InstantiateDefault( final Class inClass )
+	InstantiateDefault( final Class<?> inClass )
 		throws Exception
 	{
 		Object result	= null;
 		
-		final Class			objectClass	= PrimitiveClassToObjectClass( inClass );
+		final Class<?>			objectClass	= PrimitiveClassToObjectClass( inClass );
 		
 		if ( Number.class.isAssignableFrom( objectClass ) )
 		{
