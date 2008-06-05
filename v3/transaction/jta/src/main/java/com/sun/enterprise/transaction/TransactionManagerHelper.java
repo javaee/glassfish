@@ -44,7 +44,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 /**
 * This class is wrapper for the actual transaction manager implementation.
@@ -215,8 +215,8 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
         Transaction txn = getTransaction(); 
         if (txn == null) {
             throw new IllegalStateException("no current transaction");
-        } else if (txn instanceof JavaEETransaction) {
-            timeout = ((JavaEETransaction)txn).getRemainingTimeout();
+        } else if (txn instanceof JavaEETransactionImpl) {
+            timeout = ((JavaEETransactionImpl)txn).getRemainingTimeout();
         }
         return timeout;
     }

@@ -39,7 +39,7 @@ package com.sun.enterprise.resource.pool;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 
 import javax.transaction.SystemException;

@@ -140,7 +140,7 @@
            <version>${project.version}</version>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.core</groupId>
+           <groupId>org.glassfish.transaction</groupId>
            <artifactId>jta</artifactId>
            <version>${project.version}</version>
         </dependency>

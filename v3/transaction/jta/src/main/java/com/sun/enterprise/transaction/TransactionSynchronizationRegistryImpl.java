@@ -39,10 +39,11 @@ package com.sun.enterprise.transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -51,7 +52,7 @@ public class TransactionSynchronizationRegistryImpl
              implements TransactionSynchronizationRegistry {
 
     @Inject
-    private transient JavaEETransactionManager transactionManager;
+    private transient TransactionManager transactionManager;
 
     private static StringManager sm = 
                    StringManager.getManager(TransactionSynchronizationRegistryImpl.class);
@@ -106,7 +107,8 @@ public class TransactionSynchronizationRegistryImpl
      */
     public void putResource(Object key, Object value) {
         try {
-            JavaEETransaction tran = (JavaEETransaction)transactionManager.getTransaction();    
+            JavaEETransactionImpl tran = 
+                    (JavaEETransactionImpl)transactionManager.getTransaction();    
             if (tran == null)
                 throw new IllegalStateException(
                       sm.getString("enterprise_distributedtx.no_transaction"));
@@ -132,7 +134,8 @@ public class TransactionSynchronizationRegistryImpl
      */
     public Object getResource(Object key){
         try {
-            JavaEETransaction tran = (JavaEETransaction)transactionManager.getTransaction();    
+            JavaEETransactionImpl tran = 
+                    (JavaEETransactionImpl)transactionManager.getTransaction();    
             if (tran == null)
                 throw new IllegalStateException(
                       sm.getString("enterprise_distributedtx.no_transaction"));
@@ -180,7 +183,8 @@ public class TransactionSynchronizationRegistryImpl
      */
     public void registerInterposedSynchronization(Synchronization sync) {
         try {
-            JavaEETransaction tran = (JavaEETransaction)transactionManager.getTransaction();    
+            JavaEETransactionImpl tran = 
+                    (JavaEETransactionImpl)transactionManager.getTransaction();    
             if (tran == null)
                 throw new IllegalStateException(
                       sm.getString("enterprise_distributedtx.no_transaction"));

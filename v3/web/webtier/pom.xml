@@ -215,6 +215,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.transaction</groupId>
+            <artifactId>transaction-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>container-common</artifactId>
             <version>${project.version}</version>

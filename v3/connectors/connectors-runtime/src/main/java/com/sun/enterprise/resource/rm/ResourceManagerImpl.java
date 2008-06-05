@@ -40,7 +40,7 @@ import java.util.logging.*;
 import javax.transaction.*;
 
 import com.sun.logging.*;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.enterprise.resource.*;

@@ -43,9 +43,10 @@ import java.util.logging.*;
 import javax.transaction.*;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.enterprise.container.common.spi.OperationsManager;
 import com.sun.logging.LogDomains;
+
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -131,7 +132,7 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         if ( (inv.getInvocationType() == 
                  ComponentInvocation.ComponentInvocationType.EJB_INVOCATION)
                  && checkEjbAccess ) {
-            if( !((OperationsManager)inv.container).userTransactionMethodsAllowed(inv) ) {
+            if( !((TransactionOperationsManager)inv).userTransactionMethodsAllowed() ) {
                 throw new IllegalStateException(sm.getString("enterprise_distributedtx.operation_not_allowed"));
             }
         }
@@ -163,7 +164,7 @@ public class UserTransactionImpl implements UserTransaction, Serializable
             if (inv != null) {
                 if ( inv.getInvocationType() == 
                         ComponentInvocation.ComponentInvocationType.EJB_INVOCATION )
-                    ((OperationsManager)inv.container).doAfterBegin(inv);
+                    ((TransactionOperationsManager)inv).doAfterBegin();
 
                 inv.setTransaction(transactionManager.getTransaction());
                 transactionManager.enlistComponentResources();

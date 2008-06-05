@@ -46,13 +46,15 @@ import javax.resource.spi.work.WorkException;
 import com.sun.appserv.util.cache.Cache;
 import com.sun.appserv.util.cache.BaseCache;
 
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.container.common.spi.ComponentContext;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+
 import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.appserv.connectors.internal.api.TransactedPoolManager;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -240,7 +242,7 @@ public class JavaEETransactionManagerSimplified
             return false;
         }
 
-       JavaEETransaction tx = (JavaEETransaction)tran;
+       JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
 
        if(_logger.isLoggable(Level.FINE)) {
            _logger.log(Level.FINE,"\n\nIn JavaEETransactionManagerSimplified.enlistResource, h=" 
@@ -432,7 +434,7 @@ public class JavaEETransactionManagerSimplified
             throws IllegalStateException, SystemException {
         if (!h.isTransactional()) return true;
 
-        JavaEETransaction tx = (JavaEETransaction)tran;
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
         if ( tx.isLocalTx() ) {
             // dissociate resource from tx
             try {
@@ -569,29 +571,33 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    public void ejbDestroyed(ComponentContext context) {
+    public void ejbDestroyed(ComponentInvocation inv) {
         if (_logger.isLoggable(Level.FINE))
-            _logger.log(Level.FINE, " ejbDestroyed: " + context);
-/** XXX EJB CONTAINER ONLY XXX **
-        List l = (List)context.getResourceList();
-        if (l != null && l.size() > 0) {
-            Iterator it = l.iterator();
-            while (it.hasNext()) {
-                ResourceHandle h = (ResourceHandle) it.next();
-                try {
-                    h.closeUserConnection();
-                } catch (PoolingException ex) {
-                    if (_logger.isLoggable(Level.FINE))
-                        _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
+            _logger.log(Level.FINE, " ejbDestroyed: " + inv);
+
+        List l = null;
+        ResourceHandler rh = inv.getResourceHandler();
+        if (rh != null) {
+            l = rh.getResourceList();
+
+            if (l != null && l.size() > 0) {
+                Iterator it = l.iterator();
+                while (it.hasNext()) {
+                    ResourceHandle h = (ResourceHandle) it.next();
+                    try {
+                        h.closeUserConnection();
+                    } catch (PoolingException ex) {
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
+                    }
                 }
+                l.clear();
             }
-            l.clear();
         }
-** XXX EJB CONTAINER ONLY XXX **/
     }
 
     public boolean isTimedOut() {
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx != null)
             return tx.isTimedout();
         else
@@ -640,7 +646,7 @@ public class JavaEETransactionManagerSimplified
             return;
         }
 
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx == null )
             return;
 
@@ -749,11 +755,11 @@ public class JavaEETransactionManagerSimplified
              acquiredlock = true;
         }
         try{
-            JavaEETransaction tx = null;
+            JavaEETransactionImpl tx = null;
             if (timeout > 0)
-                tx = new JavaEETransaction(timeout);
+                tx = new JavaEETransactionImpl(timeout);
             else
-                tx = new JavaEETransaction();
+                tx = new JavaEETransactionImpl();
 
 // XXX NO INJECTION ???
             tx.javaEETM = this;
@@ -781,7 +787,7 @@ public class JavaEETransactionManagerSimplified
             IllegalStateException, SystemException {
 
         try {
-            JavaEETransaction tx = (JavaEETransaction)transactions.get();
+            JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
             if ( tx != null && tx.isLocalTx()) {
                 // START IASRI 4662745
                 Object obj = null;
@@ -836,7 +842,7 @@ public class JavaEETransactionManagerSimplified
         // START IASRI 4662745
         boolean acquiredlock=false;
         try {
-            JavaEETransaction tx = (JavaEETransaction)transactions.get();
+            JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
             if ( tx != null && tx.isLocalTx()) {
                 Object obj = null;
                 if(monitoringEnabled){
@@ -868,7 +874,7 @@ public class JavaEETransactionManagerSimplified
 
 
     public int getStatus() throws SystemException {
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx != null && tx.isLocalTx())
             return tx.getStatus();
         else
@@ -879,7 +885,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public Transaction getTransaction() throws SystemException {
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx != null )
             return tx;
         else { // maybe a JTS imported tx
@@ -891,9 +897,9 @@ public class JavaEETransactionManagerSimplified
             else {
                 // check if this JTS Transaction was previously active
                 // in this JVM (possible for distributed loopbacks).
-                tx = (JavaEETransaction)globalTransactions.get(jtsTx);
+                tx = (JavaEETransactionImpl)globalTransactions.get(jtsTx);
                 if ( tx == null ) {
-                    tx = new JavaEETransaction(jtsTx);
+                    tx = new JavaEETransactionImpl(jtsTx);
                     tx.setImportedTransaction();
                     try {
                         jtsTx.registerSynchronization(
@@ -918,7 +924,7 @@ public class JavaEETransactionManagerSimplified
     public void setRollbackOnly()
         throws IllegalStateException, SystemException {
 
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         // START IASRI 4662745
         if ( tx != null && tx.isLocalTx()){
             boolean acquiredlock=false;
@@ -942,7 +948,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public Transaction suspend() throws SystemException {
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx != null ) {
 /** XXX Throw an exception ??? XXX **
             if ( !tx.isLocalTx() )
@@ -963,11 +969,11 @@ public class JavaEETransactionManagerSimplified
             throws InvalidTransactionException, IllegalStateException,
             SystemException {
 
-        JavaEETransaction tx = (JavaEETransaction)transactions.get();
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)transactions.get();
         if ( tx != null )
             throw new IllegalStateException(sm.getString("enterprise_distributedtx.transaction_exist_on_currentThread"));
-        if ( tobj instanceof JavaEETransaction ) {
-            JavaEETransaction javaEETx = (JavaEETransaction)tobj;
+        if ( tobj instanceof JavaEETransactionImpl ) {
+            JavaEETransactionImpl javaEETx = (JavaEETransactionImpl)tobj;
 /** XXX Throw an exception ??? XXX **
             if ( !javaEETx.isLocalTx() )
                 super.resume(javaEETx.getJTSTx());
@@ -1076,8 +1082,8 @@ public class JavaEETransactionManagerSimplified
                 String status = "unknown";
                 String componentName = "unknown";
                 ArrayList<String> resourceNames = null;
-                if(tran instanceof JavaEETransaction){
-                    JavaEETransaction tran1 = (JavaEETransaction)tran;
+                if(tran instanceof JavaEETransactionImpl){
+                    JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
                     id=tran1.getTransactionId();
                     startTime = tran1.getStartTime();
                     componentName = tran1.getComponentName();
@@ -1172,7 +1178,7 @@ public class JavaEETransactionManagerSimplified
                         // ignore error due to tx time out
                     }catch(Exception ex){
                         it.remove();
-                        handleResourceError(h, ex, tran, inv);
+                        handleResourceError(h, ex, tran);
                     }
                 }
                 //END OF IASRI 4658504
@@ -1215,7 +1221,7 @@ public class JavaEETransactionManagerSimplified
                         enlistResource(tran,h);
                     }catch(Exception ex){
                         it.remove();
-                        handleResourceError(h,ex,tran,inv);
+                        handleResourceError(h,ex,tran);
                     }
                 }
                 //END OF IASRI 4658504
@@ -1226,8 +1232,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     private void handleResourceError(ResourceHandle h,
-                                     Exception ex, Transaction tran,
-                                     ComponentInvocation inv) {
+                                     Exception ex, Transaction tran) {
 
         if (_logger.isLoggable(Level.FINE)) {
             if (h.isTransactional()) {

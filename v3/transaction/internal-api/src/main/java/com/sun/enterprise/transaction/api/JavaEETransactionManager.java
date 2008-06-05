@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.container.common.spi;
+package com.sun.enterprise.transaction.api;
 
 import java.util.List;
 
@@ -45,9 +45,11 @@ import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkException;
 
 import org.jvnet.hk2.annotations.Contract;
+
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
+
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationException;
-import com.sun.appserv.connectors.internal.api.ResourceHandle;
 
 /**
  *
@@ -163,7 +165,7 @@ public interface JavaEETransactionManager extends TransactionManager {
      */
     public void componentDestroyed(Object instance);
 
-    public void ejbDestroyed(ComponentContext context);
+    public void ejbDestroyed(ComponentInvocation context);
 
     /**
      * Called by InvocationManager

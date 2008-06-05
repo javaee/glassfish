@@ -48,7 +48,7 @@ import com.sun.enterprise.resource.pool.resizer.Resizer;
 import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueue;
 import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueueFactory;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 

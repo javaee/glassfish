@@ -38,7 +38,6 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.ContainerUtil;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -60,9 +59,6 @@ public class ContainerUtilImpl
 
     @Inject
     private ComponentEnvManager compEnvMgr;
-
-    @Inject
-    private JavaEETransactionManager txMgr;
 
     @Inject
     private CallFlowAgent callFlowAgent;
@@ -87,10 +83,6 @@ public class ContainerUtilImpl
         return compEnvMgr;
     }
 
-    public JavaEETransactionManager getJavaEETransactionManager() {
-        return txMgr;
-    }
-    
     public EntityManager lookupExtendedEntityManager(EntityManagerFactory emf) {
         EntityManager em = null;
 

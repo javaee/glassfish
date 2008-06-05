@@ -36,12 +36,11 @@
 package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
-import com.sun.enterprise.container.common.spi.JavaEETransaction;
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.EntityManagerMethod;
 import com.sun.enterprise.deployment.types.EntityManagerReference;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -51,6 +50,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import javax.persistence.*;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
@@ -83,7 +85,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
     transient private EntityManagerFactory entityManagerFactory;
 
     @Inject
-    transient private JavaEETransactionManager txManager;
+    transient private TransactionManager txManager;
 
     @Inject
     transient private InvocationManager invMgr;
@@ -139,9 +141,9 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             init();
         }
 
-        JavaEETransaction tx = null;
+        Transaction tx = null;
         try {
-            tx = (JavaEETransaction) txManager.getTransaction();
+            tx = txManager.getTransaction();
         } catch(Exception e) {
             throw new IllegalStateException("exception retrieving tx", e);
         }

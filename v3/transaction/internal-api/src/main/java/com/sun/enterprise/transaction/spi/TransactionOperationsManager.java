@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,41 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package com.sun.enterprise.container.common.spi;
+package com.sun.enterprise.transaction.spi;
 
 import org.jvnet.hk2.annotations.Contract;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.Transaction;
-import java.util.Set;
-
-import com.sun.appserv.connectors.internal.api.ResourceHandle;
-
+/**
+ * TransactionOperationsManager interface to be used by various components
+ * to perform notifications by UserTransaction instance.
+ *
+ * @author Marina Vatkina
+ */
 @Contract
-public interface JavaEETransaction
-    extends Transaction {
+public interface TransactionOperationsManager {
+    /**
+     * Called by the UserTransaction implementation to verify 
+     * access to the UserTransaction methods.
+     */
+    boolean userTransactionMethodsAllowed();
 
-    public EntityManager getExtendedEntityManager(EntityManagerFactory factory);
-
-    public EntityManager getTxEntityManager(EntityManagerFactory factory);
-
-    public void addTxEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
-
-    public void addExtendedEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
-
-    public void removeExtendedEntityManagerMapping(EntityManagerFactory factory);
-
-    public <T> void setContainerData(T data);
-
-    public <T> T getContainerData();
-
-    public Set getAllParticipatingPools();
-
-    public Set getResources(String poolName);
-
-    public ResourceHandle getNonXAResource();
-
-    public void setResources(Set resources, String poolName);
+    /**
+     * Called by the UserTransaction when transaction is started.
+     */
+    void doAfterBegin();
 }

@@ -38,8 +38,8 @@ package com.sun.enterprise.resource;
 import javax.transaction.xa.*;
 import javax.resource.spi.*;
 
-import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.appserv.connectors.internal.api.PoolingException;
