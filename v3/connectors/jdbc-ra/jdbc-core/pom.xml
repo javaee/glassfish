@@ -25,21 +25,21 @@
   <dependencies>
 
     <dependency>
-      <groupId>javax.javaee</groupId>
-      <artifactId>javaee</artifactId>
-      <version>6.0-alpha-1</version>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.javaee</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.common</groupId>
       <artifactId>glassfish-api</artifactId>
-        <version>${glassfish-api.version}</version>
+      <version>${glassfish-api.version}</version>
     </dependency>		    
 
     <dependency>
-         <groupId>org.glassfish.connectors</groupId>
-         <artifactId>connectors-internal-api</artifactId>
-         <version>${project.version}</version>
+      <groupId>org.glassfish.connectors</groupId>
+      <artifactId>connectors-internal-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
