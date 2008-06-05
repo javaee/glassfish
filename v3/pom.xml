@@ -151,6 +151,7 @@
       	<module>common</module>
       	<module>admin</module>
       	<module>core</module>
+      	<module>transaction</module>
       	<module>web</module>
       	<module>ejb</module>
       	<module>connectors</module>

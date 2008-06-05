@@ -47,7 +47,7 @@
     <groupId>org.glassfish.transaction</groupId>
     <artifactId>transaction</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Core modules</name>  
+    <name>GlassFish Transaction modules</name>  
     <modules>
         <module>jta</module>
         <module>internal-api</module>
