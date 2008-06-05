@@ -108,7 +108,7 @@ public final class NotificationEmitterServiceImpl extends AMXNonConfigImplBase
 			dynamicInfos.add( info );
 		}
 		
-		final MBeanNotificationInfo[]	dynamicInfosArray	= (MBeanNotificationInfo[])
+		final MBeanNotificationInfo[]	dynamicInfosArray	=
 			dynamicInfos.toArray( new MBeanNotificationInfo[ dynamicInfos.size() ] );
 		
 		// now merge what we've found with super's types

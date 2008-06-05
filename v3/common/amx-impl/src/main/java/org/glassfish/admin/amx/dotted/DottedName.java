@@ -122,7 +122,7 @@ public final class DottedName
 		
 		for( int i = 0; i < numParts; ++ i )
 		{
-			final String	unescapedPart	= (String)parts.get( i );
+			final String	unescapedPart	= parts.get( i );
 			
 			buf.append( "." + escapePart( unescapedPart ) );
 		}
@@ -355,7 +355,7 @@ public final class DottedName
 		public String
 	getPart( int i )
 	{
-		return( (String)mParsed.mParts.get( i ) );
+		return mParsed.mParts.get( i );
 	}
 	
 		public static boolean

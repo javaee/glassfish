@@ -195,8 +195,7 @@ final class NotificationBuffer
 						(requestedSequenceNumber - firstAvailSequenceNumber);
 					for( int i = 0 ; i < numMatches; ++i )
 					{
-						notifs[ i ]	= (Notification)
-							mNotifications.get( startIndex + i );
+						notifs[ i ]	= mNotifications.get( startIndex + i );
 					}
 					
 					result.put( NOTIFICATIONS_KEY, notifs );

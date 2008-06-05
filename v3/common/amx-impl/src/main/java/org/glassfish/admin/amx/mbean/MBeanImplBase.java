@@ -186,8 +186,7 @@ public abstract class MBeanImplBase
 			mNotificationBuilders	= new HashMap<String,NotificationBuilder>();
 		}
 		
-		NotificationBuilder	builder	=
-			(NotificationBuilder)mNotificationBuilders.get( notificationType );
+		NotificationBuilder	builder	= mNotificationBuilders.get( notificationType );
 		
 		if ( builder == null )
 		{

@@ -322,8 +322,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 		private NotificationFilter
 	_getFilter( final ObjectName objectName)
 	{
-		final NotificationFilter filter	=
-			(NotificationFilter)mListenees.get( objectName );
+		final NotificationFilter filter	= mListenees.get( objectName );
 		
 		return( filter );
 	}

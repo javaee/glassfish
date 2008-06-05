@@ -167,7 +167,7 @@ public class QueryMgrImpl extends AMXNonConfigImplBase
 				" but found several: " + SmartStringifier.toString( names ) );
 		}
 		
-		final ObjectName	objectName	= (ObjectName)GSetUtil.getSingleton( names );
+		final ObjectName	objectName	=GSetUtil.getSingleton( names );
 		
 		return( objectName );
 	}

@@ -907,13 +907,13 @@ public class AMXImplBase extends MBeanImplBase
 		protected boolean
 	isLegalAttribute( final String name )
 	{
-		return( getAttributeInfos().keySet().contains( name )  );
+		return getAttributeInfos().keySet().contains( name );
 	}
 	
 		protected MBeanAttributeInfo
 	getAttributeInfo( final String name )
 	{
-		return( (MBeanAttributeInfo)getAttributeInfos().get( name ) );
+		return getAttributeInfos().get( name );
 	}
 	
 		protected boolean

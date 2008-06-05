@@ -1023,7 +1023,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
 		public String
 	getConfigName()
 	{
-		return( (String)getKeyProperty( XTypes.CONFIG_CONFIG ) );
+		return getKeyProperty( XTypes.CONFIG_CONFIG );
 	}
 	
 		public void

@@ -86,7 +86,7 @@ public class JMXMonitorBase extends AMXNonConfigImplBase
 	getAttributeManually( String name )
 		throws AttributeNotFoundException
 	{
-		final MBeanAttributeInfo	attrInfo	= (MBeanAttributeInfo)getAttributeInfos().get( name );
+		final MBeanAttributeInfo	attrInfo	= getAttributeInfos().get( name );
 		assert( attrInfo != null );	// getAttributeManually() should not have been called otherwise
 		
 		final String	prefix	= attrInfo.isIs() ? JMXUtil.IS : JMXUtil.GET;
@@ -109,8 +109,8 @@ public class JMXMonitorBase extends AMXNonConfigImplBase
 	setAttributeManually( final Attribute attr )
 		throws AttributeNotFoundException, InvalidAttributeValueException
 	{
-		final String	operationName	= JMXUtil.SET + attr.getName();
-		final MBeanAttributeInfo	attrInfo	= (MBeanAttributeInfo)getAttributeInfos().get( attr.getName() );
+		final String	operationName	= JMXUtil.SET + String.class.cast(attr.getName());
+		final MBeanAttributeInfo	attrInfo	= getAttributeInfos().get( attr.getName() );
 		
 		Object	result	= null;
 		try

@@ -128,7 +128,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         else
         {
             // all plain attributes are 'String'
-            result = (String)mConfigBean.rawAttribute( xmlName );
+            result = mConfigBean.rawAttribute( xmlName );
         }
         
        // debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );

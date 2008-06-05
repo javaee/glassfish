@@ -169,10 +169,10 @@ public final class LoggingImpl extends AMXNonConfigImplBase
     	private Object
     newProxy(
     	final ObjectName	target,
-    	final Class			interfaceClass )
+    	final Class<?>	    interfaceClass )
     {
-    	return( MBeanServerInvocationHandler.newProxyInstance(
-    				getMBeanServer(), target, interfaceClass, true ) );
+    	return MBeanServerInvocationHandler.newProxyInstance(
+    				getMBeanServer(), target, interfaceClass, true );
     }
 
 		public String
@@ -555,7 +555,7 @@ public final class LoggingImpl extends AMXNonConfigImplBase
     	String[]	result = null;
     	if ( causes != null )
     	{
-    	    result  = (String[])causes.toArray( new String[causes.size()] );
+    	    result  = causes.toArray( new String[causes.size()] );
     	}
     	
         return result;

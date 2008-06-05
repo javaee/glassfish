@@ -81,6 +81,9 @@ public final class KitchenSinkImpl extends AMXNonConfigImplBase
         }
         
         // get properties
+        // NOTE: DOCUMENT THE TYPE: is it Map<String,String>?  What are the legal keys?
+        // See also com.sun.appserv.management.misc.util.TypeCast.checkMap()
+        //
         connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
         result.put( PROPERTY_MAP_KEY, connProps );
         return result;

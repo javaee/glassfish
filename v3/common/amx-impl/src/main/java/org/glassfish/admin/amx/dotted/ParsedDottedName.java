@@ -62,7 +62,7 @@ final class ParsedDottedName
 	
 		for( int i = 0; i < parts.size(); ++i )
 		{
-			checkLegalNamePart( (String)parts.get( i ) );
+			checkLegalNamePart( parts.get( i ) );
 		}
 		
 		mDomain		= domain;
