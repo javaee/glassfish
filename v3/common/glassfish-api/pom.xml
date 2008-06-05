@@ -62,16 +62,17 @@
         </developer>
     </developers>
     <properties>
-    	<glassfish-api.version>10.0.0-rev1</glassfish-api.version>
-        <grizzly.version>1.7.3.3-rev1</grizzly.version>    
-        <hk2.version>0.3.1</hk2.version>    
+    	<glassfish-api.version>10.0.0-rev2</glassfish-api.version>
+        <grizzly.version>1.7.3.3-rev1</grizzly.version>  
+        <hk2-plugin.version>0.3.2</hk2-plugin.version>    
+        <hk2.version>0.3.2</hk2.version>    
     </properties>
     <build>
     	<plugins>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>${hk2.version}</version>
+                <version>${hk2-plugin.version}</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -86,7 +87,14 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
-        </dependency>       
+        </dependency>     
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+            <optional>true</optional>
+      </dependency>        
     </dependencies>
 </project>
 
