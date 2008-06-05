@@ -145,7 +145,7 @@ import org.apache.commons.logging.LogFactory;
 // END CR 6309511
 
 // START S1AS 6170450
-import com.sun.appserv.ProxyHandler;
+import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6170450
 
 /**

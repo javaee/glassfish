@@ -48,11 +48,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.RestrictTo;
+import org.glassfish.api.event.EventTypes;
 import org.glassfish.internal.api.AdminAuthenticator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -86,7 +91,8 @@ import org.jvnet.hk2.component.Habitat;
  * @since GlassFish V3 (March 2008)
  */
 @Service
-public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter, PostConstruct {
+public final class AdminConsoleAdapter extends GrizzlyAdapter 
+        implements Adapter, PostConstruct, EventListener {
 
     @Inject
     ServerEnvironment env;
@@ -103,7 +109,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private AdapterState state      = AdapterState.UNINITIAZED; //handle with care
     private ProgressObject progress = new ProgressObject();
 
-    private final ReentrantLock lock = new ReentrantLock();
+    private final CountDownLatch latch = new CountDownLatch(1); 
 
     @Inject
     private Logger log;
@@ -119,6 +125,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     @Inject(optional=true)
     AdminAuthenticator authenticator=null;
+    
+    @Inject
+    Events events;
 
     private String statusHtml;
     private String initHtml;
@@ -154,6 +163,16 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
+        try {
+            if (!latch.await(100L, TimeUnit.SECONDS)) {
+                // todo : better error reporting.
+                log.severe("Cannot process admin console request in time");
+                return;
+            }
+        } catch(InterruptedException e) {
+            log.severe("Cannot process admin console request");
+            return;
+        }
         logRequest(req);
         handleAuth(req, res);
         if (state == AdapterState.APPLICATION_NOT_INSTALLED)
@@ -167,13 +186,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     public void postConstruct() {
-        lock.lock();
+        events.register(this);
         //set up the environment properly
         init();
     }
 
-    public void ready() {
-        lock.unlock();
+    public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
+        latch.countDown();
         if (log != null)
             if (log.isLoggable(Level.FINE))
                 log.fine("AdminConsoleAdapter is ready.");
@@ -426,4 +445,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, s);
     }
+    
+    
 }

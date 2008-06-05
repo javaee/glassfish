@@ -26,7 +26,6 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
@@ -36,6 +35,8 @@ import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.internal.api.AdminAuthenticator;
 import org.jvnet.hk2.annotations.Inject;
@@ -50,23 +51,24 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Enumeration;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;
+import java.util.concurrent.CountDownLatch;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.RestrictTo;
 
 /**
  * Listen to admin commands...
  * @author dochez
  */
 @Service
-public class AdminAdapter implements Adapter, PostConstruct {
+public class AdminAdapter implements Adapter, PostConstruct, EventListener {
 
     public final static String PREFIX_URI = "/__asadmin";
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
@@ -89,15 +91,13 @@ public class AdminAdapter implements Adapter, PostConstruct {
     @Inject(optional=true)
     AdminAuthenticator authenticator=null;
 
-    ReentrantLock lock = new ReentrantLock();
+    @Inject
+    Events events;
+
+    CountDownLatch latch = new CountDownLatch(1);
 
     public void postConstruct() {
-        lock.lock();
-    }
-
-    public void ready() {
-        lock.unlock();
-        logger.fine("Ready to receive administrative commands");
+        events.register(this);
     }
 
     /**
@@ -136,25 +136,21 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report = new HTMLActionReporter();
         }
 
-        // bnevins 3/29/08 doCommand returns ActionReport
-        // this allows the command to change its reporter.
 
-        if (lock.isLocked()) {
-            if (lock.tryLock(20L, TimeUnit.SECONDS)) {
-                lock.unlock();
+        try {
+            if (!latch.await(20L, TimeUnit.SECONDS)) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("V3 cannot process this command at this time, please wait");            
+            } else {
                 if (!authenticate(req, report, res))
                     return;
                 report = doCommand(req, report);
-            } else {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage("V3 cannot process this command at this time, please wait");
             }
-        } else {
-            if (!authenticate(req, report, res))
-                return;
-            report = doCommand(req, report);
+        } catch(InterruptedException e) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("V3 cannot process this command at this time, please wait");                        
         }
-
+        
         InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
         res.setStatus(200);
         res.setContentType(report.getContentType());
@@ -371,5 +367,10 @@ public class AdminAdapter implements Adapter, PostConstruct {
             }
         }
         return parameters;
+    }
+
+    public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
+        latch.countDown();
+        logger.fine("Ready to receive administrative commands");            
     }
 }

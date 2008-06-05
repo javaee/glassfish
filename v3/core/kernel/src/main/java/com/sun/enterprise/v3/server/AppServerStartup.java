@@ -26,14 +26,11 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
-import org.glassfish.api.event.EventFactory;
 import org.glassfish.api.event.EventListener.Event;
-import org.glassfish.api.event.EventType;
 
 import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.annotations.Inject;
@@ -48,6 +45,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 
 /**
  * Main class for Glassfish v3 startup
@@ -78,9 +77,12 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     ExecutorService executor;
 
+    @Inject
+    Events events;
+    
     public void run() {
 
-        logger.fine("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        logger.fine("Module subsystem initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
         }
@@ -93,16 +95,21 @@ public class AppServerStartup implements ModuleStartup {
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);
 
         // run the init services
-        Collection<Init> inits = habitat.getAllByContract(Init.class);
-        for (Init init : inits) {
-            logger.fine(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {
+            init.get();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            }
         }
-        logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        }
 
         // run the startup services
+        final Collection<Inhabitant<? extends Startup>> startups = habitat.getInhabitants(Startup.class);
         Future<?> result = executor.submit(new Runnable() {
             public void run() {
-                for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+                for (final Inhabitant<? extends Startup> i : startups) {
                     if (i.type().getAnnotation(Async.class)!=null) {
                         //logger.fine("Runs " + i.get() + "asynchronously");
                         i.get();
@@ -111,7 +118,7 @@ public class AppServerStartup implements ModuleStartup {
             }
         });
 
-        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+        for (final Inhabitant<? extends Startup> i : startups) {
             if (i.type().getAnnotation(Async.class)==null) {
                 i.get();
                 if (logger.isLoggable(Level.FINE)) {
@@ -124,8 +131,6 @@ public class AppServerStartup implements ModuleStartup {
         logger.info("Glassfish v3 started in "
                     + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
 
-
-
         // wait for async services
         try {
             result.get(1000, TimeUnit.MILLISECONDS);
@@ -133,12 +138,7 @@ public class AppServerStartup implements ModuleStartup {
             // do nothing, we are probably shutting down
         }
 
-        // now that we are all done with loading, I can accept administrative commands.
-        AdminAdapter admin = habitat.getComponent(AdminAdapter.class);
-        if(admin!=null)
-            admin.ready();
-        AdminConsoleAdapter ac = habitat.getComponent(AdminConsoleAdapter.class);
-        if(ac!=null)
-            ac.ready();
+        events.send(new Event(EventTypes.SERVER_READY));
+
     }
 }

@@ -57,10 +57,6 @@ package org.apache.coyote.tomcat5;
 
 import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -94,18 +90,15 @@ import org.apache.catalina.Logger;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.Service;
-import org.apache.catalina.Engine;
 // START OF SJSAS 8.1 PE 6191830
 import org.apache.catalina.Globals;
 // END OF SJSAS 8.1 PE 6191830
-import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.net.DefaultServerSocketFactory;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 // START S1AS 6188932
-import com.sun.appserv.ProxyHandler;
+import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6188932
 
 

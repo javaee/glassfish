@@ -78,7 +78,6 @@ import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
 
-import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 //import com.sun.enterprise.config.ConfigContext;
@@ -122,7 +121,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.appserv.ProxyHandler;
+import com.sun.appserv.security.provider.ProxyHandler;
 //import com.sun.appserv.server.ServerLifecycleException;
 import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.appserv.server.util.Version;

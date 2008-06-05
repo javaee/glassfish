@@ -65,8 +65,6 @@ import java.security.cert.CertificateException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.ContainerListener;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -93,7 +91,7 @@ import org.apache.tomcat.util.http.Cookies;
 import org.apache.tomcat.util.http.ServerCookie;
  */
 // START S1AS 6188932
-import com.sun.appserv.ProxyHandler;
+import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6188932
 
 

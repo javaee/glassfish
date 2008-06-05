@@ -35,14 +35,11 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import javax.management.MBeanServer;
-import java.lang.management.ManagementFactory;
-
+import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Extract;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-
-import org.glassfish.internal.api.Init;
+import org.jvnet.hk2.component.Factory;
+import org.jvnet.hk2.component.ComponentException;
 
 
 /**
@@ -59,17 +56,24 @@ import org.glassfish.internal.api.Init;
     incompatibilities.
  */
 @Service
-public final class AppserverMBeanServerFactory implements Init {
-    // we'd ideally like to name things, but @Extract is not working
-    public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
+@FactoryFor(javax.management.MBeanServer.class)
+public final class AppserverMBeanServerFactory implements Factory {
 
-    @Extract(name=OFFICIAL_MBEANSERVER)
-    private MBeanServer officialMBeanServer;
-
-    public AppserverMBeanServerFactory()
-    {
-        //officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
-        officialMBeanServer = AppserverMBeanServer.getInstance();
+    /**
+     * The system calls this method to obtain a reference
+     * to the component.
+     *
+     * @return null is a valid return value. This is useful
+     *         when a factory primarily does a look-up and it fails
+     *         to find the specified component, yet you don't want that
+     *         by itself to be an error. If the injection wants
+     *         a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
+     * @throws org.jvnet.hk2.component.ComponentException
+     *          If the factory failed to get/create an instance
+     *          and would like to propagate the error to the caller.
+     */
+    public Object getObject() throws ComponentException {
+        return AppserverMBeanServer.getInstance();
     }
 }
 
