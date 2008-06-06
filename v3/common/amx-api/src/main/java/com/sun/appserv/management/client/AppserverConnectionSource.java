@@ -34,17 +34,14 @@
  * holder.
  */
  
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/client/AppserverConnectionSource.java,v 1.2 2007/05/05 05:30:31 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:31 $
- */
 
 package com.sun.appserv.management.client;
 
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.util.misc.MapUtil;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 
+import javax.management.ObjectName;
 import javax.management.MBeanServerConnection;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -482,7 +479,8 @@ public final class AppserverConnectionSource
 		if ( forceNew || mJMXConnector == null )
 		{
 			mJMXConnector	= createNew();
-			getMBeanServerConnection( false );	// make sure it works...
+			final MBeanServerConnection conn = getMBeanServerConnection( false );	// make sure it works...
+            AMXBooter.bootAMX(conn, true);
 		}
 		
 		return( mJMXConnector );

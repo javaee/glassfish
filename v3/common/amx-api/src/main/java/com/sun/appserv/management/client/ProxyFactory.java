@@ -122,8 +122,8 @@ public final class ProxyFactory implements NotificationListener
 			
 			mMBeanServerID		= JMXUtil.getMBeanServerID( conn );
 				
-			mDomainRootObjectName	= initDomainRootObjectName();
-			mDomainRoot				= initDomainRoot();
+			mDomainRoot	          = AMXBooter.bootAMX(conn, true);
+			mDomainRootObjectName = Util.getObjectName(mDomainRoot);
 			
 			// we should always be able to listen to MBeans--
 			// but the http connector does not support listeners
@@ -254,40 +254,8 @@ public final class ProxyFactory implements NotificationListener
 			debug( "ProxyFactory.handleNotification: UNKNOWN notification: ", notifIn );
 		}
 	}
-	
-		private ObjectName
-	initDomainRootObjectName()
-		throws IOException
-	{
-		final MBeanServerConnection	conn	= mConnectionSource.getMBeanServerConnection( false );
-		
-		final String	patternString	= "*:" +
-							AMX.J2EE_TYPE_KEY + "=" + XTypes.DOMAIN_ROOT + ",*";
-		
-		ObjectName	pattern	= null;
-		try
-		{
-			pattern	= new ObjectName( patternString );
-		}
-		catch ( MalformedObjectNameException e )
-		{
-            warning( "initDomainRootObjectName: impossible failure", e );
-			assert( false );	// can't happen
-			throw new RuntimeException( e );
-		}
-		
-		final Set<ObjectName>	objectNames	= JMXUtil.queryNames( conn, pattern, null );
-		if ( objectNames.size() != 1 )
-		{
-            warning( "Can't find DomainRoot MBean using pattern: ", pattern);
-			throw new IllegalArgumentException( "Can't find DomainRoot MBean using pattern " + pattern );
-		}
-
-		final ObjectName	objectName	= GSetUtil.getSingleton( objectNames );
-		
-		return( objectName );
-	}
-	
+    
+        	
 	private final static String	DOMAIN_ROOT_KEY	= "DomainRoot";
 	
 		public DomainRoot
@@ -444,6 +412,8 @@ public final class ProxyFactory implements NotificationListener
 					instance	= new ProxyFactory( connSource );
 					INSTANCES.put( conn, instance );
 				}
+                
+                // ensure that AMX is booted and ready to go.
 			}
 			catch( Exception e )
 			{
