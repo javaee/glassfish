@@ -57,8 +57,8 @@
 
 package org.apache.catalina.valves;
 
-
 import java.io.IOException;
+import java.util.logging.*;
 import javax.servlet.ServletException;
 import javax.management.ObjectName;
 import javax.management.MBeanRegistration;
@@ -89,12 +89,9 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.LifecycleSupport;
 // END CR 6411114
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 // START CR 6411114
 import org.apache.commons.modeler.Registry;
 // END CR 6411114
-
 
 /**
  * Convenience base class for implementations of the <b>Valve</b> interface.
@@ -114,7 +111,7 @@ public abstract class ValveBase
 // START CR 6411114
     implements Contained, Lifecycle, Valve, MBeanRegistration {
 // END CR 6411114
-    private static Log log = LogFactory.getLog(ValveBase.class);
+    private static Logger log = Logger.getLogger(ValveBase.class.getName());
 
     //------------------------------------------------------ Instance Variables
 
@@ -422,7 +419,10 @@ public abstract class ValveBase
             parentName=",servlet=" + container.getName() +
                     ",path=" + path + ",host=" + host.getName();
         }
-        log.debug("valve parent=" + parentName + " " + parent);
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("valve parent=" + parentName + " " + parent);
+        }
 
         String className=this.getClass().getName();
         int period = className.lastIndexOf('.');
@@ -437,7 +437,10 @@ public abstract class ValveBase
             }
             if( valves[i]!=null &&
                     valves[i].getClass() == this.getClass()) {
-                log.debug("Duplicate " + valves[i] + " " + this + " " + container);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Duplicate " + valves[i] + " " + this + " " +
+                             container);
+                }
                 seq++;
             }
         }
@@ -448,7 +451,11 @@ public abstract class ValveBase
 
         ObjectName objectName = 
             new ObjectName( domain + ":type=Valve,name=" + className + ext + parentName);
-        log.debug("valve objectname = "+objectName);
+
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("valve objectname = "+objectName);
+        }
+
         return objectName;
     }
 
@@ -481,7 +488,7 @@ public abstract class ValveBase
                     Registry.getRegistry().registerComponent(this, vname, getClass().getName());
                 }
             } catch( Throwable t ) {
-                log.info( "Can't register valve " + this , t );
+                log.log(Level.INFO, "Can't register valve " + this , t );
             }
         }
     }
@@ -494,7 +501,7 @@ public abstract class ValveBase
                 setController(null);
             }
         } catch( Throwable t ) {
-            log.info( "Can't unregister valve " + this , t );
+            log.log(Level.INFO, "Can't unregister valve " + this , t );
         }
     }
     // END CR 6411114
