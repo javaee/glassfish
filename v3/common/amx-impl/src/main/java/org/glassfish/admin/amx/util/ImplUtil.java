@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.util;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
@@ -49,9 +50,13 @@ import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.client.ProxyFactory;
 
+import com.sun.logging.LogDomains;
+
 public final class ImplUtil 
 {
     private static void debug( final String s ) { System.out.println(s); }
+    
+    public Logger getLogger() { return LogDomains.getLogger( LogDomains.AMX_LOGGER ); }
     
     /**
         Unload this AMX MBean and all its children.

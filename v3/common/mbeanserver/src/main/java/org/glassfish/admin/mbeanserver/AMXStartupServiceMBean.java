@@ -20,14 +20,20 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package org.glassfish.admin.amx.loader;
+package org.glassfish.admin.mbeanserver;
 
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
-    MBean responsible for starting AMX
+    MBean responsible for starting AMX (interface).  Implemented by the amx-impl
+    module whicih is lazily loaded.
+    
+    @see org.glassfish.admin.amx.loader.AMXStartupService
  */
+@Contract
 public interface AMXStartupServiceMBean
 {
     /**
@@ -38,6 +44,9 @@ public interface AMXStartupServiceMBean
     public ObjectName getDomainRootObjectName();
     
     public JMXServiceURL[] getJMXServiceURLs();
+    
+    /** ObjectName of the MBean which actually laods AMX MBeans; that MBean references this constant */
+    public static final ObjectName OBJECT_NAME = Util.newObjectName( "amx-support:name=startup" );
 }
 
 

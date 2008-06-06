@@ -71,7 +71,7 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
         
         report.getTopMessagePart().addChild().setMessage( JMXUtil.getMBeanServerDelegateInfo( getMBeanServer() ) );
 
-        final JMXServiceURL[] serviceURLs = AMXStartupService.getAMXStartupServiceMBean(getMBeanServer()).getJMXServiceURLs();
+        final JMXServiceURL[] serviceURLs = AMXStartupService.getAMXStartupServiceMBeanProxy(getMBeanServer()).getJMXServiceURLs();
         report.getTopMessagePart().addChild().setMessage( "JMXServiceURLs[] ===> " + StringUtil.toString( ", ", (Object)serviceURLs ) );
         
         // get a nice sorted list of all AMX MBean ObjectNames

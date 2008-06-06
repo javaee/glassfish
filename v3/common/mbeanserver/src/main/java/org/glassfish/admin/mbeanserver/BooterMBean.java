@@ -36,6 +36,9 @@ public interface BooterMBean
     public ObjectName bootAMX();
     
     public JMXServiceURL[] getJMXServiceURLs();
+    
+    /** ObjectName for BooterMBean */
+    public static final ObjectName OBJECT_NAME = Util.newObjectName( "amx-support:name=booter" );
 }
 
 

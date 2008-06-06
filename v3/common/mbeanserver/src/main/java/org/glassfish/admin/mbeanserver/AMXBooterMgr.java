@@ -35,12 +35,6 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import org.jvnet.hk2.annotations.FactoryFor;
-import org.jvnet.hk2.annotations.Extract;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Factory;
-import org.jvnet.hk2.component.ComponentException;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
@@ -48,60 +42,54 @@ import javax.management.JMException;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.annotations.Inject;
 
 /**
-    Factory for the MBeanServer, but also loads critical hooks for AMX support.
-    @see PendingConfigBeans
+    Manages the startup of the minimal but critical items for AMX support eg
+    the AMXBooter MBean and the JMXConnectors.
  */
-@Service
-@Async
-@FactoryFor(MBeanServer.class)
-public final class AppserverMBeanServerFactory implements Factory, Startup, PostConstruct {
+final class AMXBooterMgr
+{
     private static void debug( final String s ) { System.out.println(s); }
     
-    private final MBeanServer     mMBeanServer;
-    private volatile AMXBooterMgr mAMXBooterMgr;
+    private final MBeanServer         mMBeanServer;
+    private final Habitat             mHabitat;
+    private volatile Booter           mAMXBooter;
+    private final ConnectorsStarter   mConnectorsStarter;
     
-    @Inject
-    Habitat mHabitat;
-    
-    public AppserverMBeanServerFactory()
+    public AMXBooterMgr( final Habitat habitat, final MBeanServer mbeanServer)
     {
         //debug( "AppserverMBeanServerFactory.AppserverMBeanServerFactory" );
+        mMBeanServer    = mbeanServer;
+        mHabitat        = habitat;
         
-        // initialize eagerly; ~20ms
-        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        // create the connectors.  Use a thread since this network stuff could take time
+        mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
+        
+        mAMXBooter = Booter.create( mHabitat, mMBeanServer );
+        
+        new ConnectorsStarterThread(mConnectorsStarter).start();
         
         //debug( "AppserverMBeanServerFactory: MBeanServer, AMX booter and JMXConnector started" );
     }
     
-    public void postConstruct()
+    private static final class ConnectorsStarterThread extends Thread
     {
-        // start AMX booter, JMX Connectors, etc
-        mAMXBooterMgr = new AMXBooterMgr( mHabitat, mMBeanServer );
+        private final ConnectorsStarter mConnectorsStarter;
+        public ConnectorsStarterThread( final ConnectorsStarter cs ) { mConnectorsStarter = cs; }
+        
+        public void run()
+        {
+            try
+            {
+                mConnectorsStarter.startConnectors();
+            }
+            catch( Throwable t )
+            {
+                t.printStackTrace();
+            }
+        }
     }
-    
-    /**
-     * The system calls this method to obtain a reference
-     * to the component.
-     *
-     * @return null is a valid return value. This is useful
-     *         when a factory primarily does a look-up and it fails
-     *         to find the specified component, yet you don't want that
-     *         by itself to be an error. If the injection wants
-     *         a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
-     * @throws org.jvnet.hk2.component.ComponentException
-     *          If the factory failed to get/create an instance
-     *          and would like to propagate the error to the caller.
-     */
-    public Object getObject() throws ComponentException {
-        return mMBeanServer;
-    }
-    
-    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
 
 

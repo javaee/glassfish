@@ -29,8 +29,6 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
-import org.glassfish.api.Async;
-import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -38,14 +36,16 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
+import javax.management.StandardMBean;
 import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.admin.amx.config.AMXConfigLoader;
 import org.glassfish.admin.amx.util.ImplUtil;
 
-import org.glassfish.admin.mbeanserver.Booter;
 import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 
+import org.glassfish.admin.mbeanserver.BooterMBean;
+import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 
 /**
     Startup service that waits for AMX to be pinged to load.  At startup, it registers
@@ -55,12 +55,11 @@ import org.glassfish.admin.mbeanserver.PendingConfigBeans;
     <p>
     Later, the {@link #startAMX} method can be invoked on the MBean to cause AMX
     to load all the AMX MBeans.
+    @see org.glassfish.admin.mbeanserver.AMXStartupServiceMBean
  */
 @Service
-@Async
 public final class AMXStartupService
-    implements  Startup,
-                org.jvnet.hk2.component.PostConstruct,
+    implements  org.jvnet.hk2.component.PostConstruct,
                 org.jvnet.hk2.component.PreDestroy,
                 AMXStartupServiceMBean
 {
@@ -78,11 +77,12 @@ public final class AMXStartupService
     
     public AMXStartupService()
     {
+        debug( "AMXStartupService.AMXStartupService()" );
     }
     
     private static ObjectName getObjectName()
     {
-        return Booter.STARTUP_OBJECT_NAME;
+        return OBJECT_NAME;
     }
     
     public void postConstruct()
@@ -97,15 +97,17 @@ public final class AMXStartupService
         
         try
         {
-            mMBeanServer.registerMBean( this, getObjectName() );
+            // StandardMBean is required because interface and class are in different packages
+            final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class, false);
+            mMBeanServer.registerMBean( mbean, getObjectName() );
         }
         catch( JMException e )
         {
             throw new Error(e);
         }
-        //debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
+        debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
         
-        //debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms " );
+        debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms " );
     }
 
     public void preDestroy() {
@@ -131,7 +133,7 @@ public final class AMXStartupService
     {
         try
         {
-            return (JMXServiceURL[])mMBeanServer.getAttribute( Booter.BOOTER_OBJECT_NAME, "JMXServiceURLs" );
+            return (JMXServiceURL[])mMBeanServer.getAttribute( BooterMBean.OBJECT_NAME, "JMXServiceURLs" );
         }
         catch ( final JMException e )
         {
@@ -143,7 +145,7 @@ public final class AMXStartupService
         Return a proxy to the AMXStartupService.
      */
         public static AMXStartupServiceMBean
-    getAMXStartupServiceMBean( final MBeanServer mbs )
+    getAMXStartupServiceMBeanProxy( final MBeanServer mbs )
     {
         AMXStartupServiceMBean ss = null;
         
@@ -194,7 +196,7 @@ public final class AMXStartupService
         }
     }
 
-    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
+   // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
 
 

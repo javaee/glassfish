@@ -48,10 +48,8 @@ import org.jvnet.hk2.config.ConfigBean;
 
 
 /**
-    Called when ConfigBeans come into the habitat.  They are passed along
-    to the AMXConfigLoader, which might queue them (if AMX has not been requested)
-    or might register them as MBeans (if AMX has been requested already).
-    
+    Called when ConfigBeans come into the habitat (see GlassfishConfigBean); a job queue
+    is maintained for processing by the AMXConfigLoader, which is lazily loaded.
  * @author llc
  */
 @Service(name="PendingConfigBeans")
@@ -61,6 +59,12 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
     
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
     
+    /**
+        Exists only to force the MBeanServer and related infrastructure to load
+        via AppserverMBeanServerFactory.
+     */
+    //@org.jvnet.hk2.annotations.Inject
+    //javax.management.MBeanServer mMBeanServer;
     
     /**
         Singleton: there should be only one instance and hence a private constructor.

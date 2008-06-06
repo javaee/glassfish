@@ -47,10 +47,12 @@ import javax.management.loading.ClassLoaderRepository;
 
 
 /**
+    NOT USED AS OF JUNE 6, 2008, but KEEP as it might be needed in the future.
+    <p>
     Wraps the MBeanServe so as to allow lazy-loading of AMX MBeans.
     WARNING: DO NOT WRAP THE MBEANSERVER LIGHTLY; IT HAS ALL SORTS OF RAMIFICATIONS.
  */
-public final class AppserverMBeanServer implements MBeanServer
+final class AppserverMBeanServer implements MBeanServer
 {
     private final String         mDefaultDomain;
     private volatile MBeanServer mTargetMBeanServer;
