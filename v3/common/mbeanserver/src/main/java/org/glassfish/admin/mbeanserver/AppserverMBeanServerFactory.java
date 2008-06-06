@@ -41,24 +41,53 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Factory;
 import org.jvnet.hk2.component.ComponentException;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
+
 
 /**
-    The MBeanServer is optional (at least in theory).  For example, a lean production
-    environment might choose to not load the management APIs (AMX) and therefore might not
-    need the MBeanServer.
-    <p>�the PlatformMBeanServer as returned
-    by ManagementFactory.getPlatformMBeanServer(), this is <em>not</em> guaranteed.  Glassfish
-    modules that require the MBeanServer should obtain it here.
-    It might be that a single-server Glassfish would use
-    the PlatformMBeanServer, but a clustered Glassfish might use a "wrapped" version to implement
-    additional functionality, such as virtualization.  That "wrapped" version might not be the
-    PlatformMBeanServer (default), but instead another MBeanServer entirely to avoid startup
-    incompatibilities.
+    This is more than just the MBeanServer:  certain AMX booting facilities are loaded
+    as are JMX Connectors.
  */
 @Service
-@FactoryFor(javax.management.MBeanServer.class)
+@FactoryFor(MBeanServer.class)
 public final class AppserverMBeanServerFactory implements Factory {
-
+    private final MBeanServer         mMBeanServer;
+    private final AMXBooter           mAMXBooter;
+    private final ConnectorsStarter   mConnectorsStarter;
+    
+    public AppserverMBeanServerFactory()
+    {
+        // initialize eagerly; ~20ms
+        mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        
+        // register the MBean which exposes the bootAMX() call
+        mAMXBooter = AMXBooter.create( mMBeanServer );
+        
+        // create the connectors.  Use a thread since this network stuff could take time
+        mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
+        new ConnectorsStarterThread(mConnectorsStarter).start();
+    }
+    
+    private static final class ConnectorsStarterThread extends Thread
+    {
+        private final ConnectorsStarter mConnectorsStarter;
+        public ConnectorsStarterThread( final ConnectorsStarter cs ) { mConnectorsStarter = cs; }
+        
+        public void run()
+        {
+            try
+            {
+                mConnectorsStarter.startConnectors();
+            }
+            catch( Throwable t )
+            {
+                t.printStackTrace();
+            }
+        }
+    }
+    
     /**
      * The system calls this method to obtain a reference
      * to the component.
@@ -73,9 +102,13 @@ public final class AppserverMBeanServerFactory implements Factory {
      *          and would like to propagate the error to the caller.
      */
     public Object getObject() throws ComponentException {
-        return AppserverMBeanServer.getInstance();
+        return mMBeanServer;
     }
 }
+
+
+
+
 
 
 

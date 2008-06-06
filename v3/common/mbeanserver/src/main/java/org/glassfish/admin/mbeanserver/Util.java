@@ -20,24 +20,28 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package org.glassfish.admin.amx.loader;
+package org.glassfish.admin.mbeanserver;
 
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.remote.JMXServiceURL;
+import javax.management.JMException;
 
 /**
-    MBean responsible for starting AMX
+    Can't use things in amx-api, so a few methods are place here.
  */
-public interface AMXStartupServiceMBean
+final class Util
 {
-    /**
-        Start AMX and return the ObjectName of DomainRoot once AMX is ready.
-     */
-    public ObjectName startAMX();
-    
-    public ObjectName getDomainRootObjectName();
-    
-    public JMXServiceURL[] getJMXServiceURLs();
+    public static ObjectName newObjectName(final String s)
+    {
+        try
+        {
+            return new ObjectName( s );
+        }
+        catch( final JMException e )
+        {
+            throw new RuntimeException("bad ObjectName", e);
+        }
+    }
 }
 
 

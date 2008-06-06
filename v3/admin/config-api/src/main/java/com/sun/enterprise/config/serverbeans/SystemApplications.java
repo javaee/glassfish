@@ -50,7 +50,7 @@ import java.util.List;
  *
  */
 
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.annotation.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
 @Configured
 public interface SystemApplications extends ConfigBeanProxy, Injectable  {
 

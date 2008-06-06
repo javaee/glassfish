@@ -20,10 +20,7 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package org.glassfish.admin.amx.loader;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import org.glassfish.admin.amx.config.AMXConfigRegistrar;
+package org.glassfish.admin.mbeanserver;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -32,9 +29,9 @@ import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
 import javax.management.NotCompliantMBeanException;
 
-
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -42,82 +39,33 @@ import java.util.Map;
 
 
 /**
-    Initialize AMX:<br/>
-    <ul>
-    <li>Start the MBeanServer if not already started/li>
-    <li>Start the AMX loader which causes AMX MBeans to be registered</li>
-    <li>Start the JMXMP connector</li>
-    </ul>
+    Start and stop JMX connectors.
  */
-final class StartAMX
+final class ConnectorsStarter
 {
     protected static void debug( final String s ) { System.out.println(s); }
     
-    private static StartAMX INSTANCE;
-    
-    private volatile ObjectName mAMXLoaderObjectName;
-    private final AMXConfigRegistrar mConfigRegistrar;
     private final MBeanServer   mMBeanServer;
-    private final J2EELoader  mJ2EELoader;
-
-    
-    private static volatile boolean    STARTED = false;
-    
-    private StartAMX( final MBeanServer mbs, final AMXConfigRegistrar registrar )
-    {
-        mMBeanServer = mbs;
-        mConfigRegistrar= registrar;
-        
-        mJ2EELoader = new J2EELoader(mbs);
-    }
-    
-        public static synchronized StartAMX
-    init(final MBeanServer mbs, final AMXConfigRegistrar registrar)
-    {
-        INSTANCE = new StartAMX( mbs, registrar );
-        return INSTANCE;
-    }
-    
-    // @ return the instance or null if AMX has not yet been started
-        public static synchronized StartAMX
-    getInstance()
-    {
-        return INSTANCE;
-    }
-    
-        public static boolean
-    isStarted()
-    {
-        return getInstance() != null;
-    }
-    
-        private synchronized void
-    loadMBeans()
-    {
-        // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
-        mAMXLoaderObjectName = LoadAMX.loadAMX( mMBeanServer );
-        
-        // do this before loading any ConfigBeans so that it will auto-sync
-        mJ2EELoader.start();
-        
-        // load config MBeans
-        mConfigRegistrar.getAMXConfigLoader().start( mMBeanServer );
-    }
-    
-    /*
-    code moved to org.glassfish.admin.mbeanserver.ConnectorsStarter in common/mbeanserver
-    
-    public JMXServiceURL    getJMXServiceURL() { return mJMXMPServiceURL; }
-    
-    // these 3 fields are initialized later
+   
     private volatile JMXConnectorServer mJMXMP = null;
     private volatile JMXServiceURL  mJMXMPServiceURL = null;
     private volatile ObjectName     mJMXMPObjectName = null;
     public static final int JMXMP_PORT = 8888;
+
+    public JMXServiceURL    getJMXServiceURL() { return mJMXMPServiceURL; }
     
-        public static synchronized void
+    private static volatile boolean    STARTED = false;
+    
+    ConnectorsStarter( final MBeanServer mbs )
+    {
+        mMBeanServer = mbs;
+    }
+    
+        public synchronized void
     startConnectors()
     {
+        if ( STARTED )  return;
+        
         final int TRY_COUNT = 100;
         
         int port = JMXMP_PORT;
@@ -126,7 +74,7 @@ final class StartAMX
         {
             try
             {
-                final JMXConnectorServer cs = getInstance().startJMXMPConnectorServer( port );
+                final JMXConnectorServer cs = startJMXMPConnectorServer( port );
                 break;
             }
             catch( final java.net.BindException e )
@@ -145,9 +93,16 @@ final class StartAMX
             }
         }
     }
+
+    public synchronized void stopConnectors() {
+        try {
+            mJMXMP.stop();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
-    
-        private synchronized JMXConnectorServer
+        private JMXConnectorServer
     startJMXMPConnectorServer( int port)
         throws MalformedURLException, IOException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
     {
@@ -160,7 +115,7 @@ final class StartAMX
             final JMXServiceURL      serviceURL = new JMXServiceURL("service:jmx:jmxmp://localhost:" + port );
             final JMXConnectorServer jmxmp = JMXConnectorServerFactory.newJMXConnectorServer( serviceURL, env, mMBeanServer);
             
-            ObjectName objectName = JMXUtil.newObjectName( "jmxremote:type=jmx-connector,name=jmxmp,port=" + port);
+            ObjectName objectName = Util.newObjectName( "jmxremote:type=jmx-connector,name=jmxmp,port=" + port);
             objectName = mMBeanServer.registerMBean( jmxmp, objectName).getObjectName();
             
             boolean startedOK    = false;
@@ -175,8 +130,8 @@ final class StartAMX
                 // we do it this way so that the original exeption will be thrown out
                 if ( ! startedOK )
                 {
-                    try { jmxmp.stop(); } catch( Exception e ) { }
-                    try { mMBeanServer.unregisterMBean( objectName ); objectName = null;}  catch( Exception e ) {}
+                    try { jmxmp.stop(); } catch( Exception e ) { /* OK */ }
+                    try { mMBeanServer.unregisterMBean( objectName ); objectName = null;}  catch( Exception e ) { /* OK */}
                 }
             }
             
@@ -190,33 +145,6 @@ final class StartAMX
            // MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
         }
         return mJMXMP;
-    }
-
-    */
-    
-        public static synchronized void
-    startAMX()
-    {
-        if ( ! STARTED )
-        {
-            //startConnectors();
-            getInstance().loadMBeans();
-            
-            STARTED = true;
-            // now starting asynchronously...
-        }
-    }
-
-    public static synchronized void stopAMX() {
-        if (INSTANCE!=null) {
-            /*
-            try {
-                INSTANCE.mJMXMP.stop();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            */
-        }
     }
 }
 

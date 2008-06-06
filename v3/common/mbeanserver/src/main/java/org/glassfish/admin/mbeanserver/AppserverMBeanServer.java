@@ -47,7 +47,8 @@ import javax.management.loading.ClassLoaderRepository;
 
 
 /**
-    Wraps the MBeanServe so as to allow lazy-loading of AMX MBeans
+    Wraps the MBeanServe so as to allow lazy-loading of AMX MBeans.
+    WARNING: DO NOT WRAP THE MBEANSERVER LIGHTLY; IT HAS ALL SORTS OF RAMIFICATIONS.
  */
 public final class AppserverMBeanServer implements MBeanServer
 {
@@ -341,6 +342,7 @@ public final class AppserverMBeanServer implements MBeanServer
     }
 
     /* deprecated API @since 1.1 - use with caution */
+	@SuppressWarnings("deprecation") 
         public final ObjectInputStream
     deserialize (String str, byte[] values) 
         throws OperationsException, ReflectionException
@@ -350,6 +352,7 @@ public final class AppserverMBeanServer implements MBeanServer
     }
 
     /* deprecated API @since 1.1 - use with caution */
+	@SuppressWarnings("deprecation") 
         public final ObjectInputStream
     deserialize( final ObjectName objectName, final byte[] values) 
         throws InstanceNotFoundException, OperationsException
@@ -358,6 +361,7 @@ public final class AppserverMBeanServer implements MBeanServer
         return getTargetMBeanServer().deserialize (objectName, values);
     }
 
+	@SuppressWarnings("deprecation") 
         public final ObjectInputStream
     deserialize( final String str, final ObjectName objectName, 
         byte[] values) throws InstanceNotFoundException, OperationsException, 
@@ -439,6 +443,7 @@ public final class AppserverMBeanServer implements MBeanServer
         return domain.equals( AMX_DOMAIN ) || domain.equals( "*" );
     }
     
+    @SuppressWarnings("unchecked")   // can't deal with API generics change from 1.5 to 1.6
         public final Set
     queryNames( final ObjectName objectName, final QueryExp queryExp)
     {
@@ -451,6 +456,7 @@ public final class AppserverMBeanServer implements MBeanServer
         return getTargetMBeanServer().queryNames( objectName, queryExp);
     }
     
+    @SuppressWarnings("unchecked")   // can't deal with API generics change from 1.5 to 1.6
          public final Set
     queryMBeans( final ObjectName objectName, final QueryExp queryExp )
     {

@@ -559,7 +559,11 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
     {
         ObjectName objectName = null;
         
-        if ( getAMXConfigInfo(cb) != null )
+        debug( "registerConfigBeanAsMBean: " + cb.getProxyType().getName()  );
+    
+        final AMXConfigInfo info = getAMXConfigInfo(cb);
+        final boolean isVoid = info != null && info.amxInterfaceName().equals(AMXConfigVoid.class.getName());
+        if ( info != null && ! isVoid )
         {
             final ConfigBean parentCB = getActualParent(cb);
             if ( parentCB != null && parentCB.getObjectName() == null )
@@ -573,7 +577,14 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         }
         else
         {
-            debug( "NOTE: ConfigBean has no @AMXConfigInfo: " + cb.getProxyType().getName() + " (IGNORING)");
+            if ( isVoid )
+            {
+                debug( "NOTE: ConfigBean has AMXConfigInfo specifying AMXConfigVoid: " + cb.getProxyType().getName() + " (IGNORING)");
+            }
+            else 
+            {
+                debug( "NOTE: ConfigBean has no @AMXConfigInfo: " + cb.getProxyType().getName() + " (IGNORING)");
+            }
         }
         return objectName;
     }
@@ -603,6 +614,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         final ConfigBean parentCB )
     {
         final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
+        
+        debug( "_registerConfigBeanAsMBean: " + cb.getProxyType().getName() );
         
         ObjectName objectName = cb.getObjectName();
         if ( objectName != null )
@@ -735,6 +748,10 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         final AMXConfigInfoResolver info)
     {
         final Class<? extends AMXConfig> amxInterface = info.amxInterface();
+        if ( amxInterface == null )
+        {
+            throw new IllegalArgumentException( "No amx interface for: " + info);
+        }
         
         String j2eeType = null;
         // if a specific AMX interface was specified (not the base interface AMXConfig), 
@@ -746,6 +763,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         if ( j2eeType == null )
         {
             // Use the value from the annotation
+            debug( "Getting j2eeType for: " + amxInterface.getName() );
+            
             j2eeType = info.j2eeType();
             
             // if the value is empty, derive one from the fully-qualified interface name

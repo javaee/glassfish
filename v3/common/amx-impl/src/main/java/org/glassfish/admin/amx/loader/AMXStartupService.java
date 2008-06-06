@@ -41,6 +41,7 @@ import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
+import org.glassfish.admin.mbeanserver.AMXBooter;
 
 /**
     Startup service that waits for AMX to be pinged to load.  At startup, it registers
@@ -67,10 +68,13 @@ public final class AMXStartupService
     @Inject
     private AMXConfigRegistrar mConfigRegistrar;
     
-    private static final ObjectName OBJECT_NAME = JMXUtil.newObjectName( "amx-support:name=startup" );
-    
     public AMXStartupService()
     {
+    }
+    
+    private static ObjectName getObjectName()
+    {
+        return AMXBooter.STARTUP_OBJECT_NAME;
     }
     
     public void postConstruct()
@@ -82,7 +86,7 @@ public final class AMXStartupService
         
         try
         {
-            mMBeanServer.registerMBean( this, OBJECT_NAME );
+            mMBeanServer.registerMBean( this, getObjectName() );
         }
         catch( JMException e )
         {
@@ -92,7 +96,7 @@ public final class AMXStartupService
         StartAMX.init(mMBeanServer, mConfigRegistrar);
         
         // nothing to talk to if the connectors aren't started!
-        StartAMX.getInstance().startConnectors();
+        //StartAMX.getInstance().startConnectors();
         
         //debug( "Initialized (async) AMX Startup service in " + delta.elapsedMillis() + " ms " );
     }
@@ -115,9 +119,16 @@ public final class AMXStartupService
         }
     }
     
-    public JMXServiceURL getJMXServiceURL()
+    public JMXServiceURL[] getJMXServiceURLs()
     {
-        return StartAMX.getInstance().getJMXServiceURL();
+        try
+        {
+            return (JMXServiceURL[])mMBeanServer.getAttribute( AMXBooter.BOOTER_OBJECT_NAME, "JMXServiceURLs" );
+        }
+        catch ( final JMException e )
+        {
+            throw new RuntimeException(e);
+        }
     }
     
         public static AMXStartupServiceMBean
@@ -125,10 +136,10 @@ public final class AMXStartupService
     {
         AMXStartupServiceMBean ss = null;
         
-        if ( mbs.isRegistered( OBJECT_NAME ) )
+        if ( mbs.isRegistered( getObjectName() ) )
         {
             ss = AMXStartupServiceMBean.class.cast(
-                MBeanServerInvocationHandler.newProxyInstance( mbs, OBJECT_NAME, AMXStartupServiceMBean.class, false));
+                MBeanServerInvocationHandler.newProxyInstance( mbs, getObjectName(), AMXStartupServiceMBean.class, false));
         }
         return ss;
     }

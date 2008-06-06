@@ -35,6 +35,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.management.ObjectName;
+import javax.management.remote.JMXServiceURL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,8 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
         
         report.getTopMessagePart().addChild().setMessage( JMXUtil.getMBeanServerDelegateInfo( getMBeanServer() ) );
 
-        report.getTopMessagePart().addChild().setMessage( "JMXServiceURL ===> " + AMXStartupService.getAMXStartupServiceMBean(getMBeanServer()).getJMXServiceURL() );
+        final JMXServiceURL[] serviceURLs = AMXStartupService.getAMXStartupServiceMBean(getMBeanServer()).getJMXServiceURLs();
+        report.getTopMessagePart().addChild().setMessage( "JMXServiceURLs[] ===> " + StringUtil.toString( ", ", (Object)serviceURLs ) );
         
         // get a nice sorted list of all AMX MBean ObjectNames
         final ObjectName amxPattern = JMXUtil.newObjectName( "amx:*" );

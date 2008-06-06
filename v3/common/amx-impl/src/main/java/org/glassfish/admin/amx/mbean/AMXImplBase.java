@@ -2209,21 +2209,21 @@ protected static void cdebug( final String s ) { System.out.println(s); }
         
         final ObjectName containerObjectName = getContainerObjectName();
         
-        if ( containerObjectName == null )
+        if ( containerObjectName == null && ! XTypes.DOMAIN_ROOT.equals(mJ2EEType) )
         {
-    System.err.println( "ContainerObjectName is null for: " + getObjectName() );
+            System.err.println( "ContainerObjectName is null for: " + getObjectName() );
         }
         
         final ObjectName objectName = getObjectName();
         if ( objectName == null )
         {
-    System.err.println( "ObjectName is null, container = " + containerObjectName );
+            System.err.println( "ObjectName is null, container = " + containerObjectName );
         }
         
         final MBeanServer mbeanServer = getMBeanServer();
         if ( mbeanServer == null )
         {
-    System.err.println( "MBeanServer is null for: " + getObjectName() );
+                System.err.println( "MBeanServer is null for: " + getObjectName() );
         }
 
         
