@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.authenticator;
-
 
 import java.io.IOException;
 import java.security.Principal;
@@ -64,6 +60,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -82,10 +79,6 @@ import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
 import org.apache.catalina.deploy.LoginConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of FORM BASED
@@ -98,12 +91,11 @@ import org.apache.commons.logging.LogFactory;
 
 public class FormAuthenticator
     extends AuthenticatorBase {
-    private static Log log = LogFactory.getLog(FormAuthenticator.class);
+    private static Logger log = Logger.getLogger(
+        FormAuthenticator.class.getName());
 
 
-
-    // ----------------------------------------------------- Instance Variables
-
+    // -------------------------------------------------- Instance Variables
 
     /**
      * Descriptive information about this implementation.
@@ -112,20 +104,18 @@ public class FormAuthenticator
         "org.apache.catalina.authenticator.FormAuthenticator/1.0";
 
 
-    // ------------------------------------------------------------- Properties
+    // ---------------------------------------------------------- Properties
 
 
     /**
      * Return descriptive information about this Valve implementation.
      */
     public String getInfo() {
-
         return (this.info);
-
     }
 
 
-    // --------------------------------------------------------- Public Methods
+    // ------------------------------------------------------- Public Methods
 
 
     /**
@@ -166,9 +156,8 @@ public class FormAuthenticator
         // same, by letting them fall through to the j_security_check 
         // processing section of this method. 
         if (principal != null && !loginAction) {
-            if (log.isDebugEnabled())
-                log.debug("Already authenticated '" +
-                    principal.getName() + "'");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Already authenticated '" + principal.getName() + "'");
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
             if (ssoId != null) {
                 getSession(request, true);
@@ -182,15 +171,15 @@ public class FormAuthenticator
         // processing section of this method. 
         if (!cache && !loginAction) {
             session = getSession(request, true);
-            if (log.isDebugEnabled())
-                log.debug("Checking for reauthenticate in session " + session);
+            if (log.isLoggable(Level.FINE))
+                log.fine("Checking for reauthenticate in session " + session);
             String username =
                 (String) session.getNote(Constants.SESS_USERNAME_NOTE);
             String password =
                 (String) session.getNote(Constants.SESS_PASSWORD_NOTE);
             if ((username != null) && (password != null)) {
-                if (log.isDebugEnabled())
-                    log.debug("Reauthenticating username '" + username + "'");
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Reauthenticating username '" + username + "'");
                 principal =
                     context.getRealm().authenticate(username, password);
                 if (principal != null) {
@@ -202,8 +191,8 @@ public class FormAuthenticator
                         return (true);
                     }
                 }
-                if (log.isDebugEnabled())
-                    log.debug("Reauthentication failed, proceed normally");
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Reauthentication failed, proceed normally");
             }
         }
 
@@ -211,9 +200,9 @@ public class FormAuthenticator
         // authentication?  If so, forward the *original* request instead.
         if (matchRequest(request)) {
             session = getSession(request, true);
-            if (log.isDebugEnabled())
-                log.debug("Restore request from session '" + session.getIdInternal() 
-                          + "'");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Restore request from session '" +
+                         session.getIdInternal() + "'");
             principal = (Principal)
                 session.getNote(Constants.FORM_PRINCIPAL_NOTE);
             register(request, response, principal, Constants.FORM_METHOD,
@@ -223,12 +212,12 @@ public class FormAuthenticator
             if (ssoId != null)
                 associate(ssoId, session);
             if (restoreRequest(request, session)) {
-                if (log.isDebugEnabled())
-                    log.debug("Proceed to restored request");
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Proceed to restored request");
                 return (true);
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("Restore of original request failed");
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Restore of original request failed");
                 hres.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return (false);
             }
@@ -243,8 +232,9 @@ public class FormAuthenticator
         // No -- Save this request and redirect to the form login page
         if (!loginAction) {
             session = getSession(request, true);
-            if (log.isDebugEnabled())
-                log.debug("Save request in session '" + session.getIdInternal() + "'");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Save request in session '" +
+                         session.getIdInternal() + "'");
             saveRequest(request, session);
 
             //START Apache bug 36136: Refactor the login and error page forward
@@ -270,8 +260,8 @@ public class FormAuthenticator
         Realm realm = context.getRealm();
         String username = hreq.getParameter(Constants.FORM_USERNAME);
         String password = hreq.getParameter(Constants.FORM_PASSWORD);
-        if (log.isDebugEnabled())
-            log.debug("Authenticating username '" + username + "'");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Authenticating username '" + username + "'");
         principal = realm.authenticate(username, password);
         if (principal == null) {
 
@@ -293,8 +283,8 @@ public class FormAuthenticator
         }
 
         // Save the authenticated Principal in our session
-        if (log.isDebugEnabled())
-            log.debug("Authentication of '" + username + "' was successful");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Authentication of '" + username + "' was successful");
         if (session == null)
             session = getSession(request, true);
         session.setNote(Constants.FORM_PRINCIPAL_NOTE, principal);
@@ -325,8 +315,8 @@ public class FormAuthenticator
             }
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Redirecting to original '" + requestURI + "'");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Redirecting to original '" + requestURI + "'");
         }
 
         hres.sendRedirect(hres.encodeRedirectURL(requestURI));
@@ -458,8 +448,9 @@ public class FormAuthenticator
                     sc.getContextPath() + config.getLoginPage());
             }
         } catch (Throwable t) {
-            log.warn("Unexpected error forwarding or redirecting to "
-                     + "login page", t);
+            log.log(Level.WARNING,
+                    "Unexpected error forwarding or redirecting to login page",
+                    t);
         }
     }
     
@@ -486,8 +477,9 @@ public class FormAuthenticator
                     sc.getContextPath() + config.getErrorPage());
             }
         } catch (Throwable t) {
-            log.warn("Unexpected error forwarding or redirecting to "
-                     + "error page", t);
+            log.log(Level.WARNING,
+                    "Unexpected error forwarding or redirecting to error page",
+                    t);
         }
     }
     
@@ -537,7 +529,6 @@ public class FormAuthenticator
 
         // Stash the SavedRequest in our session for later use
         session.setNote(Constants.FORM_REQUEST_NOTE, saved);
-
     }
 
 
@@ -561,8 +552,8 @@ public class FormAuthenticator
             sb.append('?');
             sb.append(saved.getQueryString());
         }
-        return (sb.toString());
 
+        return (sb.toString());
     }
 
 

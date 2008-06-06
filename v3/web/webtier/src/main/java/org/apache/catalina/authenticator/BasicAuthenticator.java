@@ -52,24 +52,17 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.authenticator;
-
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.logging.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.util.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of HTTP BASIC
@@ -82,11 +75,12 @@ import org.apache.commons.logging.LogFactory;
 
 public class BasicAuthenticator
     extends AuthenticatorBase {
-    private static Log log = LogFactory.getLog(BasicAuthenticator.class);
+
+    private static Logger log = Logger.getLogger(
+        BasicAuthenticator.class.getName());
 
 
-
-    // ----------------------------------------------------- Instance Variables
+    // --------------------------------------------------- Instance Variables
 
 
     /**
@@ -102,20 +96,18 @@ public class BasicAuthenticator
         "org.apache.catalina.authenticator.BasicAuthenticator/1.0";
 
 
-    // ------------------------------------------------------------- Properties
+    // ----------------------------------------------------------- Properties
 
 
     /**
      * Return descriptive information about this Valve implementation.
      */
     public String getInfo() {
-
         return (this.info);
-
     }
 
 
-    // --------------------------------------------------------- Public Methods
+    // ------------------------------------------------------- Public Methods
 
 
     /**
@@ -140,8 +132,8 @@ public class BasicAuthenticator
         Principal principal =
             ((HttpServletRequest) request.getRequest()).getUserPrincipal();
         if (principal != null) {
-            if (log.isDebugEnabled())
-                log.debug("Already authenticated '" + principal.getName() + "'");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Already authenticated '" + principal.getName() + "'");
             return (true);
         }
 
