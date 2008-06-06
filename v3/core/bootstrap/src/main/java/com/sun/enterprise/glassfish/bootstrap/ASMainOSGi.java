@@ -84,11 +84,6 @@ public abstract class ASMainOSGi {
         "wstx-asl-*.jar" // needed by config module in HK2
     };
 
-    private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
-
-    // on jdk5, without the javaee, I need this...
-    private static final String staxJarPath = "modules/stax-api-1.0-2.jar";
-    
 
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
@@ -132,9 +127,8 @@ public abstract class ASMainOSGi {
      * Our hierarchy looks like this:
      * bootstrap class loader (a.k.a. null)
      * extension class loader (for processing contents of -Djava.ext.dirs)
-     * common classloader (for loading javaee API and jdk tools.jar)
-     * library class loader (for glassfish/lib and domain_dir/lib)
-     * framework class loader (For loading OSGi framework classes)
+     * shared classloader (for loading javaee API and jdk tools.jar OSGi
+     * framework classes and shared libraries available in lib and domain/lib dir)
      */
     private void setupLauncherClassLoader() throws Exception {
         ClassLoader commonCL = createCommonClassLoader(ClassLoader.getSystemClassLoader().getParent());

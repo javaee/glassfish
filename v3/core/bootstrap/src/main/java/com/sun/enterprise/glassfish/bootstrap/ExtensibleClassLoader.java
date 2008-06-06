@@ -58,19 +58,22 @@ final class ExtensibleClassLoader extends URLClassLoader implements RepositoryCh
     ExtensibleClassLoader(URL[] urls, ClassLoader parent, List<Repository> repos) {
         super(urls, parent);
         for (Repository repo : repos) {
+            // Add all the existing libraries to classloader
+            for(URI uri : repo.getJarLocations()) {
+                if (addURI(uri)) {
+                    LOGGER.info("Added " + uri + " to shared classpath");
+                }
+            }
             repo.addListener(this);
         }
     }
 
     public void jarAdded(URI uri) {
-        try {
-            super.addURL(uri.toURL());
+        if (addURI(uri)) {
             LOGGER.info("Added " + uri + " to shared classpath, no need to restart appserver");
-        } catch (MalformedURLException e) {
-            LOGGER.log(Level.SEVERE, "Cannot add new added library to shared classpath", e);
         }
-
     }
+
     public void jarRemoved(URI uri) {
     }
 
@@ -78,6 +81,17 @@ final class ExtensibleClassLoader extends URLClassLoader implements RepositoryCh
     }
 
     public void moduleRemoved(ModuleDefinition moduleDefinition) {
+    }
+
+    private boolean addURI(URI uri) {
+        boolean success = false;
+        try {
+            super.addURL(uri.toURL());
+            success = true;
+        } catch (MalformedURLException e) {
+            LOGGER.log(Level.SEVERE, "Cannot add new added library to shared classpath", e);
+        }
+        return success;
     }
 
     private static final Logger LOGGER = Logger.getLogger(ExtensibleClassLoader.class.getName());
