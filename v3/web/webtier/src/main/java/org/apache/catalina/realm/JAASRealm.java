@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Enumeration;
+import java.util.logging.*;
 import javax.security.auth.Subject;
 import javax.security.auth.login.AccountExpiredException;
 import javax.security.auth.login.CredentialExpiredException;
@@ -74,9 +75,6 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Container;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * <p>Implmentation of <b>Realm</b> that authenticates users via the <em>Java
@@ -136,7 +134,7 @@ import org.apache.commons.logging.LogFactory;
 public class JAASRealm
     extends RealmBase
  {
-    private static Log log = LogFactory.getLog(JAASRealm.class);
+    private static Logger log = Logger.getLogger(JAASRealm.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -294,8 +292,8 @@ public class JAASRealm
         LoginContext loginContext = null;
         if( appName==null ) appName="Tomcat";
 
-        if( log.isDebugEnabled())
-            log.debug("Authenticating " + appName + " " +  username);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Authenticating " + appName + " " +  username);
 
         // What if the LoginModule is in the container class loader ?
         //
@@ -306,16 +304,17 @@ public class JAASRealm
                 (appName, new JAASCallbackHandler(this, username,
                                                   credentials));
         } catch (Throwable e) {
-            log.debug("Error initializing JAAS: " +  e.toString());
+            log.fine("Error initializing JAAS: " +  e.toString());
 
-            log.debug(sm.getString("jaasRealm.loginException", username), e);
+            log.log(Level.FINE,
+                    sm.getString("jaasRealm.loginException", username), e);
             return (null);
         } finally {
             Thread.currentThread().setContextClassLoader(ocl);
         }
 
-        if( log.isDebugEnabled())
-            log.debug("Login context created " + username);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Login context created " + username);
 
         // Negotiate a login via this LoginContext
         Subject subject = null;
@@ -323,46 +322,47 @@ public class JAASRealm
             loginContext.login();
             subject = loginContext.getSubject();
             if (subject == null) {
-                if( log.isDebugEnabled())
-                    log.debug(sm.getString("jaasRealm.failedLogin", username));
+                if (log.isLoggable(Level.FINE))
+                    log.fine(sm.getString("jaasRealm.failedLogin", username));
                 return (null);
             }
         } catch (AccountExpiredException e) {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("jaasRealm.accountExpired", username));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("jaasRealm.accountExpired", username));
             return (null);
         } catch (CredentialExpiredException e) {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("jaasRealm.credentialExpired", username));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("jaasRealm.credentialExpired", username));
             return (null);
         } catch (FailedLoginException e) {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("jaasRealm.failedLogin", username));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("jaasRealm.failedLogin", username));
             return (null);
         } catch (LoginException e) {
-            log.debug(sm.getString("jaasRealm.loginException", username), e);
+            log.log(Level.FINE,
+                    sm.getString("jaasRealm.loginException", username), e);
             return (null);
         } catch (Throwable e) {
-            log.debug("Unexpected error", e);
+            log.log(Level.FINE, "Unexpected error", e);
             return (null);
         }
 
-        if( log.isDebugEnabled())
-            log.debug("Getting principal " + subject);
+        if( log.isLoggable(Level.FINE))
+            log.fine("Getting principal " + subject);
 
         // Return the appropriate Principal for this authenticated Subject
         Principal principal = createPrincipal(username, subject);
         if (principal == null) {
-            log.debug(sm.getString("jaasRealm.authenticateFailure", username));
+            log.fine(sm.getString("jaasRealm.authenticateFailure", username));
             return (null);
         }
-        if (log.isDebugEnabled()) {
-            log.debug(sm.getString("jaasRealm.authenticateSuccess", username));
+        if (log.isLoggable(Level.FINE)) {
+            log.fine(sm.getString("jaasRealm.authenticateSuccess", username));
         }
 
         return (principal);
         } catch( Throwable t) {
-            log.error( "error ", t);
+            log.log(Level.SEVERE, "error ", t);
             return null;
         }
     }
@@ -422,13 +422,13 @@ public class JAASRealm
             Principal principal = (Principal) principals.next();
             // No need to look further - that's our own stuff
             if( principal instanceof GenericPrincipal ) {
-                if( log.isDebugEnabled() )
-                    log.debug("Found old GenericPrincipal " + principal );
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Found old GenericPrincipal " + principal );
                 return principal;
             }
             String principalClass = principal.getClass().getName();
-            if( log.isDebugEnabled() )
-                log.info("Principal: " + principalClass + " " + principal);
+            if (log.isLoggable(Level.FINE))
+                log.fine("Principal: " + principalClass + " " + principal);
 
             if (userClasses.contains(principalClass)) {
                 // Override the default - which is the original user, accepted by

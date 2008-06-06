@@ -52,22 +52,16 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.realm;
-
 
 import java.security.Principal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.*;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.util.StringManager;
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * Simple implementation of <b>Realm</b> that reads an XML file to configure
@@ -85,7 +79,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class MemoryRealm  extends RealmBase {
 
-    private static Log log = LogFactory.getLog(MemoryRealm.class);
+    private static Logger log = Logger.getLogger(MemoryRealm.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -203,12 +197,12 @@ public class MemoryRealm  extends RealmBase {
         }
 
         if (validated) {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("memoryRealm.authenticateSuccess", username));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("memoryRealm.authenticateSuccess", username));
             return (principal);
         } else {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("memoryRealm.authenticateFailure", username));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("memoryRealm.authenticateFailure", username));
             return (null);
         }
 
@@ -324,9 +318,9 @@ public class MemoryRealm  extends RealmBase {
                               file.getAbsolutePath()));
 
         // Load the contents of the database file
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("memoryRealm.loadPath",
-                             file.getAbsolutePath()));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("memoryRealm.loadPath",
+                                  file.getAbsolutePath()));
         Digester digester = getDigester();
         try {
             synchronized (digester) {

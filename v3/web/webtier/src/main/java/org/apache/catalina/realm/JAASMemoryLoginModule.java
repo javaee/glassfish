@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.realm;
-
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -68,6 +64,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.*;
 
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -94,8 +91,6 @@ import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 // START SJSWS 6324431
 import org.apache.catalina.core.StandardContext; 
 // END SJSWS 6324431
@@ -133,7 +128,8 @@ import org.apache.catalina.core.StandardContext;
 public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, Realm {
     // We need to extend MemoryRealm to avoid class cast
 
-    private static Log log = LogFactory.getLog(JAASMemoryLoginModule.class);
+    private static Logger log = Logger.getLogger(
+        JAASMemoryLoginModule.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -201,10 +197,6 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
 
     // --------------------------------------------------------- Public Methods
 
-    public JAASMemoryLoginModule() {
-        log.debug("MEMORY LOGIN MODULE");
-    }
-
     /**
      * Phase 2 of authenticating a <code>Subject</code> when Phase 1
      * fails.  This method is called if the <code>LoginContext</code>
@@ -229,9 +221,12 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
             committed = false;
             principal = null;
         }
-        log.debug("Abort");
-        return (true);
 
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Abort");
+        }
+
+        return (true);
     }
 
 
@@ -247,7 +242,9 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
      * @exception LoginException if the commit fails
      */
     public boolean commit() throws LoginException {
-        log.debug("commit " + principal);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("commit " + principal);
+        }
 
         // If authentication was not successful, just return false
         if (principal == null)
@@ -344,7 +341,9 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
      */
     public void initialize(Subject subject, CallbackHandler callbackHandler,
                            Map sharedState, Map options) {
-        log.debug("Init");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Init");
+        }
 
         // Save configuration values
         this.subject = subject;
@@ -398,7 +397,9 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
         // Validate the username and password we have received
         principal = super.authenticate(username, password);
 
-        log.debug("login " + username + " " + principal);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("login " + username + " " + principal);
+        }
 
         // Report results based on success or failure
         if (principal != null) {
