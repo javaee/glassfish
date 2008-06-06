@@ -95,11 +95,12 @@ public final class AMXStartupService
         if ( mMBeanServer == null ) throw new Error( "AMXStartup: null MBeanServer" );
         if ( mPendingConfigBeans == null ) throw new Error( "AMXStartup: null mPendingConfigBeans" );
         
+        /*
         try
         {
             // StandardMBean is required because interface and class are in different packages
-            final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class, false);
-            mMBeanServer.registerMBean( mbean, getObjectName() );
+           final StandardMBean mbean = new StandardMBean(this, AMXStartupServiceMBean.class, false);
+           mMBeanServer.registerMBean( mbean, getObjectName() );
         }
         catch( JMException e )
         {
@@ -108,6 +109,7 @@ public final class AMXStartupService
         debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
         
         debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms " );
+        */
     }
 
     public void preDestroy() {
