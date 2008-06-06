@@ -39,12 +39,12 @@ import javax.management.remote.JMXServiceURL;
 
 
 /**
-    Registers the AMXBooter MBean.
+    Registers the AMX Booter MBean.
 
     Public API is the name of the booter MBean: "amx-support:name=amx-booter" along with the
     methods found in AMXStartupServiceMBean, in particular bootAMX(),
  */
-public final class AMXBooter implements AMXBooterMBean
+public final class Booter implements BooterMBean
 {
     private final MBeanServer mMBeanServer;
     private final ObjectName  mObjectName;
@@ -55,10 +55,10 @@ public final class AMXBooter implements AMXBooterMBean
    
     private static void debug( final String s ) { System.out.println(s); }
     
-    /** ObjectName of the AMXBooter MBean */
+    /** ObjectName of the AMX Booter MBean */
     public static final ObjectName BOOTER_OBJECT_NAME = Util.newObjectName( "amx-support:name=booter" );
     
-    private AMXBooter( final MBeanServer mbeanServer)
+    private Booter( final MBeanServer mbeanServer)
     {
         mMBeanServer = mbeanServer;
         mObjectName = BOOTER_OBJECT_NAME;
@@ -73,10 +73,10 @@ public final class AMXBooter implements AMXBooterMBean
     /**
         Create an instance of the booter.
      */
-        public static synchronized AMXBooter
+        public static synchronized Booter
     create( final MBeanServer server )
     {
-        final AMXBooter  booter = new AMXBooter(server);
+        final Booter  booter = new Booter(server);
         final ObjectName objectName = BOOTER_OBJECT_NAME;
         
         try
@@ -106,7 +106,7 @@ public final class AMXBooter implements AMXBooterMBean
     {
         if ( mDomainRootObjectName == null )
         {
-            debug( "AMXBooter.bootAMX: assuming that amx-impl loads through other means" );
+            debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
         
             if ( ! mMBeanServer.isRegistered(STARTUP_OBJECT_NAME) )
             {
@@ -116,9 +116,9 @@ public final class AMXBooter implements AMXBooterMBean
             
             try
             {
-                debug( "AMXBooter.bootAMX: invoking startAMX() on " + STARTUP_OBJECT_NAME);
+                debug( "Booter.bootAMX: invoking startAMX() on " + STARTUP_OBJECT_NAME);
                 mDomainRootObjectName = (ObjectName)mMBeanServer.invoke( STARTUP_OBJECT_NAME, "startAMX", null, null);
-                debug( "AMXBooter.bootAMX: domainRoot = " + mDomainRootObjectName);
+                debug( "Booter.bootAMX: domainRoot = " + mDomainRootObjectName);
             }
             catch( final JMException e )
             {

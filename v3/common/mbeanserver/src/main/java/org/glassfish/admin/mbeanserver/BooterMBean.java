@@ -28,7 +28,7 @@ import javax.management.remote.JMXServiceURL;
 /**
     MBean responsible for booting the AMX system.
  */
-public interface AMXBooterMBean
+public interface BooterMBean
 {
     /**
         Start AMX and return the ObjectName of DomainRoot.

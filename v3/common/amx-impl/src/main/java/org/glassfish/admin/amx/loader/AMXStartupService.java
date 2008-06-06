@@ -43,7 +43,7 @@ import javax.management.remote.JMXServiceURL;
 import org.glassfish.admin.amx.config.AMXConfigLoader;
 import org.glassfish.admin.amx.util.ImplUtil;
 
-import org.glassfish.admin.mbeanserver.AMXBooter;
+import org.glassfish.admin.mbeanserver.Booter;
 import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 
 
@@ -82,7 +82,7 @@ public final class AMXStartupService
     
     private static ObjectName getObjectName()
     {
-        return AMXBooter.STARTUP_OBJECT_NAME;
+        return Booter.STARTUP_OBJECT_NAME;
     }
     
     public void postConstruct()
@@ -131,7 +131,7 @@ public final class AMXStartupService
     {
         try
         {
-            return (JMXServiceURL[])mMBeanServer.getAttribute( AMXBooter.BOOTER_OBJECT_NAME, "JMXServiceURLs" );
+            return (JMXServiceURL[])mMBeanServer.getAttribute( Booter.BOOTER_OBJECT_NAME, "JMXServiceURLs" );
         }
         catch ( final JMException e )
         {

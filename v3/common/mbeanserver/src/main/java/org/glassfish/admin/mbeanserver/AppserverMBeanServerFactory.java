@@ -56,7 +56,7 @@ public final class AppserverMBeanServerFactory implements Factory {
     private static void debug( final String s ) { System.out.println(s); }
     
     private final MBeanServer         mMBeanServer;
-    private final AMXBooter           mAMXBooter;
+    private final Booter              mAMXBooter;
     private final ConnectorsStarter   mConnectorsStarter;
     
     public AppserverMBeanServerFactory()
@@ -67,7 +67,7 @@ public final class AppserverMBeanServerFactory implements Factory {
         mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
         
         // register the MBean which exposes the bootAMX() call
-        mAMXBooter = AMXBooter.create( mMBeanServer );
+        mAMXBooter = Booter.create( mMBeanServer );
         
         // create the connectors.  Use a thread since this network stuff could take time
         mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
