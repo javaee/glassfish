@@ -56,7 +56,7 @@ public final class ImplUtil
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    public Logger getLogger() { return LogDomains.getLogger( LogDomains.AMX_LOGGER ); }
+    //public Logger getLogger() { return LogDomains.getLogger( LogDomains.AMX_LOGGER ); }
     
     /**
         Unload this AMX MBean and all its children.
