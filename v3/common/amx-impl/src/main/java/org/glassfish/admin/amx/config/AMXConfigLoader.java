@@ -66,8 +66,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import org.glassfish.admin.amx.util.ImplUtil;
+import org.glassfish.admin.mbeanserver.PendingConfigBeans;
+import org.glassfish.admin.mbeanserver.PendingConfigBeanJob;
 
 /**
+    Responsible for loading AMXConfig MBeans
  * @author llc
  */
 public final class AMXConfigLoader extends MBeanImplBase
@@ -75,61 +79,23 @@ public final class AMXConfigLoader extends MBeanImplBase
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    private volatile MBeanServer mMBeanServer;
-    
-    private final LinkedBlockingQueue<Job> mPendingConfigBeans = new LinkedBlockingQueue<Job>();
-    
-    private AMXConfigLoaderThread mLoaderThread = null;
+    private final MBeanServer mMBeanServer;
+    private volatile AMXConfigLoaderThread mLoaderThread;
     
     private final Transactions  mTransactions = Transactions.get();
     private final Logger mLogger = AMXMBeanRootLogger.getInstance();
 
+    private final PendingConfigBeans    mPendingConfigBeans;
+    
         public
-    AMXConfigLoader()
+    AMXConfigLoader(
+        final MBeanServer mbeanServer,
+        final PendingConfigBeans pending )
     {
         if ( mTransactions == null ) throw new IllegalStateException();
         
-        mTransactions.addTransactionsListener( this );
-    }
- 
-    
-        private boolean
-    unregisterOneMBean( final ObjectName objectName )
-    {
-        boolean success = false;
-        try
-        {
-            debug( "unregisterOneMBean: " + objectName );
-            if ( mMBeanServer.isRegistered(objectName) )
-            {
-                mMBeanServer.unregisterMBean( objectName );
-            }
-        }
-        catch( Exception e )
-        {
-            debug( "unregisterOneMBean: " + objectName + " FAILED: " + ExceptionUtil.toString(e));
-        }
-        return success;
-    }
-    
-        private void
-    unregisterMBeans( final ObjectName objectName )
-    {
-        if ( objectName == null) throw new IllegalArgumentException();
-        
-        final AMX root = ProxyFactory.getInstance(mMBeanServer).getProxy( objectName );
-        
-        if ( root instanceof Container )
-        {
-            // unregister all Containees first
-            final Set<AMX>  all = ((Container)root).getContaineeSet();
-            for( final AMX amx : all )
-            {
-                unregisterMBeans( Util.getObjectName(amx) );
-            }
-        }
-        
-        unregisterOneMBean( objectName );
+        mPendingConfigBeans = pending;
+        mMBeanServer = mbeanServer;
     }
     
         private void
@@ -137,7 +103,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         if ( cb.getObjectName() != null)
         {
-            unregisterMBeans( cb.getObjectName() );
+            ImplUtil.unregisterAMXMBeans( mMBeanServer, cb.getObjectName() );
         }
         else
         {
@@ -277,7 +243,6 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         sortAndDispatch( changes, System.currentTimeMillis() );
     }
     
-    /*
     @Override
 		protected void
 	postRegisterHook( Boolean registrationDone )
@@ -289,7 +254,6 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             mTransactions.addTransactionsListener( this );
 		}
 	}
-    */
     
         public void
     handleNotification( final Notification notif, final Object handback)
@@ -334,16 +298,12 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
     {
         if ( cb.getObjectName() == null)
         {
-            final CountDownLatch  latch = waitDone ? new CountDownLatch(1) : null;
-            final Job job = new Job( cb, latch);
-            
-            mPendingConfigBeans.add( job );
-            
-            if ( latch != null )
+            final PendingConfigBeanJob job = mPendingConfigBeans.add( cb, waitDone);
+            if ( waitDone )
             {
                 try
                 {
-                    latch.await();
+                    job.await();
                 }
                 catch( InterruptedException e )
                 {
@@ -437,12 +397,10 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         Enable registration of MBeans, queued until now.
      */
         public synchronized void
-    start( final MBeanServer server )
+    start()
     {
         if ( mLoaderThread == null )
         {
-            mMBeanServer    = server;
-            
             mLoaderThread   = new AMXConfigLoaderThread( mPendingConfigBeans );
             mLoaderThread.setDaemon(true);
             mLoaderThread.start();
@@ -451,7 +409,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             final ObjectName objectName = JMXUtil.newObjectName( "amx-support", "name=amx-config-loader" );
             try
             {
-                server.registerMBean( this, objectName );
+                mMBeanServer.registerMBean( this, objectName );
             }
             catch( Exception e )
             {
@@ -468,21 +426,21 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
     
     private final class AMXConfigLoaderThread extends Thread
     {
-        private final LinkedBlockingQueue<Job> mQueue;
+        private final PendingConfigBeans mPending;
         volatile boolean    mQuit = false;
         
-        AMXConfigLoaderThread( final LinkedBlockingQueue<Job> queue )
+        AMXConfigLoaderThread( final PendingConfigBeans pending )
         {
             super( "AMXConfigLoader.AMXConfigLoaderThread" );
-            mQueue = queue;
+            mPending = pending;
         }
         
         void quit() { mQuit = true; }
         
             private ObjectName
-        registerOne( final Job job )
+        registerOne( final PendingConfigBeanJob job )
         {
-            final ConfigBean cb = job.mConfigBean;
+            final ConfigBean cb = job.getConfigBean();
             
             ObjectName objectName = cb.getObjectName();
             try 
@@ -527,15 +485,15 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
                Note when we initially empty the queue; this signifies that
                AMX is "ready" for callers that just started it.
              */
-            Job job = mQueue.take();  // block until first item is ready
+            PendingConfigBeanJob job = mPending.take();  // block until first item is ready
             while ( (! mQuit) && job != null )
             {
                 final ObjectName objectName = registerOne(job);
                 //debug( "REGISTERED: " + objectName );
-                job = mQueue.peek();  // don't block, loop exits when queue is first emptied
+                job = mPending.peek();  // don't block, loop exits when queue is first emptied
                 if ( job != null )
                 {
-                    job = mQueue.take();
+                    job = mPending.take();
                 }
             }
             
@@ -544,7 +502,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             // ongoing processing once initial queue has been emptied: blocking behavior
             while ( ! mQuit )
             {
-                job = mQueue.take();
+                job = mPending.take();
                 registerOne(job);
             }
         }
@@ -559,7 +517,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
     {
         ObjectName objectName = null;
         
-        debug( "registerConfigBeanAsMBean: " + cb.getProxyType().getName()  );
+        //debug( "registerConfigBeanAsMBean: " + cb.getProxyType().getName()  );
     
         final AMXConfigInfo info = getAMXConfigInfo(cb);
         final boolean isVoid = info != null && info.amxInterfaceName().equals(AMXConfigVoid.class.getName());
@@ -615,7 +573,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
     {
         final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
         
-        debug( "_registerConfigBeanAsMBean: " + cb.getProxyType().getName() );
+        //debug( "_registerConfigBeanAsMBean: " + cb.getProxyType().getName() );
         
         ObjectName objectName = cb.getObjectName();
         if ( objectName != null )

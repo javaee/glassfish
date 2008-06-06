@@ -33,6 +33,8 @@ import org.jvnet.hk2.annotations.Inject;
 
 import javax.management.MBeanServer;
 
+import com.sun.appserv.management.client.AMXBooter;
+
 /**
     Base class for AMX commands.
  */
@@ -71,7 +73,7 @@ abstract class AMXCommandBase implements AdminCommand {
         // presume success
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
         
-        AMXStartupService.invokeStartAMX(getMBeanServer());
+        AMXBooter.bootAMX( mMBeanServer );
     }
     
     protected abstract void _execute(final AdminCommandContext context);

@@ -53,12 +53,16 @@ import javax.management.JMException;
 @Service
 @FactoryFor(MBeanServer.class)
 public final class AppserverMBeanServerFactory implements Factory {
+    private static void debug( final String s ) { System.out.println(s); }
+    
     private final MBeanServer         mMBeanServer;
     private final AMXBooter           mAMXBooter;
     private final ConnectorsStarter   mConnectorsStarter;
     
     public AppserverMBeanServerFactory()
     {
+        //debug( "AppserverMBeanServerFactory.AppserverMBeanServerFactory" );
+        
         // initialize eagerly; ~20ms
         mMBeanServer = java.lang.management.ManagementFactory.getPlatformMBeanServer();
         

@@ -33,84 +33,93 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.client;
+package org.glassfish.admin.amx.util;
 
 import java.util.Set;
-import java.io.IOException;
-
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
-/**
-	AMX must be "booted" before use.
- */
-public final class AMXBooter
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
+
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.client.ProxyFactory;
+
+public final class ImplUtil 
 {
-    private AMXBooter() {}
-    
-    public static final ObjectName AMX_BOOTER_OBJECT_NAME = JMXUtil.newObjectName("amx-support:name=booter");
-    public static final String BOOT_AMX_OPERATION_NAME = "bootAMX";
-    
+    private static void debug( final String s ) { System.out.println(s); }
     
     /**
-        Ensure that AMX is loaded and ready to go.  Can be called more than once.
-        @param conn connection to the MBeanServer
-        @return the ObjectName of {@link DomainRoot}
+        Unload this AMX MBean and all its children.
+        MBean should be unloaded at the leafs first, working back to DomainRoot so as to
+        not violate the rule that a Container must always be present for a Containee.
      */
-    public static ObjectName bootAMX( final MBeanServerConnection conn)
+        public static void
+    unregisterAMXMBeans( final AMX top )
     {
-        ObjectName domainRootObjectName = findDomainRoot(conn);
+        if ( top == null) throw new IllegalArgumentException();
         
-        if ( domainRootObjectName == null )
-        { 
-            try
+        final MBeanServer mbeanServer = (MBeanServer)
+            Util.getExtra(top).getConnectionSource().getExistingMBeanServerConnection();
+        
+        if ( top instanceof Container )
+        {
+            // unregister all Containees first
+            final Set<AMX>  all = ((Container)top).getContaineeSet();
+            for( final AMX amx : all )
             {
-                domainRootObjectName = (ObjectName)conn.invoke( AMX_BOOTER_OBJECT_NAME, BOOT_AMX_OPERATION_NAME, null, null );
-            }
-            catch( final Exception e )
-            {
-                throw new RuntimeException(e);
+                unregisterAMXMBeans( amx );
             }
         }
-        return domainRootObjectName;
+        
+        unregisterOneMBean( mbeanServer, Util.getObjectName(top) );
+    }
+    
+    /** see javadoc for unregisterAMXMBeans(AMX) */
+        public static void
+    unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
+    {
+        unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName) );
     }
     
     /**
-        @return the ObjectName of DomainRoot if it exists, otherwise null
+        Unregister a single MBean, returning true if it was unregistered, false otherwise.
      */
-        public static ObjectName
-	findDomainRoot( final MBeanServerConnection conn )
-	{
-        ObjectName objectName = null;
-		final ObjectName pattern = JMXUtil.newObjectName( AMX.JMX_DOMAIN + ":" + AMX.J2EE_TYPE_KEY + "=" + XTypes.DOMAIN_ROOT + ",*");
-		
+        public static boolean
+    unregisterOneMBean( final MBeanServer mbeanServer, final ObjectName objectName )
+    {
+        boolean success = false;
         try
         {
-            final Set<ObjectName>	objectNames	= JMXUtil.queryNames( conn, pattern, null );
-            if ( objectNames.size() > 1 )
+            debug( "unregisterOneMBean: " + objectName );
+            if ( mbeanServer.isRegistered(objectName) )
             {
-                throw new IllegalStateException( "Found more than one DomainRoot using " + pattern);
-            }
-            else if ( objectNames.size() ==  1 )
-            {
-                objectName	= GSetUtil.getSingleton( objectNames );
+                mbeanServer.unregisterMBean( objectName );
             }
         }
-        catch ( final IOException e )
+        catch( JMException e )
         {
-            throw new RuntimeException(e);
+            debug( "unregisterOneMBean: " + objectName + " FAILED: " + ExceptionUtil.toString(e));
         }
-		
-		return( objectName );
-	}	
+        return success;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

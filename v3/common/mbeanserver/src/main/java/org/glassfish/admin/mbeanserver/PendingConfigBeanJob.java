@@ -34,71 +34,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.mbeanserver;
 
-package org.glassfish.admin.amx.config;
-
-
-import org.glassfish.admin.amx.util.SingletonEnforcer;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.CageBuilder;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigBean;
+import java.util.concurrent.CountDownLatch;
 
-
-/**
-    Called when ConfigBeans come into the habitat.  They are passed along
-    to the AMXConfigLoader, which might queue them (if AMX has not been requested)
-    or might register them as MBeans (if AMX has been requested already).
-    
- * @author llc
- */
-@Service(name="AMXConfigRegistrar")
-public final class AMXConfigRegistrar implements CageBuilder, PostConstruct
+public final class PendingConfigBeanJob
 {
-    private static void debug( final String s ) { System.out.println(s); }
-    private final AMXConfigLoader  mConfigLoader;
+    private final ConfigBean mConfigBean;
+    private final CountDownLatch mLatch;
     
-    /**
-        Singleton: there should be only one instance and hence a private constructor.
-        But the framework using this wants to instantiate things with a public constructor.
-     */
-    public AMXConfigRegistrar()
+    public PendingConfigBeanJob( final ConfigBean cb, final CountDownLatch latch )
     {
-        mConfigLoader = new AMXConfigLoader();
-        SingletonEnforcer.register( mConfigLoader.getClass(), mConfigLoader );
-    }
-    
-    public void postConstruct()
-    {
-        SingletonEnforcer.register( this.getClass(), mConfigLoader );
-    }
-    
-    /**
-        @return a ConfigBean, or null if it's not a ConfigBean
-     */
-    @SuppressWarnings("unchecked")
-    final ConfigBean asConfigBean( final Object o )
-    {
-        return (o instanceof ConfigBean) ? (ConfigBean)o : null;
-    }
-    
-    public void onEntered(Inhabitant<?> inhabitant)
-    {
-        final ConfigBean cb = asConfigBean(inhabitant);
-        if ( cb != null )
-        {
-            //final ConfigBean parent = asConfigBean(cb.parent());
-        //debug( "AMXConfigRegistrar.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
+        if ( cb == null ) throw new IllegalArgumentException();
         
-            mConfigLoader.handleConfigBean( cb, false );
+        mConfigBean = cb;
+        mLatch      = latch;
+    }
+    
+    public PendingConfigBeanJob( final ConfigBean cb, final boolean latch )
+    {
+        this( cb, latch ? new CountDownLatch(1) : null );
+    }
+    
+    public PendingConfigBeanJob( final ConfigBean cb )
+    {
+        this(cb,null);
+    }
+    
+    public ConfigBean     getConfigBean() { return mConfigBean; }
+    public CountDownLatch getCountDownLatch() { return mLatch; }
+    
+    public void releaseLatch()
+    {
+        if ( mLatch != null )
+        {
+            mLatch.countDown();
         }
     }
     
-        public AMXConfigLoader
-    getAMXConfigLoader()
+    public void await() throws InterruptedException
     {
-        return mConfigLoader;
+        if ( mLatch != null )
+        {
+            mLatch.await();
+        }
     }
 }
 

@@ -69,18 +69,18 @@ public class StringifierRegistryImpl implements StringifierRegistry
 		@param registry	the registry to use if this registry fails to find a Stringifier
 	 */
 		public
-	StringifierRegistryImpl( StringifierRegistry registry )
+	StringifierRegistryImpl( final StringifierRegistry registry )
 	{
 		mLookup			= new HashMap<Class<?>,Stringifier>();
 		mNextRegistry	= registry;
 	}
 	
 		public void
-	add( Class theClass, Stringifier stringifier )
+	add( final Class<?> theClass, final Stringifier stringifier )
 	{
 		if ( lookup( theClass ) != null )
 		{
-			new Exception().printStackTrace();
+			throw new IllegalArgumentException( "Stringifier already registered for: " + theClass.getName() );
 		}
 		
 		mLookup.remove( theClass );
@@ -89,7 +89,7 @@ public class StringifierRegistryImpl implements StringifierRegistry
 	
 	
 		public Stringifier
-	lookup( Class theClass )
+	lookup( final Class<?> theClass )
 	{
 		Stringifier		stringifier	= mLookup.get( theClass );
 		

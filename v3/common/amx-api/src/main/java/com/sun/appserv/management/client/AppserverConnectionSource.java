@@ -479,8 +479,10 @@ public final class AppserverConnectionSource
 		if ( forceNew || mJMXConnector == null )
 		{
 			mJMXConnector	= createNew();
-			final MBeanServerConnection conn = getMBeanServerConnection( false );	// make sure it works...
-            AMXBooter.bootAMX(conn, true);
+			final MBeanServerConnection conn = getMBeanServerConnection( false );
+            
+            // ensure that AMX is loaded and ready to use
+            AMXBooter.bootAMX(conn);
 		}
 		
 		return( mJMXConnector );

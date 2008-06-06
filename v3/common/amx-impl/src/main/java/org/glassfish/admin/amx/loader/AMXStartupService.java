@@ -27,7 +27,6 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
-import org.glassfish.admin.amx.config.AMXConfigRegistrar;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 import org.glassfish.api.Async;
@@ -41,7 +40,12 @@ import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
+import org.glassfish.admin.amx.config.AMXConfigLoader;
+import org.glassfish.admin.amx.util.ImplUtil;
+
 import org.glassfish.admin.mbeanserver.AMXBooter;
+import org.glassfish.admin.mbeanserver.PendingConfigBeans;
+
 
 /**
     Startup service that waits for AMX to be pinged to load.  At startup, it registers
@@ -66,7 +70,11 @@ public final class AMXStartupService
     private MBeanServer mMBeanServer;
     
     @Inject
-    private AMXConfigRegistrar mConfigRegistrar;
+    private volatile PendingConfigBeans mPendingConfigBeans;
+    
+    private volatile ObjectName      mAMXLoaderObjectName;
+    private volatile J2EELoader      mJ2EELoader;
+    private volatile AMXConfigLoader mConfigLoader;
     
     public AMXStartupService()
     {
@@ -79,10 +87,13 @@ public final class AMXStartupService
     
     public void postConstruct()
     {
-        SingletonEnforcer.register( this.getClass(), this );
+        //debug( "AMXStartupService.postConstruct()" );
         final TimingDelta delta = new TimingDelta();
+        
+        SingletonEnforcer.register( this.getClass(), this );
+        
         if ( mMBeanServer == null ) throw new Error( "AMXStartup: null MBeanServer" );
-        if ( mConfigRegistrar == null ) throw new Error( "AMXStartup: null AMXConfigRegistrar" );
+        if ( mPendingConfigBeans == null ) throw new Error( "AMXStartup: null mPendingConfigBeans" );
         
         try
         {
@@ -92,17 +103,14 @@ public final class AMXStartupService
         {
             throw new Error(e);
         }
+        //debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
         
-        StartAMX.init(mMBeanServer, mConfigRegistrar);
-        
-        // nothing to talk to if the connectors aren't started!
-        //StartAMX.getInstance().startConnectors();
-        
-        //debug( "Initialized (async) AMX Startup service in " + delta.elapsedMillis() + " ms " );
+        //debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms " );
     }
 
     public void preDestroy() {
-        StartAMX.stopAMX();
+        debug( "AMXStartupService.preDestroy()" );
+        stopAMX();
     }
 
     public synchronized ObjectName
@@ -111,7 +119,7 @@ public final class AMXStartupService
         try
         { 
             // might not be ready yet
-            return Util.getExtra(ProxyFactory.getInstance( mMBeanServer ).getDomainRoot()).getObjectName();
+            return Util.getObjectName( getDomainRoot() );
         }
         catch( Exception e )
         {
@@ -130,7 +138,10 @@ public final class AMXStartupService
             throw new RuntimeException(e);
         }
     }
-    
+
+    /**
+        Return a proxy to the AMXStartupService.
+     */
         public static AMXStartupServiceMBean
     getAMXStartupServiceMBean( final MBeanServer mbs )
     {
@@ -144,28 +155,53 @@ public final class AMXStartupService
         return ss;
     }
     
-         public static ObjectName
-    invokeStartAMX(final MBeanServer mbs )
+        DomainRoot
+    getDomainRoot()
     {
-        return getAMXStartupServiceMBean(mbs).startAMX();
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
     }
     
         public synchronized ObjectName
     startAMX()
     {
-        final TimingDelta delta = new TimingDelta();
+        if ( getDomainRootObjectName() == null )
+        {
+            final TimingDelta delta = new TimingDelta();
 
-        StartAMX.getInstance().startAMX();
-        
-        final DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
-        domainRoot.waitAMXReady();
-        
-        debug( "AMXStartupService: Loaded AMX MBeans in " + delta.elapsedMillis() + " ms " );
+            // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
+            mAMXLoaderObjectName = LoadAMX.loadAMX( mMBeanServer );
+            
+            // do this before loading any ConfigBeans so that it will auto-sync
+            mJ2EELoader = new J2EELoader(mMBeanServer);
+            mJ2EELoader.start();
+            
+            // load config MBeans
+            mConfigLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans);
+            mConfigLoader.start();
+            
+            getDomainRoot().waitAMXReady();
+            
+            debug( "AMXStartupService: Loaded AMX MBeans in " + delta.elapsedMillis() + " ms " );
+        }
         return getDomainRootObjectName();
     }
     
+    public synchronized void stopAMX()
+    {
+        if ( getDomainRoot() != null )
+        {
+            ImplUtil.unregisterAMXMBeans( getDomainRoot() );
+        }
+    }
+
     public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
+
+
+
+
+
+
 
 
 

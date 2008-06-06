@@ -56,7 +56,7 @@ public interface StringifierRegistry
 		@param stringifier	the Stringifier for the class
 	 */
 		public void
-	add( Class theClass, Stringifier stringifier );
+	add( Class<?> theClass, Stringifier stringifier );
 	
 	
 	/**
@@ -66,7 +66,7 @@ public interface StringifierRegistry
 		@return the Stringifier, or null if not found
 	 */
 		public Stringifier
-	lookup( Class theClass );
+	lookup( Class<?> theClass );
 }
 
 

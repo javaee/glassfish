@@ -44,7 +44,7 @@ import javax.management.remote.JMXServiceURL;
     Public API is the name of the booter MBean: "amx-support:name=amx-booter" along with the
     methods found in AMXStartupServiceMBean, in particular bootAMX(),
  */
-public final class AMXBooter implements  AMXBooterMBean
+public final class AMXBooter implements AMXBooterMBean
 {
     private final MBeanServer mMBeanServer;
     private final ObjectName  mObjectName;
@@ -104,17 +104,21 @@ public final class AMXBooter implements  AMXBooterMBean
      */
     public synchronized ObjectName bootAMX()
     {
-        debug( "AMXBooter.bootAMX: assuming that amx-impl loads through other means" );
         if ( mDomainRootObjectName == null )
         {
+            debug( "AMXBooter.bootAMX: assuming that amx-impl loads through other means" );
+        
             if ( ! mMBeanServer.isRegistered(STARTUP_OBJECT_NAME) )
             {
-                throw new IllegalStateException( "AMX MBean not yet available: STARTUP_OBJECT_NAME" );
+                debug( "AMX MBean not yet available: " + STARTUP_OBJECT_NAME );
+                throw new IllegalStateException( "AMX MBean not yet available: " + STARTUP_OBJECT_NAME );
             }
             
             try
             {
+                debug( "AMXBooter.bootAMX: invoking startAMX() on " + STARTUP_OBJECT_NAME);
                 mDomainRootObjectName = (ObjectName)mMBeanServer.invoke( STARTUP_OBJECT_NAME, "startAMX", null, null);
+                debug( "AMXBooter.bootAMX: domainRoot = " + mDomainRootObjectName);
             }
             catch( final JMException e )
             {

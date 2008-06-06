@@ -122,8 +122,12 @@ public final class ProxyFactory implements NotificationListener
 			
 			mMBeanServerID		= JMXUtil.getMBeanServerID( conn );
 				
-			mDomainRoot	          = AMXBooter.bootAMX(conn, true);
-			mDomainRootObjectName = Util.getObjectName(mDomainRoot);
+			mDomainRootObjectName = AMXBooter.findDomainRoot(conn);
+            if ( mDomainRootObjectName == null )
+            {
+                throw new IllegalStateException( "ProxyFactory: AMX has not been started" );
+            }
+            mDomainRoot           = getProxy(mDomainRootObjectName, DomainRoot.class, true);
 			
 			// we should always be able to listen to MBeans--
 			// but the http connector does not support listeners
