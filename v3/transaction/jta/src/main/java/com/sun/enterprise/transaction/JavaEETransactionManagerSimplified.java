@@ -58,6 +58,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -73,6 +74,7 @@ import org.glassfish.api.invocation.ResourceHandler;
  * @author Marina Vatkina
  */
 @Service
+@ContractProvided(TransactionManager.class)
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager {
 
@@ -81,6 +83,8 @@ public class JavaEETransactionManagerSimplified
     @Inject protected TransactedPoolManager poolmgr;
 
     @Inject protected InvocationManager invMgr;
+
+    // XXX @Inject private ServerContext sCtx;
 
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransactionManagerSimplified.class);
@@ -109,6 +113,8 @@ public class JavaEETransactionManagerSimplified
     protected int m_transInFlight = 0;
 
     private Cache resourceTable;
+
+    private  Timer _timer = new Timer("transaction-manager", true);
 
     private static java.util.concurrent.locks.ReentrantReadWriteLock freezeLock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
@@ -169,7 +175,6 @@ public class JavaEETransactionManagerSimplified
         // END IASRI 4705808 TTT001
 
 /** XXX 
-        ServerContext sCtx = ApplicationServer.getServerContext();
         // running on the server side
         if (sCtx != null) {
             ConfigContext ctx = sCtx.getConfigContext();
@@ -192,6 +197,7 @@ public class JavaEETransactionManagerSimplified
             } catch (NumberFormatException ex) {
             }
         }
+*** XXX **/
         // ENF OF BUG 4665539
                 if (_logger.isLoggable(Level.FINE))
                 _logger.log(Level.FINE,"TM: Tx Timeout = " + transactionTimeout);
@@ -206,7 +212,6 @@ public class JavaEETransactionManagerSimplified
         } catch (Exception ex) {
             // ignore
         }
-*** XXX **/
     }
 
     public void clearThreadTx() {
@@ -340,11 +345,8 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    void startJTSTx(JavaEETransaction tx)
+    void startJTSTx(JavaEETransactionImpl tx)
             throws RollbackException, IllegalStateException, SystemException {
-
-        throw new UnsupportedOperationException("startJTSTx");
-/**
         try {
             if (tx.isAssociatedTimeout()) {
                 // calculate the timeout for the transaction, this is required as the local tx 
@@ -352,25 +354,24 @@ public class JavaEETransactionManagerSimplified
                 int timeout = tx.cancelTimerTask();
                 int newtimeout = (int) ((System.currentTimeMillis() - tx.getStartTime()) / 1000);
                 newtimeout = (timeout -   newtimeout);
-                super.begin(newtimeout);
+                begin(newtimeout);
             } else {
-                super.begin();
+                begin();
             }
-            // START IASRI 4662745
+            
             // The local Transaction was promoted to global Transaction
             if (tx!=null && monitoringEnabled){
                 if(activeTransactions.remove(tx)){
                     m_transInFlight--;
                 }
             }
-            // END IASRI 4662745
+            
         } catch ( NotSupportedException ex ) {
             throw new RuntimeException(sm.getString("enterprise_distributedtx.lazy_transaction_notstarted"),ex);
         }
         Transaction jtsTx = getTransaction();
         tx.setJTSTx(jtsTx);
         jtsTx.registerSynchronization(new JTSSynchronization(jtsTx, this));
-**/
     }
 
     public List getResourceList(Object instance, ComponentInvocation inv) {
@@ -1146,6 +1147,42 @@ public class JavaEETransactionManagerSimplified
             m_transRolledback++;
         }
         m_transInFlight--;
+    }
+
+    // Mods: Adding method for statistic dumps using TimerTask
+    private void registerStatisticMonitorTask() {
+        TimerTask task = new StatisticMonitorTask();
+        // for now, get monitoring interval from system prop
+        int statInterval = 2 * 60 * 1000;
+        try {
+            String interval
+                = System.getProperty("MONITOR_JTA_RESOURCE_TABLE_SECONDS");
+            int temp = Integer.parseInt(interval);
+            if (temp > 0) {
+                statInterval = temp;
+            }
+        } catch (Exception ex) {
+            // ignore
+        }
+
+        _timer.scheduleAtFixedRate(task, 0, statInterval);
+    }
+
+    // Mods: Adding TimerTask class for statistic dumps
+    class StatisticMonitorTask extends TimerTask {
+        public void run() {
+            if (resourceTable != null) {
+                Map stats = resourceTable.getStats();
+                Iterator it = stats.keySet().iterator();
+                String key;
+                _logger.log(Level.INFO, 
+                        "********** J2EETransactionManager resourceTable stats *****");
+                while (it.hasNext()) {
+                    key = (String)it.next();
+                    _logger.log(Level.INFO, key + ": " + stats.get(key).toString());
+                }
+            }
+        }
     }
 
 /****************************************************************************/

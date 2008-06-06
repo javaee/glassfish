@@ -74,7 +74,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransactionImpl.class);
 
-    static JavaEETransactionManager /** XXX ??? Opt **/ javaEETM; 
+    static JavaEETransactionManager javaEETM; 
 
     // Local Tx ids are just numbers: they dont need to be unique across
     // processes or across multiple activations of this server process.
@@ -340,11 +340,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
             for ( int i=0; i<syncs.size(); i++ )
                 jtsTx.registerSynchronization((Synchronization)syncs.elementAt(i));
 
-/** XXX ???
+/** XXX TransactionImpl XXX
             for ( int i=0; i<interposedSyncs.size(); i++ )
                 ((TransactionImpl)jtsTx).registerInterposedSynchronization(
                         (Synchronization)interposedSyncs.elementAt(i));
-** XXX **/
+** XXX TransactionImpl XXX **/
         }
     }
 
@@ -455,21 +455,21 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     if ( nonXAResource != null )
                         nonXAResource.getXAResource().commit(xid, true);
 
-                    // XXX should this be STATUS_NO_TRANSACTION ?
+                    // V2-XXX should this be STATUS_NO_TRANSACTION ?
                     localTxStatus = Status.STATUS_COMMITTED;
                 }
 
             } catch ( RollbackException ex ) {
-                localTxStatus = Status.STATUS_ROLLEDBACK; // XXX is this correct ?
+                localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
                 throw ex;
 
             } catch ( SystemException ex ) {
-                // localTxStatus = Status.STATUS_ROLLEDBACK; // XXX is this correct ?
+                // localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
                 localTxStatus = Status.STATUS_COMMITTING;
                 throw ex;
 
             } catch ( Exception ex ) {
-                localTxStatus = Status.STATUS_ROLLEDBACK; // XXX is this correct ?
+                localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
                 SystemException exc = new SystemException();
                 exc.initCause(ex);
                 throw exc;
@@ -517,12 +517,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 if ( nonXAResource != null )
                     nonXAResource.getXAResource().rollback(xid);
 
-                // XXX should this be STATUS_NO_TRANSACTION ?
+                // V2-XXX should this be STATUS_NO_TRANSACTION ?
                 localTxStatus = Status.STATUS_ROLLEDBACK;
             }
 
         } catch ( Exception ex ) {
-            localTxStatus = Status.STATUS_ROLLEDBACK; // XXX is this correct ?
+            localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
         } finally {
             ((JavaEETransactionManagerSimplified) javaEETM).clearThreadTx();
             if ( jtsTx == null ) {
@@ -576,7 +576,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
             throw new IllegalStateException(sm.getString("enterprise_distributedtx.already_has_nonxa"));
         // IASRI END 4723068
         /***
-        else  // XXX what to do ? Start a new JTS tx ?
+        else  // V2-XXX what to do ? Start a new JTS tx ?
             throw new IllegalStateException("JavaEETransactionImpl.enlistResource called for local tx");
         ***/
         else  { //  Start a new JTS tx
@@ -694,7 +694,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         }
     
         public byte[] getBranchQualifier() {
-            return bqual; // XXX check if its ok to always have same bqual
+            return bqual; // V2-XXX check if its ok to always have same bqual
         }
     
         // START IASRI 4662745
