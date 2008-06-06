@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.*;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.Servlet;
@@ -71,15 +72,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.sun.grizzly.util.buf.MessageBytes;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.connector.ClientAbortException;
@@ -98,7 +96,8 @@ import org.apache.catalina.valves.ValveBase;
 final class StandardWrapperValve
     extends ValveBase {
 
-    private static Log log = LogFactory.getLog(StandardWrapperValve.class);
+    private static Logger log = Logger.getLogger(
+        StandardWrapperValve.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -434,7 +433,7 @@ final class StandardWrapperValve
      */
     private void log(String message) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)
@@ -459,7 +458,7 @@ final class StandardWrapperValve
      */
     private void log(String message, Throwable throwable) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)

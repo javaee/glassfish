@@ -75,6 +75,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.*;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
@@ -131,8 +132,8 @@ public final class ApplicationContextFacade
     private HashMap objectCache;
     
     
-    private static org.apache.commons.logging.Log sysLog=
-        org.apache.commons.logging.LogFactory.getLog( ApplicationContextFacade.class );
+    private static Logger sysLog = Logger.getLogger(
+        ApplicationContextFacade.class.getName());
 
         
     // ----------------------------------------------------------- Constructors
@@ -609,8 +610,9 @@ public final class ApplicationContextFacade
 
         Throwable realException;
 
-        if (sysLog.isDebugEnabled()) {   
-            sysLog.debug("ApplicationContextFacade." + methodName, ex);
+        if (sysLog.isLoggable(Level.FINE)) {   
+            sysLog.log(Level.FINE, "ApplicationContextFacade." + methodName,
+                       ex);
         }
 
 	if (ex instanceof PrivilegedActionException) {

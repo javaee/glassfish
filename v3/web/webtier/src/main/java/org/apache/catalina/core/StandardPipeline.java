@@ -59,6 +59,7 @@ package org.apache.catalina.core;
 
 
 import java.io.IOException;
+import java.util.logging.*;
 
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
@@ -70,7 +71,6 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -78,8 +78,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
 import org.apache.commons.modeler.Registry;
@@ -105,7 +103,9 @@ public class StandardPipeline
     // implements Pipeline, Contained, Lifecycle, ValveContext {
     implements Pipeline, Contained, Lifecycle {
     // END OF IASRI 4665318
-    private static Log log = LogFactory.getLog(StandardPipeline.class);
+
+    private static Logger log = Logger.getLogger(
+        StandardPipeline.class.getName());
    
 
     // ----------------------------------------------------------- Constructors
@@ -449,7 +449,8 @@ public class StandardPipeline
                 try {
                     ((Lifecycle) oldBasic).stop();
                 } catch (LifecycleException e) {
-                    log.error("StandardPipeline.setBasic: stop", e);
+                    log.log(Level.SEVERE, "StandardPipeline.setBasic: stop",
+                            e);
                 }
             }
             if (oldBasic instanceof Contained) {
@@ -477,7 +478,7 @@ public class StandardPipeline
             try {
                 ((Lifecycle) valve).start();
             } catch (LifecycleException e) {
-                log.error("StandardPipeline.setBasic: start", e);
+                log.log(Level.SEVERE, "StandardPipeline.setBasic: start", e);
                 return;
             }
         }
@@ -517,7 +518,8 @@ public class StandardPipeline
                 try {
                     ((Lifecycle) valve).start();
                 } catch (LifecycleException e) {
-                    log.error("StandardPipeline.addValve: start: ", e);
+                    log.log(Level.SEVERE,
+                            "StandardPipeline.addValve: start: ", e);
                 }
             }
             /** CR 6411114 (MBean registration moved to ValveBase.start())
@@ -719,7 +721,8 @@ public class StandardPipeline
                 try {
                     ((Lifecycle) valve).stop();
                 } catch (LifecycleException e) {
-                    log.error("StandardPipeline.removeValve: stop: ", e);
+                    log.log(Level.SEVERE,
+                            "StandardPipeline.removeValve: stop: ", e);
                 }
             }
             /** CR 6411114 (MBean deregistration moved to ValveBase.stop())
@@ -741,7 +744,7 @@ public class StandardPipeline
      */
     protected void log(String message) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)
@@ -762,7 +765,7 @@ public class StandardPipeline
      */
     protected void log(String message, Throwable throwable) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)

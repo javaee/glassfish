@@ -57,7 +57,9 @@
 
 package org.apache.catalina.core;
 
-
+import java.io.File;
+import java.util.List;
+import java.util.logging.*;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -71,12 +73,8 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Service;
 import org.apache.catalina.realm.JAASRealm;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.modeler.Registry;
 import org.apache.commons.modeler.modules.MbeansSource;
-import java.io.File;
-import java.util.List;
 
 /**
  * Standard implementation of the <b>Engine</b> interface.  Each
@@ -91,7 +89,8 @@ public class StandardEngine
     extends ContainerBase
     implements Engine {
 
-    private static Log log = LogFactory.getLog(StandardEngine.class);
+    private static Logger log = Logger.getLogger(
+        StandardEngine.class.getName());
 
     // ----------------------------------------------------------- Constructors
 
@@ -404,12 +403,12 @@ public class StandardEngine
                 if (domain==null) {
                     domain=getName();
                 }
-                log.debug( "Register " + domain );
+                log.fine( "Register " + domain );
                 oname=new ObjectName(domain + ":type=Engine");
                 controller=oname;
                 Registry.getRegistry().registerComponent(this, oname, null);
-            } catch( Throwable t ) {
-                log.info("Error registering ", t );
+            } catch (Throwable t) {
+                log.log(Level.INFO, "Error registering ", t);
             }
         }
 
@@ -425,7 +424,7 @@ public class StandardEngine
             try {
                 Registry.getRegistry().invoke(mbeans, "init", false);
             } catch (Exception e) {
-                log.error("Error in init() for " + mbeansFile, e);
+                log.log(Level.SEVERE, "Error in init() for " + mbeansFile, e);
             }
         }
         
@@ -456,7 +455,7 @@ public class StandardEngine
                 service.setContainer( this );
                 service.initialize();
             } catch( Throwable t ) {
-                log.error(t);
+                log.log(Level.SEVERE, t.toString());
             }
         }
         // START CR 6368085
@@ -486,10 +485,11 @@ public class StandardEngine
             try {
                 Registry.getRegistry().invoke(mbeans, "destroy", false);
             } catch (Exception e) {
-                log.error(sm.getString(
-                              "standardEngine.unregister.mbeans.failed",
-                              mbeansFile),
-                          e);
+                log.log(Level.SEVERE,
+                        sm.getString(
+                            "standardEngine.unregister.mbeans.failed",
+                            mbeansFile),
+                        e);
             }
         }
         // 
@@ -499,10 +499,11 @@ public class StandardEngine
                     Registry.getRegistry().unregisterComponent((ObjectName)mbeans.get(i));
                 }
             } catch (Exception e) {
-                log.error(sm.getString(
-                              "standardEngine.unregister.mbeans.failed",
-                              mbeansFile),
-                          e);
+                log.log(Level.SEVERE,
+                        sm.getString(
+                            "standardEngine.unregister.mbeans.failed",
+                            mbeansFile),
+                        e);
             }
         }
         
@@ -532,8 +533,8 @@ public class StandardEngine
         log.info( "Starting Servlet Engine: " + ServerInfo.getServerInfo());
         */
         // START PWC 6296256
-        if (log.isDebugEnabled()) {
-            log.debug("Starting Servlet Engine");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Starting Servlet Engine");
         }
         // END PWC 6296256
 
@@ -541,7 +542,7 @@ public class StandardEngine
             try {
                 Registry.getRegistry().invoke(mbeans, "start", false);
             } catch (Exception e) {
-                log.error("Error in start() for " + mbeansFile, e);
+                log.log(Level.SEVERE, "Error in start() for " + mbeansFile, e);
             }
         }
 
@@ -556,7 +557,7 @@ public class StandardEngine
             try {
                 Registry.getRegistry().invoke(mbeans, "stop", false);
             } catch (Exception e) {
-                log.error("Error in stop() for " + mbeansFile, e);
+                log.log(Level.SEVERE, "Error in stop() for " + mbeansFile, e);
             }
         }
     }
@@ -604,8 +605,8 @@ public class StandardEngine
     public ObjectName createObjectName(String domain, ObjectName parent)
         throws Exception
     {
-        if( log.isDebugEnabled())
-            log.debug("Create ObjectName " + domain + " " + parent );
+        if (log.isLoggable(Level.FINE))
+            log.fine("Create ObjectName " + domain + " " + parent );
         return new ObjectName( domain + ":type=Engine");
     }
 
@@ -624,7 +625,7 @@ public class StandardEngine
             mbeans=mbeansMB.getMBeans();
             
         } catch( Throwable t ) {
-            log.error( "Error loading " + mbeansFile, t );
+            log.log(Level.SEVERE, "Error loading " + mbeansFile, t);
         }
         
     }

@@ -69,6 +69,8 @@ import java.io.BufferedInputStream;
 import javax.servlet.ServletOutputStream;
 // END SJSAS 6324911
 
+import java.util.logging.*;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -83,7 +85,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -100,8 +101,6 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Valve that implements the default basic behavior for the
@@ -119,7 +118,8 @@ final class StandardHostValve
     extends ValveBase {
 
 
-    private static Log log = LogFactory.getLog(StandardHostValve.class);
+    private static Logger log = Logger.getLogger(
+        StandardHostValve.class.getName());
 
     private static final ClassLoader standardHostValveClassLoader =
         StandardHostValve.class.getClassLoader();
@@ -290,10 +290,9 @@ final class StandardHostValve
 
         // If this is an aborted request from a client just log it and return
         if (realError instanceof ClientAbortException ) {
-            if (log.isDebugEnabled()) {
-                log.debug
-                    (sm.getString("standardHost.clientAbort",
-                                  realError.getCause().getMessage()));
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(sm.getString("standardHost.clientAbort",
+                                      realError.getCause().getMessage()));
             }
             return;
         }
@@ -570,7 +569,7 @@ final class StandardHostValve
      */
     protected void log(String message) {
 
-        Logger logger = container.getLogger();
+        org.apache.catalina.Logger logger = container.getLogger();
         if (logger != null)
             logger.log(this.toString() + ": " + message);
         else
@@ -587,7 +586,7 @@ final class StandardHostValve
      */
     protected void log(String message, Throwable throwable) {
 
-        Logger logger = container.getLogger();
+        org.apache.catalina.Logger logger = container.getLogger();
         if (logger != null)
             logger.log(this.toString() + ": " + message, throwable);
         else {

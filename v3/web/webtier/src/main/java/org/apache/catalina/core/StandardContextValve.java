@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -79,7 +80,6 @@ import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 // START GlassFish 1343
@@ -89,9 +89,6 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.apache.tomcat.util.log.SystemLogHandler;
 
@@ -127,7 +124,8 @@ final class StandardContextValve
         StringManager.getManager(Constants.Package);
 
 
-    private static Log log = LogFactory.getLog(StandardContextValve.class);
+    private static Logger log = Logger.getLogger(
+        StandardContextValve.class.getName());
 
 
     // ------------------------------------------------------------- Properties
@@ -374,7 +372,7 @@ final class StandardContextValve
      */
     private void log(String message) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)
@@ -399,7 +397,7 @@ final class StandardContextValve
      */
     private void log(String message, Throwable throwable) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (container != null)
             logger = container.getLogger();
         if (logger != null)

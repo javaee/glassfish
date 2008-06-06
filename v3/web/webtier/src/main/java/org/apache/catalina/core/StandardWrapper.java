@@ -64,6 +64,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
+import java.util.logging.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -113,8 +114,8 @@ public class StandardWrapper
     extends ContainerBase
     implements ServletConfig, Wrapper {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( StandardWrapper.class );
+    private static Logger log = Logger.getLogger(
+        StandardWrapper.class.getName());
 
     private static final String[] DEFAULT_SERVLET_METHODS = new String[] {
                                                     "GET", "HEAD", "POST" };
@@ -862,8 +863,8 @@ public class StandardWrapper
                 synchronized (this) {
                     if (instance == null) {
                         try {
-                            if (log.isTraceEnabled())
-                                log.trace("Allocating non-STM instance");
+                            if (log.isLoggable(Level.FINEST))
+                                log.finest("Allocating non-STM instance");
 
                             instance = loadServlet();
                         } catch (ServletException e) {
@@ -877,8 +878,8 @@ public class StandardWrapper
             }
 
             if (!singleThreadModel) {
-                if (log.isTraceEnabled())
-                    log.trace("  Returning non-STM instance");
+                if (log.isLoggable(Level.FINEST))
+                    log.finest("Returning non-STM instance");
                 countAllocated++;
                 return (instance);
             }
@@ -907,8 +908,8 @@ public class StandardWrapper
                     }
                 }
             }
-            if (log.isTraceEnabled())
-                log.trace("  Returning allocated STM instance");
+            if (log.isLoggable(Level.FINEST))
+                log.finest("Returning allocated STM instance");
             countAllocated++;
             return (Servlet) instancePool.pop();
 
@@ -1425,9 +1426,9 @@ public class StandardWrapper
             int nRetries = 0;
             while ((nRetries < 21) && (countAllocated > 0)) {
                 if ((nRetries % 10) == 0) {
-                    log.debug(sm.getString("standardWrapper.waiting",
-                            countAllocated,
-                                           instance.getClass().getName()));
+                    log.fine(sm.getString("standardWrapper.waiting",
+                                          countAllocated,
+                                          instance.getClass().getName()));
                 }
                 try {
                     Thread.sleep(100);

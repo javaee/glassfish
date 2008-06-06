@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.*;
 import java.io.Serializable;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -86,8 +87,8 @@ import org.apache.tomcat.util.log.SystemLogHandler;
 
 final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( ApplicationFilterConfig.class );
+    private static Logger log = Logger.getLogger(
+        ApplicationFilterConfig.class.getName());
  
     // ----------------------------------------------------------- Constructors
 
@@ -318,7 +319,8 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
                                                filter); 
                     SecurityUtil.remove(filter);
                 } catch(java.lang.Exception ex){                    
-                    log.error("ApplicationFilterConfig.doAsPrivilege", ex);
+                    log.log(Level.SEVERE,
+                            "ApplicationFilterConfig.doAsPrivilege", ex);
                 }
             } else { 
                 filter.destroy();
@@ -371,7 +373,8 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
                                                    filter);  
                         SecurityUtil.remove(filter);
                     } catch(java.lang.Exception ex){    
-                        log.error("ApplicationFilterConfig.doAsPrivilege", ex);
+                        log.log(Level.SEVERE,
+                                "ApplicationFilterConfig.doAsPrivilege", ex);
                     }
                 } else { 
                     filter.destroy();
