@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.startup;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +60,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.*;
 import org.apache.catalina.loader.StandardClassLoader;
 
 
@@ -92,8 +89,8 @@ public final class ClassLoaderFactory {
     // ------------------------------------------------------- Static Variables
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( ClassLoaderFactory.class );
+    private static Logger log = Logger.getLogger(
+        ClassLoaderFactory.class.getName());
 
     /**
      * Debugging detail level for processing the startup.
@@ -177,8 +174,8 @@ public final class ClassLoaderFactory {
                                                 ClassLoader parent)
         throws Exception {
 
-        if (log.isDebugEnabled()) 
-            log.debug("Creating new class loader");
+        if (log.isLoggable(Level.FINE)) 
+            log.fine("Creating new class loader");
 
         // Construct the "class path" for this class loader
         ArrayList list = new ArrayList();
@@ -189,9 +186,9 @@ public final class ClassLoaderFactory {
                 File file = unpacked[i];
                 if (!file.exists() || !file.canRead())
                     continue;
-                if (log.isDebugEnabled())
-                    log.debug("  Including directory or JAR " 
-                        + file.getAbsolutePath());
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Including directory or JAR " 
+                             + file.getAbsolutePath());
                 URL url = new URL("file", null,
                                   file.getCanonicalPath() + File.separator);
                 list.add(url.toString());
@@ -211,8 +208,9 @@ public final class ClassLoaderFactory {
                     if (!filename.endsWith(".jar"))
                         continue;
                     File file = new File(directory, filenames[j]);
-                    if (log.isDebugEnabled())
-                        log.debug("  Including jar file " + file.getAbsolutePath());
+                    if (log.isLoggable(Level.FINE))
+                        log.fine("Including jar file " +
+                                 file.getAbsolutePath());
                     URL url = new URL("file", null,
                                       file.getCanonicalPath());
                     list.add(url.toString());

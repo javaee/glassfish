@@ -79,6 +79,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.*;
 
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
@@ -108,8 +109,7 @@ public final class TldConfig  {
     // Names of JARs that are known not to contain any TLDs with listeners
     private static HashSet<String> tldListeners;
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( TldConfig.class );
+    private static Logger log = Logger.getLogger(TldConfig.class.getName());
 
     private static final String FILE_URL_PREFIX = "file:";
     private static final int FILE_URL_PREFIX_LEN = FILE_URL_PREFIX.length();
@@ -340,8 +340,8 @@ public final class TldConfig  {
     }
 
     public void addApplicationListener( String s ) {
-        if (log.isDebugEnabled()) {
-            log.debug( "Add tld listener " + s);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine( "Add tld listener " + s);
         }
         if ((isCurrentTldLocal
                     && !systemTldUris.contains(currentTldUri)
@@ -406,9 +406,9 @@ public final class TldConfig  {
         if (context instanceof StandardContext) {
         */
         // START CR 6402120
-        if (log.isDebugEnabled()) { 
-            log.debug("Create/use TLD listener cache? "
-                      + (isCacheListeners()));
+        if (log.isLoggable(Level.FINE)) { 
+            log.fine("Create/use TLD listener cache? "
+                     + (isCacheListeners()));
         }
 
         // If multiple JVMs are running, then do not create tldCache.ser 
@@ -429,7 +429,7 @@ public final class TldConfig  {
                     processCache(tldCache);
                     return;
                 } catch (Throwable t) {
-                    log.warn("Error scanning " + tldCache, t);
+                    log.log(Level.WARNING, "Error scanning " + tldCache, t);
                 }
             }
         }
@@ -455,7 +455,7 @@ public final class TldConfig  {
                     processCache(tldCache);
                     return;
                 } catch (Throwable t) {
-                    log.warn("Error scanning " + tldCache, t);
+                    log.log(Level.WARNING, "Error scanning " + tldCache, t);
                 }
             }
         }
@@ -483,7 +483,10 @@ public final class TldConfig  {
         String list[] = getTldListeners();
 
         if( tldCache!= null ) {
-            log.debug( "Saving tld cache: " + tldCache + " " + list.length);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Saving tld cache: " + tldCache + " " +
+                         list.length);
+            }
             try {
                 FileOutputStream out=new FileOutputStream(tldCache);
                 ObjectOutputStream oos=new ObjectOutputStream( out );
@@ -494,8 +497,9 @@ public final class TldConfig  {
             }
         }
 
-        if( log.isDebugEnabled() )
-            log.debug( "Adding tld listeners:" + list.length);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Adding tld listeners:" + list.length);
+        }
         for( int i=0; list!=null && i<list.length; i++ ) {
             context.addApplicationListener(list[i]);
         }
@@ -533,13 +537,15 @@ public final class TldConfig  {
             String path = (String) paths.next();
             URL url = context.getServletContext().getResource(path);
             if (url == null) {
-                log.debug( "Null url "+ path );
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Null url "+ path );
+                }
                 break;
             }
             long lastM = url.openConnection().getLastModified();
             if (lastM > lastModified) lastModified = lastM;
-            if (log.isDebugEnabled()) {
-                log.debug( "Last modified " + path + " " + lastM);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine( "Last modified " + path + " " + lastM);
             }
         }
 
@@ -550,9 +556,9 @@ public final class TldConfig  {
                 File jarFile = elem.getJarFile();
                 long lastM = jarFile.lastModified();
                 if (lastM > lastModified) lastModified = lastM;
-                if (log.isDebugEnabled()) {
-                    log.debug("Last modified " + jarFile.getAbsolutePath()
-                              + " " + lastM);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Last modified " + jarFile.getAbsolutePath()
+                             + " " + lastM);
                 }
             }
         }
@@ -563,8 +569,8 @@ public final class TldConfig  {
                     URL tldURL = new URL("jar:" + url.toString() + "!/" + tldName);
                     long lastM = tldURL.openConnection().getLastModified();
                     if (lastM > lastModified) lastModified = lastM;
-                    if (log.isDebugEnabled()) {
-                        log.debug("Last modified " + tldURL + " " + lastM);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Last modified " + tldURL + " " + lastM);
                     }
                 }
             }
@@ -580,8 +586,8 @@ public final class TldConfig  {
         FileInputStream in=new FileInputStream(tldCache);
         ObjectInputStream ois=new ObjectInputStream( in );
         String list[]=(String [])ois.readObject();
-        if( log.isDebugEnabled() ) {
-            log.debug("Reusing tldCache " + tldCache + " " + list.length);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Reusing tldCache " + tldCache + " " + list.length);
         }
         for( int i=0; list!=null && i<list.length; i++ ) {
             // Load the listener class. Failure to do so is an indication
@@ -640,8 +646,8 @@ public final class TldConfig  {
                 if (!name.endsWith(".tld")) {
                     continue;
                 }
-                if (log.isTraceEnabled()) {
-                    log.trace("  Processing TLD at '" + name + "'");
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("Processing TLD at '" + name + "'");
                 }
                 // START GlassFish 747
                 currentTldJarFile = jarPath;
@@ -651,15 +657,17 @@ public final class TldConfig  {
                     tldScanStream(new InputSource(jarFile.getInputStream(entry)),
                                   isLocal);
                 } catch (Exception e) {
-                    log.error(sm.getString("contextConfig.tldEntryException",
-                                           name, jarPath, context.getPath()),
-                              e);
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.tldEntryException",
+                                         name, jarPath, context.getPath()),
+                            e);
                 }
             }
         } catch (Exception e) {
-            log.error(sm.getString("contextConfig.tldJarException",
-                                   jarPath, context.getPath()),
-                      e);
+            log.log(Level.SEVERE,
+                    sm.getString("contextConfig.tldJarException",
+                                 jarPath, context.getPath()),
+                    e);
         } finally {
             if (jarFile != null) {
                 try {
@@ -682,10 +690,11 @@ public final class TldConfig  {
                         false);
             }
         } catch (Exception e) {
-            log.error(sm.getString("contextConfig.tldEntryException",
-                    name, url.toString(), context.getPath()), e);
+            log.log(Level.SEVERE,
+                    sm.getString("contextConfig.tldEntryException",
+                                 name, url.toString(), context.getPath()),
+                    e);
         }
-
     }
 
     /**
@@ -740,8 +749,8 @@ public final class TldConfig  {
      */
     private void tldScanTld(String resourcePath) throws Exception {
 
-        if (log.isDebugEnabled()) {
-            log.debug(" Scanning TLD at resource path '" + resourcePath + "'");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Scanning TLD at resource path '" + resourcePath + "'");
         }
 
         InputStream tldStream =
@@ -780,15 +789,15 @@ public final class TldConfig  {
      *  accumulating the list of resource paths
      */
     private Set tldScanResourcePaths() throws IOException {
-        if (log.isTraceEnabled()) {
-            log.trace(" Accumulating TLD resource paths");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Accumulating TLD resource paths");
         }
         Set resourcePaths = new HashSet();
 
         // Accumulate resource paths explicitly listed in the web application
         // deployment descriptor
-        if (log.isTraceEnabled()) {
-            log.trace("  Scanning <taglib> elements in web.xml");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Scanning <taglib> elements in web.xml");
         }
         String taglibs[] = context.findTaglibs();
         for (int i = 0; i < taglibs.length; i++) {
@@ -798,9 +807,9 @@ public final class TldConfig  {
             if (!resourcePath.startsWith("/")) {
                 resourcePath = "/WEB-INF/" + resourcePath;
             }
-            if (log.isTraceEnabled()) {
-                log.trace("   Adding path '" + resourcePath +
-                    "' for URI '" + taglibs[i] + "'");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Adding path '" + resourcePath +
+                           "' for URI '" + taglibs[i] + "'");
             }
             // START GlassFish 747
             tldUriToLocationMap.put(taglibs[i],
@@ -836,8 +845,8 @@ public final class TldConfig  {
                                             Set tldPaths) 
             throws IOException {
 
-        if (log.isTraceEnabled()) {
-            log.trace("  Scanning TLDs in " + rootPath + " subdirectory");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("  Scanning TLDs in " + rootPath + " subdirectory");
         }
 
         try {
@@ -849,8 +858,8 @@ public final class TldConfig  {
                     continue;
                 }
                 if (resourcePath.endsWith(".tld")) {
-                    if (log.isTraceEnabled()) {
-                        log.trace("   Adding path '" + resourcePath + "'");
+                    if (log.isLoggable(Level.FINEST)) {
+                        log.finest("Adding path '" + resourcePath + "'");
                     }
                     tldPaths.add(resourcePath);
                 } else {

@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.*;
 
 /**
  * Utility class to read the bootstrap Catalina configuration.
@@ -74,31 +75,25 @@ import java.util.Properties;
 public class CatalinaProperties {
 
 
-    // ------------------------------------------------------- Static Variables
+    // ----------------------------------------------------- Static Variables
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( CatalinaProperties.class );
+    private static Logger log = Logger.getLogger(
+        CatalinaProperties.class.getName());
 
     private static Properties properties = null;
 
-
     static {
-
         loadProperties();
-
     }
 
 
-    // --------------------------------------------------------- Public Methods
-
+    // ------------------------------------------------------- Public Methods
 
     /**
      * Return specified property value.
      */
     public static String getProperty(String name) {
-
         return properties.getProperty(name);
-
     }
 
 
@@ -164,7 +159,8 @@ public class CatalinaProperties {
 
         if ((is == null) || (error != null)) {
             // Do something
-            log.warn("Failed to load catalina.properties", error);
+            log.log(Level.WARNING, "Failed to load catalina.properties",
+                    error);
             // That's fine - we have reasonable defaults.
             properties = new Properties();
         }

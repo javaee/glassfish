@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.*;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -80,7 +81,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Logger;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.StringManager;
 import org.apache.naming.resources.ResourceAttributes;
@@ -98,8 +98,7 @@ import org.apache.naming.resources.ResourceAttributes;
 public class HostConfig
     implements LifecycleListener {
     
-    private static org.apache.commons.logging.Log log=
-         org.apache.commons.logging.LogFactory.getLog( HostConfig.class );
+    private static Logger log = Logger.getLogger(HostConfig.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -377,7 +376,8 @@ public class HostConfig
                 setXmlValidation(((StandardHost) host).getXmlValidation());
             }
         } catch (ClassCastException e) {
-            log.error(sm.getString("hostConfig.cce", event.getLifecycle()), e);
+            log.log(Level.SEVERE,
+                    sm.getString("hostConfig.cce", event.getLifecycle()), e);
             return;
         }
 
@@ -497,7 +497,7 @@ public class HostConfig
                 }
 
                 // Assume this is a configuration descriptor and deploy it
-                log.debug(sm.getString("hostConfig.deployDescriptor", files[i]));
+                log.fine(sm.getString("hostConfig.deployDescriptor", files[i]));
                 try {
                     if (host.findChild(contextPath) != null) {
                         if ((deployed.contains(file))
@@ -515,14 +515,13 @@ public class HostConfig
                         new URL("file", null, dir.getCanonicalPath());
                     ((Deployer) host).install(config, null);
                 } catch (Throwable t) {
-                    log.error(sm.getString("hostConfig.deployDescriptor.error",
-                                           files[i]), t);
+                    log.log(Level.SEVERE,
+                            sm.getString("hostConfig.deployDescriptor.error",
+                                         files[i]),
+                            t);
                 }
-
             }
-
         }
-
     }
 
 
@@ -623,7 +622,7 @@ public class HostConfig
                 if (isUnpackWARs()) {
 
                     // Expand and deploy this application as a directory
-                    log.debug(sm.getString("hostConfig.expand", files[i]));
+                    log.fine(sm.getString("hostConfig.expand", files[i]));
                     URL url = null;
                     String path = null;
                     try {
@@ -632,12 +631,14 @@ public class HostConfig
                         path = ExpandWar.expand(host, url);
                     } catch (IOException e) {
                         // JAR decompression failure
-                        log.warn(sm.getString
-                                 ("hostConfig.expand.error", files[i]));
+                        log.warning(sm.getString("hostConfig.expand.error",
+                                                 files[i]));
                         continue;
                     } catch (Throwable t) {
-                        log.error(sm.getString
-                                  ("hostConfig.expand.error", files[i]), t);
+                        log.log(Level.SEVERE,
+                                sm.getString("hostConfig.expand.error",
+                                             files[i]),
+                                t);
                         continue;
                     }
                     try {
@@ -646,8 +647,10 @@ public class HostConfig
                             ((Deployer) host).install(contextPath, url);
                         }
                     } catch (Throwable t) {
-                        log.error(sm.getString
-                                  ("hostConfig.expand.error", files[i]), t);
+                        log.log(Level.SEVERE,
+                                sm.getString("hostConfig.expand.error",
+                                             files[i]),
+                                t);
                     }
 
                 } else {
@@ -660,16 +663,14 @@ public class HostConfig
                         url = new URL("jar:" + url.toString() + "!/");
                         ((Deployer) host).install(contextPath, url);
                     } catch (Throwable t) {
-                        log.error(sm.getString("hostConfig.deployJar.error",
-                                         files[i]), t);
+                        log.log(Level.SEVERE,
+                                sm.getString("hostConfig.deployJar.error",
+                                             files[i]),
+                                t);
                     }
-
                 }
-
             }
-
         }
-
     }
 
 
@@ -708,19 +709,21 @@ public class HostConfig
                     continue;
 
                 // Deploy the application in this directory
-                if( log.isDebugEnabled() ) 
-                    log.debug(sm.getString("hostConfig.deployDir", files[i]));
+                if (log.isLoggable(Level.FINE)) 
+                    log.fine(sm.getString("hostConfig.deployDir", files[i]));
                 long t1=System.currentTimeMillis();
                 try {
                     URL url = new URL("file", null, dir.getCanonicalPath());
                     ((Deployer) host).install(contextPath, url);
                 } catch (Throwable t) {
-                    log.error(sm.getString("hostConfig.deployDir.error", files[i]),
-                        t);
+                    log.log(Level.SEVERE,
+                            sm.getString("hostConfig.deployDir.error",
+                                         files[i]),
+                            t);
                 }
                 long t2=System.currentTimeMillis();
                 if( (t2-t1) > 200 )
-                    log.debug("Deployed " + files[i] + " " + (t2-t1));
+                    log.fine("Deployed " + files[i] + " " + (t2-t1));
             }
 
         }
@@ -808,9 +811,10 @@ public class HostConfig
                                     ((Deployer) host).remove(contextName);
                                 }
                             } catch (Throwable t) {
-                                log.error(sm.getString
-                                          ("hostConfig.undeployJar.error",
-                                           fileName), t);
+                                log.log(Level.SEVERE,
+                                        sm.getString("hostConfig.undeployJar.error",
+                                                     fileName),
+                                        t);
                             }
                             deployApps();
                         }
@@ -856,9 +860,10 @@ public class HostConfig
                                     ExpandWar.deleteDir(expanded);
                                 }
                             } catch (Throwable t) {
-                                log.error(sm.getString
-                                          ("hostConfig.undeployJar.error",
-                                           files[i]), t);
+                                log.log(Level.SEVERE,
+                                        sm.getString("hostConfig.undeployJar.error",
+                                                     files[i]),
+                                        t);
                             }
                             deployApps();
                         }
@@ -893,16 +898,18 @@ public class HostConfig
         try {
             ((Lifecycle) context).stop();
         } catch( Exception ex ) {
-            log.warn("Erorr stopping context " + context.getName()  +  " " +
-                    ex.toString());
+            log.log(Level.WARNING,
+                    "Erorr stopping context " + context.getName(),
+                    ex);
         }
         // if the context was not started ( for example an error in web.xml)
         // we'll still get to try to start
         try {
             ((Lifecycle) context).start();
         } catch (Exception e) {
-            log.warn("Error restarting context " + context.getName() + " " +
-                    e.toString());
+            log.log(Level.WARNING,
+                    "Error restarting context " + context.getName(),
+                    e);
             result = false;
         }
         
@@ -952,7 +959,7 @@ public class HostConfig
      */
     protected void log(String message) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (host != null)
             logger = host.getLogger();
         if (logger != null)
@@ -970,14 +977,14 @@ public class HostConfig
      */
     protected void log(String message, Throwable throwable) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (host != null)
             logger = host.getLogger();
         if (logger != null)
             logger.log("HostConfig[" + host.getName() + "] "
                        + message, throwable);
         else {
-            log.error( message, throwable );
+            log.log(Level.SEVERE, message, throwable);
         }
 
     }
@@ -988,8 +995,8 @@ public class HostConfig
      */
     public void start() {
 
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("hostConfig.start"));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("hostConfig.start"));
 
         if (host.getDeployOnStartup()) {
             deployApps();
@@ -1011,8 +1018,8 @@ public class HostConfig
      */
     public void stop() {
 
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("hostConfig.stop"));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("hostConfig.stop"));
 
         undeployApps();
 
@@ -1029,18 +1036,20 @@ public class HostConfig
 
         if (!(host instanceof Deployer))
             return;
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("hostConfig.undeploying"));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("hostConfig.undeploying"));
 
         String contextPaths[] = ((Deployer) host).findDeployedApps();
         for (int i = 0; i < contextPaths.length; i++) {
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("hostConfig.undeploy", contextPaths[i]));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("hostConfig.undeploy", contextPaths[i]));
             try {
                 ((Deployer) host).remove(contextPaths[i]);
             } catch (Throwable t) {
-                log.error(sm.getString("hostConfig.undeploy.error",
-                                 contextPaths[i]), t);
+                log.log(Level.SEVERE,
+                        sm.getString("hostConfig.undeploy.error",
+                                     contextPaths[i]),
+                        t);
             }
         }
 

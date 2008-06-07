@@ -64,6 +64,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.*;
 import org.apache.catalina.loader.StandardClassLoader;
 
 
@@ -116,7 +117,6 @@ public final class Tool {
 
     // ------------------------------------------------------- Static Variables
 
-
     /**
      * Set <code>ant.home</code> system property?
      */
@@ -141,8 +141,7 @@ public final class Tool {
     private static boolean debug = false;
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( Tool.class );
+    private static Logger log = Logger.getLogger(Tool.class.getName());
 
     /**
      * Include server classes in the repositories?
@@ -168,7 +167,7 @@ public final class Tool {
 
         // Verify that "catalina.home" was passed.
         if (catalinaHome == null) {
-            log.error("Must set 'catalina.home' system property");
+            log.severe("Must set 'catalina.home' system property");
             System.exit(1);
         }
 
@@ -205,8 +204,8 @@ public final class Tool {
         // Construct the class loader we will be using
         ClassLoader classLoader = null;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Constructing class loader");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Constructing class loader");
                 ClassLoaderFactory.setDebug(1);
             }
             ArrayList packed = new ArrayList();
@@ -237,7 +236,7 @@ public final class Tool {
                  (File[]) packed.toArray(new File[0]),
                  null);
         } catch (Throwable t) {
-            log.error("Class loader creation threw exception", t);
+            log.log(Level.SEVERE, "Class loader creation threw exception", t);
             System.exit(1);
         }
         Thread.currentThread().setContextClassLoader(classLoader);
@@ -246,11 +245,12 @@ public final class Tool {
         Class clazz = null;
         String className = args[index++];
         try {
-            if (log.isDebugEnabled())
-                log.debug("Loading application class " + className);
+            if (log.isLoggable(Level.FINE))
+                log.fine("Loading application class " + className);
             clazz = classLoader.loadClass(className);
         } catch (Throwable t) {
-            log.error("Exception creating instance of " + className, t);
+            log.log(Level.SEVERE,
+                    "Exception creating instance of " + className, t);
             System.exit(1);
         }
 
@@ -259,26 +259,26 @@ public final class Tool {
         String params[] = new String[args.length - index];
         System.arraycopy(args, index, params, 0, params.length);
         try {
-            if (log.isDebugEnabled())
-                log.debug("Identifying main() method");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Identifying main() method");
             String methodName = "main";
             Class paramTypes[] = new Class[1];
             paramTypes[0] = params.getClass();
             method = clazz.getMethod(methodName, paramTypes);
         } catch (Throwable t) {
-            log.error("Exception locating main() method", t);
+            log.log(Level.SEVERE, "Exception locating main() method", t);
             System.exit(1);
         }
 
         // Invoke the main method of the application class
         try {
-            if (log.isDebugEnabled())
-                log.debug("Calling main() method");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Calling main() method");
             Object paramValues[] = new Object[1];
             paramValues[0] = params;
             method.invoke(null, paramValues);
         } catch (Throwable t) {
-            log.error("Exception calling main() method", t);
+            log.log(Level.SEVERE, "Exception calling main() method", t);
             System.exit(1);
         }
 

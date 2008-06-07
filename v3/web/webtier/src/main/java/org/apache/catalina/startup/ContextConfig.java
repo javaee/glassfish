@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.startup;
-
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,6 +62,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Map;
+import java.util.logging.*;
+
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Authenticator;
@@ -77,7 +75,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
@@ -118,9 +115,10 @@ public class ContextConfig
 // END OF SJAS 8.0 BUG 5046959
     implements LifecycleListener {
 
-    private static Log log= LogFactory.getLog( ContextConfig.class );
+    private static Logger log = Logger.getLogger(
+        ContextConfig.class.getName());
 
-    // ----------------------------------------------------- Instance Variables
+    // --------------------------------------------------- Instance Variables
 
 
     /*
@@ -233,7 +231,7 @@ public class ContextConfig
     private static boolean xmlNamespaceAware = false;
 
         
-    // ------------------------------------------------------------- Properties
+    // ----------------------------------------------------------- Properties
 
 
     /**
@@ -252,9 +250,7 @@ public class ContextConfig
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         this.debug = debug;
-
     }
     
     
@@ -265,7 +261,6 @@ public class ContextConfig
     public String getDefaultWebXml() {
         if( defaultWebXml == null ) defaultWebXml=Constants.DefaultWebXml;
         return (this.defaultWebXml);
-
     }
 
 
@@ -275,9 +270,7 @@ public class ContextConfig
      * @param path Absolute/relative path to the default web.xml
      */
     public void setDefaultWebXml(String path) {
-
         this.defaultWebXml = path;
-
     }
     // END GlassFish 2439
 
@@ -291,7 +284,6 @@ public class ContextConfig
         }
 
         return (this.defaultContextXml);
-
     }
 
 
@@ -301,9 +293,7 @@ public class ContextConfig
      * @param path Absolute/relative path to the default context.xml
      */
     public void setDefaultContextXml(String path) {
-
         this.defaultContextXml = path;
-
     }
 
 
@@ -337,7 +327,9 @@ public class ContextConfig
 //                     this.debug = contextDebug;
 //             }
         } catch (ClassCastException e) {
-            log.error(sm.getString("contextConfig.cce", event.getLifecycle()), e);
+            log.log(Level.SEVERE,
+                    sm.getString("contextConfig.cce", event.getLifecycle()),
+                    e);
             return;
         }
 
@@ -375,8 +367,9 @@ public class ContextConfig
                 try {
                     stream = new FileInputStream(altDDName);
                 } catch (FileNotFoundException e) {
-                    log.error(sm.getString("contextConfig.altDDNotFound",
-                                           altDDName));
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.altDDNotFound",
+                                         altDDName));
                 }
             }
             else {
@@ -389,9 +382,9 @@ public class ContextConfig
             log.info(sm.getString("contextConfig.applicationMissing") + " " + context);
             */
             // START PWC 6296257
-            if (log.isDebugEnabled()) {
-                log.debug(sm.getString("contextConfig.applicationMissing")
-                          + " " + context);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(sm.getString("contextConfig.applicationMissing")
+                         + " " + context);
             }
             // END PWC 6296257
             return;
@@ -424,21 +417,23 @@ public class ContextConfig
                     webDigester.setUseContextClassLoader(false);
                     webDigester.push(context);
                     // START PWC 6390776
-                    webDigester.setLogger(
-                                    new DigesterLogger(context.getName()));
+                    webDigester.setLogger(new DigesterLogger(context.getName()));
                     // END PWC 6390776
                     webDigester.parse(is);
                 } else {
                     log.info("No web.xml, using defaults " + context );
                 }
             } catch (SAXParseException e) {
-                log.error(sm.getString("contextConfig.applicationParse"), e);
-                log.error(sm.getString("contextConfig.applicationPosition",
-                                 "" + e.getLineNumber(),
-                                 "" + e.getColumnNumber()));
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.applicationParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.applicationPosition",
+                                     "" + e.getLineNumber(),
+                                     "" + e.getColumnNumber()));
                 ok = false;
             } catch (Exception e) {
-                log.error(sm.getString("contextConfig.applicationParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.applicationParse"), e);
                 ok = false;
             } finally {
                 try {
@@ -446,7 +441,9 @@ public class ContextConfig
                         stream.close();
                     }
                 } catch (IOException e) {
-                    log.error(sm.getString("contextConfig.applicationClose"), e);
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.applicationClose"),
+                            e);
                 }
                 webDigester.push(null);
             }
@@ -471,7 +468,7 @@ public class ContextConfig
                     context.setManager(context.getCluster().createManager
                                        (context.getName()));
                 } catch (Exception ex) {
-                    log.error("contextConfig.clusteringInit", ex);
+                    log.log(Level.SEVERE, "contextConfig.clusteringInit", ex);
                     ok = false;
                 }
             } else {
@@ -536,7 +533,7 @@ public class ContextConfig
         Realm rlm = context.getRealm();
         if (rlm == null) {
         // END IASRI 4856062
-            log.error(sm.getString("contextConfig.missingRealm"));
+            log.log(Level.SEVERE, sm.getString("contextConfig.missingRealm"));
             ok = false;
             return;
         }
@@ -568,9 +565,9 @@ public class ContextConfig
                     && customAuthenticators.containsKey(loginMethod)) {
                 authenticator = (Valve) customAuthenticators.get(loginMethod);
                 if (authenticator == null) {
-                    log.error(
-                        sm.getString("contextConfig.authenticatorMissing",
-                                     loginMethod));
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.authenticatorMissing",
+                                         loginMethod));
                     ok = false;
                     return;
                 }
@@ -586,14 +583,15 @@ public class ContextConfig
                         authenticators = new Properties();
                         authenticators.load(is);
                     } else {
-                        log.error(sm.getString(
-                                "contextConfig.authenticatorResources"));
+                        log.log(Level.SEVERE,
+                                sm.getString("contextConfig.authenticatorResources"));
                         ok=false;
                         return;
                     }
                 } catch (IOException e) {
-                    log.error(sm.getString(
-                                "contextConfig.authenticatorResources"), e);
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.authenticatorResources"),
+                            e);
                     ok = false;
                     return;
                 }
@@ -617,8 +615,9 @@ public class ContextConfig
             */
 
             if (authenticatorName == null) {
-                log.error(sm.getString("contextConfig.authenticatorMissing",
-                                 loginConfig.getAuthMethod()));
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.authenticatorMissing",
+                                     loginConfig.getAuthMethod()));
                 ok = false;
                 return;
             }
@@ -628,10 +627,10 @@ public class ContextConfig
                 Class authenticatorClass = Class.forName(authenticatorName);
                 authenticator = (Valve) authenticatorClass.newInstance();
             } catch (Throwable t) {
-                log.error(sm.getString(
-                                    "contextConfig.authenticatorInstantiate",
-                                    authenticatorName),
-                          t);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.authenticatorInstantiate",
+                                     authenticatorName),
+                        t);
                 ok = false;
             }
         }
@@ -640,10 +639,9 @@ public class ContextConfig
             Pipeline pipeline = ((ContainerBase) context).getPipeline();
             if (pipeline != null) {
                 ((ContainerBase) context).addValve(authenticator);
-                if (log.isDebugEnabled()) {
-                    log.debug(sm.getString(
-                                    "contextConfig.authenticatorConfigured",
-                                    loginConfig.getAuthMethod()));
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine(sm.getString("contextConfig.authenticatorConfigured",
+                                          loginConfig.getAuthMethod()));
                 }
             }
         }
@@ -706,19 +704,18 @@ public class ContextConfig
      * container servlets can be loaded
      */
     protected void defaultConfig() {
-        long t1=System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
 
         // Open the default web.xml file, if it exists
-        if( defaultWebXml==null && context instanceof StandardContext ) {
+        if (defaultWebXml == null && context instanceof StandardContext) {
             defaultWebXml=((StandardContext)context).getDefaultWebXml();
         }
         // set the default if we don't have any overrides
-        if( defaultWebXml==null ) getDefaultWebXml();
+        if (defaultWebXml == null) getDefaultWebXml();
 
         File file = new File(this.defaultWebXml);
         if (!file.isAbsolute()) {
-            file = new File(getBaseDir(),
-                            this.defaultWebXml);
+            file = new File(getBaseDir(), this.defaultWebXml);
         }
         
         InputStream stream = null;
@@ -735,7 +732,7 @@ public class ContextConfig
                             .getResource(defaultWebXml).toString());
                 } 
 
-                if( stream== null ) { 
+                if (stream == null) { 
                     // maybe embedded
                     stream = getClass().getClassLoader()
                         .getResourceAsStream("web-embed.xml");
@@ -757,8 +754,10 @@ public class ContextConfig
                 stream = new FileInputStream(file);
             }
         } catch (Exception e) {
-            log.error(sm.getString("contextConfig.defaultMissing") 
-                      + " " + defaultWebXml + " " + file , e);
+            log.log(Level.SEVERE,
+                    sm.getString("contextConfig.defaultMissing") 
+                        + " " + defaultWebXml + " " + file,
+                    e);
             return;
         }
 
@@ -782,13 +781,16 @@ public class ContextConfig
                 webDigester.push(context);
                 webDigester.parse(source);
             } catch (SAXParseException e) {
-                log.error(sm.getString("contextConfig.defaultParse"), e);
-                log.error(sm.getString("contextConfig.defaultPosition",
-                                 "" + e.getLineNumber(),
-                                 "" + e.getColumnNumber()));
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultPosition",
+                                     "" + e.getLineNumber(),
+                                     "" + e.getColumnNumber()));
                 ok = false;
             } catch (Exception e) {
-                log.error(sm.getString("contextConfig.defaultParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultParse"), e);
                 ok = false;
             } finally {
                 try {
@@ -796,7 +798,8 @@ public class ContextConfig
                         stream.close();
                     }
                 } catch (IOException e) {
-                    log.error(sm.getString("contextConfig.defaultClose"), e);
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.defaultClose"), e);
                 }
             }
         }
@@ -804,7 +807,7 @@ public class ContextConfig
         
         long t2=System.currentTimeMillis();
         if( (t2-t1) > 200 )
-            log.debug("Processed default web.xml " + file + " "  + ( t2-t1));
+            log.fine("Processed default web.xml " + file + " "  + ( t2-t1));
     }
 
 
@@ -830,9 +833,9 @@ public class ContextConfig
      * Process a context.xml.
      */
     protected void processContextConfig(File baseDir, String resourceName) {
-        if (log.isDebugEnabled())
-            log.debug("Processing context [" + context.getName()
-                    + "] configuration file " + baseDir + " " + resourceName);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Processing context [" + context.getName() +
+                     "] configuration file " + baseDir + " " + resourceName);
 
         InputSource source = null;
         InputStream stream = null;
@@ -859,8 +862,10 @@ public class ContextConfig
                 stream = new FileInputStream(file);
             }
         } catch (Exception e) {
-            log.error(sm.getString("contextConfig.defaultMissing")
-                      + " " + resourceName + " " + file , e);
+            log.log(Level.SEVERE,
+                    sm.getString("contextConfig.defaultMissing")
+                        + " " + resourceName + " " + file ,
+                    e);
         }
         if (source == null)
             return;
@@ -879,17 +884,21 @@ public class ContextConfig
                 if (parseException != null) {
                     ok = false;
                 }
-                if (log.isDebugEnabled())
-                    log.debug("Successfully processed context [" + context.getName()
-                            + "] configuration file " + baseDir + " " + resourceName);
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Successfully processed context [" +
+                             context.getName() + "] configuration file " +
+                             baseDir + " " + resourceName);
             } catch (SAXParseException e) {
-                log.error(sm.getString("contextConfig.defaultParse"), e);
-                log.error(sm.getString("contextConfig.defaultPosition",
-                                 "" + e.getLineNumber(),
-                                 "" + e.getColumnNumber()));
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultPosition",
+                                     "" + e.getLineNumber(),
+                                     "" + e.getColumnNumber()));
                 ok = false;
             } catch (Exception e) {
-                log.error(sm.getString("contextConfig.defaultParse"), e);
+                log.log(Level.SEVERE,
+                        sm.getString("contextConfig.defaultParse"), e);
                 ok = false;
             } finally {
                 //contextDigester.reset();
@@ -899,7 +908,8 @@ public class ContextConfig
                         stream.close();
                     }
                 } catch (IOException e) {
-                    log.error(sm.getString("contextConfig.defaultClose"), e);
+                    log.log(Level.SEVERE,
+                            sm.getString("contextConfig.defaultClose"), e);
                 }
             }
         }
@@ -915,7 +925,7 @@ public class ContextConfig
      */
     private void log(String message) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (context != null)
             logger = context.getLogger();
         if (logger != null)
@@ -933,16 +943,15 @@ public class ContextConfig
      */
     private void log(String message, Throwable throwable) {
 
-        Logger logger = null;
+        org.apache.catalina.Logger logger = null;
         if (context != null)
             logger = context.getLogger();
         if (logger != null)
             logger.log("ContextConfig[" + context.getName() + "] "
                        + message, throwable);
         else {
-            log.error( message, throwable );
+            log.log(Level.SEVERE, message, throwable );
         }
-
     }
 
 
@@ -955,8 +964,8 @@ public class ContextConfig
 
         // Called from StandardContext.init()
 
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("contextConfig.init"));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("contextConfig.init"));
         context.setConfigured(false);
         ok = true;
 
@@ -972,8 +981,8 @@ public class ContextConfig
     protected synchronized void start() {
         // Called from StandardContext.start()
 
-        if (log.isTraceEnabled())
-            log.trace(sm.getString("contextConfig.start"));
+        if (log.isLoggable(Level.FINEST))
+            log.finest(sm.getString("contextConfig.start"));
         context.setConfigured(false);
         ok = true;
 
@@ -1019,25 +1028,26 @@ public class ContextConfig
             managerConfig();
 
         // Dump the contents of this pipeline if requested
-        if ((log.isTraceEnabled()) && (context instanceof ContainerBase)) {
-            log.trace("Pipline Configuration:");
+        if ((log.isLoggable(Level.FINEST)) &&
+                (context instanceof ContainerBase)) {
+            log.finest("Pipline Configuration:");
             Pipeline pipeline = ((ContainerBase) context).getPipeline();
             Valve valves[] = null;
             if (pipeline != null)
                 valves = pipeline.getValves();
             if (valves != null) {
                 for (int i = 0; i < valves.length; i++) {
-                    log.trace("  " + valves[i].getInfo());
+                    log.finest("  " + valves[i].getInfo());
                 }
             }
-            log.trace("======================");
+            log.finest("======================");
         }
 
         // Make our application available if no problems were encountered
         if (ok)
             context.setConfigured(true);
         else {
-            log.error(sm.getString("contextConfig.unavailable"));
+            log.severe(sm.getString("contextConfig.unavailable"));
             context.setConfigured(false);
         }
 
@@ -1049,8 +1059,8 @@ public class ContextConfig
      */
     protected synchronized void stop() {
 
-        if (log.isTraceEnabled())
-            log.trace(sm.getString("contextConfig.stop"));
+        if (log.isLoggable(Level.FINEST))
+            log.finest(sm.getString("contextConfig.stop"));
 
         int i;
 
@@ -1280,7 +1290,7 @@ class DigesterLogger implements Log {
     public String contextMsg = null;
 
     public DigesterLogger(String contextName) {
-        log = LogFactory.getLog("org.apache.commons.digester.Digester");
+        log = LogFactory.getLog(Digester.class.getName());
         contextMsg = "In context [" + contextName + "]: ";
     }
     
@@ -1298,7 +1308,7 @@ class DigesterLogger implements Log {
 
     public void error(Object message, Throwable t) {
         if (log.isDebugEnabled()) {
-            log.error(contextMsg + message,t);
+            log.error(contextMsg + message, t);
         } else {
             log.error(contextMsg + message);
         }
@@ -1309,7 +1319,7 @@ class DigesterLogger implements Log {
     }
 
     public void fatal(Object message, Throwable t) {
-        log.fatal(contextMsg + message,t);
+        log.fatal(contextMsg + message, t);
     }
 
     public void info(Object message) {
