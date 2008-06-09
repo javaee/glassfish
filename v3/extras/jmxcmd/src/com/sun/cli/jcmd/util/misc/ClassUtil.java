@@ -348,7 +348,7 @@ public final class ClassUtil
 		};
 	
 	
-		public static Class
+		public static Class<?>
 	classForName( String name )
 		throws ClassNotFoundException
 	{
@@ -377,11 +377,11 @@ public final class ClassUtil
 		@param classname	classname string
 		@return			the classname for the array element
 	 */
-		public static Class
+		public static Class<?>
 	getClassFromName( final String classname )
 		throws ClassNotFoundException
 	{
-		Class	theClass	= null;
+		Class<?>	theClass	= null;
 		
 		if ( classname.startsWith( "[L" ))
 		{
@@ -427,7 +427,7 @@ public final class ClassUtil
 		@param		theClass	the class to map
 		@return	the corresponding Object class or the original Class if not a primitive.
 	 */
-		public static Class
+		public static Class<?>
 	PrimitiveClassToObjectClass( final Class theClass )
 	{
 		Class	result	= theClass;
@@ -453,8 +453,8 @@ public final class ClassUtil
 		@param		theClass	the class to map
 		@return	the corresponding Object class or the original Class if not a primitive.
 	 */
-		public static Class
-	ObjectClassToPrimitiveClass( final Class theClass )
+		public static Class<?>
+	ObjectClassToPrimitiveClass( final Class<?> theClass )
 	{
 		Class	result	= theClass;
 		
@@ -480,7 +480,7 @@ public final class ClassUtil
 		@return	true if it's a primitive class, false otherwise.
 	 */
 		public static boolean
-	IsPrimitiveClass( final Class theClass )
+	IsPrimitiveClass( final Class<?> theClass )
 	{
 		boolean	isSimple	= false;
 		
@@ -621,7 +621,7 @@ public final class ClassUtil
 		@return		the "friendly" name
 	 */
 		public static String
-	getFriendlyClassname( Class theClass )
+	getFriendlyClassname( Class<?> theClass )
 	{
 		return( getFriendlyClassname( theClass.getName() ) );
 	}
@@ -696,7 +696,7 @@ public final class ClassUtil
 	/*
 	 */
 		public static int
-	getArrayDimensions( final Class theClass )
+	getArrayDimensions( final Class<?> theClass )
 	{
 		final String	classname	= theClass.getName();
 		
@@ -712,7 +712,7 @@ public final class ClassUtil
 	/*
 	 */
 		public static Class
-	getArrayElementClass( final Class arrayClass )
+	getArrayElementClass( final Class<?> arrayClass )
 	{
 		final String	arrayClassName	= arrayClass.getName();
 			
@@ -760,7 +760,7 @@ public final class ClassUtil
 	}
 	
 		public static Class
-	getInnerArrayElementClass( final Class arrayClass )
+	getInnerArrayElementClass( final Class<?> arrayClass )
 		throws ClassNotFoundException
 	{
 		Class	elementClass	= arrayClass;
@@ -876,10 +876,10 @@ public final class ClassUtil
 		@param args		the argument list for the constructor
 	 */
 		public static Object
-	InstantiateObject( final Class theClass, final Object [] args )
+	InstantiateObject( final Class<?> theClass, final Object [] args )
 		throws Exception
 	{
-		final Class []		signature	= new Class [ args.length ];
+		final Class<?> []		signature	= new Class<?> [ args.length ];
 		
 		for( int i = 0; i < signature.length; ++i )
 		{
@@ -902,7 +902,7 @@ public final class ClassUtil
 			{
 				final Constructor	tempConstructor	= constructors[ i ];
 				
-				final Class [] tempSignature	= tempConstructor.getParameterTypes();
+				final Class<?> [] tempSignature	= tempConstructor.getParameterTypes();
 				
 				if ( signaturesAreCompatible( tempSignature, signature ) )
 				{
@@ -952,10 +952,10 @@ public final class ClassUtil
 		@return the resulting Object
 	 */
 		public static Object
-	InstantiateObject( final Class theClass, final String theString )
+	InstantiateObject( final Class<?> theClass, final String theString )
 		throws Exception
 	{
-		final Class []		signature	= new Class [] { String.class };
+		final Class<?> []		signature	= new Class<?> [] { String.class };
 		final Constructor	constructor	= theClass.getConstructor( signature );
 		
 		Object	result	= null;
@@ -1027,7 +1027,7 @@ public final class ClassUtil
 		@return the resulting Object
 	 */
 		public static Object
-	InstantiateFromString( final Class theClass, final String theString )
+	InstantiateFromString( final Class<?> theClass, final String theString )
 		throws Exception
 	{
 		Object result	= null;
@@ -1073,12 +1073,12 @@ public final class ClassUtil
 		@return the resulting Object
 	 */
 		public static Object
-	InstantiateDefault( final Class inClass )
+	InstantiateDefault( final Class<?> inClass )
 		throws Exception
 	{
 		Object result	= null;
 		
-		final Class			objectClass	= PrimitiveClassToObjectClass( inClass );
+		final Class<?>			objectClass	= PrimitiveClassToObjectClass( inClass );
 		
 		if ( Number.class.isAssignableFrom( objectClass ) )
 		{
