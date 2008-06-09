@@ -57,9 +57,9 @@
 
 package org.apache.tomcat.util.buf;
 
-import org.apache.tomcat.util.buf.*;
-
 import java.io.*;
+import java.util.logging.*;
+import org.apache.tomcat.util.buf.*;
 
 /** Efficient conversion of bytes  to character .
  *  
@@ -74,8 +74,7 @@ import java.io.*;
  */
 public class B2CConverter {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( B2CConverter.class );
+    private static Logger log = Logger.getLogger(B2CConverter.class.getName());
 
     private IntermediateInputStream iis;
     private ReadConvertor conv;
@@ -179,8 +178,8 @@ public class B2CConverter {
 
     private final int debug=0;
     void log( String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("B2CConverter: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("B2CConverter: " + s );
     }
 
     // -------------------- Not used - the speed improvemnt is quite small

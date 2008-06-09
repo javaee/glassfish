@@ -62,6 +62,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.logging.*;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -99,8 +100,7 @@ import org.apache.naming.NamingContextEnumeration;
 public class WARDirContext extends BaseDirContext {
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( WARDirContext.class );
+    private static Logger log = Logger.getLogger(WARDirContext.class.getName());
 
     // ----------------------------------------------------------- Constructors
 
@@ -201,7 +201,8 @@ public class WARDirContext extends BaseDirContext {
             try {
                 base.close();
             } catch (IOException e) {
-                log.warn("Exception closing WAR File " + base.getName(), e);
+                log.log(Level.WARNING,
+                        "Exception closing WAR File " + base.getName(), e);
             }
         }
         base = null;

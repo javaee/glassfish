@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.logging.*;
 import org.apache.tomcat.util.buf.*;
 
 /**
@@ -68,8 +69,7 @@ import org.apache.tomcat.util.buf.*;
 public final class Expirer  implements ThreadPoolRunnable
 {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(Expirer.class );
+    private static Logger log = Logger.getLogger(Expirer.class.getName());
 
     // We can use Event/Listener, but this is probably simpler
     // and more efficient
@@ -196,7 +196,7 @@ public final class Expirer  implements ThreadPoolRunnable
 
     private static final int dL=0;
     private void debug( String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("Expirer: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("Expirer: " + s );
     }
 }

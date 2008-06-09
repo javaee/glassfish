@@ -73,6 +73,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.InetAddress;
+import java.util.logging.*;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
 
@@ -123,7 +124,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
                             System.getProperty(USE_KEEP_ALIVE)).booleanValue();
 
             if (!useKeepAliveAlgorithm)
-                log.warn("Keep Alive algorith will no be used"); 
+                log.warning("Keep Alive algorith will no be used"); 
         }
         // END OF SJSAS PE 8.1 5036984
 
@@ -209,8 +210,8 @@ public class CoyoteProcessor implements Processor, ActionHook {
     /**
      * Logger.
      */
-    protected static final org.apache.commons.logging.Log log 
-        = org.apache.commons.logging.LogFactory.getLog(CoyoteProcessor.class);
+    protected static final Logger log = Logger.getLogger(
+        CoyoteProcessor.class.getName());
 
 
     /**
@@ -682,7 +683,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
                 error = true;
                 break;
             } catch (Exception e) {
-                log.debug("Error parsing HTTP request", e);
+                log.log(Level.FINE, "Error parsing HTTP request", e);
                 // 400 - Bad Request
                 response.setStatus(400);
                 error = true;
@@ -694,7 +695,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
             try {
                 prepareRequest();
             } catch (Throwable t) {
-                log.debug("Error preparing request", t);
+                log.log(Level.FINE, "Error preparing request", t);
                 // 400 - Internal Server Error
                 response.setStatus(400);
                 error = true;
@@ -735,7 +736,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
                 } catch (InterruptedIOException e) {
                     error = true;
                 } catch (Throwable t) {
-                    log.error("Error processing request", t);
+                    log.log(Level.SEVERE, "Error processing request", t);
                     // 500 - Internal Server Error
                     response.setStatus(500);
                     error = true;
@@ -750,7 +751,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
             } catch (IOException e) {
                 error = true;
             } catch (Throwable t) {
-                log.error("Error finishing request", t);
+                log.log(Level.SEVERE, "Error finishing request", t);
                 // 500 - Internal Server Error
                 response.setStatus(500);
                 error = true;
@@ -762,7 +763,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
             } catch (IOException e) {
                 error = true;
             } catch (Throwable t) {
-                log.error("Error finishing response", t);
+                log.log(Level.SEVERE, "Error finishing response", t);
                 error = true;
             }
 
@@ -895,7 +896,8 @@ public class CoyoteProcessor implements Processor, ActionHook {
                             (SSLSupport.SESSION_ID_KEY, sslO);
                 }
             } catch (Exception e) {
-                log.warn("Exception getting SSL attributes " ,e);
+                log.log(Level.WARNING, "Exception getting SSL attributes",
+                        e);
             }
 
         } else if (actionCode == ActionCode.ACTION_REQ_HOST_ADDR_ATTRIBUTE) {
@@ -965,7 +967,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
                             (SSLSupport.CERTIFICATE_KEY, sslO);
                     }
                 } catch (Exception e) {
-                    log.warn("Exception getting SSL Cert",e);
+                    log.log(Level.WARNING, "Exception getting SSL Cert", e);
                 }
             }
         }

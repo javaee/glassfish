@@ -74,6 +74,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.*;
 
 import javax.management.MBeanRegistration;
 import javax.management.ObjectName;
@@ -100,8 +101,6 @@ import org.apache.catalina.SessionLocker;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.modeler.Registry;
 
 //HERCULES:added
@@ -120,7 +119,7 @@ import com.sun.enterprise.util.uuid.UuidGenerator;
  */
 
 public abstract class ManagerBase implements Manager, MBeanRegistration {
-    protected Log log = LogFactory.getLog(ManagerBase.class);
+    protected Logger log = Logger.getLogger(ManagerBase.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -309,8 +308,8 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                 fileInputStream = new FileInputStream(f);
                 randomIS= new DataInputStream( fileInputStream );
                 randomIS.readLong();
-                if( log.isDebugEnabled() )
-                    log.debug( "Opening " + devRandomSource );
+                if( log.isLoggable(Level.FINE))
+                    log.fine( "Opening " + devRandomSource );
                 return randomIS;
             } catch (IOException ex){
                 return null;
@@ -458,25 +457,29 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
 
         if (this.digest == null) {
             long t1=System.currentTimeMillis();
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("managerBase.getting", algorithm));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("managerBase.getting", algorithm));
             try {
                 this.digest = MessageDigest.getInstance(algorithm);
             } catch (NoSuchAlgorithmException e) {
-                log.error(sm.getString("managerBase.digest", algorithm), e);
+                log.log(Level.SEVERE,
+                        sm.getString("managerBase.digest", algorithm),
+                        e);
                 try {
                     this.digest = MessageDigest.getInstance(DEFAULT_ALGORITHM);
                 } catch (NoSuchAlgorithmException f) {
-                    log.error(sm.getString("managerBase.digest",
-                                     DEFAULT_ALGORITHM), e);
+                    log.log(Level.SEVERE,
+                            sm.getString("managerBase.digest",
+                                         DEFAULT_ALGORITHM),
+                            e);
                     this.digest = null;
                 }
             }
-            if (log.isDebugEnabled())
-                log.debug(sm.getString("managerBase.gotten"));
+            if (log.isLoggable(Level.FINE))
+                log.fine(sm.getString("managerBase.gotten"));
             long t2=System.currentTimeMillis();
-            if( log.isDebugEnabled() )
-                log.debug("getDigest() " + (t2-t1));
+            if (log.isLoggable(Level.FINE))
+                log.fine("getDigest() " + (t2-t1));
         }
 
         return (this.digest);
@@ -665,8 +668,8 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                     fileInputStream = new FileInputStream(f);
                     randomIS= new DataInputStream( fileInputStream);
                     randomIS.readLong();
-                    if( log.isDebugEnabled() )
-                        log.debug( "Opening " + devRandomSource );
+                    if (log.isLoggable(Level.FINE))
+                        log.fine( "Opening " + devRandomSource );
                 } catch( IOException ex ) {
                     randomIS=null;
                 } finally {
@@ -709,14 +712,17 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                         this.random.setSeed(seed);
                     } catch (Exception e) {
                         // Fall back to the simple case
-                        log.error(sm.getString("managerBase.random", randomClass),
-                            e);
+                        log.log(Level.SEVERE,
+                                sm.getString("managerBase.random",
+                                             randomClass),
+                                e);
                         this.random = new java.util.Random();
                         this.random.setSeed(seed);
                     }
                     long t2=System.currentTimeMillis();
                     if( (t2-t1) > 100 )
-                        log.debug(sm.getString("managerBase.seeding", randomClass) + " " + (t2-t1));
+                        log.fine(sm.getString("managerBase.seeding",
+                                              randomClass) + " " + (t2-t1));
                 }
             }
         }
@@ -807,11 +813,12 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                 + path + ",host=" + hst.getName());
                 Registry.getRegistry().registerComponent(this, oname, null );
             } catch (Exception e) {
-                log.error("Error registering ",e);
+                log.log(Level.SEVERE, "Error registering ", e);
             }
         }
-        log.debug("Registering " + oname );
-               
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Registering " + oname );
+        }           
     }
 
     /**
@@ -1071,7 +1078,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                 if( len==bytes.length ) {
                     return;
                 }
-                log.debug("Got " + len + " " + bytes.length );
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Got " + len + " " + bytes.length );
+                }
             } catch( Exception ex ) {
             }
             devRandomSource=null;
@@ -1150,7 +1159,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @deprecated
      */
     protected void log(String message, Throwable throwable) {
-        log.info(message,throwable);
+        log.log(Level.INFO, message, throwable);
     }
 
 
@@ -1354,7 +1363,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     public HashMap getSession(String sessionId) {
         Session s = (Session) sessions.get(sessionId);
         if (s == null) {
-            if (log.isInfoEnabled()) {
+            if (log.isLoggable(Level.INFO)) {
                 log.info("Session not found " + sessionId);
             }
             return null;

@@ -59,6 +59,7 @@ package org.apache.naming;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.logging.*;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.LinkRef;
@@ -92,8 +93,7 @@ public class NamingContext implements Context {
     protected static final NameParser nameParser = new NameParserImpl();
 
 
-    private static org.apache.commons.logging.Log log =
-        org.apache.commons.logging.LogFactory.getLog(NamingContext.class);
+    private static Logger log = Logger.getLogger(NamingContext.class.getName());
 
 
     // ----------------------------------------------------------- Constructors
@@ -837,8 +837,9 @@ public class NamingContext implements Context {
                 } catch (NamingException e) {
                     throw e;
                 } catch (Exception e) {
-                    log.warn(sm.getString
-                             ("namingContext.failResolvingReference"), e);
+                    log.log(Level.WARNING,
+                            sm.getString("namingContext.failResolvingReference"),
+                            e);
                     throw new NamingException(e.getMessage());
                 }
             } else {

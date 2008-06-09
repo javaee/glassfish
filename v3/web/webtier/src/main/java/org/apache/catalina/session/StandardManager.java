@@ -73,6 +73,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.*;
 import javax.servlet.ServletContext;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -410,8 +411,8 @@ public class StandardManager
                 } else if (exception instanceof IOException){
                     throw (IOException)exception;
                 }
-                if (log.isDebugEnabled())
-                    log.debug("Unreported exception in load() "
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Unreported exception in load() "
                         + exception);                
             }
         } else {
@@ -430,8 +431,8 @@ public class StandardManager
      * @exception IOException if an input/output error occurs
      */
     private void doLoad() throws ClassNotFoundException, IOException {    
-        if (log.isDebugEnabled())
-            log.debug("Start: Loading persisted sessions");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Start: Loading persisted sessions");
 
         // Initialize our internal data structures
         sessions.clear();
@@ -440,8 +441,8 @@ public class StandardManager
         File file = file();
         if (file == null)
             return;
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("standardManager.loading", pathname));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("standardManager.loading", pathname));
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         Loader loader = null;
@@ -461,24 +462,26 @@ public class StandardManager
                                         bis, true, classLoader);
                     } catch (Exception ex) {}
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Creating custom object input stream for class loader ");
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Creating custom object input stream for class loader ");
                     }
                     ois = new CustomObjectInputStream(bis, classLoader);
                 }
             }
             if (ois == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Creating standard object input stream");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Creating standard object input stream");
                 }
                 ois = new ObjectInputStream(bis);
             }
         } catch (FileNotFoundException e) {
-            if (log.isDebugEnabled())
-                log.debug("No persisted data file found");
+            if (log.isLoggable(Level.FINE))
+                log.fine("No persisted data file found");
             return;
         } catch (IOException e) {
-            log.error(sm.getString("standardManager.loading.ioe", e), e);
+            log.log(Level.SEVERE, sm.getString("standardManager.loading.ioe",
+                                               e),
+                    e);
             if (ois != null) {
                 try {
                     ois.close();
@@ -495,8 +498,8 @@ public class StandardManager
             try {
                 Integer count = (Integer) ois.readObject();
                 int n = count.intValue();
-                if (log.isDebugEnabled())
-                    log.debug("Loading " + n + " persisted sessions");
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Loading " + n + " persisted sessions");
                 for (int i = 0; i < n; i++) {
                     StandardSession session =
                         StandardSession.deserialize(ois, this);
@@ -505,7 +508,9 @@ public class StandardManager
                     session.activate();
                 }
             } catch (ClassNotFoundException e) {
-              log.error(sm.getString("standardManager.loading.cnfe", e), e);
+              log.log(Level.SEVERE,
+                      sm.getString("standardManager.loading.cnfe", e),
+                      e);
                 if (ois != null) {
                     try {
                         ois.close();
@@ -516,7 +521,9 @@ public class StandardManager
                 }
                 throw e;
             } catch (IOException e) {
-              log.error(sm.getString("standardManager.loading.ioe", e), e);
+              log.log(Level.SEVERE,
+                      sm.getString("standardManager.loading.ioe", e),
+                      e);
                 if (ois != null) {
                     try {
                         ois.close();
@@ -541,8 +548,8 @@ public class StandardManager
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("Finish: Loading persisted sessions");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Finish: Loading persisted sessions");
     }
 
 
@@ -576,8 +583,8 @@ public class StandardManager
                 if (exception instanceof IOException){
                     throw (IOException)exception;
                 }
-                if (log.isDebugEnabled())
-                    log.debug("Unreported exception in unLoad() "
+                if (log.isLoggable(Level.FINE))
+                    log.fine("Unreported exception in unLoad() "
                         + exception);                
             }        
         } else {
@@ -597,8 +604,8 @@ public class StandardManager
      */
     private void doUnload(boolean doExpire) throws IOException {   
 
-        if (log.isDebugEnabled())
-            log.debug("Unloading persisted sessions");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Unloading persisted sessions");
 
         // Open an output stream to the specified pathname, if any
         File file = file();
@@ -611,8 +618,8 @@ public class StandardManager
             return;
         //end HERCULES: add         
         
-        if (log.isDebugEnabled())
-            log.debug(sm.getString("standardManager.unloading", pathname));
+        if (log.isLoggable(Level.FINE))
+            log.fine(sm.getString("standardManager.unloading", pathname));
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
         try {
@@ -630,7 +637,9 @@ public class StandardManager
                 oos = new ObjectOutputStream(new BufferedOutputStream(fos)); 
             }
         } catch (IOException e) {
-            log.error(sm.getString("standardManager.unloading.ioe", e), e);
+            log.log(Level.SEVERE,
+                    sm.getString("standardManager.unloading.ioe", e),
+                    e);
             if (oos != null) {
                 try {
                     oos.close();
@@ -645,8 +654,8 @@ public class StandardManager
         // Write the number of active sessions, followed by the details
         ArrayList list = new ArrayList();
         synchronized (sessions) {
-            if (log.isDebugEnabled())
-                log.debug("Unloading " + sessions.size() + " sessions");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Unloading " + sessions.size() + " sessions");
             try {
                 // START SJSAS 6375689
                 Session actSessions[] = findSessions();
@@ -670,7 +679,9 @@ public class StandardManager
                     oos.writeObject(session);
                 }
             } catch (IOException e) {
-                log.error(sm.getString("standardManager.unloading.ioe", e), e);
+                log.log(Level.SEVERE,
+                        sm.getString("standardManager.unloading.ioe", e),
+                        e);
                 if (oos != null) {
                     try {
                         oos.close();
@@ -702,8 +713,8 @@ public class StandardManager
 
         if (doExpire) {
             // Expire all the sessions we just wrote
-            if (log.isDebugEnabled())
-                log.debug("Expiring " + list.size() + " persisted sessions");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Expiring " + list.size() + " persisted sessions");
             Iterator expires = list.iterator();
             while (expires.hasNext()) {
                 StandardSession session = (StandardSession) expires.next();
@@ -715,8 +726,8 @@ public class StandardManager
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("Unloading complete");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Unloading complete");
 
     }
     
@@ -799,17 +810,18 @@ public class StandardManager
         started = true;
 
         // Force initialization of the random number generator
-        if (log.isTraceEnabled())
-            log.trace("Force random number initialization starting");
+        if (log.isLoggable(Level.FINEST))
+            log.finest("Force random number initialization starting");
         String dummy = generateSessionId();
-        if (log.isTraceEnabled())
-            log.trace("Force random number initialization completed");
+        if (log.isLoggable(Level.FINEST))
+            log.finest("Force random number initialization completed");
 
         // Load unloaded sessions, if any
         try {
             load();
         } catch (Throwable t) {
-            log.error(sm.getString("standardManager.managerLoad"), t);
+            log.log(Level.SEVERE,
+                    sm.getString("standardManager.managerLoad"), t);
         }
 
     }
@@ -825,8 +837,8 @@ public class StandardManager
      */
     public void stop() throws LifecycleException {
 
-        if (log.isDebugEnabled())
-            log.debug("Stopping");
+        if (log.isLoggable(Level.FINE))
+            log.fine("Stopping");
         
         // Validate and update our current component state
         if (!started)
@@ -839,7 +851,9 @@ public class StandardManager
         try {
             unload(false);
         } catch (IOException e) {
-            log.error(sm.getString("standardManager.managerUnload"), e);
+            log.log(Level.SEVERE,
+                    sm.getString("standardManager.managerUnload"),
+                    e);
         }
 
         // Expire all active sessions and notify their listeners
@@ -885,8 +899,9 @@ public class StandardManager
                 setMaxInactiveIntervalSeconds
                     ( ((Integer) event.getNewValue()).intValue()*60 );
             } catch (NumberFormatException e) {
-                log.error(sm.getString("standardManager.sessionTimeout",
-                                 event.getNewValue().toString()));
+                log.log(Level.SEVERE,
+                        sm.getString("standardManager.sessionTimeout",
+                                     event.getNewValue().toString()));
             }
         }
 

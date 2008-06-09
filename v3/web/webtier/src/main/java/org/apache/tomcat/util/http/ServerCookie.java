@@ -60,6 +60,7 @@ import org.apache.tomcat.util.buf.DateTool;
 import java.text.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 
 // START OF IASRI 4830338
 import java.io.UnsupportedEncodingException;
@@ -78,8 +79,7 @@ import java.net.URLEncoder;
  */
 public class ServerCookie implements Serializable {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(ServerCookie.class );
+    private static Logger log = Logger.getLogger(ServerCookie.class.getName());
 
     // START PWC 6392327
     /**
@@ -425,8 +425,8 @@ public class ServerCookie implements Serializable {
     // log
     static final int dbg=1;
     public static void log(String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("ServerCookie: " + s);
+        if (log.isLoggable(Level.FINE))
+	    log.fine("ServerCookie: " + s);
     }
 
     /**

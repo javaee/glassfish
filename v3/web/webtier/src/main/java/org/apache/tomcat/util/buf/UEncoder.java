@@ -59,6 +59,7 @@ package org.apache.tomcat.util.buf;
 
 import org.apache.tomcat.util.buf.*;
 import java.util.BitSet;
+import java.util.logging.*;
 import java.io.*;
 
 /** Efficient implementation for encoders.
@@ -73,8 +74,7 @@ import java.io.*;
  */
 public final class UEncoder {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(UEncoder.class );
+    private static Logger log = Logger.getLogger(UEncoder.class.getName());
 
     // Not static - the set may differ ( it's better than adding
     // an extra check for "/", "+", etc
@@ -213,7 +213,7 @@ public final class UEncoder {
     }
 
     private static void log( String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("Encoder: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("Encoder: " + s );
     }
 }

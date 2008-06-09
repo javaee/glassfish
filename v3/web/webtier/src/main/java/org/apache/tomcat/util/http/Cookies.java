@@ -60,7 +60,7 @@ package org.apache.tomcat.util.http;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.StringTokenizer;
-
+import java.util.logging.*;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 
@@ -75,8 +75,7 @@ import org.apache.tomcat.util.buf.MessageBytes;
  */
 public final class Cookies { // extends MultiMap {
   
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(Cookies.class );
+    private static Logger log = Logger.getLogger(Cookies.class.getName());
 
     // expected average number of cookies per request
     public static final int INITIAL_SIZE=4; 
@@ -478,8 +477,8 @@ public final class Cookies { // extends MultiMap {
     // log
     static final int dbg=0;
     public void log(String s ) {
-        if (log.isDebugEnabled())
-            log.debug("Cookies: " + s);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Cookies: " + s);
     }
 
     /*

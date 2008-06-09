@@ -60,6 +60,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
+import java.util.logging.*;
 
 import org.apache.catalina.security.SecurityUtil;
 import com.sun.grizzly.tcp.Request;
@@ -80,8 +81,7 @@ public class InputBuffer extends Reader
     implements ByteChunk.ByteInputChannel, CharChunk.CharInputChannel,
                CharChunk.CharOutputChannel {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( InputBuffer.class );
+    private static Logger log = Logger.getLogger(InputBuffer.class.getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -255,8 +255,8 @@ public class InputBuffer extends Reader
      */
     public void recycle() {
 
-        if (log.isTraceEnabled())
-            log.trace("recycle()");
+        if (log.isLoggable(Level.FINEST))
+            log.finest("recycle()");
 
         state = INITIAL_STATE;
         bytesRead = 0;
@@ -329,8 +329,8 @@ public class InputBuffer extends Reader
     public int realReadBytes(byte cbuf[], int off, int len)
 	throws IOException {
 
-        if (log.isDebugEnabled())
-            log.debug("realRead() " + coyoteRequest);
+        if (log.isLoggable(Level.FINE))
+            log.fine("realRead() " + coyoteRequest);
 
         if (closed)
             return -1;
@@ -387,14 +387,14 @@ public class InputBuffer extends Reader
         // START OF SJSAS 6231069
         initChar();
         // END OF SJSAS 6231069
-        if (log.isDebugEnabled())
-            log.debug("realRead() " + cb.getOffset() + " " + len);
+        if (log.isLoggable(Level.FINE))
+            log.fine("realRead() " + cb.getOffset() + " " + len);
 
         if (!gotEnc)
             setConverter();
 
-        if (log.isDebugEnabled())
-            log.debug("encoder:  " + conv + " " + gotEnc);
+        if (log.isLoggable(Level.FINE))
+            log.fine("encoder:  " + conv + " " + gotEnc);
 
         if (bb.getLength() <= 0) {
             int nRead = realReadBytes(bb.getBytes(), 0, bb.getBytes().length);
@@ -554,8 +554,8 @@ public class InputBuffer extends Reader
         if (coyoteRequest != null)
             enc = coyoteRequest.getCharacterEncoding();
 
-        if (log.isDebugEnabled())
-            log.debug("Got encoding: " + enc);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Got encoding: " + enc);
 
         gotEnc = true;
         if (enc == null)
@@ -578,8 +578,8 @@ public class InputBuffer extends Reader
                     if (e instanceof IOException)
                         throw (IOException)e; 
                     
-                    if (log.isDebugEnabled())
-                        log.debug("setConverter: " + ex.getMessage());
+                    if (log.isLoggable(Level.FINE))
+                        log.fine("setConverter: " + ex.getMessage());
                 }
             } else {
                 conv = new B2CConverter(enc);

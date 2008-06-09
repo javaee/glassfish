@@ -60,6 +60,7 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 
 // Depends: JDK1.1
 
@@ -68,8 +69,8 @@ import java.util.*;
  */
 public final class IntrospectionUtils {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( IntrospectionUtils.class );
+    private static Logger log = Logger.getLogger(
+        IntrospectionUtils.class.getName());
 
     /** Call execute() - any ant-like task should work
      */
@@ -376,7 +377,8 @@ public final class IntrospectionUtils {
 	    }
 
 	} catch( IllegalArgumentException ex2 ) {
-            log.warn("IAE " + o + " " + name + " " + value, ex2);
+            log.log(Level.WARNING, "IAE " + o + " " + name + " " + value,
+                    ex2);
 	} catch( SecurityException ex1 ) {
 	    if( dbg > 0 )
 		d("SecurityException for " + o.getClass() + " " +
@@ -426,7 +428,7 @@ public final class IntrospectionUtils {
 	    }
 
 	} catch( IllegalArgumentException ex2 ) {
-            log.warn("IAE " + o + " " + name, ex2);
+            log.log(Level.WARNING, "IAE " + o + " " + name, ex2);
 	} catch( SecurityException ex1 ) {
 	    if( dbg > 0 )
 		d("SecurityException for " + o.getClass() + " " +
@@ -992,7 +994,7 @@ public final class IntrospectionUtils {
     // debug --------------------
     static final int dbg=0;
     static void d(String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("IntrospectionUtils: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("IntrospectionUtils: " + s );
     }
 }

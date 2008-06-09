@@ -67,6 +67,7 @@ import java.util.HashMap;
 // END GlassFish 1024
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.*;
 
 /**
  * Mapper, which implements the servlet API mapping rules (which are derived
@@ -77,8 +78,8 @@ import java.util.ArrayList;
 public final class Mapper {
 
 
-    private static org.apache.commons.logging.Log logger =
-        org.apache.commons.logging.LogFactory.getLog(Mapper.class);
+    private static Logger logger = Logger.getLogger(Mapper.class.getName());
+
     // ----------------------------------------------------- Instance Variables
 
 
@@ -251,7 +252,7 @@ public final class Mapper {
             pos = find(hosts, hostName);
         }
         if (pos < 0) {
-            logger.error("No host found: " + hostName);
+            logger.severe("No host found: " + hostName);
         }
         Host host = hosts[pos];
         if (host.name.equals(hostName)) {
@@ -362,7 +363,7 @@ public final class Mapper {
             Context[] contexts = host.contextList.contexts;
             int pos2 = find(contexts, contextPath);
             if( pos2<0 ) {
-                logger.error("No context found: " + contextPath );
+                logger.severe("No context found: " + contextPath );
                 return;
             }
             Context context = contexts[pos2];

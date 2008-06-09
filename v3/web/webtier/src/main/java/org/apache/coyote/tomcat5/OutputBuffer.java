@@ -63,6 +63,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
+import java.util.logging.*;
 
 import javax.servlet.http.Cookie;
 
@@ -89,8 +90,7 @@ import com.sun.grizzly.util.buf.C2BConverter;
 public class OutputBuffer extends Writer
     implements ByteChunk.ByteOutputChannel {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( OutputBuffer.class );
+    private static Logger log = Logger.getLogger(OutputBuffer.class.getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -291,8 +291,8 @@ public class OutputBuffer extends Writer
      */
     public void recycle() {
 
-	if (log.isDebugEnabled())
-            log.debug("recycle()");
+	if (log.isLoggable(Level.FINE))
+            log.fine("recycle()");
 
         initial = true;
         bytesWritten = 0;
@@ -405,8 +405,8 @@ public class OutputBuffer extends Writer
     public void realWriteBytes(byte buf[], int off, int cnt)
 	throws IOException {
 
-        if (log.isDebugEnabled())
-            log.debug("realWrite(b, " + off + ", " + cnt + ") " + response);
+        if (log.isLoggable(Level.FINE))
+            log.fine("realWrite(b, " + off + ", " + cnt + ") " + response);
 
         if (closed)
             return;
@@ -447,8 +447,8 @@ public class OutputBuffer extends Writer
 
         if (closed)
             return;
-        if (log.isDebugEnabled())
-            log.debug("write(b,off,len)");
+        if (log.isLoggable(Level.FINE))
+            log.fine("write(b,off,len)");
 
         bb.append(b, off, len);
         bytesWritten += len;
@@ -562,8 +562,8 @@ public class OutputBuffer extends Writer
         if (response != null)
             enc = response.getCharacterEncoding();
 
-        if (log.isDebugEnabled())
-            log.debug("Got encoding: " + enc);
+        if (log.isLoggable(Level.FINE))
+            log.fine("Got encoding: " + enc);
 
         gotEnc = true;
         if (enc == null)
@@ -586,8 +586,8 @@ public class OutputBuffer extends Writer
                     if (e instanceof IOException)
                         throw (IOException)e; 
                     
-                    if (log.isDebugEnabled())
-                        log.debug("setConverter: " + ex.getMessage());
+                    if (log.isLoggable(Level.FINE))
+                        log.fine("setConverter: " + ex.getMessage());
                 }
             } else {
                 conv = C2BConverter.getInstance(bb, enc);
@@ -607,8 +607,8 @@ public class OutputBuffer extends Writer
     public void flushBytes()
         throws IOException {
 
-        if (log.isDebugEnabled())
-            log.debug("flushBytes() " + bb.getLength());
+        if (log.isLoggable(Level.FINE))
+            log.fine("flushBytes() " + bb.getLength());
         bb.flushBuffer();
 
     }

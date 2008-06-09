@@ -56,6 +56,7 @@
 package org.apache.coyote.tomcat5;
 
 import java.io.IOException;
+import java.util.logging.*;
 
 // START S1AS 6188932
 import java.security.cert.X509Certificate;
@@ -71,8 +72,6 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
@@ -107,7 +106,7 @@ import com.sun.appserv.security.provider.ProxyHandler;
 public class CoyoteAdapter
     implements Adapter 
  {
-    private static Log log = LogFactory.getLog(CoyoteAdapter.class);
+    private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -232,8 +231,8 @@ public class CoyoteAdapter
         if (!connector.isEnabled()) {
             String msg = sm.getString("coyoteAdapter.listenerOff",
                                       String.valueOf(connector.getPort()));
-            if (log.isDebugEnabled()) {
-                log.debug(msg);            
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(msg);            
             }
             response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
             return;
@@ -268,9 +267,9 @@ public class CoyoteAdapter
                         certs = proxyHandler.getSSLClientCertificateChain(
                                     request.getRequest());
                     } catch (CertificateException ce) {
-                        log.error(sm.getString(
-                            "coyoteAdapter.proxyAuthCertError"),
-                            ce);
+                        log.log(Level.SEVERE,
+                                sm.getString("coyoteAdapter.proxyAuthCertError"),
+                                ce);
                     }
                     if (certs != null) {
                         request.setAttribute(Globals.CERTIFICATES_ATTR,
@@ -304,7 +303,7 @@ public class CoyoteAdapter
             request.recycle();
             response.recycle();
         } catch (Throwable t) {
-            log.error(sm.getString("coyoteAdapter.service"), t);
+            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
                         // Recycle the wrapper request and response
             request.recycle();
             response.recycle();
@@ -332,7 +331,7 @@ public class CoyoteAdapter
             response.finishResponse();
             req.action( ActionCode.ACTION_POST_REQUEST , null);
         }catch (Throwable t) {
-            log.error(sm.getString("coyoteAdapter.service"), t);
+            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
         } finally {
             // Recycle the wrapper request and response
             request.recycle();
@@ -976,7 +975,7 @@ public class CoyoteAdapter
      * @param throwable Associated exception
      */
     protected void log(String message, Throwable throwable) {
-        log.error( message, throwable);
+        log.log(Level.SEVERE, message, throwable);
     }
 
 
@@ -1022,7 +1021,7 @@ public class CoyoteAdapter
                 ((ContainerBase)connector.getContainer())
                     .fireContainerEvent(type,data);
             } catch (Throwable t){
-                log.error(sm.getString("coyoteAdapter.service"), t);
+                log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
             }
         }
     }

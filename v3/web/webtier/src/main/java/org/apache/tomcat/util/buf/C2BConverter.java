@@ -66,6 +66,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
+import java.util.logging.*;
 
 /** Efficient conversion of character to bytes.
  *  
@@ -74,8 +75,7 @@ import java.nio.charset.CodingErrorAction;
 
 public class C2BConverter {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(C2BConverter.class );
+    private static Logger log = Logger.getLogger(C2BConverter.class.getName());
 
     protected ByteChunk bb;
     protected String enc;
@@ -183,8 +183,8 @@ public class C2BConverter {
                                 charC.getOffset(), charC.getLength());
             //System.out.println("XXX Converting " + mb.getCharChunk() );
         } else {
-            if (log.isDebugEnabled()) 
-                log.debug("XXX unknowon type " + type );
+            if (log.isLoggable(Level.FINE)) 
+                log.fine("XXX unknowon type " + type );
         }
         //System.out.println("C2B: XXX " + bb.getBuffer() + bb.getLength()); 
         setByteChunk(orig);

@@ -62,6 +62,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Hashtable;
+import java.util.logging.*;
 
 import javax.management.Attribute;
 import javax.management.MBeanException;
@@ -79,7 +80,6 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Group;
 import org.apache.catalina.Host;
 import org.apache.catalina.Loader;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Role;
@@ -94,8 +94,6 @@ import org.apache.catalina.deploy.ContextResourceLink;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
 
@@ -110,7 +108,7 @@ import org.apache.commons.modeler.Registry;
 
 public class MBeanUtils {
 
-    private static Log log = LogFactory.getLog(MBeanUtils.class);
+    private static Logger log = Logger.getLogger(MBeanUtils.class.getName());
 
     private static final ClassLoader serverLifecycleListenerClassLoader =
         ServerLifecycleListener.class.getClassLoader();
@@ -251,7 +249,9 @@ public class MBeanUtils {
         ModelMBean mbean = managed.createMBean(context);
         ObjectName oname = createObjectName(domain, context);
         if( mserver.isRegistered(oname)) {
-            log.debug("Already registered " + oname);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Already registered " + oname);
+            }
             mserver.unregisterMBean(oname);
         }
         mserver.registerMBean(mbean, oname);
@@ -516,7 +516,7 @@ public class MBeanUtils {
      *
      * @exception Exception if an MBean cannot be created or registered
      */
-    static ModelMBean createMBean(Logger logger)
+    static ModelMBean createMBean(org.apache.catalina.Logger logger)
         throws Exception {
 
         String mname = createManagedName(logger);
@@ -1163,7 +1163,7 @@ public class MBeanUtils {
      * @exception MalformedObjectNameException if a name cannot be created
      */
     static ObjectName createObjectName(String domain,
-                                              Host host)
+                                       Host host)
         throws MalformedObjectNameException {
 
         ObjectName name = null;
@@ -1186,7 +1186,7 @@ public class MBeanUtils {
      * @exception MalformedObjectNameException if a name cannot be created
      */
     static ObjectName createObjectName(String domain,
-                                              Loader loader)
+                                       Loader loader)
         throws MalformedObjectNameException {
 
         ObjectName name = null;
@@ -1242,7 +1242,7 @@ public class MBeanUtils {
      * @exception MalformedObjectNameException if a name cannot be created
      */
     static ObjectName createObjectName(String domain,
-                                              Logger logger)
+                                       org.apache.catalina.Logger logger)
         throws MalformedObjectNameException {
 
         ObjectName name = null;
@@ -1674,7 +1674,7 @@ public class MBeanUtils {
                 stream.close();
             } else {
                 // XXX: i18n
-                log.warn("MBean descriptors not found:" + resource);
+                log.warning("MBean descriptors not found:" + resource);
             }
         } catch (Throwable t) {
             t.printStackTrace(System.out);
@@ -2084,7 +2084,7 @@ public class MBeanUtils {
      *
      * @exception Exception if an MBean cannot be deregistered
      */
-    static void destroyMBean(Logger logger)
+    static void destroyMBean(org.apache.catalina.Logger logger)
         throws Exception {
 
         String mname = createManagedName(logger);

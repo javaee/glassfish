@@ -58,6 +58,7 @@ package org.apache.tomcat.util.buf;
 
 import java.text.*;
 import java.util.*;
+import java.util.logging.*;
 import java.io.Serializable;
 import java.io.IOException;
 import org.apache.tomcat.util.buf.*;
@@ -76,8 +77,7 @@ import org.apache.tomcat.util.buf.*;
  */
 public final class UTF8Decoder extends B2CConverter {
  
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(UTF8Decoder.class );
+    private static Logger log = Logger.getLogger(UTF8Decoder.class.getName());
 
     // may have state !!
     
@@ -185,8 +185,8 @@ public final class UTF8Decoder extends B2CConverter {
 
     private static int debug=1;
     void log(String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("UTF8Decoder: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("UTF8Decoder: " + s );
     }
     
 }

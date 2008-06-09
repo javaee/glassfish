@@ -63,10 +63,8 @@ import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-
 import java.util.*;
-
-import org.apache.commons.logging.*;
+import java.util.logging.*;
 
 /**
  *  Log using common-logging.
@@ -92,9 +90,9 @@ public  class CommonLogHandler extends LogHandler {
     {
         if( prefix==null ) prefix="tomcat";
 
-        org.apache.commons.logging.Log l=(org.apache.commons.logging.Log)loggers.get( prefix );
+        Logger l = (Logger)loggers.get( prefix );
         if( l==null ) {
-            l=LogFactory.getLog( prefix );
+            l=Logger.getLogger( prefix );
             loggers.put( prefix, l );
         }
         
@@ -102,26 +100,26 @@ public  class CommonLogHandler extends LogHandler {
 
         if( t==null ) {
             if( verbosityLevel == Log.FATAL )
-                l.fatal(msg);
+                l.severe(msg);
             else if( verbosityLevel == Log.ERROR )
-                l.error( msg );
+                l.severe( msg );
             else if( verbosityLevel == Log.WARNING )
-                l.warn( msg );
+                l.warning( msg );
             else if( verbosityLevel == Log.INFORMATION)
                 l.info( msg );
             else if( verbosityLevel == Log.DEBUG )
-                l.debug( msg );
+                l.fine( msg );
         } else {
             if( verbosityLevel == Log.FATAL )
-                l.fatal(msg, t);
+                l.log(Level.SEVERE, msg, t);
             else if( verbosityLevel == Log.ERROR )
-                l.error( msg, t );
+                l.log(Level.SEVERE, msg, t );
             else if( verbosityLevel == Log.WARNING )
-                l.warn( msg, t );
+                l.log(Level.WARNING, msg, t );
             else if( verbosityLevel == Log.INFORMATION)
-                l.info( msg, t );
+                l.log(Level.INFO, msg, t );
             else if( verbosityLevel == Log.DEBUG )
-                l.debug( msg, t );
+                l.log(Level.FINE, msg, t );
         }
     }
 

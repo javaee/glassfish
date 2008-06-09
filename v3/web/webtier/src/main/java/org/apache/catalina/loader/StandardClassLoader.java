@@ -81,6 +81,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.logging.*;
 import org.apache.naming.JndiPermission;
 import org.glassfish.web.loader.Reloader;
 
@@ -113,8 +114,8 @@ public class StandardClassLoader
     implements Reloader {
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( StandardClassLoader.class );
+    private static Logger log = Logger.getLogger(
+        StandardClassLoader.class.getName());
 
     // ----------------------------------------------------------- Constructors
 
@@ -1073,8 +1074,8 @@ public class StandardClassLoader
      */
     private void log(String message) {
 
-        if (log.isDebugEnabled())
-            log.debug("StandardClassLoader: " + message);
+        if (log.isLoggable(Level.FINE))
+            log.fine("StandardClassLoader: " + message);
 
     }
 
@@ -1087,8 +1088,8 @@ public class StandardClassLoader
      */
     private void log(String message, Throwable throwable) {
 
-        if (log.isDebugEnabled())
-            log.debug("StandardClassLoader: " + message, throwable);
+        if (log.isLoggable(Level.FINE))
+            log.log(Level.FINE, "StandardClassLoader: " + message, throwable);
 
     }
 

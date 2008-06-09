@@ -59,6 +59,7 @@ package org.apache.tomcat.util.buf;
 import org.apache.tomcat.util.buf.*;
 
 import java.util.BitSet;
+import java.util.logging.*;
 import java.io.*;
 
 /** 
@@ -71,8 +72,7 @@ import java.io.*;
  */
 public final class UDecoder {
     
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(UDecoder.class );
+    private static Logger log = Logger.getLogger(UDecoder.class.getName());
 
     protected static final boolean ALLOW_ENCODED_SLASH = 
         Boolean.valueOf(System.getProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "false")).booleanValue();
@@ -320,8 +320,8 @@ public final class UDecoder {
 
     private final static int debug=0;
     private static void log( String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("URLDecoder: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("URLDecoder: " + s );
     }
 
 }

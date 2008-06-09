@@ -78,6 +78,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Locale;
 import java.util.Date;
+import java.util.logging.*;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletContext;
@@ -122,8 +123,7 @@ import org.apache.catalina.Wrapper;
      */
 public class ProcessHelper {
 
-private static org.apache.commons.logging.Log log=
-    org.apache.commons.logging.LogFactory.getLog( ProcessHelper.class );
+private static Logger log = Logger.getLogger(ProcessHelper.class.getName());
 
 /** script/command to be executed */
 private String command = null;
@@ -562,8 +562,8 @@ protected String getPostInput(Hashtable params) {
 
 
 private void log(String s) {
-    if (log.isDebugEnabled())
-        log.debug(s);
+    if (log.isLoggable(Level.FINE))
+        log.fine(s);
 }
 
 

@@ -57,8 +57,7 @@
 package org.apache.tomcat.util.threads;
 
 import java.util.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.*;
 import org.apache.tomcat.util.res.StringManager;
 
 /**
@@ -68,7 +67,7 @@ import org.apache.tomcat.util.res.StringManager;
  */
 public class ThreadPool  {
 
-    private static Log log = LogFactory.getLog(ThreadPool.class);
+    private static Logger log = Logger.getLogger(ThreadPool.class.getName());
 
     private static StringManager sm =
         StringManager.getManager("org.apache.tomcat.util.threads.res");
@@ -340,11 +339,11 @@ public class ThreadPool  {
                     // it'll never actually happen, since nowhere
                     // do we say pool.interrupt().
                     catch(InterruptedException e) {
-                        log.error("Unexpected exception", e);
+                        log.log(Level.SEVERE, "Unexpected exception", e);
                     }
-		    if( log.isDebugEnabled() ) {
-			log.debug("Finished waiting: CTC="+currentThreadCount +
-				  ", CTB=" + currentThreadsBusy);
+		    if( log.isLoggable(Level.FINE) ) {
+			log.fine("Finished waiting: CTC="+currentThreadCount +
+				 ", CTB=" + currentThreadsBusy);
                     }
                     // Pool was stopped. Get away of the pool.
                     if( stopThePool) {
@@ -367,16 +366,16 @@ public class ThreadPool  {
         return c;
     }
 
-    private static void logFull(Log loghelper, int currentThreadCount,
+    private static void logFull(Logger loghelper, int currentThreadCount,
                                 int maxThreads) {
 	if( logfull ) {
-            log.error(sm.getString("threadpool.busy",
-                                   Integer.valueOf(currentThreadCount),
-                                   Integer.valueOf(maxThreads)));
+            log.severe(sm.getString("threadpool.busy",
+                                    Integer.valueOf(currentThreadCount),
+                                    Integer.valueOf(maxThreads)));
             logfull=false;
-        } else if( log.isDebugEnabled() ) {
-            log.debug("All threads are busy " + currentThreadCount + " " +
-                      maxThreads );
+        } else if( log.isLoggable(Level.FINE) ) {
+            log.fine("All threads are busy " + currentThreadCount + " " +
+                     maxThreads );
         }
     }
 
@@ -396,7 +395,9 @@ public class ThreadPool  {
 		     * Do nothing... The show must go on, we are shutting
 		     * down the pool and nothing should stop that.
 		     */
-		    log.error("Ignored exception while shutting down thread pool", t);
+		    log.log(Level.SEVERE,
+                            "Ignored exception while shutting down thread pool",
+                            t);
                 }
             }
             currentThreadsBusy = currentThreadCount = 0;
@@ -470,9 +471,9 @@ public class ThreadPool  {
         if(maxThreads <= 0) {
             maxThreads = MAX_THREADS;
         } else if (maxThreads < MAX_THREADS_MIN) {
-            log.warn(sm.getString("threadpool.max_threads_too_low",
-                                  Integer.valueOf(maxThreads),
-                                  Integer.valueOf(MAX_THREADS_MIN)));
+            log.warning(sm.getString("threadpool.max_threads_too_low",
+                                     Integer.valueOf(maxThreads),
+                                     Integer.valueOf(MAX_THREADS_MIN)));
             maxThreads = MAX_THREADS_MIN;
         }
 
@@ -569,7 +570,8 @@ public class ThreadPool  {
                     p.checkSpareControllers();
 
                 } catch(Throwable t) {
-		    ThreadPool.log.error("Unexpected exception", t);
+		    ThreadPool.log.log(Level.SEVERE, "Unexpected exception",
+                                       t);
                 }
             }
         }
@@ -660,8 +662,8 @@ public class ThreadPool  {
                     }
 
                     if( _shouldTerminate ) {
-                            if( p.log.isDebugEnabled())
-                                p.log.debug( "Terminate");
+                            if( p.log.isLoggable(Level.FINE))
+                                p.log.fine( "Terminate");
                             break;
                     }
 
@@ -671,8 +673,8 @@ public class ThreadPool  {
                             if( _toRun != null ) {
                                 Object thData[]=_toRun.getInitData();
                                 t.setThreadData(p, thData);
-                                if(p.log.isDebugEnabled())
-                                    p.log.debug( "Getting new thread data");
+                                if(p.log.isLoggable(Level.FINE))
+                                    p.log.fine( "Getting new thread data");
                             }
                             noThData = false;
                         }
@@ -683,13 +685,13 @@ public class ThreadPool  {
                             } else if( toRunRunnable != null ) { 
                                 toRunRunnable.run();
                             } else {
-                                if( p.log.isDebugEnabled())
-                                    p.log.debug( "No toRun ???");
+                                if( p.log.isLoggable(Level.FINE))
+                                    p.log.fine( "No toRun ???");
                             }
                         }
                     } catch(Throwable t) {
-			p.log.error(sm.getString("threadpool.thread_error",
-                                                 t, toRun.toString()));
+			p.log.severe(sm.getString("threadpool.thread_error",
+                                                  t, toRun.toString()));
                        /*
                         * The runnable throw an exception (can be even a ThreadDeath),
                         * signalling that the thread die.
@@ -719,7 +721,7 @@ public class ThreadPool  {
                     }
                 } catch(InterruptedException ie) { /* for the wait operation */
 		    // can never happen, since we don't call interrupt
-    		    p.log.error("Unexpected exception", ie);
+    		    p.log.log(Level.SEVERE, "Unexpected exception", ie);
                 }
             }
           } finally {

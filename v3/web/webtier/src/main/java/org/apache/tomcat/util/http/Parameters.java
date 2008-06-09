@@ -66,6 +66,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
 // END PWC 6057385
+import java.util.logging.*;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
@@ -78,8 +79,7 @@ import org.apache.tomcat.util.collections.MultiMap;
  */
 public final class Parameters extends MultiMap {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(Parameters.class );
+    private static Logger log = Logger.getLogger(Parameters.class.getName());
 
     // Transition: we'll use the same Hashtable( String->String[] )
     // for the beginning. When we are sure all accesses happen through
@@ -639,8 +639,8 @@ public final class Parameters extends MultiMap {
 
     private static int debug=0;
     private void log(String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("Parameters: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("Parameters: " + s );
     }
    
     // -------------------- Old code, needs rewrite --------------------

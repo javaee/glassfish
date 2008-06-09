@@ -62,10 +62,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 /**
  *  See JdkCompat. This is an extension of that class for Jdk1.4 support.
  *

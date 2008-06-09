@@ -56,6 +56,7 @@
 package org.apache.catalina.security;
 
 import java.security.Security;
+import java.util.logging.*;
 import org.apache.catalina.startup.CatalinaProperties;
 
 /**
@@ -67,8 +68,7 @@ import org.apache.catalina.startup.CatalinaProperties;
 public final class SecurityConfig{
     private static SecurityConfig singleton = null;
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( SecurityConfig.class );
+    private static Logger log = Logger.getLogger(SecurityConfig.class.getName());
 
     
     private final static String PACKAGE_ACCESS =  "sun.,"
@@ -102,8 +102,10 @@ public final class SecurityConfig{
             packageDefinition = CatalinaProperties.getProperty("package.definition");
             packageAccess = CatalinaProperties.getProperty("package.access");
         } catch (java.lang.Exception ex){
-            if (log.isDebugEnabled()){
-                log.debug("Unable to load properties using CatalinaProperties", ex); 
+            if (log.isLoggable(Level.FINE)){
+                log.log(Level.FINE,
+                        "Unable to load properties using CatalinaProperties",
+                        ex); 
             }            
         }
     }

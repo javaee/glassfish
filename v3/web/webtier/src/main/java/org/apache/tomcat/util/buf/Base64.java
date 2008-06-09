@@ -57,6 +57,7 @@
 
 package org.apache.tomcat.util.buf;
 
+import java.util.logging.*;
 
 /**
  * This class provides encode/decode for RFC 2045 Base64 as
@@ -73,8 +74,7 @@ package org.apache.tomcat.util.buf;
 public final class Base64 {
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( Base64.class );
+    private static Logger log = Logger.getLogger(Base64.class.getName());
 
     static private final int  BASELENGTH         = 255;
     static private final int  LOOKUPLENGTH       = 63;
@@ -289,8 +289,8 @@ public final class Base64 {
 	    
 	    if ( v >= 64 ) {
 		if( chars[i] != '=' )
-                    if (log.isDebugEnabled())
-		        log.debug("Wrong char in base64: " + chars[i]);
+                    if (log.isLoggable(Level.FINE))
+		        log.fine("Wrong char in base64: " + chars[i]);
 	    } else {
 		acc= ( acc << 6 ) | v;
 		shift += 6;

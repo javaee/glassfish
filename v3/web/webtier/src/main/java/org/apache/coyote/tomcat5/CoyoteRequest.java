@@ -80,6 +80,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.logging.*;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
@@ -118,7 +119,6 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Manager;
 // START SJSAS 6406580
 import org.apache.catalina.session.PersistentManagerBase;
@@ -139,10 +139,6 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.apache.catalina.security.SecurityUtil;
-import org.apache.commons.logging.Log;
-// START CR 6309511
-import org.apache.commons.logging.LogFactory;
-// END CR 6309511
 
 // START S1AS 6170450
 import com.sun.appserv.security.provider.ProxyHandler;
@@ -224,7 +220,7 @@ public class CoyoteRequest
         StringManager.getManager(Constants.Package);
 
     // START CR 6309511
-    private static final Log log = LogFactory.getLog(CoyoteRequest.class);
+    private static final Logger log = Logger.getLogger(CoyoteRequest.class.getName());
     // END CR 6309511
 
     /**
@@ -1437,7 +1433,7 @@ public class CoyoteRequest
                 remoteAddr = connector.getProxyHandler().getRemoteAddress(
                                             getRequest());
                 if (remoteAddr == null) {
-                    log.warn(sm.getString(
+                    log.warning(sm.getString(
                         "coyoteRequest.nullRemoteAddressFromProxy"));
                 }
                 return remoteAddr;
@@ -1473,13 +1469,13 @@ public class CoyoteRequest
                     try {
                         remoteHost = InetAddress.getByName(addr).getHostName();
                     } catch (UnknownHostException e) {
-                        log.warn(sm.getString(
-                                    "coyoteRequest.unknownHost",
-                                    addr),
-                                 e);
+                        log.log(Level.WARNING,
+                                sm.getString("coyoteRequest.unknownHost",
+                                             addr),
+                                e);
                     }
                 } else {
-                    log.warn(sm.getString(
+                    log.warning(sm.getString(
                         "coyoteRequest.nullRemoteAddressFromProxy"));
                 }
             // END SJSAS 6347215
@@ -1809,8 +1805,8 @@ public class CoyoteRequest
         if (requestParametersParsed || usingReader) {
             String contextName =
                 (getContext() != null ? getContext().getName() : "UNKNOWN");
-            log.warn(sm.getString("coyoteRequest.setCharacterEncoding.ise",
-                                  enc, contextName));
+            log.warning(sm.getString("coyoteRequest.setCharacterEncoding.ise",
+                                     enc, contextName));
             return;
         }
         // END SJSAS 4936855
@@ -3550,10 +3546,10 @@ public class CoyoteRequest
                     parseSessionVersionString(sessionVersionString);
                     setRequestedSessionCookie(true);
                     setRequestedSessionURL(false);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Requested cookie session id is " +
-                                  ((HttpServletRequest) getRequest())
-                                  .getRequestedSessionId());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Requested cookie session id is " +
+                                 ((HttpServletRequest) getRequest())
+                                 .getRequestedSessionId());
                     }
                 } else {
                     if (!isRequestedSessionIdValid()) {
@@ -3629,7 +3625,7 @@ public class CoyoteRequest
                 }
             } catch (IOException e) {
                 // Ignore
-                log.error("Invalid URI encoding; using HTTP default");
+                log.severe("Invalid URI encoding; using HTTP default");
                 connector.setURIEncoding(null);
             }
             if (conv != null) {
@@ -3639,7 +3635,7 @@ public class CoyoteRequest
                                  cc.getLength());
                     return;
                 } catch (IOException e) {
-                    log.error("Invalid URI character encoding; trying ascii");
+                    log.severe("Invalid URI character encoding; trying ascii");
                     cc.recycle();
                 }
             }
@@ -3665,7 +3661,7 @@ public class CoyoteRequest
      */
     private void log(String message) {
 
-        Logger logger = connector.getContainer().getLogger();
+        org.apache.catalina.Logger logger = connector.getContainer().getLogger();
         String localName = "CoyoteRequest";
         if (logger != null)
             logger.log(localName + " " + message);
@@ -3683,7 +3679,7 @@ public class CoyoteRequest
      */
     private void log(String message, Throwable throwable) {
 
-        Logger logger = connector.getContainer().getLogger();
+        org.apache.catalina.Logger logger = connector.getContainer().getLogger();
         String localName = "CoyoteRequest";
         if (logger != null)
             logger.log(localName + " " + message, throwable);

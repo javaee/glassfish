@@ -77,10 +77,6 @@ import org.apache.naming.EjbRef;
 public class EjbFactory
     implements ObjectFactory {
 
-
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( EjbFactory.class );
-
     // ----------------------------------------------------------- Constructors
 
 

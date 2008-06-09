@@ -78,6 +78,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Locale;
 import java.util.Date;
+import java.util.logging.*;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletContext;
@@ -107,8 +108,7 @@ import org.apache.catalina.Wrapper;
 public class CGIProcessEnvironment extends ProcessEnvironment {
 
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog( CGIProcessEnvironment.class );
+    private static Logger log = Logger.getLogger(CGIProcessEnvironment.class.getName());
 
     /** cgi command's query parameters */
     private Hashtable queryParameters = null;

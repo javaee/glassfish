@@ -56,6 +56,8 @@
 
 package org.apache.tomcat.util.collections;
 
+import java.util.logging.*;
+
 /**
  * Simple object pool. Based on ThreadPool and few other classes
  *
@@ -66,8 +68,7 @@ package org.apache.tomcat.util.collections;
  */
 public final class SimplePool  {
 
-    private static org.apache.commons.logging.Log log=
-        org.apache.commons.logging.LogFactory.getLog(SimplePool.class );
+    private static Logger log = Logger.getLogger(SimplePool.class.getName());
 
     /*
      * Where the threads are held.
@@ -160,7 +161,7 @@ public final class SimplePool  {
     }
     
     private void log( String s ) {
-        if (log.isDebugEnabled())
-	    log.debug("SimplePool: " + s );
+        if (log.isLoggable(Level.FINE))
+	    log.fine("SimplePool: " + s );
     }
 }
