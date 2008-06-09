@@ -205,6 +205,9 @@ public class LogDomains
 
     /** GMS Logger */
     public static final String GMS_LOGGER = DOMAIN_ROOT +"ee.enterprise.system.gms";
+    
+    /** AMX Logger */
+    public static final String AMX_LOGGER = DOMAIN_ROOT +"enterprise.system.AMX";
 
 
     /**
@@ -241,9 +244,24 @@ public class LogDomains
                     return null;
                 }
             };
-            LogManager.getLogManager().addLogger(l);
+            
+            // We must not return an orphan logger (the one we just created) if
+            // a race condition has already created one
+            if ( ! LogManager.getLogManager().addLogger(l) )
+            {
+                final Logger existing = LogManager.getLogManager().getLogger(name);
+                if ( existing == null )
+                {
+                    // Can loggers be removed?  If not, this should be impossible
+                    // this time, make the call and hope for the best.
+                    LogManager.getLogManager().addLogger(l);
+                }
+                else
+                {
+                    l = existing;
+                }
+            }
         }
         return l;
-        //return Logger.getLogger(name, getLoggerResourceBundleName(name));
     }
 }
