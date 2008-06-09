@@ -113,7 +113,18 @@ public class CLIRemoteCommand {
                 else
                     uriString += URLEncoder.encode(fileParameter.getPath(), "UTF-8");
             }
-            
+
+            // add deployment plan
+            if(deploymentPlanParameter != null) {
+                uriString += "?deploymentplan=";
+                // if we are about to upload it -- give just the name
+                // o/w give the full path
+                if(doUpload)
+                    uriString += URLEncoder.encode(deploymentPlanParameter.getName(), "UTF-8");
+                else
+                    uriString += URLEncoder.encode(deploymentPlanParameter.getPath(), "UTF-8");
+            }
+
             // add passwordfile parameters if any
             if(encodedPasswords != null) {
                 for(Map.Entry<String,String> entry : encodedPasswords.entrySet()) {
@@ -420,6 +431,18 @@ public class CLIRemoteCommand {
         if(!fileParameter.exists())
             throw new CommandException(strings.get("badDeployFile", commandName, fileParameter));
 
+        // check for deployment plan
+        String deploymentPlan = params.get("deploymentplan");
+        if (deploymentPlan != null) {
+            deploymentPlanParameter = SmartFile.sanitize(
+                new File(deploymentPlan));
+
+            if(!deploymentPlanParameter.exists()) {
+                throw new CommandException(strings.get("badDeploymentPlan", 
+                    commandName, deploymentPlanParameter));
+            }
+        }
+
         // if we make it here -- we have a file param and the file exists!
         // if the file is a directory, then we keep doUpload as false
         // if it is a normal file then we set doUpload depending on the param.
@@ -507,6 +530,7 @@ public class CLIRemoteCommand {
     private OutputStream                    userOut;
     private boolean                         doUpload = false;
     private File                            fileParameter;
+    private File                            deploymentPlanParameter;
     private Map<String, String>             encodedPasswords;
 
     private String                          hostName;

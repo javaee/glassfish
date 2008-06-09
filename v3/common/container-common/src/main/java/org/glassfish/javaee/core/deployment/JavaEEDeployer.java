@@ -38,6 +38,7 @@ import org.glassfish.internal.data.ApplicationRegistry;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
@@ -232,6 +233,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         archivist.setDefaultBundleDescriptor(
                 getDefaultBundleDescriptor());
 
+        // we only expand deployment plan once in the first deployer
+        if (dc.getModuleMetaData(Application.class) == null) {
+            String deploymentPlan = props.getProperty(
+                DeploymentProperties.DEPLOYMENT_PLAN);
+            handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
+        }
+
         Application application = applicationFactory.openArchive(
                 name, archivist, sourceArchive, true);
 
@@ -360,6 +368,21 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             }
         }
         return null;
+    }
+
+    protected void handleDeploymentPlan(String deploymentPlan, 
+        Archivist archivist, ReadableArchive sourceArchive) throws IOException {
+        //Note in copying of deployment plan to the portable archive,
+        //we should make sure the manifest in the deployment plan jar
+        //file does not overwrite the one in the original archive
+        if (deploymentPlan != null) {
+            DeploymentPlanArchive dpa = new DeploymentPlanArchive();
+            dpa.open(new File(deploymentPlan).toURI());
+            // need to revisit for ear case
+            WritableArchive targetArchive = archiveFactory.createArchive(
+                sourceArchive.getURI());
+            archivist.copyInto(dpa, targetArchive, false);
+        } 
     }
 
     abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();

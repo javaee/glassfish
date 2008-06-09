@@ -15,4 +15,5 @@ public interface ParameterNames {
     public static final String LOCATION = "location";
     public static final String ENABLED = "enabled";
     public static final String PRECOMPILE_JSP = "precompilejsp";    
+    public static final String DEPLOYMENT_PLAN = "deploymentplan";    
 }

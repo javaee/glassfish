@@ -492,6 +492,7 @@ public class DeploymentProperties extends Properties {
         KEY_PREFIX + "GenerateRMIStubs";
     public static final String DEPLOY_OPTION_AVAILABILITY_ENABLED_KEY = 
         KEY_PREFIX + "AvailabilityEnabled";
+    public static final String DEPLOYMENT_PLAN = "deploymentplan";
 
 
     // here are the new keys after AMX time, no conversions needed 

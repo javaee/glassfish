@@ -115,7 +115,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(optional=true)
     Boolean uniquetablenames;
 
-    @Param(optional=true)
+    @Param(name=ParameterNames.DEPLOYMENT_PLAN, optional=true)
     String deploymentplan = null;
 
     @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
