@@ -96,7 +96,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
             LOGGER.log(Level.INFO, "Configuring GlassFish");
             configureGlassfish(
                 installDir,
-                aSheet.getProperty("Administration.A_ADMIN_PORT"),
+                "4848",
                 aSheet.getProperty("Administration.A_HTTP_PORT"));
 	    }
 
@@ -366,6 +366,61 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
         isWindows=true;
     }
 
+    // set execute permissions for UC utilities
+
+    if (!isWindows) {
+
+        String CLInames[] = {"pkg", "updatetool"};
+        for (int i = 0; i < CLInames.length; i++) {
+            Runtime.getRuntime().exec("/bin/chmod a+x " +
+                               installDir + "/bin/" + CLInames[i]);
+	}
+    }
+
+    //create updatetool wrapper scripts used by program
+    //group menu items
+
+    FileWriter wrapperWriter = null;
+    File startWrapperFile = null; 
+    try {
+        if (isWindows) {
+            startWrapperFile = new File(installDir + "\\updatetool\\lib\\updatetool-start.bat");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("@echo off\n");
+	    wrapperWriter.write ("REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("REM\n");
+            wrapperWriter.write ("REM Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("REM Use is subject to License Terms\n");
+	    wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("cd \"" + installDir + "\\updatetool\\bin\"\n");
+	    wrapperWriter.write ("call updatetool.bat\n");
+ 	    wrapperWriter.write ("endlocal\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+	}
+	else {
+	    startWrapperFile = new File(installDir + "/updatetool/lib/updatetool-start");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("#!/bin/sh\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("#\n");
+            wrapperWriter.write ("# Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# Use is subject to License Terms\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("cd \"" + installDir + "/updatetool/bin\"\n");
+	    wrapperWriter.write ("./updatetool\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+	    
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
+	}
+    } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+    }
 
     // check whether to bootstrap at all
 
@@ -395,7 +450,8 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
         FileWriter writer = null;
         File propertiesFile = null;        
         try {            
-            propertiesFile = File.createTempFile("bootstrapTmp", null);                                  propertiesFile.deleteOnExit();            
+            propertiesFile = File.createTempFile("bootstrapTmp", null);  
+	    propertiesFile.deleteOnExit();            
             writer = new FileWriter(propertiesFile); 
             writer.write("image.path=" + installDirForward + "\n");
             writer.write("install.pkg=true\n");

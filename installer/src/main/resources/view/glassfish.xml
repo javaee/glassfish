@@ -51,15 +51,17 @@
          <apt:visual>
             <apt:htmlPanel/>
          </apt:visual>
-        </apt:property> 
+         </apt:property>
+<!-- 
           <apt:property apt:name="A_ADMIN_PORT"
               apt:label="Administration Port"
               apt:dataPath="Administration.A_ADMIN_PORT"
               apt:type="xs:int">
             <apt:visual>
-                <apt:textField apt:columns="15" apt:toolTip="Enter the administration port" />
+	        <apt:textField apt:columns="15" apt:toolTip="Enter the administration port" />
             </apt:visual>
-           </apt:property>
+          </apt:property>
+-->
            <apt:property apt:name="A_HTTP_PORT"
               apt:label="HTTP Port"
               apt:dataPath="Administration.A_HTTP_PORT"

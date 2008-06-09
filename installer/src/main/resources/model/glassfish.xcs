@@ -16,13 +16,15 @@
  xmlns:if="http://openinstaller.org/config/V1"
  xml:lang='en-US'>
  <component>
-     <group oor:name="Administration">
-         <prop oor:name="A_ADMIN_PORT" oor:type="xs:int">
+    <group oor:name="Administration">
+<!--
+       <prop oor:name="A_ADMIN_PORT" oor:type="xs:int">
            <value>4848</value>
            <info>
              <desc xml:lang="en-US">Admin Port</desc>
            </info>
-        </prop> 
+       </prop> 
+-->
        <prop oor:name="A_HTTP_PORT" oor:type="xs:int">
            <value>8080</value>
            <info>
