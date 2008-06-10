@@ -149,6 +149,7 @@
         <module>javaee-api</module>
         -->
       	<module>common</module>
+      	<module>deployment</module>
       	<module>admin</module>
       	<module>core</module>
       	<module>transaction</module>

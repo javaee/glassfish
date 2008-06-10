@@ -179,7 +179,7 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
+            <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

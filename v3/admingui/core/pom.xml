@@ -37,7 +37,7 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
+            <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-client</artifactId>
             <version>${glassfish.version}</version>
 	    <scope>provided</scope>

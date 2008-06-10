@@ -53,6 +53,5 @@
         <module>bootstrap</module>
 		<module>kernel</module>
         <module>security</module>
-        <module>deployment-client</module>
     </modules>
 </project>

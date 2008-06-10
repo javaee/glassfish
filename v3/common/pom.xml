@@ -57,7 +57,6 @@
     	<module>internal-ee-api</module>
         <module>annotation-framework</module>
         <module>common-util</module>
-        <module>dol</module>
         <module>container-common</module>
         <module>glassfish-naming</module>        
     </modules>
