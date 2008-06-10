@@ -187,10 +187,12 @@ public class ModuleDependencyAnalyser {
     }
 
     private Set<String> getExportedClasses(ModuleDefinition moduleDef) throws IOException {
-        Attributes attributes = moduleDef.getManifest().getMainAttributes();
+        Set<String> exportedPkgs = new HashSet<String>();
+        java.util.jar.Manifest m = moduleDef.getManifest();
+        if (m==null) return exportedPkgs;
+        Attributes attributes = m.getMainAttributes();
         String exportedPkgsAttr = attributes.getValue("Export-Package");
         StringTokenizer st = new StringTokenizer(exportedPkgsAttr, ",", false);
-        Set<String> exportedPkgs = new HashSet<String>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken().trim();
             int idx = token.indexOf(';');
