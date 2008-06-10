@@ -36,7 +36,7 @@ public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration
 	private MBeanInfo					mCachedMBeanInfo;
 	private long						mCachedMBeanInfoTime;
 	
-	private Map							mCachedAttributes;
+	private Map<String,Attribute>		mCachedAttributes;
 	private long						mCachedAttributesTime;
 	
 	private final int					mMBeanInfoRefreshMillis;
@@ -66,7 +66,7 @@ public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration
 		mCachedMBeanInfo		= null;
 		
 		mAttributeRefreshMillis	= attributeRefreshMillis;
-		mCachedAttributes		= mAttributeRefreshMillis != 0 ? new HashMap() : null;
+		mCachedAttributes		= mAttributeRefreshMillis != 0 ? new HashMap<String,Attribute>() : null;
 		
 		mPreRegisterDone		= false;
 		mSelfObjectName			= null;
@@ -265,7 +265,7 @@ public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration
 		{
 			if ( attributesAreStale()  || mCachedAttributes == null )
 			{
-				mCachedAttributes		= new HashMap();
+				mCachedAttributes		= new HashMap<String,Attribute>();
 				mCachedAttributesTime	= System.currentTimeMillis();
 			}
 		}
@@ -275,7 +275,7 @@ public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration
 	getCachedAttribute( final String name )
 	{
 		assert( shouldCacheAttributes() );
-		return( (Attribute)mCachedAttributes.get( name ) );
+		return( mCachedAttributes.get( name ) );
 	}
 	
 		private void

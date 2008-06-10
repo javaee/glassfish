@@ -31,7 +31,7 @@ import com.sun.cli.jmxcmd.support.ArgParserException;
  */
 public final class ConnectInfo
 {
-	private final Map		mParams;
+	private final Map<String,String>		mParams;
 	
 	public final static char	ESCAPE_CHAR	= '\\';
 	public final static char	VALUE_DELIM		= '=';
@@ -100,7 +100,7 @@ public final class ConnectInfo
 		@param params	a map containing connect info
 	 */
 		public
-	ConnectInfo( final Map params )
+	ConnectInfo( final Map<String,String> params )
 	{
 		mParams	= params;
 	}
@@ -111,8 +111,7 @@ public final class ConnectInfo
 		public
 	ConnectInfo( final ConnectInfo rhs )
 	{
-		mParams	= new HashMap();
-		mParams.putAll( rhs.mParams );
+		mParams	= new HashMap<String,String>(rhs.mParams);
 	}
 	
 		public Map
@@ -146,12 +145,9 @@ public final class ConnectInfo
 		String
 	paramsToString( )
 	{
-		final java.util.Iterator	iter	= mParams.keySet().iterator();
-		
 		StringBuffer	buf	= new StringBuffer();
-		while ( iter.hasNext() )
+        for( final String key : mParams.keySet() )
 		{
-			final String	key		= (String)iter.next();
 			final String	value	=(String)mParams.get( key );
 			
 			final String	pair	= key + VALUE_DELIM + escapeString( value );
@@ -172,7 +168,7 @@ public final class ConnectInfo
 		public String
 	getParam( String name )
 	{
-		return( (String)mParams.get( name ) );
+		return( mParams.get( name ) );
 	}
 		
 		public String

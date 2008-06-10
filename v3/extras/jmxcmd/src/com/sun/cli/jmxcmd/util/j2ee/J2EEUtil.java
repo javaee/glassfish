@@ -54,12 +54,6 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/util/j2ee/J2EEUtil.java,v 1.5 2005/11/15 20:59:55 llc Exp $
- * $Revision: 1.5 $
- * $Date: 2005/11/15 20:59:55 $
- */
 
 package com.sun.cli.jmxcmd.util.j2ee;
 

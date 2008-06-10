@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.management.ObjectName;
@@ -144,7 +145,7 @@ class MonitorInfo
  */
 public class MonitorCmd extends JMXCmd
 {
-	private static final Set		mThreads;
+	private static final Set<MonitorThread>		mThreads;
 	
 		public
 	MonitorCmd( final CmdEnv env )
@@ -160,7 +161,7 @@ public class MonitorCmd extends JMXCmd
 	
 	static
 	{
-		mThreads	= new HashSet();
+		mThreads	= new HashSet<MonitorThread>();
 	}
 	
 	public static final int	DEFAULT_POLL_SECONDS	= 5;
@@ -341,28 +342,25 @@ public class MonitorCmd extends JMXCmd
 	}
 	
 	
-		Set
+		Set<String>
 	getAllMonitorNames( )
 	{
-		Set	names	= new HashSet();
+		Set<String>	names	= new HashSet<String>();
 		
-		final Set	monitors		= getEnvKeys( MONITOR_PREFIX + ".*" );
+		final Set<String>	monitors		= getEnvKeys( MONITOR_PREFIX + ".*" );
 		final int	prefixLength	= MONITOR_PREFIX.length();
 		
-		final Iterator	iter	= monitors.iterator();
-		while ( iter.hasNext() )
+        for( final String m : monitors )
 		{
-			final String	m	= (String)iter.next();
-			
 			names.add( m.substring( prefixLength, m.length() ) );
 		}
 		return( names );
 	}
 	
-		Set
+		Set<String>
 	getMonitorNames( final String[] monitorNames )
 	{
-		Set	names	= new HashSet();
+		Set<String>	names	= new HashSet<String>();
 		
 		if ( monitorNames == null || monitorNames.length == 0 )
 		{
@@ -380,13 +378,10 @@ public class MonitorCmd extends JMXCmd
 	stopMonitors( final String []	monitors )
 		throws Exception
 	{
-		final Set	monitorsSet	= getMonitorNames( monitors );
+		final Set<String>	monitorsSet	= getMonitorNames( monitors );
 		
-		final Iterator	iter	= mThreads.iterator();
-		while ( iter.hasNext() )
+        for( final MonitorThread m : mThreads )
 		{
-			final MonitorThread	m	= (MonitorThread)iter.next();
-			
 			if ( monitorsSet.contains( m.getMonitorName() ) )
 			{
 				println( "Stopping: " + m.getMonitorName() );
@@ -453,7 +448,7 @@ public class MonitorCmd extends JMXCmd
 		void
 	listMonitors(  )
 	{
-		final Set	monitors	= getAllMonitorNames();
+		final Set<String>	monitors	= getAllMonitorNames();
 		
 		if ( monitors.size() == 0 )
 		{
@@ -594,12 +589,12 @@ public class MonitorCmd extends JMXCmd
 		private final MBeanServerConnection	mConn;
 		private final ObjectName	mObjectName;
 		private final String[]		mAttributeNames;
-		private Map					mLastAttributes;
+		private Map<String,Object>  mLastAttributes;
 		
 		ObjectName		getObjectName()					{ return( mObjectName ); }
-		Map				getLastAttributes()				{ return( mLastAttributes ); }
+		Map<String,Object> getLastAttributes()				{ return( mLastAttributes ); }
 		String[]		getAttributeNames()				{ return( mAttributeNames ); }
-		void			setLastAttributes( Map attrs )	{ mLastAttributes	= attrs; }
+		void			setLastAttributes( Map<String,Object> attrs )	{ mLastAttributes	= attrs; }
 		
 			public
 		MonitoringTarget(
@@ -610,7 +605,7 @@ public class MonitorCmd extends JMXCmd
 		{
 			mConn				= conn;
 			mObjectName			= objectName;
-			mLastAttributes		= new HashMap();
+			mLastAttributes		= new HashMap<String,Object>();
 			mAttributeNames		= resolveAttrNames( conn, objectName, attributeNames );
 		}
 		
@@ -623,7 +618,7 @@ public class MonitorCmd extends JMXCmd
 			private static String[]
 		matchCandidateNames( final String[] candidates, final Pattern[] patterns )
 		{
-			final HashSet	s	= new HashSet();
+			final HashSet<String>	s	= new HashSet<String>();
 			
 			for( int c = 0; c < candidates.length; ++c )
 			{
@@ -684,7 +679,7 @@ public class MonitorCmd extends JMXCmd
 				final MBeanAttributeInfo[]	writeable	= includeWriteable ? 
 					JMXUtil.filterAttributeInfos( allInfos, ReadWriteAttributeFilter.READ_ONLY_FILTER ) : null;
 				
-				final Set	candidateInfos	= new HashSet();
+				final Set<MBeanAttributeInfo>	candidateInfos	= new HashSet<MBeanAttributeInfo>();
 				if ( includeReadOnly )
 				{
 					candidateInfos.addAll( SetUtil.newSet( readOnly ) );
@@ -750,7 +745,7 @@ class MonitorThread extends Thread implements CmdEventListener
 		mQuit				= false;
 		mListener			= listener;
 		
-		final ArrayList	targetList	= new ArrayList();
+		final List<MonitoringTarget>	targetList	= new ArrayList<MonitoringTarget>();
 		for( int i = 0; i < objectNames.length; ++i )
 		{
 			try

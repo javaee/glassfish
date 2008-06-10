@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -31,8 +32,8 @@ public final class IteratorStringifierTest extends junit.framework.TestCase
 		public void
 	testEmpty(  ) throws Exception
 	{
-		final Set		s	= new HashSet();
-		final Iterator	iter	= s.iterator();
+		final Set<String>		s	= new HashSet<String>();
+		final Iteratorr<String>	iter	= s.iterator();
 		
 		final String	stringified	= IteratorStringifier.stringify( iter, ",");
 		
@@ -43,10 +44,10 @@ public final class IteratorStringifierTest extends junit.framework.TestCase
 		public void
 	testSingle(  ) throws Exception
 	{
-		final Set		s	= new HashSet();
+		final Set<String>		s	= new HashSet<String>();
 		s.add( "hello" );
 		
-		final Iterator	iter	= s.iterator();
+		final Iterator<String>	iter	= s.iterator();
 		
 		final String	stringified	= IteratorStringifier.stringify( iter, ",");
 		
@@ -58,11 +59,11 @@ public final class IteratorStringifierTest extends junit.framework.TestCase
 		public void
 	testDouble(  ) throws Exception
 	{
-		final ArrayList		list	= new ArrayList();
+		final List<String>		list	= new ArrayList<String>();
 		list.add( "hello" );
 		list.add( "there" );
 		
-		final Iterator	iter	= list.iterator();
+		final Iteratorr<String>	iter	= list.iterator();
 		
 		final String	stringified	= IteratorStringifier.stringify( iter, ",");
 		

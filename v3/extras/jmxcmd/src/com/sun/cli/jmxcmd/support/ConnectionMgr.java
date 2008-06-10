@@ -27,10 +27,10 @@ public interface ConnectionMgr
 	public Set					getNames();
 	public ConnectInfo			getConnectInfo( String name );
 	
-	public void					addProvider( Class providerClass )
+	public void					addProvider( Class<? extends JMXConnectorProvider> providerClass )
 									throws IllegalAccessException,
 										InstantiationException, ClassNotFoundException;
-	public void					removeProvider( Class provider );
+	public void					removeProvider( Class<? extends JMXConnectorProvider> provider );
 	public JMXConnectorProvider []	getProviders();
 };
 

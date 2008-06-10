@@ -90,32 +90,32 @@ public class ObjectNameQueryMBeanImpl
 		super( ObjectNameQueryMBean.class );
 	}
 	
-		public Set
+		public Set<ObjectName>
 	matchAll( ObjectName startingSetPattern, String [] regexNames, String [] regexValues )
 				throws MalformedObjectNameException, java.io.IOException
 	{
-		final Set	candidates	= mConn.queryNames( startingSetPattern, null );
+		final Set<ObjectName>	candidates	= mConn.queryNames( startingSetPattern, null );
 		
 		return( mImpl.matchAll( candidates, regexNames, regexValues ) );
 	}
 	
-		public Set
+		public Set<ObjectName>
 	matchAll( Set startingSet, String [] regexNames, String [] regexValues )
 	{
 		return( mImpl.matchAll( startingSet, regexNames, regexValues ) );
 	}
 				
-		public Set
+		public Set<ObjectName>
 	matchAny( ObjectName startingSetPattern, String [] regexNames, String [] regexValues )
 				throws MalformedObjectNameException, java.io.IOException
 	{
-		final Set	candidates	= mConn.queryNames( startingSetPattern, null );
+		final Set<ObjectName>	candidates	= mConn.queryNames( startingSetPattern, null );
 		
 		return( mImpl.matchAny( candidates, regexNames, regexValues ) );
 	}
 				
-		public Set
-	matchAny( Set startingSet, String [] regexNames, String [] regexValues )
+		public Set<ObjectName>
+	matchAny( Set<ObjectName> startingSet, String [] regexNames, String [] regexValues )
 	{
 		return( mImpl.matchAny( startingSet, regexNames, regexValues ) );
 	}

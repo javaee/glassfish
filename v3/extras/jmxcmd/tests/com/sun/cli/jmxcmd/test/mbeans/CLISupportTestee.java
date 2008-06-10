@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 
 import java.util.Properties;
 import java.util.ArrayList;
+import java.util.List;
 import javax.management.*;
 
 
@@ -39,7 +40,7 @@ public final class CLISupportTestee implements DynamicMBean
 		
 	final static String	D	= ",";	// delimiter
 	
-	final Map	mAttributes;
+	final Map<String,Object>	mAttributes;
 
 		private void
 	p( Object o )
@@ -55,7 +56,7 @@ public final class CLISupportTestee implements DynamicMBean
 	{
 		mInvokeHelper	= new InvokeHelper( this );
 		
-		mAttributes		= new HashMap();
+		mAttributes		= new HashMap<String,Object>();
 	}
    
 	
@@ -215,7 +216,7 @@ public final class CLISupportTestee implements DynamicMBean
 	{
 		final Method []	allMethods	= this.getClass().getDeclaredMethods();
 		
-		final ArrayList	exportMethods	= new ArrayList();
+		final List<Method>	exportMethods	= new ArrayList<Method>();
 		final int 		allCount	= Array.getLength( allMethods );
 		for( int i = 0; i < allCount; ++i )
 		{
@@ -294,7 +295,7 @@ public final class CLISupportTestee implements DynamicMBean
 		public Class []
 	getSupportedClassList()
 	{
-		ArrayList	classes	= new ArrayList();
+		ArrayList<Class<?>>	classes	= new ArrayList<Class<?>>();
 		
 		for( int i = 0; i < NUM_BASE_CLASSES; ++i )
 		{
@@ -369,7 +370,7 @@ public final class CLISupportTestee implements DynamicMBean
 	{
 		final String	operationName	= VIRTUAL_OPERATION_NAME;
 		
-		ArrayList	ops	= new ArrayList();
+		ArrayList<MBeanOperationInfo>	ops	= new ArrayList<MBeanOperationInfo>();
 		
 		/* create a method for each supported class consisting of a single parameter
 		 */

@@ -65,7 +65,6 @@ import javax.management.NotificationFilter;
 import javax.management.MBeanServerNotification;
 import javax.management.MBeanServerConnection;
 import javax.management.InstanceNotFoundException;
-import com.sun.appserv.management.base.AMXRootLogger;
 
 /**
 	Convenience base class for listening to 

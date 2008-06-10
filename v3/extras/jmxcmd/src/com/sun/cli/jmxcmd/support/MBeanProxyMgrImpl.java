@@ -62,8 +62,8 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 	MBeanProxyMgrMBean, MBeanRegistration, NotificationListener
 {
 	final ConnectionSource		mConnectionSource;
-	final Map					mProxyObjectNameToProxyInfo;
-	final Map					mTargetObjectNameToProxyObjectName;
+	final Map<ObjectName,MBeanProxyInfo>		mProxyObjectNameToProxyInfo;
+	final Map<ObjectName,ObjectName>	mTargetObjectNameToProxyObjectName;
 	MBeanServer					mSelfMBeanServer;
 	ConnectionListener	mListener;
 	final String				mDefaultDomain;
@@ -84,8 +84,8 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		mConnectionSource	= connSource;
 		
 		mSelfMBeanServer					= null;
-		mProxyObjectNameToProxyInfo			= Collections.synchronizedMap( new HashMap() );
-		mTargetObjectNameToProxyObjectName	= Collections.synchronizedMap( new HashMap() );
+		mProxyObjectNameToProxyInfo			= Collections.synchronizedMap( new HashMap<ObjectName,MBeanProxyInfo>() );
+		mTargetObjectNameToProxyObjectName	= Collections.synchronizedMap( new HashMap<ObjectName,ObjectName>() );
 		
 		mProxySetInfos	= Collections.synchronizedList( new ArrayList() );
 		

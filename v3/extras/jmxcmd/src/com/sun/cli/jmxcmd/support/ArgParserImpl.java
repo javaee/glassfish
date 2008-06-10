@@ -15,6 +15,7 @@ package com.sun.cli.jmxcmd.support;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -510,7 +511,7 @@ public final class ArgParserImpl implements ArgParser
 			return( null );
 		}
 		
-		final ArrayList	elems	= new ArrayList();
+		final List<ParseResult>	elems	= new ArrayList<ParseResult>();
 		
 		boolean		endOfArrayFound	= false;
 			

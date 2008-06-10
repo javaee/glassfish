@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
 import javax.management.remote.JMXConnector;
@@ -30,8 +31,8 @@ import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 public final class ConnectionMgrImpl implements ConnectionMgr
 {
-	private final Map		mNameConnMap;
-	final ArrayList			mProviders;
+	private final Map<String,Connection>		mNameConnMap;
+	final List<JMXConnectorProvider>			mProviders;
 	
 		private static void
 	dm( Object o )
@@ -45,9 +46,9 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 		// do allow instantiation of this class; probably a singleton,
 		// but could be useful to have more than one to segregate by user for example
 		
-		mNameConnMap	= new HashMap();
+		mNameConnMap	= new HashMap<String,Connection>();
 		
-		mProviders	= new ArrayList();
+		mProviders	= new ArrayList<JMXConnectorProvider>();
 		try
 		{
 			addProvider( com.sun.cli.jmxcmd.spi.JMXMPDefaultConnectorProvider.class );
@@ -64,7 +65,7 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 		public ConnectInfo
 	getConnectInfo( String name )
 	{
-		final Connection	conn	= (Connection)mNameConnMap.get( name );
+		final Connection	conn	= mNameConnMap.get( name );
 
 		return( conn == null ? null : conn.mConnectInfo );
 	}
@@ -72,7 +73,7 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 		private Connection
 	lookup( final String	name )
 	{
-		final Connection	conn	= (Connection)mNameConnMap.get( name );
+		final Connection	conn	= mNameConnMap.get( name );
 		
 		return( conn );
 	}
@@ -81,7 +82,7 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 	createProvider( String className )
 		throws ClassNotFoundException, IllegalAccessException, InstantiationException
 	{
-		final Class	theClass	= ClassUtil.getClassFromName( className );
+		final Class<? extends JMXConnectorProvider>	theClass	= ClassUtil.getClassFromName( className ).asSubclass(JMXConnectorProvider.class);
 		
 		final JMXConnectorProvider	provider = (JMXConnectorProvider)theClass.newInstance( );
 		
@@ -89,17 +90,17 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 	}
 	
 		public void
-	addProvider( Class provider )
+	addProvider( final Class<? extends JMXConnectorProvider> provider )
 		throws IllegalAccessException, InstantiationException, ClassNotFoundException
 	{
-		final JMXConnectorProvider	instance = (JMXConnectorProvider)provider.newInstance( );
+		final JMXConnectorProvider	instance = provider.newInstance( );
 		
 		// last added = first priority
 		mProviders.add( 0, instance );
 	}
 	
 		public void
-	removeProvider( Class provider )
+	removeProvider( final Class<? extends JMXConnectorProvider> provider )
 	{
 		mProviders.remove( provider );
 	}

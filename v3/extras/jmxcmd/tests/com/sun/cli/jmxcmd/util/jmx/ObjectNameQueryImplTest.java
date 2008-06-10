@@ -23,23 +23,23 @@ public class ObjectNameQueryImplTest extends junit.framework.TestCase
 		new ObjectNameQueryImpl();
 	}
 	
-	static final Set		EmptySet	= java.util.Collections.EMPTY_SET;
+	static final Set<ObjectName>		EmptySet	= java.util.Collections.emptySet();
 	static final String []	EmptyStrings	= new String [0];
 	
-		static Set
+		static Set<ObjectName>
 	createSet( ObjectName name )
 	{
-		final HashSet	s	= new HashSet();
+		final HashSet<ObjectName>	s	= new HashSet<ObjectName>();
 		
 		s.add( name );
 		
 		return( s );
 	}
 	
-		static Set
+		static Set<ObjectName>
 	createSet( ObjectName [] names )
 	{
-		final HashSet	s	= new HashSet();
+		final HashSet<ObjectName>	s	= new HashSet<ObjectName>();
 		
 		for( int i = 0; i < names.length; ++i )
 		{
@@ -86,7 +86,7 @@ public class ObjectNameQueryImplTest extends junit.framework.TestCase
 	testSingleItem()
 	{
 		final ObjectName	name1	= createName( ":name=test,type=test" );
-		final Set			testSet	= createSet( name1 );
+		final Set<ObjectName>			testSet	= createSet( name1 );
 		
 		final ObjectNameQuery	q	= new ObjectNameQueryImpl();
 		

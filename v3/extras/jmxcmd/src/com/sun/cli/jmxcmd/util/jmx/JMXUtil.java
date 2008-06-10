@@ -577,7 +577,7 @@ public final class JMXUtil
 		final MBeanAttributeInfo[]	infos,
 		final AttributeFilter		filter )
 	{
-		final ArrayList	matches	= new ArrayList();
+		final ArrayList<MBeanAttributeInfo>	matches	= new ArrayList<MBeanAttributeInfo>();
 		for( int i = 0; i < infos.length; ++i )
 		{
 			if ( filter.filterAttribute( infos[ i ] ) )
@@ -739,7 +739,7 @@ public final class JMXUtil
 		public static Map<String,MBeanAttributeInfo>
 	attributeInfosToMap( final MBeanAttributeInfo[] attrInfos )
 	{
-		final Map<String,MBeanAttributeInfo>	map	= new HashMap();
+		final Map<String,MBeanAttributeInfo>	map	= new HashMap<String,MBeanAttributeInfo>();
 		
 		for( int i = 0; i < attrInfos.length; ++i )
 		{
@@ -1315,13 +1315,13 @@ public final class JMXUtil
 	}
 	
 	
-		public static ArrayList
+		public static List<MBeanAttributeInfo>
 	generateAttributeInfos(
 		final Collection<Method> methodSet,
 		final boolean	read,
 		final boolean	write)
 	{
-		final ArrayList	infos	= new ArrayList();
+		final List<MBeanAttributeInfo>	infos	= new ArrayList<MBeanAttributeInfo>();
 		
 		assert( methodSet != null );
 		final Iterator	iter	= methodSet.iterator();
@@ -1354,7 +1354,7 @@ public final class JMXUtil
 		final Collection<Method> getters,
 		final Collection<Method> setters  )
 	{
-		final ArrayList	attrsList	= new ArrayList();
+		final List<MBeanAttributeInfo>	attrsList	= new ArrayList<MBeanAttributeInfo>();
 		
 		attrsList.addAll( generateAttributeInfos( getterSetters, true, true ) );
 		attrsList.addAll( generateAttributeInfos( getters, true, false ) );

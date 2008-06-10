@@ -447,13 +447,13 @@ public class MBeanServerConnection_Hook implements MBeanServerConnection
 	}
 
 
-	public Set queryMBeans(ObjectName name, QueryExp query)
+	public Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query)
 		throws IOException
 	{
 		final Object []	args	= new Object [] { name, query };
 		final long id = callPreHook( QUERY_MBEANS, args );
 		
-		Set	result	= null;
+		Set<ObjectInstance>	result	= null;
 		try
 		{
 			result	= getConn().queryMBeans( name, query );
@@ -469,7 +469,7 @@ public class MBeanServerConnection_Hook implements MBeanServerConnection
 	}
 
 
-	public Set queryNames(ObjectName name, QueryExp query)
+	public Set<ObjectName> queryNames(ObjectName name, QueryExp query)
 		throws IOException
 	{
 		final Object []	args	= new Object [] { name, query };
