@@ -44,67 +44,30 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>webtier-all</artifactId>
+    <artifactId>web-common</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Web Related Implementations for GlassFish</name>
+    <name>Classes Shared by Servlet and JSP Containers</name>
 
     <developers>
         <developer>
-            <id>swchan2</id>
-            <name>Shing Wai Chan</name>
-            <url>http://blogs.sun.com/swchan</url>
+            <id>jluehe</id>
+            <name>Jan Luehe</name>
+            <url>http://blogs.sun.com/jluehe</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>  
-
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>websecurity</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jstl-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jsf-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-web-plugin</artifactId>
-	    <version>1.0-SNAPSHOT</version>
-        </dependency>
-         <!--dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
-    </dependencies>
+    </developers>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+	</build>
 </project>
