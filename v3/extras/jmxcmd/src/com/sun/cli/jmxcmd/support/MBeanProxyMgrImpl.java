@@ -72,7 +72,7 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		An ordered list (first added is first in the list) of information
 		about desired proxies.
 	 */
-	final List					mProxySetInfos;
+	final List<ProxySetInfo>					mProxySetInfos;
 	
 
 		public
@@ -87,7 +87,7 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		mProxyObjectNameToProxyInfo			= Collections.synchronizedMap( new HashMap<ObjectName,MBeanProxyInfo>() );
 		mTargetObjectNameToProxyObjectName	= Collections.synchronizedMap( new HashMap<ObjectName,ObjectName>() );
 		
-		mProxySetInfos	= Collections.synchronizedList( new ArrayList() );
+		mProxySetInfos	= Collections.synchronizedList( new ArrayList<ProxySetInfo>() );
 		
 		final MBeanServerConnection	conn	= connSource.getMBeanServerConnection( false );
 		try
@@ -290,15 +290,10 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		throws JMException, IOException
 	{
 		//dm( "MBeanProxyMgrImpl.checkRegisterTarget: " + targetObjectName );
-		
-		final Iterator	iter	= mProxySetInfos.iterator();
-		
 		ProxySetInfo	proxySetContaining	= null;
 		
-		while ( iter.hasNext() )
+        for( final ProxySetInfo proxySet : mProxySetInfos )
 		{
-			final ProxySetInfo	proxySet	= (ProxySetInfo)iter.next();
-			
 			if ( matches( proxySet.getNamesAndPatterns(), targetObjectName ) )
 			{
 				proxySetContaining	= proxySet;

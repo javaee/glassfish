@@ -579,7 +579,7 @@ public class MBeanServerCmd extends JMXCmd
 	
 		private void
 	initEnvForRMI(
-		final Map				env,
+		final Map<String,Object> env,
 		final SecurityOptions	options )
 			throws CmdException, IOException
 	{

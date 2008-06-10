@@ -104,7 +104,7 @@ public class CompositeDataHelper
 	mapToCompositeType(
 		final String	typeName,
 		final String	description,
-		final Map		map)
+		final Map<String,Object>		map)
 		throws OpenDataException
 	{
 	    return mapToCompositeType( typeName, description, map, null );
@@ -141,7 +141,7 @@ public class CompositeDataHelper
 	mapToCompositeData(
 		final String	typeName,
 		final String	description,
-		final Map		map )
+		final Map<String,Object>		map )
 		throws OpenDataException
 	{
 		final CompositeType	type	= mapToCompositeType( typeName, description, map );
@@ -162,7 +162,7 @@ public class CompositeDataHelper
 	setToCompositeData(
 		final String	typeName,
 		final String	description,
-		final Set		set )
+		final Set<Object>		set )
 	{
 		return( null );
 	}
@@ -315,7 +315,7 @@ public class CompositeDataHelper
 			);
 		
 		
-		final Map	m	= new HashMap();
+		final Map<String,Object>	m	= new HashMap<String,Object>();
 		m.put( "Message", t.getMessage() );
 		m.put( "Cause", cause == null ? null : throwableToCompositeData( cause ) );
 		m.put( "StackTrace", t.getStackTrace() );
