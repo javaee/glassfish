@@ -155,7 +155,7 @@ public class AMXRoot {
 	    Habitat habitat = (Habitat) servletCtx.getAttribute("com.sun.appserv.jsf.habitat");
 
 	    // Get the MBeanServer via the Habitat, we want the "official" one
-	    MBeanServer mbs = (MBeanServer) habitat.getComponent(MBeanServer.class, AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER);
+	    MBeanServer mbs = (MBeanServer)habitat.getComponent(MBeanServer.class); 
 
 	    DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot();
 	    domainRoot.waitAMXReady();
