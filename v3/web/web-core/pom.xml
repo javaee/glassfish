@@ -86,17 +86,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <!--
-              since our minimum requirement is still JDK5,
-              we need this dependency. When we we switch
-              to minimum JDK6 (which we do at some point toward EE6),
-              we can remove this.
-            -->
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>ant</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
