@@ -605,6 +605,9 @@ public final class Response {
         return contentLength;
     }
 
+    public long getContentLengthLong() {
+        return contentLength;
+    }
 
     /** 
      * Write a chunk of bytes.
