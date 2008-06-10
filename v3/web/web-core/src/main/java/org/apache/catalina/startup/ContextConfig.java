@@ -463,17 +463,7 @@ public class ContextConfig
     protected synchronized void managerConfig() {
 
         if (context.getManager() == null) {
-            if ((context.getCluster() != null) && context.getDistributable()) {
-                try {
-                    context.setManager(context.getCluster().createManager
-                                       (context.getName()));
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "contextConfig.clusteringInit", ex);
-                    ok = false;
-                }
-            } else {
-                context.setManager(new StandardManager());
-            }
+            context.setManager(new StandardManager());
         }
 
     }

@@ -77,7 +77,6 @@ import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletException;
 
-import org.apache.catalina.Cluster;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.ContainerListener;
@@ -251,11 +250,6 @@ public abstract class ContainerBase
      * The Manager implementation with which this Container is associated.
      */
     protected Manager manager = null;
-
-    /**
-     * The cluster with which this Container is associated.
-     */
-    protected Cluster cluster = null;
 
     /**
      * The human-readable name of this Container.
@@ -624,78 +618,6 @@ public abstract class ContainerBase
      */
     public Object getMappingObject() {
         return this;
-    }
-
-
-    /**
-     * Return the Cluster with which this Container is associated.  If there is
-     * no associated Cluster, return the Cluster associated with our parent
-     * Container (if any); otherwise return <code>null</code>.
-     */
-    public Cluster getCluster() {
-
-        try {
-            readLock.lock();
-            if (cluster != null)
-                return (cluster);
-        } finally {
-            readLock.unlock();
-        }
-
-        if (parent != null)
-            return (parent.getCluster());
-
-        return (null);
-    }
-
-
-    /**
-     * Set the Cluster with which this Container is associated.
-     *
-     * @param cluster The newly associated Cluster
-     */
-    public void setCluster(Cluster cluster) {
-
-        Cluster oldCluster;
-
-        try {
-            writeLock.lock();
-            // Change components if necessary
-            oldCluster = this.cluster;
-            if (oldCluster == cluster)
-                return;
-            this.cluster = cluster;
-
-            // Stop the old component if necessary
-            if (started && (oldCluster != null) &&
-                    (oldCluster instanceof Lifecycle)) {
-                try {
-                    ((Lifecycle) oldCluster).stop();
-                } catch (LifecycleException e) {
-                    log.log(Level.SEVERE, "ContainerBase.setCluster: stop: ",
-                            e);
-                }
-            }
-
-            // Start the new component if necessary
-            if (cluster != null)
-                cluster.setContainer(this);
-
-            if (started && (cluster != null) &&
-                    (cluster instanceof Lifecycle)) {
-                try {
-                    ((Lifecycle) cluster).start();
-                } catch (LifecycleException e) {
-                    log.log(Level.SEVERE, "ContainerBase.setCluster: start: ",
-                            e);
-                }
-            }
-        } finally {
-            writeLock.unlock();
-        }
-
-        // Report this property change to interested listeners
-        support.firePropertyChange("cluster", oldCluster, this.cluster);
     }
 
 
@@ -1248,8 +1170,6 @@ public abstract class ContainerBase
             ((Lifecycle) logger).start();
         if ((manager != null) && (manager instanceof Lifecycle))
             ((Lifecycle) manager).start();
-        if ((cluster != null) && (cluster instanceof Lifecycle))
-            ((Lifecycle) cluster).start();
         if ((realm != null) && (realm instanceof Lifecycle))
             ((Lifecycle) realm).start();
         if ((resources != null) && (resources instanceof Lifecycle))
@@ -1333,9 +1253,6 @@ public abstract class ContainerBase
         }
         if ((realm != null) && (realm instanceof Lifecycle)) {
             ((Lifecycle) realm).stop();
-        }
-        if ((cluster != null) && (cluster instanceof Lifecycle)) {
-            ((Lifecycle) cluster).stop();
         }
         if ((manager != null) && (manager instanceof Lifecycle)) {
             ((Lifecycle) manager).stop();

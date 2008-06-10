@@ -237,22 +237,6 @@ public interface Container {
 
 
     /**
-     * Return the Cluster with which this Container is associated.  If there is
-     * no associated Cluster, return the Cluster associated with our parent
-     * Container (if any); otherwise return <code>null</code>.
-     */
-    public Cluster getCluster();
-
-
-    /**
-     * Set the Cluster with which this Container is associated.
-     *
-     * @param connector The Connector to be added
-     */
-    public void setCluster(Cluster cluster);
-
-
-    /**
      * Get the delay between the invocation of the backgroundProcess method on
      * this container and its children. Child containers will not be invoked
      * if their delay value is not negative (which would mean they are using 

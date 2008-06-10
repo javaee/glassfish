@@ -5207,8 +5207,6 @@ public class StandardContext
                 // Binding thread
                 oldCCL = bindThread();
 
-                if ((cluster != null) && (cluster instanceof Lifecycle))
-                    ((Lifecycle) cluster).start();
                 if ((realm != null) && (realm instanceof Lifecycle))
                     ((Lifecycle) realm).start();
                 if ((resources != null) && (resources instanceof Lifecycle))
@@ -5499,9 +5497,6 @@ public class StandardContext
 
             if ((realm != null) && (realm instanceof Lifecycle)) {
                 ((Lifecycle) realm).stop();
-            }
-            if ((cluster != null) && (cluster instanceof Lifecycle)) {
-                ((Lifecycle) cluster).stop();
             }
             if ((logger != null) && (logger instanceof Lifecycle)) {
                 ((Lifecycle) logger).stop();
