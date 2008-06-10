@@ -44,9 +44,9 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gf-web-connector</artifactId>
+    <artifactId>web-core</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Connector for GlassFish Web Container</name>
+    <name>Core Servlet Container</name>
 
     <developers>
         <developer>
@@ -55,7 +55,6 @@
             <url>http://blogs.sun.com/jluehe</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
-                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -68,65 +67,44 @@
                 <role>developer</role>
             </roles>
         </developer>
-        <developer>
-            <id>swchan2</id>
-            <name>Shing Wai Chan</name>
-            <url>http://blogs.sun.com/swchan</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>dochez</id>
-            <name>Jerome Dochez</name>
-            <url>http://blogs.sun.com/dochez</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>amyroh</id>
-            <name>Amy Roh</name>
-            <url>http://weblogs.java.net/blog/amyroh</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>  
-
+    </developers>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+	</build>
     <dependencies>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <!--
+              since our minimum requirement is still JDK5,
+              we need this dependency. When we we switch
+              to minimum JDK6 (which we do at some point toward EE6),
+              we can remove this.
+            -->
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>ant</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>war-util</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${grizzly.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -136,7 +114,27 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>              
-    </dependencies>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>war-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>container-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-naming</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+   </dependencies>
 </project>

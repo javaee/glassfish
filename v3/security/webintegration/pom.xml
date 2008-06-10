@@ -123,7 +123,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
+            <artifactId>web-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

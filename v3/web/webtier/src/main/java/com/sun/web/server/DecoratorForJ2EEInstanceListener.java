@@ -53,7 +53,6 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class DecoratorForJ2EEInstanceListener implements WebModuleDecorator {
     public void decorate(WebModule module) {
-        // TODO: stop passing class names. At least use Class, or better yet a factory.
-        module.addInstanceListener(J2EEInstanceListener.class.getName());
+        module.addInstanceListener(new J2EEInstanceListener());
     }
 }
