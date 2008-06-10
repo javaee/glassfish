@@ -290,7 +290,15 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
                 }                
             }
         }
- 
+    
+    //get JDK directory from java.home property and use it to define asadmin 
+    //execution environment PATH
+    
+    String javaHome = System.getProperty("java.home");
+    LOGGER.log(Level.INFO, "javaHome: " +javaHome);
+
+    String jdkHome = new File(javaHome).getParent();
+    
     //construct asadmin command
 
         try {
@@ -316,8 +324,13 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             LOGGER.log(Level.INFO, "Creating GlassFish domain");
             LOGGER.log(Level.INFO, "Admin port:" + adminPort);
             LOGGER.log(Level.INFO, "HTTP port:" + httpPort);
+
+	    String existingPath = System.getenv("PATH");
+            String newPath = jdkHome + File.separator + "bin" +
+		    File.pathSeparator + existingPath; 
     
             ExecuteCommand asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+	    asadminExecuteCommand.putEnvironmentSetting("PATH", newPath);
             asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             asadminExecuteCommand.setCollectOutput(true);
         
