@@ -171,11 +171,9 @@ public final class JspRuntimeContext implements Runnable {
         bytecodeBirthTimes = new ConcurrentHashMap<String, Long>(hashSize);
 
         // Get the parent class loader
-        parentClassLoader =
-            (URLClassLoader) Thread.currentThread().getContextClassLoader();
+        parentClassLoader = Thread.currentThread().getContextClassLoader();
         if (parentClassLoader == null) {
-            parentClassLoader =
-                (URLClassLoader)this.getClass().getClassLoader();
+            parentClassLoader = this.getClass().getClassLoader();
         }
 
 	if (log.isTraceEnabled()) {
@@ -221,7 +219,7 @@ public final class JspRuntimeContext implements Runnable {
      */
     private ServletContext context;
     private Options options;
-    private URLClassLoader parentClassLoader;
+    private ClassLoader parentClassLoader;
     private PermissionCollection permissionCollection;
     private CodeSource codeSource;                    
     private String classpath;
@@ -317,9 +315,9 @@ public final class JspRuntimeContext implements Runnable {
     /**
      * Get the parent URLClassLoader.
      *
-     * @return URLClassLoader parent
+     * @return ClassLoader parent
      */
-    public URLClassLoader getParentClassLoader() {
+    public ClassLoader getParentClassLoader() {
         return parentClassLoader;
     }
 
@@ -498,20 +496,8 @@ public final class JspRuntimeContext implements Runnable {
      */
     private void initClassPath() {
 
-        URL [] urls = parentClassLoader.getURLs();
         StringBuffer cpath = new StringBuffer();
         String sep = System.getProperty("path.separator");
-
-        for(int i = 0; i < urls.length; i++) {
-            // Tomcat 4 can use URL's other than file URL's,
-            // a protocol other than file: will generate a
-            // bad file system path, so only add file:
-            // protocol URL's to the classpath.
-            
-            if( urls[i].getProtocol().equals("file") ) {
-                cpath.append((String)urls[i].getFile()+sep);
-            }
-        }    
 
 	cpath.append(options.getScratchDir() + sep);
 
@@ -520,15 +506,19 @@ public final class JspRuntimeContext implements Runnable {
             cp = options.getClassPath();
         }
 
-        classpath = cpath.toString() + cp;
+        if (cp != null) {
+            classpath = cpath.toString() + cp;
+        }
 
         // START GlassFish Issue 845
-        try {
-            classpath = URLDecoder.decode(classpath, "UTF-8");
+        if (classpath != null) {
+            try {
+                classpath = URLDecoder.decode(classpath, "UTF-8");
 
-        } catch (UnsupportedEncodingException e) {
-            if (log.isDebugEnabled())
-                log.debug("Exception decoding classpath : " + classpath, e);
+            } catch (UnsupportedEncodingException e) {
+                if (log.isDebugEnabled())
+                    log.debug("Exception decoding classpath : " + classpath, e);
+            }
         }
         // END GlassFish Issue 845
     }
@@ -588,7 +578,7 @@ public final class JspRuntimeContext implements Runnable {
                     "accessClassInPackage.org.apache.jasper.runtime") );
 
                 if (parentClassLoader instanceof URLClassLoader) {
-                    URL [] urls = parentClassLoader.getURLs();
+                    URL [] urls = ((URLClassLoader)parentClassLoader).getURLs();
                     String jarUrl = null;
                     String jndiUrl = null;
                     for (int i=0; i<urls.length; i++) {
