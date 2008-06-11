@@ -46,7 +46,6 @@ package org.glassfish.admingui.util;
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.SystemInfo;
 import com.sun.appserv.management.base.UploadDownloadMgr;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.config.AMXConfig;
@@ -93,8 +92,9 @@ import javax.servlet.ServletContext;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 
-import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 import org.jvnet.hk2.component.Habitat;
+import java.lang.management.ManagementFactory;
+import com.sun.appserv.management.client.AMXBooter;
 
 
 /**
@@ -155,9 +155,15 @@ public class AMXRoot {
 	    Habitat habitat = (Habitat) servletCtx.getAttribute("com.sun.appserv.jsf.habitat");
 
 	    // Get the MBeanServer via the Habitat, we want the "official" one
-	    MBeanServer mbs = (MBeanServer)habitat.getComponent(MBeanServer.class); 
-
-	    DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot();
+	    MBeanServer mbs = (MBeanServer) habitat.getComponent(MBeanServer.class);
+            if (mbs == null){
+                 mbs = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+            }
+            if (mbs == null){
+                System.out.println("!!!!!!!!!!!!!!  Cannot get to MBeanServer");
+            }
+            AMXBooter.bootAMX(mbs);
+            DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot(); 
 	    domainRoot.waitAMXReady();
 	    amxRoot = new AMXRoot(domainRoot, mbs);
             
