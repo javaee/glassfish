@@ -35,8 +35,6 @@
  */
 package org.glassfish.security.common;
 
-import com.sun.enterprise.deployment.*;
-
 /**
  * This class implements the EJB concept of a Group. A Group is
  * a privilege attribute that several Principals share. Or, in

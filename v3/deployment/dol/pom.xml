@@ -111,6 +111,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-common</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish-api.version}</version>

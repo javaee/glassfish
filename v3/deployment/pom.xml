@@ -51,5 +51,6 @@
     <modules>
         <module>dol</module>
         <module>client</module>
+        <module>common</module>
     </modules>
 </project>

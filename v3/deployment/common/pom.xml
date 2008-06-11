@@ -35,82 +35,74 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
--->
+--> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.webservices</groupId>
-        <artifactId>webservices</artifactId>
+        <groupId>org.glassfish.deployment</groupId>
+        <artifactId>deployment</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-
-    <artifactId>jsr109-impl</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>deployment-common</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>JSR-109 implementation to deploy Metro</name>
+    <name>Deployment Related Common Classes</name>
 
     <developers>
-        <developer>
-            <id>bhaktimehta</id>
-            <name>Bhakti Mehta</name>
+      <developer>
+            <id>hzhang</id>
+            <name>Hong Zhang</name>
+            <url>http://blogs.sun.com/misty</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-                <role>lead</role>
             </roles>
         </developer>
-    </developers>
+        <developer>
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>       
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+	</build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${project.version}</version>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2</artifactId>
+                <version>${hk2.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>dol</artifactId>
-            <version>${project.version}</version>
+	    <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${glassfish-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.deployment</groupId>
-            <artifactId>deployment-common</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.common</groupId>
-            <artifactId>container-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>javax.xml</groupId>
-            <artifactId>webservices-api</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-           <groupId>com.sun.xml.ws</groupId>
-            <artifactId>webservices-rt</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-           <groupId>com.sun.tools.ws</groupId>
-            <artifactId>webservices-tools</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-        
-    </dependencies>
+   </dependencies>
 </project>
