@@ -933,7 +933,7 @@ public final class StandardServer
         if ((wloader.getDebug() != 0) ||
             (wloader.getDelegate() != false) ||
             !wloader.getLoaderClass().equals
-             ("org.apache.catalina.loader.WebappClassLoader")) {
+             ("org.glassfish.web.loader.WebappClassLoader")) {
             return (false);
         }
         return (true);

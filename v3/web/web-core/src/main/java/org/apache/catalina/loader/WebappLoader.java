@@ -218,7 +218,7 @@ public class WebappLoader
      * loader implementation must be used.
      */
     private String loaderClass =
-        "org.apache.catalina.loader.WebappClassLoader";
+        "org.glassfish.web.loader.WebappClassLoader";
 
 
     /**
