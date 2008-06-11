@@ -89,7 +89,6 @@ import org.apache.catalina.logger.SystemOutLogger;
 import org.apache.catalina.realm.JDBCRealm;
 import org.apache.catalina.realm.JNDIRealm;
 import org.apache.catalina.realm.MemoryRealm;
-import org.apache.catalina.realm.UserDatabaseRealm;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.valves.AccessLogValve;
@@ -1002,41 +1001,6 @@ public class MBeanFactory extends BaseModelMBean {
         ObjectName oname = logger.getObjectName();
         return (oname.toString());
         
-    }
-
-
-    /**
-     * Create a new  UserDatabaseRealm.
-     *
-     * @param parent MBean Name of the associated parent component
-     * @param resourceName Global JNDI resource name of the associated
-     *  UserDatabase
-     *
-     * @exception Exception if an MBean cannot be created or registered
-     */
-    public String createUserDatabaseRealm(String parent, String resourceName)
-        throws Exception {
-
-         // Create a new UserDatabaseRealm instance
-        UserDatabaseRealm realm = new UserDatabaseRealm();
-        realm.setResourceName(resourceName);
-        
-        // Add the new instance to its parent component
-        ObjectName pname = new ObjectName(parent);
-        ContainerBase containerBase = getParentContainerFromParent(pname);
-        // Add the new instance to its parent component
-        containerBase.setRealm(realm);
-        // Return the corresponding MBean name
-        ObjectName oname = realm.getObjectName();
-        // FIXME getObjectName() returns null
-        //ObjectName oname = 
-        //    MBeanUtils.createObjectName(pname.getDomain(), realm);
-        if (oname != null) {
-            return (oname.toString());
-        } else {
-            return null;
-        }   
-
     }
 
 
