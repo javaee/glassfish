@@ -52,5 +52,6 @@
         <module>dol</module>
         <module>client</module>
         <module>common</module>
+        <module>javaee-core</module>
     </modules>
 </project>

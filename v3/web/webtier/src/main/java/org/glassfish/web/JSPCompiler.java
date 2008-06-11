@@ -68,7 +68,7 @@ import com.sun.enterprise.deployment.runtime.web.JspConfig;
 import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.deployment.backend.DeploymentLogger;
+import com.sun.logging.LogDomains;
 
 public final class JSPCompiler {
     private ServerContext serverContext;
@@ -319,7 +319,7 @@ public final class JSPCompiler {
         localStrings.getLocalString("org.glassfish.web.start_jspc", "Beginning JSP Precompile...");
 	private static final String finishMessage =
         localStrings.getLocalString("org.glassfish.web.finish_jspc", "Finished JSP Precompile");
-	private static final Logger logger = DeploymentLogger.get();
+	private static final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
 
 
 	////////////////////////////////////////////////////////////////////////////

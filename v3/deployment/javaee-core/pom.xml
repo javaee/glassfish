@@ -36,148 +36,95 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
-    <modelVersion>4.0.0</modelVersion>
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-
-		<groupId>org.glassfish.web</groupId>
-
-    	<artifactId>web</artifactId>
-
+        <groupId>org.glassfish.deployment</groupId>
+        <artifactId>deployment</artifactId>
         <version>10.0-SNAPSHOT</version>
-
     </parent>
-
-
-
-    <artifactId>tomcat-connector</artifactId>
-
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>deployment-javaee-core</artifactId>
     <packaging>hk2-jar</packaging>
-
-    <name>Web Container connector for Glassfish</name>
-
-    
+    <name>Deployment Related JavaEE Core Classes</name>
 
     <developers>
-
+     <developer>
+            <id>hzhang</id>
+            <name>Hong Zhang</name>
+            <url>http://blogs.sun.com/misty</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
         <developer>
-
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
             <id>dochez</id>
-
             <name>Jerome Dochez</name>
-
             <url>http://blogs.sun.com/dochez</url>
-
             <organization>Sun Microsystems, Inc.</organization>
-
             <roles>
-
                 <role>developer</role>
-
             </roles>
-
         </developer>
+    </developers>
 
-        <developer>
-
-            <id>jfarcand</id>
-
-            <name>Jean Francois Arcand</name>
-
-            <url>http://weblogs.java.net/blog/jfarcand/</url>
-
-            <organization>Sun Microsystems, Inc.</organization>
-
-            <roles>
-
-				<role>lead</role>
-
-                <role>developer</role>
-
-            </roles>
-
-        </developer>
-
-        <developer>
-
-            <id>oleksiys</id>
-
-            <name>Oleksiy Stashok</name>
-
-            <url>http://blogs.sun.com/dochez</url>
-
-            <organization>Sun Microsystems, Inc.</organization>
-
-            <roles>
-
-                <role>developer</role>
-
-            </roles>
-
-        </developer>
-
-    </developers>    
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
     <dependencies>
-
         <dependency>
-
-            <groupId>org.glassfish.web</groupId>
-
-            <artifactId>webtier</artifactId>
-
-            <version>${project.version}</version>
-
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-
-            <groupId>org.glassfish.deployment</groupId>
-
-            <artifactId>dol</artifactId>
-
-            <version>${project.version}</version>
-
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
         </dependency>
-
         <dependency>
-
             <groupId>org.glassfish.common</groupId>
-
-            <artifactId>container-common</artifactId>
-
-            <version>${project.version}</version>
-
+            <artifactId>glassfish-api</artifactId>
+            <version>${glassfish-api.version}</version>            
         </dependency>
         <dependency>
-
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.deployment</groupId>
-
-            <artifactId>deployment-javaee-core</artifactId>
-
+            <artifactId>dol</artifactId>
             <version>${project.version}</version>
-
         </dependency>
-
         <dependency>
-
-            <groupId>org.glassfish.web</groupId>
-
-            <artifactId>war-util</artifactId>
-
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
             <version>${project.version}</version>
-
-        </dependency>        
-
-    </dependencies>
-
+        </dependency>
+       <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+   </dependencies>
 </project>
-
