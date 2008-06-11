@@ -49,7 +49,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
-import com.sun.appserv.connectors.internal.api.ResourceHandle;
+import com.sun.enterprise.transaction.spi.TransactionalResource;
 import com.sun.logging.LogDomains;
 
 /**
@@ -83,8 +83,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
     private long txId;
     private JavaEEXid xid;
     private Transaction jtsTx;
-    private ResourceHandle nonXAResource;
-    private ResourceHandle laoResource;
+    private TransactionalResource nonXAResource;
+    private TransactionalResource laoResource;
     private int localTxStatus;
     private Vector syncs = new Vector();
     private Vector interposedSyncs = new Vector();
@@ -212,19 +212,19 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return xid;
     }
 
-    public ResourceHandle getNonXAResource() {
+    public TransactionalResource getNonXAResource() {
         return nonXAResource;
     }
 
-    void setNonXAResource(ResourceHandle h) {
+    void setNonXAResource(TransactionalResource h) {
         nonXAResource = h;
     }
 
-    ResourceHandle getLAOResource() {
+    TransactionalResource getLAOResource() {
         return laoResource;
     }
 
-    void setLAOResource(ResourceHandle h) {
+    void setLAOResource(TransactionalResource h) {
         laoResource = h;
     }
 
@@ -598,7 +598,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 SystemException {
         // START OF IASRI 4660742
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE,"--In JavaEETransactionImpl.registerSynchronization, jtsTx=" +jtsTx+" nonXAResource="+nonXAResource);
+            _logger.log(Level.FINE,"--In JavaEETransactionImpl.registerSynchronization, jtsTx=" 
+                    +jtsTx+" nonXAResource="+nonXAResource);
         }
         // END OF IASRI 4660742
 

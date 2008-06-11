@@ -37,12 +37,15 @@ package com.sun.enterprise.resource;
 
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.allocator.LocalTxConnectorAllocator;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.enterprise.transaction.spi.TransactionalResource;
 
 import javax.resource.spi.ConnectionEventListener;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
+import javax.transaction.Transaction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -53,7 +56,8 @@ import java.util.logging.Level;
  *
  * @author Tony Ng
  */
-public class ResourceHandle implements com.sun.appserv.connectors.internal.api.ResourceHandle {
+public class ResourceHandle implements 
+        com.sun.appserv.connectors.internal.api.ResourceHandle, TransactionalResource {
 
     // unique ID for resource handles
     static private long idSequence;
@@ -303,5 +307,13 @@ public class ResourceHandle implements com.sun.appserv.connectors.internal.api.R
 
     public void setPartition(int partition) {
         this.partition = partition;
+    }
+
+    public String getName() {
+        return spec.getResourceId();
+    }
+
+    public void enlistedInTransaction(Transaction tran) throws IllegalStateException {
+        ConnectorRuntime.getRuntime().getPoolManager().resourceEnlisted(tran, this);
     }
 }

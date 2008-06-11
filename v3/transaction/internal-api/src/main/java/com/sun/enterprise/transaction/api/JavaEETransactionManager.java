@@ -46,7 +46,8 @@ import javax.resource.spi.work.WorkException;
 
 import org.jvnet.hk2.annotations.Contract;
 
-import com.sun.appserv.connectors.internal.api.ResourceHandle;
+import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationException;
@@ -98,7 +99,7 @@ public interface JavaEETransactionManager extends TransactionManager {
      *
      */
     public boolean enlistResource(Transaction tran,
-                                  ResourceHandle h)
+                                  TransactionalResource h)
         throws RollbackException,
                IllegalStateException, SystemException;
 
@@ -119,7 +120,7 @@ public interface JavaEETransactionManager extends TransactionManager {
      *
      */
     public boolean delistResource(Transaction tran,
-                                  ResourceHandle h,
+                                  TransactionalResource h,
                                   int flag)
         throws IllegalStateException, SystemException;
 
@@ -189,9 +190,9 @@ public interface JavaEETransactionManager extends TransactionManager {
 
     public List getExistingResourceList(Object instance, ComponentInvocation inv);
 
-    public void registerComponentResource(ResourceHandle h);
+    public void registerComponentResource(TransactionalResource h);
 
-    public void unregisterComponentResource(ResourceHandle h);
+    public void unregisterComponentResource(TransactionalResource h);
 
     public void recover(XAResource[] resourceList);
 
@@ -306,5 +307,11 @@ public interface JavaEETransactionManager extends TransactionManager {
      */
     public XATerminator getXATerminator() ;
 
-
+    /**
+     * Explicitly set the JavaEETransactionManagerDelegate instance
+     * for implementation-specific callbacks.
+     *
+     * @param delegate the JavaEETransactionManagerDelegate instance.
+     */
+    public void setDelegate(JavaEETransactionManagerDelegate delegate);
 }

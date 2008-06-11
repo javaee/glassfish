@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,41 +33,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.transaction.spi;
 
-package com.sun.enterprise.transaction.api;
-
-import org.jvnet.hk2.annotations.Contract;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transaction;
-import java.util.Set;
+import javax.transaction.xa.XAResource;
 
-import com.sun.enterprise.transaction.spi.TransactionalResource;
+/**
+ * TransactionalResource interface to be implemented by the resource handlers 
+ * to be able to communicate with used the transaction manager components
+ *
+ * @author Marina Vatkina
+ */
 
-@Contract
-public interface JavaEETransaction
-    extends Transaction {
+public interface TransactionalResource {
 
-    public EntityManager getExtendedEntityManager(EntityManagerFactory factory);
+    public boolean isTransactional();
 
-    public EntityManager getTxEntityManager(EntityManagerFactory factory);
+    //TODO V3 not needed as of now.
+    public boolean isEnlistmentSuspended();
 
-    public void addTxEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
+    public XAResource getXAResource();
 
-    public void addExtendedEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
+    public boolean supportsXA();
 
-    public void removeExtendedEntityManagerMapping(EntityManagerFactory factory);
+    public Object getComponentInstance();
 
-    public <T> void setContainerData(T data);
+    public void setComponentInstance(Object instance);
 
-    public <T> T getContainerData();
+    public void closeUserConnection() throws Exception;
 
-    public Set getAllParticipatingPools();
+    public boolean isEnlisted();
 
-    public Set getResources(String poolName);
+    public boolean isShareable();
 
-    public TransactionalResource getNonXAResource();
+    public void destroyResource();
 
-    public void setResources(Set resources, String poolName);
+    /**
+     * @returns the String that can identify this resource
+     */
+    public String getName();
+
+    /**
+     * Indicates that a resource has been enlisted in the transaction.
+     * @param tran Transaction to which the resource is enlisted
+     * @throws IllegalStateException when unable to enlist the resource
+     */
+    void enlistedInTransaction(Transaction tran) throws IllegalStateException;
 }

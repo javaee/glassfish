@@ -44,6 +44,8 @@ import java.util.logging.*;
 import javax.transaction.*;
 
 import org.glassfish.api.invocation.InvocationManager;
+import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 /**
  * Unit test for simple App.
@@ -78,6 +80,7 @@ public class AppTest extends TestCase {
     public void setUp() {
         try {
             t = new JavaEETransactionManagerSimplified();
+            ((JavaEETransactionManager)t).setDelegate(new JavaEETransactionManagerSimplifiedDelegate());
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -163,6 +166,33 @@ public class AppTest extends TestCase {
                     + " <===");
             assertTrue ("beforeCompletion was not called", s.called_beforeCompletion);
             assertTrue ("afterCompletion was not called", s.called_afterCompletion);
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testTxSuspendResume() {
+        System.out.println("**Testing TM suspend ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+
+            Transaction tx = t.suspend();
+            assertNotNull(tx);
+
+            System.out.println("**TX suspended ....");
+            System.out.println("**Calling TM resume ===>");
+            t.resume(tx);
+
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus()), 
+                "Active");
+
+            System.out.println("**Calling TX commit ===>");
+            tx.commit();
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus());
+            System.out.println("**Status after commit: " + status + " <===");
             assert (true);
         } catch (Exception ex) {
             ex.printStackTrace();
