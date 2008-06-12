@@ -674,7 +674,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return "Web";
     }
 
-    public Class<WebDeployer> getDeployer() {
+    public Class<? extends WebDeployer> getDeployer() {
         return WebDeployer.class;
     }
     
