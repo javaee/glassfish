@@ -75,8 +75,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${glassfish.version}</version>
-	    <scope>provided</scope>
+            <version>${glassfish-api.version}</version>
         </dependency>
     <!--
         <dependency>
