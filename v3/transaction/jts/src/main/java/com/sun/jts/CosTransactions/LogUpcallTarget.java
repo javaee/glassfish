@@ -33,60 +33,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.transaction;
 
-import javax.transaction.SystemException;
-import javax.transaction.xa.Xid;
-import javax.resource.spi.XATerminator;
+/*
+ * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ * Use is subject to license terms.
+ */
+
+//----------------------------------------------------------------------------
+//
+// Module:      LogUpcallTarget.java
+//
+// Description: Log short-on-storage upcall interface.
+//
+// Product:     com.sun.jts.CosTransactions
+//
+// Author:      Simon Holdsworth
+//
+// Date:        March, 1997
+//
+// Copyright (c):   1995-1997 IBM Corp.
+//
+//   The source code for this program is not published or otherwise divested
+//   of its trade secrets, irrespective of what has been deposited with the
+//   U.S. Copyright Office.
+//
+//   This software contains confidential and proprietary information of
+//   IBM Corp.
+//----------------------------------------------------------------------------
+
+package com.sun.jts.CosTransactions;
 
 /**
- * Transaction Manager extensions to support transaction inflow w/o resource adapter.
+ * The LogUpcallTarget interface provides an operation that the log will call
+ * in the event it goes short-on-storage. This class must be sub-classed in
+ * order to implement the method that will handle the situation.
+ *
+ * @version 0.01
+ *
+ * @author Simon Holdsworth, IBM Corporation
+ *
+ * @see
  */
-public interface TransactionImport {
-  /**
-     * Recreate a transaction based on the Xid. This call causes the calling
-     * thread to be associated with the specified transaction. 
-     * 
-     * <p>
-     * This method imports a transactional context controlled by an external transaction manager.
-     *
-     * @param xid the Xid object representing a transaction.
-     */
-    public void recreate(Xid xid, long timeout); 
+
+interface LogUpcallTarget {
 
     /**
-     * Release a transaction. This call causes the calling thread to be
-     * dissociated from the specified transaction. 
-     * 
-     * <p>
-     * This call releases transactional context imported by recreate method.
+     * This is the upcall which is called by the log file.
      *
-     * @param xid the Xid object representing a transaction.
+     * @param
+     *
+     * @return
+     *
+     * @see
      */
-    public void release(Xid xid); 
-
-    /**
-     * Provides a handle to a <code>XATerminator</code> instance.
-     *
-     * <p> The XATerminator exports 2PC protocol control to an external root transaction coordinator.
-     *
-     * @return a <code>XATerminator</code> instance.
-     */
-    public XATerminator getXATerminator();
-    
-    /**
-     * Return duration before current transaction would timeout.
-     *
-     * @return Returns the duration in seconds before current transaction would
-     *         timeout.
-     *         Returns zero if transaction has no timeout set and returns 
-     *         negative value if transaction already timed out.
-     *
-     * @exception IllegalStateException Thrown if the current thread is
-     *    not associated with a transaction.
-     *
-     * @exception SystemException Thrown if the transaction manager
-     *    encounters an unexpected error condition.
-     */
-    public int getTransactionRemainingTimeout() throws SystemException;
+    void upcall(int reason);
 }

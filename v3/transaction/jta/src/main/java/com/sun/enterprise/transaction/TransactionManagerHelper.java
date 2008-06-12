@@ -45,6 +45,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.TransactionImport;
 
 /**
 * This class is wrapper for the actual transaction manager implementation.
