@@ -26,6 +26,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -53,6 +54,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -338,6 +340,7 @@ public class WebServicesDeployer extends WebDeployer {
         String[] otherExportedPackages = new String[] {
                  "org.glassfish.webservices:jsr109-impl",
                  "org.glassfish.web:webtier" ,
+                 "org.glassfish.common:internal-api" ,
                  "com.sun.xml.ws:webservices-rt",
                  "com.sun.tools.ws:webservices-tools",
                  "javax.xml:webservices-api"
@@ -774,7 +777,11 @@ public class WebServicesDeployer extends WebDeployer {
         }
     }
 
-    public void doWebServiceDeployment(WebBundleDescriptor web) throws DeploymentException{
+    public void doWebServiceDeployment(WebBundleDescriptor web) throws DeploymentException, MalformedURLException {
+        /**
+         * Combining code from <code>com.sun.enterprise.deployment.backend.WebServiceDeployer</code>
+         * in v2
+         */
         Collection endpoints = web.getWebServices().getEndpoints();
 
         for(Iterator endpointIter = endpoints.iterator();endpointIter.hasNext();) {
@@ -802,12 +809,27 @@ public class WebServicesDeployer extends WebDeployer {
             String containerServlet = "org.glassfish.webservices.JAXWSServlet";
             webComp.setWebComponentImplementation(containerServlet);
 
+
+            /**
+             * Now trying to figure the address from <code>com.sun.enterprise.webservice.WsUtil.java</code>
+             */
+            // Get a URL for the root of the webserver, where the host portion
+            // is a canonical host name.  Since this will be used to compose the
+            // endpoint address that is written into WSDL, it's better to use
+            // hostname as opposed to IP address.
+            // The protocol and port will be based on whether the endpoint
+            // has a transport guarantee of INTEGRAL or CONFIDENTIAL.
+            // If yes, https will be used.  Otherwise, http will be used.
+            WebServerInfo wsi = new WsUtil().getWebServerInfo();
+            URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
+
+            URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
-          /*  logger.log(Level.INFO,
-                                 "enterprise.deployment.endpoint.registration",
+            logger.log(Level.INFO,
+                                 "Listening to address",
                        new Object[] { nextEndpoint,
-                               nextEndpoint.getEndpointName(), actualAddress });*/
+                               nextEndpoint.getEndpointName(), actualAddress });
             
 
         }

@@ -41,6 +41,8 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServiceHandlerChain;
 import com.sun.enterprise.deployment.WebServiceHandler;
+import com.sun.enterprise.deployment.util.WebServerInfo;
+import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
 
@@ -1375,20 +1377,20 @@ public class WsUtil {
         }
 
         return headers;
-    }
+    }   */
     
-    *//**
+    /**
      * @return the web server information based on a deployment request.
-     *//*
-    public WebServerInfo getWebServerInfo(DeploymentRequest request) throws ConfigException {
+     */
+    public WebServerInfo getWebServerInfo() {
 
-        *//**
+        /** TODO BM fix the getWebServerInfo
          * If there is only one target and that target is a stand alone server, WSDL_TARGET_HINT in options would have been set
          * by the client. Use this hint to enable WSDL generation with the specific target's host and port. 
          * Refer to bug 6157923 for more info
-         *//*
+         */
         
-        String serverTarget = (String) request.getOptionalArguments().get(DeploymentProperties.WSDL_TARGET_HINT);
+        /*String serverTarget = (String) request.getOptionalArguments().get(DeploymentProperties.WSDL_TARGET_HINT);
         if(serverTarget == null) {
             return(getWebServerInfoForDAS(request));
         }
@@ -1402,17 +1404,19 @@ public class WsUtil {
             return(getWebServerInfoForDAS(request));
         }
         String host = info.getHost();
-        return(getWebServerInfo(cc, config, null, serverTarget, host));
+        return(getWebServerInfo(cc, config, null, serverTarget, host));*/
+        return getWebServerInfoForDAS();
     }
     
-    private WebServerInfo getWebServerInfoForDAS(DeploymentRequest request) {
+    private WebServerInfo getWebServerInfoForDAS() {
         WebServerInfo wsi = new WebServerInfo();
-        wsi.setHttpVS(new VirtualServerInfo("http", request.getHttpHostName(), request.getHttpPort()));
-        wsi.setHttpsVS(new VirtualServerInfo("https", request.getHttpsHostName(), request.getHttpsPort()));
+        //TODO BM fix me the port numbers and host should be actual info from WebserverInfo
+        wsi.setHttpVS(new VirtualServerInfo("http", "localhost", 8080));
+        wsi.setHttpsVS(new VirtualServerInfo("https", "localhost", 8081));
         return wsi;
     }
 
-    *//**
+    /**
      * @return the web server information based on a http request
      *//*
     public WebServerInfo getWebServerInfo(String moduleID, HttpServletRequest request) throws ConfigException {
@@ -1426,7 +1430,7 @@ public class WsUtil {
         return(getWebServerInfo(cc, config, ref.getVirtualServers(), null, null));
     }
     
-    private WebServerInfo getWebServerInfo(ConfigContext cc, Config config, 
+   /* private WebServerInfo getWebServerInfo(ConfigContext cc, Config config,
                             String virtualServers, String targetName, String targetHostName) throws ConfigException {
         HttpService httpService = config.getHttpService();
         VirtualServer[] vServers = null;

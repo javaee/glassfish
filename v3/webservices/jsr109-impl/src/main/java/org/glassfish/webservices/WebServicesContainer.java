@@ -25,8 +25,10 @@
 package org.glassfish.webservices;
 
 import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.Deployer;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.web.WebContainer;
+import com.sun.enterprise.web.WebDeployer;
 
 /**
  * Webservices container service
@@ -39,8 +41,8 @@ public class WebServicesContainer extends WebContainer {
         return "webservices";
     }
 
-    public Class<? extends org.glassfish.api.deployment.Deployer>
-        getDeployer() {
+    @Override
+    public Class<? extends WebDeployer> getDeployer() {
         return WebServicesDeployer.class;
     }
 }

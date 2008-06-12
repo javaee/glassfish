@@ -36,16 +36,9 @@
  */
 package org.glassfish.webservices;
 
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.v3.deployment.GenericSniffer;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 
-import java.io.IOException;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 
 /**

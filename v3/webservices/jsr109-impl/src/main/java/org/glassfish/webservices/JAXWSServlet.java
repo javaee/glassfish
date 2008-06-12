@@ -109,7 +109,7 @@ public class JAXWSServlet extends HttpServlet {
     }
 
     public void destroy() {
-        /*synchronized(this) {
+        synchronized(this) {
             ServletAdapterList list = 
                     (ServletAdapterList) getServletContext().getAttribute("ADAPTER_LIST");
             if(list != null) {
@@ -119,14 +119,17 @@ public class JAXWSServlet extends HttpServlet {
                 getServletContext().removeAttribute("ADAPTER_LIST");
             }
             JAXWSAdapterRegistry.getInstance().removeAdapter(contextRoot);
+            /*
+            Fix for bug 3932/4052 since the x.getEndpoint().dispose is being
+           called above we do not need to call this explicitly
             try {
                 (new WsUtil()).doPreDestroy(endpoint, classLoader);
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "@PreDestroy lifecycle call failed for service" 
                         + endpoint.getName(), t);
-            }
+            }*/
             wsEngine_.removeHandler(endpoint);
-        }*/
+        }
     }
 
     protected void doPost(HttpServletRequest request,
