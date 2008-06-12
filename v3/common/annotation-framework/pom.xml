@@ -77,5 +77,10 @@
         <artifactId>hk2</artifactId>
         <version>${hk2.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.javaee</artifactId>
+        <version>${project.version}</version>
+    </dependency>
 	</dependencies>
 </project>
