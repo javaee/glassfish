@@ -95,7 +95,7 @@ public class JavaEETransactionManagerSimplified
 
     // Note: this is not inheritable because we dont want transactions
     // to be inherited by child threads.
-    ThreadLocal<JavaEETransactionImpl> transactions;
+    private ThreadLocal<JavaEETransaction> transactions;
 
     private ThreadLocal localCallCounter;
     private ThreadLocal<JavaEETransactionManagerDelegate> delegates;
@@ -137,7 +137,7 @@ public class JavaEETransactionManagerSimplified
         statusMap.put(javax.transaction.Status.STATUS_ROLLING_BACK, "RollingBack");
     }
     public JavaEETransactionManagerSimplified() {
-        transactions = new ThreadLocal<JavaEETransactionImpl>();
+        transactions = new ThreadLocal<JavaEETransaction>();
         localCallCounter = new ThreadLocal();
         delegates = new ThreadLocal<JavaEETransactionManagerDelegate>();
     }
@@ -354,8 +354,9 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    void startJTSTx(JavaEETransactionImpl tx)
+    void startJTSTx(JavaEETransaction t)
             throws RollbackException, IllegalStateException, SystemException {
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)t;
         try {
             if (tx.isAssociatedTimeout()) {
                 // calculate the timeout for the transaction, this is required as the local tx 
@@ -429,7 +430,7 @@ public class JavaEETransactionManagerSimplified
             return;
         try {
             Transaction tran = getTransaction();
-            inv.setTransaction((JavaEETransactionImpl)tran);
+            inv.setTransaction((JavaEETransaction)tran);
             enlistComponentResources(inv);
         } catch (InvocationException ex) {
             _logger.log(Level.SEVERE,"enterprise_distributedtx.excep_in_enlist" ,ex);
@@ -607,7 +608,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public boolean isTimedOut() {
-        JavaEETransactionImpl tx = transactions.get();
+        JavaEETransaction tx = transactions.get();
         if ( tx != null)
             return tx.isTimedout();
         else
@@ -653,7 +654,7 @@ public class JavaEETransactionManagerSimplified
             return;
         }
 
-        JavaEETransactionImpl tx = transactions.get();
+        JavaEETransaction tx = transactions.get();
         if ( tx == null )
             return;
 
@@ -794,7 +795,7 @@ public class JavaEETransactionManagerSimplified
             IllegalStateException, SystemException {
 
         try {
-            JavaEETransactionImpl tx = transactions.get();
+            JavaEETransaction tx = transactions.get();
             if ( tx != null && tx.isLocalTx()) {
                 Object obj = null;
                 boolean acquiredlock = false;
@@ -849,7 +850,7 @@ public class JavaEETransactionManagerSimplified
                 SystemException {
         boolean acquiredlock=false;
         try {
-            JavaEETransactionImpl tx = transactions.get();
+            JavaEETransaction tx = transactions.get();
             if ( tx != null && tx.isLocalTx()) {
                 Object obj = null;
                 if(monitoringEnabled){
@@ -892,9 +893,9 @@ public class JavaEETransactionManagerSimplified
             else {
                 // check if this JTS Transaction was previously active
                 // in this JVM (possible for distributed loopbacks).
-                tx = (JavaEETransactionImpl)globalTransactions.get(jtsTx);
+                tx = (JavaEETransaction)globalTransactions.get(jtsTx);
                 if ( tx == null ) {
-                    tx = new JavaEETransactionImpl(jtsTx);
+                    tx = new JavaEETransaction(jtsTx);
                     tx.setImportedTransaction();
                     try {
                         jtsTx.registerSynchronization(
@@ -918,7 +919,7 @@ public class JavaEETransactionManagerSimplified
     public void setRollbackOnly()
         throws IllegalStateException, SystemException {
 
-        JavaEETransactionImpl tx = transactions.get();
+        JavaEETransaction tx = transactions.get();
         // START IASRI 4662745
         if ( tx != null && tx.isLocalTx()){
             boolean acquiredlock=false;
@@ -958,7 +959,7 @@ public class JavaEETransactionManagerSimplified
             throws InvalidTransactionException, IllegalStateException,
             SystemException {
 
-        JavaEETransactionImpl tx = transactions.get();
+        JavaEETransaction tx = transactions.get();
         if ( tx != null )
             throw new IllegalStateException(
                     sm.getString("enterprise_distributedtx.transaction_exist_on_currentThread"));
@@ -1069,7 +1070,7 @@ public class JavaEETransactionManagerSimplified
                 String status = "unknown";
                 String componentName = "unknown";
                 ArrayList<String> resourceNames = null;
-                if(tran instanceof JavaEETransactionImpl){
+                if(tran instanceof JavaEETransaction){
                     JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
                     id=tran1.getTransactionId();
                     startTime = tran1.getStartTime();
@@ -1174,7 +1175,7 @@ public class JavaEETransactionManagerSimplified
 /****************************************************************************/
 /************************* Helper Methods ***********************************/
 /****************************************************************************/
-    protected static String getStatusAsString(int status) {
+    public static String getStatusAsString(int status) {
         return (String)statusMap.get(status);
     }
 
@@ -1370,12 +1371,22 @@ public class JavaEETransactionManagerSimplified
                             + d.getClass().getName());
             }
         }
+        if (order > 0 && _logger.isLoggable(Level.INFO))
+                _logger.log(Level.INFO,"Using " + delegate.getClass().getName() + " as the delegate");
     }
 
     public void setDelegate(JavaEETransactionManagerDelegate d) {
         // XXX Check if it's valid to set
         delegate = d;
         delegate.setTransactionManager(this);
+    }
+
+    public JavaEETransaction getCurrentTransaction() { 
+        return transactions.get();
+    }
+
+    public void setCurrentTransaction(JavaEETransaction t) { 
+        transactions.set(t);
     }
 
 /****************************************************************************/

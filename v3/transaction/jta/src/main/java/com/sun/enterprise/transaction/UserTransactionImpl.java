@@ -153,7 +153,7 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         }
 
         transactionManager.begin();
-            /**
+            /** V2 **
         if ( transactionTimeout > 0 ) 
             transactionManager.begin(transactionTimeout);
         else
@@ -279,8 +279,9 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         transactionManager.setTransactionTimeout(seconds);
     }
 
-    protected void setForTesting(TransactionManager tm, InvocationManager im) {
+    public void setForTesting(TransactionManager tm, InvocationManager im) {
         transactionManager = (JavaEETransactionManager)tm;
         invocationManager = im;
+        ((JavaEETransactionManagerSimplified)transactionManager).invMgr = im;
     }
 }

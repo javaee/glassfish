@@ -314,4 +314,22 @@ public interface JavaEETransactionManager extends TransactionManager {
      * @param delegate the JavaEETransactionManagerDelegate instance.
      */
     public void setDelegate(JavaEETransactionManagerDelegate delegate);
+
+    /**
+     *
+     * Return JavaEETransaction instance associated with the current thread.
+     *
+     * @return the JavaEETransaction associated with the current thread or null
+     * if it there is none.
+     */
+    public JavaEETransaction getCurrentTransaction();
+
+    /**
+     *
+     * Update JavaEETransaction associated with the current thread.
+     *
+     * @param tx the JavaEETransaction associated with the current thread or null
+     * if the existing transaction had been completed.
+     */
+    public void setCurrentTransaction(JavaEETransaction tx);
 }

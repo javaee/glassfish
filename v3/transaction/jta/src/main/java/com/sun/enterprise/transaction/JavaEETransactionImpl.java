@@ -183,7 +183,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return timeout;
     }
 
-    boolean isTimedout() {
+    public boolean isTimedout() {
         return isTimedOut;
     }
     // END: local transaction timeout
@@ -328,7 +328,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return extendedEntityManagerMap;
     }
 
-    boolean isLocalTx() {
+    public boolean isLocalTx() {
         return (jtsTx==null);
     }
 

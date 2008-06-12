@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,44 +34,45 @@
  * holder.
  */
 
-package com.sun.enterprise.transaction.api;
+package com.sun.enterprise.transaction.xa;
 
-import org.jvnet.hk2.annotations.Contract;
+//import com.sun.enterprise.transaction.monitor.JTSMonitorMBean;
+//import com.sun.enterprise.admin.event.tx.TransactionsRecoveryEvent;
+//import com.sun.enterprise.admin.event.tx.TransactionsRecoveryEventListener;
+//import com.sun.enterprise.admin.event.AdminEventListenerException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.Transaction;
-import java.util.Set;
+//import com.sun.enterprise.server.ApplicationServer;
+import com.sun.enterprise.util.i18n.StringManager;
 
-import com.sun.enterprise.transaction.spi.TransactionalResource;
+public class TransactionsRecoveryEventListenerImpl /** implements  TransactionsRecoveryEventListener **/ {
+ 
+        // Sting Manager for Localization
+    private static StringManager sm = StringManager.getManager(TransactionsRecoveryEventListenerImpl.class);
 
-@Contract
-public interface JavaEETransaction
-    extends Transaction {
 
-    public EntityManager getExtendedEntityManager(EntityManagerFactory factory);
+   /**
+    * Recovers taransactions for given instance
+    * @param event - TransactionsRecoveryEvent containing data to recovery
+    *
+   public void processEvent(TransactionsRecoveryEvent event) throws AdminEventListenerException
+   {
+       // System.out.println("====>TransactionsRecoveryEventListener.processEvent"+
+       //     "request for recovery transactions on server="+
+       //     event.getServerName() + " logDir=" + event.getLogDir());
 
-    public EntityManager getTxEntityManager(EntityManagerFactory factory);
+        String currentServer = ApplicationServer.getServerContext().getInstanceName();
 
-    public void addTxEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
+        boolean delegated = (!currentServer.equals(event.getServerName()));
 
-    public void addExtendedEntityManagerMapping(EntityManagerFactory factory, EntityManager em);
-
-    public void removeExtendedEntityManagerMapping(EntityManagerFactory factory);
-
-    public <T> void setContainerData(T data);
-
-    public <T> T getContainerData();
-
-    public Set getAllParticipatingPools();
-
-    public Set getResources(String poolName);
-
-    public TransactionalResource getNonXAResource();
-
-    public void setResources(Set resources, String poolName);
-
-    public boolean isLocalTx();
-
-    public boolean isTimedout();
+        //call recover method.
+        try {
+            JTSMonitorMBean.recover(delegated, event.getLogDir());
+        } catch (Exception ex) {
+            if (ex.getMessage() != null)
+                throw new AdminEventListenerException(ex.getMessage());
+            else
+                throw new AdminEventListenerException(sm.getString("transaction.unexpected_exception_in_recover-transactions"));
+        }
+   }
+    **/
 }

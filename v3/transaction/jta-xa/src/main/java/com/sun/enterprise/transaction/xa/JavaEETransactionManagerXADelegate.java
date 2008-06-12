@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.transaction;
+package com.sun.enterprise.transaction.xa;
 
 import javax.transaction.*;
 import javax.transaction.xa.*;
@@ -42,19 +42,21 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
+import com.sun.enterprise.transaction.JavaEETransactionImpl;
 
 import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Service;
 
 /**
- ** Implementation of JavaEETransactionManagerDelegate that supports only
- * local transactions with a single non-XA resource.
+ ** Implementation of JavaEETransactionManagerDelegate that supports XA
+ * transactions without OTS.
  *
  * @author Marina Vatkina
  */
 @Service
-public class JavaEETransactionManagerSimplifiedDelegate 
+public class JavaEETransactionManagerXADelegate 
             implements JavaEETransactionManagerDelegate {
 
     private JavaEETransactionManagerSimplified tm;
@@ -63,7 +65,7 @@ public class JavaEETransactionManagerSimplifiedDelegate
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
-    private boolean lao = false;
+    private boolean lao = true;
 
     public boolean useLAO() {
          return lao;
@@ -131,7 +133,7 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public void removeTransaction(Transaction tx) {}
 
     public int getOrder() {
-        return 1;
+        return 2;
     }
 
     public void setTransactionManager(JavaEETransactionManager tm) {
