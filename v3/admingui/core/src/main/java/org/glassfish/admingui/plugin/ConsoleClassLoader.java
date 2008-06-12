@@ -42,6 +42,8 @@ import java.net.URLClassLoader;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
+//import static com.sun.enterprise.web.Constants.HABITAT_ATTRIBUTE;
+
 import org.jvnet.hk2.component.Habitat;
 
 
@@ -53,6 +55,10 @@ import org.jvnet.hk2.component.Habitat;
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 public class ConsoleClassLoader extends ClassLoader {
+
+    // This is defined in the web module, but for now I don't want to depend
+    // on that module to get the value of this variable.
+    public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
 
     /**
      *	<p> This constructor should not normally be used.  You should use
@@ -134,8 +140,7 @@ public class ConsoleClassLoader extends ClassLoader {
 	    (FacesContext.getCurrentInstance().getExternalContext()).getContext();
 
 	// Get the Habitat from the ServletContext
-	Habitat habitat = (Habitat)
-	    servletCtx.getAttribute("com.sun.appserv.jsf.habitat");
+	Habitat habitat = (Habitat) servletCtx.getAttribute(HABITAT_ATTRIBUTE);
 
 	// Use the Habitat to fine the ConsolePluginService and return the
 	// correct ClassLoader for the requested module (or null)
