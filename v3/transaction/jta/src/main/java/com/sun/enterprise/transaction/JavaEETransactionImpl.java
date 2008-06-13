@@ -580,7 +580,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
             throw new IllegalStateException("JavaEETransactionImpl.enlistResource called for local tx");
         ***/
         else  { //  Start a new JTS tx
-            ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(this);
+            ((JavaEETransactionManagerSimplified) javaEETM).getDelegate().startJTSTx(this);
             return jtsTx.enlistResource(xaRes);
         }
         // IASRI END 4723068

@@ -35,12 +35,16 @@
  */
 package com.sun.enterprise.transaction.jts;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import javax.transaction.*;
 import javax.transaction.xa.*;
+import javax.resource.spi.XATerminator;
+import javax.resource.spi.work.WorkException;
 
 import com.sun.jts.jta.TransactionManagerImpl;
 
@@ -236,7 +240,6 @@ public class JavaEETransactionManagerJTSDelegate
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
         startJTSTx(tx);
-        globalTransactions.put(tm.getTransaction(), tx);
 
         //If transaction conatains a NonXA and no LAO, convert the existing
         //Non XA to LAO
@@ -299,8 +302,28 @@ public class JavaEETransactionManagerJTSDelegate
 
     public void startJTSTx(JavaEETransaction tx) 
             throws RollbackException, IllegalStateException, SystemException {
-        tm = TransactionManagerImpl.getTransactionManagerImpl();
+        if (tm == null)
+            tm = TransactionManagerImpl.getTransactionManagerImpl();
+
         javaEETM.startJTSTx(tx);
+        globalTransactions.put(tm.getTransaction(), tx);
+    }
+
+    public void recover(XAResource[] resourceList) {
+        ((TransactionManagerImpl)tm).recover(
+                Collections.enumeration(Arrays.asList(resourceList)));
+    }
+
+    public void release(Xid xid) throws WorkException {
+        ((TransactionManagerImpl) tm).release(xid);
+    }
+
+    public void recreate(Xid xid, long timeout) throws WorkException {
+        ((TransactionManagerImpl) tm).recreate(xid, timeout);
+    }
+
+    public XATerminator getXATerminator() {
+        return ((TransactionManagerImpl) tm).getXATerminator();
     }
 
     private Transaction suspendInternal() throws SystemException {

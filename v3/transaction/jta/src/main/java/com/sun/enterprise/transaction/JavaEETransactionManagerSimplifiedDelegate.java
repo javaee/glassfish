@@ -37,6 +37,8 @@ package com.sun.enterprise.transaction;
 
 import javax.transaction.*;
 import javax.transaction.xa.*;
+import javax.resource.spi.XATerminator;
+import javax.resource.spi.work.WorkException;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -141,5 +143,21 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public void startJTSTx(JavaEETransaction t) 
             throws RollbackException, IllegalStateException, SystemException {
         /** XXX Throw an exception ??? XXX **/
+    }
+
+    public void recover(XAResource[] resourceList) {
+        throw new UnsupportedOperationException("recover");
+    }
+
+    public XATerminator getXATerminator() {
+        throw new UnsupportedOperationException("getXATerminator");
+    }
+
+    public void release(Xid xid) throws WorkException {
+        throw new UnsupportedOperationException("release");
+    }
+
+    public void recreate(Xid xid, long timeout) throws WorkException {
+        throw new UnsupportedOperationException("recreate");
     }
 }

@@ -246,7 +246,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void recover(XAResource[] resourceList) {
-        throw new UnsupportedOperationException("recover");
+        getDelegate().recover(resourceList);
     }
 
     public boolean enlistResource(Transaction tran, TransactionalResource h)
@@ -293,7 +293,7 @@ public class JavaEETransactionManagerSimplified
                d.enlistLAOResource(tx, tx.getNonXAResource());
 
 /** XXX MOVE TO XA DELEGATE XXX **
-               startJTSTx(tx);
+               getDelegate().startJTSTx(tx);
 
                //If transaction conatains a NonXA and no LAO, convert the existing
                //Non XA to LAO
@@ -689,7 +689,7 @@ public class JavaEETransactionManagerSimplified
      * @throws UnsupportedOperationException
      */
     public XATerminator getXATerminator() {
-        throw new UnsupportedOperationException("getXATerminator");
+        return getDelegate().getXATerminator();
     }
 
     /**
@@ -700,7 +700,7 @@ public class JavaEETransactionManagerSimplified
      * @param xid the Xid object representing a transaction.
      */
     public void release(Xid xid) throws WorkException {
-        throw new UnsupportedOperationException("release");
+        getDelegate().release(xid);
     }
 
     /**
@@ -711,7 +711,7 @@ public class JavaEETransactionManagerSimplified
      * @param xid the Xid object representing a transaction.
      */
     public void recreate(Xid xid, long timeout) throws WorkException {
-        throw new UnsupportedOperationException("recreate");
+        getDelegate().recreate(xid, timeout);
     }
 
 /****************************************************************************/
@@ -1340,7 +1340,10 @@ public class JavaEETransactionManagerSimplified
 ** XXX MOVE TO DELEGATES XXX **/
     }
 
-    private JavaEETransactionManagerDelegate getDelegate() {
+    /**
+     * Called by JavaEETransactionImpl also
+     */
+    JavaEETransactionManagerDelegate getDelegate() {
         JavaEETransactionManagerDelegate d = delegates.get();
         return (d == null)? delegate : d;
     }

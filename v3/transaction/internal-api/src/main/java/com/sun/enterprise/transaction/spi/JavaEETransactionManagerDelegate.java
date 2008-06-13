@@ -37,6 +37,10 @@
 package com.sun.enterprise.transaction.spi;
 
 import javax.transaction.*;
+import javax.transaction.xa.*;
+import javax.resource.spi.XATerminator;
+import javax.resource.spi.work.WorkException;
+
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.jvnet.hk2.annotations.Contract;
@@ -162,4 +166,45 @@ public interface JavaEETransactionManagerDelegate {
     public void startJTSTx(JavaEETransaction t)
             throws RollbackException, IllegalStateException, SystemException;
 
+    /**
+     * Recover an array of XAResource objects for a failed XA transaction.
+     *
+     * @param resourceList the array of XAResource objects to recover.
+     * @throws UnsupportedOperationException if a delegate doesn't support
+     * this functionality.
+     */
+    public void recover(XAResource[] resourceList);
+
+    /**
+     * This is used by importing transactions via the Connector contract.
+     * Should not be called
+     *
+     * @return a <code>XATerminator</code> instance.
+     * @throws UnsupportedOperationException if a delegate doesn't support
+     * this functionality.
+     */
+    public XATerminator getXATerminator();
+
+    /**
+     * Release a transaction. This call causes the calling thread to be
+     * dissociated from the specified transaction. <p>
+     * This is used by importing transactions via the Connector contract.
+     *
+     * @param xid the Xid object representing a transaction.
+     * @throws UnsupportedOperationException if a delegate doesn't support
+     * this functionality.
+     */
+    public void release(Xid xid) throws WorkException;
+
+    /**
+     * Recreate a transaction based on the Xid. This call causes the calling
+     * thread to be associated with the specified transaction. <p>
+     * This is used by importing transactions via the Connector contract.
+     *
+     * @param xid the Xid object representing a transaction.
+     * @param timeout the timeout for the transaction to be recreated.
+     * @throws UnsupportedOperationException if a delegate doesn't support
+     * this functionality.
+     */
+    public void recreate(Xid xid, long timeout) throws WorkException;
 }
