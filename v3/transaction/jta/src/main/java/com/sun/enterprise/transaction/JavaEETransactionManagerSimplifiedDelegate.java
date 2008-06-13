@@ -137,4 +137,9 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public void setTransactionManager(JavaEETransactionManager tm) {
         this.tm = (JavaEETransactionManagerSimplified)tm;
     }
+
+    public void startJTSTx(JavaEETransaction t) 
+            throws RollbackException, IllegalStateException, SystemException {
+        /** XXX Throw an exception ??? XXX **/
+    }
 }

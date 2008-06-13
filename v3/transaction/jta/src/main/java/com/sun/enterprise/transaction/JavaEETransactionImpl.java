@@ -220,11 +220,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
         nonXAResource = h;
     }
 
-    TransactionalResource getLAOResource() {
+    public TransactionalResource getLAOResource() {
         return laoResource;
     }
 
-    void setLAOResource(TransactionalResource h) {
+    public void setLAOResource(TransactionalResource h) {
         laoResource = h;
     }
 

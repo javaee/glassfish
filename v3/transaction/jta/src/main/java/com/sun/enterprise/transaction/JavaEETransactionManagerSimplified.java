@@ -292,7 +292,7 @@ public class JavaEETransactionManagerSimplified
            if ( tx.isLocalTx() ) {
                d.enlistLAOResource(tx, tx.getNonXAResource());
 
-/** XXX MOVE TO DELEGATE XXX **
+/** XXX MOVE TO XA DELEGATE XXX **
                startJTSTx(tx);
 
                //If transaction conatains a NonXA and no LAO, convert the existing
@@ -303,7 +303,7 @@ public class JavaEETransactionManagerSimplified
                        // XXX super.enlistLAOResource(tx, tx.getNonXAResource());
                    }
                }
-** XXX MOVE TO XA DELEGATES XXX **/
+** XXX MOVE TO XA DELEGATE XXX **/
            }
            return enlistXAResource(tx, h);
        } else { // non-XA resource
@@ -330,14 +330,14 @@ public class JavaEETransactionManagerSimplified
                 return true;
             } else {
                 return d.enlistDistributedNonXAResource(tx, h);
-/** XXX MOVE TO XA DELEGATES? XXX
+/** XXX MOVE TO XA DELEGATE? XXX
                 if(useLAO) {
                     return super.enlistResource(tx, h);
                 } else {
                     throw new IllegalStateException(
                             sm.getString("enterprise_distributedtx.nonxa_usein_jts"));
                 }
-** XXX MOVE TO XA DELEGATES? XXX **/
+** XXX MOVE TO XA DELEGATE? XXX **/
             }
         }
     }
@@ -354,7 +354,7 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    void startJTSTx(JavaEETransaction t)
+    public void startJTSTx(JavaEETransaction t)
             throws RollbackException, IllegalStateException, SystemException {
         JavaEETransactionImpl tx = (JavaEETransactionImpl)t;
         try {
@@ -669,7 +669,7 @@ public class JavaEETransactionManagerSimplified
         // If we came here, it means we have a local tx with no registered
         // resources, so start a JTS tx which can be exported.
         try {
-            startJTSTx(tx);
+            getDelegate().startJTSTx(tx);
         } catch ( RollbackException rlex ) {
             throw new RuntimeException(sm.getString("enterprise_distributedtx.unable_tostart_JTSTransaction"),rlex);
         } catch ( IllegalStateException isex ) {
@@ -886,7 +886,7 @@ public class JavaEETransactionManagerSimplified
     public Transaction getTransaction() throws SystemException {
         return getDelegate().getTransaction();
 
-/** XXX MOVE TO THE JTS DELEGATE XXX **
+/** XXX CHECK WHAT'S NEEDED FOR XA DELEGATE XXX **
             Transaction jtsTx = super.getTransaction();
             if ( jtsTx == null )
                 return null;
@@ -913,7 +913,7 @@ public class JavaEETransactionManagerSimplified
                 transactions.set(tx); // associate tx with thread
                 return tx;
             }
-** XXX MOVE TO THE JTS DELEGATE XXX **/
+** XXX CHECK WHAT'S NEEDED FOR XA DELEGATE XXX **/
     }
 
     public void setRollbackOnly()
@@ -1218,7 +1218,7 @@ public class JavaEETransactionManagerSimplified
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: enlistResource");
 
-        if (h.isTransactional() && (!h.isEnlisted() || !h.isShareable() || multipleEnlistDelists)) {
+        if (resourceEnlistable(h)) {
             XAResource res = h.getXAResource();
             boolean result = tran.enlistResource(res);
             if (!h.isEnlisted())
@@ -1387,6 +1387,49 @@ public class JavaEETransactionManagerSimplified
 
     public void setCurrentTransaction(JavaEETransaction t) { 
         transactions.set(t);
+    }
+
+    public Logger getLogger() {
+        return _logger;
+    }
+
+    public void monitorTxCompleted0(Object obj, boolean b) {
+        if(monitoringEnabled){
+            monitorTxCompleted(obj, b);
+        }
+    }
+
+    public boolean resourceEnlistable(TransactionalResource h) {
+        return (h.isTransactional() &&
+                (!h.isEnlisted() || !h.isShareable() || multipleEnlistDelists));
+    }
+
+    public boolean isInvocationStackEmpty() {
+        return invMgr.isInvocationStackEmpty();
+    }
+
+    public void setTransactionCompeting(boolean b) {
+        ComponentInvocation curr = invMgr.getCurrentInvocation();
+        if (curr != null)
+            curr.setTransactionCompeting(b);
+    }
+
+    public JavaEETransaction createImportedTransaction(Transaction jtsTx) 
+            throws SystemException { 
+        JavaEETransactionImpl tx = new JavaEETransactionImpl(jtsTx);
+        tx.setImportedTransaction();
+        try {
+            jtsTx.registerSynchronization(
+                    new JTSSynchronization(jtsTx, this));
+        } catch ( RollbackException rlex ) {
+            throw new SystemException(rlex.toString());
+        } catch ( IllegalStateException isex ) {
+            throw new SystemException(isex.toString());
+        } catch ( Exception ex ) {
+            throw new SystemException(ex.toString());
+        }
+
+        return tx;
     }
 
 /****************************************************************************/

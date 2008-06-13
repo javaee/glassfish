@@ -153,4 +153,13 @@ public interface JavaEETransactionManagerDelegate {
      * @param tm the JavaEETransactionManager object.
      */
     public void setTransactionManager(JavaEETransactionManager tm);
+
+    /**
+     * Start new JTS transaction for the existing local transaction object.
+     *
+     * @param tm the JavaEETransactionManager object.
+     */
+    public void startJTSTx(JavaEETransaction t)
+            throws RollbackException, IllegalStateException, SystemException;
+
 }

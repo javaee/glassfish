@@ -35,13 +35,20 @@
  */
 package com.sun.enterprise.transaction.jts;
 
+import java.util.Hashtable;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import javax.transaction.*;
 import javax.transaction.xa.*;
+
+import com.sun.jts.jta.TransactionManagerImpl;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionImpl;
 
@@ -59,13 +66,26 @@ import org.jvnet.hk2.annotations.Service;
 public class JavaEETransactionManagerJTSDelegate 
             implements JavaEETransactionManagerDelegate {
 
-    private JavaEETransactionManagerSimplified tm;
+    // an implementation of the JavaEETransactionManager that calls
+    // this object.
+    private JavaEETransactionManagerSimplified javaEETM;
+
+    // an implementation of the JTA TransactionManager provided by JTS.
+    private TransactionManager tm;
+
+    private Hashtable globalTransactions;
+
+    private Logger _logger;
 
     // Sting Manager for Localization
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
     private boolean lao = true;
+
+    public JavaEETransactionManagerJTSDelegate() {
+        globalTransactions = new Hashtable();
+    }
 
     public boolean useLAO() {
          return lao;
@@ -81,62 +101,219 @@ public class JavaEETransactionManagerJTSDelegate
     public void commitDistributedTransaction() throws 
             RollbackException, HeuristicMixedException, 
             HeuristicRollbackException, SecurityException, 
-            IllegalStateException, SystemException {} 
+            IllegalStateException, SystemException {
+
+        if (_logger.isLoggable(Level.FINE))
+                _logger.log(Level.FINE,"TM: commit");
+        validateTransactionManager();
+        Object obj = tm.getTransaction(); // monitoring object
+        
+        if (javaEETM.isInvocationStackEmpty()) {
+            try{
+                tm.commit();
+                javaEETM.monitorTxCompleted0(obj, true);
+            }catch(RollbackException e){
+                javaEETM.monitorTxCompleted0(obj, false);
+                throw e;
+            }catch(HeuristicRollbackException e){
+                javaEETM.monitorTxCompleted0(obj, false);
+                throw e;
+            }catch(HeuristicMixedException e){
+                javaEETM.monitorTxCompleted0(obj, true);
+                throw e;
+            }
+        } else {
+            try {
+                javaEETM.setTransactionCompeting(true);
+                tm.commit();
+                javaEETM.monitorTxCompleted0(obj, true);
+/**
+            } catch (InvocationException ex) {
+                assert false;
+**/
+            }catch(RollbackException e){
+                javaEETM.monitorTxCompleted0(obj, false);
+                throw e;
+            }catch(HeuristicRollbackException e){
+                javaEETM.monitorTxCompleted0(obj, false);
+                throw e;
+            }catch(HeuristicMixedException e){
+                javaEETM.monitorTxCompleted0(obj, true);
+                throw e;
+            } finally {
+                javaEETM.setTransactionCompeting(false);
+            }
+        }
+    }
 
     /** XXX Throw an exception if called ??? XXX
      *  it might be a JTS imported global tx or an error
      */
     public void rollbackDistributedTransaction() throws IllegalStateException, 
-            SecurityException, SystemException {} 
+            SecurityException, SystemException {
+
+        if (_logger.isLoggable(Level.FINE))
+                _logger.log(Level.FINE,"TM: rollback");
+        validateTransactionManager();
+
+        Object obj = tm.getTransaction(); // monitoring object
+        
+        if (javaEETM.isInvocationStackEmpty()) {
+            tm.rollback();
+        } else {
+            try {
+                javaEETM.setTransactionCompeting(true);
+                tm.rollback();
+/**
+            } catch (InvocationException ex) {
+                assert false;
+**/
+            } finally {
+                javaEETM.setTransactionCompeting(false);
+            }
+        }
+
+        javaEETM.monitorTxCompleted0(obj, false);
+    }
 
     public int getStatus() throws SystemException {
-        JavaEETransaction tx = tm.getCurrentTransaction();
+        JavaEETransaction tx = javaEETM.getCurrentTransaction();
         if ( tx != null && tx.isLocalTx())
             return tx.getStatus();
+        else if (tm != null) 
+            return tm.getStatus();
         else
             return javax.transaction.Status.STATUS_NO_TRANSACTION;
     }
 
     public Transaction getTransaction() 
             throws SystemException {
-        return  tm.getCurrentTransaction();
+        JavaEETransaction tx = javaEETM.getCurrentTransaction();
+        if ( tx != null )
+            return tx;
+
+        // Check for a JTS imported tx
+        Transaction jtsTx = null;
+        if (tm != null) {
+            jtsTx = tm.getTransaction();
+        }
+
+        if ( jtsTx == null )
+            return null;
+        else {
+            // check if this JTS Transaction was previously active
+            // in this JVM (possible for distributed loopbacks).
+            tx = (JavaEETransaction)globalTransactions.get(jtsTx);
+            if ( tx == null ) {
+                tx = javaEETM.createImportedTransaction(jtsTx);
+                globalTransactions.put(jtsTx, tx);
+            }
+            javaEETM.setCurrentTransaction(tx); // associate tx with thread
+            return tx;
+        }
     }
 
-    public boolean enlistDistributedNonXAResource(Transaction tran, TransactionalResource h)
+    public boolean enlistDistributedNonXAResource(Transaction tx, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
-        throw new IllegalStateException(sm.getString("enterprise_distributedtx.nonxa_usein_jts"));
+        if(useLAO()) {
+            if (javaEETM.resourceEnlistable(h)) {
+                XAResource res = h.getXAResource();
+                boolean result = tx.enlistResource(res);
+                if (!h.isEnlisted())
+                    h.enlistedInTransaction(tx);
+                    return result;
+                } else {
+                    return true;
+            }
+        } else {
+            throw new IllegalStateException(
+                    sm.getString("enterprise_distributedtx.nonxa_usein_jts"));
+        }
     }
 
     public boolean enlistLAOResource(Transaction tran, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
 
-        return false;
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
+        startJTSTx(tx);
+        globalTransactions.put(tm.getTransaction(), tx);
+
+        //If transaction conatains a NonXA and no LAO, convert the existing
+        //Non XA to LAO
+        if(useLAO()) {
+            if(h != null && (tx.getLAOResource() == null) ) {
+                tx.setLAOResource(h);
+                if (h.isTransactional()) {
+                    XAResource res = h.getXAResource();
+                    return tran.enlistResource(res);
+                }
+            }
+        }
+        return true;
+
     }
 
     public void setRollbackOnlyDistributedTransaction()
             throws IllegalStateException, SystemException {
-        /** XXX Throw an exception ??? XXX **/
+        if (_logger.isLoggable(Level.FINE))
+                _logger.log(Level.FINE,"TM: setRollbackOnly");
+
+        validateTransactionManager();
+        tm.setRollbackOnly();
     }
 
     public Transaction suspend(JavaEETransaction tx) throws SystemException {
-        if ( tx != null )
-            tm.setCurrentTransaction(null);
-        return tx;
+        if ( tx != null ) {
+            if ( !tx.isLocalTx() )
+                suspendInternal();
+
+            javaEETM.setCurrentTransaction(null);
+            return tx;
+        }
+        else {
+            return suspendInternal(); // probably a JTS imported tx
+        }
     }
 
     public void resume(Transaction tx)
         throws InvalidTransactionException, IllegalStateException,
         SystemException {
-        /** XXX Throw an exception ??? XXX **/
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: resume");
+
+        tm.resume(tx);
     }
 
-    public void removeTransaction(Transaction tx) {}
+    public void removeTransaction(Transaction tx) {
+        globalTransactions.remove(tx);
+    }
 
     public int getOrder() {
         return 3;
     }
 
     public void setTransactionManager(JavaEETransactionManager tm) {
-        this.tm = (JavaEETransactionManagerSimplified)tm;
+        javaEETM = (JavaEETransactionManagerSimplified)tm;
+        _logger = javaEETM.getLogger();
+    }
+
+    public void startJTSTx(JavaEETransaction tx) 
+            throws RollbackException, IllegalStateException, SystemException {
+        tm = TransactionManagerImpl.getTransactionManagerImpl();
+        javaEETM.startJTSTx(tx);
+    }
+
+    private Transaction suspendInternal() throws SystemException {
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: suspend");
+        validateTransactionManager();
+        return tm.suspend();
+    }
+
+    private void validateTransactionManager() throws IllegalStateException {
+        if (tm == null) {
+            throw new IllegalStateException
+            (sm.getString("enterprise_distributedtx.transaction_notactive"));
+        }
     }
 }
