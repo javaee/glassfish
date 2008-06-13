@@ -113,7 +113,6 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <HK2-Module-Import-Policy>com.sun.enterprise.web.WebImportPolicy</HK2-Module-Import-Policy>
                             <Bundle-Activator>org.glassfish.web.DirContextURLStreamHandlerService</Bundle-Activator>
                             <Import-Package>org.osgi.framework,org.osgi.service.url</Import-Package>
                         </manifestEntries>
@@ -177,17 +176,17 @@
             <artifactId>deployment-javaee-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
             <!--
+        <dependency>
               since our minimum requirement is still JDK5,
               we need this dependency. When we we switch
               to minimum JDK6 (which we do at some point toward EE6),
               we can remove this.
-            -->
             <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
             <version>${project.version}</version>
         </dependency>
+            -->
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>apache-commons</artifactId>
@@ -199,11 +198,10 @@
             <version>${grizzly.version}</version>
         </dependency>
         <dependency>
-            <groupId>jasper-jsr199</groupId>
-            <artifactId>jasper-jsr199</artifactId>
-            <version>${jasper-jsr199.version}</version>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jspimpl</artifactId>
+            <version>${jspimpl.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-core</artifactId>

@@ -110,7 +110,7 @@
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.7.3.3-rev1</grizzly.version>
         <grizzly.original-version>1.8.0-rc1</grizzly.original-version>        
-        <jasper-jsr199.version>9.1</jasper-jsr199.version>
+        <jspimpl.version>1.0-SNAPSHOT</jspimpl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
