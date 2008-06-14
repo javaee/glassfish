@@ -26,14 +26,13 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
 import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
-import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.logging.LogDomains;
+import java.io.InputStream;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
@@ -43,7 +42,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,7 +49,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +56,15 @@ import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
 
@@ -68,7 +73,7 @@ import org.glassfish.api.event.RestrictTo;
  * @author dochez
  */
 @Service
-public class AdminAdapter implements Adapter, PostConstruct, EventListener {
+public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
     public final static String PREFIX_URI = "/__asadmin";
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
@@ -78,6 +83,7 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
     private final static String POST = "POST";
     private static final BASE64Decoder decoder = new BASE64Decoder();
     private static final String BASIC = "Basic ";
+    private static final String UPLOAD_DIR_PREFIX = "upl-";
 
     @Inject
     ModulesRegistry modulesRegistry;
@@ -115,17 +121,14 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
      *  Tomcat should be able to handle and log any other exception ( including
      *  runtime exceptions )
      */
-    public void service(Request req, Response res)
-            throws Exception {
+    public void service(GrizzlyRequest req, GrizzlyResponse res) {
 
 
 
         Utils.getDefaultLogger().finer("Admin adapter !");
-        Utils.getDefaultLogger().finer("Received something on " + req.requestURI());
-        Utils.getDefaultLogger().finer("QueryString = " + req.queryString());
+        Utils.getDefaultLogger().finer("Received something on " + req.getRequestURI());
+        Utils.getDefaultLogger().finer("QueryString = " + req.getQueryString());
 
-        // so far, I only use HTMLActionReporter, but I should really look at
-        // the request client.
         // XXX Really needs to be generalized
         ActionReport report;
         if (req.getHeader("User-Agent").startsWith("hk2")) {
@@ -149,18 +152,20 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
         } catch(InterruptedException e) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");                        
+        } catch (Exception e) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("Error authenticating");
         }
         
-        InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
-        res.setStatus(200);
-        res.setContentType(report.getContentType());
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        report.writeReport(bos);
-        res.setContentLength(bos.size());
-        outputBuffer.flush();
-        outputBuffer.realWriteBytes(bos.toByteArray(), 0, bos.size());
-
-        res.finish();
+        try {
+            res.setStatus(200);
+            res.setContentType(report.getContentType());
+            report.writeReport(res.getOutputStream());
+            res.getOutputStream().flush();
+            res.finishResponse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean authenticate(Request req, ServerEnvironment serverEnviron)
@@ -175,32 +180,28 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
 
     }
 
-    private boolean authenticate(Request req, ActionReport report, Response res)
+    private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
-        boolean authenticated = authenticate(req, env);
+        boolean authenticated = authenticate(req.getRequest(), env);
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
                     "Invalid user name or password");
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             report.setActionDescription("Authentication error");
-            InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
             res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
             res.setHeader("WWW-Authenticate", "BASIC");
             res.setContentType(report.getContentType());
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            report.writeReport(bos);
-            res.setContentLength(bos.size());
-            outputBuffer.flush();
-            outputBuffer.realWriteBytes(bos.toByteArray(), 0, bos.size());
-            res.finish();
+            report.writeReport(res.getOutputStream());
+            res.getOutputStream().flush();
+            res.finishResponse();
         }
         return authenticated;
     }
 
-    private ActionReport doCommand(Request req, ActionReport report) {
+    private ActionReport doCommand(GrizzlyRequest req, ActionReport report) {
 
-        String requestURI = req.requestURI().toString();
+        String requestURI = req.getRequestURI();
         if (!requestURI.startsWith(PREFIX_URI)) {
             String msg = adminStrings.getLocalString("adapter.panic",
                     "Wrong request landed in AdminAdapter {0}", requestURI);
@@ -215,26 +216,21 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
         if (requestURI.length() > PREFIX_URI.length() + 1) 
             command = requestURI.substring(PREFIX_URI.length() + 1);
 
-        final Properties parameters = extractParameters(req.queryString().toString());
+        final Properties parameters = extractParameters(req.getQueryString());
+        UploadedFilesInfo uploadedFilesInfo = null;
         try {
-            if (req.method().toString().equalsIgnoreCase(GET)) {
+            if (req.getMethod().equalsIgnoreCase(GET)) {
                 logger.fine("***** AdminAdapter GET  *****");
                 report = commandRunner.doCommand(command, parameters, report);
             } 
-            else if (req.method().toString().equalsIgnoreCase(POST)) {
+            else if (req.getMethod().equalsIgnoreCase(POST)) {
                 logger.fine("***** AdminAdapter POST *****");
-                if (parameters.get("path") != null) {
-                    try {
-                        final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
-                        parameters.setProperty("path", uploadFile);
-                        report = commandRunner.doCommand(command, parameters, report);
-                    } 
-                    catch (IOException ioe) {
-                        logger.log(Level.WARNING, ioe.getMessage());
-                    //log the exception message to server log
-                    //client recieves error message embedded in report object
-                    }
-                }
+                /*
+                 * Extract any uploaded files from the POST payload.
+                 */
+                uploadedFilesInfo = new UploadedFilesInfo(req.getInputStream(), report);
+                
+                report = commandRunner.doCommand(command, parameters, report, uploadedFilesInfo.getFiles());
             }
         } catch (Throwable t) {
             /*
@@ -245,6 +241,10 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
             report.setFailureCause(t);
             report.setMessage(t.getLocalizedMessage());
             report.setActionDescription("Last-chance AdminAdapter exception handler");
+        } finally {
+            if (uploadedFilesInfo != null) {
+                uploadedFilesInfo.cleanup();
+            }
         }
         return report;
     }
@@ -253,7 +253,7 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
      */
-    public void afterService(Request req, Response res) throws Exception {
+    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
 
     }
 
@@ -278,60 +278,9 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
         return PREFIX_URI;
     }
 
-    /**
-     * uploads request from client and save the content in <os temp dir>/gfv3/<fileName>
-     * @param req to process
-     * @param report back to the client
-     * @param fileName to save client request
-     * @return <os temp dir>/gfv3/<fileName>
-     * @throws IOException if upload file cannot be created
-     */
-    private String doUploadFile(final Request req, final ActionReport report, final String fileName)
-            throws IOException 
-    {
-        final String localTmpDir = System.getProperty("java.io.tmpdir");
-        final File gfv3Folder = new File(localTmpDir, GFV3);
-        File uploadFile = null;
-        FileOutputStream fos = null;
-        String uploadFilePath = null;
 
-        try {
-            if (!gfv3Folder.exists()) {
-                gfv3Folder.mkdirs();
-            }
-            uploadFile = new File(gfv3Folder, fileName);
-            //check for pre-existing file
-            if (uploadFile.exists()) {
-                if (!uploadFile.delete()) {
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage("cannot delete existing file: " + uploadFile);
-                    throw new IOException("cannot delete existing file: " + uploadFile);
-                }
-            }
-
-            uploadFilePath = uploadFile.getCanonicalPath();
-            fos = new FileOutputStream(uploadFile);
-            ByteChunk bc = new ByteChunk(1024 * 64);
-            com.sun.grizzly.tcp.InputBuffer ib = req.getInputBuffer();
-            for (int ii = req.doRead(bc); ii > 0; ii = req.doRead(bc)) {
-                fos.write(bc.getBytes(), bc.getOffset(), ii);
-            }
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            report.setMessage("upload file successful: " + uploadFilePath);
-        } 
-        catch (Exception e) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("upload file failed: " + uploadFilePath);
-            report.setFailureCause(e);
-            throw new IOException("upload file failed: " + uploadFilePath);
-        } 
-        finally {
-            if (fos != null) 
-                fos.close();
-        }
-        return uploadFilePath;
-    }
-
+     
+     
     /**
      *  extract parameters from URI and save it in Properties obj
      *  
@@ -342,7 +291,7 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
     Properties extractParameters(final String requestString) {
         // extract parameters...
         final Properties parameters = new Properties();
-        StringTokenizer stoken = new StringTokenizer(requestString, "?");
+        StringTokenizer stoken = new StringTokenizer(requestString == null ? "" : requestString, "?");
         while (stoken.hasMoreTokens()) {
             String token = stoken.nextToken();            
             if (token.indexOf("=") == -1) 
@@ -373,4 +322,131 @@ public class AdminAdapter implements Adapter, PostConstruct, EventListener {
         latch.countDown();
         logger.fine("Ready to receive administrative commands");            
     }
+    
+    /**
+     * Manages all aspects of uploaded files delivered via an ZipInputStream.
+     * 
+     * This class constructs a unique temporary directory, then creates one
+     * temp file per ZipEntry in the stream to hold the uploaded content.  
+     */
+    private class UploadedFilesInfo {
+        private File tempFolder = null;
+        private ArrayList<File> uploadedFiles;
+        
+        UploadedFilesInfo(final InputStream is, final ActionReport report) throws IOException {
+            uploadedFiles = extractUploadedFiles(is, report);
+        }
+        
+        private ArrayList<File> getFiles() {
+            return uploadedFiles;
+        }
+        
+        private void cleanup() {
+            if (tempFolder != null) {
+                FileUtils.whack(tempFolder);
+                tempFolder = null;
+            }
+        }
+        
+        /**
+         * uploads request from client and save the content in <os temp dir>/gfv3/<unique-dir>/<fileName>
+         * @param req to process
+         * @param report back to the client
+         * @return <os temp dir>/gfv3/<fileName> files
+         * @throws IOException if upload file cannot be created
+         */
+        private ArrayList<File> extractUploadedFiles(final InputStream is, final ActionReport report)
+                throws IOException 
+        {
+            final String localTmpDir = System.getProperty("java.io.tmpdir");
+            final File gfv3Folder = new File(localTmpDir, GFV3);
+            if (!gfv3Folder.exists()) {
+                gfv3Folder.mkdirs();
+            }
+
+            ArrayList<File> uploadedFiles = new ArrayList<File>();
+
+            /*
+             * Try to extract zip entries from the payload.
+             */
+            ZipInputStream zis = new ZipInputStream(is);
+            ZipEntry entry = null;
+            OutputStream os = null;
+
+            try {
+                tempFolder = createTempFolder(gfv3Folder);
+                StringBuilder uploadedEntryNames = new StringBuilder();
+                while ((entry = zis.getNextEntry()) != null) {
+                    String entryName = entry.getName();
+
+                    /*
+                     * Note: the client should name the entries using only the name and type; no paths.
+                     */
+                    File uploadFile = new File(tempFolder, entryName);
+                    //check for pre-existing file
+                    if (uploadFile.exists()) {
+                        if (!uploadFile.delete()) {
+                            logger.warning(adminStrings.getLocalString(
+                                    "adapter.command.overwrite",
+                                    "Overwriting previously-uploaded file because the attempt to delete it failed: {0}",
+                                    uploadFile.getAbsolutePath()));
+                        }
+                    }
+
+                    os = new BufferedOutputStream(new FileOutputStream(uploadFile));
+                    int bytesRead;
+                    byte[] buffer = new byte[1024 * 64];
+                    while ((bytesRead = zis.read(buffer)) != -1) {
+                        os.write(buffer, 0, bytesRead);
+                    }
+                    os.close();
+                    uploadedFiles.add(uploadFile);
+                    uploadedEntryNames.append(entryName).append(" ");
+                    logger.fine("Extracted uploaded entry " + entryName + " to " +
+                            uploadFile.getAbsolutePath());
+                }
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            } 
+            catch (Exception e) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("Error extracting uploaded file " + (entry == null ? "" : entry.getName()));
+                report.setFailureCause(e);
+                throw new IOException(report.getMessage());
+            } 
+            finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
+            return uploadedFiles;
+        }
+        
+        private File createTempFolder(File parent) throws IOException {
+            File result = File.createTempFile(UPLOAD_DIR_PREFIX, "", parent);
+            try {
+                if ( ! result.delete()) {
+                    throw new IOException(
+                            adminStrings.getLocalString(
+                                "adapter.command.errorDeletingTempFile",
+                                "Error deleting temporary file {0}",
+                                result.getAbsolutePath()));
+                }
+                if ( ! result.mkdir()) {
+                    throw new IOException(
+                            adminStrings.getLocalString(
+                                "adapter.command.errorCreatingDir",
+                                "Error creating directory {0}",
+                                result.getAbsolutePath()));
+                }
+                logger.fine("Created temporary upload folder " + result.getAbsolutePath());
+                return result;
+            } catch (Exception e) {
+                IOException ioe = new IOException(adminStrings.getLocalString(
+                        "adapter.command.errorCreatingUploadFolder", 
+                        "Error creating temporary upload folder"));
+                ioe.initCause(e);
+                throw ioe;
+            }
+        }
+   }
 }

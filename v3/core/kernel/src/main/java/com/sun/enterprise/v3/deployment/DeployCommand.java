@@ -116,7 +116,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     Boolean uniquetablenames;
 
     @Param(name=ParameterNames.DEPLOYMENT_PLAN, optional=true)
-    String deploymentplan = null;
+    File deploymentplan = null;
 
     @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
     Boolean enabled;
@@ -147,13 +147,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
 
-        File file = path;
+        File file = choosePathFile(context);
         if (!file.exists()) {
             report.setMessage(localStrings.getLocalString("fnf","File not found", file.getAbsolutePath()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
+        deploymentplan = chooseDeploymentPlanFile(context);
+        
         if (snifferManager.hasNoSniffers()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             report.failure(logger,msg);
@@ -182,6 +184,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 // For the autodeployer in particular the name must be set in the
                 // command context parameters for later use.
                 parameters.put(ParameterNames.NAME, name);
+            }
+            
+            if (parameters.containsKey(ParameterNames.DEPLOYMENT_PLAN)) {
+                parameters.put(ParameterNames.DEPLOYMENT_PLAN, deploymentplan.getAbsolutePath());
             }
             
             handleRedeploy(name, report, parameters);
@@ -284,6 +290,27 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         }
     }
 
+    private File choosePathFile(AdminCommandContext context) {
+        if (context.getUploadedFiles().size() >= 1) {
+            /*
+             * Use the uploaded file rather than the one specified by --path.
+             */
+            return context.getUploadedFiles().get(0);
+        }
+        return path;
+    }
+    
+    private File chooseDeploymentPlanFile(AdminCommandContext context) {
+        if (context.getUploadedFiles().size() >= 2) {
+            /*
+             * Use the uploaded file rather than the one specified by
+             * --deploymentplan.
+             */
+            return context.getUploadedFiles().get(1);
+        }
+        return deploymentplan;
+    }
+    
     /**
      *  Check if the application is deployed or not.
      *  If force option is true and appInfo is not null, then undeploy

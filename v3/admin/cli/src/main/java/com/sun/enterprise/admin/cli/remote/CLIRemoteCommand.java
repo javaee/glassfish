@@ -49,9 +49,10 @@ import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
-import java.util.jar.*;
 import java.util.logging.Level;
 import com.sun.enterprise.universal.BASE64Encoder;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class CLIRemoteCommand {
     
@@ -149,8 +150,11 @@ public class CLIRemoteCommand {
                 urlConnection = (HttpURLConnection) url.openConnection(uriString);
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
                 urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
+                urlConnection.setRequestMethod(chooseRequestMethod());
                 urlConnection.connect();
-                upload(urlConnection);
+                if (doUpload) {
+                    upload(urlConnection);
+                }
                 InputStream in = urlConnection.getInputStream();
                 handleResponse(params, in, urlConnection.getResponseCode(),
                         userOut);
@@ -182,36 +186,67 @@ public class CLIRemoteCommand {
         }
     }
 
+    /**
+     * Decide what request method to use in building the HTTP request.
+     * @return the request method appropriate to the current command and options
+     */
+    private String chooseRequestMethod() {
+        if (doUpload) {
+            return "POST";
+        } else {
+            return "GET";
+        }
+    }
+    
+    /**
+     * Adds the path file and the deployment plan file to the HTTP request
+     * payload as ZipEntry objects.
+     * @param conn the connection used for sending the http request
+     * @throws com.sun.enterprise.cli.framework.CommandException
+     * @throws java.io.IOException
+     */
+    private void upload(HttpURLConnection conn) throws CommandException, IOException {
 
-    private void upload(HttpURLConnection conn) throws CommandException {
-
-        OutputStream out = null;
+        /*
+         * Each file to be uploaded is added to the HTTP request payload as a ZipEntry.
+         */
+        ZipOutputStream zos = new ZipOutputStream(conn.getOutputStream());
+        if (fileParameter != null) {
+            upload(zos, fileParameter);
+        }
+        
+        if (deploymentPlanParameter != null) {
+            upload(zos, deploymentPlanParameter);
+        }
+        
+        zos.flush();
+    }
+    
+    /**
+     * Adds the specified file as a ZipEntry to the ZipOutputStream (already
+     * linked to the request's output stream).
+     * @param out ZipOutputStream to receive the file to be uploaded
+     * @param uploadFile the File to be uploaded
+     * @throws com.sun.enterprise.cli.framework.CommandException
+     */
+    private void upload(ZipOutputStream out, File uploadFile) throws CommandException {
+        ZipEntry entry = new ZipEntry(uploadFile.getName());
+        entry.setTime(uploadFile.lastModified());
+        
         try {
-            if (fileParameter == null || !doUpload)
-                return;
-
-            out = conn.getOutputStream();
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileParameter));
+            out.putNextEntry(entry);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(uploadFile));
 
             // write upload file data
             byte[] buffer = new byte[1024 * 64];
             for (int i = bis.read(buffer); i > 0; i = bis.read(buffer)) {
                 out.write(buffer, 0, i);
             }
-            out.flush();
+            out.closeEntry();
             bis.close();
         }
         catch (IOException ex) {
             throw new CommandException(ex.getMessage());
-        }
-        finally {
-            try {
-                if (out != null)
-                    out.close();
-            }
-            catch (IOException ex) {
-            // ignore
-            }
         }
     }
 

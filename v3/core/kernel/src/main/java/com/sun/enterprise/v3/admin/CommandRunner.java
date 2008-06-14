@@ -39,7 +39,6 @@ import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import java.lang.reflect.AnnotatedElement;
@@ -62,6 +61,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.enterprise.universal.BASE64Decoder;
+import java.util.ArrayList;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -91,11 +91,27 @@ public class CommandRunner {
      */
     public ActionReport doCommand(final String commandName, final Properties parameters, final ActionReport report) {
 
+        return doCommand(commandName, parameters, report, new ArrayList<File>());
+    }
+    
+    /**
+     * Executes a command by name.
+     * <p>
+     * The commandName parameter value should correspond to the name of a 
+     * command that is a service with that name.
+     * @param commandName the command to execute
+     * @param parameters name/value pairs to be passed to the command
+     * @param report will hold the result of the command's execution
+     * @param uploadedFiles files uploaded from the client
+     */
+    public ActionReport doCommand(final String commandName, final Properties parameters, 
+            final ActionReport report, ArrayList<File> uploadedFiles) {
+
         final AdminCommand handler = getCommand(commandName, report, logger);
         if (handler==null) {
             return report;
         }
-        return doCommand(commandName, handler, parameters, report);
+        return doCommand(commandName, handler, parameters, report, uploadedFiles);
     }
 
     /**
@@ -111,7 +127,24 @@ public class CommandRunner {
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
+        return doCommand(commandName, command, parameters, report, new ArrayList<File>());
+    }
         
+    /**
+     * Executes the provided command object.
+     * @param commandName name of the command (used for logging and reporting)
+     * @param command the command service to execute
+     * @param parameters name/value pairs to be passed to the command
+     * @param report will hold the result of the command's execution
+     * @param uploadedFiles files uploaded from the client
+     */
+    
+    public ActionReport doCommand(
+            final String commandName, 
+            final AdminCommand command, 
+            final Properties parameters, 
+            final ActionReport report,
+            final ArrayList<File> uploadedFiles) {
         if (parameters.size()==1 && parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
             String manPage = encodeManPage(in);
@@ -129,7 +162,7 @@ public class CommandRunner {
 
         final AdminCommandContext context = new AdminCommandContext(
                 LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
-                report, parameters);                                                 
+                report, parameters, uploadedFiles);                                                 
 
         // initialize the injector.
         InjectionManager injectionMgr =  new InjectionManager<Param>() {
