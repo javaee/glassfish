@@ -152,7 +152,8 @@ public class AMXRoot {
 	    ServletContext servletCtx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
 
 	    // Get the Habitat from the ServletContext
-	    Habitat habitat = (Habitat) servletCtx.getAttribute("com.sun.appserv.jsf.habitat");
+            Habitat habitat = (Habitat) servletCtx.getAttribute(
+                org.glassfish.admingui.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
 
 	    // Get the MBeanServer via the Habitat, we want the "official" one
 	    MBeanServer mbs = (MBeanServer) habitat.getComponent(MBeanServer.class);
