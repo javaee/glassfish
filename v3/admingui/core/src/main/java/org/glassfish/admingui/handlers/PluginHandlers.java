@@ -83,8 +83,10 @@ public class PluginHandlers {
     private static Object getPluginService(FacesContext ctx) {
 	ServletContext servletCtx = (ServletContext)
 	    (ctx.getExternalContext()).getContext();
-	Habitat habitat = (Habitat)
-	    servletCtx.getAttribute("com.sun.appserv.jsf.habitat");
+	// Get the Habitat from the ServletContext
+	Habitat habitat = (Habitat) servletCtx.getAttribute(
+	    org.glassfish.admingui.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
+
 //	System.out.println("Habitat:" + habitat);
 
 	return habitat.getByType(ConsolePluginService.class);
