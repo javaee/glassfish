@@ -74,7 +74,6 @@ public class Tests {
 
                 // these tests are standalone and do not require a
                 // server connection
-                AMXDebugTest.class,
                 CoverageInfoTest.class,
 
                 //  Tests that follow require a server connection
@@ -108,7 +107,6 @@ public class Tests {
 
                 J2EETest.class,
                 ServletTest.class,
-
 
                 DanglingRefsTest.class,
                 ConfigRunMeFirstTest.class,

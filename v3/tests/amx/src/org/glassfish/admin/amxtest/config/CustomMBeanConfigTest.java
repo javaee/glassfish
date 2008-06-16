@@ -41,7 +41,6 @@ import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.helper.RefHelper;
 import com.sun.appserv.management.util.misc.CollectionUtil;
-import org.glassfish.admin.amx.mbean.TestDummy;
 import org.glassfish.admin.amxtest.AMXTestBase;
 
 import javax.management.ObjectName;
@@ -54,8 +53,8 @@ import java.util.Set;
  */
 public final class CustomMBeanConfigTest
         extends AMXTestBase {
-    // built-into server already
-    private static final String IMPL_CLASSNAME = TestDummy.class.getName();
+    // built-into server already; use the name; we can't rely on the server jars
+    private static final String IMPL_CLASSNAME = "org.glassfish.admin.amx.mbean.TestDummy";
 
     private static final String TEST_NAME_BASE = "custom";
     private static final String TEST_TYPE = "CustomMBeanConfigTest";

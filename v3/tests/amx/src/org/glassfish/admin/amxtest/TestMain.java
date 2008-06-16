@@ -86,6 +86,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import junit.framework.TestCase;
 
 /**
  Main class that runs all the unit tests
@@ -439,7 +440,7 @@ public final class TestMain
     }
 
     private String[]
-    classesToStrings(final Set<Class<junit.framework.TestCase>> classes) {
+    classesToStrings(final Set<Class<TestCase>> classes) {
         final String[] names = new String[classes.size()];
 
         int i = 0;
@@ -451,11 +452,11 @@ public final class TestMain
     }
 
     private void
-    warnUntestedClasses(final List<Class<junit.framework.TestCase>> actual) {
-        final Set<Class<junit.framework.TestCase>> actualSet = GSetUtil.newSet(actual);
-        final Set<Class<junit.framework.TestCase>> allSet = GSetUtil.newSet(Tests.getTestClasses());
+    warnUntestedClasses(final List<Class<TestCase>> actual) {
+        final Set<Class<TestCase>> actualSet = GSetUtil.newSet(actual);
+        final Set<Class<TestCase>> allSet = GSetUtil.newSet(Tests.getTestClasses());
 
-        final Set<Class<junit.framework.TestCase>> untested = GSetUtil.newSet(allSet);
+        final Set<Class<TestCase>> untested = GSetUtil.newSet(allSet);
         untested.removeAll(actualSet);
         if (untested.size() != 0) {
             println("\nWARNING: the following tests WILL NOT BE RUN:");
@@ -468,7 +469,7 @@ public final class TestMain
             println("");
         }
 
-        final Set<Class<junit.framework.TestCase>> extras = GSetUtil.newSet(actualSet);
+        final Set<Class<TestCase>> extras = GSetUtil.newSet(actualSet);
         extras.removeAll(actualSet);
         if (extras.size() != 0) {
             println("\nNOTE: the following non-default tests WILL BE RUN:");
@@ -496,10 +497,10 @@ public final class TestMain
         println(WARNING);
     }
 
-    private List<Class<junit.framework.TestCase>>
+    private List<Class<TestCase>>
     getTestClasses(final File testsFile)
             throws FileNotFoundException, IOException {
-        List<Class<junit.framework.TestCase>> testClasses = null;
+        List<Class<TestCase>> testClasses = null;
 
         if (testsFile == null) {
             testClasses = Tests.getTestClasses();
@@ -507,25 +508,36 @@ public final class TestMain
         } else {
             println("Reading test classes from: " + StringUtil.quote(testsFile.toString()));
 
-            final String fileString = FileUtils.fileToString(testsFile);
+            String fileString = null;
+            
+            try
+            {
+                fileString = FileUtils.fileToString(testsFile);
+            }
+            catch( final IOException e )
+            {
+                println( "Unable to open file " + testsFile.getAbsolutePath() );
+                throw e;
+            }
+            
             final String temp = fileString.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
             final String[] classnames = temp.split("\n");
 
-            testClasses = new ArrayList<Class<junit.framework.TestCase>>();
+            testClasses = new ArrayList<Class<TestCase>>();
 
             for (int i = 0; i < classnames.length; ++i) {
                 final String classname = classnames[i].trim();
 
                 if (classname.length() != 0 && !classname.startsWith("#")) {
                     try {
-                        final Class<junit.framework.TestCase> theClass =
-                                TypeCast.asClass(ClassUtil.getClassFromName(classname));
+                        // println( "Looking for class " + StringUtil.quote(classname) );
+                        final Class<TestCase> theClass = TypeCast.asClass(ClassUtil.getClassFromName(classname));
 
                         testClasses.add(theClass);
                     }
                     catch (Throwable t) {
-                        final String msg = "Can't load test class: " + classname;
-
+                        final String msg = "Can't load test class " + StringUtil.quote(classname);
+                        println( msg );
                         throw new Error(msg, t);
                     }
                 }
@@ -631,11 +643,11 @@ public final class TestMain
         return capabilities;
     }
 
-    private List<Class<junit.framework.TestCase>>
+    private List<Class<TestCase>>
     filterTestClasses(
             final DomainRoot domainRoot,
             final PropertyGetter getter,
-            final List<Class<junit.framework.TestCase>> classes) {
+            final List<Class<TestCase>> classes) {
         final boolean offline = getter.getboolean(TEST_OFFLINE_KEY);
 
         final SystemInfo systemInfo = domainRoot == null ? null : domainRoot.getSystemInfo();
@@ -648,12 +660,21 @@ public final class TestMain
 
         final boolean monitorsSupported = !offline;
 
-        final List<Class<junit.framework.TestCase>> included = new ArrayList<Class<junit.framework.TestCase>>();
-        final List<Class<junit.framework.TestCase>> omitted = new ArrayList<Class<junit.framework.TestCase>>();
-        for (final Class<junit.framework.TestCase> c : classes) {
+        final List<Class<TestCase>> included = new ArrayList<Class<TestCase>>();
+        final List<Class<TestCase>> omitted = new ArrayList<Class<TestCase>>();
+        for (final Class<TestCase> c : classes) {
             boolean include = true;
 
-            final Capabilities capabilities = getCapabilities(c);
+            Capabilities capabilities = null;
+            
+            try {
+                capabilities = getCapabilities(c);
+            }
+            catch( Throwable t )
+            {
+                println( "WARNING: cannot getCapabilities() from " + c.getClass().getName() + ": " + t );
+                continue;
+            }
 
             if ((!monitorsSupported) &&
                     AMXMonitorTestBase.class.isAssignableFrom(c)) {
@@ -677,6 +698,25 @@ public final class TestMain
 
         return included;
     }
+    
+    private File mDefaultDir;
+    
+    static File getDefaultDir( final String propsFile )
+    {
+        File dir = null;
+        
+        if ( propsFile != null )
+        {
+            final File pf = new File(propsFile);
+            dir = pf.getParentFile().getAbsoluteFile();
+        }
+        else
+        {
+            dir = new File(System.getProperty("user.dir"));
+        }
+        
+        return dir;
+    }
 
     /**
      */
@@ -687,6 +727,8 @@ public final class TestMain
         AMXDebug.getInstance().setAll(true);
 
         checkAssertsOn();
+        
+        mDefaultDir = getDefaultDir(optionalPropertiesFile);
 
         final Map<String, String> props = getProperties(optionalPropertiesFile);
 
@@ -762,11 +804,14 @@ public final class TestMain
                         "threaded tests will be impacted by other concurrent tests.");
             }
         }
+        
+        
+        final File classesFile = new File( mDefaultDir, getter.getString(TEST_CLASSES_FILE_KEY));
+        println( "Default directory: " + mDefaultDir );
+        println( "Classes file: " + classesFile );
+        final List<Class<TestCase>> specifiedClasses = getTestClasses(classesFile);
 
-        final List<Class<junit.framework.TestCase>> specifiedClasses =
-                getTestClasses(getter.getFile(TEST_CLASSES_FILE_KEY));
-
-        final List<Class<junit.framework.TestCase>> testClasses =
+        final List<Class<TestCase>> testClasses =
                 filterTestClasses(mDomainRoot, getter, specifiedClasses);
 
         final int iterations = getter.getInteger(ITERATIONS_KEY).intValue();
@@ -789,7 +834,7 @@ public final class TestMain
 
     private void
     iterateTests(
-            final List<Class<junit.framework.TestCase>> testClasses,
+            final List<Class<TestCase>> testClasses,
             final int iterations,
             final ConnectionSource conn,
             final boolean threaded,
