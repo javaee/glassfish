@@ -37,10 +37,11 @@ package org.glassfish.admin.amx.util;
 
 
 /**
+    Interface for AMX debug support remotely.
  */
 public interface AMXDebugSupportMBean
 {
-    public static final String OBJECT_NAME  = "amx-support:name=amx-debug";
+    public static final String OBJECT_NAME  = "amx-support:name=debug";
     
     /**
         @return default AMX debug state
