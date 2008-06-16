@@ -63,6 +63,20 @@
     </developers>
 
    <build>
+  	<testSourceDirectory>src/test</testSourceDirectory>
+  	
+	   <plugins>
+	     <plugin>
+	       <groupId>org.apache.maven.plugins</groupId>
+	       <artifactId>maven-compiler-plugin</artifactId>
+	       <configuration>
+	         <source>1.5</source>
+	         <target>1.5</target>
+	         <compilerArgument>-Xlint:all</compilerArgument>
+	       </configuration>
+	     </plugin>
+	   </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/java</directory>
@@ -101,23 +115,28 @@
             <version>${project.version}</version>
         </dependency>
         
+     <!--
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
-        </dependency>                 
+        </dependency>
+      -->
 		
         <dependency>
+        	<!-- runtime dependency -->
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish-api.version}</version>
-        </dependency>  		
+        </dependency>  
         
+       <!--
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
-        </dependency>      
+        </dependency>  
+        -->
         
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
@@ -125,12 +144,14 @@
             <version>${project.version}</version>
         </dependency>
 
+		<!--
         <dependency>
             <groupId>org.glassfish.tests</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+          -->
         
     </dependencies>
 </project>
