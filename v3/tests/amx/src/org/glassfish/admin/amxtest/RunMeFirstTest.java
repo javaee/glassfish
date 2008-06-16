@@ -39,8 +39,8 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.JavaConfig;
 import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.management.base.AMXDebugSupportMBean;
 import org.glassfish.admin.amx.util.AMXDebugStuff;
-import org.glassfish.admin.amx.util.AMXDebugSupportMBean;
 
 import java.util.Map;
 import java.util.Set;

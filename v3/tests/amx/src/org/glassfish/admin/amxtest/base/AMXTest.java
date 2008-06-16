@@ -61,7 +61,7 @@ import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import org.glassfish.admin.amx.util.AMXDebugStuff;
-import org.glassfish.admin.amx.util.CoverageInfo;
+import com.sun.appserv.management.ext.coverage.CoverageInfo;
 import org.glassfish.admin.amxtest.AMXTestBase;
 import org.glassfish.admin.amxtest.Capabilities;
 

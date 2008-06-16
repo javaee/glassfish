@@ -41,8 +41,8 @@ import com.sun.appserv.management.base.QueryMgr;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import org.glassfish.admin.amx.util.AMXDebugStuff;
-import org.glassfish.admin.amx.util.CoverageInfo;
-import org.glassfish.admin.amx.util.CoverageInfoDummy;
+import com.sun.appserv.management.ext.coverage.CoverageInfo;
+import com.sun.appserv.management.ext.coverage.CoverageInfoDummy;
 
 import java.util.Arrays;
 import java.util.HashMap;

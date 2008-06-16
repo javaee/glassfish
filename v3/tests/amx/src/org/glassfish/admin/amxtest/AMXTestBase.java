@@ -61,7 +61,7 @@ import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
-import org.glassfish.admin.amx.util.AMXDebugSupportMBean;
+import com.sun.appserv.management.base.AMXDebugSupportMBean;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
