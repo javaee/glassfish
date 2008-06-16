@@ -60,10 +60,11 @@ import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+import com.sun.appserv.management.helper.TemplateResolverHelper;
+
+
 import static org.glassfish.admin.amxtest.PropertyKeys.*;
 import org.glassfish.admin.amxtest.monitor.AMXMonitorTestBase;
-
-import com.sun.appserv.management.helper.TemplateResolverHelper;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -127,7 +128,7 @@ public final class TestMain
     checkAssertsOn() {
         try {
             assert (false);
-            throw new Error("Assertions must be enabled for unit tests");
+            throw new Error("TestMain(): Assertions must be enabled for unit tests!");
         }
         catch (AssertionError a) {
         }
