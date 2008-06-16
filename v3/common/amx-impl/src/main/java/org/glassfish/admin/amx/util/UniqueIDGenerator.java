@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.util;
 
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
 	Produces a series of unique identifiers which are unique
@@ -42,7 +43,7 @@ package org.glassfish.admin.amx.util;
  */
 public final class UniqueIDGenerator
 {
-	private int				mID;
+	private AtomicInteger	mID;
 	private final String	mPrefix;
 	
 		public
@@ -50,14 +51,13 @@ public final class UniqueIDGenerator
 	{
 		mPrefix	= prefix == null ? "" : prefix;
 		
-		mID	= 0;
+		mID	= new AtomicInteger(0);
 	}
 	
-		public synchronized Object
+		public Object
 	createID()
 	{
-		++mID;
-		return( mPrefix + mID );
+		return( mPrefix + mID.getAndIncrement() );
 	}
 }
 
