@@ -165,6 +165,12 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
         isWindows=true;
     }
 
+    boolean isMac = false;
+    String osName = System.getProperty("os.name").toLowerCase();
+    if (osName.startsWith("mac os x")) {
+        isMac=true;
+    }
+
     if (!isWindows) {
 
         String CLInames[] = {"asadmin", "stopserv", "startserv"};
@@ -299,14 +305,22 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 
     String jdkHome = new File(javaHome).getParent();
     
+    // Mac OS resolves java.home differently, reset jdkHome to java.home
+    if (isMac) {
+        jdkHome = javaHome;
+    }
+
+    LOGGER.log(Level.INFO, "jdkHome: " +jdkHome);
+    
     //construct asadmin command
+    ExecuteCommand asadminExecuteCommand = null;
 
         try {
 
             String asadminCommand;
         
             if (isWindows) {
-                 asadminCommand = installDir + "\\glassfish\\bin\\asadmin.bat";
+                asadminCommand = installDir + "\\glassfish\\bin\\asadmin.bat";
             }
             else {
                 asadminCommand = installDir + "/glassfish/bin/asadmin";
@@ -320,26 +334,45 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "domain1"};
+
+	    String[] asadminCommandArrayMac = { "java", "-jar",
+		installDir+"/glassfish/modules/admin-cli-10.0-tp-2-SNAPSHOT.jar",
+	        "create-domain",
+                "--savelogin",
+		"--no-checkports",
+                "--adminport", adminPort,
+                "--user", "anonymous",
+                "--passwordfile", pwdFile.getAbsolutePath(),
+                "--instanceport", httpPort,
+                "domain1"};
             
             LOGGER.log(Level.INFO, "Creating GlassFish domain");
             LOGGER.log(Level.INFO, "Admin port:" + adminPort);
             LOGGER.log(Level.INFO, "HTTP port:" + httpPort);
 
 	    String existingPath = System.getenv("PATH");
+	    LOGGER.log(Level.INFO, "Existing PATH: " +existingPath);
             String newPath = jdkHome + File.separator + "bin" +
 		    File.pathSeparator + existingPath; 
-    
-            ExecuteCommand asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+            LOGGER.log(Level.INFO, "New PATH: " +newPath);
+            
+	    if (isMac) {
+		    asadminExecuteCommand = new ExecuteCommand(asadminCommandArrayMac);
+	    }
+	    else {
+                   asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+	    }
 	    asadminExecuteCommand.putEnvironmentSetting("PATH", newPath);
             asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             asadminExecuteCommand.setCollectOutput(true);
         
             asadminExecuteCommand.execute();
+	    LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput()); 
             hackAdminKeyfile(installDir);
 
             productError = asadminExecuteCommand.getErrors();
        } catch (Exception e) {
-
+            LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput()); 
             LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
        }
 }
