@@ -65,6 +65,8 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ResourceHandler;
 
+import com.sun.enterprise.config.serverbeans.TransactionService;
+
 /**
  * Implementation of javax.transaction.TransactionManager interface.
  * This class provides non-XA local transaction support and delegates 
@@ -81,11 +83,11 @@ public class JavaEETransactionManagerSimplified
 
     protected Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
+    @Inject private Habitat habitat;
+
     @Inject protected InvocationManager invMgr;
 
-    // XXX @Inject private ServerContext sCtx;
-
-    @Inject private Habitat habitat;
+    @Inject private TransactionService txnService;
 
     private JavaEETransactionManagerDelegate delegate;
 
@@ -143,10 +145,11 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void postConstruct() {
-        init();
         initDelegate();
+        initProperties();
     }
-    protected void init() {
+
+    protected void initProperties() {
         int maxEntries = 8192; // FIXME: this maxEntry should be a config
         float loadFactor = 0.75f; // FIXME: this loadFactor should be a config
         // for now, let's get it from system prop
@@ -184,31 +187,16 @@ public class JavaEETransactionManagerSimplified
         ((BaseCache)resourceTable).init(maxEntries, loadFactor, cacheProps);
         // END IASRI 4705808 TTT001
 
-/** XXX  TransactionService XXX
-        // running on the server side
-        if (sCtx != null) {
-            ConfigContext ctx = sCtx.getConfigContext();
-            TransactionService txnService = null;
-            try {
-                txnService = ServerBeansFactory.getTransactionServiceBean(ctx);
-                transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
-                ElementProperty[] eprops = txnService.getElementProperty();
-                for (int index = 0; index < eprops.length; index++) {
-                    if ("use-last-agent-optimization".equals(eprops[index].getName())) {
-                        if ("false".equals(eprops[index].getValue())) {
-                           // XXX Need to set it on the reset delegate also
-                            delegate.setUseLAO(false);
-                            if (_logger.isLoggable(Level.FINE))
-                                _logger.log(Level.FINE,"TM: LAO is disabled");
-                        }
-                    }
-                }
-            } catch(ConfigException e) {
-                throw new RuntimeException(sm.getString("enterprise_distributedtx.config_excep",e));
-            } catch (NumberFormatException ex) {
+        // running on the server side XXX ??? XXX
+        if (txnService != null) {
+            transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
+            String value = txnService.getPropertyValue("use-last-agent-optimization");
+            if (value != null && "false".equals(value)) {
+                delegate.setUseLAO(false);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"TM: LAO is disabled");
             }
         }
-*** XXX **/
         // ENF OF BUG 4665539
                 if (_logger.isLoggable(Level.FINE))
                 _logger.log(Level.FINE,"TM: Tx Timeout = " + transactionTimeout);
@@ -1382,6 +1370,7 @@ public class JavaEETransactionManagerSimplified
         // XXX Check if it's valid to set
         delegate = d;
         delegate.setTransactionManager(this);
+        // XXX check how to to replace on a new delegate: delegate.setUseLAO(false);
     }
 
     public JavaEETransaction getCurrentTransaction() { 
