@@ -3524,6 +3524,14 @@ public class CoyoteRequest
      */
     protected void parseSessionCookiesId() {
 
+        // If session tracking via cookies has been disabled for the current
+        // context, don't go looking for a session ID in a cookie as a cookie
+        // from a parent context with a session ID may be present which would
+        // overwrite the valid session ID encoded in the URL
+        Context context = (Context) getMappingData().context;
+        if (context != null && !context.getCookies())
+            return;
+
         // Parse session id from cookies
         Cookies serverCookies = coyoteRequest.getCookies();
         int count = serverCookies.getCookieCount();
