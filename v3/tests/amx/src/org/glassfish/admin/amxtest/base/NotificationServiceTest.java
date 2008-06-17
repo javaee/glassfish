@@ -145,7 +145,7 @@ public final class NotificationServiceTest
     public void
     testListen()
             throws Exception {
-        trace( "testListen: START" );
+        //trace( "testListen: START" );
         final NotificationService proxy = create();
 
         final QueryMgr queryMgr = getQueryMgr();
@@ -157,22 +157,22 @@ public final class NotificationServiceTest
         assert (proxy.getListeneeSet().size() == 1);
         assert (Util.getObjectName((Util.asAMX(proxy.getListeneeSet().iterator().next()))).equals(objectName));
 
-        trace( "testListen: NEWING" );
+        //trace( "testListen: NEWING" );
         final MyListener myListener = new MyListener(2);    // we expect two changes, see below
         proxy.addNotificationListener(myListener, null, null);
         final String saveLevel = queryMgr.getMBeanLogLevel();
         queryMgr.setMBeanLogLevel("" + Level.FINEST);
         queryMgr.setMBeanLogLevel(saveLevel);
 
-        trace( "testListen: WAITING" );
+        //trace( "testListen: WAITING" );
         // delivery may be asynchronous; wait until done
         if ( ! myListener.await( 5, TimeUnit.SECONDS ) )
         {
-        trace( "testListen: FAILED TIMEOUT" );
+            //trace( "testListen: FAILED TIMEOUT" );
             assert false : "NotificationServiceTest.testListen():  TIMED OUT waiting for Notifications";
         }
         
-        trace( "testListen: NOT FAILED" );
+        //trace( "testListen: NOT FAILED" );
         assert (myListener.getCount() == 2);
 
         Notification[] notifs = helper.getNotifications();
@@ -188,7 +188,7 @@ public final class NotificationServiceTest
         assert (proxy.getListeneeSet().size() == 0);
 
         removeNotificationService(proxy);
-        trace( "testListen: EXIT" );
+        //trace( "testListen: EXIT" );
     }
 
 }

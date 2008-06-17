@@ -707,7 +707,7 @@ public final class TestMain
         
         if ( propsFile != null )
         {
-            final File pf = new File(propsFile);
+            final File pf = new File(propsFile).getAbsoluteFile();
             dir = pf.getParentFile().getAbsoluteFile();
         }
         else
@@ -805,8 +805,10 @@ public final class TestMain
             }
         }
         
-        
-        final File classesFile = new File( mDefaultDir, getter.getString(TEST_CLASSES_FILE_KEY));
+        final File temp = new File(TEST_CLASSES_FILE_KEY);
+        final File classesFile =  temp.isAbsolute() ?
+                    temp : new File( mDefaultDir, getter.getString(TEST_CLASSES_FILE_KEY));
+
         println( "Default directory: " + mDefaultDir );
         println( "Classes file: " + classesFile );
         final List<Class<TestCase>> specifiedClasses = getTestClasses(classesFile);

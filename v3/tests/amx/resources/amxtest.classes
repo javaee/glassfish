@@ -141,7 +141,7 @@ org.glassfish.admin.amxtest.client.PerformanceTest
 #
 # Test for callflow
 #
-org.glassfish.admin.amxtest.monitor.CallFlowMonitorTest
+#org.glassfish.admin.amxtest.monitor.CallFlowMonitorTest
 
 # run again, to hit any MBeans created during testing
 org.glassfish.admin.amxtest.base.GenericTest

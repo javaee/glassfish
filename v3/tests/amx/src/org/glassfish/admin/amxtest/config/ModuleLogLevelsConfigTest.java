@@ -60,6 +60,7 @@ public final class ModuleLogLevelsConfigTest
         return getConfigConfig().getLogServiceConfig().getModuleLogLevelsConfig();
     }
 
+/*
     public void
     testGetAll() {
         final ModuleLogLevelsConfig config = getModuleLogLevelsConfig();
@@ -86,6 +87,7 @@ public final class ModuleLogLevelsConfigTest
             assert (value.equals(LogLevelValues.INFO));
         }
     }
+*/
 }
 
 
