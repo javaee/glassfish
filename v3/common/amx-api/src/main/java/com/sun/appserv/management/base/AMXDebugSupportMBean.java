@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package com.sun.appserv.management.base;
 
 
 /**

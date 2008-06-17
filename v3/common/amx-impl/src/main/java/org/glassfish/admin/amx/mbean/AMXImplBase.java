@@ -1111,16 +1111,19 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		}
 		catch( InvocationTargetException e )
 		{
+        e.printStackTrace();
 			trace( "InvocationTargetException: " + attrName + " by " + m );
 			rethrowAttributeNotFound( e, attrName );
 		}
 		catch( IllegalAccessException e )
 		{
+        e.printStackTrace();
 			trace( "ILLEGAL ACCESS TO: " + attrName + " by " + m );
 			rethrowAttributeNotFound( e, attrName );
 		}
 		catch( Exception e )
 		{
+        e.printStackTrace();
 			trace( "Exception: " + attrName + " by " + m );
 			rethrowAttributeNotFound( e, attrName );
 		}
@@ -2577,7 +2580,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
     }
 	
         public Map<String,Map<String,ObjectName>>
-    getMultiContaineeMap( final Set<String> j2eeTypes )
+    getMultiContaineeObjectNameMap( final Set<String> j2eeTypes )
     {
         return getContainerSupport().getMultiContaineeObjectNameMap( j2eeTypes );
     }

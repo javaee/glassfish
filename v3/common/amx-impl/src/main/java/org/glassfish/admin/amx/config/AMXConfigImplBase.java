@@ -50,7 +50,7 @@ import org.glassfish.admin.amx.mbean.ContainerSupport;
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
-import org.glassfish.admin.amx.util.UnregistrationListener;
+import com.sun.appserv.management.util.jmx.UnregistrationListener;
 import org.glassfish.admin.amx.util.Issues;
 import org.jvnet.hk2.config.*;
 

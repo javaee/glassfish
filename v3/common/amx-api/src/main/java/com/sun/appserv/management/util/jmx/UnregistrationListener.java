@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
+package com.sun.appserv.management.util.jmx;
 
 import javax.management.*;
 import java.util.concurrent.CountDownLatch;

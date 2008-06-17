@@ -38,7 +38,7 @@ package org.glassfish.admin.amx.loader;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.mbean.DomainRootImpl;
-import org.glassfish.admin.amx.util.FeatureAvailability;
+import com.sun.appserv.management.util.misc.FeatureAvailability;
 
 import javax.management.*;
 

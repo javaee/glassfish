@@ -45,6 +45,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.File;
 
+import com.sun.appserv.management.base.AMXDebugSupportMBean;
 
 /**
  */
@@ -53,27 +54,25 @@ public final class AMXDebugSupport
 {
     private final MBeanServer   mServer;
     
-    public static final String  NAME    = "amx-debug";
+    public static final String  NAME    = "debug";
+    
+        public static ObjectName
+    getObjectName()
+    {
+        final String    domain  =
+            BootUtil.getInstance().getAMXSupportJMXDomain();
+        
+        final String    props   = Util.makeNameProp(NAME);
+        
+        final ObjectName    objectName  = Util.newObjectName( domain, props );
+        
+        return objectName;
+    }
     
         public
     AMXDebugSupport( final MBeanServer server )
     {
         mServer = server;
-        
-        final String    domain  =
-            BootUtil.getInstance().getAMXSupportJMXDomain();
-        
-        final String    props   = Util.makeNameProp( NAME);
-        
-        final ObjectName    objectName  = Util.newObjectName( domain, props );
-        try
-        {
-            mServer.registerMBean( this, objectName );
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
     }
     
         private AMXDebug

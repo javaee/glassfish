@@ -51,7 +51,7 @@ import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.MBeanImplBase;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
-import org.glassfish.admin.amx.util.FeatureAvailability;
+import com.sun.appserv.management.util.misc.FeatureAvailability;
 import org.glassfish.admin.amx.util.ObjectNames;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXMBeanMetadata;

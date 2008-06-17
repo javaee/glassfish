@@ -100,7 +100,6 @@
             <groupId>javax.management.j2ee</groupId>
             <artifactId>management-api</artifactId>
             <version>${management-api.version}</version>
-            <scope>provided</scope>
         </dependency>
         
         <dependency>
@@ -115,13 +114,11 @@
             <version>${project.version}</version>
         </dependency>
         
-     <!--
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-      -->
 		
         <dependency>
         	<!-- runtime dependency -->
@@ -130,13 +127,11 @@
             <version>${glassfish-api.version}</version>
         </dependency>  
         
-       <!--
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
-        </dependency>  
-        -->
+        </dependency>
         
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
@@ -144,14 +139,12 @@
             <version>${project.version}</version>
         </dependency>
 
-		<!--
         <dependency>
             <groupId>org.glassfish.tests</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-          -->
         
     </dependencies>
 </project>

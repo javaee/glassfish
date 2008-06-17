@@ -46,7 +46,7 @@ import com.sun.appserv.server.util.Version;
 import org.glassfish.admin.amx.dotted.DottedNamesImpl;
 import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
 import org.glassfish.admin.amx.loader.BootUtil;
-import org.glassfish.admin.amx.util.FeatureAvailability;
+import com.sun.appserv.management.util.misc.FeatureAvailability;
 import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.util.ObjectNames;
 

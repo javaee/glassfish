@@ -33,8 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
-
+package com.sun.appserv.management.ext.coverage;
 
 import javax.management.MBeanInfo;
 import java.util.Map;
@@ -42,25 +41,12 @@ import java.util.Set;
 
 
 /**
-	Used to record access to AMX.
-	@see AMXDebugStuff
+	Information about code coverage of an MBean.
  */
 public interface CoverageInfo
 {
-    /** reset coverage data to empty */
-    public void         clear();
-    
     /** get the current MBeanInfo, possibly null if not yet set */
     public MBeanInfo    getMBeanInfo();
-    
-    /**
-        Set the current MBeanInfo.  Should be set prior to calling
-        other routines because it is used to recognize unknown Attributes
-        and operations.
-      */
-    public void         setMBeanInfo( final MBeanInfo mbeanInfo );
-    public void         merge( final CoverageInfo info );
-    
     
     /**
         Get the Set of legal attributes which can be read.
@@ -149,6 +135,18 @@ public interface CoverageInfo
     
     /** @return true if 100% coverage, false otherwise */
     public  boolean         getFullCoverage();
+
+//-------------------------------------------------------------------------------------------------------
+   /** reset coverage data to empty */
+    public void         clear();
+    
+    /**
+        Set the current MBeanInfo.  Should be set prior to calling
+        other routines because it is used to recognize unknown Attributes
+        and operations.
+      */
+    public void         setMBeanInfo( final MBeanInfo mbeanInfo );
+    public void         merge( final CoverageInfo info );
     
     /**
        Remove the Attribute from the list of unknown Attributes.
@@ -197,6 +195,7 @@ public interface CoverageInfo
        Record the fact that a failure occurred while invoking the operation.
      */
     public void         operationFailed(final String name, final String[] sig);
+
 
 }
 

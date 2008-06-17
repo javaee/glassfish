@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.loader;
 
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.AMXDebugSupportMBean;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
@@ -327,7 +328,19 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 			mStarted	= true;
 		}
 		
-		new AMXDebugSupport( mServer );
+        try
+        {
+            final AMXDebugSupport dbg = new AMXDebugSupport( mServer );
+            mServer.registerMBean( new StandardMBean(dbg, AMXDebugSupportMBean.class), AMXDebugSupport.getObjectName() );
+        }
+        catch( final Exception e )
+        {
+            final Throwable rootCause   = ExceptionUtil.getRootCause(e);
+            debug( "Exception loading AMXDebugSupport: " +
+                 rootCause + ", msg=" + rootCause.getMessage() );
+            throw new RuntimeException( rootCause );
+        }
+        
 		loadDomainRoot();
 		
 		startHook();

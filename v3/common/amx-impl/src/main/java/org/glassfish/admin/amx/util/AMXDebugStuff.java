@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.util;
 
+import com.sun.appserv.management.ext.coverage.CoverageInfo;
+
 
 /**
     This interface will be exposed in MBeanInfo when AMX-DEBUG.enabled=true.

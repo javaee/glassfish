@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package com.sun.appserv.management.ext.coverage;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
@@ -50,7 +50,7 @@ import java.util.*;
 
 
 /**
-	Used to record access to AMX.
+	Used to record access to AMX MBean.
 	@see AMXDebugStuff
  */
 public final class CoverageInfoImpl implements Serializable, CoverageInfo

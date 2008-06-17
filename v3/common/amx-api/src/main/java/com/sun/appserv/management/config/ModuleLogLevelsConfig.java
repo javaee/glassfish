@@ -55,21 +55,25 @@ public interface ModuleLogLevelsConfig extends PropertiesAccess, ConfigElement, 
 
 
 	/**
+
+CANNOT support this generically
 		Get a Map keyed by Attribute name of all log levels.
 		Attribute names correspond to the various get methods eg
 		"Admin" for {@link #getAdmin}, "CMP" for {@link #getCMP}, etc.
 		<p>
 		The possible levels are as defined in {@link LogLevelValues}.
-	 */
 	public Map<String,String>		getAllLevels();
+	 */
 	
 	
 	/**
+CANNOT support this generically
+
 		Change all log levels to the specified value.
 		
 		@param value one of the values in {@link LogLevelValues}
-	 */
 	public void		changeAll( final String value );
+	 */
 	
 	/**
 	    @since AppServer 9.0
