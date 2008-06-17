@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  */
@@ -104,9 +106,11 @@ public final class NotificationServiceTest
     private static final class MyListener
             implements NotificationListener {
         private final List<Notification> mReceived;
+        private final CountDownLatch mLatch;
 
-        public MyListener() {
+        public MyListener( final int numNeeded ) {
             mReceived = Collections.synchronizedList(new ArrayList<Notification>());
+            mLatch     = new CountDownLatch(numNeeded);
         }
 
         public void
@@ -114,6 +118,13 @@ public final class NotificationServiceTest
                 final Notification notif,
                 final Object handback) {
             mReceived.add(notif);
+            mLatch.countDown();
+        }
+        
+        public boolean await( final long amt, final TimeUnit units )
+            throws InterruptedException
+        {
+           return mLatch.await( amt, units);
         }
 
         public int
@@ -134,6 +145,7 @@ public final class NotificationServiceTest
     public void
     testListen()
             throws Exception {
+        trace( "testListen: START" );
         final NotificationService proxy = create();
 
         final QueryMgr queryMgr = getQueryMgr();
@@ -145,17 +157,22 @@ public final class NotificationServiceTest
         assert (proxy.getListeneeSet().size() == 1);
         assert (Util.getObjectName((Util.asAMX(proxy.getListeneeSet().iterator().next()))).equals(objectName));
 
-        final MyListener myListener = new MyListener();
+        trace( "testListen: NEWING" );
+        final MyListener myListener = new MyListener(2);    // we expect two changes, see below
         proxy.addNotificationListener(myListener, null, null);
-
         final String saveLevel = queryMgr.getMBeanLogLevel();
-        queryMgr.setMBeanLogLevel("" + Level.INFO);
+        queryMgr.setMBeanLogLevel("" + Level.FINEST);
         queryMgr.setMBeanLogLevel(saveLevel);
 
+        trace( "testListen: WAITING" );
         // delivery may be asynchronous; wait until done
-        while (myListener.getCount() < 2) {
-            sleep(20);
+        if ( ! myListener.await( 5, TimeUnit.SECONDS ) )
+        {
+        trace( "testListen: FAILED TIMEOUT" );
+            assert false : "NotificationServiceTest.testListen():  TIMED OUT waiting for Notifications";
         }
+        
+        trace( "testListen: NOT FAILED" );
         assert (myListener.getCount() == 2);
 
         Notification[] notifs = helper.getNotifications();
@@ -171,6 +188,7 @@ public final class NotificationServiceTest
         assert (proxy.getListeneeSet().size() == 0);
 
         removeNotificationService(proxy);
+        trace( "testListen: EXIT" );
     }
 
 }
