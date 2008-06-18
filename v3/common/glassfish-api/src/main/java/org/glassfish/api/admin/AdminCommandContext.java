@@ -25,7 +25,8 @@ package org.glassfish.api.admin;
 
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ExecutionContext;
 import java.util.Properties;
@@ -41,21 +42,23 @@ public class AdminCommandContext implements ExecutionContext {
     public  ActionReport report;
     public final Properties params;
     public final Logger logger;
-    private ArrayList<File> uploadedFiles;
+    private List<File> uploadedFiles;
     
     public AdminCommandContext(Logger logger, ActionReport report, Properties params) {
-        this(logger, report, params, new ArrayList<File>());
+        this(logger, report, params, null);
     }
     
     public AdminCommandContext(Logger logger, ActionReport report, Properties params,
-            ArrayList<File> uploadedFiles) {
-    
+            List<File> uploadedFiles) {
         this.logger = logger;
         this.report = report;
         this.params = params;
-        this.uploadedFiles = uploadedFiles;
+        this.uploadedFiles = (uploadedFiles == null) ? emptyFileList() : uploadedFiles;
     }
     
+    private static List<File> emptyFileList() {
+        return Collections.emptyList();
+    }
     /**
      * Returns the Reporter for this action
      * @return ActionReport implementation suitable for the client
@@ -91,7 +94,7 @@ public class AdminCommandContext implements ExecutionContext {
      * Returns the uploaded files
      * @return the uploaded files
      */
-    public ArrayList<File> getUploadedFiles() {
+    public List<File> getUploadedFiles() {
         return uploadedFiles;
     }
 }
