@@ -30,6 +30,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 #include "java.h"
 
 #define AWT_HEADLESS_OPTION "-Djava.awt.headless=true"
@@ -205,7 +206,7 @@ main(int argc, char **argv)
         return ret;
 
     /* Remove it after console mode support has been turned on */
-    showconsole = JNI_TRUE;
+    showconsole = JNI_FALSE;
     /* Create the temporary directory */
     s = GetLocalizedMessage("checking_disk_space");
     statusf(s);
@@ -534,9 +535,9 @@ main(int argc, char **argv)
 /* Set the "PLATFORM_PLUGIN_PROP" property */
     s = (char *)MemAlloc(strlen(PLATFORM_PLUGIN_PROP) + strlen(workdir) + strlen(PLATFORM_PLUGIN_PATH) + 10);
 #ifdef WIN32
-    sprintf(s, PLATFORM_PLUGIN_PROP "file:///%s" PLATFORM_PLUGIN_PATH, workdir);
+    sprintf(s, PLATFORM_PLUGIN_PROP "%s" PLATFORM_PLUGIN_PATH, workdir);
 #else
-    sprintf(s, PLATFORM_PLUGIN_PROP "file://%s" PLATFORM_PLUGIN_PATH, workdir);
+    sprintf(s, PLATFORM_PLUGIN_PROP "%s" PLATFORM_PLUGIN_PATH, workdir);
 #endif
     AddProp(StrDup("-p"));
     AddProp(StrDup(s));
@@ -599,8 +600,8 @@ main(int argc, char **argv)
     }
     else
     {
-  	s = (char *)MemAlloc(strlen(LOGS_LOCATION_PROP) + strlen(workdir) + 5);
-	sprintf(s, LOGS_LOCATION_PROP "%s", workdir);
+  	s = (char *)MemAlloc(strlen(LOGS_LOCATION_PROP) + strlen(tmpdir) + 8);
+	sprintf(s, LOGS_LOCATION_PROP "%s", tmpdir);
     }
 
     AddProp(StrDup("-p"));
@@ -626,7 +627,7 @@ main(int argc, char **argv)
 
 /* Set the "INSTALLABLE_UNIT_PROP" property */
     s = (char *)MemAlloc(strlen(INSTALLABLE_UNIT_PROP) + strlen(workdir) + 35);
-    sprintf(s, INSTALLABLE_UNIT_PROP "file://%s" FILE_SEPARATOR "Product", workdir);
+    sprintf(s, INSTALLABLE_UNIT_PROP "file:///%s" FILE_SEPARATOR "Product", workdir);
     AddProp(StrDup("-p"));
     AddProp(StrDup(s));
     s = NULL;
@@ -676,13 +677,10 @@ main(int argc, char **argv)
     s = NULL;
     inJava = JNI_TRUE;
     ret = ExecuteJava(jrepath, numOptions, options, numProps, props);
-    /*
     doCleanup = JNI_TRUE;
     inJava = JNI_FALSE;
     doCleanup = JNI_TRUE;
-    fprintf(stderr,"Before Prep\n");
     PrepareToExit();
-    */
     return ret;
 }
 
@@ -886,7 +884,6 @@ AddProp(char *str)
      * Expand Props array if needed to accomodate at least one more
      * VM Props.
      */
-    fprintf(stderr,"\n Inside AddProp, Prop is <%s>",str);
     if (numProps >= maxProps)
     {
         if (props == NULL)
@@ -1468,8 +1465,7 @@ PrepareToExit()
 #endif
     if (doCleanup)
         Cleanup();
-     fprintf(stderr,"Here to cleanup\n");
-    /* DeleteWorkingDirectory(); */
+    DeleteWorkingDirectory(); 
 }
 
 #ifdef WIN32
@@ -1486,9 +1482,7 @@ long WINAPI HandleException(LPEXCEPTION_POINTERS exc)
 static void
 HandleSignalAndExit(int sig)
 {
-   /*
     PrepareToExit();
-   */
     _exit(255);
 }
 
@@ -1496,12 +1490,9 @@ static void
 HandleSignalAndAbort(int sig)
 {
     struct sigaction act;
-    fprintf(stderr,"About to abort\n");
     act.sa_handler = SIG_DFL;
     sigemptyset(&act.sa_mask);
-    /*
     PrepareToExit();
-    */
     sigaction(SIGABRT, &act, NULL);
     abort();
 }

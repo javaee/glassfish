@@ -504,7 +504,6 @@ zipOpenGeneric(const char *name, int *zerror, int mode, jlong lastModified)
 
     for (zip = zfiles; zip != 0; zip = zip->next)
     {
-        fprintf(stderr,"inside zip <%s> checking for <%s>",name,zip->name);
         if (strcmp(name, zip->name) == 0
             && (zip->lastModified == lastModified || zip->lastModified == 0)
             && zip->refs < MAXREFS)
@@ -559,7 +558,6 @@ zipOpenGeneric(const char *name, int *zerror, int mode, jlong lastModified)
         zip->next = zfiles;
         zfiles = zip;
     }
-    fprintf(stderr,"\n\n About to return zip file is <%s>",zip->name);
     return zip;
 }
 

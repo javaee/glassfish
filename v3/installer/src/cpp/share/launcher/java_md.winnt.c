@@ -1576,7 +1576,6 @@ ExecuteJava(const char *jrepath, int numOptions, const JavaVMOption *options,int
     memset(&pi, 0, sizeof(PROCESS_INFORMATION));
     memset(&si, 0, sizeof(STARTUPINFO));
     si.cb = sizeof(STARTUPINFO);
-    fprintf(stderr,"\n\n Cmd line is <%s>",cmdline);
     if (CreateProcess(NULL, cmdline, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
     {
         /* Wait a few seconds to display the status dialog */

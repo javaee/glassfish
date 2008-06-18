@@ -30,6 +30,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 #include "java.h"
 #include <iconv.h>
 #include <langinfo.h>
@@ -2031,7 +2032,8 @@ DeleteFilesAndDirectories(const char *path, char **savelist)
             strcpy(newpath, path);
             *strrchr(newpath, FILE_SEPARATOR_CHAR) = '\0';
             DeleteFilesAndDirectories(newpath, savelist);
-            free(newpath);
+	    if (newpath)
+            	free(newpath);
             newpath = NULL;
         }
     }
@@ -2052,18 +2054,13 @@ DeleteFilesAndDirectories(const char *path, char **savelist)
             if ((dir = opendir(path)) != NULL)
             {
                 struct dirent *entry;
-                char *entrypath = NULL;
+                char entrypath[2048];
                 while ((entry = readdir(dir)) != NULL)
                 {
-                    if ((entrypath = (char *)malloc(strlen(path) + strlen(entry->d_name) + 2)) != NULL)
-                    {
                         strcpy(entrypath, path);
                         strcat(entrypath, FILE_SEPARATOR);
                         strcat(entrypath, entry->d_name);
                         DeleteFilesAndDirectories(entrypath, savelist);
-                        free(entrypath);
-                        entrypath = NULL;
-                    }
                 }
                 closedir(dir);
             }
