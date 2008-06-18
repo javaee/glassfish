@@ -61,7 +61,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.enterprise.universal.BASE64Decoder;
-import java.util.ArrayList;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -91,7 +90,7 @@ public class CommandRunner {
      */
     public ActionReport doCommand(final String commandName, final Properties parameters, final ActionReport report) {
 
-        return doCommand(commandName, parameters, report, new ArrayList<File>());
+        return doCommand(commandName, parameters, report, null);
     }
     
     /**
@@ -105,7 +104,7 @@ public class CommandRunner {
      * @param uploadedFiles files uploaded from the client
      */
     public ActionReport doCommand(final String commandName, final Properties parameters, 
-            final ActionReport report, ArrayList<File> uploadedFiles) {
+            final ActionReport report, List<File> uploadedFiles) {
 
         final AdminCommand handler = getCommand(commandName, report, logger);
         if (handler==null) {
@@ -127,7 +126,7 @@ public class CommandRunner {
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
-        return doCommand(commandName, command, parameters, report, new ArrayList<File>());
+        return doCommand(commandName, command, parameters, report, null);
     }
         
     /**
@@ -144,7 +143,7 @@ public class CommandRunner {
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report,
-            final ArrayList<File> uploadedFiles) {
+            final List<File> uploadedFiles) {
         if (parameters.size()==1 && parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
             String manPage = encodeManPage(in);
