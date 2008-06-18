@@ -124,6 +124,9 @@ final class StandardContextValve
         StringManager.getManager(Constants.Package);
 
 
+    private StandardContext context = null;
+
+
     private static Logger log = Logger.getLogger(
         StandardContextValve.class.getName());
 
@@ -142,6 +145,17 @@ final class StandardContextValve
 
 
     // --------------------------------------------------------- Public Methods
+
+
+    /**
+     * Cast to a StandardContext right away, as it will be needed later.
+     * 
+     * @see org.apache.catalina.Contained#setContainer(org.apache.catalina.Container)
+     */
+    public void setContainer(Container container) {
+        super.setContainer(container);
+        context = (StandardContext) container;
+    }
 
 
     /**
@@ -185,12 +199,23 @@ final class StandardContextValve
         // END CR 6415120
 
         // Wait if we are reloading
+        boolean reloaded = false;
         while (((StandardContext) container).getPaused()) {
+            reloaded = true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 ;
             }
+        }
+
+        // Reloading will have stopped the old webappclassloader and
+        // created a new one
+        if (reloaded &&
+                context.getLoader() != null &&
+                context.getLoader().getClassLoader() != null) {
+            Thread.currentThread().setContextClassLoader(
+                    context.getLoader().getClassLoader());
         }
 
         // Select the Wrapper to be used for this Request
@@ -199,6 +224,14 @@ final class StandardContextValve
             String requestURI = hreq.getDecodedRequestURI();
             notFound(requestURI, (HttpServletResponse) response.getResponse());
             return END_PIPELINE;
+        } else if (wrapper.isUnavailable()) {
+            // May be as a result of a reload, try and find the new wrapper
+            wrapper = (Wrapper) container.findChild(wrapper.getName());
+            if (wrapper == null) {
+                String requestURI = hreq.getDecodedRequestURI();
+                notFound(requestURI, (HttpServletResponse) response.getResponse());
+                return END_PIPELINE;
+            }
         }
         
         // Normal request processing
