@@ -283,10 +283,111 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
   
-  <servlet-mapping>
-     <servlet-name>jsp</servlet-name>
-     <url-pattern>*.jspx</url-pattern>
-  </servlet-mapping>
+
+  <!-- NOTE: An SSI Filter is also available as an alternative SSI          -->
+  <!-- implementation. Use either the Servlet or the Filter but NOT both.   -->
+  <!--                                                                      -->
+  <!-- Server Side Includes processing servlet, which processes SSI         -->
+  <!-- directives in HTML pages consistent with similar support in web      -->
+  <!-- servers like Apache.  Traditionally, this servlet is mapped to the   -->
+  <!-- URL pattern "*.shtml".  This servlet supports the following          -->
+  <!-- initialization parameters (default values are in square brackets):   -->
+  <!--                                                                      -->
+  <!--   buffered            Should output from this servlet be buffered?   -->
+  <!--                       (0=false, 1=true)  [0]                         -->
+  <!--                                                                      -->
+  <!--   debug               Debugging detail level for messages logged     -->
+  <!--                       by this servlet.  [0]                          -->
+  <!--                                                                      -->
+  <!--   expires             The number of seconds before a page with SSI   -->
+  <!--                       directives will expire.  [No default]          -->
+  <!--                                                                      -->
+  <!--   isVirtualWebappRelative                                            -->
+  <!--                       Should "virtual" paths be interpreted as       -->
+  <!--                       relative to the context root, instead of       -->
+  <!--                       the server root?  (0=false, 1=true) [0]        -->
+  <!--                                                                      -->
+  <!--   inputEncoding       The encoding to assume for SSI resources if    -->
+  <!--                       one is not available from the resource.        -->
+  <!--                       [Platform default]                             -->
+  <!--                                                                      -->
+  <!--   outputEncoding      The encoding to use for the page that results  -->
+  <!--                       from the SSI processing. [UTF-8]               -->
+  <!--                                                                      -->
+  <!--                                                                      -->
+  <!-- IMPORTANT: To use the SSI servlet, you also need to rename the       -->
+  <!--            $CATALINA_HOME/server/lib/servlets-ssi.renametojar file   -->
+  <!--            to $CATALINA_HOME/server/lib/servlets-ssi.jar             -->
+
+<!--
+  <servlet>
+    <servlet-name>ssi</servlet-name>
+    <servlet-class>org.apache.catalina.ssi.SSIServlet</servlet-class>
+    <init-param>
+      <param-name>buffered</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>expires</param-name>
+      <param-value>666</param-value>
+    </init-param>
+    <init-param>
+      <param-name>isVirtualWebappRelative</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+-->
+
+
+  <!-- Common Gateway Includes (CGI) processing servlet, which supports     -->
+  <!-- execution of external applications that conform to the CGI spec      -->
+  <!-- requirements.  Typically, this servlet is mapped to the URL pattern  -->
+  <!-- "/cgi-bin/*", which means that any CGI applications that are         -->
+  <!-- executed must be present within the web application.  This servlet   -->
+  <!-- supports the following initialization parameters (default values     -->
+  <!-- are in square brackets):                                             -->
+  <!--                                                                      -->
+  <!--   cgiPathPrefix        The CGI search path will start at             -->
+  <!--                        webAppRootDir + File.separator + this prefix. -->
+  <!--                        [WEB-INF/cgi]                                 -->
+  <!--                                                                      -->
+  <!--   debug                Debugging detail level for messages logged    -->
+  <!--                        by this servlet.  [0]                         -->
+  <!--                                                                      -->
+  <!--   executable           Name of the exectuable used to run the        -->
+  <!--                        script. [perl]                                -->
+  <!--                                                                      -->
+  <!--   parameterEncoding    Name of parameter encoding to be used with    -->
+  <!--                        CGI servlet.                                  -->
+  <!--                        [System.getProperty("file.encoding","UTF-8")] -->
+  <!--                                                                      -->
+  <!--   passShellEnvironment Should the shell environment variables (if    -->
+  <!--                        any) be passed to the CGI script? [false]     -->
+  <!--                                                                      -->
+  <!-- IMPORTANT: To use the CGI servlet, you also need to rename the       -->
+  <!--            $CATALINA_HOME/server/lib/servlets-cgi.renametojar file   -->
+  <!--            to $CATALINA_HOME/server/lib/servlets-cgi.jar             -->
+
+<!--
+  <servlet>
+    <servlet-name>cgi</servlet-name>
+    <servlet-class>org.apache.catalina.servlets.CGIServlet</servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cgiPathPrefix</param-name>
+      <param-value>WEB-INF/cgi</param-value>
+    </init-param>
+    <load-on-startup>5</load-on-startup>
+  </servlet>
+-->
 
 
   <!-- ================ Built In Servlet Mappings ========================= -->
@@ -297,12 +398,106 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 
-
   <!-- The mapping for the JSP servlet -->
   <servlet-mapping>
     <servlet-name>jsp</servlet-name>
     <url-pattern>*.jsp</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jspx</url-pattern>
+  </servlet-mapping>
+
+  <!-- The mapping for the SSI servlet -->
+<!--
+  <servlet-mapping>
+    <servlet-name>ssi</servlet-name>
+    <url-pattern>*.shtml</url-pattern>
+  </servlet-mapping>
+-->
+
+  <!-- The mapping for the CGI Gateway servlet -->
+<!--
+  <servlet-mapping>
+    <servlet-name>cgi</servlet-name>
+    <url-pattern>/cgi-bin/*</url-pattern>
+  </servlet-mapping>
+-->
+
+
+  <!-- ================== Built In Filter Definitions ===================== -->
+
+  <!-- NOTE: An SSI Servlet is also available as an alternative SSI         -->
+  <!-- implementation. Use either the Servlet or the Filter but NOT both.   -->
+  <!--                                                                      -->
+  <!-- Server Side Includes processing filter, which processes SSI          -->
+  <!-- directives in HTML pages consistent with similar support in web      -->
+  <!-- servers like Apache.  Traditionally, this filter is mapped to the    -->
+  <!-- URL pattern "*.shtml", though it can be mapped to "*" as it will     -->
+  <!-- selectively enable/disable SSI processing based on mime types. For   -->
+  <!-- this to work you will need to uncomment the .shtml mime type         -->
+  <!-- definition towards the bottom of this file.                          -->
+  <!-- The contentType init param allows you to apply SSI processing to JSP -->
+  <!-- pages, javascript, or any other content you wish.  This filter       -->
+  <!-- supports the following initialization parameters (default values are -->
+  <!-- in square brackets):                                                 -->
+  <!--                                                                      -->
+  <!--   contentType         A regex pattern that must be matched before    -->
+  <!--                       SSI processing is applied.                     -->
+  <!--                       [text/x-server-parsed-html(;.*)?]              -->
+  <!--                                                                      -->
+  <!--   debug               Debugging detail level for messages logged     -->
+  <!--                       by this servlet.  [0]                          -->
+  <!--                                                                      -->
+  <!--   expires             The number of seconds before a page with SSI   -->
+  <!--                       directives will expire.  [No default]          -->
+  <!--                                                                      -->
+  <!--   isVirtualWebappRelative                                            -->
+  <!--                       Should "virtual" paths be interpreted as       -->
+  <!--                       relative to the context root, instead of       -->
+  <!--                       the server root?  (0=false, 1=true) [0]        -->
+  <!--                                                                      -->
+  <!--                                                                      -->
+  <!-- IMPORTANT: To use the SSI filter, you also need to rename the        -->
+  <!--            $CATALINA_HOME/server/lib/servlets-ssi.renametojar file   -->
+  <!--            to $CATALINA_HOME/server/lib/servlets-ssi.jar             -->
+
+<!--
+  <filter>
+    <filter-name>ssi</filter-name>
+    <filter-class>
+      org.apache.catalina.ssi.SSIFilter
+    </filter-class>
+    <init-param>
+      <param-name>contentType</param-name>
+      <param-value>text/x-server-parsed-html(;.*)?</param-value>
+    </init-param>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>expires</param-name>
+      <param-value>666</param-value>
+    </init-param>
+    <init-param>
+      <param-name>isVirtualWebappRelative</param-name>
+      <param-value>0</param-value>
+    </init-param>
+  </filter>
+-->
+
+
+  <!-- ==================== Built In Filter Mappings ====================== -->
+
+  <!-- The mapping for the SSI Filter -->
+<!--
+  <filter-mapping>
+    <filter-name>ssi</filter-name>
+    <url-pattern>*.shtml</url-pattern>
+  </filter-mapping>
+-->
 
 
   <!-- ==================== Default Session Configuration ================= -->
@@ -724,10 +919,12 @@
     <extension>shar</extension>
     <mime-type>application/x-shar</mime-type>
   </mime-mapping>
+<!--
   <mime-mapping>
     <extension>shtml</extension>
     <mime-type>text/x-server-parsed-html</mime-type>
   </mime-mapping>
+-->
   <mime-mapping>
     <extension>sit</extension>
     <mime-type>application/x-stuffit</mime-type>
