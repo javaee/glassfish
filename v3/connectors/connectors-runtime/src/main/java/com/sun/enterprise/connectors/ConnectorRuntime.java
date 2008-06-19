@@ -379,9 +379,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
       * @param connectionDefinitionClassName
       *                     The Connection Definition Java bean class for which
       *                     overrideable properties are required.
-      * @return Map [property, defaultValue]
+      * @return Map<String, Object> String represents property name
+      * and Object is the defaultValue that is a primitive type or String.
       */
-    public Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+    public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
         return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
             connectionDefinitionClassName);
     }
