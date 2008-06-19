@@ -100,7 +100,7 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
             if (raConfig != null) {
                 poolId = raConfig.getThreadPoolIds();
             }
-            this.bootStrapContextImpl = new BootstrapContextImpl(poolId);
+            this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_);
 
             resourceadapter_.start(bootStrapContextImpl);
 
@@ -160,8 +160,19 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
             _logger.log(Level.FINE, "rar_stop_call_successful");
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "rardeployment.stop_warning", t);
+        }finally{
+            removeProxiesFromRegistry(moduleName_);
         }
     }
+
+    /**
+     * Remove all the proxy objects (Work-Manager) from connector registry
+     * @param moduleName_ resource-adapter name
+     */
+    private void removeProxiesFromRegistry(String moduleName_) {
+        ConnectorRuntime.getRuntime().removeWorkManagerProxy(moduleName_);
+    }
+
 
     /**
      * Creates an instance of <code>ManagedConnectionFactory</code>

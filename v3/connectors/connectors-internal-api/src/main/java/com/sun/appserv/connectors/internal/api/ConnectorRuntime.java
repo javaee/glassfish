@@ -44,7 +44,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 
 
 /**
@@ -184,5 +185,13 @@ public interface ConnectorRuntime {
       * @return Map [property, defaultValue]
       */
     public Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
+
+    /**
+     * Provides specified ThreadPool or default ThreadPool from server
+     * @param threadPoolId Thread-pool-id
+     * @return ThreadPool
+     * @throws NoSuchThreadPoolException when unable to get a ThreadPool
+     */
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException;
 
 }

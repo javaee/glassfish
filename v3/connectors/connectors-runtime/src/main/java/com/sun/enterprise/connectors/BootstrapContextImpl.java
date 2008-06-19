@@ -45,6 +45,7 @@ import javax.resource.spi.work.WorkManager;
 import java.io.Serializable;
 import java.util.Timer;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -55,6 +56,9 @@ import java.util.logging.Logger;
 public final class BootstrapContextImpl implements BootstrapContext, Serializable {
 
     private String poolId;
+    private WorkManager wm;
+    private String moduleName;
+    private String threadPoolId;
 
     private static final Logger logger =
             LogDomains.getLogger(LogDomains.RSR_LOGGER);
@@ -64,9 +68,11 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * thread pool for work manager.
      *
      * @throws ConnectorRuntimeException If there is a failure in
-     *                                   retrieving WorkManager.
+     *         retrieving WorkManager.
      */
-    public BootstrapContextImpl() throws ConnectorRuntimeException {
+    public BootstrapContextImpl (String moduleName) throws ConnectorRuntimeException{
+        this.moduleName = moduleName;
+        initializeWorkManager();
     }
 
     /**
@@ -74,11 +80,13 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * thread pool for work manager.
      *
      * @throws ConnectorRuntimeException If there is a failure in
-     *                                   retrieving WorkManager.
+     *         retrieving WorkManager.
      */
-    public BootstrapContextImpl(String poolId)
-            throws ConnectorRuntimeException {
-        this.poolId = poolId;
+    public BootstrapContextImpl (String poolId, String moduleName)
+                                 throws ConnectorRuntimeException{
+        this.threadPoolId = poolId;
+        this.moduleName = moduleName;
+        initializeWorkManager();
     }
 
     /**
@@ -100,8 +108,23 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * @see com.sun.enterprise.connectors.work.WorkManagerFactory
      */
     public WorkManager getWorkManager() {
-        throw new UnsupportedOperationException("Work manager not supported yet");
+        initializeWorkManager();
+        return wm;
     }
+
+    /**
+     * initialize work manager reference
+     */
+    private void initializeWorkManager() {
+        if (wm == null) {
+            try {
+                wm = ConnectorRuntime.getRuntime().getWorkManagerProxy(threadPoolId, moduleName);
+            } catch(Exception e) {
+           	logger.log(Level.SEVERE, "workmanager.instantiation_error", e);
+            }
+        }
+    }
+
 
     /**
      * Retrieves the <code>XATerminator</code> object.

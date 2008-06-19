@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>connectors-runtime</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Java EE Connector Architecute Runtime for GlassFish</name>
+    <name>Java EE Connector Architecture Runtime for GlassFish</name>
 
     <developers>
         <developer>
@@ -124,6 +124,12 @@
             <artifactId>security</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+
+        <!--dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>work-management</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency-->
 
     </dependencies>
 </project>

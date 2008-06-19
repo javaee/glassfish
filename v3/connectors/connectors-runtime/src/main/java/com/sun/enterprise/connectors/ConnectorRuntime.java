@@ -49,12 +49,17 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.connectors.util.ConnectorClassLoader;
+import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.javaee.services.ResourceManager;
@@ -68,6 +73,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.work.WorkManager;
 import javax.resource.ResourceException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -128,6 +134,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private ResourceManager rm;
+
+    @Inject
+    private WorkManagerFactory wmf;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -375,6 +384,26 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     public Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
         return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
             connectionDefinitionClassName);
+    }
+
+    /**
+     * Provides specified ThreadPool or default ThreadPool from server
+     * @param threadPoolId Thread-pool-id
+     * @return ThreadPool
+     * @throws NoSuchThreadPoolException when unable to get a ThreadPool
+     */
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException {
+        int env = getEnviron();
+        if (env == ConnectorRuntime.SERVER) {
+            ThreadPoolManager tpm = new ThreadPoolManagerImpl(null);
+            if (threadPoolId != null) {
+                return tpm.getThreadPool(threadPoolId);
+            } else {
+                return tpm.getDefaultThreadPool();
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -648,5 +677,21 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     public PoolType getPoolType(String poolName) throws ConnectorRuntimeException {
         return ccPoolAdmService.getPoolType(poolName);
+    }
+
+    /**
+     * provides work manager proxy that is Serializable
+     * @param poolId ThreadPoolId
+     * @param moduleName resource-adapter name
+     * @return WorkManager
+     * @throws ConnectorRuntimeException when unable to get work manager
+     */
+    public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException{
+        //TODO V3 can't we make work-manager to return proxy by default ?
+        return wmf.getWorkManagerProxy(poolId, moduleName);
+    }
+
+    public void removeWorkManagerProxy(String moduleName){
+        wmf.removeWorkManager(moduleName);        
     }
 }
