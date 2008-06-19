@@ -108,8 +108,13 @@ public final class CustomObjectInputStream
      * @exception IOException if an input/output error occurs
      */
     public Class resolveClass(ObjectStreamClass classDesc)
-        throws ClassNotFoundException, IOException {
-        return Class.forName(classDesc.getName(), false, classLoader);
+             throws ClassNotFoundException, IOException {
+        try {
+            return Class.forName(classDesc.getName(), false, classLoader);
+        } catch (ClassNotFoundException e) {
+            // Try also the superclass because of primitive types
+            return super.resolveClass(classDesc);
+        }
     }
 
 

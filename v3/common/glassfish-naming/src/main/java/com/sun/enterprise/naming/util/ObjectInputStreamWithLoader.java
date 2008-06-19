@@ -88,28 +88,33 @@ public class ObjectInputStreamWithLoader extends ObjectInputStream {
     protected Class resolveClass(ObjectStreamClass classDesc)
             throws IOException, ClassNotFoundException {
 
-        String cname = classDesc.getName();
-        if (cname.startsWith("[")) {
-            // An array
-            Class component;        // component class
-            int dcount;            // dimension
-            for (dcount = 1; cname.charAt(dcount) == '['; dcount++) ;
-            if (cname.charAt(dcount) == 'L') {
-                component = loader.loadClass(cname.substring(dcount + 1,
-                        cname.length() - 1));
-            } else {
-                if (cname.length() != dcount + 1) {
-                    throw new ClassNotFoundException(cname);// malformed
+        try {
+            String cname = classDesc.getName();
+            if (cname.startsWith("[")) {
+                // An array
+                Class component;        // component class
+                int dcount;            // dimension
+                for (dcount = 1; cname.charAt(dcount) == '['; dcount++) ;
+                if (cname.charAt(dcount) == 'L') {
+                    component = loader.loadClass(cname.substring(dcount + 1,
+                            cname.length() - 1));
+                } else {
+                    if (cname.length() != dcount + 1) {
+                        throw new ClassNotFoundException(cname);// malformed
+                    }
+                    component = primitiveType(cname.charAt(dcount));
                 }
-                component = primitiveType(cname.charAt(dcount));
+                int dim[] = new int[dcount];
+                for (int i = 0; i < dcount; i++) {
+                    dim[i] = 0;
+                }
+                return Array.newInstance(component, dim).getClass();
+            } else {
+                return loader.loadClass(cname);
             }
-            int dim[] = new int[dcount];
-            for (int i = 0; i < dcount; i++) {
-                dim[i] = 0;
-            }
-            return Array.newInstance(component, dim).getClass();
-        } else {
-            return loader.loadClass(cname);
+        } catch (ClassNotFoundException e) {
+            // Try also the superclass because of primitive types
+            return super.resolveClass(classDesc);
         }
     }
 }
