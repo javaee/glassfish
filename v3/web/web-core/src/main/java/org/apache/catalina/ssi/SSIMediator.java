@@ -64,6 +64,8 @@ import java.util.TimeZone;
 import org.apache.catalina.util.DateTool;
 import org.apache.catalina.util.Strftime;
 import org.apache.catalina.util.URLEncoder;
+import org.apache.tomcat.util.http.HttpMessages;
+
 /**
  * Allows the different SSICommand implementations to share data/talk to each
  * other
@@ -162,8 +164,8 @@ public class SSIMediator {
     }
 
 
-    public Collection getVariableNames() {
-        Set variableNames = new HashSet();
+    public Collection<String> getVariableNames() {
+        Set<String> variableNames = new HashSet();
         //These built-in variables are supplied by the mediator ( if not
         // over-written by
         // the user ) and always exist
@@ -172,9 +174,9 @@ public class SSIMediator {
         variableNames.add("LAST_MODIFIED");
         ssiExternalResolver.addVariableNames(variableNames);
         //Remove any variables that are reserved by this class
-        Iterator iter = variableNames.iterator();
+        Iterator<String> iter = variableNames.iterator();
         while (iter.hasNext()) {
-            String name = (String)iter.next();
+            String name = iter.next();
             if (isNameReserved(name)) {
                 iter.remove();
             }
@@ -242,10 +244,31 @@ public class SSIMediator {
      * new resolved string.
      */
     public String substituteVariables(String val) {
-        // If it has no variable references then no work
+        // If it has no references or HTML entities then no work
         // need to be done
-        if (val.indexOf('$') < 0) return val;
+        if (val.indexOf('$') < 0 && val.indexOf('&') < 0) return val;
+
+        // HTML decoding
+        val.replace("&lt;", "<");
+        val.replace("&gt;", ">");
+        val.replace("&quot;", "\"");
+        val.replace("&amp;", "&");
+
         StringBuffer sb = new StringBuffer(val);
+        int charStart = sb.indexOf("&#");
+        while (charStart > -1) {
+            int charEnd = sb.indexOf(";", charStart);
+            if (charEnd > -1) {
+                char c = (char) Integer.parseInt(
+                        sb.substring(charStart + 2, charEnd));
+                sb.delete(charStart, charEnd + 1);
+                sb.insert(charStart, c);
+                charStart = sb.indexOf("&#");
+            } else {
+                break;
+            }
+        }
+
         for (int i = 0; i < sb.length();) {
             // Find the next $
             for (; i < sb.length(); i++) {
@@ -317,7 +340,7 @@ public class SSIMediator {
             retVal = value;
         } else if (encoding.equalsIgnoreCase("entity")) {
             //Not sure how this is really different than none
-            retVal = value;
+            retVal = HttpMessages.filter(value);
         } else {
             //This shouldn't be possible
             throw new IllegalArgumentException("Unknown encoding: " + encoding);

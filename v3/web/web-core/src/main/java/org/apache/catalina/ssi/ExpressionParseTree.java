@@ -68,12 +68,12 @@ public class ExpressionParseTree {
      * Contains the current set of completed nodes. This is a workspace for the
      * parser.
      */
-    private LinkedList nodeStack = new LinkedList();
+    private LinkedList<Node> nodeStack = new LinkedList();
     /**
      * Contains operator nodes that don't yet have values. This is a workspace
      * for the parser.
      */
-    private LinkedList oppStack = new LinkedList();
+    private LinkedList<OppNode> oppStack = new LinkedList();
     /**
      * The root node after the expression has been parsed.
      */
@@ -115,7 +115,7 @@ public class ExpressionParseTree {
         }
         while (true) {
             if (oppStack.size() == 0) break;
-            OppNode top = (OppNode)oppStack.get(0);
+            OppNode top = oppStack.get(0);
             // If the top is a spacer then don't pop
             // anything
             if (top == null) break;
@@ -140,7 +140,7 @@ public class ExpressionParseTree {
      */
     private void resolveGroup() {
         OppNode top = null;
-        while ((top = (OppNode)oppStack.remove(0)) != null) {
+        while ((top = oppStack.remove(0)) != null) {
             // Let it fill its branches
             top.popValues(nodeStack);
             // Stick it on the resolved node stack
@@ -232,7 +232,7 @@ public class ExpressionParseTree {
         if (oppStack.size() != 0) {
             throw new ParseException("Unused opp nodes exist.", et.getIndex());
         }
-        root = (Node)nodeStack.get(0);
+        root = nodeStack.get(0);
     }
 
     /**
@@ -309,9 +309,9 @@ public class ExpressionParseTree {
          * Lets the node pop its own branch nodes off the front of the
          * specified list. The default pulls two.
          */
-        public void popValues(List values) {
-            right = (Node)values.remove(0);
-            left = (Node)values.remove(0);
+        public void popValues(List<Node> values) {
+            right = values.remove(0);
+            left = values.remove(0);
         }
     }
     private final class NotNode extends OppNode {
@@ -328,8 +328,8 @@ public class ExpressionParseTree {
         /**
          * Overridden to pop only one value.
          */
-        public void popValues(List values) {
-            left = (Node)values.remove(0);
+        public void popValues(List<Node> values) {
+            left = values.remove(0);
         }
 
 
