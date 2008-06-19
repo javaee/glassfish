@@ -347,13 +347,7 @@ public final class CGIServlet extends HttpServlet {
             Boolean.valueOf(getServletConfig().getInitParameter("passShellEnvironment")).booleanValue();
 
         if (passShellEnvironment) {
-            try {
-                shellEnv.putAll(getShellEnvironment());
-            } catch (IOException ioe) {
-                ServletException e = new ServletException(
-                        "Unable to read shell environment variables", ioe);
-                throw e;
-            }
+            shellEnv.putAll(System.getenv());
         }
 
         if (getServletConfig().getInitParameter("executable") != null) {
@@ -680,54 +674,6 @@ public final class CGIServlet extends HttpServlet {
     public static void main(String[] args) {
         System.out.println("$Header$");
     }
-
-    /**
-     * Get all shell environment variables. Have to do it this rather ugly way
-     * as the API to obtain is not available in 1.4 and earlier APIs.
-     *
-     * See <a href="http://www.rgagnon.com/javadetails/java-0150.html">Read environment
-     * variables from an application</a> for original source and article.
-     */
-    private Hashtable getShellEnvironment() throws IOException {
-        Hashtable envVars = new Hashtable();
-        Process p = null;
-        Runtime r = Runtime.getRuntime();
-        String OS = System.getProperty("os.name").toLowerCase();
-        boolean ignoreCase;
-
-        if (OS.indexOf("windows 9") > -1) {
-            p = r.exec( "command.com /c set" );
-            ignoreCase = true;
-        } else if ( (OS.indexOf("nt") > -1)
-                || (OS.indexOf("windows 20") > -1)
-                || (OS.indexOf("windows xp") > -1) ) {
-            // thanks to JuanFran for the xp fix!
-            p = r.exec( "cmd.exe /c set" );
-            ignoreCase = true;
-        } else {
-            // our last hope, we assume Unix (thanks to H. Ware for the fix)
-            p = r.exec( "env" );
-            ignoreCase = false;
-        }
-
-        BufferedReader br = new BufferedReader
-            ( new InputStreamReader( p.getInputStream() ) );
-        String line;
-        while( (line = br.readLine()) != null ) {
-            int idx = line.indexOf( '=' );
-            String key = line.substring( 0, idx );
-            String value = line.substring( idx+1 );
-            if (ignoreCase) {
-                key = key.toUpperCase();
-            }
-            envVars.put(key, value);
-        }
-        return envVars;
-    }
-
-
-
-
 
 
 
