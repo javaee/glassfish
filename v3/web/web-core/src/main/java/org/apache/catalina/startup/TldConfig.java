@@ -438,8 +438,8 @@ public final class TldConfig  {
          * Acquire the list of TLD resource paths, possibly embedded in JAR
          * files, to be processed
          */
-        Set resourcePaths = tldScanResourcePaths();              
-        Map jarPaths = getJarPaths();
+        Set<String> resourcePaths = tldScanResourcePaths();              
+        Map<String, JarPathElement> jarPaths = getJarPaths();
 
         Map<URL, List<String>> tldMap = null;
         if (scanParent || context.isJsfApplication()) {
@@ -527,14 +527,15 @@ public final class TldConfig  {
      *
      * @return Last modification date
      */
-    private long getLastModified(Set resourcePaths, Map jarPaths,
+    private long getLastModified(Set<String> resourcePaths,
+            Map<String, JarPathElement> jarPaths,
             Map<URL, List<String>> tldMap) throws Exception {
 
         long lastModified = 0;
 
-        Iterator paths = resourcePaths.iterator();
+        Iterator<String> paths = resourcePaths.iterator();
         while (paths.hasNext()) {
-            String path = (String) paths.next();
+            String path = paths.next();
             URL url = context.getServletContext().getResource(path);
             if (url == null) {
                 if (log.isLoggable(Level.FINE)) {
@@ -636,9 +637,9 @@ public final class TldConfig  {
 
         try {
             jarFile = new JarFile(file);
-            Enumeration entries = jarFile.entries();
+            Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
-                JarEntry entry = (JarEntry) entries.nextElement();
+                JarEntry entry = entries.nextElement();
                 name = entry.getName();
                 if (!name.startsWith("META-INF/")) {
                     continue;
@@ -788,11 +789,11 @@ public final class TldConfig  {
      * @exception IOException if an input/output error occurs while
      *  accumulating the list of resource paths
      */
-    private Set tldScanResourcePaths() throws IOException {
+    private Set<String> tldScanResourcePaths() throws IOException {
         if (log.isLoggable(Level.FINEST)) {
             log.finest("Accumulating TLD resource paths");
         }
-        Set resourcePaths = new HashSet();
+        Set<String> resourcePaths = new HashSet<String>();
 
         // Accumulate resource paths explicitly listed in the web application
         // deployment descriptor
@@ -842,7 +843,7 @@ public final class TldConfig  {
      */
     private void tldScanResourcePathsWebInf(DirContext resources,
                                             String rootPath,
-                                            Set tldPaths) 
+                                            Set<String> tldPaths) 
             throws IOException {
 
         if (log.isLoggable(Level.FINEST)) {
@@ -850,9 +851,9 @@ public final class TldConfig  {
         }
 
         try {
-            NamingEnumeration items = resources.list(rootPath);
+            NamingEnumeration<NameClassPair> items = resources.list(rootPath);
             while (items.hasMoreElements()) {
-                NameClassPair item = (NameClassPair) items.nextElement();
+                NameClassPair item = items.nextElement();
                 String resourcePath = rootPath + "/" + item.getName();
                 if (resourcePath.startsWith("/WEB-INF/tags")) {
                     continue;
@@ -893,9 +894,9 @@ public final class TldConfig  {
      *
      * @return Map of JAR file paths
      */
-    private Map getJarPaths() {
+    private Map<String, JarPathElement> getJarPaths() {
 
-        HashMap jarPathMap = null;
+        HashMap<String, JarPathElement> jarPathMap = null;
 
         ClassLoader webappLoader = Thread.currentThread().getContextClassLoader();
         ClassLoader loader = webappLoader;
@@ -903,10 +904,17 @@ public final class TldConfig  {
             if (loader instanceof URLClassLoader) {
                 URL[] urls = ((URLClassLoader) loader).getURLs();
                 for (int i=0; i<urls.length; i++) {
-                    // Expect file URLs
+                    // Expect file URLs, these are %xx encoded or not depending
+                    // on the class loader
                     // This is definitely not as clean as using JAR URLs either
                     // over file or the custom jndi handler, but a lot less
                     // buggy overall
+
+                    // Check that the URL is using file protocol, else ignore it
+                    if (!"file".equals(urls[i].getProtocol())) {
+                        continue;
+                    }
+
                     File file = new File(
                             RequestUtil.URLDecode(urls[i].getFile()));
                     try {
@@ -932,7 +940,7 @@ public final class TldConfig  {
                         JarPathElement elem = new JarPathElement(
                                 file, loader == webappLoader);
                         if (jarPathMap == null) {
-                            jarPathMap = new HashMap();
+                            jarPathMap = new HashMap<String, JarPathElement>();
                             jarPathMap.put(path, elem);
                         } else if (!jarPathMap.containsKey(path)) {
                             jarPathMap.put(path, elem);
