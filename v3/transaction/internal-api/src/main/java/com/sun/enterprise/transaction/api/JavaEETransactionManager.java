@@ -332,4 +332,15 @@ public interface JavaEETransactionManager extends TransactionManager {
      * if the existing transaction had been completed.
      */
     public void setCurrentTransaction(JavaEETransaction tx);
+
+    /**
+     *
+     * Return XAResourceWrapper instance specific to this datasource class name 
+     * that can be used instead of the driver provided version for transaction recovery.
+     *
+     * @param clName the class name of a datasource.
+     * @return the XAResourceWrapper instance specific to this datasource class 
+     * name or null if there is no special wrapper available.
+     */
+    public XAResourceWrapper getXAResourceWrapper(String clName);
 }

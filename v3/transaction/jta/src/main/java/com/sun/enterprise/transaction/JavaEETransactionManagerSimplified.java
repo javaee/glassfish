@@ -48,6 +48,7 @@ import com.sun.appserv.util.cache.BaseCache;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 
@@ -121,10 +122,13 @@ public class JavaEETransactionManagerSimplified
     protected int m_transInFlight = 0;
 
     private Cache resourceTable;
+    private Hashtable<String, XAResourceWrapper> xaresourcewrappers = 
+            new Hashtable<String, XAResourceWrapper>();
 
     private  Timer _timer = new Timer("transaction-manager", true);
 
-    private static java.util.concurrent.locks.ReentrantReadWriteLock freezeLock = new java.util.concurrent.locks.ReentrantReadWriteLock();
+    private static java.util.concurrent.locks.ReentrantReadWriteLock freezeLock = 
+            new java.util.concurrent.locks.ReentrantReadWriteLock();
 
     static {
         statusMap.put(javax.transaction.Status.STATUS_ACTIVE, "Active");
@@ -195,6 +199,20 @@ public class JavaEETransactionManagerSimplified
                 delegate.setUseLAO(false);
                 if (_logger.isLoggable(Level.FINE))
                     _logger.log(Level.FINE,"TM: LAO is disabled");
+            }
+
+            value = txnService.getPropertyValue("oracle-xa-recovery-workaround");
+            if (value == null || "true".equals(value)) {
+                xaresourcewrappers.put(
+                    "oracle.jdbc.xa.client.OracleXADataSource",
+                    new OracleXAResource());
+            }
+
+            value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
+            if (value != null && "true".equals(value)) {
+                xaresourcewrappers.put(
+                    "com.sybase.jdbc2.jdbc.SybXADataSource",
+                    new SybaseXAResource());
             }
         }
         // ENF OF BUG 4665539
@@ -984,6 +1002,22 @@ public class JavaEETransactionManagerSimplified
         // transactionTimeout = seconds;
     }
 
+    public JavaEETransaction getCurrentTransaction() { 
+        return transactions.get();
+    }
+
+    public void setCurrentTransaction(JavaEETransaction t) { 
+        transactions.set(t);
+    }
+
+    public XAResourceWrapper getXAResourceWrapper(String clName) {
+        XAResourceWrapper rc = xaresourcewrappers.get(clName);
+        if (rc != null)
+            return rc.getInstance();
+
+        return null;
+    }
+
 /****************************************************************************/
 /*********************** Called by Admin Framework **************************/
 /****************************************************************************/
@@ -1371,14 +1405,6 @@ public class JavaEETransactionManagerSimplified
         delegate = d;
         delegate.setTransactionManager(this);
         // XXX check how to to replace on a new delegate: delegate.setUseLAO(false);
-    }
-
-    public JavaEETransaction getCurrentTransaction() { 
-        return transactions.get();
-    }
-
-    public void setCurrentTransaction(JavaEETransaction t) { 
-        transactions.set(t);
     }
 
     public Logger getLogger() {

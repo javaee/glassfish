@@ -36,11 +36,12 @@
 
 //Source File Name:   SybaseXAResource.java
 
-package com.sun.enterprise.transaction.xa;
+package com.sun.enterprise.transaction;
 
 import javax.transaction.xa.*;
 import javax.resource.ResourceException;
 
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.util.i18n.StringManager;
 
 /**
@@ -53,8 +54,13 @@ public class SybaseXAResource extends XAResourceWrapper
 {
 
 
-	// Sting Manager for Localization
+    // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(SybaseXAResource.class);
+
+    public XAResourceWrapper getInstance() {
+        return new SybaseXAResource();
+    }
+
   /**
    * Returns xids list for recovery depending on flags. Sybase XA Resource ignores the flags
    * for XAResource recover call. This method takes care for the fault. Allows the recover call

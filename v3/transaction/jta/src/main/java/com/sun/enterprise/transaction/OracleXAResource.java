@@ -36,11 +36,12 @@
 
 //Source File Name:   OracleXAResource.java
 
-package com.sun.enterprise.transaction.xa;
+package com.sun.enterprise.transaction;
 
 import java.sql.*;
 import javax.transaction.xa.*;
 
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -61,6 +62,9 @@ public class OracleXAResource extends XAResourceWrapper
     private static final StringManager sm = StringManager.getManager(OracleXAResource.class);
     private static final Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
+    public XAResourceWrapper getInstance() {
+        return new OracleXAResource();
+    }
 	
   /**
    * Recovers list of xids in transaction table. Recover on oracle ignores flags sent to it, this method

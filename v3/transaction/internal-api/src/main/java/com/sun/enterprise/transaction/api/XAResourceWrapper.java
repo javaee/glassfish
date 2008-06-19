@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.transaction.xa;
+package com.sun.enterprise.transaction.api;
 
 import javax.sql.*;
 import javax.transaction.xa.*;
@@ -55,34 +55,42 @@ import com.sun.enterprise.util.i18n.StringManager;
 public abstract class XAResourceWrapper implements XAResource
 {
 
-	/// Sting Manager for Localization
+    /// Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(XAResourceWrapper.class);
 
     protected ManagedConnection m_xacon;
     protected Subject subject;
+
     public void init(ManagedConnection xacon,Subject subject){
         m_xacon=xacon;
         this.subject = subject;
     }
+
     public void end(Xid xid, int i) throws XAException{
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public void forget(Xid xid) throws XAException{
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public int getTransactionTimeout() throws XAException{
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public boolean isSameRM(XAResource xaresource) throws XAException
     {
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public int prepare(Xid xid) throws XAException{
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public boolean setTransactionTimeout(int i) throws XAException {
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
+
     public void start(Xid xid, int i) throws XAException{
         throw new XAException(sm.getString("transaction.for_recovery_only"));
     }
@@ -93,7 +101,7 @@ public abstract class XAResourceWrapper implements XAResource
 
     public abstract void rollback(Xid xid) throws XAException;
 
-	/**
+    /**
     public Xid[] recover(int flag) throws XAException {
         throw new XAException("This is to be implemented by sub classes");
     }
@@ -103,5 +111,7 @@ public abstract class XAResourceWrapper implements XAResource
     public void rollback(Xid xid) throws XAException{
         throw new XAException("This is to be implemented by sub classes");
     }
-	*/
+    */
+
+    public abstract XAResourceWrapper getInstance();
 }

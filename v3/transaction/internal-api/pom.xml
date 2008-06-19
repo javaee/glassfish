@@ -43,5 +43,13 @@
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish-api.version}</version>
         </dependency>
+
+	<!-- Dependency on StringManager -->
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
     </dependencies>
 </project>

@@ -70,13 +70,6 @@ public class AppTest extends TestCase {
         return new TestSuite(AppTest.class);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp() {
-        assertTrue(true);
-    }
-
     public void setUp() {
         try {
             t = new JavaEETransactionManagerSimplified();
@@ -86,6 +79,15 @@ public class AppTest extends TestCase {
             assert (false);
         }
 
+    }
+
+    /**
+     * Can't test more than null (but no NPE)
+     */
+    public void testXAResourceWrapper() {
+        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper("xxx"));
+        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper(
+            "oracle.jdbc.xa.client.OracleXADataSource"));
     }
 
     public void testBegin() {
