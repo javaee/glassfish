@@ -1885,7 +1885,10 @@ public class StandardWrapper
                 broadcaster.sendNotification(notification);
             }
         } catch( Exception ex ) {
-            log.info("Error registering servlet with jmx " + this);
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO,
+                    "Error registering servlet with jmx " + this, ex);
+            }
         }
 
         if (isJspServlet) {
@@ -1899,8 +1902,11 @@ public class StandardWrapper
                 Registry.getRegistry(null, null)
                     .registerComponent(instance, jspMonitorON, null);
             } catch( Exception ex ) {
-                log.info("Error registering JSP monitoring with jmx " +
-                         instance);
+                if (log.isLoggable(Level.INFO)) {
+                    log.log(Level.INFO,
+                        "Error registering JSP monitoring with jmx " +
+                        instance, ex);
+                }
             }
         }
 
