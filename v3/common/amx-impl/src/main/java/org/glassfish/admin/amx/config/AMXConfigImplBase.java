@@ -523,7 +523,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
         private void
     checkPropertiesSupported(
         final Class<? extends AMXConfig>  intf,
-        final ConfigCreateArgSupport      argSpt )
+        final CreateConfigArgSupport      argSpt )
     {
         // check for illegal use of properties on configs that don't have them
         if ( argSpt.getProperties().keySet().size() != 0 &&
@@ -621,7 +621,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
         //
         // Parse out the arguments
         //
-        final ConfigCreateArgSupport argSpt = new ConfigCreateArgSupport( operationName, args, types );
+        final CreateConfigArgSupport argSpt = new CreateConfigArgSupport( operationName, args, types );
         
         final Method m = getCreateMethod( operationName, types );
         final Class<? extends AMXConfig> returnType = TypeCast.asClass(m.getReturnType());

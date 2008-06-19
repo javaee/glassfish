@@ -49,7 +49,7 @@ import java.util.Set;
 /**
     Gets information about available contained types (interfaces)
  */
-final class ConfigCreateArgSupport
+final class CreateConfigArgSupport
 {
     private final String   mOperationName;
     
@@ -61,7 +61,7 @@ final class ConfigCreateArgSupport
 
     private static void debug( final String s ) { System.out.println(s); }
     
-    public ConfigCreateArgSupport( 
+    public CreateConfigArgSupport( 
         final String operationName,
         final Object[] argsIn,
         String[]	   types )
