@@ -401,9 +401,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      *
      * @param connectionDefinitionClassName The Connection Definition Java bean class for which
      *                                      overrideable properties are required.
-     * @return Map [property, defaultValue]
+     * @return Map<String, Object> String represents property name
+      * and Object is the defaultValue that is a primitive type or String
      */
-    public static Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+    public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
         return ConnectionDefinitionUtils
                 .getConnectionDefinitionPropertiesAndDefaults(
                         connectionDefinitionClassName);
