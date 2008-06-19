@@ -993,7 +993,9 @@ public class WebappClassLoader
             }
             if ((clazz == null) && hasExternalRepositories) {
                 try {
-                    clazz = super.findClass(name);
+                    synchronized(this) {
+                        clazz = super.findClass(name);
+                    }
                 } catch(AccessControlException ace) {
                     throw new ClassNotFoundException(name, ace);
                 } catch (RuntimeException e) {
