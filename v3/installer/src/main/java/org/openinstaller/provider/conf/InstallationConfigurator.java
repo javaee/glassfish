@@ -37,6 +37,7 @@
 package org.openinstaller.provider.conf;
 
 
+import java.io.BufferedOutputStream;
 import org.openinstaller.provider.conf.ResultReport;
 import org.openinstaller.provider.conf.Configurator;
 import org.openinstaller.config.PropertySheet;
@@ -46,7 +47,9 @@ import org.openinstaller.util.ClassUtils;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,7 +96,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
             LOGGER.log(Level.INFO, "Configuring GlassFish");
             configureGlassfish(
                 installDir,
-                aSheet.getProperty("Administration.A_ADMIN_PORT"),
+                "4848",
                 aSheet.getProperty("Administration.A_HTTP_PORT"));
 	    }
 
@@ -104,7 +107,6 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
                 installDir,
                 aSheet.getProperty("Configuration.BOOTSTRAP_UPDATETOOL"),
                 aSheet.getProperty("Configuration.ALLOW_UPDATE_CHECK"),
-                aSheet.getProperty("Configuration.ALLOW_DATA_COLLECTION"),
                 aSheet.getProperty("Configuration.PROXY_HOST"),
                 aSheet.getProperty("Configuration.PROXY_PORT"));
 	    }
@@ -113,7 +115,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
          
      }
   
-     return new ResultReport(ResultReport.ResultStatus.SUCCESS, "Documentation", "Next Steps", null, productError);
+     return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
          
 }
 
@@ -126,7 +128,23 @@ public PropertySheet getCurrentConfiguration() {
 
 public ResultReport unConfigure (final PropertySheet aSheet, final boolean aValidateFlag) {
 
-    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "Documentation", "Next Steps", null, productError);
+     try {
+	if (productName.equals(GLASSFISH_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Unconfiguring GlassFish");
+            unconfigureGlassfish(installDir);
+	}
+        
+        if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Unconfiguring Updatetool");
+            LOGGER.log(Level.INFO, "Installation directory: " + installDir);
+            unconfigureUpdatetool(installDir);
+	}
+     }
+     catch (Exception e) {
+         
+     }
+
+    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
 }
 
 public void handleNotification (final Notification aNotification,
@@ -147,6 +165,12 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
         isWindows=true;
     }
 
+    boolean isMac = false;
+    String osName = System.getProperty("os.name").toLowerCase();
+    if (osName.startsWith("mac os x")) {
+        isMac=true;
+    }
+
     if (!isWindows) {
 
         String CLInames[] = {"asadmin", "stopserv", "startserv"};
@@ -154,7 +178,84 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             Runtime.getRuntime().exec("/bin/chmod a+x " +
                                installDir + "/glassfish/bin/" + CLInames[i]);
 		}
+	Runtime.getRuntime().exec("/bin/chmod a+x " +
+			installDir + "/bin/asadmin");
     }
+
+    //create domain startup/shutdown wrapper scripts used by program
+    //group menu items
+
+    FileWriter wrapperWriter = null;
+    File startWrapperFile = null; 
+    File stopWrapperFile = null; 
+    try {
+        if (isWindows) {
+            startWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-start-domain.bat");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("@echo off\n");
+	    wrapperWriter.write ("REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("REM\n");
+            wrapperWriter.write ("REM Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("REM Use is subject to License Terms\n");
+	    wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("call \"" + installDir + "\\glassfish\\bin\\asadmin\" start-domain domain1\n");
+	    wrapperWriter.write ("pause\n");
+ 	    wrapperWriter.write ("endlocal\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+
+	    stopWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-stop-domain.bat");
+	    wrapperWriter = new FileWriter(stopWrapperFile);
+	    wrapperWriter.write ("@echo off\n");
+	    wrapperWriter.write ("REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("REM\n");
+            wrapperWriter.write ("REM Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("REM Use is subject to License Terms\n");
+	    wrapperWriter.write ("REM\n");
+ 	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("call \"" + installDir + "\\glassfish\\bin\\asadmin\" stop-domain domain1\n");
+ 	    wrapperWriter.write ("pause\n");
+ 	    wrapperWriter.write ("endlocal\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+	}
+	else {
+	    startWrapperFile = new File(installDir + "/glassfish/lib/asadmin-start-domain");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("#\n");
+            wrapperWriter.write ("# Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# Use is subject to License Terms\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("\"" + installDir + "/glassfish/bin/asadmin\" start-domain domain1\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+
+	    stopWrapperFile = new File(installDir + "/glassfish/lib/asadmin-stop-domain");
+	    wrapperWriter = new FileWriter(stopWrapperFile);
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("#\n");
+            wrapperWriter.write ("# Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# Use is subject to License Terms\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("\"" + installDir + "/glassfish/bin/asadmin\" stop-domain domain1\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + stopWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
+	}
+    } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+    }
+      
     
     //create temporary password file for asadmin create-domain
 
@@ -164,8 +265,8 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             pwdFile = File.createTempFile("asadminTmp", null);                        
             pwdFile.deleteOnExit();            
             writer = new FileWriter(pwdFile);            
-            writer.write("AS_ADMIN_ADMINPASSWORD=adminadmin\n");
-            writer.write("AS_ADMIN_PASSWORD=adminadmin\n");
+            writer.write("AS_ADMIN_ADMINPASSWORD=anonymous\n");
+            writer.write("AS_ADMIN_PASSWORD=anonymous\n");
             writer.write("AS_ADMIN_MASTERPASSWORD=changeit\n");
             writer.close();
             writer = null;
@@ -195,15 +296,31 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
                 }                
             }
         }
- 
+    
+    //get JDK directory from java.home property and use it to define asadmin 
+    //execution environment PATH
+    
+    String javaHome = System.getProperty("java.home");
+    LOGGER.log(Level.INFO, "javaHome: " +javaHome);
+
+    String jdkHome = new File(javaHome).getParent();
+    
+    // Mac OS resolves java.home differently, reset jdkHome to java.home
+    if (isMac) {
+        jdkHome = javaHome;
+    }
+
+    LOGGER.log(Level.INFO, "jdkHome: " +jdkHome);
+    
     //construct asadmin command
+    ExecuteCommand asadminExecuteCommand = null;
 
         try {
 
             String asadminCommand;
         
             if (isWindows) {
-                 asadminCommand = installDir + "\\glassfish\\bin\\asadmin.bat";
+                asadminCommand = installDir + "\\glassfish\\bin\\asadmin.bat";
             }
             else {
                 asadminCommand = installDir + "/glassfish/bin/asadmin";
@@ -211,8 +328,20 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 
             String[] asadminCommandArray = { asadminCommand, "create-domain",
                 "--savelogin",
+		"--no-checkports",
                 "--adminport", adminPort,
-                "--user", "admin",
+                "--user", "anonymous",
+                "--passwordfile", pwdFile.getAbsolutePath(),
+                "--instanceport", httpPort,
+                "domain1"};
+
+	    String[] asadminCommandArrayMac = { "java", "-jar",
+		installDir+"/glassfish/modules/admin-cli-10.0-tp-2-SNAPSHOT.jar",
+	        "create-domain",
+                "--savelogin",
+		"--no-checkports",
+                "--adminport", adminPort,
+                "--user", "anonymous",
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "domain1"};
@@ -220,22 +349,62 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             LOGGER.log(Level.INFO, "Creating GlassFish domain");
             LOGGER.log(Level.INFO, "Admin port:" + adminPort);
             LOGGER.log(Level.INFO, "HTTP port:" + httpPort);
-    
-            ExecuteCommand asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+
+	    String existingPath = System.getenv("PATH");
+	    LOGGER.log(Level.INFO, "Existing PATH: " +existingPath);
+            String newPath = jdkHome + File.separator + "bin" +
+		    File.pathSeparator + existingPath; 
+            LOGGER.log(Level.INFO, "New PATH: " +newPath);
+            
+	    if (isMac) {
+		    asadminExecuteCommand = new ExecuteCommand(asadminCommandArrayMac);
+	    }
+	    else {
+                   asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
+	    }
+	    asadminExecuteCommand.putEnvironmentSetting("PATH", newPath);
             asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             asadminExecuteCommand.setCollectOutput(true);
         
             asadminExecuteCommand.execute();
+	    LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput()); 
+            hackAdminKeyfile(installDir);
 
             productError = asadminExecuteCommand.getErrors();
        } catch (Exception e) {
-
+            LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput()); 
             LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
        }
 }
-
+    private void hackAdminKeyfile(String install) { //TODO
+       // Sorry to create this hack probably for the last time -- should go away soon
+       File gd = new File (install, "glassfish");
+       File ddd = new File(gd, "domains");
+       File dd  = new File(ddd, "domain1");
+       File dc  = new File(dd, "config");
+       dc.mkdirs();
+       File akf = new File(dc, "admin-keyfile");
+       BufferedOutputStream bos = null;
+       byte[] line0 = "#Default user: anonymous\n".getBytes();
+       byte[] line1 = "anonymous;{SSHA}jBnM2TF2BglcyR3RtTfEXg0U18nbjwDKCfK9wg==;asadmin".getBytes();
+       try {
+           bos = new BufferedOutputStream(new FileOutputStream(akf));
+           bos.write(line0);
+           bos.write(line1);
+       } catch(IOException ioe) {
+           LOGGER.log(Level.INFO, "Exception while overwriting user in keyfile" + ioe.getMessage());
+       } finally {
+           if (bos != null) {
+               try {
+                   bos.close();
+               } catch(IOException ioe) {
+                   //can't do anything anyway
+               }
+           }
+       }
+    }
 void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
-    String allowDataCollection, String proxyHost, String proxyPort) throws Exception {
+    String proxyHost, String proxyPort) throws Exception {
 
     
     boolean isWindows = false;
@@ -243,6 +412,61 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
         isWindows=true;
     }
 
+    // set execute permissions for UC utilities
+
+    if (!isWindows) {
+
+        String CLInames[] = {"pkg", "updatetool"};
+        for (int i = 0; i < CLInames.length; i++) {
+            Runtime.getRuntime().exec("/bin/chmod a+x " +
+                               installDir + "/bin/" + CLInames[i]);
+	}
+    }
+
+    //create updatetool wrapper scripts used by program
+    //group menu items
+
+    FileWriter wrapperWriter = null;
+    File startWrapperFile = null; 
+    try {
+        if (isWindows) {
+            startWrapperFile = new File(installDir + "\\updatetool\\lib\\updatetool-start.bat");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("@echo off\n");
+	    wrapperWriter.write ("REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("REM\n");
+            wrapperWriter.write ("REM Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("REM Use is subject to License Terms\n");
+	    wrapperWriter.write ("REM\n");
+	    wrapperWriter.write ("setlocal\n");
+	    wrapperWriter.write ("cd \"" + installDir + "\\updatetool\\bin\"\n");
+	    wrapperWriter.write ("call updatetool.bat\n");
+ 	    wrapperWriter.write ("endlocal\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+	}
+	else {
+	    startWrapperFile = new File(installDir + "/updatetool/lib/updatetool-start");
+	    wrapperWriter = new FileWriter(startWrapperFile);
+	    wrapperWriter.write ("#!/bin/sh\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+	    wrapperWriter.write ("#\n");
+            wrapperWriter.write ("# Copyright 2008 Sun Microsystems, Inc. All rights reserved.\n");
+            wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("# Use is subject to License Terms\n");
+	    wrapperWriter.write ("#\n");
+	    wrapperWriter.write ("cd \"" + installDir + "/updatetool/bin\"\n");
+	    wrapperWriter.write ("./updatetool\n");
+            wrapperWriter.close();
+            wrapperWriter = null;
+	    
+	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
+	}
+    } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+    }
 
     // check whether to bootstrap at all
 
@@ -272,13 +496,14 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
         FileWriter writer = null;
         File propertiesFile = null;        
         try {            
-            propertiesFile = File.createTempFile("bootstrapTmp", null);                                  propertiesFile.deleteOnExit();            
+            propertiesFile = File.createTempFile("bootstrapTmp", null);  
+	    propertiesFile.deleteOnExit();            
             writer = new FileWriter(propertiesFile); 
             writer.write("image.path=" + installDirForward + "\n");
             writer.write("install.pkg=true\n");
             writer.write("install.updatetool=true\n");
             writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
-            writer.write("optin.usage.reporting=" + allowDataCollection + "\n");
+            writer.write("optin.usage.reporting=" + allowUpdateCheck + "\n");
             if (proxyURL != null) {
                 writer.write("proxy.URL=" + proxyURL + "\n");
             }
@@ -308,7 +533,7 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
             }
         }
  
-    //construct the command command
+    //construct the bootstrap command
 
         try {
 
@@ -342,6 +567,152 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
 
             LOGGER.log(Level.INFO, "Exception while boostrapping updatetool: " + e.getMessage()); 
        }
+
+    //register notifier if appropriate option is set
+    
+    if (allowUpdateCheck.equalsIgnoreCase("true")) {
+        try {
+
+            String configCommand;
+        
+            if (isWindows) {
+                 configCommand = installDir + "\\updatetool\\bin\\updatetoolconfig.bat";
+            }
+            else {
+                configCommand = installDir + "/updatetool/bin/updatetoolconfig";
+            }
+
+            String[] configCommandArray = { configCommand, 
+                "--register" };
+            
+            LOGGER.log(Level.INFO, "Registering notifier process");
+            
+            ExecuteCommand configExecuteCommand = new ExecuteCommand(configCommandArray);
+            configExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+            configExecuteCommand.setCollectOutput(true);
+        
+            configExecuteCommand.execute();
+
+            productError = productError +configExecuteCommand.getErrors();
+       } catch (Exception e) {
+
+            LOGGER.log(Level.INFO, "Exception while registering notifier: " + e.getMessage()); 
+       }
+    }    
+
 }
 
+void unconfigureUpdatetool(String installDir) throws Exception {
+
+    boolean isWindows = false;
+    if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        isWindows=true;
+    }
+    try {
+
+            String configCommand;
+        
+            if (isWindows) {
+                 configCommand = installDir + "\\updatetool\\bin\\updatetoolconfig.bat";
+            }
+            else {
+                configCommand = installDir + "/updatetool/bin/updatetoolconfig";
+            }
+
+            String[] configCommandArray = { configCommand, 
+                "--unregister" };
+            
+            LOGGER.log(Level.INFO, "Unregistering notifier process");
+            
+            ExecuteCommand configExecuteCommand = new ExecuteCommand(configCommandArray);
+            configExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+            configExecuteCommand.setCollectOutput(true);
+        
+            configExecuteCommand.execute();
+
+            productError = productError +configExecuteCommand.getErrors();
+       } catch (Exception e) {
+
+            LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage()); 
+       }
+}
+
+void unconfigureGlassfish(String installDir) throws Exception {
+
+    boolean isWindows = false;
+    if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        isWindows=true;
+    }	
+    try {
+	File domainsDir = null;
+	File startWrapperFile = null;
+	File stopWrapperFile = null;
+        if (isWindows) {
+	    domainsDir = new File (installDir + "\\glassfish\\domains");
+	    startWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-start-domain.bat");
+	    stopWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-stop-domain.bat");
+	}
+	else {
+            domainsDir = new File (installDir + "/glassfish/domains");
+	    startWrapperFile = new File(installDir + "/glassfish/lib/asadmin-start-domain");
+	    stopWrapperFile = new File(installDir + "/glassfish/lib/asadmin-stop-domain");
+        }
+
+	if (startWrapperFile.exists()) {
+            startWrapperFile.delete();
+        }
+	if (stopWrapperFile.exists()) {
+            stopWrapperFile.delete();
+	}
+        if (domainsDir.exists()) {
+            deleteDirectory(domainsDir);
+	}
+
+    }
+    catch (Exception e) {
+
+        LOGGER.log(Level.INFO, "Exception while removing created files: " + e.getMessage()); 
+    }
+
+}
+
+static public void deleteDirectory(File objName) throws Exception {
+	File filesList[] = objName.listFiles();
+	
+	String osName = System.getProperty("os.name");
+	boolean isWindows = false;
+        if (osName.indexOf("Windows") == -1) {
+            isWindows = false;
+        }
+        else {
+            isWindows = true;
+        }    
+        
+        boolean notSymlink = true;
+        
+	if (filesList != null)	{
+		for (int i=0;i<filesList.length;i++) {
+		if (filesList[i].isDirectory()) {
+                    
+                   if (isWindows)  {
+                       notSymlink = filesList[i].getAbsolutePath().equalsIgnoreCase(filesList[i].getCanonicalPath());
+                   }
+                   else { 
+                       notSymlink = filesList[i].getAbsolutePath().equals(filesList[i].getCanonicalPath());
+                   }
+                   if (notSymlink) {
+		        deleteDirectory(filesList[i]);
+                   }
+                   else {
+		        filesList[i].delete();
+                   }
+
+		}
+		else {
+		    filesList[i].delete();
+		}
+		}
+	}
+	objName.delete();
+	}
 }

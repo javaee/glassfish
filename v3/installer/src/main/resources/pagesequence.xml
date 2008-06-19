@@ -48,6 +48,13 @@
     <page name="updatetool"/>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
+    <page name="RegistrationOptions"/>
+    <page name="SOAccountCreation">
+	<when><![CDATA[ CREATE_NEWACCT ]]></when>
+    </page>
+    <page name="RegistrationInfo">
+	<when><![CDATA[ CREATE_NEWACCT || USE_EXISTINGACCT ]]></when>
+    </page> 
     <page name="Summary"/>
   </flow>
   <flow name="REMOVE">

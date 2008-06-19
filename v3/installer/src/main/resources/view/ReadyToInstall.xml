@@ -109,29 +109,29 @@
                for (Operation op : theOperations) {
                  if (op.getOperation() == Operation.OPTYPE.UNREGISTER @and op.getSystemProduct() != null) {
                    theID = op.getSystemProduct().getName() + " " + op.getSystemProduct().getDescription().toString();
-                   theDesc = op.getSystemProduct().getName() + " " + op.getSystemProduct().getVersion().toString() ;
+                   theDesc = op.getSystemProduct().getName();
                    if (! theSeenSet.contains(theID)) {
                      theProductList = theProductList + "<li>" + Msg.get("uninstall", new Object[]{theDesc});
                      theSeenSet.add(theID);
                    }
                  } else if (op.getOperation() == Operation.OPTYPE.REGISTER @and op.getMediaPackage() == null @and op.getMediaProduct() != null) {
                    theID = op.getMediaProduct().getID();
-                   theDesc = op.getMediaProduct().getDescription() + " " + op.getMediaProduct().getVersion();
+                   theDesc = op.getMediaProduct().getDescription();
                    if (! theSeenSet.contains(theID)) {
                      theProductList = theProductList + "<li>" + Msg.get("install", new Object[]{theDesc});
                      theSeenSet.add(theID);
                    }
                  } else if (op.getOperation() == Operation.OPTYPE.CONFIGURE @and op.getMediaProduct() != null) {
                    theID = op.getMediaProduct().getID();
-                   theDesc = op.getMediaProduct().getDescription() + " " + op.getMediaProduct().getVersion();
+                   theDesc = op.getMediaProduct().getDescription();
                    theProductList = theProductList + "<li>" + Msg.get("configure", new Object[]{theDesc});
                  } else if (op.getOperation() == Operation.OPTYPE.UNCONFIGURE @and op.getSystemProduct() != null) {
                    theID = op.getSystemProduct().getName();
-                   theDesc = op.getSystemProduct().getName() + " " + op.getSystemProduct().getVersion().toString();
+                   theDesc = op.getSystemProduct().getName();
                    theProductList = theProductList + "<li>" + Msg.get("unconfigure", new Object[]{theDesc});
                  } else if (op.getOperation() == Operation.OPTYPE.REPAIR @and op.getMediaProduct() != null @and op.getSystemProduct() != null) {
                    theID = op.getMediaProduct().getID();
-                   theDesc = op.getMediaProduct().getDescription() + " " + op.getMediaProduct().getVersion();
+                   theDesc = op.getMediaProduct().getDescription();
                    if (! theSeenSet.contains(theID)) {
                      theProductList = theProductList + "<li>" + Msg.get("repair", new Object[]{theDesc});
                      theSeenSet.add(theID);

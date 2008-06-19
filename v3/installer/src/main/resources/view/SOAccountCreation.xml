@@ -96,13 +96,13 @@
 	  </apt:visual>
         </apt:property>
 
-	<!--apt:property apt:name="COMPANYNAME" apt:label="$COMPANYNAME"
+	<apt:property apt:name="COMPANYNAME" apt:label="$COMPANYNAME"
                       apt:dataPath="accountinfo.COMPANYNAME"
-                      apt:type="xs:string"->
+                      apt:type="xs:string">
 	  <apt:visual>
 	    <apt:textField apt:toolTip="$COMPANYNAME"/>
 	  </apt:visual>
-        </apt:property-->
+        </apt:property>
 
         <apt:property apt:name="COUNTRY" apt:label="$COUNTRY"
                       apt:dataPath="accountinfo.COUNTRY"

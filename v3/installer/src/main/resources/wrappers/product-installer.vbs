@@ -49,7 +49,7 @@ ENGINE_DIR=MYDIR+"install"
 LOGDIR=gFileSystem.GetSpecialFolder(2)
 
 ' this must be changed to your products java installation directory
-JAVA_HOME="C:\Program Files\Java\jdk1.6.0_05"
+JAVA_HOME= wShell.ExpandEnvironmentStrings("%JAVA_HOME%")
 
 JAVA_OPTIONS="-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator"
 
@@ -104,7 +104,7 @@ if INSTALLABLES <> "" Then
     ENGINE_OPS=ENGINE_OPS+" -i " + chr(34) + INSTALLABLES + chr(34)
 end if
 
-wscript.echo "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
+'wscript.echo "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
 
 wShell.exec "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
 
@@ -252,7 +252,7 @@ end select
 Loop
 
 
-WScript.Echo "Welcome to GlassFish V3 installation based on openInstaller.  Press OK to begin."
+'WScript.Echo "Welcome to GlassFish V3 installation based on openInstaller.  Press OK to begin."
 
 ' overwrite check if user specify javahome to use
 if JAVA_HOME = "" Then

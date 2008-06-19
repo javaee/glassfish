@@ -117,6 +117,13 @@ checkForNullValues(thisProperty);
         </actions>
         </prop>
 
+       <prop oor:name="COMPANYNAME" oor:type="xs:string" oor:transient="true" oor:nillable="false">
+          <value/>
+          <info>
+            <desc xml:lang="en-US">Company Name</desc>
+          </info>
+        </prop>
+
         <prop oor:name="COUNTRY" oor:type="xs:string" oor:transient="true" oor:nillable="false">
           <value/>
           <info>

@@ -37,7 +37,7 @@
  
 
 # Sample fake product.
-PRODUCTNAME="GlassFish V3"
+PRODUCTNAME="glassfish"
 ORIG_ARGS=$@
 
 INST_DIR=/tmp/.launcher.$$
@@ -54,7 +54,6 @@ CPIO=/bin/cpio
 FIND=/usr/bin/find
 ECHO=/bin/echo
 EGREP=/bin/egrep
-GETTEXT=/usr/bin/gettext
 ID=/usr/bin/id
 MKDIR=/bin/mkdir
 _PWD=/bin/pwd
@@ -62,7 +61,7 @@ RM=/bin/rm
 SED=/bin/sed
 SU=/bin/su
 TOUCH=/bin/touch
-UNAME=/bin/uname
+UNAME=uname
 XAUTH=/openwin/bin/xauth,/usr/X11R6/bin/xauth
 
 TEXTDOMAINDIR="@LOCALEDIR@"
@@ -142,10 +141,10 @@ perform() {
 
 ENGINE_OPS="-m file://${MYDIR}/metadata/"
 ENGINE_OPS="${ENGINE_OPS} -a file://${MYDIR}/install.properties"
-ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product"
+ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product/"
 ENGINE_OPS="${ENGINE_OPS} -p Default-Product-ID=${PRODUCTNAME}"
 ENGINE_OPS="${ENGINE_OPS} -p Pkg-Format=zip"
-ENGINE_OPS="${ENGINE_OPS} -C install-configurator.jar"
+ENGINE_OPS="${ENGINE_OPS} -C ${MYDIR}/commons-codec-1.3.jar:${MYDIR}/registration-api.jar:${MYDIR}/registration-impl.jar:${MYDIR}/sysnet-registration.jar"
 
 
 # add ubi-enabled packaging tool location to environment so that it
@@ -207,7 +206,7 @@ _pwd=`pwd`
 
 if [ ${_pwd} != "/" ] ; then
     cd /
-    echo `${GETTEXT} "Cleaning up temporary environment."`
+    echo "Cleaning up temporary environment."
     ${RM} -rf ${INST_DIR}
 fi
 
@@ -231,7 +230,7 @@ getBundledJvm() {
            JAVAMEDIAPATH="usr/jdk/instances/@pp.jre.pkg.basedirname@/"
            ;;
          *)
-           echo `${GETTEXT} "Unknown platform, exiting"`
+           echo  "Unknown platform, exiting"
 	   exit 1
            ;;
        esac
@@ -260,7 +259,7 @@ loginAsRoot() {
 USERID=`${ID} | ${CUT} -d'(' -f1 | ${CUT} -d'=' -f2`
 if [ "$USERID" != "0" ]; then
     ${ECHO}
-    echo `${GETTEXT} "To use this installer, you will need to be the system's root user. \n"`
+    echo "To use this installer, you will need to be the system's root user. \n"
     if [ -n "$DISPLAY" ]; then
       tmp_file="/tmp/installer_auth_$USER_$DISPLAY"
       touch $tmp_file
@@ -270,14 +269,14 @@ if [ "$USERID" != "0" ]; then
     status=1;
     retry=3;
     while [ $status = 1 -a ! $retry = 0 ]; do
-      echo `${GETTEXT} "Please enter this system's root user password \n"`
+      echo "Please enter this system's root user password \n"
       ${SU} root -c "${0} ${ORIG_ARGS}"
       status=$?
       retry=`expr $retry - 1`
       ${ECHO} " "
     done
     if [ "$retry" = 0 ]; then
-      echo `${GETTEXT} "Administrative privilege is req'd to perform this operation. Exiting.\n"`
+      echo "Administrative privilege is req'd to perform this operation. Exiting.\n"
       exit 1
     fi
     exit
@@ -292,8 +291,8 @@ useBundledJvm() {
   getBundledJvm
   JAVA_HOME=${BUNDLED_JAVA_JRE_LOC}/${JAVAMEDIAPATH}
   if [ ! -d ${JAVA_HOME} ] ; then
-       echo `${GETTEXT} "${JAVA_HOME} must be the root directory of a valid JVM installation"`
-       echo `${GETTEXT} "Please provide JAVA_HOME as argument with -j option and proceed."`
+       echo  "${JAVA_HOME} must be the root directory of a valid JVM installation"
+       echo  "Please provide JAVA_HOME as argument with -j option and proceed."
        exit 1
   fi
 }
@@ -313,7 +312,7 @@ OS2=`${UNAME} -r`
 if [ "${OS1}" = SunOS ] ; then
     case "${OS2}" in
       2.* | 5.7 | 5.8)
-        echo `${GETTEXT} "openInstaller is only supported on Solaris 9 or later"`
+        echo  "openInstaller is only supported on Solaris 9 or later"
         exit 1
         ;;
       5.9)
@@ -338,7 +337,7 @@ while getopts "${OPTSTRING}" opt ; do
 	R) ALTROOT=${OPTARG}
 
 	    if [ ! -d ${ALTROOT} -o ! -r ${ALTROOT} ] ; then
-		echo `${GETTEXT} "${ALTROOT} is not a valid alternate root"`
+		echo  "${ALTROOT} is not a valid alternate root"
 		exit 1
 	    fi
 	;;
@@ -346,7 +345,7 @@ while getopts "${OPTSTRING}" opt ; do
 	l) LOGDIR=${OPTARG}
 
 	    if [ ! -d ${LOGDIR} -o ! -w ${LOGDIR} ] ; then
-		echo `${GETTEXT} "${LOGDIR} is not a directory or is not writable"`
+		echo  "${LOGDIR} is not a directory or is not writable"
 		exit 1
 	    fi
 	;;
@@ -362,7 +361,7 @@ while getopts "${OPTSTRING}" opt ; do
 	j) JAVA_HOME=${OPTARG}
 
 	    if [ ! -d ${JAVA_HOME} -o ! -r ${JAVA_HOME} ] ; then
-		echo `${GETTEXT} "${JAVA_HOME} must be the root directory of a valid JVM installation"`
+		echo  "${JAVA_HOME} must be the root directory of a valid JVM installation"
 		exit 1
 	    fi
 	;;
@@ -377,7 +376,7 @@ while getopts "${OPTSTRING}" opt ; do
 done
 
 ${ECHO}
-echo `${GETTEXT} "Welcome to openInstaller Sample Product setup"`
+echo "Welcome to GlassFish V3 installer"
 ${ECHO}
 
 # check user for access privileges
@@ -387,14 +386,14 @@ trap 'cleanup; exit' 1 2 13 15
 
 # overwrite check if user specify javahome to use
 if [ -z "$JAVA_HOME" ]; then
-    echo `${GETTEXT} "Creating temporary environment..."`
+    echo "Creating temporary environment..."
     useBundledJvm
 else
-    echo `${GETTEXT} "Using the user defined JAVA_HOME : ${JAVA_HOME}"`
+    echo  "Using the user defined JAVA_HOME : ${JAVA_HOME}"
 
 fi
 
-echo `${GETTEXT} "Entering setup..."`
+echo "Entering setup..."
 perform
 cleanup
 exit $instCode
