@@ -83,6 +83,15 @@ public class AppTest extends TestCase {
 
     }
 
+    /**
+     * Can't test more than null (but no NPE)
+     */
+    public void testXAResourceWrapper() {
+        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper("xxx"));
+        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper(
+            "oracle.jdbc.xa.client.OracleXADataSource"));
+    }
+
     public void testBegin() {
         System.out.println("**Testing TM begin ===>");
         try {

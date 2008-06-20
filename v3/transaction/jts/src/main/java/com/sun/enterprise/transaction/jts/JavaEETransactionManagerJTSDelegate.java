@@ -339,4 +339,8 @@ public class JavaEETransactionManagerJTSDelegate
             (sm.getString("enterprise_distributedtx.transaction_notactive"));
         }
     }
+
+    public boolean supportsRecovery() {
+        return true;
+    }
 }

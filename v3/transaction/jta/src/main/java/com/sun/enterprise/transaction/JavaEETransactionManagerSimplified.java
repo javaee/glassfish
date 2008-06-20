@@ -298,7 +298,7 @@ public class JavaEETransactionManagerSimplified
            if ( tx.isLocalTx() ) {
                d.enlistLAOResource(tx, tx.getNonXAResource());
 
-/** XXX MOVE TO XA DELEGATE XXX **
+/** XXX TO BE MOVED TO XA DELEGATE XXX **
                getDelegate().startJTSTx(tx);
 
                //If transaction conatains a NonXA and no LAO, convert the existing
@@ -309,7 +309,7 @@ public class JavaEETransactionManagerSimplified
                        // XXX super.enlistLAOResource(tx, tx.getNonXAResource());
                    }
                }
-** XXX MOVE TO XA DELEGATE XXX **/
+** XXX TO BE MOVED TO XA DELEGATE XXX **/
            }
            return enlistXAResource(tx, h);
        } else { // non-XA resource
@@ -336,14 +336,14 @@ public class JavaEETransactionManagerSimplified
                 return true;
             } else {
                 return d.enlistDistributedNonXAResource(tx, h);
-/** XXX MOVE TO XA DELEGATE? XXX
+/** XXX TO BE MOVED TO XA DELEGATE? XXX
                 if(useLAO) {
                     return super.enlistResource(tx, h);
                 } else {
                     throw new IllegalStateException(
                             sm.getString("enterprise_distributedtx.nonxa_usein_jts"));
                 }
-** XXX MOVE TO XA DELEGATE? XXX **/
+** XXX TO BE MOVED TO XA DELEGATE? XXX **/
             }
         }
     }
@@ -947,7 +947,7 @@ public class JavaEETransactionManagerSimplified
 
     public Transaction suspend() throws SystemException {
         return getDelegate().suspend(transactions.get());
-/** XXX MOVE TO DELEGATES XXX **
+/** XXX TO BE MOVED TO DELEGATES XXX **
         if ( tx != null ) {
             if ( !tx.isLocalTx() )
                 super.suspend();
@@ -958,7 +958,7 @@ public class JavaEETransactionManagerSimplified
         else {
             return super.suspend(); // probably a JTS imported tx
         }
-** XXX MOVE TO DELEGATES XXX **/
+** XXX TO BE MOVED TO DELEGATES XXX **/
     }
 
     public void resume(Transaction tobj)
@@ -1011,9 +1011,12 @@ public class JavaEETransactionManagerSimplified
     }
 
     public XAResourceWrapper getXAResourceWrapper(String clName) {
-        XAResourceWrapper rc = xaresourcewrappers.get(clName);
-        if (rc != null)
-            return rc.getInstance();
+        if (getDelegate().supportsRecovery()) {
+            XAResourceWrapper rc = xaresourcewrappers.get(clName);
+
+            if (rc != null)
+                return rc.getInstance();
+        }
 
         return null;
     }
@@ -1357,9 +1360,9 @@ public class JavaEETransactionManagerSimplified
     private void remove(Transaction tx) {
         getDelegate().removeTransaction(tx);
 
-/** XXX MOVE TO DELEGATES XXX
+/** XXX TO BE MOVED TO XA DELEGATE XXX
         javaEETM.globalTransactions.remove(jtsTx);
-** XXX MOVE TO DELEGATES XXX **/
+** XXX TO BE MOVED TO XA DELEGATE XXX **/
     }
 
     /**

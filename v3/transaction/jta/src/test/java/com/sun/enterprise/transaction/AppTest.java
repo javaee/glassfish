@@ -88,6 +88,7 @@ public class AppTest extends TestCase {
         assertNull(((JavaEETransactionManager)t).getXAResourceWrapper("xxx"));
         assertNull(((JavaEETransactionManager)t).getXAResourceWrapper(
             "oracle.jdbc.xa.client.OracleXADataSource"));
+        assertFalse(((JavaEETransactionManagerSimplified)t).getDelegate().supportsRecovery());
     }
 
     public void testBegin() {

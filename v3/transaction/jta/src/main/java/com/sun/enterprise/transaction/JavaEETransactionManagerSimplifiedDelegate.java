@@ -160,4 +160,8 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public void recreate(Xid xid, long timeout) throws WorkException {
         throw new UnsupportedOperationException("recreate");
     }
+
+    public boolean supportsRecovery() {
+        return false;
+    }
 }

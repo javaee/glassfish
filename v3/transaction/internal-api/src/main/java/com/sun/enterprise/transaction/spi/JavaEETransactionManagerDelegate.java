@@ -207,4 +207,12 @@ public interface JavaEETransactionManagerDelegate {
      * this functionality.
      */
     public void recreate(Xid xid, long timeout) throws WorkException;
+
+    /**
+     * Tells the caller if this delegate supports transaction recovery.
+     *
+     *
+     * @returns <code>true</code> if this delegate supports transaction recovery.
+     */
+    public boolean supportsRecovery();
 }
