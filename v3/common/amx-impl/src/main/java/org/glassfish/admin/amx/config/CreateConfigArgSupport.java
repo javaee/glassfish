@@ -68,7 +68,6 @@ final class CreateConfigArgSupport
     {
         mOperationName = operationName;
         
-        debug( "1" );
         /*
           Determine if this create has an optional Map as the last argument; could be of the form:
                 createFooConfig(p1, p2, ..., Map optional)
@@ -95,7 +94,7 @@ final class CreateConfigArgSupport
         }
         else
         {
-            mArgs = argsIn;
+            mArgs = argsIn == null ? new Object[0] : argsIn;
         }
         
         final Map<String,Object> attrs = new HashMap<String,Object>();

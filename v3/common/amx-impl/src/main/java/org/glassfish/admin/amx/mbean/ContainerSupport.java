@@ -137,6 +137,8 @@ public final class ContainerSupport
 		public Set<ObjectName>
 	getContaineeObjectNameSet(final Set<String>		j2eeTypes )
 	{
+        if ( j2eeTypes == null ) throw new IllegalArgumentException( "j2eeTypes cannot be null" );
+        
         final Set<ObjectName>   result = new HashSet<ObjectName>();
         
         for( final String j2eeType : j2eeTypes )

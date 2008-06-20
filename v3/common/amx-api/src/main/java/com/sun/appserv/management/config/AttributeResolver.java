@@ -35,23 +35,24 @@
  */
 package com.sun.appserv.management.config;
 
-
-import  com.sun.appserv.management.helper.TemplateResolverHelper;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
 
 /**
-	Interface implemented by MBeans which can resolve a template
-	String to a value.  Template strings are of the form ${...} and
-	are returned as the values of certain Attributes.  This facility is intended for use
-    <em>only</em> with {@link AMXConfig} MBeans.
+	Interface implemented by MBeans which can resolve a variable to a value.
+    Variable attributes are strings  of the form ${...} and
+	are returned as the values of certain Attributes.  This interface is intended for use
+    only with {@link AMXConfig} MBeans.
     <p>
-    The class {@link TemplateResolverHelper} should be used
-    in most cases for dealing with template values.
-    @see com.sun.apperv.management.helper.TemplateResolverHelper
+    The class {@link com.sun.appserv.management.helper.AttributeResolverHelper} offers
+    convenience methods for resolving attributes.
+    @see com.sun.apperv.management.helper.AttributeResolverHelper
  */
-public interface TemplateResolver
+public interface AttributeResolver
 {
 	/**
-        Resolve a value to a literal.
+        Resolve an attribute <em>value</em> to a literal.  The value should have been
+        previously obtained.
         <p>
         If the String is not a template string, return the string unchanged.
         <p>
@@ -70,7 +71,13 @@ public interface TemplateResolver
 		@param template	any String
 		@return resolved value
 	 */
-	public String	resolveTemplateString( String template );
+	public String	resolveAttributeValue( String template );
+    
+    /** calls getAttribute(), then returns the resolved value */
+	public String	resolveAttribute( String attributeName ) throws AttributeNotFoundException;
+    
+    /** calls getAttributes(), then returns all resolved values */
+	public AttributeList	resolveAttributes( String[] attributeName );
 }
 
 

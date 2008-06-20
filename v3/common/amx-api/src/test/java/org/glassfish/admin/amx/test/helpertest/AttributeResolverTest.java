@@ -35,8 +35,8 @@
  */
 package org.glassfish.admin.amx.test.helpertest;
 
-import com.sun.appserv.management.config.TemplateResolver;
-import com.sun.appserv.management.helper.TemplateResolverHelper;
+import com.sun.appserv.management.config.AttributeResolver;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
 import com.sun.appserv.management.util.misc.MapUtil;
 
 import java.util.Map;
@@ -46,24 +46,26 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public final class TemplateResolverHelperTest
+import javax.management.AttributeList;
+
+public final class AttributeResolverTest
         extends junit.framework.TestCase
 {
     private final Map<String,String>     mPairings;
     private final MyResolver             mResolver;
-    private final TemplateResolverHelper mHelper;
+    private final AttributeResolverHelper mHelper;
 
-    public TemplateResolverHelperTest()
+    public AttributeResolverTest()
     {
         mPairings = createPairings();
         mResolver = new MyResolver( mPairings );
-        mHelper = new TemplateResolverHelper( mResolver );
+        mHelper = new AttributeResolverHelper( mResolver );
     }
     
     /**
       Mock object for unit test.
      */
-    private static final class MyResolver implements TemplateResolver
+    private static final class MyResolver implements AttributeResolver
     {
         public final Map<String,String> mPairings;
         
@@ -71,13 +73,24 @@ public final class TemplateResolverHelperTest
         {
             mPairings = pairings;
         }
-        public String resolveTemplateString( final String t )
+        public String resolveAttributeValue( final String t )
         {
-            if ( ! TemplateResolverHelper.isTemplateString(t) ) return t;
+            if ( ! AttributeResolverHelper.needsResolving(t) ) return t;
             
             final String key = t.trim();
             return mPairings.containsKey(key ) ? mPairings.get( key ) : null;
         }
+        
+        public String resolveAttribute( final String attrName )
+        {
+            return null;
+        }
+        
+        public AttributeList resolveAttributes( final String[] attrNames )
+        {
+            return null;
+        }
+
     }
     
     

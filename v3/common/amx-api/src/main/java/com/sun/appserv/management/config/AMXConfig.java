@@ -47,7 +47,7 @@ import com.sun.appserv.management.base.AMX;
 	A Config  must issue {@link javax.management.AttributeChangeNotification} when
 	changes are made to the configuration.
  */
-public interface AMXConfig extends AMX, TemplateResolver
+public interface AMXConfig extends AMX, AttributeResolver
 {
 	/**
 		The type of the Notification emitted when a config element

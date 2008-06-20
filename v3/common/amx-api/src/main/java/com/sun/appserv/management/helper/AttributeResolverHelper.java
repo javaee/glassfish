@@ -35,28 +35,38 @@
  */
 package com.sun.appserv.management.helper;
 
-import com.sun.appserv.management.config.TemplateResolver;
+import com.sun.appserv.management.config.AttributeResolver;
 
 /**
-	Helper to resolve template configuration values eg ${com.sun.aas.installRoot}.  Values
-    can be resolved into String, boolean or int.
+	Helper to resolve attribute configuration values eg ${com.sun.aas.installRoot} once they have
+    already been obtained in "raw" form.  If the goal is to fetch the attribute values in
+    already-resolved form, do so directly via @{link AttributeResolver#resolveAttribute}.
+    <p>
+    Values can be resolved into String, boolean or int.  
     <p>
     Example usage:</b>
     <pre>
-    HTTPListenerConfig l = ...;
-    TemplateResolverHelper h = new TemplateResolverHelper( l );
+    HTTPListenerConfig l = ...; // or any AMXConfig sub-interface
+    AttributeResolverHelper h = new AttributeResolverHelper( l );
     int port = h.resolveInt( l.getPort() );
     </pre>
-    @see com.sun.appserv.management.config.TemplateResolver
+    Alternately, the static method form can be used:<br>
+    <pre>
+    HTTPListenerConfig l = ...; // or any AMXConfig sub-interface
+    int port = AttributeResolverHelper.resolveInt( l, value );
+    </pre>
+    The value can also be pre-resolved by calling {@link AttributeResolver#resolveAttribute}
+    @see com.sun.appserv.management.config.AttributeResolver
  */
-public class TemplateResolverHelper
+public class AttributeResolverHelper
 {
-    private final TemplateResolver mResolver;
+    private final AttributeResolver mResolver;
     
     /**
-        Resolver will be any AMXConfig, but could be another implementation if desired.
+        An AttributeResolver will usually be an {@link com.sun.appserv.management.config.AMXConfig},
+        but could be another implementation if desired.
      */
-    public TemplateResolverHelper( final TemplateResolver resolver )
+    public AttributeResolverHelper( final AttributeResolver resolver )
     {
         mResolver = resolver;
     }
@@ -65,13 +75,23 @@ public class TemplateResolverHelper
         Return true if the string is a template string of the for ${...}
      */
         public static boolean
-    isTemplateString( final String s )
+    needsResolving( final String value )
     {
-        if ( s == null ) return false;
+        if ( value == null ) return false;
         
-        final String temp = s.trim();
+        final String temp = value.trim();
         
         return temp.startsWith( "${" ) && temp.endsWith( "}" );
+    }
+    
+    /**
+        Extract the variable name.
+     */
+        public static String
+    extract( final String value )
+    {
+        // 2 is length of "${" and 1 is for the "}"
+        return needsResolving(value) ? value.trim().substring(2, value.length() - 1) : value;
     }
     
     /**
@@ -87,18 +107,18 @@ public class TemplateResolverHelper
         Resolve the String using the specified resolver.
      */
         public static String
-    resolve( final TemplateResolver resolver, final String in )
+    resolve( final AttributeResolver resolver, final String value )
     {
-        return isTemplateString(in) ? resolver.resolveTemplateString( in ) : in;
+        return needsResolving(value) ? resolver.resolveAttributeValue(value) : value;
     }
     
     /**
         Resolve the String into a boolean value using the target resolver (MBean).
      */
         public boolean
-    resolveBoolean(final String templateString )
+    resolveBoolean(final String value )
     {   
-        return resolveBoolean( mResolver, templateString );
+        return resolveBoolean( mResolver, value );
     }
     
     /**
@@ -106,10 +126,10 @@ public class TemplateResolverHelper
      */
         public static boolean
     resolveBoolean(
-        final TemplateResolver resolver,
-        final String           templateString )
+        final AttributeResolver resolver,
+        final String           value )
     {
-        final String resolved = resolve( resolver, templateString );
+        final String resolved = resolve( resolver, value );
         
         return Boolean.parseBoolean( resolved );
     }
@@ -118,9 +138,9 @@ public class TemplateResolverHelper
         Resolve the String into an int value using the target resolver (MBean).
      */
         public int
-    resolveInt(final String templateString )
+    resolveInt(final String value )
     {   
-        return resolveInt( mResolver, templateString );
+        return resolveInt( mResolver, value );
     }
     
     /**
@@ -128,10 +148,10 @@ public class TemplateResolverHelper
      */
         public static int
     resolveInt(
-        final TemplateResolver resolver,
-        final String           templateString )
+        final AttributeResolver resolver,
+        final String           value )
     {
-        final String resolved = resolve( resolver, templateString );
+        final String resolved = resolve( resolver, value );
         
         return Integer.parseInt( resolved );
     }

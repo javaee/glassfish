@@ -41,9 +41,10 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.helper.RefHelper;
-import com.sun.appserv.management.helper.TemplateResolverHelper;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.*;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
+
 import org.glassfish.admin.amx.dotted.DottedName;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.ContainerSupport;
@@ -52,7 +53,12 @@ import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 import com.sun.appserv.management.util.jmx.UnregistrationListener;
 import org.glassfish.admin.amx.util.Issues;
-import org.jvnet.hk2.config.*;
+
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.WriteableView;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import javax.management.*;
 import java.lang.reflect.InvocationTargetException;
@@ -301,16 +307,21 @@ cdebug( "asAMXAttributeName: no match: " + name );
     }
     
     /**
-        Resolve a template String.  See {@link TemplateResolver} for details.
+        Resolve a template String.  See {@link AttributeResolver} for details.
      */
         public String
-    resolveTemplateString( final String varString )
+    resolveAttributeValue( final String varString )
     {
+        if ( ! AttributeResolverHelper.needsResolving(varString) )
+        {
+            return varString;
+        }
+        
         String result = null;
-        final String temp = varString.trim();
+        final String varName = AttributeResolverHelper.extract(varString);
         
         // first look for a system property
-        final Object value = System.getProperty( temp );
+        final Object value = System.getProperty( varName );
         if ( value != null )
         {
             result = "" + value;
@@ -329,7 +340,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
                     // might not allow some characters that might be allowed in the name field
                     for( final SystemPropertyConfig prop : props.values() )
                     {
-                        if ( prop.getName().equals( temp ) )
+                        if ( prop.getName().equals( varName ) )
                         {
                             result = prop.getValue();
                             break;
@@ -341,6 +352,36 @@ cdebug( "asAMXAttributeName: no match: " + name );
             }
         }
         return result;
+    }
+    
+        public String
+    resolveAttribute( final String attrName ) throws AttributeNotFoundException
+    {
+        final Object result = getAttribute(attrName);
+        
+        return resolveAttributeValue( "" + result );
+    }
+    
+    
+        public AttributeList
+    resolveAttributes( final String[] attrNames )
+    {
+        final AttributeList attrs = getAttributes(attrNames);
+        final AttributeList resolvedAttrs = new AttributeList();
+        for (final Object o : attrs )
+        {
+            Attribute r = (Attribute)o;
+            // allow non-String attributes
+            final Object value = r.getValue();
+            if ( (value instanceof String) && AttributeResolverHelper.needsResolving((String)value) )
+            {
+                r = new Attribute( r.getName(), resolveAttributeValue((String)value) );
+            }
+
+            resolvedAttrs.add( r );
+        }
+        
+        return resolvedAttrs;
     }
     
 //========================================================================================
