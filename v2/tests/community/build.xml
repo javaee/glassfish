@@ -46,6 +46,7 @@
 	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
         <echo message="testng jar value: ${testng.jar}"/ -->
         <!-- antcall target="setup.toplink"/ -->
+        <antcall target="copyJARS"/>
         <antcall target="start-server"/>
         <antcall target="startDerby"/>        
         <antcall target="build"/>
