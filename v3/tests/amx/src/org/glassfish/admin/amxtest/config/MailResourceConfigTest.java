@@ -57,7 +57,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-import com.sun.appserv.management.helper.TemplateResolverHelper;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
 
 /**
  */
@@ -102,14 +102,14 @@ public final class MailResourceConfigTest
         if (result == null) {
             result = createInstance(dc, getDefaultInstanceName(),
                                     MAIL_RESOURCE_HOST, MAIL_RESOURCE_USER, MAIL_RESOURCE_FROM, OPTIONS);
-            assert ! TemplateResolverHelper.resolveBoolean( result, "Enabled" );
+            assert ! AttributeResolverHelper.resolveBoolean( result, "Enabled" );
             
             final StandaloneServerConfig serverConfig = dc.getServersConfig().getStandaloneServerConfigMap().get("server");
 
             final Map<String, String> options = new HashMap<String, String>();
             options.put(ResourceConfigKeys.ENABLED_KEY, "false");
             final ResourceRefConfig ref = serverConfig.createResourceRefConfig(result.getName(), options);
-            assert ! TemplateResolverHelper.resolveBoolean( ref, "Enabled" );
+            assert ! AttributeResolverHelper.resolveBoolean( ref, "Enabled" );
 
             RefHelper.removeAllRefsTo(result, false);
         }

@@ -60,7 +60,7 @@ import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
-import com.sun.appserv.management.helper.TemplateResolverHelper;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
 
 
 import static org.glassfish.admin.amxtest.PropertyKeys.*;
@@ -586,7 +586,7 @@ public final class TestMain
 
             final JMXConnectorConfig connConfig = nodeAgentConfig.getJMXConnectorConfig();
 
-            final TemplateResolverHelper r = new TemplateResolverHelper(connConfig);
+            final AttributeResolverHelper r = new AttributeResolverHelper(connConfig);
             
             if (! r.resolveBoolean("Enabled") ) {
                 println(nodeAgentName + ": DISABLED CONNECTOR");

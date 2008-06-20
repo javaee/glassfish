@@ -173,55 +173,6 @@ public final class ProxyTest
 		*/
     }
 
-    public void
-    testProxyInterfaceNameConsistent()
-            throws Exception {                        /*
-		final long	start	= now();
-		
-		final TypeInfos	infos	= TypeInfos.getInstance();
-		
-		final Iterator	iter	= infos.getJ2EETypes().iterator();
-		while ( iter.hasNext() )
-		{
-			final TypeInfo	info	= infos.getInfo( (String)iter.next() );
-			
-			final Class	proxyClass	= info.getInterface();
-			
-			
-			if ( proxyClass.getName().endsWith( "ResourceConfigProxy" ) )
-			{
-				if ( proxyClass.getName().endsWith( "ConnectorConnectionPoolConfigProxy" ) )
-				{
-					// ConnectorConnectionPoolConfig does not extend ResourceConfig,
-				}
-				else if ( ! ResourceConfig.class.isAssignableFrom( proxyClass ) )
-				{
-					warning( "Proxy interface does not extend ResourceConfigProxy: " +
-						proxyClass.getName() );
-				}
-			}
-			
-			if ( proxyClass.getName().endsWith( "ResourceRefConfigProxy" ) )
-			{
-				if ( ! ResourceRefConfig.class.isAssignableFrom( proxyClass ) )
-				{
-					warning( "Proxy interface does not extend ResourceRefConfigProxy: " +
-						proxyClass.getName() );
-				}
-			}
-			
-			if ( proxyClass.getName().endsWith( "DeployedItemRefConfig" ) )
-			{
-				if ( ! DeployedItemRefConfig.class.isAssignableFrom( proxyClass ) )
-				{
-					trace( "Proxy interface does not extend DeployedItemRefConfig: " +
-						proxyClass.getName() );
-				}
-			}
-		}
-		printElapsed( "testProxyInterfaceNameConsistent", start );
-		*/
-    }
 
     /**
      Verify that every getXXX() method can be called (those without parameters).

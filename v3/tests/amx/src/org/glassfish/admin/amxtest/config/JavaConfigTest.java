@@ -45,7 +45,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import com.sun.appserv.management.helper.TemplateResolverHelper;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
 
 /**
  */
@@ -144,7 +144,7 @@ public final class JavaConfigTest
         }
 
         final String debugEnabledStr = jc.getDebugEnabled();
-        final boolean debugEnabled = TemplateResolverHelper.resolveBoolean( jc, debugEnabledStr);
+        final boolean debugEnabled = AttributeResolverHelper.resolveBoolean( jc, debugEnabledStr);
         jc.setDebugEnabled( debugEnabledStr );
 
         s = jc.getDebugOptions();
@@ -153,7 +153,7 @@ public final class JavaConfigTest
         }
 
         final String existingValue = jc.getEnvClasspathIgnored();
-        final boolean envClasspathIgnored = TemplateResolverHelper.resolveBoolean( jc, existingValue);
+        final boolean envClasspathIgnored = AttributeResolverHelper.resolveBoolean( jc, existingValue);
         jc.setEnvClasspathIgnored( existingValue);
 
         s = jc.getJavaHome();

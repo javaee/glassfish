@@ -42,7 +42,7 @@ import org.glassfish.admin.amxtest.ClusterSupportRequired;
 
 import javax.management.InstanceNotFoundException;
 
-import com.sun.appserv.management.helper.TemplateResolverHelper;
+import com.sun.appserv.management.helper.AttributeResolverHelper;
 
 public class AvailabilityServiceConfigTest
         extends AMXTestBase
@@ -174,15 +174,15 @@ public class AvailabilityServiceConfigTest
         final AvailabilityServiceConfig  asc = getIt();
         if (asc!= null) {
             final String save = asc.getHAStoreHealthcheckEnabled();
-            final boolean b = TemplateResolverHelper.resolveBoolean( asc, save);
+            final boolean b = AttributeResolverHelper.resolveBoolean( asc, save);
 
             asc.setHAStoreHealthcheckEnabled("" + false);
             assertFalse("getHAStoreHealthcheckEnabled() was supposed to return false.",
-                TemplateResolverHelper.resolveBoolean( asc, asc.getHAStoreHealthcheckEnabled()));
+                AttributeResolverHelper.resolveBoolean( asc, asc.getHAStoreHealthcheckEnabled()));
                 
             asc.setHAStoreHealthcheckEnabled("" + true);
             assertTrue("getHAStoreHealthcheckEnabled() was supposed to return true.",
-                TemplateResolverHelper.resolveBoolean( asc, asc.getHAStoreHealthcheckEnabled()));
+                AttributeResolverHelper.resolveBoolean( asc, asc.getHAStoreHealthcheckEnabled()));
             asc.setHAStoreHealthcheckEnabled( save );
         }
 	}
