@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="300"/>
+    <property name="TOTAL_EXPECTED" value="301"/>
 
     &commonSetup;
     &commonBuild;
@@ -274,6 +274,7 @@
         <ant dir="classloaderGetResourceJarFile" target="all"/>
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
+        <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
         <ant dir="pipelineQueueFull" target="all"/>
     </target>
 
