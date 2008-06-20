@@ -88,10 +88,11 @@ public class MBeanServerNotificationStringifier
 		final MBeanServerNotification	notif	= (MBeanServerNotification)o;
 		
 		final StringBuffer	b	= super._stringify( notif );
+        /* not needed
 		append( b, "" );
 		
 		append( b, "registered MBean: " + notif.getMBeanName() );
-		
+		*/
 		return( b.toString() );
 	}
 }
