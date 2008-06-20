@@ -71,7 +71,7 @@ import java.util.logging.Logger;
 @Service
 public class WebServicesDeployer extends WebDeployer {
 
-    protected Logger logger = Logger.getLogger(WebServicesDeployer.class.getName());
+    protected Logger logger = Logger.getLogger(LogDomains.DPL_LOGGER);
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -117,7 +117,7 @@ public class WebServicesDeployer extends WebDeployer {
                 return false;
             }
             WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
-            if (!wbd.getSpecVersion().equals("2.5") ){
+            if (!wbd.getSpecVersion().equals("2.5") || (!wbd.hasWebServices())){
                 super.generateArtifacts(dc);
             } else {
                 generateArtifacts(dc);
@@ -150,6 +150,7 @@ public class WebServicesDeployer extends WebDeployer {
                 //For modules this is domains/<domain-name>/generated/xml
                 //Check with Hong about j2ee-modules
                 File wsdlDir = dc.getScratchDir("xml");
+                wsdlDir.mkdir();
 
 
                 //For modules this is domains/<domain-name>/generated/xml
@@ -340,7 +341,6 @@ public class WebServicesDeployer extends WebDeployer {
         String[] otherExportedPackages = new String[] {
                  "org.glassfish.webservices:jsr109-impl",
                  "org.glassfish.web:webtier" ,
-                 "org.glassfish.common:internal-api" ,
                  "com.sun.xml.ws:webservices-rt",
                  "com.sun.tools.ws:webservices-tools",
                  "javax.xml:webservices-api"
@@ -357,7 +357,7 @@ public class WebServicesDeployer extends WebDeployer {
             }
         }
 
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, null );
     }
     private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
@@ -827,9 +827,12 @@ public class WebServicesDeployer extends WebDeployer {
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
             logger.log(Level.INFO,
-                                 "Listening to address",
-                       new Object[] { nextEndpoint,
-                               nextEndpoint.getEndpointName(), actualAddress });
+            localStrings.getLocalString("enterprise.deployment.endpoint.registration",
+                                               "WebService deployed \n Webservice Endpoint {1} listening at address at {2}"
+                                                , new Object[] { nextEndpoint,
+                                           nextEndpoint.getEndpointName(), actualAddress }));
+
+           
             
 
         }
