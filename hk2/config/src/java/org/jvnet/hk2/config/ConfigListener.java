@@ -48,6 +48,7 @@ import java.beans.PropertyChangeEvent;
  *  @Inject
  *  MyConfiguredObject o;
  *
+ *
  *  public void changed(PropertyChangeEvent[] events) {
  *      // notification that o changed.
  *  }

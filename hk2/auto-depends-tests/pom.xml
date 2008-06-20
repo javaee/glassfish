@@ -25,7 +25,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>RELEASE</version>
                 <extensions>true</extensions>
                 <executions>
                     <!-- Run the code as a test -->
