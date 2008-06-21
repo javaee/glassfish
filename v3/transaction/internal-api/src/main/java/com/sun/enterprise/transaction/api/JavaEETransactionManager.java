@@ -343,4 +343,12 @@ public interface JavaEETransactionManager extends TransactionManager {
      * name or null if there is no special wrapper available.
      */
     public XAResourceWrapper getXAResourceWrapper(String clName);
+
+    /**
+     * Handle configuration change. Actual change will be performed by the delegate.
+     *
+     * @param name the name of the configuration property.
+     * @param value the ne value of the configuration.
+     */
+    public void handlePropertyUpdate(String name, Object value);
 }

@@ -43,6 +43,9 @@ import junit.framework.TestSuite;
 import java.util.logging.*;
 import javax.transaction.*;
 
+import java.beans.PropertyChangeEvent;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+
 import org.glassfish.api.invocation.InvocationManager;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -90,6 +93,24 @@ public class AppTest extends TestCase {
             "oracle.jdbc.xa.client.OracleXADataSource"));
         assertFalse(((JavaEETransactionManagerSimplified)t).getDelegate().supportsRecovery());
     }
+
+    /**
+     * Test TransactionServiceConfigListener call
+     */
+    public void testTransactionServiceConfigListener() {
+        PropertyChangeEvent e1 = new PropertyChangeEvent("", ServerTags.KEYPOINT_INTERVAL, "1", "10");
+        PropertyChangeEvent e2 = new PropertyChangeEvent("", ServerTags.RETRY_TIMEOUT_IN_SECONDS, "1", "10");
+        try {
+            TransactionServiceConfigListener tl = new TransactionServiceConfigListener();
+            tl.setTM((JavaEETransactionManager)t);
+            tl.changed(new PropertyChangeEvent[] {e1, e2});
+            assert(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
 
     public void testBegin() {
         System.out.println("**Testing TM begin ===>");

@@ -215,4 +215,12 @@ public interface JavaEETransactionManagerDelegate {
      * @returns <code>true</code> if this delegate supports transaction recovery.
      */
     public boolean supportsRecovery();
+
+    /**
+     * Handle configuration change.
+     *
+     * @param name the name of the configuration property.
+     * @param value the ne value of the configuration.
+     */
+    public void handlePropertyUpdate(String name, Object value);
 }

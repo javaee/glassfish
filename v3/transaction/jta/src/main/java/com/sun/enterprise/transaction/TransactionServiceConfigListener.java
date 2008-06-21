@@ -43,11 +43,12 @@ import java.util.logging.Level;
 import java.beans.PropertyChangeEvent;
 
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.config.serverbeans.TransactionService;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.annotations.Inject;
 
 /*
@@ -58,25 +59,45 @@ public class TransactionServiceConfigListener implements ConfigListener
      // Logger to log transaction messages
     static Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
-    @Inject private JavaEETransactionManagerSimplified tm;
+    @Inject private JavaEETransactionManager tm;
+
+    @Inject private TransactionService ts;
 
     public synchronized void changed(PropertyChangeEvent[] events) {
-
-        ConfigSupport.sortAndDispatch(events, new Changed() {
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> tClass, T t) {
-               System.err.println("XXXX tClass ======= " + tClass);
-               if (type==TYPE.ADD || type==TYPE.REMOVE) {
-                   // XXX throw new RuntimeException(???)
-               } else if (type==TYPE.CHANGE) {
-                   System.err.println("======CHANGE======");
-               }
-            }
-        }
-        , _logger);
-
         for (PropertyChangeEvent event : events) {
             System.err.println("XXX event ======== "+event.getSource()+ " "+event.getPropertyName()+" "+
                     event.getOldValue()+" "+event.getNewValue());
+
+            if (event.getPropertyName().equals(ServerTags.TIMEOUT_IN_SECONDS)) {
+                _logger.log(Level.FINE," Transaction Timeout interval event occurred");
+                String oldTimeout = (String)event.getOldValue();
+                String newTimeout = (String)event.getNewValue();
+                if (!oldTimeout.equals(newTimeout)) {
+                    try {
+                        tm.setDefaultTransactionTimeout(Integer.parseInt(newTimeout,10));
+                    } catch (Exception ex) {
+                        _logger.log(Level.WARNING,"transaction.reconfig_txn_timeout_failed",ex);
+                    }
+                } // timeout-in-seconds
+            }else if (event.getPropertyName().equals(ServerTags.KEYPOINT_INTERVAL)) {
+                _logger.log(Level.FINE,"Keypoint interval event occurred");
+                Object oldKeyPoint = event.getOldValue();
+                Object newKeyPoint = event.getNewValue();
+                if (!oldKeyPoint.equals(newKeyPoint)) {
+                    tm.handlePropertyUpdate(ServerTags.KEYPOINT_INTERVAL, newKeyPoint);
+                }
+            }else if (event.getPropertyName().equals(ServerTags.RETRY_TIMEOUT_IN_SECONDS)) {
+                Object oldRetryTiemout = event.getOldValue();
+                Object newRetryTiemout = event.getNewValue();
+                _logger.log(Level.FINE,"retry_timeout_in_seconds reconfig event occurred " + newRetryTiemout);
+                if (!oldRetryTiemout.equals(newRetryTiemout)) {
+                    tm.handlePropertyUpdate(ServerTags.RETRY_TIMEOUT_IN_SECONDS, newRetryTiemout);
+                }
+            }
+            else {
+                // Not handled dynamically. Restart is required.
+                // XXX AdminEventMulticaster.notifyFailure(event, AdminEventResult.RESTART_NEEDED);
+            }
         }
     }
 
@@ -191,4 +212,7 @@ public class TransactionServiceConfigListener implements ConfigListener
 
     }
 ** XX **/
+    public void setTM(JavaEETransactionManager tm) {
+        this.tm = tm;
+    }
 }

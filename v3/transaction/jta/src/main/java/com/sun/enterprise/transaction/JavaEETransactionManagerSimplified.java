@@ -1021,6 +1021,11 @@ public class JavaEETransactionManagerSimplified
         return null;
     }
 
+    public void handlePropertyUpdate(String name, Object value) {
+        delegate.handlePropertyUpdate(name, value);
+        // XXX Check if the current delegate needs to be called as well.
+    }
+
 /****************************************************************************/
 /*********************** Called by Admin Framework **************************/
 /****************************************************************************/

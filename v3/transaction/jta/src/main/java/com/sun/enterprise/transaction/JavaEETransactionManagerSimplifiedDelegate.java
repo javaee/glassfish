@@ -164,4 +164,6 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public boolean supportsRecovery() {
         return false;
     }
+
+    public void handlePropertyUpdate(String name, Object value) {}
 }

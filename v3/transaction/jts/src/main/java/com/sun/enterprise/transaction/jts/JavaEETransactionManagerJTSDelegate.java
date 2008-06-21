@@ -47,6 +47,9 @@ import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkException;
 
 import com.sun.jts.jta.TransactionManagerImpl;
+import com.sun.jts.CosTransactions.Configuration;
+
+import com.sun.enterprise.config.serverbeans.ServerTags;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -342,5 +345,15 @@ public class JavaEETransactionManagerJTSDelegate
 
     public boolean supportsRecovery() {
         return true;
+    }
+
+    public void handlePropertyUpdate(String name, Object value) {
+        if (name.equals(ServerTags.KEYPOINT_INTERVAL)) {
+            Configuration.setKeypointTrigger(Integer.parseInt((String)value,10));
+
+        } else if (name.equals(ServerTags.RETRY_TIMEOUT_IN_SECONDS)) {
+            Configuration.setCommitRetryVar((String)value);
+
+        }
     }
 }
