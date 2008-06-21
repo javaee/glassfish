@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/DeployedItemRefConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
@@ -69,8 +62,9 @@ public interface DeployedItemRefConfig extends RefConfig
         Return the String flag that causes any and all load-balancers using
         this application to consider this application unavailable to
         them. Defaults to unavailable (false).
-     */    
-    public boolean getLBEnabled();
+     */
+    @ResolveTo(Boolean.class)
+    public String getLBEnabled();
 
     /**
         <b>EE only</b>
@@ -78,13 +72,14 @@ public interface DeployedItemRefConfig extends RefConfig
         this application to consider this application unavailable to
         them. 
      */    
-    public void setLBEnabled(final boolean lbEnabled);
+    public void setLBEnabled(final String lbEnabled);
     
     /**
         The time, in minutes, that it takes this application to reach 
         a quiescent state after having been disabled.
         @since AppServer 9.0
      */
+    @ResolveTo(Integer.class)
     public String   getDisableTimeoutInMinutes();
     
     /**

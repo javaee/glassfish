@@ -61,6 +61,7 @@ public interface JMSServiceConfig
 	public String	getDefaultJMSHost();
 	public void	    setDefaultJMSHost( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getInitTimeoutInSeconds();
 	public void	    setInitTimeoutInSeconds( final String value );
 
@@ -70,9 +71,11 @@ public interface JMSServiceConfig
 	public String	getMQService();
 	public void	    setMQService( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getReconnectAttempts();
 	public void	    setReconnectAttempts( final String value );
 
+    @ResolveTo(Boolean.class)
 	public String	getReconnectEnabled();
 	public void	    setReconnectEnabled( final String value );
 

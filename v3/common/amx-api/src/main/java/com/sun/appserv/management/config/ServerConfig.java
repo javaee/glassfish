@@ -81,6 +81,7 @@ public interface ServerConfig
 	    This is used by both IIOP and HTTP load balancer. Default value is 1.
 	    @since AppServer 9.0
       */
+    @ResolveTo(Integer.class)
     public String getLBWeight();
         
 	/**

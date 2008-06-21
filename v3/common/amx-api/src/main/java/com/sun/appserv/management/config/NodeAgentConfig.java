@@ -65,12 +65,13 @@ public interface NodeAgentConfig
 	/**
 	    @since Appserver 9.0
 	 */
-	public boolean  getStartServersInStartup();
+    @ResolveTo(Boolean.class)
+	public String  getStartServersInStartup();
 	
 	/**
 	    @since Appserver 9.0
 	 */
-	public void  setStartServersInStartup( boolean start );
+	public void  setStartServersInStartup( String start );
 	
 	
 	public String   getSystemJMXConnectorName();

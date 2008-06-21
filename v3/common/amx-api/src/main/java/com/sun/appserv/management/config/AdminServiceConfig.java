@@ -101,13 +101,7 @@ public interface AdminServiceConfig
         @since Appserver 9.0
 	 */
 	public JMXConnectorConfig	createJMXConnectorConfig( String name, String address, 
-		String port, String authRealmName, Map<String,String> optional );
-		
-    /**
-        @Deprecated do not use
-     */
-	public JMXConnectorConfig	createJMXConnectorConfig( String name, String address, 
-		int port, String authRealmName, Map<String,String> optional );
+		@ResolveTo(Integer.class) String port, String authRealmName, Map<String,String> optional );
 
 	/**
 		Removes a jmx-connector element.

@@ -182,13 +182,14 @@ public interface ConfigConfig
         restarts.
         @since AppServer 9.0                                                
      */
-	public boolean   getDynamicReconfigurationEnabled();
+    @ResolveTo(Boolean.class)
+	public String   getDynamicReconfigurationEnabled();
 	
 	/**
 	    @see #getDynamicReconfigurationEnabled
         @since AppServer 9.0
 	 */
-	public void      setDynamicReconfigurationEnabled( boolean enabled );
+	public void      setDynamicReconfigurationEnabled( String enabled );
 	
 	/**
 	    @return ManagementRulesConfig (may be null );

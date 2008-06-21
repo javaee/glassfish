@@ -47,33 +47,43 @@ public interface HTTPFileCacheConfig extends ConfigElement, Singleton
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_FILE_CACHE_CONFIG;
 
-	public boolean	getFileCachingEnabled();
-	public void	setFileCachingEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getFileCachingEnabled();
+	public void	setFileCachingEnabled( final String value );
 
-	public boolean	getFileTransmissionEnabled();
-	public void	setFileTransmissionEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getFileTransmissionEnabled();
+	public void	setFileTransmissionEnabled( final String value );
 
-	public boolean	getGloballyEnabled();
-	public void	setGloballyEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getGloballyEnabled();
+	public void	setGloballyEnabled( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getHashInitSize();
 	public void	setHashInitSize( final String value );
 
-	public String	getMaxAgeInSeconds();
+    @ResolveTo(Integer.class)
+    public String	getMaxAgeInSeconds();
 	public void	setMaxAgeInSeconds( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMaxFilesCount();
 	public void	setMaxFilesCount( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMediumFileSizeLimitInBytes();
 	public void	setMediumFileSizeLimitInBytes( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMediumFileSpaceInBytes();
 	public void	setMediumFileSpaceInBytes( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getSmallFileSizeLimitInBytes();
 	public void	setSmallFileSizeLimitInBytes( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getSmallFileSpaceInBytes();
 	public void	setSmallFileSpaceInBytes( final String value );
 }

@@ -51,9 +51,11 @@ public interface AccessLogConfig extends ConfigElement, Singleton
 	public String	getFormat();
 	public void	setFormat( final String value );
 
-	public boolean	getRotationEnabled();
-	public void	setRotationEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getRotationEnabled();
+	public void	setRotationEnabled( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getRotationIntervalInMinutes();
 	public void	setRotationIntervalInMinutes( final String value );
 

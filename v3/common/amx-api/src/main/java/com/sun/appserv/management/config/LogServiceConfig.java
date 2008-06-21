@@ -52,9 +52,9 @@ public interface LogServiceConfig
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.LOG_SERVICE_CONFIG;
 	
-
-	public boolean	getAlarms();
-	public void	setAlarms( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getAlarms();
+	public void	setAlarms( String value );
 
 	public String	getFile();
 	public void	setFile( String value );
@@ -68,19 +68,23 @@ public interface LogServiceConfig
     /**
         @since AppServer 9.0
      */
+    @ResolveTo(Integer.class)
 	public String	getLogRotationTimeLimitInMinutes();
 	public void	setLogRotationTimeLimitInMinutes( String value );
 	
+    @ResolveTo(Integer.class)
 	public String	getLogRotationLimitInBytes();
 	public void	setLogRotationLimitInBytes( String value );
 
-	public boolean	getLogToConsole();
-	public void	setLogToConsole( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getLogToConsole();
+	public void	setLogToConsole( String value );
 
-	public boolean	getUseSystemLogging();
-	public void	setUseSystemLogging( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getUseSystemLogging();
+	public void	setUseSystemLogging( String value );
 	
-	
+    @ResolveTo(Integer.class)
 	public String  getRetainErrorStatisticsForHours();
 	public void    setRetainErrorStatisticsForHours( String hours );
 	

@@ -59,6 +59,7 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 	public String	getHTTPSessionStorePoolName();
 	public void	setHTTPSessionStorePoolName( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getPersistenceFrequency();
 	/**
 		See {@link SessionSaveFrequencyValues}.
@@ -76,6 +77,7 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 	 */
 	public void	setPersistenceScope( final String value );
 
+    @ResolveTo(Boolean.class)
 	public String	getPersistenceStoreHealthCheckEnabled();
 	public void	setPersistenceStoreHealthCheckEnabled( final String value );
 
@@ -85,6 +87,7 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 	 */
 	public void	setPersistenceType( final String value );
 
+    @ResolveTo(Boolean.class)
 	public String	getSSOFailoverEnabled();
 	public void	setSSOFailoverEnabled( final String value );
 

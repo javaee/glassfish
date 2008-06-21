@@ -66,6 +66,7 @@ public interface JMSAvailabilityConfig extends ConfigElement, PropertiesAccess
         turned off by default [i.e. the MQ cluster associated with    
         the AS cluster would behave as a non-HA cluster]
 	 */
+    @ResolveTo(Boolean.class)
 	public String	getAvailabilityEnabled();
 	
 	/**

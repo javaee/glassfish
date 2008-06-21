@@ -53,33 +53,41 @@ public interface EJBContainerConfig extends
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EJB_CONTAINER_CONFIG;
 
+    @ResolveTo(Integer.class)
 	String	getCacheIdleTimeoutInSeconds();
 	void	setCacheIdleTimeoutInSeconds( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getCacheResizeQuantity();
 	void	setCacheResizeQuantity( final String value );
 
 	String	getCommitOption();
 	void	setCommitOption( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getMaxCacheSize();
 	void	setMaxCacheSize( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getMaxPoolSize();
 	void	setMaxPoolSize( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getPoolIdleTimeoutInSeconds();
 	void	setPoolIdleTimeoutInSeconds( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getPoolResizeQuantity();
 	void	setPoolResizeQuantity( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getRemovalTimeoutInSeconds();
 	void	setRemovalTimeoutInSeconds( final String value );
 
 	String	getSessionStore();
 	void	setSessionStore( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getSteadyPoolSize();
 	void	setSteadyPoolSize( final String value );
 

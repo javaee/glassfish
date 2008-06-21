@@ -54,11 +54,13 @@ public interface LifecycleModuleConfig
 	public String	getClassname();
 	public void		setClassname( String classname );
 	
+    @ResolveTo(Integer.class)
 	public String	getLoadOrder();
 	public void		setLoadOrder( String order );
 	
-	public boolean	getIsFailureFatal();
-	public void 	setIsFailureFatal( boolean isFatal );
+    @ResolveTo(Boolean.class)
+	public String	getIsFailureFatal();
+	public void 	setIsFailureFatal( String isFatal );
 }
 
 

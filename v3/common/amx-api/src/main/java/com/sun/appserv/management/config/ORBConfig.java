@@ -52,9 +52,11 @@ public interface ORBConfig extends AMXConfig, PropertiesAccess, Singleton
 	public static final String	J2EE_TYPE	= XTypes.ORB_CONFIG;
 	
 	
+    @ResolveTo(Integer.class)
 	public String	getMaxConnections();
 	public void	setMaxConnections( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMessageFragmentSize();
 	public void	setMessageFragmentSize( String value );
 

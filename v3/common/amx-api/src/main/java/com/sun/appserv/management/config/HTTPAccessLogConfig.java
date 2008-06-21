@@ -54,6 +54,7 @@ public interface HTTPAccessLogConfig extends ConfigElement
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_ACCESS_LOG_CONFIG;
 
+    @ResolveTo(Boolean.class)
 	public String	getIPOnly();
 	public void	setIPOnly( final String value );
 

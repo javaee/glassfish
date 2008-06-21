@@ -33,14 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/MDBContainerConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Singleton;
@@ -57,15 +49,19 @@ public interface MDBContainerConfig extends AMXConfig, PropertiesAccess, Singlet
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.MDB_CONTAINER_CONFIG;
 	
+    @ResolveTo(Integer.class)
 	public String	getIdleTimeoutInSeconds();
 	public void	setIdleTimeoutInSeconds( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMaxPoolSize();
 	public void	setMaxPoolSize( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getPoolResizeQuantity();
 	public void	setPoolResizeQuantity( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getSteadyPoolSize();
 	public void	setSteadyPoolSize( final String value );
 

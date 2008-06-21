@@ -54,6 +54,7 @@ public interface DiagnosticServiceConfig
     /**
         @return true if the diagnostic service is computing the checksum for the data
      */
+    @ResolveTo(Boolean.class)
     public String getComputeChecksum();
     
     /**
@@ -64,6 +65,7 @@ public interface DiagnosticServiceConfig
     /**
      @return true if installation log is collected for diagnosis, false otherwise
      */
+    @ResolveTo(Boolean.class)
     public String getCaptureInstallLog();
     
     /**
@@ -83,6 +85,7 @@ public interface DiagnosticServiceConfig
     /**
         @return true if HA data-base information is being collected, false otherwise
      */
+    @ResolveTo(Boolean.class)
     public String getCaptureHADBInfo();
     
     /**
@@ -93,6 +96,7 @@ public interface DiagnosticServiceConfig
     /**
         @return true if app deployment descriptor data is being collected, false otherwise
      */
+    @ResolveTo(Boolean.class)
     public String getCaptureAppDD();
     
     /**
@@ -124,12 +128,14 @@ public interface DiagnosticServiceConfig
     /**
         See {@link #getMaxLogEntries}.
      */
+    @ResolveTo(Integer.class)
     public void setMaxLogEntries(final String entries);
     
     /**                    
         Indicates whether output of verify-config asadmin command is
         included in the diagnostic report.                                               
      */
+    @ResolveTo(Boolean.class)
     public String  getVerifyConfig();
     
     /**

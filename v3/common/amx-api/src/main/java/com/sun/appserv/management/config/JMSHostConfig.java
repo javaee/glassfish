@@ -61,6 +61,7 @@ public interface JMSHostConfig extends NamedConfigElement, PropertiesAccess
 	public String	getHost();
 	public void	setHost( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getPort();
 	public void	setPort( String value );
 

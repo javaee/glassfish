@@ -73,14 +73,15 @@ public interface J2EEApplicationConfig
 		If this attribute is missing, it defaults to "false".
 		@see #setAvailabilityEnabled
 	*/     
-	public boolean	getAvailabilityEnabled();
+    @ResolveTo(Boolean.class)
+	public String	getAvailabilityEnabled();
 
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();
     
 	/**
 		@see #getAvailabilityEnabled
 	*/       
-	public void		setAvailabilityEnabled( boolean enabled );
+	public void		setAvailabilityEnabled( String enabled );
 }
 
 

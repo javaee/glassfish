@@ -51,13 +51,7 @@ public interface StorePropertiesConfig extends AMXConfig, PropertiesAccess, Sing
 	public String	getDirectory();
 	public void	setDirectory( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getReapIntervalInSeconds();
 	public void	setReapIntervalInSeconds( final String value );
-
-
-
-
-
-
-
 }

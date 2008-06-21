@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/EJBModuleConfig.java,v 1.2 2007/05/05 05:30:33 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:33 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
@@ -72,6 +65,7 @@ public interface EJBModuleConfig
 		Finer-grained control exists at lower level inside each bean.
 		@see #setAvailabilityEnabled
 	 */
+    @ResolveTo(Boolean.class)
 	public String	getAvailabilityEnabled();
 
 	/**

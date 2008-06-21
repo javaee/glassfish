@@ -378,7 +378,7 @@ public final class LBConfigHelper {
                     healthCheckerInterval, healthCheckerTimeout);
         }else{
             //create the server-ref
-            ServerRefConfig serverRefConfig = lbConfig.createServerRefConfig(target,"30",true,true);
+            ServerRefConfig serverRefConfig = lbConfig.createServerRefConfig(target,"30","true","true");
             //create the health checker
             serverRefConfig.createHealthCheckerConfig(healthCheckerUrl,
                     healthCheckerInterval, healthCheckerTimeout);
@@ -472,7 +472,7 @@ public final class LBConfigHelper {
                 Map<String, ServerRefConfig> serverRefConfigMap = 
                     mDomainConfig.getClustersConfig().getClusterConfigMap().get(target).getServerRefConfigMap();
                 for (ServerRefConfig serverRefConfig : serverRefConfigMap.values()) {
-                    if ( serverRefConfig.getLBEnabled() ){
+                    if ( serverRefConfig.resolveBoolean("LBEnabled") ){
                         String msg = formatter.format(
                         resBundle.getString("DisableServer"), target);
                         throw new MBeanException(new RuntimeException(msg));            
@@ -484,7 +484,7 @@ public final class LBConfigHelper {
             lbConfig.removeClusterRefConfig(target);
         } else {
             if (!force && 
-                ( lbConfig.getServerRefConfigMap().get(target).getLBEnabled()) ){
+                ( lbConfig.getServerRefConfigMap().get(target).resolveBoolean("LBEnabled")) ){
                 String msg = formatter.format(
                     resBundle.getString("DisableServer"), target);
                 throw new MBeanException(new RuntimeException(msg));            
@@ -694,7 +694,7 @@ public final class LBConfigHelper {
                     healthCheckerInterval, healthCheckerTimeout);
         }else{
             //create the server-ref
-            ServerRefConfig serverRefConfig = lbConfig.createServerRefConfig(target,"30",true,true);
+            ServerRefConfig serverRefConfig = lbConfig.createServerRefConfig(target,"30","true","true");
             //create the health checker
             serverRefConfig.createHealthCheckerConfig(healthCheckerUrl,
                     healthCheckerInterval, healthCheckerTimeout);
@@ -770,7 +770,7 @@ public final class LBConfigHelper {
             if(app != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(app.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled( true );
+                    deployedItemRefConfig.setLBEnabled( "true" );
                 }
                 continue;
             }
@@ -780,7 +780,7 @@ public final class LBConfigHelper {
             if (web != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(web.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled( true);
+                    deployedItemRefConfig.setLBEnabled( "true");
                 }
                 continue;
             }
@@ -790,7 +790,7 @@ public final class LBConfigHelper {
             if (ejb != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(ejb.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled( true);
+                    deployedItemRefConfig.setLBEnabled( "true");
                 }
                 continue;
             }
@@ -800,7 +800,7 @@ public final class LBConfigHelper {
             if (rar != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(rar.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled( true);
+                    deployedItemRefConfig.setLBEnabled( "true");
                 }
                 continue;
             }
@@ -810,7 +810,7 @@ public final class LBConfigHelper {
             if (appClient != null) {
                 //if the type is user (There is no API yet), then only set the lb-enabled to true
                 //if(appClient.getObjectType().equals(ObjectTypeValues.USER)) {
-                    deployedItemRefConfig.setLBEnabled( true);
+                    deployedItemRefConfig.setLBEnabled( "true");
                 //}
                 continue;
             }
@@ -935,9 +935,9 @@ public final class LBConfigHelper {
      */
     private void setLBEnabled(final ServerRefConfig sRef, final boolean status, 
             final int timeout, final String target, boolean ignore) throws MBeanException {
-        int curTout = sRef.getDisableTimeoutInMinutes();
+        int curTout = sRef.resolveInteger("DisableTimeoutInMinutes");
         //check if it is already in the state desired
-        boolean enabled = sRef.getLBEnabled();
+        boolean enabled = sRef.resolveBoolean("LBEnabled");
         if(!status){
             if ((ignore == false) && (enabled == false) && (curTout == timeout)) {
                         String msg = formatter.format(resBundle.getString("ServerDisabled"),
@@ -945,9 +945,9 @@ public final class LBConfigHelper {
                         throw new MBeanException(new Exception(msg));
             }
             //set the disable timeout in minutes
-            sRef.setDisableTimeoutInMinutes(timeout);
+            sRef.setDisableTimeoutInMinutes( "" + timeout);
             //set the lb-enabled to false
-            sRef.setLBEnabled(false);
+            sRef.setLBEnabled("false");
             //mLogger.log(Level.INFO,formatter.format(resBundle.getString(
             //        "http_lb_admin.ServerDisabled"), target));
         }else{
@@ -956,7 +956,7 @@ public final class LBConfigHelper {
                                 sRef.getRef());
                 throw new MBeanException(new Exception("ServerEnabled"));
             }
-            sRef.setLBEnabled(true);
+            sRef.setLBEnabled("true");
             //mLogger.log(Level.INFO,formatter.format(resBundle.getString(
             //        "http_lb_admin.ServerEnabled"), target));
         }
@@ -1012,19 +1012,17 @@ public final class LBConfigHelper {
             int curTout = Integer.parseInt(
                     dRef.getDisableTimeoutInMinutes());
             //check if the app is already in the state desired
-            boolean enabled = dRef.getLBEnabled();
+            boolean enabled = dRef.resolveBoolean("LBEnabled");
             if(!status){
                 if ((enabled == false) && (curTout == timeout)) {
-                    String msg = resBundle.getString("AppDisabledOnServer"
-                            );
+                    String msg = resBundle.getString("AppDisabledOnServer");
                     throw new MBeanException(new Exception(msg));
                 }
                 //set the disable timeout
                 dRef.setDisableTimeoutInMinutes( "" + timeout );
                 //disable the app
-                dRef.setLBEnabled(false);
-                mLogger.log(Level.INFO,resBundle.getString(
-                        "http_lb_admin.ApplicationDisabled"));
+                dRef.setLBEnabled("false");
+                mLogger.log(Level.INFO,resBundle.getString("http_lb_admin.ApplicationDisabled"));
             }else{
                 if (enabled == true) {
                     String msg = resBundle.getString("AppEnabledOnServer"
@@ -1032,7 +1030,7 @@ public final class LBConfigHelper {
                     throw new MBeanException(new Exception(msg));
                 }
                 //enable the app
-                dRef.setLBEnabled(true);
+                dRef.setLBEnabled("true");
                 mLogger.log(Level.INFO,resBundle.getString(
                         "http_lb_admin.ApplicationEnabled"));
             }

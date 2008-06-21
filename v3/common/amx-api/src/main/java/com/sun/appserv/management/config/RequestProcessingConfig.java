@@ -49,18 +49,23 @@ public interface RequestProcessingConfig extends ConfigElement, Singleton
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.REQUEST_PROCESSING_CONFIG;
 
+    @ResolveTo(Integer.class)
 	public String	getHeaderBufferLengthInBytes();
 	public void	setHeaderBufferLengthInBytes( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getInitialThreadCount();
 	public void	setInitialThreadCount( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getRequestTimeoutInSeconds();
 	public void	setRequestTimeoutInSeconds( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getThreadCount();
 	public void	setThreadCount( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getThreadIncrement();
 	public void	setThreadIncrement( final String value );
 

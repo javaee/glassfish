@@ -55,6 +55,7 @@ public interface MailResourceConfig extends ResourceConfig
 	public String	getHost();
 	public String	getUser();
 	public String	getFrom();
+    @ResolveTo(Boolean.class)
 	public String	getDebug();
 
 

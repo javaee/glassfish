@@ -51,12 +51,15 @@ public interface EJBTimerServiceConfig extends AMXConfig, PropertiesAccess, Sing
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EJB_TIMER_SERVICE_CONFIG;
 
+    @ResolveTo(Integer.class)
 	String	getMaxRedeliveries();
 	void	setMaxRedeliveries( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getMinimumDeliveryIntervalInMillis();
 	void	setMinimumDeliveryIntervalInMillis( final String value );
 
+    @ResolveTo(Integer.class)
 	String	getRedeliveryIntervalInternalInMillis();
 	void	setRedeliveryIntervalInternalInMillis( final String value );
 

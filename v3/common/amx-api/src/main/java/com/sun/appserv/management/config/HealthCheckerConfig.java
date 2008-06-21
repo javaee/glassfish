@@ -69,6 +69,7 @@ public interface HealthCheckerConfig extends AMXConfig {
         Returns interval, in seconds, between health checks. A value of "0"
         means that the health check is disabled. 
      */
+    @ResolveTo(Integer.class)
     public String getIntervalInSeconds();
 
     /**
@@ -82,6 +83,7 @@ public interface HealthCheckerConfig extends AMXConfig {
         Return the maximum time, in seconds, that a server must respond to a
         health check request to be considered healthy. 
      */
+    @ResolveTo(Integer.class)
     public String getTimeoutInSeconds();
 
     /**

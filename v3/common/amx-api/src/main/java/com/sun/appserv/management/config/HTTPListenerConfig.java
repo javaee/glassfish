@@ -50,8 +50,8 @@ public interface HTTPListenerConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_LISTENER_CONFIG;
-
     
+    @ResolveTo(Integer.class)
 	public String	getAcceptorThreads();
 	public void		setAcceptorThreads( String value );
 
@@ -67,6 +67,7 @@ public interface HTTPListenerConfig
 		The port can be either a number or a system property ${...}, thus its
 		type is String.
 	 */
+    @ResolveTo(Integer.class)
 	public String	getPort();
 	public void		setPort( String value );
 
@@ -76,17 +77,20 @@ public interface HTTPListenerConfig
 		The port can be either a number or a system property ${...}, thus its
 		type is String.
 	 */
+    @ResolveTo(Integer.class)
 	public String	getRedirectPort();
 	public void		setRedirectPort( String value );
 
-	public boolean	getSecurityEnabled();
-	public void		setSecurityEnabled( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getSecurityEnabled();
+	public void		setSecurityEnabled( String value );
 
 	public String	getServerName();
 	public void		setServerName( String value );
 
-	public boolean	getXpoweredBy();
-	public void		setXpoweredBy( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getXpoweredBy();
+	public void		setXpoweredBy( String value );
 
 	/**
 		See {@link HTTPListenerConfigFamilyValues}.
@@ -97,9 +101,11 @@ public interface HTTPListenerConfig
 	*/
 	public void	setFamily( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getExternalPort();
 	public void	setExternalPort( final String value );
 
-	public boolean	getBlockingEnabled();
-	public void	setBlockingEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getBlockingEnabled();
+	public void	setBlockingEnabled( final String value );
 }

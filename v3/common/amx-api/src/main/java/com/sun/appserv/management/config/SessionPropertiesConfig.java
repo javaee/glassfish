@@ -49,6 +49,7 @@ public interface SessionPropertiesConfig extends AMXConfig, PropertiesAccess, Si
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SESSION_PROPERTIES_CONFIG;
 	
+    @ResolveTo(Integer.class)
 	public String	getTimeoutInSeconds();
 	public void	setTimeoutInSeconds( final String value );
 

@@ -58,9 +58,11 @@ public interface IIOPListenerConfig
 	public String	getAddress();
 	public void	setAddress( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getPort();
 	public void	setPort( String value );
 
+    @ResolveTo(Boolean.class)
 	public String	getSecurityEnabled();
 	public void	setSecurityEnabled( String value );
 

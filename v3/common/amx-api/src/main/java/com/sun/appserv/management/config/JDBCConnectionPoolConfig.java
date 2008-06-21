@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/JDBCConnectionPoolConfig.java,v 1.4 2007/05/05 05:30:33 tcfujii Exp $
- * $Revision: 1.4 $
- * $Date: 2007/05/05 05:30:33 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
@@ -74,30 +67,38 @@ public interface JDBCConnectionPoolConfig
 	public String	getDatasourceClassname();
 	public void	setDatasourceClassname( String value );
 
-	public boolean	getFailAllConnections();
-	public void	setFailAllConnections( boolean value );
+    @ResolveTo(String.class)
+	public String	getFailAllConnections();
+	public void	setFailAllConnections( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getIdleTimeoutInSeconds();
 	public void	setIdleTimeoutInSeconds( String value );
 
-	public boolean	getIsConnectionValidationRequired();
-	public void	setIsConnectionValidationRequired( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getIsConnectionValidationRequired();
+	public void	setIsConnectionValidationRequired( String value );
 
-	public boolean	getIsIsolationLevelGuaranteed();
-	public void	setIsIsolationLevelGuaranteed( boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getIsIsolationLevelGuaranteed();
+	public void	setIsIsolationLevelGuaranteed( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMaxPoolSize();
 	public void	setMaxPoolSize( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMaxWaitTimeInMillis();
 	public void	setMaxWaitTimeInMillis( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getPoolResizeQuantity();
 	public void	setPoolResizeQuantity( String value );
 
 	public String	getResType();
 	public void	setResType( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getSteadyPoolSize();
 	public void	setSteadyPoolSize( String value );
 
@@ -117,13 +118,14 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public boolean getNonTransactionalConnections();
+    @ResolveTo(Boolean.class)
+    public String getNonTransactionalConnections();
     
     /**
         @see #getNonTransactionalConnections          
         @since AppServer 9.0
      */
-    public void setNonTransactionalConnections( boolean enabled );
+    public void setNonTransactionalConnections( String enabled );
     
     /**                                
         A pool with this property set to true, can be used by         
@@ -140,13 +142,14 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public boolean getAllowNonComponentCallers();
+    @ResolveTo(Boolean.class)
+    public String getAllowNonComponentCallers();
     
     /**
         @see #getAllowNonComponentCallers          
         @since AppServer 9.0
      */
-    public void setAllowNonComponentCallers( boolean enabled );
+    public void setAllowNonComponentCallers( String enabled );
 
 
     
@@ -160,6 +163,7 @@ public interface JDBCConnectionPoolConfig
          on leak tracing.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String  getConnectionLeakTimeoutInSeconds();
     
     /**
@@ -174,6 +178,7 @@ public interface JDBCConnectionPoolConfig
          connection-leak-timeout-in-seconds occurs. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getConnectionLeakReclaim();
     
     /**
@@ -188,6 +193,7 @@ public interface JDBCConnectionPoolConfig
          implies no retries.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getConnectionCreationRetryAttempts();
     
     /**
@@ -203,6 +209,7 @@ public interface JDBCConnectionPoolConfig
          greater than 0.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getConnectionCreationRetryIntervalInSeconds();
     
     /**
@@ -217,6 +224,7 @@ public interface JDBCConnectionPoolConfig
          Default is 0 seconds, not enabled.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getValidateAtMostOncePeriodInSeconds();
     
     /**
@@ -233,6 +241,7 @@ public interface JDBCConnectionPoolConfig
          cached in the calling components. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getLazyConnectionEnlistment();
     
     /**
@@ -249,6 +258,7 @@ public interface JDBCConnectionPoolConfig
          connections. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getLazyConnectionAssociation();
     
     /**
@@ -265,6 +275,7 @@ public interface JDBCConnectionPoolConfig
         of getting a connection from the pool. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getAssociateWithThread();
     
     /**
@@ -283,6 +294,7 @@ public interface JDBCConnectionPoolConfig
         need not be matched by the resource adapter. Default value is true.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getMatchConnections();
     
     /**
@@ -299,6 +311,7 @@ public interface JDBCConnectionPoolConfig
         Default value is 0, which implies the feature is not enabled.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getMaxConnectionUsageCount();
     
     /**
@@ -315,6 +328,7 @@ public interface JDBCConnectionPoolConfig
        PreparedStatement, CallableStatement, ResultSet, DatabaseMetaData. 
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
      String     getWrapJDBCObjects();
      
      /**
@@ -328,6 +342,7 @@ public interface JDBCConnectionPoolConfig
         associate-with-thread (integer)<br>
         @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getStatementTimeoutInSeconds();
     
     /**

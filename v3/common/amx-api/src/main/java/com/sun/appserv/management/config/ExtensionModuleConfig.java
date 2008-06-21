@@ -33,12 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/Attic/ExtensionModuleConfig.java,v 1.1.2.1 2008/01/04 00:12:07 llc Exp $
- * $Revision: 1.1.2.1 $
- * $Date: 2008/01/04 00:12:07 $
- */
 
 package com.sun.appserv.management.config;
 
@@ -55,8 +49,9 @@ public interface ExtensionModuleConfig
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EXTENSION_MODULE_CONFIG;
 	
-	public boolean	getAvailabilityEnabled();
-	public void 	setAvailabilityEnabled( boolean isFatal );
+    @ResolveTo(Boolean.class)
+	public String	getAvailabilityEnabled();
+	public void 	setAvailabilityEnabled( String isFatal );
 }
 
 

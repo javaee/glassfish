@@ -51,9 +51,11 @@ public interface ManagerPropertiesConfig extends AMXConfig, PropertiesAccess, Si
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MANAGER_PROPERTIES_CONFIG;
 	
+    @ResolveTo(Integer.class)
 	public String	getMaxSessions();
 	public void	setMaxSessions( final String value );
 
+    @ResolveTo(Integer.class)
 	public String	getReapIntervalInSeconds();
 	public void	    setReapIntervalInSeconds( final String value );
 

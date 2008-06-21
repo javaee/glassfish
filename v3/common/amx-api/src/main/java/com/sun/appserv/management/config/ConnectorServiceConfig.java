@@ -54,6 +54,7 @@ public interface ConnectorServiceConfig extends ConfigElement
 	public static final String	J2EE_TYPE	= XTypes.CONNECTOR_SERVICE_CONFIG;
 
 
+    @ResolveTo(Integer.class)
 	public String	getShutdownTimeoutInSeconds();
 	public void	setShutdownTimeoutInSeconds( final String value );
 

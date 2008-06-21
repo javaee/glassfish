@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ThreadPoolConfig.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
@@ -57,21 +50,21 @@ public interface ThreadPoolConfig extends NamedConfigElement
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.THREAD_POOL_CONFIG;
 	
+    @ResolveTo(Integer.class)
 	public String	getIdleThreadTimeoutInSeconds();
 	public void	setIdleThreadTimeoutInSeconds( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMaxThreadPoolSize();
 	public void	setMaxThreadPoolSize( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getMinThreadPoolSize();
 	public void	setMinThreadPoolSize( String value );
 
+    @ResolveTo(Integer.class)
 	public String	getNumWorkQueues();
 	public void	setNumWorkQueues( String value );
 
 	public String	getThreadPoolId();
-
-
-
-
 }

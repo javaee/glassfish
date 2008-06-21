@@ -48,6 +48,10 @@ import static org.junit.Assert.*;
 
 import javax.management.AttributeList;
 
+/**
+    Placeholder; move this to a live test in tests/amx so it can be run
+    on real MBeans with real Attributes.
+ */
 public final class AttributeResolverTest
         extends junit.framework.TestCase
 {
@@ -81,10 +85,10 @@ public final class AttributeResolverTest
             return mPairings.containsKey(key ) ? mPairings.get( key ) : null;
         }
         
-        public String resolveAttribute( final String attrName )
-        {
-            return null;
-        }
+        public String resolveAttribute( final String attrName ) { return null; }
+        public Boolean resolveBoolean( final String attrName )  { return null; }
+        public Integer resolveInteger( final String attrName )  { return null; }
+        public Long    resolveLong( final String attrName )     { return null; }
         
         public AttributeList resolveAttributes( final String[] attrNames )
         {

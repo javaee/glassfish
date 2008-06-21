@@ -50,6 +50,7 @@ public interface SecurityServiceConfig extends
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SECURITY_SERVICE_CONFIG;
 
+    @ResolveTo(Boolean.class)
 	public String	getAuditEnabled();
 	public void	setAuditEnabled( String value );
 

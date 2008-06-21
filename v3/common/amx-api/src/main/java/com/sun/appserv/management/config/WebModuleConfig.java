@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/WebModuleConfig.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
@@ -94,12 +87,13 @@ public interface WebModuleConfig
 
 		@see #setAvailabilityEnabled
 	 */
-	public boolean	getAvailabilityEnabled();
+    @ResolveTo(Boolean.class)
+	public String	getAvailabilityEnabled();
 
 	/**
 		@see #getAvailabilityEnabled
 	*/       
-	public void		setAvailabilityEnabled( boolean enabled );
+	public void		setAvailabilityEnabled( String enabled );
 	
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();
 }

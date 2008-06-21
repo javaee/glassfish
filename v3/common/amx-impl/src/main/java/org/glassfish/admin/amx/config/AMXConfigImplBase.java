@@ -355,17 +355,43 @@ cdebug( "asAMXAttributeName: no match: " + name );
     }
     
         public String
-    resolveAttribute( final String attrName ) throws AttributeNotFoundException
+    resolveAttribute( final String attrName )
     {
-        final Object result = getAttribute(attrName);
-        
-        return resolveAttributeValue( "" + result );
+        try
+        {
+            final Object value = getAttribute(attrName);
+            return resolveAttributeValue( value == null ? null : "" + value );
+        }
+        catch( AttributeNotFoundException e )
+        {
+            return null;
+        }
+    }
+
+        public Boolean
+    resolveBoolean( final String attrName) 
+    {
+        return Boolean.parseBoolean( resolveAttribute(attrName) );
+    }
+
+        public Integer
+    resolveInteger( final String attrName) 
+    {
+        return Integer.parseInt( resolveAttribute(attrName) );
+    }
+
+        public Long
+    resolveLong( final String attrName) 
+    {
+        return Long.parseLong( resolveAttribute(attrName) );
     }
     
     
         public AttributeList
     resolveAttributes( final String[] attrNames )
     {
+        Issues.getAMXIssues().notDone( "resolveAttributes: use annotations to create the correct type" );
+                
         final AttributeList attrs = getAttributes(attrNames);
         final AttributeList resolvedAttrs = new AttributeList();
         for (final Object o : attrs )
@@ -375,7 +401,9 @@ cdebug( "asAMXAttributeName: no match: " + name );
             final Object value = r.getValue();
             if ( (value instanceof String) && AttributeResolverHelper.needsResolving((String)value) )
             {
-                r = new Attribute( r.getName(), resolveAttributeValue((String)value) );
+                final String resolvedValue = resolveAttributeValue((String)value);
+                // TODO: use annotation to determine correct type
+                r = new Attribute( r.getName(), resolvedValue );
             }
 
             resolvedAttrs.add( r );

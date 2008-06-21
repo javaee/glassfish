@@ -33,8 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
@@ -60,6 +58,7 @@ public interface WebServiceEndpointConfig extends NamedConfigElement, Container
     /**
     * visibility of this endoint as a service in JBI
     */
+    @ResolveTo(Boolean.class)
     public String getJBIEnabled();
 
     /**
@@ -83,6 +82,7 @@ public interface WebServiceEndpointConfig extends NamedConfigElement, Container
     * Gets the web service' max history size. Number of statistics stored in
     * memory.
     */
+    @ResolveTo(Integer.class)
     public String getMaxHistorySize();
 
     /**
@@ -147,6 +147,8 @@ public interface WebServiceEndpointConfig extends NamedConfigElement, Container
     * specified parameters
     */
     public TransformationRuleConfig createTransformationRuleConfig(
-         String name,  String ruleFileLocation,boolean enabled, String applyTo,
+         String name,  String ruleFileLocation, 
+         @ResolveTo(Boolean.class) String enabled,
+         String applyTo,
          Map<String,String> reserved);
 }

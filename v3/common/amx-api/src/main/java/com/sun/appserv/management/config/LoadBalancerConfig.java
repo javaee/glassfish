@@ -70,11 +70,12 @@ public interface LoadBalancerConfig extends AMXConfig, PropertiesAccess, NamedCo
       Return the boolean flag which indicates whether the changes to lb config 
       will be pushed or not.
      */
-    public boolean getAutoApplyEnabled();
+    @ResolveTo(Boolean.class)
+    public String getAutoApplyEnabled();
 
     /**
       Set the boolean flag to indicate whether the changes to lb config 
       will be pushed or not i.e. if true, changes will be pushed immediately
      */
-    public void	setAutoApplyEnabled(final boolean value);
+    public void	setAutoApplyEnabled(final String value);
 }

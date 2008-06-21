@@ -52,7 +52,7 @@ public interface AttributeResolver
 {
 	/**
         Resolve an attribute <em>value</em> to a literal.  The value should have been
-        previously obtained.
+        previously obtained from an Attribute of the same AMXConfig MBean.
         <p>
         If the String is not a template string, return the string unchanged.
         <p>
@@ -73,12 +73,34 @@ public interface AttributeResolver
 	 */
 	public String	resolveAttributeValue( String template );
     
-    /** calls getAttribute(), then returns the resolved value */
-	public String	resolveAttribute( String attributeName ) throws AttributeNotFoundException;
+    /** calls getAttribute(), then returns the resolved value or null */
+	public String	resolveAttribute( String attributeName );
     
-    /** calls getAttributes(), then returns all resolved values */
+    /** calls getAttribute(), then returns the resolved value
+        Legal classes include String, Boolean, Integer, Long
+	public <T> T	resolveAttribute( String attributeName, Class<T> clazz) throws AttributeNotFoundException;
+    */
+    
+    /** Get the Attribute and resolve it to a Boolean or null */
+	public Boolean	resolveBoolean( String attributeName);
+    
+    /** Get the Attribute and resolve it to an Integer or null */
+	public Integer	resolveInteger( String attributeName);
+    
+    /** Get the Attribute and resolve it to a Long or null */
+	public Long	resolveLong( String attributeName);
+    
+    /**
+        Calls getAttributes(), then returns all resolved values.  If the attributes
+        have been annotated with @ResolveTo, then the value is of the correct type
+        (eg String, Boolean, Integer).
+     */
 	public AttributeList	resolveAttributes( String[] attributeName );
 }
+
+
+
+
 
 
 

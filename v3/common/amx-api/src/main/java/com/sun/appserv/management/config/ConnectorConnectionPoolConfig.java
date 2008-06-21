@@ -83,12 +83,13 @@ public interface ConnectorConnectionPoolConfig
         Specifies if the connection that is about to   
         be returned is to be validated by the container.
       */
-    public boolean  getConnectionValidationRequired();
+    @ResolveTo(Boolean.class)
+    public String  getConnectionValidationRequired();
     
 	/**
 	    See {@link #getConnectionValidationRequired}.
 	*/
-    public void     setConnectionValidationRequired( final boolean required );
+    public void     setConnectionValidationRequired( final String required );
     
 	/**             
         Unique name, identifying one connection-definition in a       
@@ -107,12 +108,13 @@ public interface ConnectorConnectionPoolConfig
         false. One attempt will be made to re-establish failed        
         connections.               
 	*/
-	public boolean  getFailAllConnections();
+    @ResolveTo(Boolean.class)
+	public String  getFailAllConnections();
 	
 	/**
 	    See {@link #getFailAllConnections}.
 	*/
-	public void     setFailAllConnections( final boolean value );
+	public void     setFailAllConnections( final String value );
 
 	/**
         Maximum time in seconds, that a connection can remain idle in 
@@ -124,6 +126,7 @@ public interface ConnectorConnectionPoolConfig
         specific EIS), to prevent accumulation of unusable connection 
         in Application Server.                           
 	*/
+    @ResolveTo(Integer.class)
 	public String   getIdleTimeoutInSeconds();
 	
 	/**
@@ -134,6 +137,7 @@ public interface ConnectorConnectionPoolConfig
 	/**
         Maximum number of conections that can be created.
 	*/
+    @ResolveTo(Integer.class)
 	public String   getMaxPoolSize();
 	
 	/**
@@ -146,6 +150,7 @@ public interface ConnectorConnectionPoolConfig
         connection timeout. The default is 60 seconds. A value of 0   
         will force caller to wait indefinitely.            
 	*/
+    @ResolveTo(Integer.class)
 	public String   getMaxWaitTimeInMillis();
 	
 	/**
@@ -161,6 +166,7 @@ public interface ConnectorConnectionPoolConfig
         When the pool size reaches steady-pool-size, the connection   
         removal stops.                           
 	*/
+    @ResolveTo(Integer.class)
 	public String   getPoolResizeQuantity();
 	
 	/**
@@ -183,6 +189,7 @@ public interface ConnectorConnectionPoolConfig
         Minimum and initial number of connections maintained in the   
         pool.                                        
 	*/
+    @ResolveTo(Integer.class)
 	public String   getSteadyPoolSize();
 	
 	/**
@@ -241,6 +248,7 @@ public interface ConnectorConnectionPoolConfig
          on leak tracing.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String  getConnectionLeakTimeoutInSeconds();
     
     /**
@@ -255,6 +263,7 @@ public interface ConnectorConnectionPoolConfig
          connection-leak-timeout-in-seconds occurs. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getConnectionLeakReclaim();
     
     /**
@@ -269,6 +278,7 @@ public interface ConnectorConnectionPoolConfig
          implies no retries.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getConnectionCreationRetryAttempts();
     
     /**
@@ -284,6 +294,7 @@ public interface ConnectorConnectionPoolConfig
          greater than 0.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getConnectionCreationRetryIntervalInSeconds();
     
     /**
@@ -298,6 +309,7 @@ public interface ConnectorConnectionPoolConfig
          Default is 0 seconds, not enabled.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getValidateAtMostOncePeriodInSeconds();
     
     /**
@@ -314,6 +326,7 @@ public interface ConnectorConnectionPoolConfig
          cached in the calling components. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getLazyConnectionEnlistment();
     
     /**
@@ -330,6 +343,7 @@ public interface ConnectorConnectionPoolConfig
          connections. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getLazyConnectionAssociation();
     
     /**
@@ -346,6 +360,7 @@ public interface ConnectorConnectionPoolConfig
         of getting a connection from the pool. Default value is false.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getAssociateWithThread();
     
     /**
@@ -364,6 +379,7 @@ public interface ConnectorConnectionPoolConfig
         need not be matched by the resource adapter. Default value is true.
          @since AppServer 9.1
      */
+    @ResolveTo(Boolean.class)
     String     getMatchConnections();
     
     /**
@@ -380,6 +396,7 @@ public interface ConnectorConnectionPoolConfig
         Default value is 0, which implies the feature is not enabled.
          @since AppServer 9.1
      */
+    @ResolveTo(Integer.class)
     String     getMaxConnectionUsageCount();
     
     /**

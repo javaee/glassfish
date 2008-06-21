@@ -63,6 +63,7 @@ public interface LBConfig extends
       or otherwise it will be considered unhealthy. Must be greater than or 
       equal to 0. 
      */
+    @ResolveTo(Integer.class)
     public String getResponseTimeoutInSeconds();
 
     /**
@@ -79,6 +80,7 @@ public interface LBConfig extends
       result in an HTTPS request to the server; if false, then HTTPS requests 
       to the load-balancer result in HTTP requests to the server. 
      */
+    @ResolveTo(Boolean.class)
     public String getHttpsRouting();
 
     /**
@@ -96,6 +98,7 @@ public interface LBConfig extends
       the load balancer and the file reloaded. A value of 0
       indicates that reloading is disabled. 
      */
+    @ResolveTo(Integer.class)
     public String getReloadPollIntervalInSeconds();
 
     /**
@@ -110,6 +113,7 @@ public interface LBConfig extends
       Returns the String flag that determines whether monitoring is switched
       on or not. Default is that monitoring is switched off (false)
      */
+    @ResolveTo(Boolean.class)
     public String getMonitoringEnabled();
 
     /**
@@ -122,6 +126,7 @@ public interface LBConfig extends
       Returns the String flag that determines whether a route cookie is or is
       not enabled.
      */
+    @ResolveTo(Boolean.class)
     public String getRouteCookieEnabled();
 
     /**

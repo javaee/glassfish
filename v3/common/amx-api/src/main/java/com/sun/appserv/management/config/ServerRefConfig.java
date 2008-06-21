@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ServerRefConfig.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
@@ -57,13 +50,14 @@ public interface ServerRefConfig extends RefConfig, HealthCheckerConfigCR, Conta
         returns the time, in minutes, that it takes this application to reach
         a quiescent state after having been disabled
      */        
-    public int getDisableTimeoutInMinutes();
+    @ResolveTo(Integer.class)
+    public String getDisableTimeoutInMinutes();
 
     /**
         Set the time, in minutes, that it takes this application to reach
         a quiescent state after having been disabled
      */        
-    public void setDisableTimeoutInMinutes(final int timeoutInMins);
+    public void setDisableTimeoutInMinutes(final String timeoutInMins);
 
     /**
         <b>EE only</b>
@@ -71,7 +65,8 @@ public interface ServerRefConfig extends RefConfig, HealthCheckerConfigCR, Conta
         this application to consider this application unavailable to
         them. Defaults to unavailable (false).
      */    
-    public boolean getLBEnabled();
+    @ResolveTo(Boolean.class)
+    public String getLBEnabled();
 
     /**
         <b>EE only</b>
@@ -79,5 +74,5 @@ public interface ServerRefConfig extends RefConfig, HealthCheckerConfigCR, Conta
         this application to consider this application unavailable to
         them. 
      */    
-     public void setLBEnabled(final boolean String);        
+     public void setLBEnabled(final String enabled);        
 }

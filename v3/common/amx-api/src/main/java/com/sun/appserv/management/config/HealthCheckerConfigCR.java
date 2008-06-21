@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/HealthCheckerConfigCR.java,v 1.2 2007/05/05 05:30:33 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:33 $
- */
-
 package com.sun.appserv.management.config;
 
 /**
@@ -62,8 +55,10 @@ public interface HealthCheckerConfigCR {
           healthy. Default is 10 seconds. Must be greater than 0.
       @return A proxy to the HealthCheckerConfig MBean.
     */
-    public HealthCheckerConfig createHealthCheckerConfig(String url, 
-        String intervalInSeconds, String timeoutInSeconds);
+    public HealthCheckerConfig createHealthCheckerConfig(
+        String url, 
+        @ResolveTo(Integer.class) String intervalInSeconds,
+        @ResolveTo(Integer.class) String timeoutInSeconds);
 
     /**
       Removes a health checker config from the container config element

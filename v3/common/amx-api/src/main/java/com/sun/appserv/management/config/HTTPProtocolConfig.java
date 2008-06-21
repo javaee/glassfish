@@ -51,6 +51,7 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
         <b>DO NOT USE, use {@link #getDefaultType}</b>
         @Deprecated
      */
+    @ResolveTo(Integer.class)
 	public String	getDefaultResponseType();
     
 	/**
@@ -59,8 +60,9 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
 	*/
 	public void	setDefaultResponseType( final String value );
 
-	public boolean	getDNSLookupEnabled();
-	public void	setDNSLookupEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getDNSLookupEnabled();
+	public void	setDNSLookupEnabled( final String value );
 
 
 	/**
@@ -91,8 +93,9 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
 	*/
 	public void	setForcedResponseType( final String value );
 
-	public boolean	getSSLEnabled();
-	public void	setSSLEnabled( final boolean value );
+    @ResolveTo(Boolean.class)
+	public String	getSSLEnabled();
+	public void	setSSLEnabled( final String value );
 
 	public String	getVersion();
 	public void	setVersion( final String value );

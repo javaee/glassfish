@@ -33,73 +33,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.Singleton;
-import com.sun.appserv.management.base.XTypes;
-
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
 
 /**
-	
-	 Configuration for the &lt;das-config&gt; element.
-	
-	The name is confusing, this item actually lives inside an <admin-service>,
-	which is in turn inside a <config>
+    Specifies to what data type (class) a String value taken from or inserted into
+    configuration should have.  Annotates Attribute getters as well as parameters
+    for creating elements. For example:<br>
+    @ResolveTo(Boolean.class) String getDoIt();<br>
+    SomeConfig createSomeConfig( @ResolveTo(Integer.class) String port );
+    <p>
  */
-public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD,ElementType.PARAMETER})
+public @interface ResolveTo
 {
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.DAS_CONFIG;
-	
-    @ResolveTo(Integer.class)
-	public String	getAdminSessionTimeoutInMinutes();
-	public void	setAdminSessionTimeoutInMinutes( String value );
-
-	public String	getAutodeployDir();
-	public void	setAutodeployDir( String value );
-
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployEnabled();
-	public void	setAutodeployEnabled( String value );
-
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployJSPPrecompilationEnabled();
-	public void	setAutodeployJSPPrecompilationEnabled( String value );
-
-    @ResolveTo(Integer.class)
-	public String	getAutodeployPollingIntervalInSeconds();
-	public void	setAutodeployPollingIntervalInSeconds( String value );
-
-    @ResolveTo(Boolean.class)
-	public String	getAutodeployVerifierEnabled();
-	public void	setAutodeployVerifierEnabled( String value );
-
     /**
-       @since Glassfish V3
+        The intended type (class) of the data type once resolved from its String form.
+        For example, the String value of a boolean attribute could be  a variable eg
+        ${...} or simply "true" or "false".
+        <p>
+        The only legal types are String, Boolean, Integer, Long.  Do not specify the
+        primitive classes (eg boolean).
      */
-    @ResolveTo(Integer.class)
-    public String  getAutodeployRetryTimeout();
-    
-    /**
-       @since Glassfish V3
-     */
-    public void setAutodeployRetryTimeout( String value );
-
-	/**
-		See {@link ValidationLevelValues}.  Read-only.
-	 */
-	public String	getDeployXMLValidation();
-
-    @ResolveTo(Boolean.class)
-	public String	getDynamicReloadEnabled();
-	public void	setDynamicReloadEnabled( String value );
-
-    @ResolveTo(Integer.class)
-	public String	getDynamicReloadPollIntervalInSeconds();
-	public void	setDynamicReloadPollIntervalInSeconds( String value );
-
-
-
-
+    public Class<?> value() default String.class;
 }

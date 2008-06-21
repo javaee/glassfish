@@ -60,6 +60,7 @@ public interface JavaConfig
 	public String	getClasspathSuffix();
 	public void	setClasspathSuffix( String value );
 
+    @ResolveTo(Boolean.class)
 	public String	getDebugEnabled();
 	public void	setDebugEnabled( String value );
 

@@ -33,14 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/AvailabilityServiceConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Container;
@@ -95,6 +87,9 @@ public interface AvailabilityServiceConfig
 		Get the WebContainerAvailabilityConfig MBean.
 	 */
 	WebContainerAvailabilityConfig		getWebContainerAvailabilityConfig();
+    
+    
+    @ResolveTo(Boolean.class)
 	String getAvailabilityEnabled();
 	void	setAvailabilityEnabled( String enabled );
 
@@ -108,6 +103,7 @@ public interface AvailabilityServiceConfig
 	* @return the value of auto-manage-ha-store
 	* @since AppServer 9.0
 	*/
+    @ResolveTo(Boolean.class)
 	String	getAutoManageHAStore();
 	/**
 	 * If set to true, the lifecycle of the highly available store   
@@ -185,6 +181,7 @@ public interface AvailabilityServiceConfig
 	 * @return the port number
      * @since AppServer 9.0
 	 */
+    @ResolveTo(Integer.class)
 	String	getHAAgentPort();
 	
 	/**
@@ -210,6 +207,7 @@ public interface AvailabilityServiceConfig
 	 * @return the interval time in seconds
      * @since AppServer 9.0
 	 */
+    @ResolveTo(Integer.class)
 	String	getHAStoreHealthcheckIntervalSeconds();
 
 	/**

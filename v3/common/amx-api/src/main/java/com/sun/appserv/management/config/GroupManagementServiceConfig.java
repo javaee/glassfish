@@ -56,6 +56,7 @@ public interface GroupManagementServiceConfig
      *  failure is suspected in the group.
      *  @return positive integer specifying the number of such attempts
      */
+    @ResolveTo(Integer.class)
     public String getFDProtocolMaxTries();
     /** Set the FD protocol tries to the specified positive integer value.
       * Must be a positive integer.
@@ -64,18 +65,23 @@ public interface GroupManagementServiceConfig
     public void setFDProtocolMaxTries(final String tries);
 
 
+    @ResolveTo(Integer.class)
     public String getFDProtocolTimeoutMillis();
     public void setFDProtocolTimeoutMillis(final String duration);
 
+    @ResolveTo(Integer.class)
     public String getMergeProtocolMaxIntervalMillis();
     public void setMergeProtocolMaxIntervalMillis(final String duration);
 
+    @ResolveTo(Integer.class)
     public String getMergeProtocolMinIntervalMillis();
     public void setMergeProtocolMinIntervalMillis(final String duration);
 
+    @ResolveTo(Integer.class)
     public String getPingProtocolTimeoutMillis();
     public void setPingProtocolTimeoutMillis(final String duration);
 
+    @ResolveTo(Integer.class)
     public String getVSProtocolTimeoutMillis();
     public void setVSProtocolTimeoutMillis(final String duration);
 }

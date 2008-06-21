@@ -33,12 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/VirtualServerConfig.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
 
 package com.sun.appserv.management.config;
 
@@ -97,7 +91,7 @@ public interface VirtualServerConfig
 		@return A proxy to the HTTPAccessLogConfig MBean.
 	 */
 	public HTTPAccessLogConfig createHTTPAccessLogConfig(
-		final boolean	ipOnly,
+        @ResolveTo(Boolean .class) final String	ipOnly,
 		final String	logDirectory,
 		final Map<String,String>		reserved );
 }

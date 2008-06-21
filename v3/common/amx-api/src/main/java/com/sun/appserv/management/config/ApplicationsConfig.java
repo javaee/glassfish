@@ -212,7 +212,7 @@ public interface ApplicationsConfig
                         	        String name,
                         	        String implClassname,
                         	        String objectName,
-                        	        boolean enabled,
+                                    @ResolveTo(Boolean.class) String enabled,
                         	        Map<String,String> reserved );
                         	        
     /** 
@@ -267,9 +267,9 @@ public interface ApplicationsConfig
 	                            String description,
 	                            String classname,
 	                            String classpath, 
-	                            String loadOrder,
-	                            boolean	isFailureFatal,
-	                            boolean enabled,
+	                            @ResolveTo(Integer.class) String loadOrder,
+	                            @ResolveTo(Boolean.class) String isFailureFatal,
+	                            @ResolveTo(Boolean.class) String enabled,
 	                            Map<String,String>		reserved );
 
 	/**
