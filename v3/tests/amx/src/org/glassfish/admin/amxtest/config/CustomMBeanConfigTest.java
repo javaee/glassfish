@@ -93,7 +93,7 @@ public final class CustomMBeanConfigTest
         final CustomMBeanConfig custom =
                 domainConfig.getResourcesConfig().createCustomMBeanConfig(name, IMPL_CLASSNAME,
                                                                           createObjectName(name),
-                                                                          false,
+                                                                          "false",
                                                                           optional);
 
         return custom;

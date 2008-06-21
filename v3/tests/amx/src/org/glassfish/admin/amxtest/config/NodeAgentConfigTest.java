@@ -53,7 +53,7 @@ public final class NodeAgentConfigTest
     sanityCheck(final NodeAgentConfig na) {
         final JMXConnectorConfig jmx = na.getJMXConnectorConfig();
 
-        final boolean startServers = na.getStartServersInStartup();
+        final String startServers = na.getStartServersInStartup();
         na.setStartServersInStartup(startServers);
 
         final String name = na.getSystemJMXConnectorName();

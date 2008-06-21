@@ -121,7 +121,7 @@ public final class VirtualServerConfigTest
             assert (newVS.getHTTPAccessLogConfig() == null);
 
             final HTTPAccessLogConfig accessLog =
-                    newVS.createHTTPAccessLogConfig(false, "${com.sun.aas.instanceRoot}/logs/access", null);
+                    newVS.createHTTPAccessLogConfig("false", "${com.sun.aas.instanceRoot}/logs/access", null);
             assert (accessLog != null);
             assert (Util.getObjectName(accessLog).equals(Util.getObjectName(newVS.getHTTPAccessLogConfig())));
 
