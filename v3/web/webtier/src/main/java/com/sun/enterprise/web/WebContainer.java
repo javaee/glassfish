@@ -80,8 +80,6 @@ import org.apache.jasper.xmlparser.ParserUtils;
 
 import com.sun.grizzly.util.http.mapper.Mapper;
 
-//import com.sun.enterprise.config.ConfigContext;
-//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -143,14 +141,6 @@ import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
-
-//HERCULES:add
-//admin event imports
-//import com.sun.enterprise.admin.event.ApplicationDeployEvent;
-//import com.sun.enterprise.admin.event.ApplicationDeployEventListener;
-//import com.sun.enterprise.admin.event.ModuleDeployEvent;
-//import com.sun.enterprise.admin.event.ModuleDeployEventListener;
-//end HERCULES:add
 
 // Begin EE: 4927099 load only associated applications
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -599,22 +589,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _logger.info("Created virtual server " + vs.getId());
             }
         }
-
-        /*
-        Engine[] engines =  _embedded.getEngines();
-
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsList = engines[j].findChildren();
-            for (int i = 0; i < vsList.length; i++) {
-                // Load all the standalone web modules for each VS
-                loadWebModules((VirtualServer)vsList[i]);
-            }
-        }
-
-        
-        // Load the web modules specified in each j2ee-application
-        loadAllJ2EEApplicationWebModules(true);
-        */
 
         loadDefaultWebModules();
        
@@ -2129,72 +2103,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // --------------------------------------------------------- end Replication
 
-    // ------------------------------------------------ Admin Event Processing
-
-    //private WebContainerAdminEventProcessor _adminEventProcessor = null;
-
-    //HERCULES:add
-    /*public void registerAdminEvents() {
-
-        EventListenerRegistry registry = _serverContext.getDefaultHabitat().getComponent(EventListenerRegistry.class);
-        if (registry!=null) {
-            registry.addEventListener(ApplicationDeployEvent.class.getName(), this);
-            registry.addEventListener(ModuleDeployEvent.class.getName(), this);
-        }
-        WebContainerFeatureFactory webContainerFeatureFactory =
-                _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
-        _adminEventProcessor =
-            webFeatureFactory.getWebContainerAdminEventProcessor();
-        _adminEventProcessor.init(_embedded);
-    }
-
-    public void unregisterAdminEvents() {
-
-        EventListenerRegistry registry = _serverContext.getDefaultHabitat().getComponent(EventListenerRegistry.class);
-        if (registry!=null) {
-            registry.removeEventListener(this);
-        }
-        _adminEventProcessor = null;
-    }
-
-    public void applicationDeployed(ApplicationDeployEvent deployEvent) {
-        _adminEventProcessor.applicationDeployed(deployEvent);
-    }
-
-    public void applicationUndeployed(ApplicationDeployEvent deployEvent) {
-        _adminEventProcessor.applicationUndeployed(deployEvent);
-    }
-
-    public void applicationRedeployed(ApplicationDeployEvent deployEvent) {
-        _adminEventProcessor.applicationRedeployed(deployEvent);
-    }
-
-    public void applicationEnabled(ApplicationDeployEvent deployEvent) {
-    }
-
-    public void applicationDisabled(ApplicationDeployEvent deployEvent) {
-    }
-
-    public void moduleDeployed(ModuleDeployEvent deployEvent) {
-        _adminEventProcessor.moduleDeployed(deployEvent);
-    }
-
-    public void moduleUndeployed(ModuleDeployEvent deployEvent) {
-        _adminEventProcessor.moduleUndeployed(deployEvent);
-    }
-
-    public void moduleRedeployed(ModuleDeployEvent deployEvent) {
-        _adminEventProcessor.moduleRedeployed(deployEvent);
-    }
-
-    public void moduleEnabled(ModuleDeployEvent deployEvent) {
-    }
-
-    public void moduleDisabled(ModuleDeployEvent deployEvent) {
-    }
-    //end HERCULES:add
-     */
-
     // -------------------------------------- Monitoring Level Event Processing
     /*
     public void registerMonitoringLevelEvents() {
@@ -2343,7 +2251,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //ejbWebServiceRegistryListener.unregister(_serverContext.getDefaultHabitat());
 
         //HERCULES:mod
-        //unregisterAdminEvents();
         //unregisterMonitoringLevelEvents();
         stopHealthChecker();
         WebContainerStartStopOperation startStopOperation =
@@ -2392,36 +2299,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     // -------------------------------------------------------- Private Methods
-
-    /**
-     * Loads all the standalone web-modules that are hosted (as specified by
-     * the server configuration) under the specified virtual server.
-     *
-    protected void loadWebModules(VirtualServer vs) {
-        WebModuleConfig wmInfo = null;
-
-        String defaultWebModuleId = vs.getDefaultWebModuleID();
-
-        // Get a list of the web modules to be loaded on this virtual server
-        List modules = vs.getWebModules(_serverBean, _modulesRoot);
-        if ((modules != null) && (modules.size() > 0)) {
-            ListIterator iterator = modules.listIterator();
-            while (iterator.hasNext()) {
-                wmInfo = (WebModuleConfig) iterator.next();
-                if (defaultWebModuleId != null && "".equals(wmInfo.getContextPath())) {
-                    _logger.log(Level.SEVERE, "webcontainer.defaultWebModuleConflict",
-                            new Object[] { wmInfo.getName(),
-                            wmInfo.getContextPath(),
-                            vs.getID() });
-                }
-                // load the stand alone web module if it is enabled
-                if (wmInfo != null &&
-                        isEnabled(wmInfo.getName())) {
-                    loadStandaloneWebModule(vs, wmInfo);
-                }
-            }
-        }
-    }*/
 
     /**
      * Configures a default web module for each virtual server.

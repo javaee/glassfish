@@ -439,75 +439,7 @@ public class VirtualServer extends StandardHost {
         }
     }
 
-
     // ------------------------------------------------------ Protected Methods
-
-    /**
-     * Return the list of enabled web-modules configured for this
-     * virtual server.
-     *
-     * @return     The list of WebModuleConfig objects for all enabled
-     *             web-modules hosted under the specified virtual server.
-     *
-    
-    protected List getWebModules(Server serverBean, String modulesRoot) {
-
-        List modules = new Vector();
-
-        Domain domain = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Domain.class);
-        Applications appsBean = domain.getApplications();
-        
-        if (appsBean != null) {
-            List apps = appsBean.getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
-            for (Object app : apps) {
-                if (app instanceof WebModule) {
-                    WebModule wm = (WebModule) app;
-                    if (isActive(wm)) {                      
-                        // skips if the web module is not referenced by 
-                        // this server
-                        
-                        ApplicationRef ref = null;
-                        for (ApplicationRef ar : serverBean.getApplicationRef()) {
-                            if (ar.getRef().equals(wm.getName())) {
-                                ref = ar;
-                                break;
-                            }
-                        }
-                        if (ref == null) {
-                            continue;
-                        }                       
-
-                        String location = wm.getLocation();
-                        // If module root is relative then prefix it with the 
-                        // location of where all the standalone modules for 
-                        // this server instance are deployed
-                        File moduleBase = new File(location);
-                        try {
-                        if (!moduleBase.isAbsolute()) {
-                            location = modulesRoot+File.separator+location;
-                            wm.setLocation(location);
-                        }
-                        }
-                        catch (PropertyVetoException pve) {
-                            // XXX
-                        }
-                        WebModuleConfig wmInfo = loadWebModuleConfig(wm);
-                        if (wmInfo != null)
-                            modules.add(wmInfo);
-                    } else {
-                        if (_debug) {
-                            _logger.finer("Web Module [" + wm.getName() + 
-                                          "] is not applicable for virtual " +
-                                          " server [" + getID() + "]");
-                        }
-                    }
-                }
-            }
-        }
-        
-        return modules;
-        
-    }*/
 
     /**
      * Gets the context root of the web module that the user/configuration
