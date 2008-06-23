@@ -339,7 +339,7 @@ public class ApplicationHandlers {
             @HandlerInput(name="javaWebStart", type=Boolean.class),
             @HandlerInput(name="threadPool", type=String.class),
             @HandlerInput(name="enabled", type=Boolean.class),
-            @HandlerInput(name="availEnabled", type=Boolean.class)
+            @HandlerInput(name="availEnabled", type=String.class)
         })
     public static void saveApplicationInfo(HandlerContext handlerCtx) {
 
@@ -354,9 +354,7 @@ public class ApplicationHandlers {
 	    if (appConfig != null){
 		appConfig.setContextRoot((String)handlerCtx.getInputValue("contextRoot"));
                 if (amxRoot.isEE()){
-                    Boolean ae = (Boolean)handlerCtx.getInputValue("availEnabled");
-                    if (ae != null)
-                        appConfig.setAvailabilityEnabled(ae);
+                    appConfig.setAvailabilityEnabled((String) handlerCtx.getInputValue("availEnabled"));
                 }
 		else {
                     String vs = (String)handlerCtx.getInputValue("vs");
@@ -487,7 +485,7 @@ public class ApplicationHandlers {
             @HandlerInput(name="classpath", type=String.class),
             @HandlerInput(name="loadOrder", type=String.class),
             @HandlerInput(name="enabled", type=Boolean.class),
-            @HandlerInput(name="isFailureFatal", type=Boolean.class),
+            @HandlerInput(name="isFailureFatal", type=String.class),
             @HandlerInput(name="AddProps",    type=Map.class),
             @HandlerInput(name="RemoveProps", type=ArrayList.class)
         })
@@ -504,7 +502,7 @@ public class ApplicationHandlers {
         module.setClassname((String)handlerCtx.getInputValue("classname"));
         module.setClasspath((String)handlerCtx.getInputValue("classpath"));
         module.setLoadOrder((String)handlerCtx.getInputValue("loadOrder"));
-        module.setIsFailureFatal((Boolean)handlerCtx.getInputValue("isFailureFatal"));
+        module.setIsFailureFatal((String)handlerCtx.getInputValue("isFailureFatal"));
         if (! amxRoot.isEE()){
             Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
             TargetUtil.setApplicationEnabled(module, "server", enabled); 
@@ -919,7 +917,7 @@ public class ApplicationHandlers {
             HashMap oneRow = new HashMap();
             oneRow.put("name", appConfig.getName());
             oneRow.put("selected",false);
-            boolean javaWebStart = appConfig.getJavaWebStartEnabled();
+            boolean javaWebStart = "true".equalsIgnoreCase( appConfig.getJavaWebStartEnabled());
             if (javaWebStart){
                 oneRow.put("javaWebStart", "true");
                 oneRow.put("hasLaunch", true);
@@ -1171,7 +1169,7 @@ public class ApplicationHandlers {
                     oneRow.put("timeout", "");
                 }else{
                     oneRow.put("enabled", refObject.getEnabled());
-                    oneRow.put("lbEnabled", refObject.getLBEnabled()? "true" : "false");
+                    oneRow.put("lbEnabled", refObject.getLBEnabled());
                     oneRow.put("timeout", refObject.getDisableTimeoutInMinutes());
                 }
                 oneRow.put("name", appName);
@@ -1206,7 +1204,7 @@ public class ApplicationHandlers {
             String appType = amxRoot.getAppType(appName);
             
             if(includeAppRef(appName, appType, null)){
-                if (refObject.getLBEnabled())
+                if ("true".equalsIgnoreCase(refObject.getLBEnabled()));
                     totalEnabled++;
                 totalCount++;
             }

@@ -150,29 +150,29 @@ public class ServerHandlers {
 	input={
 	    @HandlerInput(name="ConfigName", type=String.class, required=true)},      
     output={
-        @HandlerOutput(name="Reload",     type=Boolean.class),
+        @HandlerOutput(name="Reload",     type=String.class),
         @HandlerOutput(name="ReloadInterval", type=String.class),
-        @HandlerOutput(name="AutoDeploy", type=Boolean.class),
+        @HandlerOutput(name="AutoDeploy", type=String.class),
         @HandlerOutput(name="AdminTimeout", type=String.class),
         @HandlerOutput(name="AutoDeployInterval", type=String.class),
         @HandlerOutput(name="AutoDeployTimeout", type=String.class),
-        @HandlerOutput(name="Verifier", type=Boolean.class),
-        @HandlerOutput(name="Precompile", type=Boolean.class),
+        @HandlerOutput(name="Verifier", type=String.class),
+        @HandlerOutput(name="Precompile", type=String.class),
         @HandlerOutput(name="AutoDeployDirectory", type=String.class),
         @HandlerOutput(name="Properties", type=Map.class)})     
         public static void getServerAppsConfigAttributes(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-        boolean reload = dConfig.getDynamicReloadEnabled();
+        String reload = dConfig.getDynamicReloadEnabled();
         String reloadInterval = dConfig.getDynamicReloadPollIntervalInSeconds();
-        boolean autoDeploy = dConfig.getAutodeployEnabled();
+        String autoDeploy = dConfig.getAutodeployEnabled();
         String adminTimeout = dConfig.getAdminSessionTimeoutInMinutes();
         String autoDeployInterval = dConfig.getAutodeployPollingIntervalInSeconds();
         String autoDeployTimeout = dConfig.getAutodeployRetryTimeout();
         String autoDeployDirectory = dConfig.getAutodeployDir() ;
-        boolean precompile = dConfig.getAutodeployJSPPrecompilationEnabled();
-        boolean verifier = dConfig.getAutodeployVerifierEnabled();
+        String precompile = dConfig.getAutodeployJSPPrecompilationEnabled();
+        String verifier = dConfig.getAutodeployVerifierEnabled();
         handlerCtx.setOutputValue("Reload", reload);
         handlerCtx.setOutputValue("ReloadInterval", reloadInterval);
         handlerCtx.setOutputValue("AutoDeploy", autoDeploy);
@@ -272,28 +272,28 @@ public class ServerHandlers {
     @Handler(id="saveServerAppsConfigAttributes",
     input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),        
-        @HandlerInput(name="Reload",     type=Boolean.class),
+        @HandlerInput(name="Reload",     type=String.class),
         @HandlerInput(name="ReloadInterval", type=String.class),
-        @HandlerInput(name="AutoDeploy", type=Boolean.class),
+        @HandlerInput(name="AutoDeploy", type=String.class),
         @HandlerInput(name="AdminTimeout", type=String.class),
         @HandlerInput(name="AutoDeployInterval", type=String.class),
         @HandlerInput(name="AutoDeployTimeout", type=String.class),
-        @HandlerInput(name="Verifier", type=Boolean.class),
-        @HandlerInput(name="Precompile", type=Boolean.class),
+        @HandlerInput(name="Verifier", type=String.class),
+        @HandlerInput(name="Precompile", type=String.class),
         @HandlerInput(name="AutoDeployDirectory", type=String.class),
         @HandlerInput(name="newProps",    type=Map.class)})
         public static void saveServerAppsConfigAttributes(HandlerContext handlerCtx) {
             ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
             DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-            dConfig.setDynamicReloadEnabled(((Boolean)handlerCtx.getInputValue("Reload")).booleanValue());
+            dConfig.setDynamicReloadEnabled((String)handlerCtx.getInputValue("Reload"));
             dConfig.setDynamicReloadPollIntervalInSeconds((String)handlerCtx.getInputValue("ReloadInterval"));
-            dConfig.setAutodeployEnabled(((Boolean)handlerCtx.getInputValue("AutoDeploy")).booleanValue());
+            dConfig.setAutodeployEnabled( (String) handlerCtx.getInputValue("AutoDeploy"));
             dConfig.setAdminSessionTimeoutInMinutes((String)handlerCtx.getInputValue("AdminTimeout"));
             dConfig.setAutodeployPollingIntervalInSeconds((String)handlerCtx.getInputValue("AutoDeployInterval"));
             dConfig.setAutodeployRetryTimeout((String)handlerCtx.getInputValue("AutoDeployTimeout"));
             dConfig.setAutodeployDir((String)handlerCtx.getInputValue("AutoDeployDirectory")) ;
-            dConfig.setAutodeployJSPPrecompilationEnabled(((Boolean)handlerCtx.getInputValue("Precompile")).booleanValue());
-            dConfig.setAutodeployVerifierEnabled(((Boolean)handlerCtx.getInputValue("Verifier")).booleanValue());
+            dConfig.setAutodeployJSPPrecompilationEnabled((String)handlerCtx.getInputValue("Precompile"));
+            dConfig.setAutodeployVerifierEnabled((String)handlerCtx.getInputValue("Verifier"));
             AMXUtil.updateProperties( dConfig, (Map)handlerCtx.getInputValue("newProps"));
         }
     
@@ -952,8 +952,8 @@ public class ServerHandlers {
 	    @HandlerInput(name="ConfigName", type=String.class, required=true)},        
     output={
         @HandlerOutput(name="LogFile",     type=String.class),
-        @HandlerOutput(name="Alarms", type=Boolean.class),
-        @HandlerOutput(name="SystemLog", type=Boolean.class),
+        @HandlerOutput(name="Alarms", type=String.class),
+        @HandlerOutput(name="SystemLog", type=String.class),
         @HandlerOutput(name="LogHandler", type=String.class),
         @HandlerOutput(name="LogFilter", type=String.class),
         @HandlerOutput(name="RotationLimit", type=String.class),
@@ -964,8 +964,8 @@ public class ServerHandlers {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         LogServiceConfig lc = config.getLogServiceConfig();
         String logFile = lc.getFile();
-        boolean alarms = lc.getAlarms();
-        boolean systemLog = lc.getUseSystemLogging();        
+        String alarms = lc.getAlarms();
+        String systemLog = lc.getUseSystemLogging();        
         String logHandler = lc.getLogHandler();
         String logFilter = lc.getLogFilter();
         String rotationLimit = lc.getLogRotationLimitInBytes();
@@ -1002,8 +1002,8 @@ public class ServerHandlers {
     input={
         @HandlerInput(name="ConfigName",  type=String.class, required=true),
         @HandlerInput(name="LogFile",  type=String.class),
-        @HandlerInput(name="Alarms", type=Boolean.class),
-        @HandlerInput(name="SystemLog", type=Boolean.class),
+        @HandlerInput(name="Alarms", type=String.class),
+        @HandlerInput(name="SystemLog", type=String.class),
         @HandlerInput(name="LogHandler", type=String.class),
         @HandlerInput(name="LogFilter", type=String.class),
         @HandlerInput(name="RotationLimit", type=String.class),
@@ -1032,8 +1032,8 @@ public class ServerHandlers {
                     }
                 }         
                 lc.setFile((String)handlerCtx.getInputValue("LogFile"));
-                lc.setAlarms(((Boolean)handlerCtx.getInputValue("Alarms")).booleanValue());
-                lc.setUseSystemLogging(((Boolean)handlerCtx.getInputValue("SystemLog")).booleanValue());
+                lc.setAlarms( (String) handlerCtx.getInputValue("Alarms"));
+                lc.setUseSystemLogging( (String) handlerCtx.getInputValue("SystemLog"));
                 lc.setLogHandler((String)handlerCtx.getInputValue("LogHandler"));
                 lc.setLogFilter((String)handlerCtx.getInputValue("LogFilter"));
                 lc.setLogRotationLimitInBytes((String)handlerCtx.getInputValue("RotationLimit"));

@@ -62,7 +62,6 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Properties;
-import java.io.File;
 
 
 import org.glassfish.admingui.util.AMXRoot;
@@ -322,8 +321,8 @@ public class ConnectorsHandlers {
 @HandlerInput(name = "poolResizeQuantity", type = String.class),
 @HandlerInput(name = "idleTimeoutInSeconds", type = String.class),
 @HandlerInput(name = "maxWaitTimeInMillis", type = String.class),
-@HandlerInput(name = "isConnectionValidationRequired", type = Boolean.class),
-@HandlerInput(name = "failAllConnections", type = Boolean.class),
+@HandlerInput(name = "isConnectionValidationRequired", type = String.class),
+@HandlerInput(name = "failAllConnections", type = String.class),
 @HandlerInput(name = "isIsolationLevelGuaranteed", type = Boolean.class),
 @HandlerInput(name = "transactionSupport", type = String.class)
 })
@@ -347,9 +346,9 @@ public class ConnectorsHandlers {
             pool.setPoolResizeQuantity((String) handlerCtx.getInputValue("poolResizeQuantity"));
             pool.setIdleTimeoutInSeconds((String) handlerCtx.getInputValue("idleTimeoutInSeconds"));
             pool.setMaxWaitTimeInMillis((String) handlerCtx.getInputValue("maxWaitTimeInMillis"));
-            pool.setConnectionValidationRequired((Boolean) handlerCtx.getInputValue("isConnectionValidationRequired"));
+            pool.setConnectionValidationRequired((String) handlerCtx.getInputValue("isConnectionValidationRequired"));
             pool.setTransactionSupport((String) handlerCtx.getInputValue("transactionSupport"));
-            pool.setFailAllConnections((Boolean) handlerCtx.getInputValue("failAllConnections"));
+            pool.setFailAllConnections((String) handlerCtx.getInputValue("failAllConnections"));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }

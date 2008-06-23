@@ -244,7 +244,7 @@ public class TargetUtil {
         DeployedItemRefConfig ref = getDeployedItemRefObject(name, target);
         if (forLB){
             if (ref != null)
-                return ref.getLBEnabled();
+                return Boolean.valueOf(ref.getLBEnabled());
             else
                 return false;
         }
@@ -268,7 +268,7 @@ public class TargetUtil {
 	DeployedItemRefConfig ref = getDeployedItemRefObject(name, target);
         if (forLB){
             if (ref != null){
-                    ref.setLBEnabled(enabledFlag);
+                    ref.setLBEnabled(Boolean.toString(enabledFlag));
             }
             return;
         }
@@ -409,7 +409,7 @@ public class TargetUtil {
         if (totalCount == 0) return GuiUtil.getMessage("loadBalancer.noInstance");
         int totalEnabled = 0;
         for(ServerRefConfig ref : refs){
-            if (ref.getLBEnabled())
+            if (Boolean.valueOf(ref.getLBEnabled()));
                 totalEnabled++;
         }
         return GuiUtil.getMessage("loadBalancer.numLBInstance", new Object[]{""+totalEnabled, ""+totalCount});

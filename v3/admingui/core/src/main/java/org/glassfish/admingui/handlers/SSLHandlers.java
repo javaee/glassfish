@@ -166,11 +166,11 @@ public class SSLHandlers {
                 
                 SSLConfig sslConfig = sslContainerConfig.getSSLConfig();
                 if(sslConfig != null){
-                    clientAuth = sslConfig.getClientAuthEnabled();
+                    clientAuth = Boolean.valueOf(sslConfig.getClientAuthEnabled());
                     handlerCtx.setOutputValue("CertNickname", sslConfig.getCertNickname());
-                    ssl3Prop = sslConfig.getSSL3Enabled();
-                    ssl2Prop = sslConfig.getSSL2Enabled();
-                    tlsProp = sslConfig.getTLSEnabled();
+                    ssl3Prop = Boolean.valueOf(sslConfig.getSSL3Enabled());
+                    ssl2Prop = Boolean.valueOf(sslConfig.getSSL2Enabled());
+                    tlsProp = Boolean.valueOf(sslConfig.getTLSEnabled());
                     selectedCiphers = sslConfig.getSSL3TLSCiphers();
                 }
             }else{
@@ -316,11 +316,11 @@ public class SSLHandlers {
                                 serverName,
                                 options);
                         httpConfig.setEnabled( "" + GuiUtil.getBooleanValue(props, "enabled"));
-                        httpConfig.setSecurityEnabled(GuiUtil.getBooleanValue(props, "securityEnabled"));
+                        httpConfig.setSecurityEnabled((String)props.get( "securityEnabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));
-                        httpConfig.setXpoweredBy(GuiUtil.getBooleanValue(props, "xpowered-by"));
-                        httpConfig.setBlockingEnabled(GuiUtil.getBooleanValue(props, "blocking-enabled"));
+                        httpConfig.setXpoweredBy((String)props.get( "xpowered-by"));
+                        httpConfig.setBlockingEnabled((String)props.get( "blocking-enabled"));
                         
                         VirtualServerConfig vsConfig= config.getHTTPServiceConfig().getVirtualServerConfigMap().get(vs);
                         String listeners = vsConfig.getHTTPListeners();
@@ -339,15 +339,15 @@ public class SSLHandlers {
                     }else{
                         sslConfig.setCertNickname(certNickname);
                     }
-                    sslConfig.setClientAuthEnabled((Boolean)handlerCtx.getInputValue("ClientAuth"));
-                    boolean ssl3Prop = ((Boolean)handlerCtx.getInputValue("SSL3Prop")).booleanValue();
-                    sslConfig.setSSL3Enabled(ssl3Prop);                   
+                    sslConfig.setClientAuthEnabled((String)handlerCtx.getInputValue("ClientAuth"));
+                    Boolean ssl3Prop = (Boolean)handlerCtx.getInputValue("SSL3Prop");
+                    sslConfig.setSSL3Enabled( ssl3Prop.toString());                   
                     if(!type.equals("iiop")) {
-                        boolean ssl2Prop = ((Boolean)handlerCtx.getInputValue("SSL2Prop")).booleanValue();
-                        sslConfig.setSSL2Enabled(ssl2Prop);                                            
+                        Boolean ssl2Prop = (Boolean)handlerCtx.getInputValue("SSL2Prop");
+                        sslConfig.setSSL2Enabled(ssl2Prop.toString());                                            
                     }
-                    boolean tlsProp = ((Boolean)handlerCtx.getInputValue("TLSProp")).booleanValue();
-                    sslConfig.setTLSEnabled(tlsProp);
+                    Boolean tlsProp = (Boolean)handlerCtx.getInputValue("TLSProp");
+                    sslConfig.setTLSEnabled(tlsProp.toString());
                     if(ssl3Prop || tlsProp){
                         String[] supportedCiphers = getSupportedCipherSuites();
                         Vector ciphersVector = getCiphersVector(supportedCiphers);

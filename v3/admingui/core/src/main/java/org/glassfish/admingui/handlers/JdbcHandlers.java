@@ -279,14 +279,14 @@ public class JdbcHandlers {
 		@HandlerInput(name="poolResizeQuantity", type=String.class),
 		@HandlerInput(name="idleTimeoutInSeconds", type=String.class),
 		@HandlerInput(name="maxWaitTimeInMillis", type=String.class),
-		@HandlerInput(name="isConnectionValidationRequired", type=Boolean.class),
+		@HandlerInput(name="isConnectionValidationRequired", type=String.class),
 		@HandlerInput(name="connectionValidationMethod", type=String.class),
 		@HandlerInput(name="validationTableName", type=String.class),
-		@HandlerInput(name="failAllConnections", type=Boolean.class),
-		@HandlerInput(name="allowNonComponentCallers", type=Boolean.class),
-		@HandlerInput(name="nonTransactionalConnections", type=Boolean.class),
+		@HandlerInput(name="failAllConnections", type=String.class),
+		@HandlerInput(name="allowNonComponentCallers", type=String.class),
+		@HandlerInput(name="nonTransactionalConnections", type=String.class),
 		@HandlerInput(name="transactionIsolationLevel", type=String.class),
-		@HandlerInput(name="isIsolationLevelGuaranteed", type=Boolean.class)
+		@HandlerInput(name="isIsolationLevelGuaranteed", type=String.class)
         })
     public static void saveJdbcConnectionPool(HandlerContext handlerCtx) {
 
@@ -305,7 +305,7 @@ public class JdbcHandlers {
             pool.setPoolResizeQuantity ((String) handlerCtx.getInputValue("poolResizeQuantity"));
             pool.setIdleTimeoutInSeconds ((String) handlerCtx.getInputValue("idleTimeoutInSeconds"));
             pool.setMaxWaitTimeInMillis ((String) handlerCtx.getInputValue("maxWaitTimeInMillis"));
-            pool.setIsConnectionValidationRequired ((Boolean) handlerCtx.getInputValue("isConnectionValidationRequired"));
+            pool.setIsConnectionValidationRequired ((String) handlerCtx.getInputValue("isConnectionValidationRequired"));
             String method = (String) handlerCtx.getInputValue("connectionValidationMethod");
             pool.setConnectionValidationMethod (method);
             if ("table".equals(method)){
@@ -315,11 +315,11 @@ public class JdbcHandlers {
             }else{
                 pool.setValidationTableName("");
             }
-            pool.setFailAllConnections ((Boolean) handlerCtx.getInputValue("failAllConnections"));
-            pool.setAllowNonComponentCallers ((Boolean) handlerCtx.getInputValue("allowNonComponentCallers"));
-            pool.setNonTransactionalConnections ((Boolean) handlerCtx.getInputValue("nonTransactionalConnections"));
+            pool.setFailAllConnections ((String) handlerCtx.getInputValue("failAllConnections"));
+            pool.setAllowNonComponentCallers ((String) handlerCtx.getInputValue("allowNonComponentCallers"));
+            pool.setNonTransactionalConnections ((String) handlerCtx.getInputValue("nonTransactionalConnections"));
             pool.setTransactionIsolationLevel ((String) handlerCtx.getInputValue("transactionIsolationLevel"));
-            pool.setIsIsolationLevelGuaranteed ((Boolean) handlerCtx.getInputValue("isIsolationLevelGuaranteed"));
+            pool.setIsIsolationLevelGuaranteed ((String) handlerCtx.getInputValue("isIsolationLevelGuaranteed"));
             GuiUtil.prepareSuccessful(handlerCtx);
         }catch (Exception ex){
 	    GuiUtil.handleException(handlerCtx, ex);

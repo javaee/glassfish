@@ -672,7 +672,7 @@ public class EESupportHandlers {
     public static void saveSystemProperties(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
-        config.setDynamicReconfigurationEnabled(((Boolean)handlerCtx.getInputValue("DynamicReconfig")).booleanValue());
+        config.setDynamicReconfigurationEnabled("" + handlerCtx.getInputValue("DynamicReconfig"));
         Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
         ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
         if(removeProps != null){

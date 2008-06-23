@@ -116,7 +116,7 @@ public class HttpServiceHandlers {
         String interval="";
         String suffix="";
         String format="";
-        boolean rotation = true;
+        String rotation = "true";
         
         if (al != null){
              rotation = al.getRotationEnabled();
@@ -130,8 +130,7 @@ public class HttpServiceHandlers {
             interval = (String)defaultMap.get("rotation-interval-in-minutes");
             suffix = (String)defaultMap.get("rotation-suffix");
             format = (String)defaultMap.get("format");
-            String rotationKey = (String) defaultMap.get("rotation-enabled");
-            rotation = (rotationKey == null) ? false : Boolean.valueOf(rotationKey);
+            rotation = (String) defaultMap.get("rotation-enabled");
         }
         handlerCtx.setOutputValue("Rotation", rotation);
         handlerCtx.setOutputValue("Policy", policy);
@@ -192,7 +191,7 @@ public class HttpServiceHandlers {
     @Handler(id="saveAccessLogSettings",
    input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="Rotation",      type=Boolean.class),
+        @HandlerInput(name="Rotation",      type=String.class),
         @HandlerInput(name="Policy",  type=String.class),
         @HandlerInput(name="Interval",    type=String.class),
         @HandlerInput(name="Suffix",       type=String.class),
@@ -206,8 +205,7 @@ public class HttpServiceHandlers {
             if (al == null){
                 al = config.getHTTPServiceConfig().createAccessLogConfig(new HashMap());
             }
-            Boolean temp = (Boolean) handlerCtx.getInputValue("Rotation");
-            al.setRotationEnabled( (temp == null) ? false : temp);
+            al.setRotationEnabled( ((String)handlerCtx.getInputValue("Rotation")));
             al.setRotationPolicy(((String)handlerCtx.getInputValue("Policy")));
             al.setRotationIntervalInMinutes(((String)handlerCtx.getInputValue("Interval")));
             al.setRotationSuffix(((String)handlerCtx.getInputValue("Suffix")));
@@ -608,16 +606,11 @@ public class HttpServiceHandlers {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
 	HTTPProtocolConfig hp = config.getHTTPServiceConfig().getHTTPProtocolConfig();
-        String version = hp.getVersion();
-        boolean dns = hp.getDNSLookupEnabled();
-        boolean ssl = hp.getSSLEnabled();
-        String forced = hp.getForcedType();
-        String defaultResponse = hp.getDefaultType();
-        handlerCtx.setOutputValue("Version", version);
-        handlerCtx.setOutputValue("DNS", dns);
-        handlerCtx.setOutputValue("SSL", ssl);   
-        handlerCtx.setOutputValue("Forced", forced);    
-        handlerCtx.setOutputValue("Default", defaultResponse);   
+        handlerCtx.setOutputValue("Version", hp.getVersion());
+        handlerCtx.setOutputValue("DNS", hp.getDNSLookupEnabled());
+        handlerCtx.setOutputValue("SSL", hp.getSSLEnabled());   
+        handlerCtx.setOutputValue("Forced", hp.getForcedType());    
+        handlerCtx.setOutputValue("Default", hp.getDefaultResponseType());   
         
     }     
     
@@ -683,8 +676,8 @@ public class HttpServiceHandlers {
    input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),
         @HandlerInput(name="Version",  type=String.class),
-        @HandlerInput(name="DNS",      type=Boolean.class),
-        @HandlerInput(name="SSL",      type=Boolean.class),
+        @HandlerInput(name="DNS",      type=String.class),
+        @HandlerInput(name="SSL",      type=String.class),
         @HandlerInput(name="Forced",   type=String.class),
         @HandlerInput(name="Default",  type=String.class)})
         
@@ -694,8 +687,8 @@ public class HttpServiceHandlers {
         try{
             HTTPProtocolConfig hp = config.getHTTPServiceConfig().getHTTPProtocolConfig();
             hp.setVersion(((String)handlerCtx.getInputValue("Version")));
-            hp.setDNSLookupEnabled(((Boolean)handlerCtx.getInputValue("DNS")).booleanValue());
-            hp.setSSLEnabled(((Boolean)handlerCtx.getInputValue("SSL")).booleanValue());
+            hp.setDNSLookupEnabled((String)handlerCtx.getInputValue("DNS"));
+            hp.setSSLEnabled((String)handlerCtx.getInputValue("SSL"));
             hp.setForcedType(((String)handlerCtx.getInputValue("Forced")));
             hp.setDefaultType(((String)handlerCtx.getInputValue("Default")));
         }catch(Exception ex){
@@ -738,8 +731,8 @@ public class HttpServiceHandlers {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
 	HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
-        boolean globally = hp.getGloballyEnabled();
-        boolean fileTransmission = hp.getFileTransmissionEnabled();
+        String globally = hp.getGloballyEnabled();
+        String fileTransmission = hp.getFileTransmissionEnabled();
         String age = hp.getMaxAgeInSeconds();
         String fileCount = hp.getMaxFilesCount();
         String hashSize = hp.getHashInitSize();
@@ -747,7 +740,7 @@ public class HttpServiceHandlers {
         String medSize = hp.getMediumFileSpaceInBytes();
         String smLimit = hp.getSmallFileSizeLimitInBytes();
         String smSize = hp.getSmallFileSpaceInBytes();
-        boolean fileCaching = hp.getFileCachingEnabled();
+        boolean fileCaching = Boolean.valueOf(hp.getFileCachingEnabled());
        if(fileCaching == true) {
             handlerCtx.setOutputValue("FileCaching", "ON");    
         } else {
@@ -848,8 +841,8 @@ public class HttpServiceHandlers {
     @Handler(id="saveHttpFileCachingSettings",
    input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),        
-        @HandlerInput(name="Globally",  type=Boolean.class),
-        @HandlerInput(name="FileTransmission",      type=Boolean.class),
+        @HandlerInput(name="Globally",  type=String.class),
+        @HandlerInput(name="FileTransmission",      type=String.class),
         @HandlerInput(name="Age",          type=String.class),
         @HandlerInput(name="FileCount",    type=String.class),        			
         @HandlerInput(name="HashSize",     type=String.class),
@@ -864,8 +857,8 @@ public class HttpServiceHandlers {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         try{
             HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
-            hp.setGloballyEnabled(((Boolean)handlerCtx.getInputValue("Globally")).booleanValue());
-            hp.setFileTransmissionEnabled(((Boolean)handlerCtx.getInputValue("FileTransmission")).booleanValue());
+            hp.setGloballyEnabled((String)handlerCtx.getInputValue("Globally"));
+            hp.setFileTransmissionEnabled((String)handlerCtx.getInputValue("FileTransmission"));
             hp.setMaxAgeInSeconds(((String)handlerCtx.getInputValue("Age")));
             hp.setMaxFilesCount(((String)handlerCtx.getInputValue("FileCount")));
             hp.setHashInitSize(((String)handlerCtx.getInputValue("HashSize")));
@@ -875,9 +868,9 @@ public class HttpServiceHandlers {
             hp.setSmallFileSpaceInBytes(((String)handlerCtx.getInputValue("SmSize")));
             String fileCaching = (String)handlerCtx.getInputValue("FileCaching");
             if(fileCaching.equals("ON")) {
-                hp.setFileCachingEnabled(true);    
+                hp.setFileCachingEnabled("true");    
             } else {
-                hp.setFileCachingEnabled(false);   
+                hp.setFileCachingEnabled("false");   
             }             
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -1108,12 +1101,12 @@ public class HttpServiceHandlers {
         @HandlerInput(name="ListenerPort",      type=String.class, required=true),
         @HandlerInput(name="DefaultVirtServer", type=String.class, required=true),
         @HandlerInput(name="ServerName",        type=String.class, required=true),
-        @HandlerInput(name="Listener",          type=Boolean.class),
-        @HandlerInput(name="security",          type=Boolean.class),
+        @HandlerInput(name="Listener",          type=String.class),
+        @HandlerInput(name="security",          type=String.class),
         @HandlerInput(name="RedirectPort",      type=String.class),
         @HandlerInput(name="Acceptor",          type=String.class),
-        @HandlerInput(name="PoweredBy",         type=Boolean.class),
-        @HandlerInput(name="Blocking",          type=Boolean.class),
+        @HandlerInput(name="PoweredBy",         type=String.class),
+        @HandlerInput(name="Blocking",          type=String.class),
         @HandlerInput(name="newProps",          type=Map.class)})
         
         public static void saveHttpListenerValues(HandlerContext handlerCtx) {
@@ -1134,12 +1127,12 @@ public class HttpServiceHandlers {
                 httpPropsMap.put("virtualServer", virtualServer);
                 httpPropsMap.put("serverName", serverName);
                 httpPropsMap.put("options", (Map)handlerCtx.getInputValue("newProps"));
-                httpPropsMap.put("enabled", (Boolean)handlerCtx.getInputValue("Listener"));
-                httpPropsMap.put("securityEnabled", (Boolean)handlerCtx.getInputValue("security"));
+                httpPropsMap.put("enabled", (String)handlerCtx.getInputValue("Listener"));
+                httpPropsMap.put("securityEnabled", (String)handlerCtx.getInputValue("security"));
                 httpPropsMap.put("redirectPort", (String)handlerCtx.getInputValue("RedirectPort"));
                 httpPropsMap.put("acceptor-threads", (String)handlerCtx.getInputValue("Acceptor"));
-                httpPropsMap.put("xpowered-by", (Boolean)handlerCtx.getInputValue("PoweredBy")); 
-                httpPropsMap.put("blocking-enabled", (Boolean)handlerCtx.getInputValue("Blocking")); 
+                httpPropsMap.put("xpowered-by", (String)handlerCtx.getInputValue("PoweredBy")); 
+                httpPropsMap.put("blocking-enabled", (String)handlerCtx.getInputValue("Blocking")); 
                 handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", httpPropsMap);
                 //the actual creation is in step 2 of the wizard.
             } else {
@@ -1150,16 +1143,16 @@ public class HttpServiceHandlers {
                 httpListConfig.setDefaultVirtualServer(virtualServer);
                 httpListConfig.setServerName(serverName);
                 httpListConfig.setEnabled(""+ handlerCtx.getInputValue("Listener"));
-                httpListConfig.setSecurityEnabled((Boolean)handlerCtx.getInputValue("security"));
+                httpListConfig.setSecurityEnabled((String)handlerCtx.getInputValue("security"));
                 httpListConfig.setRedirectPort((String)handlerCtx.getInputValue("RedirectPort"));
                 httpListConfig.setAcceptorThreads((String)handlerCtx.getInputValue("Acceptor"));
-                httpListConfig.setXpoweredBy((Boolean)handlerCtx.getInputValue("PoweredBy"));
-                httpListConfig.setBlockingEnabled((Boolean)handlerCtx.getInputValue("Blocking"));
+                httpListConfig.setXpoweredBy((String)handlerCtx.getInputValue("PoweredBy"));
+                httpListConfig.setBlockingEnabled((String)handlerCtx.getInputValue("Blocking"));
                 AMXUtil.updateProperties( httpListConfig, (Map)handlerCtx.getInputValue("newProps"));
                 
                 //refer to issue #2920
                 if (httpListenerName.equals(ADMIN_LISTENER)){
-                    if (httpListConfig.getSecurityEnabled()){
+                    if (Boolean.valueOf(httpListConfig.getSecurityEnabled())){
                         if (httpListConfig.getPropertyConfigMap().get(PROXIED_PROTOCOLS) != null)
                             httpListConfig.getPropertyConfigMap().get(PROXIED_PROTOCOLS).setValue(PROXIED_PROTOCOLS_VALUE);
                          else
