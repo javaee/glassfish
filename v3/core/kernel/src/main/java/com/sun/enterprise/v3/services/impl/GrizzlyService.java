@@ -72,7 +72,44 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
     
     private final Controller controller  = new Controller();
-
+           
+    /**
+     * Add the new proxy to our list of proxies.
+     * @param proxy new proxy to be added
+     */
+    public void addNetworkProxy(NetworkProxy proxy) {
+        proxies.add(proxy);               
+    }
+    
+    
+    /**
+     * Remove the new proxy from our list of proxies.
+     * @param int port number to be removed
+     */    
+    public void removeNetworkProxy(int port) {
+        NetworkProxy proxy = null;
+        for (NetworkProxy p : proxies) {
+            if (p.getPort() == port) {
+                proxy = p;
+            }
+        }
+        if (proxy != null) {
+            proxy.stop();
+            proxies.remove(proxy);
+        }
+    }
+    
+    
+     /**
+     * Returns the controller
+     *
+     * @return the controller.
+     */   
+    public Controller getController() {
+        return controller;
+    }
+    
+    
     /**
      * Returns the life expectency of the service
      *
@@ -91,38 +128,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         HttpService httpService = config.getHttpService();
         try {
             for (HttpListener listener : httpService.getHttpListener()) {
-                // create the proxy for the port.
-                NetworkProxy proxy = new GrizzlyProxy(logger, habitat,
-                        listener, controller, httpService);
-                proxy.setVsMapper(new VirtualHostMapper(logger, listener));
-
-                // attach all virtual servers to this port
-                for (VirtualServer vs : httpService.getVirtualServer()) {
-                    List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners(), " ,");
-                    if (vsListeners == null || vsListeners.size() == 0 || 
-                            vsListeners.contains(listener.getId())) {
-                        proxy.getVsMapper().addVirtualServer(vs);
-                    }
-                }
-                proxy.start();
-
-                // add the new proxy to our list of proxies.
-                proxies.add(proxy);
+                createNetworkProxy(listener, httpService);
             }
-            
-            // todo : this neeed some rework...
-            // now register all proxies you can find out there !
-            // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
-            for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
-                //@TODO change EndportRegistrationException processing if required
-                try {
-                    registerEndpoint(subAdapter.getContextRoot(), null, 
-                            subAdapter, null);
-                } catch(EndpointRegistrationException e) {
-                    logger.log(Level.WARNING, 
-                            "GrizzlyService endpoint registration problem", e);
-                }
-            }
+            registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.WARNING, "Closing initialized network proxies");
             for(NetworkProxy proxy : proxies) {
@@ -136,7 +144,55 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             throw e;
         }
     }
-
+    
+    
+    /*
+     * Creates a new NetworkProxy for a particular HttpListner
+     * @param listener HttpListener
+     * @param httpService HttpService
+     */
+    public void createNetworkProxy(HttpListener listener, HttpService httpService) {
+        // create the proxy for the port.
+        NetworkProxy proxy = new GrizzlyProxy(logger, habitat, listener, 
+                controller, httpService);
+        proxy.setVsMapper(new VirtualHostMapper(logger, listener));
+      
+        // attach all virtual servers to this port
+        for (VirtualServer vs : httpService.getVirtualServer()) {
+            List<String> vsListeners = 
+                    StringUtils.parseStringList(vs.getHttpListeners(), " ,");
+            if (vsListeners == null || vsListeners.size() == 0 || 
+                vsListeners.contains(listener.getId())) {
+                proxy.getVsMapper().addVirtualServer(vs);
+            }
+        }
+        proxy.start();
+        // add the new proxy to our list of proxies.
+        proxies.add(proxy);
+    }
+    
+    
+    /*
+     * Registers all proxies
+     */
+    public void registerNetworkProxy(){
+        // todo : this neeed some rework...
+        // now register all proxies you can find out there !
+        // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
+        for (org.glassfish.api.container.Adapter subAdapter : 
+            habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
+            //@TODO change EndportRegistrationException processing if required
+            try {
+                registerEndpoint(subAdapter.getContextRoot(), null, 
+                        subAdapter, null);
+            } catch(EndpointRegistrationException e) {
+                logger.log(Level.WARNING, 
+                        "GrizzlyService endpoint registration problem", e);
+            }
+        }
+    }
+    
+    
     /**
      * The component is about to be removed from commission
      */

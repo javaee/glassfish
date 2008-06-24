@@ -78,8 +78,6 @@ import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
 
-import com.sun.grizzly.util.http.mapper.Mapper;
-
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -127,6 +125,7 @@ import com.sun.logging.LogDomains;
 
 // monitoring imports
 import com.sun.enterprise.admin.monitor.stats.ServletStats;
+import com.sun.enterprise.web.stats.HTTPListenerStatsImpl;
 import com.sun.enterprise.web.stats.ServletStatsImpl;
 import com.sun.enterprise.web.monitor.PwcServletStats;
 import com.sun.enterprise.web.monitor.impl.PwcServletStatsImpl;
@@ -149,11 +148,20 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-
+import com.sun.enterprise.v3.services.impl.NetworkProxy;
+import com.sun.enterprise.v3.services.impl.GrizzlyProxy;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.v3.services.impl.VirtualHostMapper;
+import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
+import com.sun.grizzly.Controller;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.hk2.component.ConstructorWomb;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
 
 import javax.naming.spi.NamingManager;
 import javax.servlet.jsp.JspFactory;
@@ -239,9 +247,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     
     @Inject
     RequestDispatcher dispatcher;
+    @Inject
+    GrizzlyService grizzlyService;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, CoyoteAdapter> adapterMap = new HashMap<Integer, CoyoteAdapter>();
+    HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
     EmbeddedWebContainer _embedded;
     Engine engine;
@@ -632,6 +643,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         enableAllWSEndpoints();    
          */
+
+        ConstructorWomb<HttpServiceConfigListener> womb = 
+                new ConstructorWomb<HttpServiceConfigListener>(
+                HttpServiceConfigListener.class, 
+                _serverContext.getDefaultHabitat(), 
+                null);
+        HttpServiceConfigListener configListener = womb.get(null);
+        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(
+                configListener.httpService);
+        bean.addListener(configListener);    
+        configListener.setContainer(this);
+        configListener.setLogger(_logger);
     }
 
     public void preDestroy() {
@@ -659,12 +682,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param httpService The http-service element
      * @param httpListener the configuration element.
      */       
-    private void createHttpListener(HttpListener httpListener,
+    protected WebConnector createHttpListener(HttpListener httpListener,
                                              HttpService httpService){
         if (!Boolean.valueOf(httpListener.getEnabled())) {
             _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
                     Boolean.valueOf(httpListener.getEnabled()));
-            return;
+            return null;
         }
                                  
         int port = 8080;
@@ -723,13 +746,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     Integer.valueOf(httpListener.getPort()));
         CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
         adapterMap.put(Integer.valueOf(httpListener.getPort()), coyoteAdapter);
+        connectorMap.put(httpListener.getId(), connector);
 
         // If we already know the redirect port, then set it now
         // This situation will occurs when dynamic reconfiguration occurs
         if ( defaultRedirectPort != -1 ){
             connector.setRedirectPort(defaultRedirectPort);
         }
-        
+        return connector;
     }
 
     /**
@@ -1168,7 +1192,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }            
     }
     
-    private void createVirtualServer(
+    protected void createVirtualServer(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
                 HttpService httpService, SecurityService securityService) {
         
@@ -4559,6 +4583,584 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             JspFactory.setDefaultFactory(new JspFactoryImpl());
         }
     }
+    
+    /** 
+     * Delete virtual-server.
+     * @param httpService element which contains the configuration info.
+     */
+    public void deleteHost(HttpService httpService) throws LifecycleException{
+    
+        Engine[] engines = _embedded.getEngines();
+        VirtualServer virtualServer;
+        // First we need to find which virtual-server was deleted. In
+        // reconfig/VirtualServerReconfig, it is impossible to lookup
+        // the vsBean because the element is removed from domain.xml
+        // before handleDelete is invoked.
+        Container[] virtualServers = engines[0].findChildren();
+        for (int i=0;i < virtualServers.length; i++){
+            for (com.sun.enterprise.config.serverbeans.VirtualServer vse : httpService.getVirtualServer()) {
+                if ( virtualServers[i].getName().equals(vse.getId())){
+                    virtualServers[i] = null;
+                    break;
+                }
+            }
+        }       
+        
+        for (int i=0;i < virtualServers.length; i++){
+            virtualServer = (VirtualServer)virtualServers[i];
+            
+            if (virtualServer != null ){           
+                if (virtualServer.getID().equals(VirtualServer.ADMIN_VS)) {
+                    throw new 
+                      LifecycleException("Cannot delete admin virtual-server.");
+                }     
+
+                Container[] webModules = virtualServer.findChildren();
+                for (int j=0; j < webModules.length; j++){
+                    unloadWebModule(webModules[j].getName(),
+                                    webModules[j].getName(), 
+                                    virtualServer.getID(),
+                                    null);
+                }
+                try {                
+                    virtualServer.destroy();
+                } catch (Exception e) {
+                    _logger.log(Level.WARNING,
+                                "Error during destruction of virtual server "
+                                + virtualServer.getID(), e);
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     * Updates a virtual-server element.
+     *
+     * @param vsBean the virtual-server config bean.
+     * @param httpService element which contains the configuration info.
+     */
+    public void updateHost(
+                    com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
+                    HttpService httpService)
+                throws LifecycleException {
+
+        Engine[] engines = _embedded.getEngines();
+        VirtualServer virtualServer = 
+            (VirtualServer)engines[0].findChild(vsBean.getId());
+
+        // Must retrieve the old default-web-module before updating the
+        // virtual server with the new vsBean, because default-web-module is
+        // read from vsBean
+        String oldDefaultWebModule = virtualServer.getDefaultWebModuleID();
+
+        virtualServer.setBean(vsBean);
+
+        _embedded.setLogFile(virtualServer,vsBean.getLogFile());
+
+        virtualServer.configureVirtualServerState();
+        
+        virtualServer.clearAliases();
+        virtualServer.configureAliases();
+
+        String docroot = vsBean.getDocroot();
+        if (docroot != null) {
+            updateDocroot(docroot, virtualServer, vsBean);
+        }
+
+        int[] oldPorts = virtualServer.getPorts();
+
+        List<String> listeners = StringUtils.parseStringList(
+            vsBean.getHttpListeners(), ",");
+        if (listeners != null) {
+            HttpListener[] httpListeners = new HttpListener[listeners.size()];
+            for (int i=0; i < listeners.size(); i++){
+                for (HttpListener httpListener : httpService.getHttpListener()) {
+                    if (httpListener.getId().equals(listeners.get(i))) {
+                        httpListeners[i] = httpListener;
+                    }
+                }
+            }
+            // Update the port numbers with which the virtual server is
+            // associated
+            configureHostPortNumbers(virtualServer, httpListeners); 
+        } else {
+            // The virtual server is not associated with any http listeners
+            virtualServer.setPorts(new int[0]);
+        }
+
+        int[] newPorts = virtualServer.getPorts();
+
+        // Disassociate the virtual server from all http listeners that
+        // have been removed from its http-listeners attribute
+        for (int i=0; i<oldPorts.length; i++) {
+            boolean found = false;
+            for (int j=0; j<newPorts.length; j++) {
+                if (oldPorts[i] == newPorts[j]) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                // http listener was removed
+                Connector[] connectors = _embedded.findConnectors();
+                for (int k=0; k<connectors.length; k++) {
+                    WebConnector conn = (WebConnector)
+                        connectors[k];
+                    if (oldPorts[i] == conn.getPort()) {
+                        try {
+                             conn.getMapperListener().unregisterHost(
+                                virtualServer.getJmxName());
+                        } catch (Exception e) {
+                            throw new LifecycleException(e);
+                        }
+                    } 
+                }
+                
+            }
+        }
+
+        // Associate the virtual server with all http listeners that
+        // have been added to its http-listeners attribute
+        for (int i=0; i<newPorts.length; i++) {
+            boolean found = false;
+            for (int j=0; j<oldPorts.length; j++) {
+                if (newPorts[i] == oldPorts[j]) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                // http listener was added
+                Connector[] connectors = _embedded.findConnectors();
+                for (int k=0; k<connectors.length; k++) {
+                    WebConnector conn = (WebConnector)
+                        connectors[k];
+                    if (newPorts[i] == conn.getPort()) {
+                        if (!conn.isAvailable()){
+                            conn.start();
+                            enableHttpListenerMonitoring(
+                                virtualServer,
+                                conn.getPort(),
+                                conn.getName());
+                        }
+                        try {
+                            conn.getMapperListener().registerHost(
+                                virtualServer.getJmxName());
+                        } catch (Exception e) {
+                            throw new LifecycleException(e);
+                        }
+                    }
+                }
+            } 
+        }
+
+        // Remove the old default web module if one was configured, by
+        // passing in "null" as the default context path
+        if (oldDefaultWebModule != null) {
+            updateDefaultWebModule(virtualServer, oldPorts, null);
+        }
+
+        // Add the new default web module
+        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain, 
+                            _serverContext.getDefaultHabitat().getComponent(
+                            WebDeployer.class) );
+        String newDefaultContextPath = wmInfo.getContextPath();
+        if (newDefaultContextPath != null) {
+            // Remove dummy context that was created off of docroot, if such
+            // a context exists
+            removeDummyModule(virtualServer);
+            updateDefaultWebModule(virtualServer,
+                                   virtualServer.getPorts(),
+                                   wmInfo);
+        } else {
+            WebModuleConfig wmc = 
+                virtualServer.createSystemDefaultWebModuleIfNecessary(
+                    _serverContext.getDefaultHabitat().getComponent(
+                    WebDeployer.class));
+            if ( wmc != null) {
+                loadStandaloneWebModule(virtualServer,wmc);
+            }
+        } 
+    }
+    
+    
+    /**
+     * Update virtual-server properties.
+     */
+    public void updateHostProperties(
+                    com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
+                    String name, 
+                    String value,
+                    HttpService httpService,
+                    SecurityService securityService) {
+                        
+        Engine[] engines = _embedded.getEngines();
+        VirtualServer vs = (VirtualServer)engines[0].findChild(vsBean.getId());
+        vs.setBean(vsBean);
+        
+        if (name == null) {
+            return;
+        }
+
+        if ("docroot".equals(name)) {
+            updateDocroot(value, vs, vsBean);
+        } else if (name.startsWith("alternatedocroot_")) {
+            updateAlternateDocroot(vs, vsBean);
+        } else if ("setCacheControl".equals(name)){
+            vs.configureCacheControl(value);
+        } else if (Constants.ACCESS_LOG_PROPERTY.equals(name)){
+            vs.reconfigureAccessLog(globalAccessLogBufferSize,
+                                    globalAccessLogWriteInterval,
+                                    _serverContext.getDefaultHabitat(),
+                                    domain,
+                                    globalAccessLoggingEnabled);
+        } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(name)){
+            vs.reconfigureAccessLog(globalAccessLogBufferSize,
+                                    globalAccessLogWriteInterval,
+                                    _serverContext.getDefaultHabitat(),
+                                    domain,
+                                    globalAccessLoggingEnabled);
+        } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(name)){
+            vs.reconfigureAccessLog(globalAccessLogBufferSize,
+                                    globalAccessLogWriteInterval,
+                                    _serverContext.getDefaultHabitat(),
+                                    domain,
+                                    globalAccessLoggingEnabled);
+        } else if ("allowRemoteHost".equals(name)
+                || "denyRemoteHost".equals(name)) {
+            vs.configureRemoteHostFilterValve(httpService.getHttpProtocol());
+        } else if ("allowRemoteAddress".equals(name)
+                || "denyRemoteAddress".equals(name)) {
+            vs.configureRemoteAddressFilterValve();
+        } else if (Constants.SSO_ENABLED.equals(name)) {
+            vs.configureSSOValve(globalSSOEnabled, webContainerFeatureFactory);
+        } else if ("authRealm".equals(name)) {
+            vs.configureAuthRealm(securityService);
+        } else if (name.startsWith("send-error")) {
+            vs.configureErrorPage();
+        } else if (name.startsWith("redirect")) {
+            vs.configureRedirect();
+        } else if (name.startsWith("contextXmlDefault")) {
+            vs.setDefaultContextXmlLocation(value);
+        }
+    }
+    
+
+    /**
+     * Processes an update to the http-service element, by updating each
+     * http-listener
+     */
+    public void updateHttpService(HttpService httpService)
+            throws LifecycleException {
+
+        if (httpService == null) {
+            return;
+        }
+
+        /*
+         * Update each virtual server with the sso-enabled and
+         * access logging related properties of the updated http-service
+         */	
+        Property ssoEnabled = null;
+        Property accessLoggingEnabled = null;
+        Property accessLogWriteInterval = null;
+        Property accessLogBufferSize = null;
+        List<Property> props = httpService.getProperty();
+        if (props != null) {
+            for (Property prop : props) {
+                if (Constants.SSO_ENABLED.equals(prop.getName())) {
+                    ssoEnabled = prop;
+                    globalSSOEnabled = ConfigBeansUtilities.toBoolean(
+                            prop.getValue());
+                } else if (Constants.ACCESS_LOGGING_ENABLED.equals(
+                                prop.getName())) {
+                    accessLoggingEnabled = prop;
+                    globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(
+                                prop.getValue());
+                } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(
+                                prop.getName())) {
+                    accessLogWriteInterval = prop;
+                    globalAccessLogWriteInterval = prop.getValue();
+                } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(
+                                prop.getName())) {
+                    accessLogBufferSize = prop;
+                    globalAccessLogBufferSize = prop.getValue();
+                }
+            }
+        }
+
+        List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers =
+            httpService.getVirtualServer();
+        if (virtualServers != null
+                && (ssoEnabled != null || accessLoggingEnabled != null
+                    || accessLogWriteInterval != null
+                    || accessLogBufferSize != null)) {
+            for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer :
+                    virtualServers) {
+                if (ssoEnabled != null) {
+                    updateHostProperties(virtualServer,
+                                         ssoEnabled.getName(), 
+                                         ssoEnabled.getValue(),
+                                         httpService,
+                                         null);
+                }
+                if (accessLoggingEnabled != null) {
+                    updateHostProperties(virtualServer,
+                                         accessLoggingEnabled.getName(), 
+                                         accessLoggingEnabled.getValue(),
+                                         httpService,
+                                         null);
+                }
+                if (accessLogWriteInterval != null) {
+                    updateHostProperties(virtualServer,
+                                         accessLogWriteInterval.getName(), 
+                                         accessLogWriteInterval.getValue(),
+                                         httpService,
+                                         null);
+                }
+                if (accessLogBufferSize != null) {
+                    updateHostProperties(virtualServer,
+                                         accessLogBufferSize.getName(), 
+                                         accessLogBufferSize.getValue(),
+                                         httpService,
+                                         null);
+                }
+            }
+        }
+
+        List<HttpListener> httpListeners = httpService.getHttpListener();
+        if (httpListeners != null) {
+            for (HttpListener httpListener : httpListeners) {
+                updateConnector(httpListener, httpService);
+            }
+        }
+    }
+
+    
+    /**
+     * Update an http-listener property
+     * @param httpListener the configuration bean.
+     * @param propName the property name
+     * @param propValue the property value
+     */
+    public void updateConnectorProperty(HttpListener httpListener,
+                                        String propName,
+                                        String propValue) 
+        throws LifecycleException{
+      
+        WebConnector connector = connectorMap.get(httpListener.getId());
+        if (connector != null) {
+            configureHttpListenerProperty(propName,propValue,connector);
+        }
+    }
+
+
+    /**
+     * Update an http-listener
+     * @param httpService the configuration bean.
+     */
+    public void updateConnector(HttpListener httpListener,
+                                HttpService httpService)
+            throws LifecycleException {
+            
+        if (httpListener.getDefaultVirtualServer()
+                                    .equals(VirtualServer.ADMIN_VS)){
+            return;
+        }
+        
+        WebConnector connector = connectorMap.get(httpListener.getId());
+        if (connector != null) {
+            _embedded.removeConnector(connector);
+            connectorMap.remove(httpListener.getId());
+        }
+
+        
+        if (!Boolean.valueOf(httpListener.getEnabled())) {
+            return;
+        }
+
+        connector = createHttpListener(httpListener, httpService);
+        
+        // The connector is not enabled.
+        if (connector == null) return;
+        
+        String virtualServerName = httpListener.getDefaultVirtualServer();
+        VirtualServer virtualServer = (VirtualServer)
+                     _embedded.getEngines()[0].findChild(virtualServerName);
+        
+        boolean found = false;
+        int[] ports = virtualServer.getPorts();
+        for (int i=0; i<ports.length; i++) {
+            if (ports[i] == connector.getPort()) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            int[] newPorts = new int[ports.length + 1];
+            System.arraycopy(ports, 0, newPorts, 0, ports.length);
+            newPorts[ports.length] = connector.getPort();
+            virtualServer.setPorts(newPorts);
+        }
+
+        connector.start();
+    }
+  
+    
+    public WebConnector addConnector(HttpListener httpListener,
+                            HttpService httpService) throws LifecycleException {     
+        String defaultContextPath = "/";
+        WebConnector connector = createHttpListener(httpListener, httpService);  
+        if (connector.getRedirectPort() == -1) {
+            connector.setRedirectPort(defaultRedirectPort);
+        }       
+        
+        String virtualServerName = httpListener.getDefaultVirtualServer();
+        VirtualServer vs = (VirtualServer)
+                     _embedded.getEngines()[0].findChild(virtualServerName);  
+                                    
+        int[] oldPorts = vs.getPorts();
+        int[] newPorts = new int[oldPorts.length+1];
+        System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
+        newPorts[oldPorts.length] = connector.getPort();
+        vs.setPorts(newPorts);
+        
+        grizzlyService.createNetworkProxy(httpListener, httpService);
+        grizzlyService.registerNetworkProxy();
+        connector.start();
+       
+        return connector;
+    }
+    
+    
+    /**
+     * Stop and delete the selected http-listener.
+     * @param httpService the configuration bean.
+     */
+    public void deleteConnector(HttpListener httpListener, 
+                            HttpService httpService) throws LifecycleException{
+        
+        Connector[] connectors = (Connector[])_embedded.findConnectors();
+        int port = Integer.parseInt(httpListener.getPort()); 
+
+        for (int i=0; i<connectors.length; i++){
+            WebConnector conn = (WebConnector) connectors[i];
+            if ( port == conn.getPort() ) {       
+                _embedded.removeConnector(conn);
+                grizzlyService.removeNetworkProxy(port);
+                portMap.remove(httpListener.getId());
+                adapterMap.remove(Integer.valueOf(port));
+                connectorMap.remove(httpListener.getId());
+            }
+        }
+        
+    }  
+    
+
+    /**
+     * Reconfigures the access log valve of each virtual server with the
+     * updated attributes of the <access-log> element from domain.xml.
+     */
+    public void updateAccessLog(HttpService httpService) {
+        Container[] virtualServers = _embedded.getEngines()[0].findChildren();
+        for (int i=0; i<virtualServers.length; i++) {
+            ((VirtualServer) virtualServers[i]).reconfigureAccessLog(
+                httpService,
+                _serverContext.getDefaultHabitat().getComponent(
+                        WebContainerFeatureFactory.class));
+        }
+    }
+
+
+    /**
+     * Updates the docroot of the given virtual server
+     */
+    private void updateDocroot(
+            String docroot,
+            VirtualServer vs,
+            com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
+
+        boolean isValid = validateDocroot(docroot,
+                                          vsBean.getId(),
+                                          vsBean.getDefaultWebModule());
+        if (isValid) {
+            vs.setAppBase(docroot);
+            removeDummyModule(vs);
+            WebModuleConfig wmInfo = 
+                vs.createSystemDefaultWebModuleIfNecessary(
+                    _serverContext.getDefaultHabitat().getComponent(
+                    WebDeployer.class));
+            if (wmInfo != null) {
+                loadStandaloneWebModule(vs, wmInfo);
+            }
+        }
+    }
+
+
+    private void updateAlternateDocroot(
+            VirtualServer vs,
+            com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
+
+        removeDummyModule(vs);
+        WebModuleConfig wmInfo = 
+            vs.createSystemDefaultWebModuleIfNecessary(
+                    _serverContext.getDefaultHabitat().getComponent(
+                    WebDeployer.class));
+        if (wmInfo != null) {
+            loadStandaloneWebModule(vs, wmInfo);
+        }
+    }
+
+        
+    /**
+     * Register http-listener monitoring statistics.
+     */
+    protected void enableHttpListenerMonitoring(VirtualServer virtualServer,
+            int port, String httpListenerId){
+            
+        PWCRequestStatsImpl pwcRequestStatsImpl = 
+                virtualServer.getPWCRequestStatsImpl();
+        
+        if ( pwcRequestStatsImpl == null ){
+            pwcRequestStatsImpl = new PWCRequestStatsImpl(
+                    getServerContext().getDefaultDomainName());
+            virtualServer.setPWCRequestStatsImpl(pwcRequestStatsImpl);
+        }
+ 
+        HTTPListenerStatsImpl httpStats;
+        MonitoringRegistry mReg = getServerContext().getDefaultHabitat().getComponent(MonitoringRegistry.class);
+        String vsId = virtualServer.getID();
+        
+        if (isTomcatUsingDefaultDomain()) {
+            httpStats = new HTTPListenerStatsImpl(
+                    getServerContext().getDefaultDomainName(),port);
+        } else {
+            httpStats = new HTTPListenerStatsImpl(vsId,port);
+        }
+
+        try {
+            mReg.registerHttpListenerStats(httpStats, httpListenerId, vsId, null);
+            pwcRequestStatsImpl.addHttpListenerStats(httpStats);
+        } catch (MonitoringRegistrationException mre) {
+            String msg =
+                _logger.getResourceBundle().getString(
+                    "web.monitoringRegistrationError");
+            msg = MessageFormat.format(
+                    msg,
+                    new Object[] { "HTTPListenerStats" });
+            _logger.log(Level.WARNING, msg, mre);
+        }        
+    }
+    
+    
+    /**
+     * is Tomcat using default domain name as its domain
+     */
+    protected boolean isTomcatUsingDefaultDomain() {
+        // need to be careful and make sure tomcat jmx mapping works
+        // since setting this to true might result in undeployment problems
+        return true;
+    }
+  
 
 }
 
