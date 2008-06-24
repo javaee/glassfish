@@ -755,6 +755,14 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
+     * Another version of the {@link #invoke(Object, Method, Object[])},
+     * but instead of {@link Method} object, it takes the method name and argument types.
+     */
+    public Object invoke(Object proxy, String methodName, Class[] argTypes, Object[] args) throws Throwable {
+        return invoke( proxy, getProxyType().getMethod(methodName, argTypes), args );
+    }
+
+    /**
      * Invoke the user defined static method in the nested "Duck" class so that
      * the user can define convenience methods on the config beans.
      */
