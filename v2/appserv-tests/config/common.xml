@@ -138,7 +138,8 @@ Variables Used:
         tofile="${build.classes.dir}/tmp/WEB-INF/tagPlugins.xml"
         failonerror="false"/>
   <copy file="${web.xml}" 
-      tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"/>
+      tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"
+        failonerror="false"/>
   <copy file="${context.xml}"
       tofile="${build.classes.dir}/tmp/META-INF/context.xml" failonerror="false"/>
   <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
@@ -161,6 +162,7 @@ Variables Used:
       <include name="**/*.gif"/>
       <include name="**/*.do"/>
       <include name="**/*.txt"/>
+      <include name="**/*.shtml"/>
       <exclude name="**/*.java,**/*.xml,**/*.properties"/>
     </fileset>
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
