@@ -64,6 +64,7 @@ import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -1690,6 +1691,19 @@ public class WebappClassLoader
                 // Ignore
             }
             jarFiles[i] = null;
+        }
+
+        try {
+            Class clazz = Class.forName("sun.misc.ClassLoaderUtil");
+            if (clazz != null) {
+                Method m = clazz.getMethod("releaseLoader",
+                                           URLClassLoader.class);
+                if (m != null) {
+                    m.invoke(null, this);
+                }
+            }
+        } catch (Exception e) {
+            // ignore
         }
 
         notFoundResources.clear();
