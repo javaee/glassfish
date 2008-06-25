@@ -30,7 +30,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for SSI Escape Character");
+        stat.addDescription("Unit test for Http Request whitespace tolerance");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
