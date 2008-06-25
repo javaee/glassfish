@@ -68,6 +68,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
     @Param(optional=true)
     String target = "server";
+    
+    @Param(optional=true, defaultValue="false")
+    Boolean keepreposdir;
 
     Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -141,7 +144,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
             //if directory deployment then do no remove the directory
             if (source!=null) {
-                if (!isDirectoryDeployed && source.exists()) {
+                if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
                     FileUtils.whack(new File(info.getSource().getURI()));
                 }
             }

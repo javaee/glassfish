@@ -53,6 +53,7 @@ import java.util.Properties;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 
 /**
@@ -129,6 +130,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     
     @Param(optional=true)
     String target = "server";
+    
+    @Param(optional=true, defaultValue="false")
+    Boolean keepreposdir;
 
     @Inject
     Domain domain;
@@ -193,7 +197,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             handleRedeploy(name, report, parameters);
 
             // clean up any left over repository files
-            FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+            if ( ! keepreposdir.booleanValue()) {
+                FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+            }
             parameters.put(ParameterNames.ENABLED, enabled.toString());
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
@@ -339,6 +345,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             //then undeploy the application first.
             Properties undeployParam = new Properties();
             undeployParam.put(ParameterNames.NAME, name);
+            undeployParam.put(DeploymentProperties.KEEP_REPOSITORY_DIRECTORY, 
+                    keepreposdir.toString());
             ActionReport subReport = report.addSubActionsReport();
             commandRunner.doCommand("undeploy", undeployParam, subReport);
         }
