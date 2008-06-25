@@ -31,7 +31,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for SSI Escape Character");
+        stat.addDescription("Unit test for SSI Html Entity");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
