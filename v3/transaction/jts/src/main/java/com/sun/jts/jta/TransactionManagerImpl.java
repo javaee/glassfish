@@ -184,8 +184,14 @@ public class TransactionManagerImpl implements TransactionManager {
     private TransactionManagerImpl() {
         try {
             ORB orb = Configuration.getORB();
-            current = org.omg.CosTransactions.CurrentHelper.
-                narrow(orb.resolve_initial_references("TransactionCurrent"/*#Frozen*/));
+            if (orb != null)
+                current = org.omg.CosTransactions.CurrentHelper.
+                    narrow(orb.resolve_initial_references("TransactionCurrent"/*#Frozen*/));
+            else {
+                DefaultTransactionService dts = new DefaultTransactionService();
+                dts.identify_ORB(null, null, new Properties());
+                current = dts.get_current();
+             }
             // transactionStates = new Hashtable();
         } catch (InvalidName inex) { 
 			_logger.log(Level.SEVERE,

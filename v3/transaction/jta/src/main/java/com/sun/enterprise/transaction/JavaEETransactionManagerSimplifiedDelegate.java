@@ -151,9 +151,9 @@ public class JavaEETransactionManagerSimplifiedDelegate
         this.tm = (JavaEETransactionManagerSimplified)tm;
     }
 
-    public void startJTSTx(JavaEETransaction t) 
+    public Transaction startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
-        /** XXX Throw an exception ??? XXX **/
+        throw new UnsupportedOperationException("startJTSTx");
     }
 
     public void recover(XAResource[] resourceList) {
@@ -177,4 +177,5 @@ public class JavaEETransactionManagerSimplifiedDelegate
     }
 
     public void handlePropertyUpdate(String name, Object value) {}
+
 }

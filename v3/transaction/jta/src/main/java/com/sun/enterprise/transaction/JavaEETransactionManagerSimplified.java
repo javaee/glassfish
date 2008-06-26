@@ -283,7 +283,7 @@ public class JavaEETransactionManagerSimplified
                d.enlistLAOResource(tx, tx.getNonXAResource());
 
 /** XXX TO BE MOVED TO XA DELEGATE XXX **
-               getDelegate().startJTSTx(tx);
+               startJTSTx(tx);
 
                //If transaction conatains a NonXA and no LAO, convert the existing
                //Non XA to LAO
@@ -346,7 +346,22 @@ public class JavaEETransactionManagerSimplified
 
     public void startJTSTx(JavaEETransaction t)
             throws RollbackException, IllegalStateException, SystemException {
+
         JavaEETransactionImpl tx = (JavaEETransactionImpl)t;
+        Transaction jtsTx = getDelegate().startJTSTx(tx, tx.isAssociatedTimeout());
+
+        // The local Transaction was promoted to global Transaction
+        if (tx!=null && monitoringEnabled){
+            if(activeTransactions.remove(tx)){
+                m_transInFlight--;
+            }
+        }
+
+        tx.setJTSTx(jtsTx);
+        jtsTx.registerSynchronization(new JTSSynchronization(jtsTx, this));
+    }
+
+/**
         try {
             if (tx.isAssociatedTimeout()) {
                 // calculate the timeout for the transaction, this is required as the local tx 
@@ -354,9 +369,9 @@ public class JavaEETransactionManagerSimplified
                 int timeout = tx.cancelTimerTask();
                 int newtimeout = (int) ((System.currentTimeMillis() - tx.getStartTime()) / 1000);
                 newtimeout = (timeout -   newtimeout);
-                begin(newtimeout);
+                getDelegate().beginJTS(newtimeout);
             } else {
-                begin();
+                getDelegate().beginJTS(getEffectiveTimeout());
             }
             
             // The local Transaction was promoted to global Transaction
@@ -369,10 +384,7 @@ public class JavaEETransactionManagerSimplified
         } catch ( NotSupportedException ex ) {
             throw new RuntimeException(sm.getString("enterprise_distributedtx.lazy_transaction_notstarted"),ex);
         }
-        Transaction jtsTx = getTransaction();
-        tx.setJTSTx(jtsTx);
-        jtsTx.registerSynchronization(new JTSSynchronization(jtsTx, this));
-    }
+**/
 
     public List getResourceList(Object instance, ComponentInvocation inv) {
         if (inv == null)
@@ -662,7 +674,7 @@ public class JavaEETransactionManagerSimplified
         // If we came here, it means we have a local tx with no registered
         // resources, so start a JTS tx which can be exported.
         try {
-            getDelegate().startJTSTx(tx);
+            startJTSTx(tx);
         } catch ( RollbackException rlex ) {
             throw new RuntimeException(sm.getString("enterprise_distributedtx.unable_tostart_JTSTransaction"),rlex);
         } catch ( IllegalStateException isex ) {
@@ -1040,7 +1052,7 @@ public class JavaEETransactionManagerSimplified
         txnTmout.set(null);
     }
 
-    int getEffectiveTimeout() {
+    public int getEffectiveTimeout() {
         Integer tmout = txnTmout.get();
         if (tmout ==  null) {
             return transactionTimeout;
@@ -1419,6 +1431,13 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
+    public void monitorTxBegin(Transaction tx) {
+        if (monitoringEnabled) {
+            activeTransactions.addElement(tx);
+            m_transInFlight++;
+        }
+    }
+
     public boolean resourceEnlistable(TransactionalResource h) {
         return (h.isTransactional() &&
                 (!h.isEnlisted() || !h.isShareable() || multipleEnlistDelists));
@@ -1433,7 +1452,7 @@ public class JavaEETransactionManagerSimplified
         if (curr != null)
             curr.setTransactionCompeting(b);
     }
-
+    
     public JavaEETransaction createImportedTransaction(Transaction jtsTx) 
             throws SystemException { 
         JavaEETransactionImpl tx = new JavaEETransactionImpl(jtsTx);

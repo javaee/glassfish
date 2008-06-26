@@ -51,10 +51,11 @@ import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.DefaultTransactionService;
 
 import org.omg.CORBA.CompletionStatus;
-import com.sun.corba.ee.spi.costransactions.TransactionService;
+// import com.sun.corba.ee.spi.costransactions.TransactionService;
 import com.sun.corba.ee.impl.logging.POASystemException;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.TransactionService;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -87,7 +88,7 @@ public class JavaEETransactionManagerJTSDelegate
     private JavaEETransactionManager javaEETM;
 
     @Inject 
-    private com.sun.enterprise.config.serverbeans.TransactionService txnService;
+    private TransactionService txnService;
 
     // an implementation of the JTA TransactionManager provided by JTS.
     private TransactionManager tm;
@@ -271,7 +272,7 @@ public class JavaEETransactionManagerJTSDelegate
            throws RollbackException, IllegalStateException, SystemException {
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
-        startJTSTx(tx);
+        ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(tx);
 
         //If transaction conatains a NonXA and no LAO, convert the existing
         //Non XA to LAO
@@ -332,13 +333,31 @@ public class JavaEETransactionManagerJTSDelegate
         _logger = ((JavaEETransactionManagerSimplified)javaEETM).getLogger();
     }
 
-    public void startJTSTx(JavaEETransaction tx) 
+    public Transaction startJTSTx(JavaEETransaction tran, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
         if (tm == null)
             tm = TransactionManagerImpl.getTransactionManagerImpl();
 
-        ((JavaEETransactionManagerSimplified)javaEETM).startJTSTx(tx);
-        globalTransactions.put(tm.getTransaction(), tx);
+        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
+        try {
+            if (isAssociatedTimeout) {
+                // calculate the timeout for the transaction, this is required as the local tx
+                // is getting converted to a global transaction
+                int timeout = tx.cancelTimerTask();
+                int newtimeout = (int) ((System.currentTimeMillis() - tx.getStartTime()) / 1000);
+                newtimeout = (timeout -   newtimeout);
+                beginJTS(newtimeout);
+            } else {
+                beginJTS(((JavaEETransactionManagerSimplified)javaEETM).getEffectiveTimeout());
+            }
+        } catch ( NotSupportedException ex ) {
+            throw new RuntimeException(sm.getString("enterprise_distributedtx.lazy_transaction_notstarted"),ex);
+        }
+
+        Transaction jtsTx = tm.getTransaction();
+        globalTransactions.put(jtsTx, tx);
+
+        return jtsTx;
     }
 
     public void recover(XAResource[] resourceList) {
@@ -391,6 +410,11 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
+    public void beginJTS(int timeout) throws NotSupportedException, SystemException {
+        ((TransactionManagerImpl)tm).begin(timeout);
+        ((JavaEETransactionManagerSimplified)javaEETM).monitorTxBegin(tm.getTransaction());
+    }
+
     public void initTransactionProperties() {
         if (txnService != null) {
             String value = txnService.getPropertyValue("use-last-agent-optimization");
@@ -420,8 +444,8 @@ public class JavaEETransactionManagerJTSDelegate
         // XXX MOVE TO A GENERIC LOCATION? XXX
 
         try {
-            TransactionService jts = new DefaultTransactionService();
 /** XXX ???
+            TransactionService jts = new DefaultTransactionService();
             jts.identify_ORB(theORB, tsIdent, jtsProperties ) ;
             jtsInterceptor.setTSIdentification(tsIdent);
             org.omg.CosTransactions.Current transactionCurrent =

@@ -178,7 +178,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     }
 
     // Cancels the timertask and returns the timeout
-    int cancelTimerTask() {
+    public int cancelTimerTask() {
         cancel();
         return timeout;
     }
@@ -580,7 +580,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
             throw new IllegalStateException("JavaEETransactionImpl.enlistResource called for local tx");
         ***/
         else  { //  Start a new JTS tx
-            ((JavaEETransactionManagerSimplified) javaEETM).getDelegate().startJTSTx(this);
+            ((JavaEETransactionManagerSimplified) javaEETM).startJTSTx(this);
             return jtsTx.enlistResource(xaRes);
         }
         // IASRI END 4723068

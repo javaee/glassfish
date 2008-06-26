@@ -163,8 +163,11 @@ public interface JavaEETransactionManagerDelegate {
      * Start new JTS transaction for the existing local transaction object.
      *
      * @param tm the JavaEETransactionManager object.
+     * @param isAssociatedTimeout <code>true</code> if transaction has a timeout
+     * associated with it.
+     * @return the new JTS Transaction instance.
      */
-    public void startJTSTx(JavaEETransaction t)
+    public Transaction startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout)
             throws RollbackException, IllegalStateException, SystemException;
 
     /**

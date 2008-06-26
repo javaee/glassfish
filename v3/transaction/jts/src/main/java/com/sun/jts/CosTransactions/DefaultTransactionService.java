@@ -222,7 +222,8 @@ public class DefaultTransactionService implements TransactionService,
             // Set up the POA objects for transient and persistent references.
 
             try {
-                createPOAs();
+                if (orb != null)
+                    createPOAs();
             } catch( Exception exc ) {
 				_logger.log(Level.WARNING,"jts.unexpected_error_when_creating_poa",exc);
                 throw new INTERNAL(MinorCode.TSCreateFailed,CompletionStatus.COMPLETED_NO);
@@ -241,7 +242,8 @@ public class DefaultTransactionService implements TransactionService,
 
         // Identify Sender and Receiver objects to the Comm Manager.
 
-        SenderReceiver.identify(ident);
+        if (ident != null)
+            SenderReceiver.identify(ident);
 
         // If the server is recoverable, create a NamingContext with which to
         // register the factory and admin objects.
