@@ -101,9 +101,11 @@ public class ListDataStructure implements DataStructure {
         ResourceHandle resource = null;
         if (strategy != null) {
             resource = strategy.retrieveResource();
-        } else if (free.size() > 0) {
+        } else {
             synchronized (free) {
-                resource = free.remove(0);
+                if (free.size() > 0){
+                    resource = free.remove(0);
+                }
             }
         }
         return resource;
