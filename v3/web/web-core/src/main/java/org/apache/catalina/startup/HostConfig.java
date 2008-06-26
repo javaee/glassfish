@@ -66,6 +66,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.*;
@@ -137,7 +139,7 @@ public class HostConfig
      * The names of applications that we have auto-deployed (to avoid
      * double deployment attempts).
      */
-    protected ArrayList deployed = new ArrayList();
+    protected List<String> deployed = new ArrayList<String>();
 
 
     /**
@@ -170,14 +172,14 @@ public class HostConfig
      * Last modified dates of the web.xml files of the contexts, keyed by
      * context name.
      */
-    private HashMap webXmlLastModified = new HashMap();
+    private Map<String, Long> webXmlLastModified = new HashMap<String, Long>();
 
 
     /**
      * Last modified dates of the Context xml files of the contexts, keyed by
      * context name.
      */
-    private HashMap contextXmlLastModified = new HashMap();
+    private Map<String, Long> contextXmlLastModified = new HashMap<String, Long>();
 
 
     /**
@@ -766,7 +768,7 @@ public class HostConfig
                     resources.getAttributes("/WEB-INF");
                 long newLastModified = webXmlAttributes.getLastModified();
                 long webInfLastModified = webInfAttributes.getLastModified();
-                Long lastModified = (Long) webXmlLastModified.get(contextName);
+                Long lastModified = webXmlLastModified.get(contextName);
                 if (lastModified == null) {
                     webXmlLastModified.put
                         (contextName, Long.valueOf(newLastModified));
@@ -785,7 +787,7 @@ public class HostConfig
                 ; // Ignore
             }
 
-            Long lastModified = (Long) contextXmlLastModified.get(contextName);
+            Long lastModified = contextXmlLastModified.get(contextName);
             String configBase = configBase().getPath();
             String configFileName = context.getConfigFile();
             if (configFileName != null) {
