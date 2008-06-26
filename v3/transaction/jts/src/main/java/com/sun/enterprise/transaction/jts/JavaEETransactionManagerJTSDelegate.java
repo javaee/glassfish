@@ -48,11 +48,17 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.DefaultTransactionService;
+
+import org.omg.CORBA.CompletionStatus;
+import com.sun.corba.ee.spi.costransactions.TransactionService;
+import com.sun.corba.ee.impl.logging.POASystemException;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 
@@ -62,6 +68,8 @@ import com.sun.enterprise.transaction.JavaEETransactionImpl;
 import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  ** Implementation of JavaEETransactionManagerDelegate that supports XA
@@ -71,16 +79,22 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class JavaEETransactionManagerJTSDelegate 
-            implements JavaEETransactionManagerDelegate {
+            implements JavaEETransactionManagerDelegate, PostConstruct {
 
     // an implementation of the JavaEETransactionManager that calls
     // this object.
-    private JavaEETransactionManagerSimplified javaEETM;
+    // @Inject 
+    private JavaEETransactionManager javaEETM;
+
+    @Inject 
+    private com.sun.enterprise.config.serverbeans.TransactionService txnService;
 
     // an implementation of the JTA TransactionManager provided by JTS.
     private TransactionManager tm;
 
     private Hashtable globalTransactions;
+    private Hashtable<String, XAResourceWrapper> xaresourcewrappers =
+            new Hashtable<String, XAResourceWrapper>();
 
     private Logger _logger;
 
@@ -92,6 +106,15 @@ public class JavaEETransactionManagerJTSDelegate
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
+    }
+
+    public void postConstruct() {
+        if (javaEETM != null) {
+            // JavaEETransactionManager has been already initialized
+            javaEETM.setDelegate(this);
+        }
+
+        initTransactionProperties();
     }
 
     public boolean useLAO() {
@@ -114,41 +137,44 @@ public class JavaEETransactionManagerJTSDelegate
                 _logger.log(Level.FINE,"TM: commit");
         validateTransactionManager();
         Object obj = tm.getTransaction(); // monitoring object
+
+        JavaEETransactionManagerSimplified javaEETMS = 
+                (JavaEETransactionManagerSimplified)javaEETM;
         
-        if (javaEETM.isInvocationStackEmpty()) {
+        if (javaEETMS.isInvocationStackEmpty()) {
             try{
                 tm.commit();
-                javaEETM.monitorTxCompleted0(obj, true);
+                javaEETMS.monitorTxCompleted0(obj, true);
             }catch(RollbackException e){
-                javaEETM.monitorTxCompleted0(obj, false);
+                javaEETMS.monitorTxCompleted0(obj, false);
                 throw e;
             }catch(HeuristicRollbackException e){
-                javaEETM.monitorTxCompleted0(obj, false);
+                javaEETMS.monitorTxCompleted0(obj, false);
                 throw e;
             }catch(HeuristicMixedException e){
-                javaEETM.monitorTxCompleted0(obj, true);
+                javaEETMS.monitorTxCompleted0(obj, true);
                 throw e;
             }
         } else {
             try {
-                javaEETM.setTransactionCompeting(true);
+                javaEETMS.setTransactionCompeting(true);
                 tm.commit();
-                javaEETM.monitorTxCompleted0(obj, true);
+                javaEETMS.monitorTxCompleted0(obj, true);
 /**
             } catch (InvocationException ex) {
                 assert false;
 **/
             }catch(RollbackException e){
-                javaEETM.monitorTxCompleted0(obj, false);
+                javaEETMS.monitorTxCompleted0(obj, false);
                 throw e;
             }catch(HeuristicRollbackException e){
-                javaEETM.monitorTxCompleted0(obj, false);
+                javaEETMS.monitorTxCompleted0(obj, false);
                 throw e;
             }catch(HeuristicMixedException e){
-                javaEETM.monitorTxCompleted0(obj, true);
+                javaEETMS.monitorTxCompleted0(obj, true);
                 throw e;
             } finally {
-                javaEETM.setTransactionCompeting(false);
+                javaEETMS.setTransactionCompeting(false);
             }
         }
     }
@@ -165,22 +191,25 @@ public class JavaEETransactionManagerJTSDelegate
 
         Object obj = tm.getTransaction(); // monitoring object
         
-        if (javaEETM.isInvocationStackEmpty()) {
+        JavaEETransactionManagerSimplified javaEETMS = 
+                (JavaEETransactionManagerSimplified)javaEETM;
+        
+        if (javaEETMS.isInvocationStackEmpty()) {
             tm.rollback();
         } else {
             try {
-                javaEETM.setTransactionCompeting(true);
+                javaEETMS.setTransactionCompeting(true);
                 tm.rollback();
 /**
             } catch (InvocationException ex) {
                 assert false;
 **/
             } finally {
-                javaEETM.setTransactionCompeting(false);
+                javaEETMS.setTransactionCompeting(false);
             }
         }
 
-        javaEETM.monitorTxCompleted0(obj, false);
+        javaEETMS.monitorTxCompleted0(obj, false);
     }
 
     public int getStatus() throws SystemException {
@@ -212,7 +241,7 @@ public class JavaEETransactionManagerJTSDelegate
             // in this JVM (possible for distributed loopbacks).
             tx = (JavaEETransaction)globalTransactions.get(jtsTx);
             if ( tx == null ) {
-                tx = javaEETM.createImportedTransaction(jtsTx);
+                tx = ((JavaEETransactionManagerSimplified)javaEETM).createImportedTransaction(jtsTx);
                 globalTransactions.put(jtsTx, tx);
             }
             javaEETM.setCurrentTransaction(tx); // associate tx with thread
@@ -223,7 +252,7 @@ public class JavaEETransactionManagerJTSDelegate
     public boolean enlistDistributedNonXAResource(Transaction tx, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
         if(useLAO()) {
-            if (javaEETM.resourceEnlistable(h)) {
+            if (((JavaEETransactionManagerSimplified)javaEETM).resourceEnlistable(h)) {
                 XAResource res = h.getXAResource();
                 boolean result = tx.enlistResource(res);
                 if (!h.isEnlisted())
@@ -299,8 +328,8 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void setTransactionManager(JavaEETransactionManager tm) {
-        javaEETM = (JavaEETransactionManagerSimplified)tm;
-        _logger = javaEETM.getLogger();
+        javaEETM = tm;
+        _logger = ((JavaEETransactionManagerSimplified)javaEETM).getLogger();
     }
 
     public void startJTSTx(JavaEETransaction tx) 
@@ -308,7 +337,7 @@ public class JavaEETransactionManagerJTSDelegate
         if (tm == null)
             tm = TransactionManagerImpl.getTransactionManagerImpl();
 
-        javaEETM.startJTSTx(tx);
+        ((JavaEETransactionManagerSimplified)javaEETM).startJTSTx(tx);
         globalTransactions.put(tm.getTransaction(), tx);
     }
 
@@ -343,8 +372,13 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
-    public boolean supportsRecovery() {
-        return true;
+    public XAResourceWrapper getXAResourceWrapper(String clName) {
+        XAResourceWrapper rc = xaresourcewrappers.get(clName);
+
+        if (rc != null)
+            return rc.getInstance();
+
+        return null;
     }
 
     public void handlePropertyUpdate(String name, Object value) {
@@ -355,5 +389,58 @@ public class JavaEETransactionManagerJTSDelegate
             Configuration.setCommitRetryVar((String)value);
 
         }
+    }
+
+    public void initTransactionProperties() {
+        if (txnService != null) {
+            String value = txnService.getPropertyValue("use-last-agent-optimization");
+            if (value != null && "false".equals(value)) {
+                setUseLAO(false);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"TM: LAO is disabled");
+            }
+    
+            value = txnService.getPropertyValue("oracle-xa-recovery-workaround");
+            if (value == null || "true".equals(value)) {
+                xaresourcewrappers.put(
+                    "oracle.jdbc.xa.client.OracleXADataSource",
+                    new OracleXAResource());
+            }
+    
+            value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
+            if (value != null && "true".equals(value)) {
+                xaresourcewrappers.put(
+                    "com.sybase.jdbc2.jdbc.SybXADataSource",
+                    new SybaseXAResource());
+            }
+
+            // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
+        }
+
+        // XXX MOVE TO A GENERIC LOCATION? XXX
+
+        try {
+            TransactionService jts = new DefaultTransactionService();
+/** XXX ???
+            jts.identify_ORB(theORB, tsIdent, jtsProperties ) ;
+            jtsInterceptor.setTSIdentification(tsIdent);
+            org.omg.CosTransactions.Current transactionCurrent =
+                  jts.get_current();
+    
+            theORB.getLocalResolver().register(
+                   ORBConstants.TRANSACTION_CURRENT_NAME,
+                   new Constant(transactionCurrent));
+    
+            // the JTS PI use this to call the proprietary hooks
+            theORB.getLocalResolver().register(
+                   "TSIdentification", new Constant(tsIdent));
+                    txServiceInitialized = true;
+** XXX ??? **/
+        } catch (Exception ex) {
+            throw new org.omg.CORBA.INITIALIZE(
+                   "JTS Exception: "+ex, POASystemException.JTS_INIT_ERROR, 
+                   CompletionStatus.COMPLETED_MAYBE);
+        }
+
     }
 }

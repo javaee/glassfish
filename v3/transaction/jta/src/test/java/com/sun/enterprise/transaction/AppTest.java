@@ -55,7 +55,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
  */
 public class AppTest extends TestCase {
 
-    TransactionManager t; 
+    JavaEETransactionManager t; 
 
     /**
      * Create the test case
@@ -76,7 +76,9 @@ public class AppTest extends TestCase {
     public void setUp() {
         try {
             t = new JavaEETransactionManagerSimplified();
-            ((JavaEETransactionManager)t).setDelegate(new JavaEETransactionManagerSimplifiedDelegate());
+            JavaEETransactionManagerDelegate d = new JavaEETransactionManagerSimplifiedDelegate();
+            t.setDelegate(d);
+            d.setTransactionManager(t);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -88,10 +90,8 @@ public class AppTest extends TestCase {
      * Can't test more than null (but no NPE)
      */
     public void testXAResourceWrapper() {
-        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper("xxx"));
-        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper(
-            "oracle.jdbc.xa.client.OracleXADataSource"));
-        assertFalse(((JavaEETransactionManagerSimplified)t).getDelegate().supportsRecovery());
+        assertNull(t.getXAResourceWrapper("xxx"));
+        assertNull(t.getXAResourceWrapper("oracle.jdbc.xa.client.OracleXADataSource"));
     }
 
     /**
@@ -102,7 +102,7 @@ public class AppTest extends TestCase {
         PropertyChangeEvent e2 = new PropertyChangeEvent("", ServerTags.RETRY_TIMEOUT_IN_SECONDS, "1", "10");
         try {
             TransactionServiceConfigListener tl = new TransactionServiceConfigListener();
-            tl.setTM((JavaEETransactionManager)t);
+            tl.setTM(t);
             tl.changed(new PropertyChangeEvent[] {e1, e2});
             assert(true);
         } catch (Exception ex) {

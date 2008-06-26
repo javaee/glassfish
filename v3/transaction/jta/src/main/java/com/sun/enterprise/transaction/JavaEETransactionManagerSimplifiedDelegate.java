@@ -42,12 +42,15 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 
 import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  ** Implementation of JavaEETransactionManagerDelegate that supports only
@@ -57,15 +60,23 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class JavaEETransactionManagerSimplifiedDelegate 
-            implements JavaEETransactionManagerDelegate {
+            implements JavaEETransactionManagerDelegate, PostConstruct {
 
-    private JavaEETransactionManagerSimplified tm;
+    // @Inject 
+    private JavaEETransactionManager tm;
 
     // Sting Manager for Localization
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
     private boolean lao = false;
+
+    public JavaEETransactionManagerSimplifiedDelegate() {
+    }
+
+    public void postConstruct() {
+        // tm.setDelegate(this);
+    }
 
     public boolean useLAO() {
          return lao;
@@ -161,8 +172,8 @@ public class JavaEETransactionManagerSimplifiedDelegate
         throw new UnsupportedOperationException("recreate");
     }
 
-    public boolean supportsRecovery() {
-        return false;
+    public XAResourceWrapper getXAResourceWrapper(String clName) {
+        return null;
     }
 
     public void handlePropertyUpdate(String name, Object value) {}

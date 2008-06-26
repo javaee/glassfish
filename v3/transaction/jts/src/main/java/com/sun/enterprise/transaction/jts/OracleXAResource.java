@@ -36,7 +36,7 @@
 
 //Source File Name:   OracleXAResource.java
 
-package com.sun.enterprise.transaction;
+package com.sun.enterprise.transaction.jts;
 
 import java.sql.*;
 import javax.transaction.xa.*;

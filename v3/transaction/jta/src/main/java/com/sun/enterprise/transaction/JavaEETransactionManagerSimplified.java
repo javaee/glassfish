@@ -122,8 +122,6 @@ public class JavaEETransactionManagerSimplified
     protected int m_transInFlight = 0;
 
     private Cache resourceTable;
-    private Hashtable<String, XAResourceWrapper> xaresourcewrappers = 
-            new Hashtable<String, XAResourceWrapper>();
 
     private  Timer _timer = new Timer("transaction-manager", true);
 
@@ -149,7 +147,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void postConstruct() {
-        initDelegate();
+        initDelegates();
         initProperties();
     }
 
@@ -194,27 +192,10 @@ public class JavaEETransactionManagerSimplified
         // running on the server side XXX ??? XXX
         if (txnService != null) {
             transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
-            String value = txnService.getPropertyValue("use-last-agent-optimization");
-            if (value != null && "false".equals(value)) {
-                delegate.setUseLAO(false);
-                if (_logger.isLoggable(Level.FINE))
-                    _logger.log(Level.FINE,"TM: LAO is disabled");
-            }
 
-            value = txnService.getPropertyValue("oracle-xa-recovery-workaround");
-            if (value == null || "true".equals(value)) {
-                xaresourcewrappers.put(
-                    "oracle.jdbc.xa.client.OracleXADataSource",
-                    new OracleXAResource());
-            }
-
-            value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
-            if (value != null && "true".equals(value)) {
-                xaresourcewrappers.put(
-                    "com.sybase.jdbc2.jdbc.SybXADataSource",
-                    new SybaseXAResource());
-            }
+            // delegate would the rest if they support it
         }
+
         // ENF OF BUG 4665539
                 if (_logger.isLoggable(Level.FINE))
                 _logger.log(Level.FINE,"TM: Tx Timeout = " + transactionTimeout);
@@ -264,6 +245,9 @@ public class JavaEETransactionManagerSimplified
         if(h.isEnlistmentSuspended()){
             return false;
         }
+
+        if ( !(tran instanceof JavaEETransaction) )
+           return enlistXAResource(tran, h);
 
        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
 
@@ -450,6 +434,9 @@ public class JavaEETransactionManagerSimplified
     public boolean delistResource(Transaction tran, TransactionalResource h, int flag)
             throws IllegalStateException, SystemException {
         if (!h.isTransactional()) return true;
+
+        if ( !(tran instanceof JavaEETransaction) )
+            return delistJTSResource(tran, h, flag);
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
         if ( tx.isLocalTx() ) {
@@ -1011,14 +998,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public XAResourceWrapper getXAResourceWrapper(String clName) {
-        if (getDelegate().supportsRecovery()) {
-            XAResourceWrapper rc = xaresourcewrappers.get(clName);
-
-            if (rc != null)
-                return rc.getInstance();
-        }
-
-        return null;
+        return getDelegate().getXAResourceWrapper(clName);
     }
 
     public void handlePropertyUpdate(String name, Object value) {
@@ -1107,6 +1087,8 @@ public class JavaEETransactionManagerSimplified
                     componentName = tran1.getComponentName();
                     resourceNames = tran1.getResourceNames();
                 }
+                // XXX else use com.sun.jts.jta.TransactionImpl XXX
+
                 elapsedTime = System.currentTimeMillis()-startTime;
                 status = (String)statusMap.get(new Integer(tran.getStatus()));
                 TransactionAdminBean tBean = new TransactionAdminBean(tran,id,status,elapsedTime,
@@ -1193,7 +1175,7 @@ public class JavaEETransactionManagerSimplified
                 Iterator it = stats.keySet().iterator();
                 String key;
                 _logger.log(Level.INFO, 
-                        "********** J2EETransactionManager resourceTable stats *****");
+                        "********** JavaEETransactionManager resourceTable stats *****");
                 while (it.hasNext()) {
                     key = (String)it.next();
                     _logger.log(Level.INFO, key + ": " + stats.get(key).toString());
@@ -1388,31 +1370,43 @@ public class JavaEETransactionManagerSimplified
         return d;
     }
 
-    private void initDelegate() {
+    public boolean isDelegate(JavaEETransactionManagerDelegate d) {
+        if (delegate == null)
+            return false;
 
+        return (d.getClass().getName().equals(delegate.getClass().getName()));
+    }
+
+    private void initDelegates() {
         if (habitat == null)
             return; // the delegate will be set explicitly
 
-        int order = 0;
-        for (JavaEETransactionManagerDelegate d : 
-                habitat.getAllByContract(JavaEETransactionManagerDelegate.class) ) {
-            if (d.getOrder() > order) {
-                order = d.getOrder();
-                setDelegate(d);
-                if (_logger.isLoggable(Level.FINE))
-                    _logger.log(Level.FINE,"Replaced delegate with " 
-                            + d.getClass().getName());
-            }
+        for (JavaEETransactionManagerDelegate d :
+                habitat.getAllByContract(JavaEETransactionManagerDelegate.class)) {
+            setDelegate(d);
         }
-        if (order > 0 && _logger.isLoggable(Level.INFO))
+
+        if (delegate != null && _logger.isLoggable(Level.INFO))
                 _logger.log(Level.INFO,"Using " + delegate.getClass().getName() + " as the delegate");
     }
 
-    public void setDelegate(JavaEETransactionManagerDelegate d) {
-        // XXX Check if it's valid to set
-        delegate = d;
-        delegate.setTransactionManager(this);
-        // XXX check how to to replace on a new delegate: delegate.setUseLAO(false);
+    public synchronized void setDelegate(JavaEETransactionManagerDelegate d) {
+        // XXX Check if it's valid to set or if we need to remember all that asked.
+
+        int curr = 0;
+        if (delegate != null) {
+            curr = delegate.getOrder();
+        }
+        if (d.getOrder() > curr) {
+            delegate = d;
+
+            // XXX Hk2 work around XXX
+            delegate.setTransactionManager(this);
+
+            if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"Replaced delegate with " 
+                            + d.getClass().getName());
+        }
     }
 
     public Logger getLogger() {

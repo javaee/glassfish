@@ -43,6 +43,7 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import org.jvnet.hk2.annotations.Contract;
 
 @Contract
@@ -209,12 +210,15 @@ public interface JavaEETransactionManagerDelegate {
     public void recreate(Xid xid, long timeout) throws WorkException;
 
     /**
-     * Tells the caller if this delegate supports transaction recovery.
+     * Returns an instance of an XAResourceWrapper if this delegate supports 
+     * transaction recovery and there is a wrapper available for this class name.
+     * Returns <code>null</code> otherwise.
      *
      *
-     * @returns <code>true</code> if this delegate supports transaction recovery.
+     * @returns an instance of an XAResourceWrapper or <code>null</code> if this 
+     * delegate doesn't support transaction recovery or a wrapper is not available.
      */
-    public boolean supportsRecovery();
+    public XAResourceWrapper getXAResourceWrapper(String clName);
 
     /**
      * Handle configuration change.

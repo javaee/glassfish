@@ -36,7 +36,7 @@
 
 //Source File Name:   SybaseXAResource.java
 
-package com.sun.enterprise.transaction;
+package com.sun.enterprise.transaction.jts;
 
 import javax.transaction.xa.*;
 import javax.resource.ResourceException;

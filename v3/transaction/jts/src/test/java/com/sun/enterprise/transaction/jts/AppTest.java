@@ -51,6 +51,7 @@ import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.UserTransactionImpl;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
+import com.sun.enterprise.transaction.JavaEETransactionManagerSimplifiedDelegate;
 import com.sun.enterprise.transaction.TransactionServiceConfigListener;
 
 /**
@@ -58,7 +59,7 @@ import com.sun.enterprise.transaction.TransactionServiceConfigListener;
  */
 public class AppTest extends TestCase {
 
-    TransactionManager t;
+    JavaEETransactionManager t;
 
     /**
      * Create the test case
@@ -79,7 +80,9 @@ public class AppTest extends TestCase {
     public void setUp() {
         try {
             t = new JavaEETransactionManagerSimplified();
-            ((JavaEETransactionManager)t).setDelegate(new JavaEETransactionManagerJTSDelegate());
+            JavaEETransactionManagerDelegate d = new JavaEETransactionManagerJTSDelegate();
+            t.setDelegate(d);
+            d.setTransactionManager(t);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -88,12 +91,20 @@ public class AppTest extends TestCase {
     }
 
     /**
+     * Test that you can't replace delegate with a lower order.
+     */
+    public void testReplaceDelegate() {
+        JavaEETransactionManagerDelegate d = new JavaEETransactionManagerSimplifiedDelegate();
+        t.setDelegate(d);
+        assertFalse(((JavaEETransactionManagerSimplified)t).isDelegate(d));
+    }
+
+    /**
      * Can't test more than null (but no NPE)
      */
     public void testXAResourceWrapper() {
-        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper("xxx"));
-        assertNull(((JavaEETransactionManager)t).getXAResourceWrapper(
-            "oracle.jdbc.xa.client.OracleXADataSource"));
+        assertNull(t.getXAResourceWrapper("xxx"));
+        assertNull(t.getXAResourceWrapper("oracle.jdbc.xa.client.OracleXADataSource"));
     }
 
     /**
@@ -104,7 +115,7 @@ public class AppTest extends TestCase {
         PropertyChangeEvent e2 = new PropertyChangeEvent("", ServerTags.RETRY_TIMEOUT_IN_SECONDS, "1", "10");
         try {
             TransactionServiceConfigListener tl = new TransactionServiceConfigListener();
-            tl.setTM((JavaEETransactionManager)t);
+            tl.setTM(t);
             tl.changed(new PropertyChangeEvent[] {e1, e2});
             assert(true);
         } catch (Exception ex) {
