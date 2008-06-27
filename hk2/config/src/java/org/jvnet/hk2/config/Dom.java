@@ -283,13 +283,17 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      * This would trigger the re-injection of the value.
      */
     public void attribute(String name, String value) {
-        attributes.put(name,value);
-        // TODO:
-        // this re-injection has two problems. First, it forces an instantiation
-        // even if that hasn't happened yet. Second, if the component is scoped,
-        // this won't work correctly (but then, there's no way to make that work,
-        // since we can't enumerate all scope instances.)
-        getInjector().injectAttribute(this,name,get());
+        if (value==null) {
+            attributes.remove(name);
+        } else {
+            attributes.put(name,value);
+            // TODO:
+            // this re-injection has two problems. First, it forces an instantiation
+            // even if that hasn't happened yet. Second, if the component is scoped,
+            // this won't work correctly (but then, there's no way to make that work,
+            // since we can't enumerate all scope instances.)
+            getInjector().injectAttribute(this,name,get());
+        }
     }
 
     /**

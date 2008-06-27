@@ -57,14 +57,14 @@ import java.util.*;
 public class WriteableView implements InvocationHandler, Transactor, ConfigView {
 
     private final ConfigBean bean;
-    private final ConfigBeanProxy readView;
+    private final ConfigBeanProxy defaultView;
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
 
     public WriteableView(ConfigBeanProxy readView) {
-        this.readView = readView;
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
+        this.defaultView = bean.createProxy();
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
         changedCollections = new HashMap<String, ProtectedList>();
     }
@@ -96,7 +96,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             if (!changedCollections.containsKey(property.xmlName())) {
                 // wrap collections so we can record events on that collection mutation.
                 changedCollections.put(property.xmlName(),
-                        new ProtectedList((List) value, readView, property.xmlName()));
+                        new ProtectedList((List) value, defaultView, property.xmlName()));
             }
             return changedCollections.get(property.xmlName());
         }
@@ -115,7 +115,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             ConfigView bean = (ConfigView) Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
             newValue = bean.getMasterView();
         }
-        PropertyChangeEvent evt = new PropertyChangeEvent(readView,property.xmlName(), oldValue, newValue);
+        PropertyChangeEvent evt = new PropertyChangeEvent(defaultView,property.xmlName(), oldValue, newValue);
         changedAttributes.put(property.xmlName(), evt);
     }
 
@@ -334,12 +334,13 @@ private class ProtectedList extends AbstractList {
         try {
             Object handler = Proxy.getInvocationHandler(object);
             if (handler instanceof WriteableView) {
-                param = ((WriteableView) handler).readView;
+                ConfigBean master = ((WriteableView) handler).getMasterView();
+                param = ((WriteableView) handler).getMasterView().createProxy(master.type());
             }
         } catch(IllegalArgumentException e) {
             // ignore, this is a leaf
         }
-        changeEvents.add(new PropertyChangeEvent(readView, id, null, param));
+        changeEvents.add(new PropertyChangeEvent(defaultView, id, null, param));
         return proxied.add(object);
     }
 
@@ -379,7 +380,7 @@ private class ProtectedList extends AbstractList {
 
     @Override
     public synchronized boolean remove(Object object) {
-        changeEvents.add(new PropertyChangeEvent(readView, id, object, null));
+        changeEvents.add(new PropertyChangeEvent(defaultView, id, object, null));
 
         try {
             ConfigView handler = ((ConfigView) Proxy.getInvocationHandler(object)).getMasterView();
