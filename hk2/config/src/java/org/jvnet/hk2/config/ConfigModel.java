@@ -470,12 +470,7 @@ public final class ConfigModel {
          * Sets the value to {@link Dom}.
          */
         public void set(Dom dom, Object arg) {
-            if(arg==null) {
-                // TODO: implement remove
-                Logger.getAnonymousLogger().severe("TODO : KK : implement remove");
-                return;
-            }
-            dom.attribute(xmlName, arg.toString());
+            dom.attribute(xmlName, arg==null?null:arg.toString());
         }
     }
 
@@ -511,11 +506,10 @@ public final class ConfigModel {
 
         public void set(Dom dom, Object arg) {
             if(arg==null) {
-                // TODO: implement remove
-                Logger.getAnonymousLogger().severe("TODO : KK : implement remove");
-                return;
+                dom.removeLeafElement(xmlName, dom.leafElement(xmlName));
+            } else {
+                dom.setLeafElements(xmlName,arg.toString());
             }
-            dom.setLeafElements(xmlName,arg.toString());
         }
     }
 

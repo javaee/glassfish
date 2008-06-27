@@ -398,6 +398,19 @@ public class Habitat {
         return (Collection)byType.get(fullyQualifiedClassName);
     }
 
+    public Collection<Inhabitant<?>> getInhabitantsByContract(String fullyQualifiedClassName) {
+        final List<NamedInhabitant> services = byContract.get(fullyQualifiedClassName);
+        return new AbstractList<Inhabitant<?>>() {
+            public Inhabitant<?> get(int index) {
+                return services.get(index).inhabitant;
+            }
+
+            public int size() {
+                return services.size();
+            }
+        };
+    }
+
     private Inhabitant _getInhabitant(Class contract, String name) {
         // TODO: faster implementation needed
         for (NamedInhabitant i : byContract.get(contract.getName())) {
