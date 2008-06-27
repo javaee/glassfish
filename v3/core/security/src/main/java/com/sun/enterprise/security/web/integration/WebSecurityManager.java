@@ -71,6 +71,7 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -89,8 +90,6 @@ import org.glassfish.internal.api.Globals;
 public class WebSecurityManager {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
-
-    private  AuditManager auditManager;
 
     /**
      * Request path. Copied from org.apache.catalina.Globals;
@@ -196,7 +195,7 @@ public class WebSecurityManager {
     private void initialise() throws PolicyContextException {
         factory = Globals.get(SecurityRoleMapperFactory.class);
         policyConfigurationFactory = Globals.get(PolicyConfigurationFactory.class);
-        auditManager = Globals.get(AuditManager.class);
+        AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
 
         String appName = wbd.getApplication().getRegistrationName();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
@@ -430,6 +429,7 @@ public class WebSecurityManager {
             logger.log(Level.FINE,"[Web-Security] hasResource isGranted: " + isGranted);
             logger.log(Level.FINE,"[Web-Security] hasResource perm: " + perm);
         }
+        AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
         if(auditManager !=null && auditManager.isAuditOn()){
             Principal prin = httpsr.getUserPrincipal();
             String user = (prin != null) ? prin.getName(): null;
@@ -485,6 +485,7 @@ public class WebSecurityManager {
             logger.log(Level.FINE,"[Web-Security] hasUserDataPermission isGranted: " + isGranted);
         }
 
+        AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
         if(auditManager!= null && auditManager.isAuditOn()){
             Principal prin = httpsr.getUserPrincipal();
             String user = (prin != null) ? prin.getName(): null;

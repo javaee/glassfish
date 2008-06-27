@@ -85,9 +85,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject 
     private PolicyLoader policyLoader;
     
-    @Inject 
-    private AuditManager auditManager;
-    
     @Inject
     private SecurityServicesUtil secServUtil;
     
@@ -138,7 +135,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
             //And since LoginContextDriver has too many static methods that use AuditManager
             //we have to make this workaround here.
-            LoginContextDriver.AUDIT_MANAGER = auditManager;
+            LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
             
             secServUtil.initSecureSeed();
 
@@ -155,7 +152,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             // which will init ORB prematurely
             createRealms();
             // start the audit mechanism
-            auditManager.loadAuditModules();
+            secServUtil.getAuditManager().loadAuditModules();
             
 
             // initRoleMapperFactory is in J2EEServer.java and not moved to here

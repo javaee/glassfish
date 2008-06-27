@@ -96,8 +96,8 @@ public class LoginContextDriver  {
 
     public static final String CERT_REALMNAME = "certificate";
   
+    //NOTE: This AuditManager is initialized in SecurityLifecycle
     public  static AuditManager AUDIT_MANAGER;
-    //TODO:V3 FIXME
     
     /** This class cannot be instantiated
      *

@@ -40,6 +40,7 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -72,6 +73,9 @@ public class SecurityServicesUtil {
     @Inject
     ServerEnvironment env;
 
+    @Inject 
+    private AuditManager auditManager;
+    
     static {
         secureRandom.setSeed(System.currentTimeMillis());
     }
@@ -146,6 +150,10 @@ public class SecurityServicesUtil {
 
     public Habitat getHabitat() {
         return habitat;
+    }
+    
+    public AuditManager getAuditManager() {
+        return auditManager;
     }
 
     public static SecurityServicesUtil getInstance() {
