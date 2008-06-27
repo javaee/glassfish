@@ -96,6 +96,7 @@ public class DirectCreationTest extends ConfigPersistence {
                 Map<String, String> configChanges = new HashMap<String, String>();
                 configChanges.put("id", "funky-listener");
                 ConfigSupport.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
+                break;
             }
         }
 

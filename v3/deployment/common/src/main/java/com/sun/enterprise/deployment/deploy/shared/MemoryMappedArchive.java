@@ -61,6 +61,10 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
         read(is);
     }
 
+    public MemoryMappedArchive(byte[] bits) {
+        file = bits;
+    }
+
     public byte[] getByteArray() {
         return file;
     }

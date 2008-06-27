@@ -136,4 +136,43 @@ public class Utils {
         }).run(configParser);
         return habitat;
     }
+
+    public static Habitat getNewHabitat() {
+
+        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
+            public ClassLoader get() {
+                return getClass().getClassLoader();
+            }
+        };
+
+        Enumeration<URL> resources = null;
+        try {
+            resources = Utils.class.getClassLoader().getResources(inhabitantPath + "/" + habitatName);
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        if (resources == null) {
+            System.out.println("Cannot find any inhabitant file in the classpath");
+            return null;
+        }
+
+        final Habitat habitat = new Habitat();
+
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            InhabitantsScanner scanner = null;
+            try {
+                scanner = new InhabitantsScanner(resource.openConnection().getInputStream(), habitatName);
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            InhabitantsParser inhabitantsParser = new InhabitantsParser(habitat);
+            try {
+                inhabitantsParser.parse(scanner, holder);
+            } catch (IOException e1) {
+                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        return habitat;        
+    }
 }

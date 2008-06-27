@@ -25,7 +25,7 @@ own identifying information: Portions Copyright [yyyy]
 
        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
        <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
-
+		<echo message="foo"/>
        <resolveAll todir="target/stage/glassfish/modules">
          <scope level="compile,runtime" />
        </resolveAll>

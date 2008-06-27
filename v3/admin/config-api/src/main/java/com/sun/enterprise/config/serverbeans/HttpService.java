@@ -41,6 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -216,4 +217,18 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link HttpFileCache }
      */
     public void setHttpFileCache(HttpFileCache value) throws PropertyVetoException;
+
+    @DuckTyped
+    VirtualServer getVirtualServerByName(String name);
+
+    public class Duck {
+        public static VirtualServer getVirtualServerByName(HttpService target, String name) {
+            for (VirtualServer v : target.getVirtualServer()) {
+                if (v.getId().equals(name)) {
+                    return v;
+                }
+            }
+            return null;
+        }
+    }
 }

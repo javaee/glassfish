@@ -185,7 +185,6 @@ public class ApplicationLifecycle {
         throws ResolveError {
 
         final ReadableArchive source = context.getSource();
-        // we add of the involved deployers public APIs
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
         for (Deployer deployer : deployers) {
             final MetaData deployMetadata = deployer.getMetaData();
@@ -214,6 +213,21 @@ public class ApplicationLifecycle {
                     Module module = modulesRegistry.makeModuleFor(token, null);
                     if (module!=null) {
                         defs.add(module.getModuleDefinition());
+                    }
+                }
+            }
+        }
+
+        // Applications can also request to be wired to implementors of certain services.
+        // That means that any module implementing the requested service will be accessible
+        // by the parent class loader of the application.
+        if (m!=null) {
+            String requestedWiring = m.getMainAttributes().getValue(org.glassfish.api.ManifestConstants.GLASSFISH_REQUIRE_SERVICES);
+            if (requestedWiring!=null) {
+                for (String token : new Tokenizer(requestedWiring, ",")) {
+                    for (Inhabitant<?> impl : habitat.getInhabitantsByContract(token)) {
+                        Module wiredBundle = modulesRegistry.find(impl.get().getClass());
+                        defs.add(wiredBundle.getModuleDefinition());
                     }
                 }
             }

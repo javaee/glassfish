@@ -100,12 +100,7 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
-            <version>${project.version}</version>
-        </dependency>        
+        </dependency>      
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
