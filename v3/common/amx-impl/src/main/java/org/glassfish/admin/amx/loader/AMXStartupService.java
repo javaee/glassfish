@@ -180,6 +180,7 @@ public final class AMXStartupService
             // load config MBeans
             mConfigLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans);
             mConfigLoader.start();
+            SingletonEnforcer.register( AMXConfigLoader.class, mConfigLoader );
             
             getDomainRoot().waitAMXReady();
             
