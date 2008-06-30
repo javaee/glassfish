@@ -1018,6 +1018,11 @@ public class JavaEETransactionManagerSimplified
         // XXX Check if the current delegate needs to be called as well.
     }
 
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, 
+            XAResource[] xaresArray) throws Exception {
+        return delegate.recoverIncompleteTx(delegated, logPath, xaresArray);
+    }
+
 /****************************************************************************/
 /*********************** Called by Admin Framework **************************/
 /****************************************************************************/

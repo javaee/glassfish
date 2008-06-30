@@ -48,11 +48,8 @@ import javax.resource.spi.work.WorkException;
 
 import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.CosTransactions.Configuration;
-import com.sun.jts.CosTransactions.DefaultTransactionService;
-
-import org.omg.CORBA.CompletionStatus;
-// import com.sun.corba.ee.spi.costransactions.TransactionService;
-import com.sun.corba.ee.impl.logging.POASystemException;
+import com.sun.jts.CosTransactions.RecoveryManager;
+import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.TransactionService;
@@ -410,6 +407,19 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, 
+            XAResource[] xaresArray) throws Exception {
+        boolean result = false;
+        if (!delegated) {
+            RecoveryManager.recoverIncompleteTx(xaresArray);
+            result = true;
+        }
+        else
+            result = DelegatedRecoveryManager.delegated_recover(logPath, xaresArray);
+
+        return result;
+    }
+
     public void beginJTS(int timeout) throws NotSupportedException, SystemException {
         ((TransactionManagerImpl)tm).begin(timeout);
         ((JavaEETransactionManagerSimplified)javaEETM).monitorTxBegin(tm.getTransaction());
@@ -440,31 +450,5 @@ public class JavaEETransactionManagerJTSDelegate
 
             // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
         }
-
-        // XXX MOVE TO A GENERIC LOCATION? XXX
-
-        try {
-/** XXX ???
-            TransactionService jts = new DefaultTransactionService();
-            jts.identify_ORB(theORB, tsIdent, jtsProperties ) ;
-            jtsInterceptor.setTSIdentification(tsIdent);
-            org.omg.CosTransactions.Current transactionCurrent =
-                  jts.get_current();
-    
-            theORB.getLocalResolver().register(
-                   ORBConstants.TRANSACTION_CURRENT_NAME,
-                   new Constant(transactionCurrent));
-    
-            // the JTS PI use this to call the proprietary hooks
-            theORB.getLocalResolver().register(
-                   "TSIdentification", new Constant(tsIdent));
-                    txServiceInitialized = true;
-** XXX ??? **/
-        } catch (Exception ex) {
-            throw new org.omg.CORBA.INITIALIZE(
-                   "JTS Exception: "+ex, POASystemException.JTS_INIT_ERROR, 
-                   CompletionStatus.COMPLETED_MAYBE);
-        }
-
     }
 }

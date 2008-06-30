@@ -230,4 +230,16 @@ public interface JavaEETransactionManagerDelegate {
      * @param value the ne value of the configuration.
      */
     public void handlePropertyUpdate(String name, Object value);
+
+    /**
+     * Recover the populated array of XAResource if this delegate supports
+     * transaction recovery.
+     *
+     * @param delegated <code>true</code> if the recovery process is owned by this instance.
+     * @param logPath the name of the transaction logging directory
+     * @param xaresArray the array of XA Resources to be recovered.
+     * @return true if the recovery has been successful.
+     */
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, 
+            XAResource[] xaresArray) throws Exception;
 }

@@ -172,6 +172,12 @@ public class JavaEETransactionManagerSimplifiedDelegate
         throw new UnsupportedOperationException("recreate");
     }
 
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, 
+            XAResource[] xaresArray) throws Exception {
+        throw new UnsupportedOperationException("recoverIncompleteTx");
+    }
+
+
     public XAResourceWrapper getXAResourceWrapper(String clName) {
         return null;
     }
