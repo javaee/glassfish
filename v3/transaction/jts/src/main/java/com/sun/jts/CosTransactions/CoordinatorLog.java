@@ -1966,7 +1966,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
      */
 
     void dump() {
-        CoordinatorLogStateHolder logStateHolder = defaultLogStateHolder;
+        // NOT USED: CoordinatorLogStateHolder logStateHolder = defaultLogStateHolder;
 
         //$ somtrDUMP_OBJECT_HEADER;
 

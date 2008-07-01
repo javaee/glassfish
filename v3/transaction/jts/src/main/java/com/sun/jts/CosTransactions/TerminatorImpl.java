@@ -176,7 +176,7 @@ class TerminatorImpl extends TerminatorPOA implements Terminator {
         /* This method has been newly added (Ram J) */
 
         StatusHolder status = new StatusHolder();
-        Long localTID = new Long(control.getLocalTID(status));
+        // NOT USED: Long localTID = new Long(control.getLocalTID(status));
 
         // check if the transaction is active, else throw exception
 
