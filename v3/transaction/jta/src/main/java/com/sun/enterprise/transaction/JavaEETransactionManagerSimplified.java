@@ -109,17 +109,17 @@ public class JavaEETransactionManagerSimplified
     // - multipleEnlistDelists can be enabled
     private boolean multipleEnlistDelists = false;
 
-    protected int transactionTimeout;
-    protected ThreadLocal<Integer> txnTmout = new ThreadLocal();
+    private int transactionTimeout;
+    private ThreadLocal<Integer> txnTmout = new ThreadLocal();
 
     // admin and monitoring related parameters
-    protected static Hashtable statusMap = new Hashtable();
-    protected Vector activeTransactions = new Vector();
-    protected boolean monitoringEnabled = false;
+    private  static final Hashtable statusMap = new Hashtable();
+    private Vector activeTransactions = new Vector();
+    private boolean monitoringEnabled = false;
 
-    protected int m_transCommitted = 0;
-    protected int m_transRolledback = 0;
-    protected int m_transInFlight = 0;
+    private int m_transCommitted = 0;
+    private int m_transRolledback = 0;
+    private int m_transInFlight = 0;
 
     private Cache resourceTable;
 
@@ -151,7 +151,7 @@ public class JavaEETransactionManagerSimplified
         initProperties();
     }
 
-    protected void initProperties() {
+    private void initProperties() {
         int maxEntries = 8192; // FIXME: this maxEntry should be a config
         float loadFactor = 0.75f; // FIXME: this loadFactor should be a config
         // for now, let's get it from system prop
