@@ -948,6 +948,14 @@ public class ControlImpl extends JControlPOA implements Control {
     public boolean equals(java.lang.Object o) {
         return this == o;
     }
+
+    /**Added because this class overrides equals() method.
+     *
+     */
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
     
     /*
      * These methods are there to satisy the compiler. At some point
