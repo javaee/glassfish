@@ -331,7 +331,7 @@ public class ServerConfigLookup {
                 if (bean instanceof com.sun.enterprise.config.serverbeans.WebModule) {
                     webModuleAvailabilityString =
                         ((com.sun.enterprise.config.serverbeans.WebModule) bean).getAvailabilityEnabled();
-                } else {
+                } else if (bean instanceof ExtensionModule) {
                     webModuleAvailabilityString =
                         ((ExtensionModule) bean).getAvailabilityEnabled();
                 }
