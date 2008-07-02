@@ -1192,7 +1192,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }            
     }
     
-    protected void createVirtualServer(
+    public void createVirtualServer(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
                 HttpService httpService, SecurityService securityService) {
         

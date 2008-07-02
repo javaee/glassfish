@@ -93,8 +93,6 @@ public class HttpServiceConfigListener implements ConfigListener {
             public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> tClass, T t) {
                 try {
                     if (t instanceof com.sun.enterprise.config.serverbeans.VirtualServer) {
-                        // TODO enable once issue 4583 is resolved
-                        /*
                         if (type==TYPE.ADD) {                           
                             container.createVirtualServer(
                             (com.sun.enterprise.config.serverbeans.VirtualServer)t,
@@ -106,7 +104,6 @@ public class HttpServiceConfigListener implements ConfigListener {
                                     (com.sun.enterprise.config.serverbeans.VirtualServer)t, 
                                     httpService);
                         }
-                         */
                     } else if (t instanceof HttpListener) {
                         if (type==TYPE.ADD) {
                             container.addConnector((HttpListener)t, httpService);
