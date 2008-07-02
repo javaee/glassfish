@@ -248,7 +248,7 @@ public class StopDomainCommand extends AbstractCommand {
     private boolean pingPort(int port) {
         try {
             String host = null;
-            Socket s = new Socket(host, port);
+            new Socket(host, port);
             return true;
         } catch (Exception ex) {
             Log.finer("pingPort got Exception: " + ex);
