@@ -35,6 +35,12 @@
  */
 package com.sun.enterprise.transaction;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.transaction.*;
 import javax.transaction.xa.*;
 import javax.resource.spi.XATerminator;
@@ -69,7 +75,14 @@ public class JavaEETransactionManagerSimplifiedDelegate
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
+    private Logger _logger;
+
     private boolean lao = false;
+
+    private static final ReentrantReadWriteLock.ReadLock readLock = 
+            new ReentrantReadWriteLock().readLock();
+
+    private final Semaphore writeLock = new Semaphore(1, true);
 
     public JavaEETransactionManagerSimplifiedDelegate() {
     }
@@ -149,6 +162,7 @@ public class JavaEETransactionManagerSimplifiedDelegate
 
     public void setTransactionManager(JavaEETransactionManager tm) {
         this.tm = (JavaEETransactionManagerSimplified)tm;
+        _logger = ((JavaEETransactionManagerSimplified)tm).getLogger();
     }
 
     public Transaction startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout) 
@@ -183,5 +197,25 @@ public class JavaEETransactionManagerSimplifiedDelegate
     }
 
     public void handlePropertyUpdate(String name, Object value) {}
+
+    public Lock getReadLock() {
+        return readLock;
+    }
+
+    public boolean isWriteLocked() {
+        return (writeLock.availablePermits() == 0);
+    }
+
+    public void acquireWriteLock() {
+        try {
+            writeLock.acquire();
+        } catch(InterruptedException ie) {
+            _logger.log(Level.FINE,"Error in acquireReadLock",ie);
+        }
+    }
+
+    public void releaseWriteLock() {
+        writeLock.release();
+    }
 
 }

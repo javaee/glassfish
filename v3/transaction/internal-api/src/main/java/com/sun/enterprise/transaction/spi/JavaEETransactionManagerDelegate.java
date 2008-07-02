@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.transaction.spi;
 
+import java.util.concurrent.locks.Lock;
+
 import javax.transaction.*;
 import javax.transaction.xa.*;
 import javax.resource.spi.XATerminator;
@@ -242,4 +244,25 @@ public interface JavaEETransactionManagerDelegate {
      */
     public boolean recoverIncompleteTx(boolean delegated, String logPath, 
             XAResource[] xaresArray) throws Exception;
+
+    /**
+     * Return the delegate specific read lock that implements Lock interface.
+     * 
+     */
+    public Lock getReadLock();
+
+    /**
+     * Return <code>true</code> if the delegate had its write lock acquired.
+     */
+    public boolean isWriteLocked();
+
+    /**
+     * Allows the delegate to acquire a write lock.
+     */
+    public void acquireWriteLock();
+
+    /**
+     * Allows the delegate to release a write lock.
+     */
+    public void releaseWriteLock();
 }

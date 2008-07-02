@@ -40,6 +40,9 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.*;
 import javax.transaction.xa.*;
@@ -50,6 +53,7 @@ import com.sun.jts.jta.TransactionManagerImpl;
 import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
+import com.sun.jts.CosTransactions.RWLock;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.TransactionService;
@@ -101,6 +105,7 @@ public class JavaEETransactionManagerJTSDelegate
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
     private boolean lao = true;
+    private final static ReadWriteLock lock = new ReadWriteLock();
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
@@ -449,6 +454,82 @@ public class JavaEETransactionManagerJTSDelegate
             }
 
             // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
+        }
+    }
+
+    public Lock getReadLock() {
+        return lock;
+    }
+
+    public void acquireWriteLock() {
+        if(com.sun.jts.CosTransactions.AdminUtil.isFrozenAll()){
+            //multiple freezes will hang this thread, therefore just return
+            return;
+        }
+        com.sun.jts.CosTransactions.AdminUtil.freezeAll();
+
+/** XXX Do we need to check twice? XXX **
+        if(lock.isWriteLocked()){
+            //multiple freezes will hang this thread, therefore just return
+            return;
+        }
+** XXX Do we need to check twice? XXX **/
+
+        lock.acquireWriteLock();
+    }
+
+    public void releaseWriteLock() {
+        if(com.sun.jts.CosTransactions.AdminUtil.isFrozenAll()){
+            com.sun.jts.CosTransactions.AdminUtil.unfreezeAll();
+        }
+
+/** XXX Do we need to check twice? XXX **
+        if(lock.isWriteLocked()){
+            lock.releaseWriteLock();
+        }
+** XXX Do we need to check twice? XXX **/
+
+        lock.releaseWriteLock();
+    }
+
+    public boolean isWriteLocked() {
+        return com.sun.jts.CosTransactions.AdminUtil.isFrozenAll();
+    }
+
+    private static class ReadWriteLock implements Lock {
+        private static final RWLock freezeLock = new RWLock();
+
+        public void lock() { 
+            freezeLock.acquireReadLock(); 
+        }
+        
+        public void unlock() { 
+            freezeLock.releaseReadLock(); 
+        }
+
+        private void acquireWriteLock() { 
+            freezeLock.acquireWriteLock();
+        }
+
+        private void releaseWriteLock() { 
+            freezeLock.releaseWriteLock();
+        }
+
+        public void lockInterruptibly() throws InterruptedException {
+            throw new UnsupportedOperationException();
+        }
+
+        public  boolean tryLock() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean tryLock(long timeout, TimeUnit unit) 
+                throws InterruptedException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Condition newCondition() {
+            throw new UnsupportedOperationException();
         }
     }
 }

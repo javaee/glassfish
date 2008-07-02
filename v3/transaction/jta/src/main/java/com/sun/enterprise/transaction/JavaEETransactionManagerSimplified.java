@@ -125,9 +125,6 @@ public class JavaEETransactionManagerSimplified
 
     private  Timer _timer = new Timer("transaction-manager", true);
 
-    private static java.util.concurrent.locks.ReentrantReadWriteLock freezeLock = 
-            new java.util.concurrent.locks.ReentrantReadWriteLock();
-
     static {
         statusMap.put(javax.transaction.Status.STATUS_ACTIVE, "Active");
         statusMap.put(javax.transaction.Status.STATUS_MARKED_ROLLBACK, "MarkedRollback");
@@ -497,6 +494,19 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
+    private JavaEETransactionImpl initJavaEETransaction(int timeout) {
+        JavaEETransactionImpl tx = null;
+        if (timeout > 0)
+            tx = new JavaEETransactionImpl(timeout);
+        else
+            tx = new JavaEETransactionImpl();
+
+        // Do not need to use injection.
+        tx.javaEETM = this;
+        transactions.set(tx);
+        return tx;
+    }
+
     private List getExistingResourceList(Object instance) {
         throw new IllegalStateException("Should not be called");
 /**
@@ -763,34 +773,21 @@ public class JavaEETransactionManagerSimplified
            throw new NotSupportedException(sm.getString("enterprise_distributedtx.notsupported_nested_transaction"));
 
         // START IASRI 4662745
-        boolean acquiredlock = false;
         if(monitoringEnabled){
-             freezeLock.readLock().lock(); // XXX acquireReadLock();
-             acquiredlock = true;
-        }
-        try{
-            JavaEETransactionImpl tx = null;
-            if (timeout > 0)
-                tx = new JavaEETransactionImpl(timeout);
-            else
-                tx = new JavaEETransactionImpl();
-
-            // Do not need to use injection.
-            tx.javaEETM = this;
-
-            transactions.set(tx);
-            if (monitoringEnabled) {
+            getDelegate().getReadLock().lock(); // XXX acquireReadLock();
+            try{
+                JavaEETransactionImpl tx = initJavaEETransaction(timeout);
                 activeTransactions.addElement(tx);
                 m_transInFlight++;
                 ComponentInvocation inv = invMgr.getCurrentInvocation();
                 if (inv != null && inv.getInstance() != null) {
                     tx.setComponentName(inv.getInstance().getClass().getName());
                 }
+            }finally{
+                getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
             }
-        }finally{
-            if(acquiredlock){
-                freezeLock.readLock().unlock(); // XXX releaseReadLock();
-            }
+        } else {
+            initJavaEETransaction(timeout);
         }
         // START IASRI 4662745
     }
@@ -802,41 +799,27 @@ public class JavaEETransactionManagerSimplified
         try {
             JavaEETransaction tx = transactions.get();
             if ( tx != null && tx.isLocalTx()) {
-                Object obj = null;
-                boolean acquiredlock = false;
                 if(monitoringEnabled){
-                    obj = tx;
-                }
+                    Object obj = tx;
+                    getDelegate().getReadLock().lock(); // XXX acquireReadLock();
 
-                if(monitoringEnabled){
-                    freezeLock.readLock().lock(); // XXX acquireReadLock();
-                    acquiredlock = true;
-                }
-
-                try{
+                    try{
+                        tx.commit(); // commit local tx
+                        monitorTxCompleted(obj, true);
+                    }catch(RollbackException e){
+                        monitorTxCompleted(obj, false);
+                        throw e;
+                    }catch(HeuristicRollbackException e){
+                        monitorTxCompleted(obj, false);
+                        throw e;
+                    }catch(HeuristicMixedException e){
+                        monitorTxCompleted(obj, true);
+                        throw e;
+                    }finally{
+                        getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
+                    }
+                } else {
                     tx.commit(); // commit local tx
-                    if (monitoringEnabled){
-                        monitorTxCompleted(obj, true);
-                    }
-                }catch(RollbackException e){
-                    if (monitoringEnabled){
-                        monitorTxCompleted(obj, false);
-                    }
-                    throw e;
-                }catch(HeuristicRollbackException e){
-                    if (monitoringEnabled){
-                        monitorTxCompleted(obj, false);
-                    }
-                    throw e;
-                }catch(HeuristicMixedException e){
-                    if (monitoringEnabled){
-                        monitorTxCompleted(obj, true);
-                    }
-                    throw e;
-                }finally{
-                    if(acquiredlock){
-                        freezeLock.readLock().unlock(); // XXX releaseReadLock();
-                    }
                 }
             }
             else  {
@@ -857,17 +840,15 @@ public class JavaEETransactionManagerSimplified
         try {
             JavaEETransaction tx = transactions.get();
             if ( tx != null && tx.isLocalTx()) {
-                Object obj = null;
                 if(monitoringEnabled){
-                    obj = tx;
-                }
-                if(monitoringEnabled){
-                    freezeLock.readLock().lock(); // XXX acquireReadLock();
+                    Object obj = tx;
+                    getDelegate().getReadLock().lock(); // XXX acquireReadLock();
                     acquiredlock = true;
-                }
-                tx.rollback(); // rollback local tx
-                if(monitoringEnabled){
+
+                    tx.rollback(); // rollback local tx
                     monitorTxCompleted(obj, false);
+                } else {
+                    tx.rollback(); // rollback local tx
                 }
             }
             else  {
@@ -878,7 +859,7 @@ public class JavaEETransactionManagerSimplified
             transactions.set(null); // clear current thread's tx
             delegates.set(null);
             if(acquiredlock){
-                freezeLock.readLock().unlock(); // XXX releaseReadLock();
+                getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
             }
         }
     }
@@ -927,17 +908,15 @@ public class JavaEETransactionManagerSimplified
         JavaEETransaction tx = transactions.get();
         // START IASRI 4662745
         if ( tx != null && tx.isLocalTx()){
-            boolean acquiredlock=false;
             if(monitoringEnabled){
-                freezeLock.readLock().lock(); // XXX acquireReadLock();
-                acquiredlock = true;
-            }
-            try{
-                tx.setRollbackOnly();
-            }finally{
-                if(acquiredlock){
-                    freezeLock.readLock().unlock(); // XXX releaseReadLock();
+                getDelegate().getReadLock().lock(); // XXX acquireReadLock();
+                try{
+                    tx.setRollbackOnly();
+                }finally{
+                    getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
                 }
+            } else {
+                tx.setRollbackOnly();
             }
         }
         else
@@ -1030,27 +1009,20 @@ public class JavaEETransactionManagerSimplified
     * Called by Admin Framework to freeze the transactions.
     */
     public synchronized void freeze(){
-        // XXX ??? super.freeze();
-        if(freezeLock.isWriteLocked()){
-            //multiple freezes will hang this thread, therefore just return
-            return;
-        }
-        freezeLock.writeLock().lock(); // XXX acquireWriteLock();
+        getDelegate().acquireWriteLock();
     }
     /*
-     * Called by Admin Framework to freeze the transactions. These undoes the work done by the freeze.
+     * Called by Admin Framework to freeze the transactions. 
+     * These undoes the work done by the freeze.
      */
     public synchronized void unfreeze(){
-        // XXX ??? super.unfreeze();
-        if(freezeLock.isWriteLocked()){
-            freezeLock.writeLock().unlock(); // XXX releaseWriteLock();
-        }
+        getDelegate().releaseWriteLock();
     }
 
     /** XXX ???
      */
     public boolean isFrozen() {
-        return freezeLock.isWriteLocked();
+        return getDelegate().isWriteLocked();
     }
 
     public void cleanTxnTimeout() {
