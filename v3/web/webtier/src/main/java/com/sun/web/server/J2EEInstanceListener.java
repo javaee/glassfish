@@ -83,9 +83,9 @@ import com.sun.logging.*;
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
-    protected static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    protected static final Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
     // END OF IASRI 4660742
-    protected static ResourceBundle _rb = _logger.getResourceBundle();
+    protected static final ResourceBundle _rb = _logger.getResourceBundle();
 
     private InvocationManager im;
     private JavaEETransactionManager tm;
