@@ -1060,7 +1060,7 @@ public class ApplicationLifecycle {
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(appName)) {
                 applicationRef = appRef;
-                if (appRef.getEnabled().equals(newEnabledValue)) {
+                if (Boolean.valueOf(appRef.getEnabled()) == newEnabledValue) {
                     // no need to set again, return
                     return;
                 }

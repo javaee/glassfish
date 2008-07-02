@@ -46,7 +46,7 @@ public class DefaultAnnotationScanner implements AnnotationScanner,
     @Inject 
     SJSASFactory factory;
     
-    private static Set<String> annotations=null;
+    private Set<String> annotations=null;
     
     /**
      * Test if the passed constant pool string is a reference to 
