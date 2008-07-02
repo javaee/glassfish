@@ -82,6 +82,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         try {
             FileDirContext r = new FileDirContext();
             File base = new File(archive.getURI());
+            int baseFileLen = base.getPath().length();
             r.setDocBase(base.getAbsolutePath());
             SunWebXmlParser sunWebXmlParser = new SunWebXmlParser(base.getAbsolutePath());
             cloader.setDelegate(sunWebXmlParser.isDelegate());
@@ -101,12 +102,15 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             }
                         }))
                 {
-                    cloader.addRepository(file.toURL().toString());
-
+                    try {
+                        cloader.addJar(file.getPath().substring(baseFileLen),
+                                       new JarFile(file), file);
+                    } catch (Exception e) {
+                        // Catch and ignore any exception in case the JAR file
+                        // is empty.
+                    }
                 }
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch(XMLStreamException xse) {
             xse.printStackTrace();
         } catch(FileNotFoundException fnfe) {
