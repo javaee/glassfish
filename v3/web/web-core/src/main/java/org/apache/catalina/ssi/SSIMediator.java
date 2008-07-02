@@ -81,7 +81,7 @@ public class SSIMediator {
     protected final static String DEFAULT_CONFIG_ERR_MSG = "[an error occurred while processing this directive]";
     protected final static String DEFAULT_CONFIG_TIME_FMT = "%A, %d-%b-%Y %T %Z";
     protected final static String DEFAULT_CONFIG_SIZE_FMT = "abbrev";
-    protected static URLEncoder urlEncoder;
+    protected final static URLEncoder urlEncoder;
     protected String configErrMsg = DEFAULT_CONFIG_ERR_MSG;
     protected String configTimeFmt = DEFAULT_CONFIG_TIME_FMT;
     protected String configSizeFmt = DEFAULT_CONFIG_SIZE_FMT;
@@ -249,10 +249,10 @@ public class SSIMediator {
         if (val.indexOf('$') < 0 && val.indexOf('&') < 0) return val;
 
         // HTML decoding
-        val.replace("&lt;", "<");
-        val.replace("&gt;", ">");
-        val.replace("&quot;", "\"");
-        val.replace("&amp;", "&");
+        val = val.replace("&lt;", "<");
+        val = val.replace("&gt;", ">");
+        val = val.replace("&quot;", "\"");
+        val = val.replace("&amp;", "&");
 
         StringBuffer sb = new StringBuffer(val);
         int charStart = sb.indexOf("&#");
