@@ -61,7 +61,7 @@ public class JarURLPattern {
         } catch(Exception ex) {
             // ignore
         }
-        if (file == null && file.isDirectory()) {
+        if (file == null || file.isDirectory()) {
             return results;
         } 
 
