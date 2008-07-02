@@ -123,13 +123,13 @@ public class CLILogger
     }
 
     public void pushAndLockLevel(Level newLevel) {
-        pushedLevel = getOutputLevel();
+        setPushedLevel(getOutputLevel());
         setOutputLevel(newLevel);
-        allowOutputLevelChanges = false;
+        setAllowOutputLevelChanges(false);
     }
 
     public void popAndUnlockLevel() {
-        allowOutputLevelChanges = true;
+        setAllowOutputLevelChanges(true);
         setOutputLevel(pushedLevel);
     }
     
@@ -224,6 +224,15 @@ public class CLILogger
         printDebugMessage(output.toString());
     }
 
+    
+    
+    private static void setPushedLevel(Level newLevel) {
+        pushedLevel = newLevel;
+    }
+
+    private static void setAllowOutputLevelChanges(boolean what) {
+        allowOutputLevelChanges = what;
+    }
     
     public class CLILoggerHandler extends Handler 
     {
