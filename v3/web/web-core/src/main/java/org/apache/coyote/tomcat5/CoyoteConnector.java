@@ -113,7 +113,7 @@ import com.sun.appserv.security.provider.ProxyHandler;
 public class CoyoteConnector
     implements Connector, Lifecycle, MBeanRegistration
 {
-    protected static Logger log = Logger.getLogger(CoyoteConnector.class.getName());
+    protected static final Logger log = Logger.getLogger(CoyoteConnector.class.getName());
 
     // ---------------------------------------------- Adapter Configuration --//
     
