@@ -284,11 +284,16 @@ public final class J2EEInstanceListener implements InstanceListener {
                     injectionMgr.injectInstance(instance, desc);
                 }
             }
-        } catch (Exception ex) {
-            throw new RuntimeException(
-                _logger.getResourceBundle().getString(
-                    "web_server.excep_handle_before_event"),
-                ex);
+        } catch (Exception ex) {            
+            String message = null;
+            try {
+                message = _logger.getResourceBundle().getString(
+                        "web_server.excep_handle_before_event");
+            } catch (NullPointerException npe) {
+                // ignore and return the original exception
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(message, ex);
         }
     }
 
