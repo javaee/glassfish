@@ -407,6 +407,10 @@ public final class  GlassfishNamingManagerImpl
 
         HashMap namespace = (HashMap) namespaces.get(componentId);
 
+        if (namespace == null) {
+            throw new NameNotFoundException("No object bound to name " + name);
+        }
+
         Object obj = namespace.get(name);
 
         if (obj == null)

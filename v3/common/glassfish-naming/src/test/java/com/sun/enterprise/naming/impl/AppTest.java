@@ -176,6 +176,27 @@ public class AppTest
         public Object getValue() {
             return value;
         }
+   } 
+
+    public void testEmptyJavaCompEnv() {
+        GlassfishNamingManagerImpl nm = null;
+        InvocationManager im = new InvocationManagerImpl();
+        ComponentInvocation inv = null;
+        try {
+            nm = new GlassfishNamingManagerImpl();
+            nm.setInvocationManager(im);
+
+            inv = new ComponentInvocation("comp1",
+                    ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
+                    null, null, null);
+            im.preInvoke(inv);
+            InitialContext ic = new InitialContext();
+            System.out.println("**lookup(java:comp/env) ==> " + ic.lookup("java:comp/env"));
+            assert(false);
+        } catch (javax.naming.NamingException nnfEx) {
+            //nnfEx.printStackTrace();
+            assert (true);
+        }
     }
 
     public void testNonCachingNamingObjectFactory() {
