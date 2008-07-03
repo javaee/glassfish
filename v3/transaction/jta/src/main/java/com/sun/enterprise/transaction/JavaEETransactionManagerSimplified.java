@@ -276,6 +276,11 @@ public class JavaEETransactionManagerSimplified
        }
 
        if ( h.supportsXA() ) {
+           if (!d.supportsXAResource()) {
+               throw new IllegalStateException(
+                        sm.getString("enterprise_distributedtx.xaresource_not_supported"));
+           }
+
            if ( tx.isLocalTx() ) {
                d.enlistLAOResource(tx, tx.getNonXAResource());
 

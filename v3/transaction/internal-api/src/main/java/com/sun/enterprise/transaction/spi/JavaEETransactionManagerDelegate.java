@@ -162,6 +162,11 @@ public interface JavaEETransactionManagerDelegate {
     public void setTransactionManager(JavaEETransactionManager tm);
 
     /**
+     * Returns <code>true</> if this delegate supports XA resources.
+     */
+    public boolean supportsXAResource();
+
+    /**
      * Start new JTS transaction for the existing local transaction object.
      *
      * @param tm the JavaEETransactionManager object.

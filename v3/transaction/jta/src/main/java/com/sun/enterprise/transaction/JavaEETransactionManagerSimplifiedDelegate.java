@@ -170,6 +170,10 @@ public class JavaEETransactionManagerSimplifiedDelegate
         throw new UnsupportedOperationException("startJTSTx");
     }
 
+    public boolean supportsXAResource() {
+        return false;
+    }
+
     public void recover(XAResource[] resourceList) {
         throw new UnsupportedOperationException("recover");
     }

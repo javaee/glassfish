@@ -430,6 +430,10 @@ public class JavaEETransactionManagerJTSDelegate
         ((JavaEETransactionManagerSimplified)javaEETM).monitorTxBegin(tm.getTransaction());
     }
 
+    public boolean supportsXAResource() {
+        return true;
+    }
+
     public void initTransactionProperties() {
         if (txnService != null) {
             String value = txnService.getPropertyValue("use-last-agent-optimization");
