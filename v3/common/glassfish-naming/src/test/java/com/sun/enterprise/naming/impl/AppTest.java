@@ -191,11 +191,12 @@ public class AppTest
                     null, null, null);
             im.preInvoke(inv);
             InitialContext ic = new InitialContext();
-            System.out.println("**lookup(java:comp/env) ==> " + ic.lookup("java:comp/env"));
-            assert(false);
+            Context ctx = (Context) ic.lookup("java:comp/env");
+            System.out.println("**lookup(java:comp/env) ==> " + ctx);
+            assert(true);
         } catch (javax.naming.NamingException nnfEx) {
-            //nnfEx.printStackTrace();
-            assert (true);
+            nnfEx.printStackTrace();
+            assert (false);
         }
     }
 

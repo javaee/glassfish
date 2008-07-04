@@ -405,11 +405,7 @@ public final class  GlassfishNamingManagerImpl
         // Get the component id and namespace to lookup
         String componentId = getComponentId();
 
-        HashMap namespace = (HashMap) namespaces.get(componentId);
-
-        if (namespace == null) {
-            throw new NameNotFoundException("No object bound to name " + name);
-        }
+        HashMap namespace = (HashMap) getComponentNameSpace(componentId);
 
         Object obj = namespace.get(name);
 
