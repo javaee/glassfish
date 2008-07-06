@@ -285,10 +285,15 @@ public final class  GlassfishNamingManagerImpl
             namespaces.put(componentId, namespace);
 
             // put entries for java:, java:comp and java:comp/env
-            namespace.put("java:", new JavaURLContext("java:", null));
-            namespace.put("java:comp", new JavaURLContext("java:comp", null));
-            namespace.put("java:comp/env",
-                    new JavaURLContext("java:comp/env", null));
+            JavaURLContext jc = new JavaURLContext("java:", null);
+            namespace.put("java:", jc);
+            namespace.put("java:/", jc);
+            JavaURLContext jcc = new JavaURLContext("java:comp", null);
+            namespace.put("java:comp", jcc);
+            namespace.put("java:comp/", jcc);
+            JavaURLContext jccEnv = new JavaURLContext("java:comp/env", null);
+            namespace.put("java:comp/env", jccEnv);
+            namespace.put("java:comp/env/", jccEnv);
         }
 
         return namespace;
