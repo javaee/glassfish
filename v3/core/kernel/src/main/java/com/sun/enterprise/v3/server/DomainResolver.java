@@ -24,7 +24,8 @@
 package com.sun.enterprise.v3.server;
 
 
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
+
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -54,7 +55,7 @@ public class   DomainResolver implements EntityResolver {
                 try {
                     return new InputSource(new BufferedInputStream(new FileInputStream(f)));
                 } catch(IOException e) {
-                    Utils.getDefaultLogger().log(Level.SEVERE, "Exception while getting " + fileName + " : ", e);
+                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Exception while getting " + fileName + " : ", e);
                     return null;
                 }
             } else {

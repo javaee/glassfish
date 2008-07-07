@@ -46,10 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.ejb</artifactId>
+    <properties>
+        <extension.name>javax.ejb</extension.name>
+        <spec.version>1.1</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>Enterprise JavaBeans(TM) Specification</name>
-    <description>Enterprise JavaBeans(TM) Specification API Repackaged as OSGi bundle in GlassFish</description>
+    <name>${extension.name} API v.${spec.version}</name>
+    <description>Enterprise JavaBeans(TM) Specification API version ${spec.version} Repackaged as OSGi bundle in GlassFish</description>
     <build>
         <plugins>
             <plugin>

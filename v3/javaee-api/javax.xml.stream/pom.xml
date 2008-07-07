@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.xml.stream</artifactId>
+    <properties>
+        <extension.name>javax.xml.stream</extension.name>
+        <spec.version>1.0</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>StAX API</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>StAX API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

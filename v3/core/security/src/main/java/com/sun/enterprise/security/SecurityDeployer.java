@@ -146,12 +146,12 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     //TODO: check if this is correct returning the Security Module def in getMetaData
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
+        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
         
-        module = modulesRegistry.makeModuleFor("org.glassfish.core:security", null);
+        module = modulesRegistry.makeModuleFor("org.glassfish.core.security", null);
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }

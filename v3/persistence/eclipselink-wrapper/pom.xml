@@ -81,11 +81,8 @@
                              other than what is specified above 
                         -->
                         <Private-Package>!*</Private-Package>
-                        <!-- Make it an HK2 module, as GlassFish needs it to be
-                             HK2 module. This is needed because we don't want 
-                             to change the packaging type to hk2-jar. 
-                        -->
-                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
+                        <!--TODO: Move all the configuration to osgi.bundle -->
+                        <_include>-osgi.bundle</_include>
 
                         <!-- Update Manifest with Premain-Class entry -->
                         <Premain-Class>org.eclipse.persistence.internal.jpa.JavaSECMPInitializerAgent</Premain-Class>

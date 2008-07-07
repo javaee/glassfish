@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.security.auth.message</artifactId>
+    <properties>
+        <extension.name>javax.security.auth.message</extension.name>
+        <spec.version>1.0</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>Java Message Authentication SPI for Containers</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>Java Message Authentication SPI for Containers Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

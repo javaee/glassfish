@@ -60,14 +60,9 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                         </manifest>
-                        <manifestEntries>
-                            <Extension-Name>${project.artifactId}</Extension-Name>
-                            <!-- Make it a HK2 module as well -->
-                            <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -101,7 +96,8 @@
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Export-Package>${project.artifactId}.*</Export-Package>
+                        <Export-Package>${extension.name}.*; version=${spec.version}</Export-Package>
+                        <_include>-osgi.bundle</_include>
                     </instructions>
                 </configuration>
                 <!-- We don't use extensions as this interfers with
@@ -154,13 +150,4 @@
         <module>javax.xml.stream</module>
         <module>javax.xml.ws</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://download.java.net/maven/glassfish</url>
-        </repository>
-        <!-- all the other repositories come from the GF super POM -->
-    </repositories>
 </project>

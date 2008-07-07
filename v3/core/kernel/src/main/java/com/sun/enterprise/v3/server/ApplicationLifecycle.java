@@ -502,7 +502,6 @@ public class ApplicationLifecycle {
         ArchiveHandler handler = getArchiveHandler(context.getSource());
         context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
 
-        boolean invalidated = false;
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
@@ -525,17 +524,7 @@ public class ApplicationLifecycle {
             }
         }
 
-        // now re-order to get the invalidator class loaders first...
-        deployers.clear();
-        for (ContainerInfo containerInfo : sortedContainerInfos) {
-            Deployer deployer = containerInfo.getDeployer();
-            if (deployer.getMetaData().invalidatesClassLoader()) {
-                deployers.add(0, deployer);
-            } else {
-                deployers.add(deployer);
-            }
-        }
-
+        boolean invalidated = false;
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
@@ -549,25 +538,6 @@ public class ApplicationLifecycle {
                     deployer.prepare(context);
                     if (deployer.getMetaData().invalidatesClassLoader()) {
                         invalidated = true;
-                    } else {
-                        if (invalidated) {
-                            // we might need to flush the class loader used the load the application
-                            // bits in case we ran all the prepare() methods of the invalidating
-                            // deployers.
-                            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
-                            // add the class file transformers to the new class loader
-                            try {
-                                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getClassLoader());
-                                for (ClassFileTransformer transformer : context.getTransformers()) {
-                                    icl.addTransformer(transformer);
-                                }
-                            } catch (Exception e) {
-                                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
-                                throw e;
-
-                            }
-                            invalidated = false;
-                        }
                     }
                     // construct an incomplete ModuleInfo which will be later
                     // filled in at loading time
@@ -581,6 +551,24 @@ public class ApplicationLifecycle {
                 }
             } finally {
                 Thread.currentThread().setContextClassLoader(currentCL);
+            }
+        }
+
+        if (invalidated) {
+            // we might need to flush the class loader used the load the application
+            // bits in case we ran all the prepare() methods of the invalidating
+            // deployers.
+            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+            // add the class file transformers to the new class loader
+            try {
+                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getClassLoader());
+                for (ClassFileTransformer transformer : context.getTransformers()) {
+                    icl.addTransformer(transformer);
+                }
+            } catch (Exception e) {
+                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
+                throw e;
+
             }
         }
 

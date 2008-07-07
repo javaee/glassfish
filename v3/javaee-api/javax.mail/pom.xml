@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.mail</artifactId>
+    <properties>
+        <extension.name>javax.mail</extension.name>
+        <spec.version>1.4</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>Java EE Mail API</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>Java EE Mail API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

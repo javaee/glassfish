@@ -45,15 +45,17 @@
         <record name="allrun.output" action="start"/>
 	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
         <echo message="testng jar value: ${testng.jar}"/ -->
-        <!-- antcall target="setup.toplink"/ -->
-        <antcall target="start-server-hk2"/>
         <antcall target="startDerby"/>        
+        <!-- antcall target="setup.toplink"/ -->
+        <!-- Not useful any more.
+        <antcall target="start-server-hk2"/>
         <antcall target="build"/>
         <antcall target="deploy"/>
         <antcall target="runtest"/>
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
 	<move file="test-output" tofile="test-output-hk2" failonerror="false" overwrite="true"/>
+        -->
         <!-- antcall target="report"/ -->        
         <antcall target="start-server-felix"/>
         <antcall target="build"/>
@@ -234,7 +236,7 @@
                 </junitreport>
             </sequential>
         </macrodef>
-        <gen-report name="hk2" />
+        <!--gen-report name="hk2" /-->
         <gen-report name="felix" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>

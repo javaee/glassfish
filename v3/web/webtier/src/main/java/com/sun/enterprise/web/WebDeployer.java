@@ -98,18 +98,19 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
      */
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
+        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
 
         String[] otherExportedPackages = new String[] {
-                "org.glassfish.web:webtier",
-                "org.glassfish.web:jsf-connector",
-                "org.glassfish.web:jstl-impl",
-                "org.glassfish.web:jspimpl",
-                "org.glassfish.external:grizzly-module",
-                "org.glassfish.external:grizzly-optionals" };
+                "org.glassfish.common.glassfish-api",
+                "org.glassfish.web.webtier",
+                "org.glassfish.web.jsf-connector",
+                "org.glassfish.web.jstl-impl",
+                "org.glassfish.web.jspimpl",
+                "org.glassfish.external.grizzly-module",
+                "org.glassfish.external.grizzly-optionals" };
 
         for (String otherExportedPackage : otherExportedPackages) {
             module = modulesRegistry.makeModuleFor(otherExportedPackage, null);

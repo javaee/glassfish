@@ -69,6 +69,83 @@
         </developer>
     </developers>
     <build>
+        <plugins>
+            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
+                 Please note: we use the manifest goal only and not the bundle goal.
+                  The bundle goal can lead to very surprising results if the
+                  package names are not correctly specified. So,
+                  we use the jar plugin to generate the jar.-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <!-- Enable the plugin for hk2-jar packaging type -->
+                    <supportedProjectTypes>
+                        <supportedProjectType>hk2-jar</supportedProjectType>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <instructions>
+                        <!-- _include does not work. See Felix-620.
+                        <_include>osgi.bundle</_include>
+                        -->
+                        <Export-Package>
+                        com.sun.enterprise.web.connector.grizzly,
+                        org.apache.catalina,
+                        org.apache.catalina.authenticator,
+                        org.apache.catalina.connector,
+                        org.apache.catalina.core,
+                        org.apache.catalina.deploy,
+                        org.apache.catalina.loader,
+                        org.apache.catalina.logger,
+                        org.apache.catalina.mbeans,
+                        org.apache.catalina.net,
+                        org.apache.catalina.realm,
+                        org.apache.catalina.security,
+                        org.apache.catalina.servlets,
+                        org.apache.catalina.session,
+                        org.apache.catalina.ssi,
+                        org.apache.catalina.startup,
+                        org.apache.catalina.util,
+                        org.apache.catalina.valves,
+                        org.apache.coyote,
+                        org.apache.coyote.http11,
+                        org.apache.coyote.tomcat5,
+                        org.apache.tomcat.util,
+                        org.apache.tomcat.util.buf,
+                        org.apache.tomcat.util.collections,
+                        org.apache.tomcat.util.compat,
+                        org.apache.tomcat.util.http,
+                        org.apache.tomcat.util.http.mapper,
+                        org.apache.tomcat.util.log,
+                        org.apache.tomcat.util.net,
+                        org.apache.tomcat.util.res,
+                        org.apache.tomcat.util.threads
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/java</directory>

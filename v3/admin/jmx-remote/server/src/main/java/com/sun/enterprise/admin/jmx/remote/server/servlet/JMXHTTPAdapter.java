@@ -24,7 +24,7 @@
 package com.sun.enterprise.admin.jmx.remote.server.servlet;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
@@ -95,9 +95,9 @@ public class JMXHTTPAdapter implements Adapter {
     public void service(Request req, Response res)
         throws Exception {
 
-        Utils.getDefaultLogger().info("New HTTP JMX adapter !");
-        Utils.getDefaultLogger().info("Received something on " + req.requestURI());
-        Utils.getDefaultLogger().info("QueryString = " + req.queryString());
+        LogHelper.getDefaultLogger().info("New HTTP JMX adapter !");
+        LogHelper.getDefaultLogger().info("Received something on " + req.requestURI());
+        LogHelper.getDefaultLogger().info("QueryString = " + req.queryString());
 
         // so far, I only use HTMLActionReporter, but I should really look at
         // the request client.
@@ -129,7 +129,7 @@ public class JMXHTTPAdapter implements Adapter {
             String msg = adminStrings.getLocalString("adapter.panic",
                     "Wrong request landed in AdminAdapter {0}", requestURI);
             report.setMessage(msg);
-            Utils.getDefaultLogger().info(msg);
+            LogHelper.getDefaultLogger().info(msg);
             return;
         }
         String command = requestURI.substring(PREFIX_URI.length());
@@ -376,7 +376,7 @@ public class JMXHTTPAdapter implements Adapter {
         if (command==null) {
             String msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
             report.setMessage(msg);
-            Utils.getDefaultLogger().info(msg);
+            LogHelper.getDefaultLogger().info(msg);
         }
         return command;
     }

@@ -47,14 +47,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
     <artifactId>javax.javaee</artifactId>
-    <packaging>jar</packaging>
+    <!-- The packaging type is hk2-jar so that maven-bundle-plugin
+         does not execute.-->
+    <packaging>hk2-jar</packaging>
     <name>Java(TM) EE Specification APIs Repackaged as HK2 module and OSGi bundle</name>
 
-    <properties>
-        <bundle-version>10.0.0.SNAPSHOT</bundle-version>
-        <require-bundle-property>bundle-version="[${bundle-version},${bundle-version}]"; resolution:="mandatory"; visibility:="reexport"
-        </require-bundle-property>
-    </properties>
     <build>
         <plugins>
             <plugin>
@@ -63,42 +60,18 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
-                            <!-- We don't need ClassPath to be generated as the classes are inlined
-                                 until we figure out how to automatically export all exported classes
-                                 of a required bundle.
-                                 -->
-                            <addClasspath>false</addClasspath>
+                            <addClasspath>true</addClasspath>
                         </manifest>
-                        <manifestEntries>
-                            <!-- Standard Extension Entries -->
-                            <Specification-Title>Java(TM) EE Specification API</Specification-Title>
-                            <Specification-Version>5.0</Specification-Version>
-                            <!-- Make it an HK2 module as well -->
-                            <HK2-Export-Package>javax.</HK2-Export-Package>
-                            <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <instructions>
-                        <!-- embed all compile and runtime scope dependencies -->
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Export-Package>javax.*</Export-Package>
-                    </instructions>
-                    <!-- Maven uses the output directory (target/classes) 
-                    rather than the final bundle, when compiling against 
-                    projects in the same reactor (ie. the same build).
-                    Since this jar is assembled out of multiple jars and 
-                    we mark those dependencies as "optional," 
-                    we need to unpack the classes.
-                    -->
-                    <unpackBundle>true</unpackBundle>
+                    <generateOSGiHeaders>true</generateOSGiHeaders>
+                    <resolution>optional</resolution>
+                    <visibility>reexport</visibility>
                 </configuration>
             </plugin>
         </plugins>
@@ -108,133 +81,111 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.enterprise.deploy</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.persistence</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.jms</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.security</artifactId>
+            <artifactId>javax.security.jacc</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.resource</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.annotation</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.jws</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.soap</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.ws</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.rpc</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.bind</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.mail</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.transaction</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.faces</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.management.j2ee</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.activation</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.stream</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.security.auth.message</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

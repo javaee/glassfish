@@ -24,6 +24,20 @@
 
     <build>
         <plugins>
+            <!-- Have to repeat this pluguin configuration here, because
+                 this POM does not extend glassfish-parent POM. -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions> <!-- bnd instructions -->
+                        <!-- Let every module specify the OSGi manifest details
+                             in a bnd config file called osgi.bundle -->
+                        <_include>osgi.bundle</_include>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -95,15 +109,15 @@
             <version>0.1-1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>1.2_07</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.faces</artifactId>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
 
@@ -178,9 +192,9 @@
     </dependencies>
 
     <properties>
-		<hk2.version>0.3.0</hk2.version>
+		<hk2.version>0.3.8</hk2.version>
 		<glassfish.version>10.0-SNAPSHOT</glassfish.version>
-		<amx-api.version>2.0-SNAPSHOT</amx-api.version>
+		<amx-api.version>10.0-SNAPSHOT</amx-api.version>
 		<jsp-api.version>2.1</jsp-api.version>
 	</properties>
 </project>

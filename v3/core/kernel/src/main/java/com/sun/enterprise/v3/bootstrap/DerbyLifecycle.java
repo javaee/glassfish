@@ -48,7 +48,7 @@ package com.sun.enterprise.v3.bootstrap;
 import com.sun.enterprise.module.LifecyclePolicy;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleState;
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import java.util.logging.Level;
 
 /**
@@ -79,11 +79,11 @@ public class DerbyLifecycle implements LifecyclePolicy {
                             myModule.setSticky(true);
                             driverClass.newInstance();
                         } catch(ClassNotFoundException e) {
-                            Utils.getDefaultLogger().log(Level.SEVERE, "Cannot load Derby Driver ",e);
+                            LogHelper.getDefaultLogger().log(Level.SEVERE, "Cannot load Derby Driver ",e);
                         } catch(java.lang.InstantiationException e) {
-                            Utils.getDefaultLogger().log(Level.SEVERE, "Cannot instantiate Derby Driver", e);          
+                            LogHelper.getDefaultLogger().log(Level.SEVERE, "Cannot instantiate Derby Driver", e);
                         } catch(IllegalAccessException e) {
-                            Utils.getDefaultLogger().log(Level.SEVERE, "Cannot instantiate Derby Driver", e);                      
+                            LogHelper.getDefaultLogger().log(Level.SEVERE, "Cannot instantiate Derby Driver", e);
                         }                   
                     }   
                     catch (RuntimeException e) {

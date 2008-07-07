@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.servlet</artifactId>
+    <properties>
+        <extension.name>javax.servlet</extension.name>
+        <spec.version>2.5</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>Java Servlet API</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>Java Servlet API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

@@ -63,6 +63,82 @@
     </developers>       
     <build>
         <plugins>
+            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
+                 Please note: we use the manifest goal only and not the bundle goal.
+                  The bundle goal can lead to very surprising results if the
+                  package names are not correctly specified. So,
+                  we use the jar plugin to generate the jar.-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <!-- Enable the plugin for hk2-jar packaging type -->
+                    <supportedProjectTypes>
+                        <supportedProjectType>hk2-jar</supportedProjectType>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <instructions>
+                        <!-- _include does not work. See Felix-620.
+                        <_include>osgi.bundle</_include>
+                        -->
+                        <Export-Package>
+                        com.sun.appserv,
+                        com.sun.appserv.ha.spi,
+                        com.sun.appserv.ha.util,
+                        com.sun.appserv.management.client.prefs,
+                        com.sun.appserv.server.util,
+                        com.sun.appserv.util.cache,
+                        com.sun.appserv.util.cache.mbeans,
+                        com.sun.common.util.logging,
+                        com.sun.enterprise.admin.monitor.callflow,
+                        com.sun.enterprise.loader,
+                        com.sun.enterprise.security.integration,
+                        com.sun.enterprise.security.store,
+                        com.sun.enterprise.spi.io,
+                        com.sun.enterprise.universal,
+                        com.sun.enterprise.universal.collections,
+                        com.sun.enterprise.universal.glassfish,
+                        com.sun.enterprise.universal.i18n,
+                        com.sun.enterprise.universal.io,
+                        com.sun.enterprise.universal.process,
+                        com.sun.enterprise.universal.xml,
+                        com.sun.enterprise.util,
+                        com.sun.enterprise.util.diagnostics,
+                        com.sun.enterprise.util.i18n,
+                        com.sun.enterprise.util.io,
+                        com.sun.enterprise.util.net,
+                        com.sun.enterprise.util.shared,
+                        com.sun.enterprise.util.uuid,
+                        com.sun.enterprise.util.web,
+                        com.sun.enterprise.util.zip,
+                        com.sun.logging,
+                        org.glassfish.resource.common,
+                        org.glassfish.security.common
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -114,9 +190,9 @@
             <version>${glassfish-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.xml.stream</groupId>
-            <artifactId>stax-api</artifactId>
-            <version>1.0-2</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.stream</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>        
         <dependency>

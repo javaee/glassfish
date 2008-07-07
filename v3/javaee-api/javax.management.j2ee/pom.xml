@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.management.j2ee</artifactId>
+    <properties>
+        <extension.name>javax.management.j2ee</extension.name>
+        <spec.version>1.1</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>Java EE Management API</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>Java EE Management API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

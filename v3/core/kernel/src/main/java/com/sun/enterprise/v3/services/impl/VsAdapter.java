@@ -30,7 +30,7 @@ import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.standalone.DynamicContentAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.enterprise.util.StringUtils;
@@ -115,8 +115,8 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
     public void service(Request req, Response res)
         throws Exception {
 
-        if (Utils.getDefaultLogger().isLoggable(Level.FINER)) {
-            Utils.getDefaultLogger().finer("Received something on " + req.requestURI());
+        if (LogHelper.getDefaultLogger().isLoggable(Level.FINER)) {
+            LogHelper.getDefaultLogger().finer("Received something on " + req.requestURI());
         }
 
 
@@ -154,7 +154,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                         serviceFile(req, res, new File(docRoot, "/favicon.gif"));
                     } else {
                         // TODO : a better job at error reporting
-                        Utils.getDefaultLogger().info("No adapter registered for : "
+                        LogHelper.getDefaultLogger().info("No adapter registered for : "
                                 + requestURI);
                         sendError(res, "Glassfish v3 Error : NotFound : "
                                 + requestURI);
@@ -173,7 +173,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     req.action( ActionCode.ACTION_POST_REQUEST , null);
                 }
             }catch (Throwable t) {
-                Utils.getDefaultLogger().log(Level.WARNING,"VsAdapter",t);
+                LogHelper.getDefaultLogger().log(Level.WARNING,"VsAdapter",t);
             }
 
             res.finish();

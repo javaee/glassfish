@@ -46,13 +46,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.faces</artifactId>
-    <packaging>jar</packaging>
-    <name>JSF</name>
-    <description>JSF API Repackaged as OSGi bundle in GlassFish</description>
     <properties>
+        <extension.name>javax.faces</extension.name>
+        <spec.version>1.2</spec.version>
         <jsf-impl.version>1.2_08</jsf-impl.version>
     </properties>
+    <artifactId>${extension.name}</artifactId>
+    <packaging>jar</packaging>
+    <name>${extension.name} API v.${spec.version}</name>
+    <description>JSF API Repackaged as OSGi bundle in GlassFish</description>
     <build>
         <plugins>
             <plugin>
@@ -77,7 +79,7 @@
                             @jsf-impl-${jsf-impl.version}.jar!/javax/faces/Message*,
                             {maven-resources}
                         </Include-Resource>
-                        <Export-Package>${project.artifactId}.*</Export-Package>
+                        <Export-Package>${extension.name}.*; version=${spec.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

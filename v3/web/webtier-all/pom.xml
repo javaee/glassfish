@@ -47,6 +47,20 @@
     <artifactId>webtier-all</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Web Related Implementations for GlassFish</name>
+    <build>
+        <plugins>
+            <!-- We use hk2-maven-plugin to generate OSGi headers, so that
+                 we have proper Require-Bundle in it. -->
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <generateOSGiHeaders>true</generateOSGiHeaders>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <developers>
         <developer>

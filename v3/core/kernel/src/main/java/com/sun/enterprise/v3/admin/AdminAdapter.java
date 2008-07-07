@@ -24,7 +24,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
@@ -125,9 +125,9 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
 
 
 
-        Utils.getDefaultLogger().finer("Admin adapter !");
-        Utils.getDefaultLogger().finer("Received something on " + req.getRequestURI());
-        Utils.getDefaultLogger().finer("QueryString = " + req.getQueryString());
+        LogHelper.getDefaultLogger().finer("Admin adapter !");
+        LogHelper.getDefaultLogger().finer("Received something on " + req.getRequestURI());
+        LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
 
         // XXX Really needs to be generalized
         ActionReport report;
@@ -206,7 +206,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             String msg = adminStrings.getLocalString("adapter.panic",
                     "Wrong request landed in AdminAdapter {0}", requestURI);
             report.setMessage(msg);
-            Utils.getDefaultLogger().info(msg);
+            LogHelper.getDefaultLogger().info(msg);
             return report;
         }
 

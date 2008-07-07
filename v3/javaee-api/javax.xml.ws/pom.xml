@@ -46,9 +46,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.xml.ws</artifactId>
+    <properties>
+        <extension.name>javax.xml.ws</extension.name>
+        <spec.version>2.1</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>JAX-WS API</name>
+    <name>${extension.name} API v.${spec.version}</name>
     <description>JAX-WS API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>

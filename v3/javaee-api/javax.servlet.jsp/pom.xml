@@ -46,9 +46,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.servlet.jsp</artifactId>
+    <properties>
+        <extension.name>javax.servlet.jsp</extension.name>
+        <spec.version>2.1</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>JavaServer Pages(TM) API</name>
+    <name>${extension.name} API v.${spec.version}</name>
+
     <description>JavaServer Pages(TM) API Repackaged as OSGi bundle in GlassFish</description>
     <build>
         <plugins>
@@ -62,7 +67,7 @@
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Export-Package>javax.servlet.jsp.*,javax.el.*</Export-Package>
+                        <Export-Package>javax.servlet.jsp.*; version=${spec.version},javax.el.*; version=${spec.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

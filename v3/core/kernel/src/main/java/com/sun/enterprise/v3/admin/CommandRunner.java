@@ -36,6 +36,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -506,7 +507,7 @@ public class CommandRunner {
             
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            Utils.getDefaultLogger().info(msg);
+            LogHelper.getDefaultLogger().info(msg);
         }
         return command;
     }

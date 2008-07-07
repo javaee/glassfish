@@ -118,7 +118,7 @@ public abstract class SimpleDeployer <T extends Container,
      */
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
+        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }

@@ -47,9 +47,78 @@
     <artifactId>amx-api</artifactId>
     <packaging>hk2-jar</packaging>
     <name>AMX API</name>
-    <version>${amx-api.version}</version>
     <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
     
+    <build>
+        <plugins>
+            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
+                 Please note: we use the manifest goal only and not the bundle goal.
+                  The bundle goal can lead to very surprising results if the
+                  package names are not correctly specified. So,
+                  we use the jar plugin to generate the jar.-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <!-- Enable the plugin for hk2-jar packaging type -->
+                    <supportedProjectTypes>
+                        <supportedProjectType>hk2-jar</supportedProjectType>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <instructions>
+                        <!-- _include does not work. See Felix-620.
+                        <_include>osgi.bundle</_include>
+                        -->
+                        <Export-Package>
+                        com.sun.appserv.management,
+                        com.sun.appserv.management.annotation,
+                        com.sun.appserv.management.base,
+                        com.sun.appserv.management.client,
+                        com.sun.appserv.management.client.handler,
+                        com.sun.appserv.management.config,
+                        com.sun.appserv.management.ext.coverage,
+                        com.sun.appserv.management.ext.lb,
+                        com.sun.appserv.management.ext.logging,
+                        com.sun.appserv.management.ext.update,
+                        com.sun.appserv.management.ext.wsmgmt,
+                        com.sun.appserv.management.helper,
+                        com.sun.appserv.management.j2ee,
+                        com.sun.appserv.management.j2ee.statistics,
+                        com.sun.appserv.management.monitor,
+                        com.sun.appserv.management.monitor.statistics,
+                        com.sun.appserv.management.util.j2ee,
+                        com.sun.appserv.management.util.j2ee.stringifier,
+                        com.sun.appserv.management.util.jmx,
+                        com.sun.appserv.management.util.jmx.stringifier,
+                        com.sun.appserv.management.util.misc,
+                        com.sun.appserv.management.util.stringifier
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <developers>
         <developer>
             <id>llc</id>
@@ -65,9 +134,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.management.j2ee</groupId>
-            <artifactId>management-api</artifactId>
-            <version>${management-api.version}</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.management.j2ee</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 <!--

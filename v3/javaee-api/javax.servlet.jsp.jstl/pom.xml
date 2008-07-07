@@ -46,9 +46,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
-    <artifactId>javax.servlet.jsp.jstl</artifactId>
+    <properties>
+        <extension.name>javax.servlet.jsp.jstl</extension.name>
+        <spec.version>1.2</spec.version>
+    </properties>
+    <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
-    <name>JSTL API</name>
+    <name>${extension.name} API v.${spec.version}</name>
     <description>JSTL API Repackaged as OSGi bundle in GlassFish</description>
     <dependencies>
         <dependency>
