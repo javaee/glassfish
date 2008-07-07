@@ -26,7 +26,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>RELEASE</version>
+                <version>0.3.6</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution><!-- this computes "project.osgi.version" property, which we use below -->
@@ -36,6 +36,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <generateOSGiHeaders>true</generateOSGiHeaders>
                     <archive>
                         <manifest>
                             <mainClass>com.sun.enterprise.module.bootstrap.Main</mainClass>
@@ -46,20 +47,6 @@
                                 ${project.groupId}.config;visibility:=reexport;resolution:=mandatory,
                                 ${project.groupId}.hk2-core;visibility:=reexport;resolution:=mandatory
                             </Require-Bundle>
-                            <Export-Package>
-                                <!-- This is needed for Knopflerfish.
-                                Both Felix and Equinox don't need this, as they
-                                automatically add the reexported packages to export list.
-                                -->
-                                org.jvnet.hk2.component;version=${project.osgi.version},
-                                org.jvnet.hk2.annotations;version=${project.osgi.version},
-                                com.sun.hk2.component;version=${project.osgi.version},
-                                org.jvnet.hk2.config;version=${project.osgi.version},
-                                com.sun.enterprise.module;version=${project.osgi.version},
-                                com.sun.enterprise.module.bootstrap;version=${project.osgi.version},
-                                com.sun.enterprise.module.common_impl;version=${project.osgi.version},
-                                com.sun.enterprise.module.impl;version=${project.osgi.version}
-                            </Export-Package>
                         </manifestEntries>
                     </archive>
                 </configuration>

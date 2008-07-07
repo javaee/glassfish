@@ -47,7 +47,6 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
@@ -146,7 +145,7 @@ public class HK2Main extends Main implements
     private Collection<? extends Repository> createRepositories() {
         List<Repository> reps = new ArrayList<Repository>();
 
-        Repository rep = new DirectoryBasedRepository(repName, contextRootDir);
+        Repository rep = new OSGiDirectoryBasedRepository(repName, contextRootDir);
         try {
             rep.initialize();
             reps.add(rep);
@@ -165,7 +164,7 @@ public class HK2Main extends Main implements
                     }
                 }))
         {
-            rep = new DirectoryBasedRepository(dir.getName(), dir);
+            rep = new OSGiDirectoryBasedRepository(dir.getName(), dir);
             try {
                 rep.initialize();
                 reps.add(rep);

@@ -18,8 +18,10 @@
               <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
               <!-- this creates proper MANIFEST.MF file -->
               <package>com.sun.enterprise:hk2-maven-plugin:package</package>
-              <!-- Analyse dependency of modules -->
+              <!-- Analyse dependency of modules 
+                   Not needed any more since we use Import-Package.
               <verify>com.sun.enterprise:hk2-maven-plugin:analyse-dependency</verify>
+              -->
               <install>org.apache.maven.plugins:maven-install-plugin:install</install>
               <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
             </phases>

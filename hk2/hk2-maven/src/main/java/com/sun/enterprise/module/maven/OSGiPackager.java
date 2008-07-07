@@ -42,7 +42,6 @@ import com.sun.enterprise.module.common_impl.Jar;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
-import org.osgi.framework.Constants;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -54,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
@@ -68,11 +68,17 @@ import static org.osgi.framework.Constants.*;
 public class OSGiPackager {
     /*
      * TODO:
-     * 1. No version range support in Require-Bundle
-     * 2. Does not yet calculate Export-Package
+     * 1. Does not yet calculate uses attribute in Export-Package
      */
      
     private static final Logger logger = Logger.getAnonymousLogger();
+
+    private Properties props;
+
+
+    public OSGiPackager(Properties props) {
+        this.props = props;
+    }
 
     /**
      * Reads information from the POM and the artifact archive to configure
@@ -162,7 +168,7 @@ public class OSGiPackager {
         String visibility; // private or reexport
     }
 
-    public static List<BundleDependency> discoverRequiredBundles(MavenProject pom)
+    public List<BundleDependency> discoverRequiredBundles(MavenProject pom)
             throws IOException {
         List<BundleDependency> dependencies = new ArrayList<BundleDependency>();
         for (Artifact a : (Set<Artifact>)pom.getDependencyArtifacts()) {
@@ -188,23 +194,21 @@ public class OSGiPackager {
                 BundleDependency bd = new BundleDependency();
                 bd.bundleSymbolicName = name;
 
-                // TODO: Use version range -- Sahoo
                 final String version = attributes.getValue(BUNDLE_VERSION);
                 // no need to translate, for it's already an OSGi version
-                bd.versionRange = "\"[" + version + ", " + version + "]\"";
+                bd.versionRange = version; // maps to [version, infinity)
 
                 // resolution=optional or mandatory
-                bd.resolution = a.isOptional() ?
-                        RESOLUTION_OPTIONAL : RESOLUTION_MANDATORY;
+                bd.resolution = props.getProperty("resolution", RESOLUTION_MANDATORY);
 
-                bd.visibility = VISIBILITY_PRIVATE;
+                bd.visibility = props.getProperty("visibility", VISIBILITY_PRIVATE);
                 dependencies.add(bd);
             }
         }
         return dependencies;
     }
 
-    public static String generateRequireBundleHeader(
+    public String generateRequireBundleHeader(
             List<BundleDependency> dependencies) {
         // Require-Bundle:
         // a.b.c;version=1.0.0.b58g;resolution:=mandatory;visibility:=reexport,

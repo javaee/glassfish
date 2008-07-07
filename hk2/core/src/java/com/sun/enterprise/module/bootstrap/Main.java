@@ -48,12 +48,12 @@ package com.sun.enterprise.module.bootstrap;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.impl.HK2Factory;
-import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
@@ -413,7 +413,7 @@ public class Main {
             Attributes attr = manifest.getMainAttributes();
             targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
             if (targetModule==null) {
-                Utils.getDefaultLogger().warning(
+                LogHelper.getDefaultLogger().warning(
                         "No Main-Bundle module found in manifest of " +
                         bootstrap.getAbsoluteFile());
             }

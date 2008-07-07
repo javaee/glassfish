@@ -56,9 +56,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                        <Export-Package>javax.xml.stream.*</Export-Package>
+                        <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                        <!--Embed-Transitive>true</Embed-Transitive-->
+                        <_exportcontents>javax.xml.stream.*;version=1.0</_exportcontents>
                         <!--
                           Don't let optional glue code in Woodstox import their dependencies.
                           This bundle is totally self-contained.

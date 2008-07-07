@@ -40,6 +40,7 @@ package com.sun.enterprise.module.impl;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.LogHelper;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -72,7 +73,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
     
     protected void finalize() throws Throwable {
         super.finalize();
-        Utils.getDefaultLogger().info("ModuleClassLoader gc'ed " + module.getModuleDefinition().getName());
+        LogHelper.getDefaultLogger().info("ModuleClassLoader gc'ed " + module.getModuleDefinition().getName());
     }
 
 
@@ -190,7 +191,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
         // we should only detach if the sticky flag is not set
         if (!module.isSticky()) {
             
-            Utils.getDefaultLogger().info("ModuleClassLoader stopped " + module.getModuleDefinition().getName());
+            LogHelper.getDefaultLogger().info("ModuleClassLoader stopped " + module.getModuleDefinition().getName());
             super.stop();
             module.stop();
         }
