@@ -156,7 +156,7 @@ public class OSGiModulesRegistryImpl
      * by their module definition and also load new urls.
      *
      * @param parent the parent class loader for the returned class loader instance
-     * @param defs module definitions for all modules this classloader should be
+     * @param mds module definitions for all modules this classloader should be
      *        capable of loading
      * @param urls urls to be added to the module classloader
      * @return class loader instance
@@ -303,11 +303,7 @@ public class OSGiModulesRegistryImpl
     public Module find(Class clazz) {
         Bundle b = pa.getBundle(clazz);
         if (b!=null) {
-            // locate the corresponding HK2 module
-            Object hk2ModuleName = b.getHeaders().get(ManifestConstants.BUNDLE_NAME);
-            if(hk2ModuleName!=null) {
-                return modules.get(hk2ModuleName);
-            }
+            return modules.get(b.getSymbolicName());
         }
         return null;
     }

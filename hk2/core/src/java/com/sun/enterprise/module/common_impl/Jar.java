@@ -37,7 +37,6 @@
 package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
@@ -120,7 +119,7 @@ public abstract class Jar {
                         new InhabitantsDescriptor(svc.getPath(), readFully(svc))
                     );
                 } catch(IOException e) {
-                    Utils.getDefaultLogger().log(Level.SEVERE, "Error reading habitats file from " + svc, e);
+                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading habitats file from " + svc, e);
                 }
             }
 
@@ -131,7 +130,7 @@ public abstract class Jar {
                 try {
                     result.load( svc.toURL(), svc.getName() );
                 } catch(IOException e) {
-                    Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider from " + svc, e);
+                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider from " + svc, e);
                 }
             }
         }
@@ -190,7 +189,7 @@ public abstract class Jar {
                             loadFully(entry)
                         ));
                     } catch(IOException e) {
-                        Utils.getDefaultLogger().log(Level.SEVERE, "Error reading inhabitants list in " + jar.getName(), e);
+                        LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading inhabitants list in " + jar.getName(), e);
                     }
                 } else
                 if (entry.getName().startsWith(SERVICE_LOCATION)) {
@@ -199,7 +198,7 @@ public abstract class Jar {
                     try {
                         result.load( new URL("jar:"+file.toURL()+"!/"+entry.getName()), serviceName, jar.getInputStream(entry));
                     } catch(IOException e) {
-                        Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
+                        LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
                     }
                 }
             }

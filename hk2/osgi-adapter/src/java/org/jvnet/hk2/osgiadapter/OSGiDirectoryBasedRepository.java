@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2007 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,62 +34,61 @@
  * holder.
  */
 
-package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.ModuleDependency;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
+package org.jvnet.hk2.osgiadapter;
 
-import java.util.Vector;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import org.osgi.framework.Constants;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
- * @author dochez
+ * Only OSGi bundles are recognized as modules.
+ * 
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class Utils {
-    
-    /** Creates a new instance of Utils */
-    private Utils() {
+public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
+
+    public OSGiDirectoryBasedRepository(String name, File repository) {
+        super(name, repository);
     }
 
-    public static void identifyCyclicDependency(ModuleImpl m, Logger logger) {
-
-        StringBuffer tree = new StringBuffer();
-        tree.append(m.getName());
-        Vector<Module> traversed = new Vector<Module>();
-        boolean success = traverseAndFind(m, m, traversed);
-        if (success) {
-            traversed.remove(0);
-            for (Module mod : traversed) {
-                tree.append("-->" + mod.getName());
-            }
-            tree.append("-->" + m.getName());
-        logger.log(Level.SEVERE, "Cyclic dependency : " + tree.toString());
-        }
+    public OSGiDirectoryBasedRepository(String name, File repository, boolean isTimerThreadDaemon) {
+        super(name, repository, isTimerThreadDaemon);
     }
 
-    static private boolean traverseAndFind(Module toTraverse, ModuleImpl toFind, Vector<Module> traversed) {
-
-        traversed.add(toTraverse);
-        for (ModuleDependency md : toTraverse.getModuleDefinition().getDependencies())  {
-            ModulesRegistry registry = toTraverse.getRegistry();
-            for (Module mod : registry.getModules()) {
-                if (mod.getName().equals(md.getName())) {
-                    if (mod!=null) {
-                        if (mod.getName().equals(toFind.getName())) {
-                            return true;
-                        }
-                        if (traverseAndFind(mod, toFind, traversed)) {
-                            return true;
-                        }
-                    }
-
-                }
+    /**
+     * This class overrides this mthod, because we don't support the following cases:
+     * 1. external manifest.mf file for a jar file
+     * 2. jar file exploded as a directory.
+     * Both the cases are supported in HK2, but not in OSGi.
+     *
+     * @param jar bundle jar
+     * @return a ModuleDefinition for this bundle
+     * @throws IOException
+     */
+    @Override
+    protected ModuleDefinition loadJar(File jar) throws IOException {
+        assert (jar.isFile()); // no support for exploded jar
+        Manifest m = new JarFile(jar).getManifest();
+        if (m != null) {
+            if (m.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) != null) {
+                Logger.logger.logp(Level.FINE, "OSGiDirectoryBasedRepository", "loadJar",
+                        "{0} is an OSGi bundle", new Object[]{jar});
+                return newModuleDefinition(jar, null);
             }
         }
-        traversed.remove(toTraverse);
-        return false;
+        return null;
+    }
+
+    @Override
+    protected ModuleDefinition newModuleDefinition(File jar, Attributes attr) throws IOException {
+        return new OSGiModuleDefinition(jar);
     }
 }

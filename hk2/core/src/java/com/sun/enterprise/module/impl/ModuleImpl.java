@@ -49,6 +49,7 @@ import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
 
@@ -594,7 +595,7 @@ public final class ModuleImpl implements Module {
             try {
                 r.add(getPrivateClassLoader().loadClass(provider));
             } catch (ClassNotFoundException e) {
-                Utils.getDefaultLogger().log(Level.SEVERE, "Failed to load "+provider+" from "+getName(),e);
+                LogHelper.getDefaultLogger().log(Level.SEVERE, "Failed to load "+provider+" from "+getName(),e);
             }
         }
 

@@ -61,6 +61,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 
 import java.io.File;
+import java.util.Properties;
 
 /**
  * Creates a jar with a special manifest entry.
@@ -141,6 +142,24 @@ public class PackageMojo extends AbstractMojo {
      */
     protected String[] excludes;
 
+    /**
+     * By default, we don't generate OSGi manifest 
+     * @parameter default-value = false
+     */
+    private boolean generateOSGiHeaders;
+
+    /**
+     * Whether to generate optional dependency or mandatory dependency
+     * @parameter default-value = "mandatory"
+     */
+    private String resolution;
+
+    /**
+     * Whether to reexport or not
+     * @parameter default-value = "private"
+     */
+    private String visibility;
+
     protected final MavenProject getProject() {
         return project;
     }
@@ -166,7 +185,13 @@ public class PackageMojo extends AbstractMojo {
 
         try {
             new Packager().configureManifest(project,archive,classesDirectory);
-            new OSGiPackager().configureOSGiManifest(project,archive,classesDirectory);
+
+            if (generateOSGiHeaders) {
+                Properties props = new Properties();
+                props.put("resolution", resolution);
+                props.put("visibility", visibility);
+                new OSGiPackager(props).configureOSGiManifest(project,archive,classesDirectory);
+            }
 
             File contentDirectory = classesDirectory;
             if (!contentDirectory.exists()) {

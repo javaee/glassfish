@@ -451,20 +451,53 @@ public class PackageAnalyser {
         out.println("</Wires>");
     }
 
+    public void generateBundleReport(PrintStream out) {
+        out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        out.println("<?xml-stylesheet type=\"text/xsl\" href=\"bundles.xsl\"?>");
+        out.println("<Bundles>");
+        for (Bundle b : bundles) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("\t<Bundle name = \"" + b.getName() + "\">\n");
+            sb.append("\t\t<Exports>\n");
+            List<String> sorted = new ArrayList<String>(b.exportedPkgs);
+            Collections.sort(sorted, new Comparator<String>() {
+                Collator collator = Collator.getInstance();
+
+                public int compare(String o1, String o2) {
+                    return collator.compare(o1, o2);
+                }
+            });
+            int i = 0;
+            for (String p : sorted) {
+                sb.append("\t\t\t" + p);
+                if (++i < sorted.size()) {
+                    sb.append(",\\");
+                }
+                sb.append("\n");
+            }
+            sb.append("\t\t</Exports>\n");
+            sb.append("\t</Bundle>");
+            out.println(sb);
+        }
+        out.println("</Bundles>");
+    }
+
     public static void main(String[] args) throws Exception {
-        if (args.length != 3) {
+        if (args.length != 4) {
             System.out.println("Usage: java " + PackageAnalyser.class.getName() +
-                    " <Repository Dir Path> <output file name for wiring details> <output file name for split-packages>");
+                    " <Repository Dir Path> <output file name for bundle details>" +
+                    " <output file name for wiring details> <output file name for split-packages>");
 
             System.out.println("Example(s):\n" +
                     "Following command analyses all modules in the specified repository:\n" +
                     " java " + PackageAnalyser.class.getName() +
-                    " /tmp/glassfish/modules/ wires.txt sp.txt\n\n");
+                    " /tmp/glassfish/modules/ bundles.xml wires.xml sp.txt\n\n");
             return;
         }
         String repoPath = args[0];
-        PrintStream wireOut = new PrintStream(new FileOutputStream(args[1]));
-        PrintStream spOut = new PrintStream(new FileOutputStream(args[2]));
+        PrintStream bundleOut = new PrintStream(new FileOutputStream(args[1]));
+        PrintStream wireOut = new PrintStream(new FileOutputStream(args[2]));
+        PrintStream spOut = new PrintStream(new FileOutputStream(args[3]));
         File f = new File(repoPath) {
             @Override
             public File[] listFiles() {
@@ -489,7 +522,7 @@ public class PackageAnalyser {
         PackageAnalyser analyser = new PackageAnalyser(moduleRepository);
         Collection<Wire> wires = analyser.analyseWirings();
         Collection<String> exportedPkgs = analyser.findAllExportedPackages();
-
+        analyser.generateBundleReport(bundleOut);
         analyser.generateWiringReport(exportedPkgs, wires, wireOut);
         Collection<SplitPackage> splitPkgs = analyser.findSplitPackages();
 

@@ -37,7 +37,7 @@
 
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.common_impl.LogHelper;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -68,7 +68,7 @@ final class ClassLoaderFacade extends URLClassLoader {
 
     protected void finalize() throws Throwable {
         super.finalize();
-        Utils.getDefaultLogger().fine("Facade ClassLoader killed " + privateLoader.getOwner().getModuleDefinition().getName());
+        LogHelper.getDefaultLogger().fine("Facade ClassLoader killed " + privateLoader.getOwner().getModuleDefinition().getName());
         privateLoader.stop();
     }
 

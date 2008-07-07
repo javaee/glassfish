@@ -70,7 +70,7 @@ import java.util.TimerTask;
  */
 public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     
-    private final File repository;
+    protected final File repository;
     private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
     private Timer timer;
     private boolean isTimerThreadDaemon = false;
@@ -149,7 +149,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
      * Checks the <tt>xyz.disabled</tt> file for <tt>xyz.jar</tt> and return true
      * if the file exists.
      */
-    private boolean isDisabled(File jar) {
+    protected boolean isDisabled(File jar) {
         String fileName = jar.getName();
         fileName = fileName.substring(0,fileName.lastIndexOf('.'))+".disabled";
         File disabledFile = new File(jar.getParent(),fileName);

@@ -35,11 +35,11 @@
                         <Export-Package>
                             org.jvnet.hk2.config;
                         </Export-Package>
-                        <!-- Don;t generate dependency on StAX because
+                        <!-- Don't generate dependency on StAX because
                         we have some issues while running on Felix. The issue is:
                         we have to install javax.javaee module before HK2, but
                         Jasper needs javax.javaee in GlassFish -->
-                        <Import-Package>!javax.xml.*,*</Import-Package>
+                        <Import-Package>!javax.xml.stream.*,*</Import-Package>
                         <!--<Private-Package>!*</Private-Package>-->
                     </instructions>
                 </configuration>
