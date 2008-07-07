@@ -125,14 +125,21 @@ public class DependencyAnalyserMojo extends AbstractMojo {
     private boolean failOnVerificationError;
 
     /**
+     * Flag that controls whether we analyse dependency or not.
+     * @parameter default-value = false
+     */
+    private boolean analyseDependency;
+
+    /**
      * Patterns excluded from dependency computation.
      * @parameter
      */
     private HashSet<String> excludedPatterns;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        // This is a brute force way of skipping executio of this plugin.
-        if (Boolean.getBoolean("do-not-analyse-dependency")) {
+        // In addition to the configuration property called analyseDependency,
+        // we support a brute force way of skipping executio of this plugin.
+        if (!analyseDependency || Boolean.getBoolean("do-not-analyse-dependency")) {
             logger.logp(Level.INFO, "DependencyAnalyserMojo", "execute", "Skipping analyse-dependency goal");
             return;
         }
