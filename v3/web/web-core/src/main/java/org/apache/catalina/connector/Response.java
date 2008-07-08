@@ -90,7 +90,6 @@ import org.apache.catalina.util.DateTool;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.security.SecurityUtil;
-import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.FastHttpDateFormat;
@@ -110,7 +109,7 @@ import com.sun.appserv.security.provider.ProxyHandler;
  * @version $Revision: 1.22 $ $Date: 2007/05/05 05:32:43 $
  */
 
-public class CoyoteResponse
+public class Response
     implements HttpResponse, HttpServletResponse {
 
 
@@ -122,7 +121,7 @@ public class CoyoteResponse
 
     // ----------------------------------------------------------- Constructors
 
-    public CoyoteResponse() {
+    public Response() {
         // START OF SJSAS 6231069
         outputBuffer = new OutputBuffer();
         outputStream = new CoyoteOutputStream(outputBuffer);
@@ -132,7 +131,7 @@ public class CoyoteResponse
     }
     
     // START OF SJSAS 6231069
-    public CoyoteResponse(boolean chunkingDisabled) {
+    public Response(boolean chunkingDisabled) {
         outputBuffer = new OutputBuffer(chunkingDisabled);
         outputStream = new CoyoteOutputStream(outputBuffer);
         writer = new CoyoteWriter(outputBuffer);
@@ -159,7 +158,7 @@ public class CoyoteResponse
      * Descriptive information about this Response implementation.
      */
     protected static final String info =
-        "org.apache.catalina.connector.CoyoteResponse/1.0";
+        "org.apache.catalina.connector.Response/1.0";
 
 
     /**
@@ -213,14 +212,14 @@ public class CoyoteResponse
     /**
      * Coyote response.
      */
-    protected Response coyoteResponse;
+    protected com.sun.grizzly.tcp.Response coyoteResponse;
 
     /**
      * Set the Coyote response.
      * 
      * @param response The Coyote response
      */
-    public void setCoyoteResponse(Response coyoteResponse) {
+    public void setCoyoteResponse(com.sun.grizzly.tcp.Response coyoteResponse) {
         this.coyoteResponse = coyoteResponse;
         outputBuffer.setCoyoteResponse(this);
     }
@@ -228,7 +227,7 @@ public class CoyoteResponse
     /**
      * Get the Coyote response.
      */
-    public Response getCoyoteResponse() {
+    public com.sun.grizzly.tcp.Response getCoyoteResponse() {
         return (coyoteResponse);
     }
 
@@ -451,7 +450,7 @@ public class CoyoteResponse
     /**
      * The request with which this response is associated.
      */
-    protected CoyoteRequest request = null;
+    protected Request request = null;
 
     /**
      * Return the Request with which this Response is associated.
@@ -466,7 +465,7 @@ public class CoyoteResponse
      * @param request The new associated request
      */
     public void setRequest(org.apache.catalina.Request request) {
-        this.request = (CoyoteRequest) request;
+        this.request = (Request) request;
     }
 
 
@@ -1498,7 +1497,7 @@ public class CoyoteResponse
             return (false);
 
         // Are we in a valid session that is not using cookies?
-        final CoyoteRequest hreq = request;
+        final Request hreq = request;
         final Session session = hreq.getSessionInternal(false);
         if (session == null) {
             return (false);
@@ -1521,7 +1520,7 @@ public class CoyoteResponse
         }
     }
 
-    private boolean doIsEncodeable(CoyoteRequest hreq, Session session,
+    private boolean doIsEncodeable(Request hreq, Session session,
                                    String location){
         // Is this a valid absolute URL?
         URL url = null;

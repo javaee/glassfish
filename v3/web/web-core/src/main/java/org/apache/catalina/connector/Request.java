@@ -111,7 +111,6 @@ import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.http.mapper.MappingData;
 
 import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.Request;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
@@ -152,7 +151,7 @@ import com.sun.appserv.security.provider.ProxyHandler;
  * @version $Revision: 1.67.2.9 $ $Date: 2008/04/17 18:37:34 $
  */
 
-public class CoyoteRequest
+public class Request
     implements HttpRequest, HttpServletRequest {
 
 
@@ -164,7 +163,7 @@ public class CoyoteRequest
     // ----------------------------------------------------------- Constructors
 
 
-    public CoyoteRequest() {
+    public Request() {
          // START OF SJSAS 6231069
         formats = (SimpleDateFormat[]) staticDateFormats.get();
         formats[0].setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -180,14 +179,14 @@ public class CoyoteRequest
     /**
      * Coyote request.
      */
-    protected Request coyoteRequest;
+    protected com.sun.grizzly.tcp.Request coyoteRequest;
 
     /**
      * Set the Coyote request.
      * 
      * @param coyoteRequest The Coyote request
      */
-    public void setCoyoteRequest(Request coyoteRequest) {
+    public void setCoyoteRequest(com.sun.grizzly.tcp.Request coyoteRequest) {
         this.coyoteRequest = coyoteRequest;
         inputBuffer.setRequest(coyoteRequest);
     }
@@ -195,7 +194,7 @@ public class CoyoteRequest
     /**
      * Get the Coyote request.
      */
-    public Request getCoyoteRequest() {
+    public com.sun.grizzly.tcp.Request getCoyoteRequest() {
         return (this.coyoteRequest);
     }
 
@@ -220,7 +219,7 @@ public class CoyoteRequest
         StringManager.getManager(Constants.Package);
 
     // START CR 6309511
-    private static final Logger log = Logger.getLogger(CoyoteRequest.class.getName());
+    private static final Logger log = Logger.getLogger(Request.class.getName());
     // END CR 6309511
 
     /**
@@ -743,7 +742,7 @@ public class CoyoteRequest
      * Descriptive information about this Request implementation.
      */
     protected static final String info =
-        "org.apache.coyote.catalina.CoyoteRequest/1.0";
+        "org.apache.catalina.connector.Request/1.0";
 
     /**
      * Return descriptive information about this Request implementation and
@@ -804,7 +803,7 @@ public class CoyoteRequest
      */
     public void setResponse(org.apache.catalina.Response response) {
         this.response = response;
-        sessionTracker.setResponse((CoyoteResponse) response);
+        sessionTracker.setResponse((Response) response);
     }
 
 
@@ -2712,7 +2711,7 @@ public class CoyoteRequest
     public ServletResponse getServletResponse() {
         if (response != null) {
             // Return response facade
-            return ((CoyoteResponse) response).getResponse();
+            return ((Response) response).getResponse();
         } else {
             return null;
         }

@@ -38,14 +38,14 @@ package com.sun.enterprise.web.connector.coyote;
 
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
-import org.apache.catalina.connector.CoyoteResponse;
+import org.apache.catalina.connector.Response;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.logging.pwc.LogDomains;
 
 /**
  * Customized version of the Tomcat 5 CoyoteResponse
  */
-public class PECoyoteResponse extends CoyoteResponse {
+public class PECoyoteResponse extends Response {
 
     private static final Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
 

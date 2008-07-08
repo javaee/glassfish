@@ -118,7 +118,7 @@ public class ResponseFacade
      *
      * @param response The response to be wrapped
      */
-    public ResponseFacade(CoyoteResponse response) {
+    public ResponseFacade(Response response) {
         this.response = response;
     }
 
@@ -136,7 +136,7 @@ public class ResponseFacade
     /**
      * The wrapped response.
      */
-    protected CoyoteResponse response = null;
+    protected Response response = null;
 
 
     // --------------------------------------------------------- Public Methods
@@ -758,7 +758,7 @@ public class ResponseFacade
     /**
      * Return the original <code>CoyoteRequest</code> object.
      */
-    public CoyoteResponse getUnwrappedCoyoteResponse()
+    public Response getUnwrappedCoyoteResponse()
         throws AccessControlException {
 
         // tomcat does not have any Permission types so instead of

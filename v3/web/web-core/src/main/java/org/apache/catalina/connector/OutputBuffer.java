@@ -68,7 +68,6 @@ import java.util.logging.*;
 import javax.servlet.http.Cookie;
 
 import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.Response;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
 import org.apache.catalina.connector.ClientAbortException;
@@ -174,8 +173,8 @@ public class OutputBuffer extends Writer
     /**
      * Associated Coyote response.
      */
-    private Response response;
-    private CoyoteResponse coyoteResponse;
+    private com.sun.grizzly.tcp.Response response;
+    private Response coyoteResponse;
 
     /**
      * Suspended flag. All output bytes will be swallowed if this is true.
@@ -242,14 +241,14 @@ public class OutputBuffer extends Writer
      * 
      * @param response Associated Coyote response
      */
-    public void setResponse(Response response) {
+    public void setResponse(com.sun.grizzly.tcp.Response response) {
 	this.response = response;
     }
 
 
-    public void setCoyoteResponse(CoyoteResponse coyoteResponse) {
+    public void setCoyoteResponse(Response coyoteResponse) {
         this.coyoteResponse = coyoteResponse;
-        setResponse((Response) coyoteResponse.getCoyoteResponse());
+        setResponse((com.sun.grizzly.tcp.Response) coyoteResponse.getCoyoteResponse());
     }
 
 
@@ -258,7 +257,7 @@ public class OutputBuffer extends Writer
      * 
      * @return the associated Coyote response
      */
-    public Response getResponse() {
+    public com.sun.grizzly.tcp.Response getResponse() {
         return this.response;
     }
 
@@ -667,7 +666,7 @@ public class OutputBuffer extends Writer
      */
     private void addSessionVersionCookieIfNecessary() {
 
-        CoyoteRequest req = (CoyoteRequest) coyoteResponse.getRequest();
+        Request req = (Request) coyoteResponse.getRequest();
         if (req.isRequestedSessionIdFromURL()) {
             return;
         }
@@ -694,7 +693,7 @@ public class OutputBuffer extends Writer
      * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
      */
     private void addSessionCookieWithJvmRoute() {
-        CoyoteRequest req = (CoyoteRequest) coyoteResponse.getRequest();
+        Request req = (Request) coyoteResponse.getRequest();
         if (req.isRequestedSessionIdFromURL()) {
             return;
         }

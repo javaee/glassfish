@@ -225,13 +225,13 @@ public final class SecurityClassLoad {
              "InputBuffer$1");
         loader.loadClass
             (basePackage +
-             "CoyoteResponse$1");
+             "Response$1");
         loader.loadClass
             (basePackage +
-             "CoyoteResponse$2");
+             "Response$2");
         loader.loadClass
             (basePackage +
-             "CoyoteResponse$3");
+             "Response$3");
     }
 
 }

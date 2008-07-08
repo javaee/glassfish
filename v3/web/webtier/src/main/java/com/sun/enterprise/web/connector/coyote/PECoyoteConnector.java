@@ -41,10 +41,7 @@ import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
 import org.apache.catalina.connector.CoyoteConnector;
-import org.apache.catalina.connector.CoyoteResponse;
 import org.apache.catalina.connector.Constants;
 import org.apache.catalina.connector.MapperListener;
 
@@ -283,7 +280,7 @@ public class PECoyoteConnector extends CoyoteConnector{
      * specifying the contents of a Request to the responsible ContractProvider.
      */
     @Override
-    public Request createRequest() {
+    public org.apache.catalina.Request createRequest() {
         
         PwcCoyoteRequest request = new PwcCoyoteRequest();
         request.setConnector(this);
@@ -298,7 +295,7 @@ public class PECoyoteConnector extends CoyoteConnector{
      * @return Response object
      */ 
     @Override
-    public Response createResponse() {
+    public org.apache.catalina.Response createResponse() {
 
         PECoyoteResponse response = new PECoyoteResponse(isChunkingDisabled());
         response.setConnector(this);

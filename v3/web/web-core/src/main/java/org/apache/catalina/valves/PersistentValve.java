@@ -77,7 +77,6 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Store;
 import org.apache.catalina.session.PersistentManager;
 import org.apache.catalina.session.ManagerBase;
-import org.apache.catalina.connector.CoyoteRequest;
 
 /**
  * Valve that implements the default basic behavior for the
@@ -228,10 +227,10 @@ public class PersistentValve
         // Read the sessionid after the response.
         // HttpSession hsess = hreq.getSession(false);
         String newsessionId = null;
-        if (request instanceof CoyoteRequest) {
+        if (request instanceof org.apache.catalina.connector.Request) {
             Session sess;
             try {
-                sess = ((CoyoteRequest) request).getSessionInternal();
+                sess = ((org.apache.catalina.connector.Request) request).getSessionInternal();
             } catch (Exception ex) {
                 sess = null;
             }

@@ -45,8 +45,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
-import org.apache.catalina.connector.CoyoteRequest;
-import org.apache.catalina.connector.CoyoteResponse;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.connector.CoyoteConnector;
 import org.apache.catalina.connector.CoyoteInputStream;
 import org.apache.catalina.connector.CoyoteReader;
@@ -67,7 +67,7 @@ import com.sun.enterprise.web.logging.pwc.LogDomains;
  * @author Jeanfrancois Arcand
  * @author Jan Luehe
  */
-public class PwcCoyoteRequest extends CoyoteRequest {
+public class PwcCoyoteRequest extends Request {
 
     private static Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
 
@@ -87,7 +87,7 @@ public class PwcCoyoteRequest extends CoyoteRequest {
         }
         
         super.setContext(ctx);
-        CoyoteResponse response = (CoyoteResponse) getResponse();
+        Response response = (Response) getResponse();
         // Assert response!=null
         if (response != null) {
             String[] cacheControls = ((PwcWebModule) ctx).getCacheControls();

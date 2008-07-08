@@ -83,8 +83,6 @@ import org.apache.catalina.InstanceEvent;
 //START OF 6364900
 import org.apache.catalina.Manager;
 //END OF 6364900
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
 //START OF 6364900
 import org.apache.catalina.Session;
 //END OF 6364900
@@ -99,7 +97,7 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.catalina.connector.CoyoteRequest;
+import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.connector.ResponseFacade;
 
@@ -832,7 +830,7 @@ final class ApplicationDispatcher
                                                                 wrapper,servlet);
 
         // START OF S1AS 4703023
-        CoyoteRequest origRequest = null;
+        Request origRequest = null;
         // END OF S1AS 4703023
 
         // Call the service() method for the allocated servlet instance
@@ -1009,7 +1007,7 @@ final class ApplicationDispatcher
         while (current != null) {
 
             // If we run into the container request we are done
-            if ((current instanceof Request)
+            if ((current instanceof org.apache.catalina.Request)
                 || (current instanceof RequestFacade))
                 break;
 
@@ -1046,7 +1044,7 @@ final class ApplicationDispatcher
         while (current != null) {
 
             // If we run into the container response we are done
-            if ((current instanceof Response)
+            if ((current instanceof org.apache.catalina.Response)
                 || (current instanceof ResponseFacade))
                 break;
 
@@ -1089,7 +1087,7 @@ final class ApplicationDispatcher
                 break;
             if (current instanceof ApplicationRequest)
                 break;
-            if (current instanceof Request)
+            if (current instanceof org.apache.catalina.Request)
                 break;
             previous = current;
             current = ((ServletRequestWrapper) current).getRequest();
@@ -1138,7 +1136,7 @@ final class ApplicationDispatcher
                 break;
             if (current instanceof ApplicationResponse)
                 break;
-            if (current instanceof Response)
+            if (current instanceof org.apache.catalina.Response)
                 break;
             previous = current;
             current = ((ServletResponseWrapper) current).getResponse();
@@ -1170,9 +1168,9 @@ final class ApplicationDispatcher
      *
      * (Doing instanceof in a loop will impact performance)
      */
-    private CoyoteRequest getCoyoteRequest(ServletRequest request) {
+    private Request getCoyoteRequest(ServletRequest request) {
 
-        CoyoteRequest coyoteRequest = null;
+        Request coyoteRequest = null;
         Object current = request;
         while (current != null) {
             // When we run into the original request object, return it

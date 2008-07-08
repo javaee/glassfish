@@ -73,7 +73,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.connector.CoyoteAdapter;
-import org.apache.catalina.connector.CoyoteRequest;
+import org.apache.catalina.connector.Request;
 import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
@@ -484,7 +484,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             } catch (NumberFormatException e) {}
                 
             if (depth > 0) {
-                CoyoteRequest.setMaxDispatchDepth(depth);
+                Request.setMaxDispatchDepth(depth);
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Maximum depth for nested request "
                             + "dispatches set to "

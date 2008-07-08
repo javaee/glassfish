@@ -90,7 +90,6 @@ import org.apache.catalina.Session;
 import org.apache.catalina.util.LifecycleSupport;
 */
 import org.apache.catalina.util.StringManager;
-import org.apache.catalina.connector.CoyoteRequest;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server
@@ -924,8 +923,8 @@ public final class AccessLogValve
                 value = "- - -";
             }
         } else if (pattern == 'S') {
-            if (request instanceof CoyoteRequest) {
-                Session sess = ((CoyoteRequest) request).getSessionInternal(false);
+            if (request instanceof org.apache.catalina.connector.Request) {
+                Session sess = ((org.apache.catalina.connector.Request) request).getSessionInternal(false);
                 if (sess != null) {
                     value = sess.getIdInternal();
                 } else {

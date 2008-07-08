@@ -56,7 +56,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.SecurityContext;
 
-import org.apache.catalina.connector.CoyoteRequest;
+import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
@@ -113,7 +113,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
     {
         // Need real request object not facade
         
-        CoyoteRequest req = getUnwrappedCoyoteRequest(request);
+        Request req = getUnwrappedCoyoteRequest(request);
         if (req == null) {
             return Boolean.valueOf(false);
         }
@@ -161,8 +161,8 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
     /**
      * Return the unwrapped <code>CoyoteRequest</code> object.
      */
-    private static CoyoteRequest getUnwrappedCoyoteRequest(HttpServletRequest request){        
-        CoyoteRequest req = null;
+    private static Request getUnwrappedCoyoteRequest(HttpServletRequest request){        
+        Request req = null;
         ServletRequest servletRequest = request;
         try{ 
 
@@ -201,7 +201,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
     {
         // Need real request object not facade
         
-        CoyoteRequest req = getUnwrappedCoyoteRequest(request);
+        Request req = getUnwrappedCoyoteRequest(request);
         if (req == null) {
             return Boolean.valueOf(false);
         }
@@ -238,7 +238,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
      * available, or null.
      *
      */
-    private static Session getSession(CoyoteRequest request)
+    private static Session getSession(Request request)
     {
         HttpSession session = request.getSession(false);
 
