@@ -53,6 +53,9 @@ public class ComponentInvocation {
     private ComponentInvocationType invocationType
             = ComponentInvocationType.UN_INITIALIZED;
 
+    private boolean preInvokeDoneStatus;
+
+    private Boolean auth;
 
     // the component instance, type Servlet, Filter or EnterpriseBean
     public Object instance;
@@ -174,4 +177,19 @@ public class ComponentInvocation {
         return resourceHandler;
     }
 
+    public boolean isPreInvokeDone() {
+        return preInvokeDoneStatus;
+    }
+
+    public void setPreInvokeDone(boolean value) {
+        preInvokeDoneStatus = value;
+    }
+
+    public Boolean getAuth() {
+        return auth;
+    }
+
+    public void setAuth(boolean value) {
+        auth = value;
+    }
 }
