@@ -542,19 +542,21 @@ final class ApplicationDispatcher
                                 State state)
         throws IOException, ServletException {
                 
-        Integer disInt = (Integer) request.getAttribute
-            (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR);
-        if (disInt != null) {
-            if (disInt.intValue() != ApplicationFilterFactory.ERROR) {
-                state.outerRequest.setAttribute
-                    (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
-                     servletPath);
-                state.outerRequest.setAttribute
-                    (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-                     Integer.valueOf(ApplicationFilterFactory.FORWARD));
-                invoke(state.outerRequest, response, state);
-            } else {
-                invoke(state.outerRequest, response, state);
+        if (request != null) {
+            Integer disInt = (Integer) request.getAttribute
+                (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR);
+            if (disInt != null) {
+                if (disInt.intValue() != ApplicationFilterFactory.ERROR) {
+                    state.outerRequest.setAttribute
+                        (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
+                        servletPath);
+                    state.outerRequest.setAttribute
+                        (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+                        Integer.valueOf(ApplicationFilterFactory.FORWARD));
+                    invoke(state.outerRequest, response, state);
+                } else {
+                    invoke(state.outerRequest, response, state);
+                }
             }
         }
 
