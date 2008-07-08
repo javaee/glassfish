@@ -51,7 +51,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.Realm;
-import org.apache.catalina.connector.CoyoteRequestFacade;
+import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -215,11 +215,11 @@ public final class J2EEInstanceListener implements InstanceListener {
 			basePrincipal = base.getUserPrincipal();
 		    }
 
-		    else if (base instanceof CoyoteRequestFacade) {
+		    else if (base instanceof RequestFacade) {
 			// try to avoid the getUnWrappedCoyoteRequest call
 			// when we can identify see we have the texact class.
-			if (base.getClass() != CoyoteRequestFacade.class) {
-			    basePrincipal = ((CoyoteRequestFacade)base).
+			if (base.getClass() != RequestFacade.class) {
+			    basePrincipal = ((RequestFacade)base).
 				getUnwrappedCoyoteRequest().getUserPrincipal();
 			}
 		    } else {

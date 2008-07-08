@@ -100,8 +100,8 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.catalina.connector.CoyoteRequest;
-import org.apache.catalina.connector.CoyoteRequestFacade;
-import org.apache.catalina.connector.CoyoteResponseFacade;
+import org.apache.catalina.connector.RequestFacade;
+import org.apache.catalina.connector.ResponseFacade;
 
 /**
  * Standard implementation of <code>RequestDispatcher</code> that allows a
@@ -1008,7 +1008,7 @@ final class ApplicationDispatcher
 
             // If we run into the container request we are done
             if ((current instanceof Request)
-                || (current instanceof CoyoteRequestFacade))
+                || (current instanceof RequestFacade))
                 break;
 
             // Remove the current request if it is our wrapper
@@ -1045,7 +1045,7 @@ final class ApplicationDispatcher
 
             // If we run into the container response we are done
             if ((current instanceof Response)
-                || (current instanceof CoyoteResponseFacade))
+                || (current instanceof ResponseFacade))
                 break;
 
             // Remove the current response if it is our wrapper
@@ -1174,8 +1174,8 @@ final class ApplicationDispatcher
         Object current = request;
         while (current != null) {
             // When we run into the original request object, return it
-            if (current instanceof CoyoteRequestFacade) {
-                coyoteRequest = ((CoyoteRequestFacade)current).getUnwrappedCoyoteRequest();
+            if (current instanceof RequestFacade) {
+                coyoteRequest = ((RequestFacade)current).getUnwrappedCoyoteRequest();
                 break;
             } else if (current instanceof ServletRequestWrapper) {
                 current = ((ServletRequestWrapper) current).getRequest();

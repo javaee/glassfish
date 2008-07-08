@@ -159,49 +159,49 @@ public final class SecurityClassLoad {
         String basePackage = "org.apache.catalina.connector.";
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetAttributePrivilegedAction");
+             "RequestFacade$GetAttributePrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetParameterMapPrivilegedAction");
+             "RequestFacade$GetParameterMapPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetRequestDispatcherPrivilegedAction");
+             "RequestFacade$GetRequestDispatcherPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetParameterPrivilegedAction");
+             "RequestFacade$GetParameterPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetParameterNamesPrivilegedAction");
+             "RequestFacade$GetParameterNamesPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetParameterValuePrivilegedAction");
+             "RequestFacade$GetParameterValuePrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetCharacterEncodingPrivilegedAction");
+             "RequestFacade$GetCharacterEncodingPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetHeadersPrivilegedAction");
+             "RequestFacade$GetHeadersPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetHeaderNamesPrivilegedAction");  
+             "RequestFacade$GetHeaderNamesPrivilegedAction");  
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetCookiesPrivilegedAction");
+             "RequestFacade$GetCookiesPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetLocalePrivilegedAction");
+             "RequestFacade$GetLocalePrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetLocalesPrivilegedAction");
+             "RequestFacade$GetLocalesPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteResponseFacade$SetContentTypePrivilegedAction");
+             "ResponseFacade$SetContentTypePrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteRequestFacade$GetSessionPrivilegedAction");
+             "RequestFacade$GetSessionPrivilegedAction");
         loader.loadClass
             (basePackage +
-             "CoyoteResponseFacade$1");
+             "ResponseFacade$1");
         loader.loadClass
             (basePackage +
              "OutputBuffer$1");

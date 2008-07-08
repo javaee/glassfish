@@ -57,7 +57,7 @@ import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.SecurityContext;
 
 import org.apache.catalina.connector.CoyoteRequest;
-import org.apache.catalina.connector.CoyoteRequestFacade;
+import org.apache.catalina.connector.RequestFacade;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
 
@@ -174,8 +174,8 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
                     ((ServletRequestWrapper)servletRequest).getRequest();
 	    }
 
-	    if (servletRequest instanceof CoyoteRequestFacade) {
-		req = ((CoyoteRequestFacade)servletRequest).getUnwrappedCoyoteRequest();
+	    if (servletRequest instanceof RequestFacade) {
+		req = ((RequestFacade)servletRequest).getUnwrappedCoyoteRequest();
 	    }
 
         } catch (AccessControlException ex){

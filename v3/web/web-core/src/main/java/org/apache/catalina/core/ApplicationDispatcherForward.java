@@ -70,7 +70,7 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ErrorReportValve;
-import org.apache.catalina.connector.CoyoteResponseFacade;
+import org.apache.catalina.connector.ResponseFacade;
 
 /**
  * Class responsible for processing the result of a RD.forward() invocation
@@ -107,7 +107,7 @@ class ApplicationDispatcherForward {
                        Wrapper wrapper)
             throws IOException, ServletException {
 
-        CoyoteResponseFacade responseFacade = getResponseFacade(response);
+        ResponseFacade responseFacade = getResponseFacade(response);
         int statusCode = responseFacade.getStatus();
         Object exception = request.getAttribute(Globals.EXCEPTION_ATTR);
         String errorReportValveClass = 
@@ -165,7 +165,7 @@ class ApplicationDispatcherForward {
      */
     private static boolean status(HttpServletRequest request,
                                   HttpServletResponse response,
-                                  CoyoteResponseFacade responseFacade,
+                                  ResponseFacade responseFacade,
                                   Context context,
                                   Wrapper wrapper,
                                   int statusCode) {
@@ -225,7 +225,7 @@ class ApplicationDispatcherForward {
      */
     private static void custom(HttpServletRequest request,
                                HttpServletResponse response,
-                               CoyoteResponseFacade responseFacade,
+                               ResponseFacade responseFacade,
                                ErrorPage errorPage,
                                Context context) {
         try {
@@ -343,7 +343,7 @@ class ApplicationDispatcherForward {
      */
     private static void serveDefaultErrorPage(HttpServletRequest request,
                                               HttpServletResponse response,
-                                              CoyoteResponseFacade responseFacade,
+                                              ResponseFacade responseFacade,
                                               int statusCode)
             throws IOException, ServletException {
 
@@ -385,18 +385,17 @@ class ApplicationDispatcherForward {
     }
 
     
-    private static CoyoteResponseFacade getResponseFacade(
-            ServletResponse response) {
+    private static ResponseFacade getResponseFacade(ServletResponse response) {
    
         while (response instanceof ServletResponseWrapper) {
             response = ((ServletResponseWrapper) response).getResponse();
         }
 
-        return ((CoyoteResponseFacade) response);
+        return ((ResponseFacade) response);
     }
 
     
-    private static void resetResponse(CoyoteResponseFacade responseFacade) {
+    private static void resetResponse(ResponseFacade responseFacade) {
         responseFacade.setSuspended(false);
         responseFacade.setAppCommitted(false);
     }

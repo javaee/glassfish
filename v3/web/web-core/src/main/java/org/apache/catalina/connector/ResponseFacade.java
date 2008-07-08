@@ -89,7 +89,7 @@ import org.apache.catalina.util.StringManager;
  */
 
 
-public class CoyoteResponseFacade 
+public class ResponseFacade 
     implements HttpServletResponse {
 
     // ----------------------------------------------------------- DoPrivileged
@@ -118,7 +118,7 @@ public class CoyoteResponseFacade
      *
      * @param response The response to be wrapped
      */
-    public CoyoteResponseFacade(CoyoteResponse response) {
+    public ResponseFacade(CoyoteResponse response) {
         this.response = response;
     }
 
