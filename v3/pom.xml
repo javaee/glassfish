@@ -139,7 +139,7 @@
         <stax-api.version>1.0-2</stax-api.version> 
         <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
-    	<glassfish-api.version>10.0.0-rev7</glassfish-api.version>        
+    	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>        
 	
     </properties>
     <modules>
