@@ -53,27 +53,32 @@
  */
 
 
-package org.apache.coyote.tomcat5;
 
-import java.io.BufferedReader;
+
+package org.apache.catalina.connector;
+
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletOutputStream;
 import org.apache.catalina.util.StringManager;
+import com.sun.enterprise.web.io.ByteWriter;
 
 
 /**
- * Coyote implementation of the buffred reader.
+ * Coyote implementation of the servlet writer.
  * 
  * @author Remy Maucherat
+ * @author Kin-man Chung
  */
-public class CoyoteReader
-    extends BufferedReader {
+public class CoyoteWriter
+    extends PrintWriter implements ByteWriter {
 
 
     // -------------------------------------------------------------- Constants
 
 
     private static final char[] LINE_SEP = { '\r', '\n' };
-    private static final int MAX_LINE_LENGTH = 4096;
 
     /**
      * The string manager for this package.
@@ -85,18 +90,18 @@ public class CoyoteReader
     // ----------------------------------------------------- Instance Variables
 
 
-    protected InputBuffer ib;
-
-    protected char[] lineBuffer = null;
+    protected OutputBuffer ob;
+    protected boolean error = false;
 
 
     // ----------------------------------------------------------- Constructors
 
 
-    public CoyoteReader(InputBuffer ib) {
-        super(ib, 1);
-        this.ib = ib;
+    public CoyoteWriter(OutputBuffer ob) {
+        super(ob);
+        this.ob = ob;
     }
+
 
     // --------------------------------------------------------- Public Methods
 
@@ -117,185 +122,272 @@ public class CoyoteReader
      * Clear facade.
      */
     void clear() {
-        ib = null;
+        ob = null;
+    }
+
+    /**
+     * Recycle.
+     */
+    void recycle() {
+        error = false;
     }
 
 
-    // --------------------------------------------------------- Reader Methods
+    // --------------------------------------------------------- Writer Methods
 
 
-    public void close()
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        ib.close();
-    }
-
-
-    public int read()
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return ib.read();
-    }
-
-
-    public int read(char[] cbuf)
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return ib.read(cbuf, 0, cbuf.length);
-    }
-
-
-    public int read(char[] cbuf, int off, int len)
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return ib.read(cbuf, off, len);
-    }
-
-
-    public long skip(long n)
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return ib.skip(n);
-    }
-
-
-    public boolean ready()
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return ib.ready();
-    }
-
-
-    public boolean markSupported() {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        return true;
-    }
-
-
-    public void mark(int readAheadLimit)
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        ib.mark(readAheadLimit);
-    }
-
-
-    public void reset()
-        throws IOException {
-        // Disallow operation if the object has gone out of scope
-        if (ib == null) {
-            throw new IllegalStateException(
-                sm.getString("object.invalidScope"));
-        }
-        ib.reset();
-    }
-
-
-    public String readLine()
-        throws IOException {
+    public void flush() {
 
         // Disallow operation if the object has gone out of scope
-        if (ib == null) {
+        if (ob == null) {
             throw new IllegalStateException(
                 sm.getString("object.invalidScope"));
         }
 
-        if (lineBuffer == null) {
-            lineBuffer = new char[MAX_LINE_LENGTH];
+        if (error)
+            return;
+
+        try {
+            ob.flush();
+        } catch (IOException e) {
+            error = true;
         }
 
-        String result = null;
+    }
 
-        int pos = 0;
-        int end = -1;
-        int skip = -1;
-        StringBuffer aggregator = null;
-        while (end < 0) {
-            mark(MAX_LINE_LENGTH);
-            while ((pos < MAX_LINE_LENGTH) && (end < 0)) {
-                int nRead = read(lineBuffer, pos, MAX_LINE_LENGTH - pos);
-                if (nRead < 0) {
-                    if (pos == 0) {
-                        return null;
-                    }
-                    end = pos;
-                    skip = pos;
-                }
-                for (int i = pos; (i < (pos + nRead)) && (end < 0); i++) {
-                    if (lineBuffer[i] == LINE_SEP[0]) {
-                        end = i;
-                        skip = i + 1;
-                        char nextchar;
-                        if (i == (pos + nRead - 1)) {
-                            nextchar = (char) read();
-                        } else {
-                            nextchar = lineBuffer[i+1];
-                        }
-                        if (nextchar == LINE_SEP[1]) {
-                            skip++;
-                        }
-                    } else if (lineBuffer[i] == LINE_SEP[1]) {
-                        end = i;
-                        skip = i + 1;
-                    }
-                }
-                if (nRead > 0) {
-                    pos += nRead;
-                }
-            }
-            if (end < 0) {
-                if (aggregator == null) {
-                    aggregator = new StringBuffer();
-                }
-                aggregator.append(lineBuffer);
-                pos = 0;
-            } else {
-                reset();
-                skip(skip);
-            }
+
+    public void close() {
+
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
         }
 
-        if (aggregator == null) {
-            result = new String(lineBuffer, 0, end);
+        // We don't close the PrintWriter - super() is not called,
+        // so the stream can be reused. We close ob.
+        try {
+            ob.close();
+        } catch (IOException ex ) {
+            ;
+        }
+        error = false;
+
+    }
+
+
+    public boolean checkError() {
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+        flush();
+        return error;
+    }
+
+
+    public void write(int c) {
+
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+
+        if (error)
+            return;
+
+        try {
+            ob.write(c);
+        } catch (IOException e) {
+            error = true;
+        }
+
+    }
+
+
+    public void write(char buf[], int off, int len) {
+
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+
+        if (error)
+            return;
+
+        try {
+            ob.write(buf, off, len);
+        } catch (IOException e) {
+            error = true;
+        }
+    }
+
+
+    public void write(char buf[]) {
+	write(buf, 0, buf.length);
+    }
+
+
+    public void write(String s, int off, int len) {
+
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+
+        if (error)
+            return;
+
+        try {
+            ob.write(s, off, len);
+        } catch (IOException e) {
+            error = true;
+        }
+
+    }
+
+
+    public void write(String s) {
+        write(s, 0, s.length());
+    }
+
+
+    // --------------------------------------------------- ByteWriter Methods
+
+
+    public void write(byte[] buff, int off, int len, int strlen) {
+
+        // Disallow operation if the object has gone out of scope
+        if (ob == null) {
+            throw new IllegalStateException(
+                sm.getString("object.invalidScope"));
+        }
+
+        if (error)
+            return;
+
+        try {
+            ob.write(buff, off, len);
+        } catch (IOException e) {
+            error = true;
+        }
+    }
+
+
+    // ---------------------------------------------------- PrintWriter Methods
+
+
+    public void print(boolean b) {
+        if (b) {
+            write("true");
         } else {
-            aggregator.append(lineBuffer, 0, end);
-            result = aggregator.toString();
+            write("false");
         }
-
-        return result;
-
     }
 
 
+    public void print(char c) {
+        write(c);
+    }
+
+
+    public void print(int i) {
+        write(String.valueOf(i));
+    }
+
+
+    public void print(long l) {
+        write(String.valueOf(l));
+    }
+
+
+    public void print(float f) {
+        write(String.valueOf(f));
+    }
+
+
+    public void print(double d) {
+        write(String.valueOf(d));
+    }
+
+
+    public void print(char s[]) {
+        write(s);
+    }
+
+
+    public void print(String s) {
+        if (s == null) {
+            s = "null";
+        }
+        write(s);
+    }
+
+
+    public void print(Object obj) {
+        write(String.valueOf(obj));
+    }
+
+
+    public void println() {
+        write(LINE_SEP);
+    }
+
+
+    public void println(boolean b) {
+        print(b);
+        println();
+    }
+
+
+    public void println(char c) {
+        print(c);
+        println();
+    }
+
+
+    public void println(int i) {
+        print(i);
+        println();
+    }
+
+
+    public void println(long l) {
+        print(l);
+        println();
+    }
+
+
+    public void println(float f) {
+        print(f);
+        println();
+    }
+
+
+    public void println(double d) {
+        print(d);
+        println();
+    }
+
+
+    public void println(char c[]) {
+        print(c);
+        println();
+    }
+
+
+    public void println(String s) {
+        print(s);
+        println();
+    }
+
+
+    public void println(Object o) {
+        print(o);
+        println();
+    }
 }

@@ -83,7 +83,7 @@ public class GrizzlyProxy implements NetworkProxy {
     // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
     // WebContainer already supports it.
     static{
-        nvVsMapper.add("org.apache.coyote.tomcat5.CoyoteAdapter");
+        nvVsMapper.add("org.apache.catalina.connector.CoyoteAdapter");
         nvVsMapper.add("com.sun.enterprise.v3.admin.AdminAdapter");
     }
     

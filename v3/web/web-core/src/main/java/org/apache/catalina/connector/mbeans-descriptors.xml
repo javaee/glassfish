@@ -64,7 +64,7 @@
           description="Implementation of a Coyote connector"
                domain="Catalina"
                 group="Connector"
-                 type="org.apache.coyote.tomcat5.CoyoteConnector">
+                 type="org.apache.catalina.connector.CoyoteConnector">
 
     <attribute   name="acceptCount"
           description="The accept count for this Connector"

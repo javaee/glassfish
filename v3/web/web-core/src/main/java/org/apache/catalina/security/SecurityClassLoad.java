@@ -156,7 +156,7 @@ public final class SecurityClassLoad {
     
     private final static void loadCoyotePackage(ClassLoader loader)
         throws Exception {
-        String basePackage = "org.apache.coyote.tomcat5.";
+        String basePackage = "org.apache.catalina.connector.";
         loader.loadClass
             (basePackage +
              "CoyoteRequestFacade$GetAttributePrivilegedAction");

@@ -39,7 +39,7 @@ package com.sun.enterprise.web;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
-import org.apache.coyote.tomcat5.CoyoteAdapter;
+import org.apache.catalina.connector.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;

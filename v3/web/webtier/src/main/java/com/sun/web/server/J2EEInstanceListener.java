@@ -47,13 +47,13 @@ import javax.transaction.Transaction;
 import javax.servlet.ServletRequest; // IASRI 4713234
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.catalina.Realm;
+import org.apache.catalina.Context;
 import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Context;
-import org.apache.jasper.servlet.JspServlet;
+import org.apache.catalina.Realm;
+import org.apache.catalina.connector.CoyoteRequestFacade;
 import org.apache.catalina.servlets.DefaultServlet;
-import org.apache.coyote.tomcat5.CoyoteRequestFacade;
+import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ServerContext;

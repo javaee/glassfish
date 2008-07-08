@@ -45,12 +45,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
-import org.apache.coyote.tomcat5.CoyoteRequest;
-import org.apache.coyote.tomcat5.CoyoteResponse;
-import org.apache.coyote.tomcat5.CoyoteConnector;
-import org.apache.coyote.tomcat5.CoyoteInputStream;
-import org.apache.coyote.tomcat5.CoyoteReader;
-import org.apache.coyote.tomcat5.InputBuffer;
+import org.apache.catalina.connector.CoyoteRequest;
+import org.apache.catalina.connector.CoyoteResponse;
+import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.CoyoteInputStream;
+import org.apache.catalina.connector.CoyoteReader;
+import org.apache.catalina.connector.InputBuffer;
 import com.sun.grizzly.util.http.Parameters;
 // START GlassFish 898
 import com.sun.grizzly.util.http.ServerCookie;

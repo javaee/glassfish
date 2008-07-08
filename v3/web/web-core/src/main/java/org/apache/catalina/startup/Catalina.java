@@ -328,7 +328,7 @@ public class Catalina extends Embedded {
                             "org.apache.catalina.LifecycleListener");
 
         digester.addObjectCreate("Server/Service/Connector",
-                                 "org.apache.coyote.tomcat5.CoyoteConnector",
+                                 "org.apache.catalina.connector.CoyoteConnector",
                                  "className");
         digester.addRule("Server/Service/Connector", 
                          new SetAllPropertiesRule());
@@ -337,7 +337,7 @@ public class Catalina extends Embedded {
                             "org.apache.catalina.Connector");
 
         digester.addObjectCreate("Server/Service/Connector/Factory",
-                                 "org.apache.coyote.tomcat5.CoyoteServerSocketFactory",
+                                 "org.apache.catalina.connector.CoyoteServerSocketFactory",
                                  "className");
         digester.addSetProperties("Server/Service/Connector/Factory");
         digester.addSetNext("Server/Service/Connector/Factory",

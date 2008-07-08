@@ -33,7 +33,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.tomcat5.CoyoteAdapter;
+import org.apache.catalina.connector.CoyoteAdapter;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.jvnet.hk2.annotations.Inject;

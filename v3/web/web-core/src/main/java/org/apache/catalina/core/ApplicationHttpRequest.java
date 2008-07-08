@@ -80,7 +80,7 @@ import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 // START GlassFish 896
-import org.apache.coyote.tomcat5.SessionTracker;
+import org.apache.catalina.connector.SessionTracker;
 // END GlassFish 896
 
 /**

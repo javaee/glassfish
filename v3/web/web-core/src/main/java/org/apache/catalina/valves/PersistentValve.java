@@ -77,7 +77,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Store;
 import org.apache.catalina.session.PersistentManager;
 import org.apache.catalina.session.ManagerBase;
-import org.apache.coyote.tomcat5.CoyoteRequest;
+import org.apache.catalina.connector.CoyoteRequest;
 
 /**
  * Valve that implements the default basic behavior for the

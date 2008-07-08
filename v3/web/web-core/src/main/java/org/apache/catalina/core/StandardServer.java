@@ -212,7 +212,7 @@ public final class StandardServer
     private static String standardImplementations[] = {
         "org.apache.catalina.core.StandardServer",
         "org.apache.catalina.core.StandardService",
-        "org.apache.coyote.tomcat5.CoyoteConnector",
+        "org.apache.catalina.connector.CoyoteConnector",
         "org.apache.catalina.core.StandardEngine",
         "org.apache.catalina.core.StandardHost",
         "org.apache.catalina.core.StandardContext"

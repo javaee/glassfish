@@ -66,7 +66,7 @@ import javax.management.RuntimeOperationsException;
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
 import com.sun.grizzly.tcp.ProtocolHandler;
-import org.apache.coyote.tomcat5.CoyoteConnector;
+import org.apache.catalina.connector.CoyoteConnector;
 import org.apache.tomcat.util.IntrospectionUtils;
 
 

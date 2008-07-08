@@ -99,7 +99,7 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.commons.modeler.BaseModelMBean;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
-import org.apache.coyote.tomcat5.CoyoteConnector;
+import org.apache.catalina.connector.CoyoteConnector;
 
 
 /**
@@ -309,7 +309,7 @@ public class MBeanFactory extends BaseModelMBean {
         try {
             // Create a new CoyoteConnector instance for AJP
             // use reflection to avoid j-t-c compile-time circular dependencies
-            Class cls = Class.forName("org.apache.coyote.tomcat5.CoyoteConnector");
+            Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
             Class partypes1 [] = new Class[1];
@@ -433,7 +433,7 @@ public class MBeanFactory extends BaseModelMBean {
         try {
             // Create a new CoyoteConnector instance
             // use reflection to avoid j-t-c compile-time circular dependencies
-            Class cls = Class.forName("org.apache.coyote.tomcat5.CoyoteConnector");
+            Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
             Class partypes1 [] = new Class[1];
@@ -486,7 +486,7 @@ public class MBeanFactory extends BaseModelMBean {
         Object retobj = null;
         // Create a new CoyoteConnector instance
         // use reflection to avoid j-t-c compile-time circular dependencies
-        Class cls = Class.forName("org.apache.coyote.tomcat5.CoyoteConnector");
+        Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
         try {
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
@@ -525,7 +525,7 @@ public class MBeanFactory extends BaseModelMBean {
             Class serverSocketFactoryCls =
                 Class.forName("org.apache.catalina.net.ServerSocketFactory");
             Class coyoteServerSocketFactoryCls =
-                Class.forName("org.apache.coyote.tomcat5.CoyoteServerSocketFactory");
+                Class.forName("org.apache.catalina.connector.CoyoteServerSocketFactory");
             Constructor factoryConst =
                      coyoteServerSocketFactoryCls.getConstructor((Class[])null);
             Object factoryObj = factoryConst.newInstance((Object[])null);

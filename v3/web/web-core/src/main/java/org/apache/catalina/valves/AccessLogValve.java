@@ -90,7 +90,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.util.LifecycleSupport;
 */
 import org.apache.catalina.util.StringManager;
-import org.apache.coyote.tomcat5.CoyoteRequest;
+import org.apache.catalina.connector.CoyoteRequest;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server

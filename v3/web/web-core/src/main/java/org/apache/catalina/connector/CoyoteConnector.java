@@ -53,7 +53,7 @@
  */
 
 
-package org.apache.coyote.tomcat5;
+package org.apache.catalina.connector;
 
 import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
@@ -78,7 +78,6 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
-import org.apache.coyote.tomcat5.CoyoteAdapter;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
@@ -123,7 +122,7 @@ public class CoyoteConnector
      * Defaults to the CoyoteAdapter.
      */
     private String defaultClassName =
-        "org.apache.coyote.tomcat5.CoyoteAdapter";
+        "org.apache.catalina.connector.CoyoteAdapter";
     // END SJSAS 6363251
 
     
@@ -209,7 +208,7 @@ public class CoyoteConnector
      * Descriptive information about this Connector implementation.
      */
     private static final String info =
-        "org.apache.coyote.tomcat5.CoyoteConnector/2.0";
+        "org.apache.catalina.connector.CoyoteConnector/2.0";
 
 
     /**

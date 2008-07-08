@@ -24,7 +24,7 @@
 package com.sun.enterprise.web.tomcat;
 
 import org.apache.catalina.LifecycleException;
-import org.apache.coyote.tomcat5.CoyoteConnector;
+import org.apache.catalina.connector.CoyoteConnector;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly

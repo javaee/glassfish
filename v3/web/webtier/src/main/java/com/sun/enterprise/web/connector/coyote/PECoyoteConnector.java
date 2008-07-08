@@ -43,10 +43,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.coyote.tomcat5.CoyoteConnector;
-import org.apache.coyote.tomcat5.CoyoteResponse;
-import org.apache.coyote.tomcat5.Constants;
-import org.apache.coyote.tomcat5.MapperListener;
+import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.CoyoteResponse;
+import org.apache.catalina.connector.Constants;
+import org.apache.catalina.connector.MapperListener;
 
 import org.apache.catalina.LifecycleException;
 

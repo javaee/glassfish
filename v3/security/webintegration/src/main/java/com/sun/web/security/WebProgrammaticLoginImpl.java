@@ -56,8 +56,8 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.SecurityContext;
 
-import org.apache.coyote.tomcat5.CoyoteRequest;
-import org.apache.coyote.tomcat5.CoyoteRequestFacade;
+import org.apache.catalina.connector.CoyoteRequest;
+import org.apache.catalina.connector.CoyoteRequestFacade;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
 

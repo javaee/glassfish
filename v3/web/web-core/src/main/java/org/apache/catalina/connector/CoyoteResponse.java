@@ -55,7 +55,7 @@
 
 
 
-package org.apache.coyote.tomcat5;
+package org.apache.catalina.connector;
 
 
 import java.io.IOException;
@@ -159,7 +159,7 @@ public class CoyoteResponse
      * Descriptive information about this Response implementation.
      */
     protected static final String info =
-        "org.apache.coyote.tomcat5.CoyoteResponse/1.0";
+        "org.apache.catalina.connector.CoyoteResponse/1.0";
 
 
     /**

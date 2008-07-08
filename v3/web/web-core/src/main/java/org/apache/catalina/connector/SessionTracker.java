@@ -51,7 +51,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coyote.tomcat5;
+package org.apache.catalina.connector;
 
 import java.util.ArrayList;
 import org.apache.catalina.Session;

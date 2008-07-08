@@ -67,7 +67,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.coyote.tomcat5.CoyoteRequest;
+import org.apache.catalina.connector.CoyoteRequest;
 import org.apache.coyote.Constants;
 
 /**

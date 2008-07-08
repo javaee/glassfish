@@ -70,7 +70,7 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ErrorReportValve;
-import org.apache.coyote.tomcat5.CoyoteResponseFacade;
+import org.apache.catalina.connector.CoyoteResponseFacade;
 
 /**
  * Class responsible for processing the result of a RD.forward() invocation
