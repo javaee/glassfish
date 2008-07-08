@@ -66,7 +66,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Request;
-import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.StringManager;
 

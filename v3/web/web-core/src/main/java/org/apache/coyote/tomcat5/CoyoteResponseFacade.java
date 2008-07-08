@@ -75,7 +75,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Globals;
-import org.apache.catalina.connector.ResponseFacade;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.StringManager;
 
@@ -91,7 +90,6 @@ import org.apache.catalina.util.StringManager;
 
 
 public class CoyoteResponseFacade 
-    extends ResponseFacade
     implements HttpServletResponse {
 
     // ----------------------------------------------------------- DoPrivileged
@@ -121,10 +119,7 @@ public class CoyoteResponseFacade
      * @param response The response to be wrapped
      */
     public CoyoteResponseFacade(CoyoteResponse response) {
-
-        super(response);
         this.response = response;
-
     }
 
 
@@ -148,10 +143,9 @@ public class CoyoteResponseFacade
 
     
     /**
-    * Prevent cloning the facade.
-    */
-    protected Object clone()
-        throws CloneNotSupportedException {
+     * Prevent cloning the facade.
+     */
+    protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
       
@@ -166,6 +160,7 @@ public class CoyoteResponseFacade
 
     public void finish() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -178,13 +173,13 @@ public class CoyoteResponseFacade
 
     public boolean isFinished() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
         }
 
         return response.isSuspended();
-
     }
 
 
@@ -193,6 +188,7 @@ public class CoyoteResponseFacade
 
     public String getCharacterEncoding() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -202,8 +198,13 @@ public class CoyoteResponseFacade
     }
 
 
-    public ServletOutputStream getOutputStream()
-        throws IOException {
+    public ServletOutputStream getOutputStream() throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         //        if (isFinished())
         //            throw new IllegalStateException
@@ -213,12 +214,16 @@ public class CoyoteResponseFacade
         if (isFinished())
             response.setSuspended(true);
         return (sos);
-
     }
 
 
-    public PrintWriter getWriter()
-        throws IOException {
+    public PrintWriter getWriter() throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         //        if (isFinished())
         //            throw new IllegalStateException
@@ -228,21 +233,31 @@ public class CoyoteResponseFacade
         if (isFinished())
             response.setSuspended(true);
         return (writer);
-
     }
 
 
     public void setContentLength(int len) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.setContentLength(len);
-
     }
 
 
     public void setContentType(String type) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             return;
@@ -257,17 +272,23 @@ public class CoyoteResponseFacade
 
     public void setBufferSize(int size) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             throw new IllegalStateException
                 (/*sm.getString("responseBase.reset.ise")*/);
 
         response.setBufferSize(size);
-
     }
 
 
     public int getBufferSize() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -277,8 +298,13 @@ public class CoyoteResponseFacade
     }
 
 
-    public void flushBuffer()
-        throws IOException {
+    public void flushBuffer() throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isFinished())
             //            throw new IllegalStateException
@@ -307,23 +333,28 @@ public class CoyoteResponseFacade
 
             response.flushBuffer();            
         }
-
     }
 
 
     public void resetBuffer() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             throw new IllegalStateException
                 (/*sm.getString("responseBase.reset.ise")*/);
 
         response.resetBuffer();
-
     }
 
 
     public boolean isCommitted() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -335,16 +366,27 @@ public class CoyoteResponseFacade
 
     public void reset() {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             throw new IllegalStateException
                 (/*sm.getString("responseBase.reset.ise")*/);
 
         response.reset();
-
     }
 
 
     public void setLocale(Locale loc) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             return;
@@ -355,6 +397,7 @@ public class CoyoteResponseFacade
 
     public Locale getLocale() {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -366,16 +409,22 @@ public class CoyoteResponseFacade
 
     public void addCookie(Cookie cookie) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.addCookie(cookie);
-
     }
 
 
     public boolean containsHeader(String name) {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -387,6 +436,7 @@ public class CoyoteResponseFacade
 
     public String encodeURL(String url) {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -398,6 +448,7 @@ public class CoyoteResponseFacade
 
     public String encodeRedirectURL(String url) {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -409,6 +460,7 @@ public class CoyoteResponseFacade
 
     public String encodeUrl(String url) {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -420,6 +472,7 @@ public class CoyoteResponseFacade
 
     public String encodeRedirectUrl(String url) {
 
+        // Disallow operation if the object has gone out of scope
         if (response == null) {
             throw new IllegalStateException(
                             sm.getString("responseFacade.nullResponse"));
@@ -429,8 +482,13 @@ public class CoyoteResponseFacade
     }
 
 
-    public void sendError(int sc, String msg)
-        throws IOException {
+    public void sendError(int sc, String msg) throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             throw new IllegalStateException
@@ -439,12 +497,16 @@ public class CoyoteResponseFacade
         response.setAppCommitted(true);
 
         response.sendError(sc, msg);
-
     }
 
 
-    public void sendError(int sc)
-        throws IOException {
+    public void sendError(int sc) throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             throw new IllegalStateException
@@ -453,12 +515,16 @@ public class CoyoteResponseFacade
         response.setAppCommitted(true);
 
         response.sendError(sc);
-
     }
 
 
-    public void sendRedirect(String location)
-        throws IOException {
+    public void sendRedirect(String location) throws IOException {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             throw new IllegalStateException
@@ -467,112 +533,222 @@ public class CoyoteResponseFacade
         response.setAppCommitted(true);
 
         response.sendRedirect(location);
-
     }
 
 
     public void setDateHeader(String name, long date) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.setDateHeader(name, date);
-
     }
 
 
     public void addDateHeader(String name, long date) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.addDateHeader(name, date);
-
     }
 
 
     public void setHeader(String name, String value) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.setHeader(name, value);
-
     }
 
 
     public void addHeader(String name, String value) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.addHeader(name, value);
-
     }
 
 
     public void setIntHeader(String name, int value) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.setIntHeader(name, value);
-
     }
 
 
     public void addIntHeader(String name, int value) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.addIntHeader(name, value);
-
     }
 
 
     public void setStatus(int sc) {
 
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         if (isCommitted())
             return;
 
         response.setStatus(sc);
-
     }
 
 
-    public void setStatus(int sc, String sm) {
+    public void setStatus(int sc, String msg) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
 
         if (isCommitted())
             return;
 
-        response.setStatus(sc, sm);
+        response.setStatus(sc, msg);
+    }
 
+
+    public String getContentType() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
+        return response.getContentType();
+    }
+
+
+    public void setCharacterEncoding(String arg0) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
+        response.setCharacterEncoding(arg0);
     }
 
 
     // START SJSAS 6374990
     public int getStatus() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         return response.getStatus();
     }
 
+
     public String getMessage() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         return response.getMessage();
     }
 
+
     public void setSuspended(boolean suspended) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         response.setSuspended(suspended);
     }
 
+
     public void setAppCommitted(boolean appCommitted) {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         response.setAppCommitted(appCommitted);
     }
 
+
     public int getContentCount() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         return response.getContentCount();
     }
 
+
     public boolean isError() {
+
+        // Disallow operation if the object has gone out of scope
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+
         return response.isError();
     }
     // END SJSAS 6374990
