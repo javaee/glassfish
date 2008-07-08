@@ -293,7 +293,7 @@ public class WebappLoader
      * Return the Java class loader to be used by this Container.
      */
     public ClassLoader getClassLoader() {
-        return ((ClassLoader) classLoader);
+        return classLoader;
     }
 
 

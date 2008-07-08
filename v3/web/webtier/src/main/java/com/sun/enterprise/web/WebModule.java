@@ -81,7 +81,6 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.web.loader.WebappClassLoader;
 
 /**
  * Class representing a web module for use by the Application Server.
@@ -844,9 +843,7 @@ public class WebModule extends PwcWebModule {
 
     private Object loadInstance(String className){
         try{
-            WebappClassLoader loader = (WebappClassLoader)
-                                                getLoader().getClassLoader();
-            Class clazz = loader.loadClass(className);
+            Class clazz = getLoader().getClassLoader().loadClass(className);
             return clazz.newInstance();
         } catch (Throwable ex){
             String msg = _rb.getString("webcontainer.unableToLoadExtension");
