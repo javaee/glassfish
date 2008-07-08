@@ -360,6 +360,7 @@ public class PwcCoyoteRequest extends CoyoteRequest {
 
 
     // START GlassFish 898
+    @Override
     protected Cookie makeCookie(ServerCookie scookie) {
 
         PwcWebModule wm = (PwcWebModule) getContext();
