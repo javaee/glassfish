@@ -72,6 +72,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -143,6 +145,8 @@ public class StandardSession
         if (manager instanceof ManagerBase)
             this.debug = ((ManagerBase) manager).getDebug();
 
+        accessCount = new AtomicInteger();
+
     }
 
 
@@ -174,7 +178,7 @@ public class StandardSession
     /**
      * The collection of user data attributes associated with this Session.
      */
-    protected Map attributes = new Hashtable();    
+    protected Map attributes = new ConcurrentHashMap();    
 
 
     /**
@@ -330,7 +334,7 @@ public class StandardSession
     /**
      * The access count for this session.
      */
-    protected transient int accessCount = 0;
+    protected transient AtomicInteger accessCount = null;
 
 
     /**
@@ -644,7 +648,7 @@ public class StandardSession
             return false;
         }
 
-        if (accessCount > 0) {
+        if (accessCount.get() > 0) {
             return true;
         }
 
@@ -703,7 +707,7 @@ public class StandardSession
 
 	evaluateIfValid();
 
-        accessCount++;
+        accessCount.incrementAndGet();
     }
 
 
@@ -713,7 +717,7 @@ public class StandardSession
     public void endAccess() {
 
         isNew = false;
-        accessCount--;       
+        accessCount.decrementAndGet();       
 
     }
 
@@ -807,7 +811,7 @@ public class StandardSession
                     }
                 }
             }
-            accessCount = 0;
+            accessCount.set(0);
             setValid(false);
 
             /*
@@ -887,6 +891,9 @@ public class StandardSession
      */
     public void activate() {
 
+        // Initialize access count
+        accessCount = new AtomicInteger();
+
         // Notify ActivationListeners
         HttpSessionEvent event = null;
         String keys[] = keys();
@@ -937,7 +944,7 @@ public class StandardSession
         id = null;
         lastAccessedTime = 0L;
         maxInactiveInterval = -1;
-        accessCount = 0;
+        accessCount = null;
         notes.clear();
         setPrincipal(null);
         isNew = false;
@@ -1186,6 +1193,8 @@ public class StandardSession
         if (!isValid())
             throw new IllegalStateException
                 (sm.getString("standardSession.getAttribute.ise"));
+
+        if (name == null) return null;
 
         return (attributes.get(name));
     }
@@ -1512,11 +1521,7 @@ public class StandardSession
     public void removeAttribute(String name, boolean notify, 
                                 boolean checkValid) {
 
-        // Name must not be null
-        if (name == null) {
-            throw new IllegalArgumentException
-                (sm.getString("standardSession.removeAttribute.namenull"));
-        }
+        if (name == null) return;
 
         // Validate our current state
         if (!isValid() && checkValid)
@@ -1827,7 +1832,7 @@ public class StandardSession
 
         // Deserialize the attribute count and attribute values
         if (attributes == null)
-            attributes = new Hashtable();
+            attributes = new ConcurrentHashMap();
         /* PWC 6444754
         int n = ((Integer) stream.readObject()).intValue();
         */
@@ -1924,7 +1929,9 @@ public class StandardSession
                 saveNames.add(keys[i]);
                 saveValues.add(value);
             //end HERCULES:mod             
-            } 
+            } else {
+                removeAttribute(keys[i], true, true);
+            }
         }
 
         // Serialize the attribute count and the Serializable attributes
