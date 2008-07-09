@@ -292,7 +292,7 @@ public final class CGIServlet extends HttpServlet {
      *    (or webAppRootDir alone if cgiPathPrefix is
      *    null)
      */
-    private String cgiPathPrefix = null;
+    private String cgiPathPrefix = "WEB-INF/cgi";
 
     /** the executable to use with the script */
     private String cgiExecutable = "perl";
@@ -342,7 +342,9 @@ public final class CGIServlet extends HttpServlet {
         String value = null;
         if (getServletConfig().getInitParameter("debug") != null)
             debug = Integer.parseInt(getServletConfig().getInitParameter("debug"));
-        cgiPathPrefix = getServletConfig().getInitParameter("cgiPathPrefix");
+        if (getServletConfig().getInitParameter("cgiPathPrefix") != null) {
+            cgiPathPrefix = getServletConfig().getInitParameter("cgiPathPrefix");
+        }
         boolean passShellEnvironment =
             Boolean.valueOf(getServletConfig().getInitParameter("passShellEnvironment")).booleanValue();
 
