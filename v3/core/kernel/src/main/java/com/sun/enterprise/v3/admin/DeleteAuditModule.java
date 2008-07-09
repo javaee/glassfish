@@ -100,7 +100,7 @@ public class DeleteAuditModule implements AdminCommand {
             if (auditModule == null) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.audit.module.notfound", 
-                    "Audit Module named {0} not found", auditModuleName));
+                    "Specified Audit Module {0} not found", auditModuleName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
