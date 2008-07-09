@@ -498,7 +498,7 @@ public class Embedded  extends StandardService implements Lifecycle {
         try {
 
             Class clazz = 
-                Class.forName("org.apache.catalina.connector.CoyoteConnector");
+                Class.forName("org.apache.catalina.connector.Connector");
             connector = (Connector) clazz.newInstance();
 
             if (address != null) {

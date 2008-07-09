@@ -79,7 +79,6 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
 
-import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
@@ -107,10 +106,10 @@ import com.sun.appserv.security.provider.ProxyHandler;
  */
 
 
-public class CoyoteConnector
-    implements Connector, Lifecycle, MBeanRegistration
+public class Connector
+    implements org.apache.catalina.Connector, Lifecycle, MBeanRegistration
 {
-    protected static final Logger log = Logger.getLogger(CoyoteConnector.class.getName());
+    protected static final Logger log = Logger.getLogger(Connector.class.getName());
 
     // ---------------------------------------------- Adapter Configuration --//
     
@@ -206,7 +205,7 @@ public class CoyoteConnector
      * Descriptive information about this Connector implementation.
      */
     private static final String info =
-        "org.apache.catalina.connector.CoyoteConnector/2.0";
+        "org.apache.catalina.connector.Connector/2.0";
 
 
     /**
@@ -1397,7 +1396,7 @@ public class CoyoteConnector
     private void log(String message) {
 
         org.apache.catalina.Logger logger = container.getLogger();
-        String localName = "CoyoteConnector";
+        String localName = "Connector";
         if (logger != null)
             logger.log(localName + " " + message);
         else
@@ -1415,7 +1414,7 @@ public class CoyoteConnector
     private void log(String message, Throwable throwable) {
 
         org.apache.catalina.Logger logger = container.getLogger();
-        String localName = "CoyoteConnector";
+        String localName = "Connector";
         if (logger != null)
             logger.log(localName + " " + message, throwable);
         else {
@@ -1508,7 +1507,7 @@ public class CoyoteConnector
             try {
                 Class clazz = Class.forName(defaultClassName);
                 Constructor constructor = 
-                        clazz.getConstructor(new Class[]{CoyoteConnector.class});
+                        clazz.getConstructor(new Class[]{Connector.class});
                 adapter = 
                         (Adapter)constructor.newInstance(new Object[]{this});
             } catch (Exception e) {

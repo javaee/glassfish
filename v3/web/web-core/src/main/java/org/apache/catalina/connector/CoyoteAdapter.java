@@ -138,7 +138,7 @@ public class CoyoteAdapter
      * @param connector CoyoteConnector that owns this processor
      * @param id Identifier of this CoyoteProcessor (unique per connector)
      */
-    public CoyoteAdapter(CoyoteConnector connector) {
+    public CoyoteAdapter(Connector connector) {
 
         super();
         this.connector = connector;
@@ -155,7 +155,7 @@ public class CoyoteAdapter
     /**
      * The CoyoteConnector with which this processor is associated.
      */
-    private CoyoteConnector connector = null;
+    private Connector connector = null;
 
 
     /**

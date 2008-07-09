@@ -24,7 +24,7 @@
 package com.sun.enterprise.web.tomcat;
 
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.Connector;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly
@@ -39,7 +39,7 @@ import org.apache.catalina.connector.CoyoteConnector;
  *
  * @author jluehe
  */ 
-public class TomcatConnector extends CoyoteConnector {
+public class TomcatConnector extends Connector {
 
     public void start() throws LifecycleException {
     

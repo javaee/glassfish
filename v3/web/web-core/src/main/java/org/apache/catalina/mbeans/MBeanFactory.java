@@ -66,7 +66,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.RuntimeOperationsException;
 
-import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.DefaultContext;
 import org.apache.catalina.Engine;
@@ -99,7 +98,7 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.commons.modeler.BaseModelMBean;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
-import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.Connector;
 
 
 /**
@@ -309,7 +308,7 @@ public class MBeanFactory extends BaseModelMBean {
         try {
             // Create a new CoyoteConnector instance for AJP
             // use reflection to avoid j-t-c compile-time circular dependencies
-            Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
+            Class cls = Class.forName("org.apache.catalina.connector.Connector");
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
             Class partypes1 [] = new Class[1];
@@ -340,13 +339,13 @@ public class MBeanFactory extends BaseModelMBean {
             // Add the new instance to its parent component
             ObjectName pname = new ObjectName(parent);
             Service service = getService(pname);
-            service.addConnector((Connector)retobj);
+            service.addConnector((org.apache.catalina.Connector)retobj);
             Method getObjectName = cls.getMethod("getObjectName", (Class[])null);
             
             // Return the corresponding MBean name
             //ObjectName coname = (ObjectName)getObjectName.invoke(retobj, null);
             ObjectName coname = 
-                MBeanUtils.createObjectName(pname.getDomain(), (Connector)retobj);
+                MBeanUtils.createObjectName(pname.getDomain(), (org.apache.catalina.Connector)retobj);
             return (coname.toString());
         
         } catch (Exception e) {
@@ -433,7 +432,7 @@ public class MBeanFactory extends BaseModelMBean {
         try {
             // Create a new CoyoteConnector instance
             // use reflection to avoid j-t-c compile-time circular dependencies
-            Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
+            Class cls = Class.forName("org.apache.catalina.connector.Connector");
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
             Class partypes1 [] = new Class[1];
@@ -456,7 +455,7 @@ public class MBeanFactory extends BaseModelMBean {
             // Add the new instance to its parent component
             ObjectName pname = new ObjectName(parent);
             Service service = getService(pname);
-            service.addConnector((Connector)retobj);
+            service.addConnector((org.apache.catalina.Connector)retobj);
             Method getObjectName = cls.getMethod("getObjectName",(Class[])null);
             
             // Return the corresponding MBean name
@@ -486,7 +485,7 @@ public class MBeanFactory extends BaseModelMBean {
         Object retobj = null;
         // Create a new CoyoteConnector instance
         // use reflection to avoid j-t-c compile-time circular dependencies
-        Class cls = Class.forName("org.apache.catalina.connector.CoyoteConnector");
+        Class cls = Class.forName("org.apache.catalina.connector.Connector");
         try {
             Constructor ct = cls.getConstructor((Class[])null);
             retobj = ct.newInstance((Object[])null);
@@ -543,13 +542,13 @@ public class MBeanFactory extends BaseModelMBean {
             // Add the new instance to its parent component
             ObjectName pname = new ObjectName(parent);
             Service service = getService(pname);
-            service.addConnector((Connector)retobj);
+            service.addConnector((org.apache.catalina.Connector)retobj);
             Method getObjectName = cls.getMethod("getObjectName",(Class[])null);
             
             // Return the corresponding MBean name
             //ObjectName coname = (ObjectName)getObjectName.invoke(retobj, null);
             ObjectName coname = 
-                MBeanUtils.createObjectName(pname.getDomain(), (Connector)retobj);
+                MBeanUtils.createObjectName(pname.getDomain(), (org.apache.catalina.Connector)retobj);
             return (coname.toString());
         } catch (Exception e) {
             // FIXME
@@ -1050,7 +1049,8 @@ public class MBeanFactory extends BaseModelMBean {
         String port = oname.getKeyProperty("port");
         //String address = oname.getKeyProperty("address");
 
-        Connector conns[] = (Connector[]) service.findConnectors();
+        org.apache.catalina.Connector conns[] =
+            (org.apache.catalina.Connector[]) service.findConnectors();
 
         for (int i = 0; i < conns.length; i++) {
             Class cls = conns[i].getClass();
@@ -1069,14 +1069,14 @@ public class MBeanFactory extends BaseModelMBean {
             // if (((address.equals("null")) &&
             if ((connAddress==null) && port.equals(connPort)) {
                 service.removeConnector(conns[i]);
-                ((CoyoteConnector)conns[i]).destroy();
+                ((Connector)conns[i]).destroy();
                 break;
             }
             // } else if (address.equals(connAddress))
             if (port.equals(connPort)) {
                 // Remove this component from its parent component
                 service.removeConnector(conns[i]);
-                ((CoyoteConnector)conns[i]).destroy();
+                ((Connector)conns[i]).destroy();
                 break;
             }
         }

@@ -47,7 +47,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.CoyoteInputStream;
 import org.apache.catalina.connector.CoyoteReader;
 import org.apache.catalina.connector.InputBuffer;
@@ -277,7 +277,7 @@ public class PwcCoyoteRequest extends Request {
         if (len <= 0) {
             return null;
         }
-        int maxPostSize = ((CoyoteConnector) connector).getMaxPostSize();
+        int maxPostSize = ((Connector) connector).getMaxPostSize();
         if ((maxPostSize > 0) && (len > maxPostSize)) {
             logger.log(Level.WARNING, "peCoyoteRequest.postTooLarge");
             throw new IllegalStateException("Post too large");

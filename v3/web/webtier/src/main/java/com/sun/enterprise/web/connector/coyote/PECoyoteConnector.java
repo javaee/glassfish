@@ -41,13 +41,13 @@ import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.catalina.connector.CoyoteConnector;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.Constants;
 import org.apache.catalina.connector.MapperListener;
 
 import org.apache.catalina.LifecycleException;
 
-public class PECoyoteConnector extends CoyoteConnector{
+public class PECoyoteConnector extends Connector{
 
 
     private static final String DUMMY_CONNECTOR_LAUNCHER = 

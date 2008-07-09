@@ -112,7 +112,6 @@ import com.sun.grizzly.util.http.mapper.MappingData;
 
 import com.sun.grizzly.tcp.ActionCode;
 
-import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
@@ -638,12 +637,12 @@ public class Request
     /**
      * Associated Catalina connector.
      */
-    protected Connector connector;
+    protected org.apache.catalina.Connector connector;
 
     /**
      * Return the Connector through which this Request was received.
      */
-    public Connector getConnector() {
+    public org.apache.catalina.Connector getConnector() {
         return (this.connector);
     }
 
@@ -652,7 +651,7 @@ public class Request
      *
      * @param connector The new connector
      */
-    public void setConnector(Connector connector) {
+    public void setConnector(org.apache.catalina.Connector connector) {
         this.connector = connector;
     }
 
@@ -3011,7 +3010,7 @@ public class Request
         int len = getContentLength();
 
         if (len > 0) {
-            int maxPostSize = ((CoyoteConnector) connector).getMaxPostSize();
+            int maxPostSize = ((Connector) connector).getMaxPostSize();
             if ((maxPostSize > 0) && (len > maxPostSize)) {
                 log(sm.getString("coyoteRequest.postTooLarge"));
                 throw new IllegalStateException("Post too large");
