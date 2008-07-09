@@ -50,7 +50,7 @@
  * @author byron.nevins@sun.com
  */
 
-package org.glassfish.web;
+package org.glassfish.web.jsp;
   
 import java.io.*;
 import java.util.*;

@@ -44,7 +44,7 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.web.JSPCompiler;
+import org.glassfish.web.jsp.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
 
 import java.util.*;
