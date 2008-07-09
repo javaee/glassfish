@@ -85,6 +85,11 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     private static final String BASIC = "Basic ";
     private static final String UPLOAD_DIR_PREFIX = "upl-";
 
+    private static final String QUERY_STRING_INTRODUCER = "?";
+    private static final String QUERY_STRING_SEPARATOR = "&";
+    private static final String QUERY_STRING_OPTION_DELIMITERS = 
+            QUERY_STRING_INTRODUCER + QUERY_STRING_SEPARATOR;
+
     @Inject
     ModulesRegistry modulesRegistry;
 
@@ -291,7 +296,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     Properties extractParameters(final String requestString) {
         // extract parameters...
         final Properties parameters = new Properties();
-        StringTokenizer stoken = new StringTokenizer(requestString == null ? "" : requestString, "?");
+        StringTokenizer stoken = new StringTokenizer(requestString == null ? "" : requestString, QUERY_STRING_OPTION_DELIMITERS);
         while (stoken.hasMoreTokens()) {
             String token = stoken.nextToken();            
             if (token.indexOf("=") == -1) 

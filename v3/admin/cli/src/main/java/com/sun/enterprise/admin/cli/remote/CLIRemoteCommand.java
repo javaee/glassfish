@@ -85,8 +85,7 @@ public class CLIRemoteCommand {
      */
     public void runCommand() throws CommandException {
         try {
-            String uriString;
-            uriString = "/__asadmin/" + commandName;
+            StringBuilder uriString = new StringBuilder(ADMIN_URI_PATH + commandName);
 
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
@@ -96,8 +95,7 @@ public class CLIRemoteCommand {
                 try {
                     String paramValue = param.getValue();
                     // let's check if I am passing a valid path...
-                    uriString = uriString + "?" + paramName + "=" + URLEncoder.encode(paramValue,
-                            "UTF-8");
+                    addOption(uriString, paramName + "=" + URLEncoder.encode(paramValue, "UTF-8"));
                 }
                 catch (UnsupportedEncodingException e) {
                     logger.printError("Error encoding " + paramName + ", parameter value will be ignored");
@@ -105,38 +103,21 @@ public class CLIRemoteCommand {
             }
 
             // add deployment path
-            if(fileParameter != null) {
-                uriString += "?path=";
-                // if we are about to upload it -- give just the name
-                // o/w give the full path
-                if(doUpload)
-                    uriString += URLEncoder.encode(fileParameter.getName(), "UTF-8");
-                else
-                    uriString += URLEncoder.encode(fileParameter.getPath(), "UTF-8");
-            }
-
+            addFileOption(uriString, "path", doUpload, fileParameter);
             // add deployment plan
-            if(deploymentPlanParameter != null) {
-                uriString += "?deploymentplan=";
-                // if we are about to upload it -- give just the name
-                // o/w give the full path
-                if(doUpload)
-                    uriString += URLEncoder.encode(deploymentPlanParameter.getName(), "UTF-8");
-                else
-                    uriString += URLEncoder.encode(deploymentPlanParameter.getPath(), "UTF-8");
-            }
+            addFileOption(uriString, "deploymentplan", doUpload, deploymentPlanParameter);
 
             // add passwordfile parameters if any
             if(encodedPasswords != null) {
                 for(Map.Entry<String,String> entry : encodedPasswords.entrySet()) {
-                    uriString += "?" + entry.getKey() + "=" + entry.getValue();
+                    addOption(uriString, entry.getKey() + "=" + entry.getValue());
                 }
             }
 
             //add operands
             for (String operand : operands) {
-                uriString = uriString + "?DEFAULT=" + URLEncoder.encode(operand,
-                        "UTF-8");
+                addOption(uriString, "DEFAULT=" + URLEncoder.encode(operand,
+                        "UTF-8"));
             }
 
             HttpURLConnection urlConnection = null;
@@ -144,10 +125,10 @@ public class CLIRemoteCommand {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, hostPort, secure);
                 logger.printDebugMessage("URI: " + uriString.toString());
                 logger.printDebugMessage("URL: " + url.toString());
-                logger.printDebugMessage("URL: " + url.toURL(uriString).toString());
+                logger.printDebugMessage("URL: " + url.toURL(uriString.toString()).toString());
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
 
-                urlConnection = (HttpURLConnection) url.openConnection(uriString);
+                urlConnection = (HttpURLConnection) url.openConnection(uriString.toString());
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
                 urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
                 urlConnection.setRequestMethod(chooseRequestMethod());
@@ -186,6 +167,44 @@ public class CLIRemoteCommand {
         }
     }
 
+    /**
+     * Adds a single option expression to the URI, preceding it with a ? if this
+     * is the first option added or a & if this is not the first option added.
+     * @param uriString the URI composed so far
+     * @param option the option expression to be added
+     * @return the URI so far, including the newly-added option
+     */
+    private StringBuilder addOption(StringBuilder uriString, String option) {
+        String nextChar = (uriString.indexOf(QUERY_STRING_INTRODUCER) == -1) ? 
+            QUERY_STRING_INTRODUCER : QUERY_STRING_SEPARATOR;
+        uriString.append(nextChar).append(option);
+        return uriString;
+    }
+    
+    /**
+     * Adds an option for a file argument, passing the name (for uploads) or the
+     * path (for no-upload) operations. 
+     * @param uriString the URI string so far
+     * @param optionName the option which takes a path or name
+     * @param isUpload whether the file is to be uploaded
+     * @param parameter the File whose name or path should be passed
+     * @return the URI string
+     * @throws java.io.UnsupportedEncodingException
+     */
+    private StringBuilder addFileOption(
+            StringBuilder uriString, 
+            String optionName, 
+            boolean isUpload, 
+            File parameter) throws UnsupportedEncodingException {
+        if(parameter != null) {
+            // if we are about to upload it -- give just the name
+            // o/w give the full path
+            String pathToPass = (isUpload ? parameter.getName() : parameter.getPath());
+            addOption(uriString, optionName + "=" + URLEncoder.encode(pathToPass, "UTF-8"));
+        }
+        return uriString;
+    }
+    
     /**
      * Decide what request method to use in building the HTTP request.
      * @return the request method appropriate to the current command and options
@@ -592,5 +611,10 @@ public class CLIRemoteCommand {
         "echo",
         "interactive",
     };
+
+    private static final String QUERY_STRING_INTRODUCER = "?";
+    private static final String QUERY_STRING_SEPARATOR = "&";
+    private static final String ADMIN_URI_PATH = "/__asadmin/";
+    
 }
 
