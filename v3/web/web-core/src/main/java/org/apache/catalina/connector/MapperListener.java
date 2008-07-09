@@ -81,7 +81,9 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.RequestUtil;
 
+import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.util.http.mapper.MappingData;
 
 import com.sun.grizzly.util.res.StringManager;
 
@@ -636,6 +638,18 @@ public class MapperListener
         if (contextName.equals("/")) {
             contextName = "";
         }
+
+        // Don't un-map a context that is paused
+        MessageBytes hostMB = MessageBytes.newInstance();
+        hostMB.setString(hostName);
+        MessageBytes contextMB = MessageBytes.newInstance();
+        contextMB.setString(contextName);
+        MappingData mappingData = new MappingData();
+        mapper.map(hostMB, contextMB, mappingData);
+        if (mappingData.context instanceof StandardContext &&
+                ((StandardContext)mappingData.context).getPaused()) {
+            return;
+        } 
 
         if (log.isLoggable(Level.FINE)) {
             log.fine(sm.getString("mapperListener.unregisterContext",
