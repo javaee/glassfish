@@ -77,7 +77,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
@@ -93,6 +92,7 @@ import org.apache.catalina.util.ServerInfo;
 // END SJSAS 6340446
 import org.apache.tomcat.util.IntrospectionUtils;
 
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Convenience class to embed a Catalina servlet container environment
@@ -843,7 +843,7 @@ public class Embedded  extends StandardService implements Lifecycle {
      */
     public void addAuthenticator(Authenticator authenticator,
                                  String loginMethod) {
-        if ((authenticator != null) && !(authenticator instanceof Valve)) {
+        if ((authenticator != null) && !(authenticator instanceof GlassFishValve)) {
             throw new IllegalArgumentException(
                 sm.getString("embedded.authenticatorNotInstanceOfValve"));
         }

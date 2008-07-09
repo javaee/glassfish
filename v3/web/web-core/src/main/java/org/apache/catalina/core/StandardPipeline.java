@@ -74,10 +74,10 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
+import org.glassfish.web.valve.GlassFishValve;
 
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
 import org.apache.commons.modeler.Registry;
@@ -141,7 +141,7 @@ public class StandardPipeline
     /**
      * The basic Valve (if any) associated with this Pipeline.
      */
-    protected Valve basic = null;
+    protected GlassFishValve basic = null;
 
 
     /**
@@ -195,7 +195,7 @@ public class StandardPipeline
      * The set of Valves (not including the Basic one, if any) associated with
      * this Pipeline.
      */
-    protected Valve valves[] = new Valve[0];
+    protected GlassFishValve valves[] = new GlassFishValve[0];
 
 
     // --------------------------------------------------------- Public Methods
@@ -417,7 +417,7 @@ public class StandardPipeline
      * <p>Return the Valve instance that has been distinguished as the basic
      * Valve for this Pipeline (if any).
      */
-    public Valve getBasic() {
+    public GlassFishValve getBasic() {
 
         return (this.basic);
 
@@ -436,10 +436,10 @@ public class StandardPipeline
      *
      * @param valve Valve to be distinguished as the basic Valve
      */
-    public void setBasic(Valve valve) {
+    public void setBasic(GlassFishValve valve) {
 
         // Change components if necessary
-        Valve oldBasic = this.basic;
+        GlassFishValve oldBasic = this.basic;
         if (oldBasic == valve)
             return;
 
@@ -506,7 +506,7 @@ public class StandardPipeline
      * @exception IllegalStateException if the specified Valve is already
      *  associated with a different Container
      */
-    public void addValve(Valve valve) {
+    public void addValve(GlassFishValve valve) {
     
         // Validate that we can add this Valve
         if (valve instanceof Contained)
@@ -530,7 +530,7 @@ public class StandardPipeline
 
         // Add this Valve to the set associated with this Pipeline
         synchronized (valves) {
-            Valve results[] = new Valve[valves.length +1];
+            GlassFishValve results[] = new GlassFishValve[valves.length +1];
             System.arraycopy(valves, 0, results, 0, valves.length);
             results[valves.length] = valve;
             valves = results;
@@ -544,12 +544,12 @@ public class StandardPipeline
      * Container, including the basic Valve (if any).  If there are no
      * such Valves, a zero-length array is returned.
      */
-    public Valve[] getValves() {
+    public GlassFishValve[] getValves() {
 
         if (basic == null)
             return (valves);
         synchronized (valves) {
-            Valve results[] = new Valve[valves.length + 1];
+            GlassFishValve results[] = new GlassFishValve[valves.length + 1];
             System.arraycopy(valves, 0, results, 0, valves.length);
             results[valves.length] = basic;
             return (results);
@@ -610,7 +610,7 @@ public class StandardPipeline
             // Set the status so that if there are no valves (other than the
             // basic one), the basic valve's request processing logic will
             // be invoked
-            int status = Valve.INVOKE_NEXT;
+            int status = GlassFishValve.INVOKE_NEXT;
 
             // Iterate over all the valves in the pipeline and invoke
             // each valve's processing logic and then move onto to the
@@ -625,7 +625,7 @@ public class StandardPipeline
                     resp = getResponse(request, response);
                 }
                 status = valves[i].invoke(req, resp);
-                if (status != Valve.INVOKE_NEXT)
+                if (status != GlassFishValve.INVOKE_NEXT)
                     break;
             }
 
@@ -635,12 +635,12 @@ public class StandardPipeline
             // in case access logging is enabled or disabled by some kind of
             // admin servlet), in which case the indices used for postInvoke
             // invocations below would be off
-            Valve[] savedValves = valves;
+            GlassFishValve[] savedValves = valves;
 
             // Invoke the basic valve's request processing and post-request
             // logic only if the pipeline was not aborted (i.e. no valve
             // returned END_PIPELINE)
-            if ((status == Valve.INVOKE_NEXT) && (basic != null)) {
+            if ((status == GlassFishValve.INVOKE_NEXT) && (basic != null)) {
                 Request req = request;
                 Response resp = response;
                 if (chaining) {
@@ -682,7 +682,7 @@ public class StandardPipeline
      *
      * @param valve Valve to be removed
      */
-    public void removeValve(Valve valve) {
+    public void removeValve(GlassFishValve valve) {
 
         synchronized (valves) {
 
@@ -698,7 +698,7 @@ public class StandardPipeline
                 return;
 
             // Remove this valve from our list
-            Valve results[] = new Valve[valves.length - 1];
+            GlassFishValve results[] = new GlassFishValve[valves.length - 1];
             int n = 0;
             for (int i = 0; i < valves.length; i++) {
                 if (i == j)

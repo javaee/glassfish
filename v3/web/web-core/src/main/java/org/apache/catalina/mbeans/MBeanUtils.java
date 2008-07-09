@@ -83,7 +83,6 @@ import org.apache.catalina.Manager;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Server;
 import org.apache.catalina.Service;
-import org.apache.catalina.Valve;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.ContextResourceLink;
@@ -93,6 +92,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
 
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Public utility methods in support of the server side MBeans implementation.
@@ -699,7 +699,7 @@ public class MBeanUtils {
      *
      * @exception Exception if an MBean cannot be created or registered
      */
-    static ModelMBean createMBean(Valve valve)
+    static ModelMBean createMBean(GlassFishValve valve)
         throws Exception {
 
         String mname = createManagedName(valve);
@@ -1339,7 +1339,7 @@ public class MBeanUtils {
      * @exception MalformedObjectNameException if a name cannot be created
      */
     static ObjectName createObjectName(String domain,
-                                       Valve valve)
+                                       GlassFishValve valve)
         throws MalformedObjectNameException {
         if( valve instanceof ValveBase ) {
             ObjectName name=((ValveBase)valve).getObjectName();
@@ -1999,7 +1999,7 @@ public class MBeanUtils {
      *
      * @exception Exception if an MBean cannot be deregistered
      */
-    static void destroyMBean(Valve valve, Container container)
+    static void destroyMBean(GlassFishValve valve, Container container)
         throws Exception {
 
         ((Contained)valve).setContainer(container);

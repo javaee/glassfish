@@ -96,7 +96,6 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.Session;
-import org.apache.catalina.Valve;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
@@ -112,6 +111,7 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.Auditor; // IASRI 4823322
 
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Basic implementation of the <b>Valve</b> interface that enforces the
@@ -1131,7 +1131,7 @@ public abstract class AuthenticatorBase
                 parent = parent.getParent();
                 continue;
             }
-            Valve valves[] = ((Pipeline) parent).getValves();
+            GlassFishValve valves[] = ((Pipeline) parent).getValves();
             for (int i = 0; i < valves.length; i++) {
                 if (valves[i] instanceof SingleSignOn) {
                     sso = (SingleSignOn) valves[i];

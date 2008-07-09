@@ -52,15 +52,12 @@
  * limitations under the License.
  */
 
-
-
-
-package org.apache.catalina;
-
+package org.glassfish.web.valve;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
-
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 
 /**
  * <p>A <b>Valve</b> is a request processing component associated with a
@@ -78,20 +75,16 @@ import javax.servlet.ServletException;
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:21 $
  */
 
-public interface Valve {
-
-
+public interface GlassFishValve {
 
     // START OF IASRI 4665318
     // ----------------------------------------------------- Manifest Constants
-
 
     /**
      * A valve returns this value to indicate (to the pipeline) that the next
      * valve in the pipeline can be invoked.
      */
     public static final int INVOKE_NEXT = 1;
-
 
     /**
      * A valve returns this value to indicate that no further processing
@@ -107,7 +100,6 @@ public interface Valve {
     // END OF IASRI 4665318
     //-------------------------------------------------------------- Properties
 
-
     /**
      * Return descriptive information about this Valve implementation.
      */
@@ -115,7 +107,6 @@ public interface Valve {
 
 
     //---------------------------------------------------------- Public Methods
-
 
     /**
      * <p>Perform request processing as required by this Valve.</p>
@@ -197,7 +188,5 @@ public interface Valve {
     public void postInvoke(Request request, Response response)
         throws IOException, ServletException;
     // END OF IASRI 4665318
-
-
 }
 

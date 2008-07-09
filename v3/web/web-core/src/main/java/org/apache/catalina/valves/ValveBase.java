@@ -75,7 +75,6 @@ import org.apache.catalina.LifecycleListener;
 // END CR 6411114
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Service;
@@ -92,6 +91,7 @@ import org.apache.catalina.util.StringManager;
 // START CR 6411114
 import org.apache.commons.modeler.Registry;
 // END CR 6411114
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Convenience base class for implementations of the <b>Valve</b> interface.
@@ -109,7 +109,7 @@ public abstract class ValveBase
     implements Contained, Valve, MBeanRegistration {
 */
 // START CR 6411114
-    implements Contained, Lifecycle, Valve, MBeanRegistration {
+    implements Contained, Lifecycle, GlassFishValve, MBeanRegistration {
 // END CR 6411114
     private static Logger log = Logger.getLogger(ValveBase.class.getName());
 
@@ -395,7 +395,7 @@ public abstract class ValveBase
             return null;
         ContainerBase containerBase=(ContainerBase)container;
         Pipeline pipe=containerBase.getPipeline();
-        Valve valves[]=pipe.getValves();
+        GlassFishValve valves[]=pipe.getValves();
 
         /* Compute the "parent name" part */
         String parentName="";

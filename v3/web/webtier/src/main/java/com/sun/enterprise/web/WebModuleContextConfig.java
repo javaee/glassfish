@@ -55,7 +55,6 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEnvironment;
@@ -64,6 +63,8 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardEngine;
+
+import org.glassfish.web.valve.GlassFishValve;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -284,10 +285,10 @@ public class WebModuleContextConfig extends ContextConfig {
         if (context instanceof ContainerBase) {
             Pipeline pipeline = ((ContainerBase) context).getPipeline();
             if (pipeline != null) {
-                Valve basic = pipeline.getBasic();
+                GlassFishValve basic = pipeline.getBasic();
                 if ((basic != null) && (basic instanceof Authenticator))
                     return;
-                Valve valves[] = pipeline.getValves();
+                GlassFishValve valves[] = pipeline.getValves();
                 for (int i = 0; i < valves.length; i++) {
                     if (valves[i] instanceof Authenticator)
                         return;
@@ -322,9 +323,9 @@ public class WebModuleContextConfig extends ContextConfig {
          * method. If so, use it. Otherwise, check if there is a mapping in
          * org/apache/catalina/startup/Authenticators.properties.
          */
-        Valve authenticator = null;
+        GlassFishValve authenticator = null;
         if (customAuthenticators != null) {
-            authenticator = (Valve)
+            authenticator = (GlassFishValve)
                 customAuthenticators.get(loginConfig.getAuthMethod());
         }
         if (authenticator == null) {
@@ -374,7 +375,7 @@ public class WebModuleContextConfig extends ContextConfig {
             // Instantiate and install an Authenticator of the requested class
             try {
                 Class authenticatorClass = Class.forName(authenticatorName);
-                authenticator = (Valve) authenticatorClass.newInstance();
+                authenticator = (GlassFishValve) authenticatorClass.newInstance();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "webModuleContextConfig.authenticatorInstantiate", authenticatorName);
                 logger.log(Level.SEVERE, "webModuleContextConfig.authenticatorInstantiate", t);

@@ -67,11 +67,9 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Logger;
 import org.apache.catalina.Service;
 import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.commons.modeler.BaseModelMBean;
-
 
 /**
  * <p>A <strong>ModelMBean</strong> implementation for the

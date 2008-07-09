@@ -91,7 +91,6 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.logger.LoggerBase;
 import org.apache.catalina.util.LifecycleSupport;
@@ -99,6 +98,7 @@ import org.apache.catalina.util.StringManager;
 import org.apache.commons.modeler.Registry;
 import org.apache.naming.resources.ProxyDirContext;
 
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Abstract implementation of the <b>Container</b> interface, providing common
@@ -1378,7 +1378,7 @@ public abstract class ContainerBase
      * @exception IllegalStateException if the specified Valve is already
      *  associated with a different Container
      */
-    public synchronized void addValve(Valve valve) {
+    public synchronized void addValve(GlassFishValve valve) {
 
         pipeline.addValve(valve);
 
@@ -1395,7 +1395,7 @@ public abstract class ContainerBase
      * <p>Return the Valve instance that has been distinguished as the basic
      * Valve for this Pipeline (if any).
      */
-    public Valve getBasic() {
+    public GlassFishValve getBasic() {
 
         return (pipeline.getBasic());
 
@@ -1407,7 +1407,7 @@ public abstract class ContainerBase
      * Container, including the basic Valve (if any).  If there are no
      * such Valves, a zero-length array is returned.
      */
-    public Valve[] getValves() {
+    public GlassFishValve[] getValves() {
 
         return (pipeline.getValves());
 
@@ -1420,7 +1420,7 @@ public abstract class ContainerBase
      *
      * @param valve Valve to be removed
      */
-    public synchronized void removeValve(Valve valve) {
+    public synchronized void removeValve(GlassFishValve valve) {
 
         pipeline.removeValve(valve);
  
@@ -1442,7 +1442,7 @@ public abstract class ContainerBase
      *
      * @param valve Valve to be distinguished as the basic Valve
      */
-    public void setBasic(Valve valve) {
+    public void setBasic(GlassFishValve valve) {
 
         pipeline.setBasic(valve);
 

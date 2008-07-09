@@ -82,15 +82,14 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-// START GlassFish 1343
-import org.apache.catalina.Valve;
-// END GlassFish 1343
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-
 import org.apache.tomcat.util.log.SystemLogHandler;
+// START GlassFish 1343
+import org.glassfish.web.valve.GlassFishValve;
+// END GlassFish 1343
 
 /**
  * Valve that implements the default basic behavior for the
@@ -313,7 +312,7 @@ final class StandardContextValve
         wrapper.getPipeline().invoke(request, response);
         */
         // START GlassFish 1343
-        Valve basic = wrapper.getPipeline().getBasic();
+        GlassFishValve basic = wrapper.getPipeline().getBasic();
         if (basic != null) {
             basic.invoke(request, response);
             basic.postInvoke(request, response);

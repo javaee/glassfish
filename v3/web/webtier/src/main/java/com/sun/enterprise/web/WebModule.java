@@ -75,12 +75,12 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Class representing a web module for use by the Application Server.
@@ -632,7 +632,7 @@ public class WebModule extends PwcWebModule {
      *
      * @param valve The valve to add
      */
-    public void addAdHocValve(Valve valve) {
+    public void addAdHocValve(GlassFishValve valve) {
         adHocPipeline.addValve(valve);
     }
 
@@ -642,7 +642,7 @@ public class WebModule extends PwcWebModule {
      *
      * @param valve The valve to remove
      */
-    public void removeAdHocValve(Valve valve) {
+    public void removeAdHocValve(GlassFishValve valve) {
         adHocPipeline.removeValve(valve);
     }
 
@@ -811,7 +811,7 @@ public class WebModule extends PwcWebModule {
      * @param valveName the fully qualified class name of the Valve.  
      */
     protected void addValve(String valveName) {
-        Valve valve = (Valve)loadInstance(valveName);  
+        GlassFishValve valve = (GlassFishValve)loadInstance(valveName);  
         
         if (valve == null) return;
         

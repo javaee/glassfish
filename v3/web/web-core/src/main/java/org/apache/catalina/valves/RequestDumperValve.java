@@ -74,9 +74,7 @@ import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Logger;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.util.StringManager;
-
 
 /**
  * <p>Implementation of a Valve that logs interesting contents from the

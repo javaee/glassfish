@@ -62,10 +62,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.ValveContext;
 import org.apache.catalina.util.StringManager;
-
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Standard implementation of a <code>ValveContext</code>.
@@ -96,8 +95,8 @@ public final class StandardValveContext
     protected String info = 
         "org.apache.catalina.core.StandardValveContext/1.0";
     protected int stage = 0;
-    protected Valve basic = null;
-    protected Valve valves[] = null;
+    protected GlassFishValve basic = null;
+    protected GlassFishValve valves[] = null;
 
 
     // ------------------------------------------------------------- Properties
@@ -163,7 +162,7 @@ public final class StandardValveContext
     /**
      * Reset state.
      */
-    void set(Valve basic, Valve valves[]) {
+    void set(GlassFishValve basic, GlassFishValve valves[]) {
         stage = 0;
         this.basic = basic;
         this.valves = valves;

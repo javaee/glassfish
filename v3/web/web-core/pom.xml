@@ -120,7 +120,8 @@
                         org.apache.tomcat.util.log,
                         org.apache.tomcat.util.net,
                         org.apache.tomcat.util.res,
-                        org.apache.tomcat.util.threads
+                        org.apache.tomcat.util.threads,
+                        org.glassfish.web.valve
                         </Export-Package>
                     </instructions>
                 </configuration>

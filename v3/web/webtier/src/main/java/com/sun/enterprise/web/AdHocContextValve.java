@@ -45,8 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
+import org.glassfish.web.valve.GlassFishValve;
 import com.sun.logging.LogDomains;
 
 /**
@@ -61,7 +61,7 @@ import com.sun.logging.LogDomains;
  *
  * @author Jan Luehe
  */
-public class AdHocContextValve implements Valve {
+public class AdHocContextValve implements GlassFishValve {
 
     private static final Logger LOGGER =
         LogDomains.getLogger(LogDomains.WEB_LOGGER);

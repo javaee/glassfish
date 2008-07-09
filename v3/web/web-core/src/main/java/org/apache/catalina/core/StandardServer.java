@@ -101,7 +101,6 @@ import org.apache.catalina.Server;
 import org.apache.catalina.ServerFactory;
 import org.apache.catalina.Service;
 import org.apache.catalina.Store;
-import org.apache.catalina.Valve;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEjb;
 import org.apache.catalina.deploy.ContextEnvironment;
@@ -118,7 +117,7 @@ import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.modeler.Registry;
-
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Standard implementation of the <b>Server</b> interface, available for use
@@ -1297,7 +1296,7 @@ public final class StandardServer
 
         // Store nested <Valve> elements
         if (context instanceof Pipeline) {
-            Valve valves[] = ((Pipeline) context).getValves();
+            GlassFishValve valves[] = ((Pipeline) context).getValves();
             for (int i = 0; i < valves.length; i++) {
                 storeValve(writer, indent + 2, valves[i]);
             }
@@ -1460,7 +1459,7 @@ public final class StandardServer
 
         // Store nested <Valve> elements
         if (dcontext instanceof Pipeline) {
-            Valve valves[] = ((Pipeline) dcontext).getValves();
+            GlassFishValve valves[] = ((Pipeline) dcontext).getValves();
             for (int i = 0; i < valves.length; i++) {
                 storeValve(writer, indent + 2, valves[i]);
             }
@@ -1583,7 +1582,7 @@ public final class StandardServer
 
         // Store nested <Valve> elements
         if (engine instanceof Pipeline) {
-            Valve valves[] = ((Pipeline) engine).getValves();
+            GlassFishValve valves[] = ((Pipeline) engine).getValves();
             for (int i = 0; i < valves.length; i++) {
                 storeValve(writer, indent + 2, valves[i]);
             }
@@ -1719,7 +1718,7 @@ public final class StandardServer
 
         // Store nested <Valve> elements
         if (host instanceof Pipeline) {
-            Valve valves[] = ((Pipeline) host).getValves();
+            GlassFishValve valves[] = ((Pipeline) host).getValves();
             for (int i = 0; i < valves.length; i++) {
                 storeValve(writer, indent + 2, valves[i]);
             }
@@ -2198,7 +2197,7 @@ public final class StandardServer
      * @exception Exception if an exception occurs while storing
      */
     private void storeValve(PrintWriter writer, int indent,
-                             Valve valve) throws Exception {
+                            GlassFishValve valve) throws Exception {
 
         if (isSkippable(valve.getClass().getName())) {
             return;

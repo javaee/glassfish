@@ -58,14 +58,13 @@ import org.apache.catalina.ContainerListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
-import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.web.loader.WebappClassLoader;
-
+import org.glassfish.web.valve.GlassFishValve;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -416,7 +415,7 @@ public class VirtualServer extends StandardHost {
      * Adds the given valve to the currently active pipeline, keeping the
      * valve that is not currently active in sync.
      */
-    public synchronized void addValve(Valve valve) {
+    public synchronized void addValve(GlassFishValve valve) {
         super.addValve(valve);
         if (pipeline == vsPipeline) {
             origPipeline.addValve(valve);
@@ -430,7 +429,7 @@ public class VirtualServer extends StandardHost {
      * Removes the given valve from the currently active pipeline, keeping the
      * valve that is not currently active in sync.
      */
-    public synchronized void removeValve(Valve valve) {
+    public synchronized void removeValve(GlassFishValve valve) {
         super.removeValve(valve);
         if (pipeline == vsPipeline) {
             origPipeline.removeValve(valve);
@@ -977,7 +976,7 @@ public class VirtualServer extends StandardHost {
      * @param valveName The valve's fully qualified class name
      */
     protected void addValve(String valveName) {
-        Valve valve = (Valve)loadInstance(valveName);  
+        GlassFishValve valve = (GlassFishValve)loadInstance(valveName);  
         
         if (valve == null) return;
         
@@ -1250,7 +1249,7 @@ public class VirtualServer extends StandardHost {
             _logger.log(Level.INFO, "webcontainer.ssodisabled", params);
 
             // Remove existing SSO valve (if any)
-            Valve[] valves = getValves();
+            GlassFishValve[] valves = getValves();
             for (int i=0; valves!=null && i<valves.length; i++) {
                 if (valves[i] instanceof SingleSignOn) {
                     removeValve(valves[i]);
@@ -1287,7 +1286,7 @@ public class VirtualServer extends StandardHost {
                 }
 
                 // Remove existing SSO valve (if any), in case of a reconfig
-                Valve[] valves = getValves();
+                GlassFishValve[] valves = getValves();
                 for (int i=0; valves!=null && i<valves.length; i++) {
                     if (valves[i] instanceof SingleSignOn) {
                         removeValve(valves[i]);
@@ -1384,7 +1383,7 @@ public class VirtualServer extends StandardHost {
 
         if (remoteAddrValve != null) {
             // Remove existing RemoteAddrValve (if any), in case of a reconfig
-            Valve[] valves = getValves();
+            GlassFishValve[] valves = getValves();
             for (int i=0; valves!=null && i<valves.length; i++) {
                 if (valves[i] instanceof RemoteAddrValve) {
                     removeValve(valves[i]);
@@ -1441,7 +1440,7 @@ public class VirtualServer extends StandardHost {
 
         if (remoteHostValve != null) {
             // Remove existing RemoteHostValve (if any), in case of a reconfig
-            Valve[] valves = getValves();
+            GlassFishValve[] valves = getValves();
             for (int i=0; valves!=null && i<valves.length; i++) {
                 if (valves[i] instanceof RemoteHostValve) {
                     removeValve(valves[i]);
@@ -1559,7 +1558,7 @@ public class VirtualServer extends StandardHost {
 
         Pipeline p = getPipeline();
         if (p != null) {
-            Valve[] valves = p.getValves();
+            GlassFishValve[] valves = p.getValves();
             if (valves != null) {
                 for (int i=0; i<valves.length; i++) {
                     if (valves[i] instanceof PEAccessLogValve) {

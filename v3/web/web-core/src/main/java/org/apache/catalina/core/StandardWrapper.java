@@ -86,9 +86,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
-// START GlassFish 1343
-import org.apache.catalina.Valve;
-// END GlassFish 1343
 import org.apache.catalina.Wrapper;
 import static org.apache.catalina.InstanceEvent.EventType.BEFORE_INIT_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_INIT_EVENT;
@@ -100,6 +97,10 @@ import org.apache.catalina.util.InstanceSupport;
 import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.tomcat.util.log.SystemLogHandler;
 import org.apache.commons.modeler.Registry;
+
+// START GlassFish 1343
+import org.glassfish.web.valve.GlassFishValve;
+// END GlassFish 1343
 
 /**
  * Standard implementation of the <b>Wrapper</b> interface that represents
@@ -711,7 +712,7 @@ public class StandardWrapper
 
 
     // START GlassFish 1343
-    public synchronized void addValve(Valve valve) {
+    public synchronized void addValve(GlassFishValve valve) {
         /*
          * This exception should never be thrown in reality, because we never
          * add any valves to a StandardWrapper. 

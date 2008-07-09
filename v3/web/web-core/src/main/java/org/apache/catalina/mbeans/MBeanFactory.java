@@ -73,7 +73,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Server;
 import org.apache.catalina.ServerFactory;
 import org.apache.catalina.Service;
-import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
@@ -99,7 +98,7 @@ import org.apache.commons.modeler.BaseModelMBean;
 import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
 import org.apache.catalina.connector.Connector;
-
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * <p>A <strong>ModelMBean</strong> implementation for the
@@ -1238,7 +1237,7 @@ public class MBeanFactory extends BaseModelMBean {
         ObjectName oname = new ObjectName(name);
         ContainerBase container = getParentContainerFromChild(oname);
         String sequence = oname.getKeyProperty("seq");
-        Valve[] valves = (Valve[])container.getValves();
+        GlassFishValve[] valves = (GlassFishValve[])container.getValves();
         for (int i = 0; i < valves.length; i++) {
             ObjectName voname = ((ValveBase) valves[i]).getObjectName();
             if (voname.equals(oname)) {

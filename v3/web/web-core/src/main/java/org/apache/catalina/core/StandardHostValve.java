@@ -91,9 +91,6 @@ import org.apache.catalina.Response;
 // START GlassFish Issue 1057
 import org.apache.catalina.Session;
 // END GlassFish Issue 1057
-// START SJSAS 6374691
-import org.apache.catalina.Valve;
-// END SJSAS 6374691
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.deploy.ErrorPage;
@@ -101,6 +98,9 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
+// START SJSAS 6374691
+import org.glassfish.web.valve.GlassFishValve;
+// END SJSAS 6374691
 
 /**
  * Valve that implements the default basic behavior for the
@@ -142,7 +142,7 @@ final class StandardHostValve
 
 
     // START SJSAS 6374691
-    private Valve errorReportValve;
+    private GlassFishValve errorReportValve;
     // END SJSAS 6374691
 
 
@@ -658,7 +658,7 @@ final class StandardHostValve
 
 
     // START SJSAS 6374691
-    void setErrorReportValve(Valve errorReportValve) {
+    void setErrorReportValve(GlassFishValve errorReportValve) {
         this.errorReportValve = errorReportValve;
     }
     // END SJSAS 6374691
