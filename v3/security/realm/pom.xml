@@ -123,6 +123,12 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.1</include>
+                </includes>
+            </resource>
         </resources>
     </build>
     <dependencies>
