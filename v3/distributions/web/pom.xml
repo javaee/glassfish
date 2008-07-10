@@ -117,15 +117,12 @@
             <artifactId>console-plugin-service</artifactId>
 	    <version>${admingui.version}</version>
         </dependency-->
-        <!-- TODO (Sahoo): Fix jruby to use new HK2 version.
-             Until then, don't distribute.
         <dependency>
             <groupId>org.glassfish.scripting</groupId>
             <artifactId>jruby-all</artifactId>
 	    <version>${jruby-scripting.version}</version>
 	    <type>pom</type>
         </dependency>
-        -->
         <dependency>
             <groupId>org.glassfish.connectors.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
