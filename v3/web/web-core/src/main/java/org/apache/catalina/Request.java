@@ -217,21 +217,6 @@ public interface Request {
      */
     public void setStream(InputStream stream);
 
-    // START OF IASRI 4665318
-     /**
-     * Get valve context.
-     */
-    public ValveContext getValveContext();
-
-
-    /**
-     * Set valve context.
-     *
-     * @param valveContext New valve context object
-     */
-    public void setValveContext(ValveContext valveContext);
-    // END OF IASRI 4665318
-
 
     /**
      * Return the Wrapper within which this Request is being processed.

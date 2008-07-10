@@ -55,7 +55,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Response;
-import org.apache.catalina.ValveContext;
 import org.apache.catalina.Wrapper;
 
 
@@ -252,14 +251,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
 
     public void setStream(InputStream stream) {
         httpRequest.setStream(stream);
-    }
-
-    public ValveContext getValveContext() {
-        return httpRequest.getValveContext();
-    }
-
-    public void setValveContext(ValveContext valveContext) {
-        httpRequest.setValveContext(valveContext);
     }
 
     public Wrapper getWrapper() {

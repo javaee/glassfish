@@ -109,7 +109,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Logger;
 import org.apache.catalina.Response;
-import org.apache.catalina.ValveContext;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.util.Enumerator;
@@ -137,7 +136,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     protected Wrapper wrapper = null;
 
     protected FilterChain filterChain = null;
-    protected ValveContext valveContext = null;
 
     // START CR 6415120
     /**
@@ -235,14 +233,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
 
     public MessageBytes getServletPathMB() {
         return null;
-    }
-
-    public ValveContext getValveContext() {
-        return (this.valveContext);
-    }
-
-    public void setValveContext(ValveContext valveContext) {
-        this.valveContext = valveContext;
     }
 
     public Wrapper getWrapper() {

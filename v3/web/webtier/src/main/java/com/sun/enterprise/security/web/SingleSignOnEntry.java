@@ -59,7 +59,6 @@ import org.apache.catalina.Response;
 import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
-import org.apache.catalina.ValveContext;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.Realm;
 
