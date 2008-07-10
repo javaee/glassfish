@@ -193,6 +193,7 @@
 
     <properties>
 		<hk2.version>0.3.8</hk2.version>
+		<hk2.plugin.version>0.3.8</hk2.plugin.version>
 		<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 		<amx-api.version>10.0-SNAPSHOT</amx-api.version>
 		<jsp-api.version>2.1</jsp-api.version>
