@@ -101,7 +101,6 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
-                        com.sun.enterprise.deployment.backend,
                         org.glassfish.javaee.core.deployment
                         </Export-Package>
                     </instructions>

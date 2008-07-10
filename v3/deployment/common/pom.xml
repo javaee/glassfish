@@ -100,7 +100,6 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
-                        com.sun.enterprise.deploy.jar,
                         com.sun.enterprise.deploy.shared,
                         com.sun.enterprise.deployment.deploy.shared,
                         org.glassfish.deployment.common
