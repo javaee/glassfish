@@ -538,13 +538,6 @@ public class StandardContext
 
 
     /**
-     * Set flag to true to cause the system.out and system.err to be redirected
-     * to the logger when executing a servlet.
-     */
-    private boolean swallowOutput = false;
-
-
-    /**
      * The JSP tag libraries for this web application, keyed by URI
      */
     private HashMap taglibs = new HashMap();
@@ -1858,34 +1851,6 @@ public class StandardContext
         //HERCULES:add
         sessionTimeoutOveridden = true;
         //end HERCULES:add        
-
-    }
-
-
-    /**
-     * Return the value of the swallowOutput flag.
-     */
-    public boolean getSwallowOutput() {
-
-        return (this.swallowOutput);
-
-    }
-
-
-    /**
-     * Set the value of the swallowOutput flag. If set to true, the system.out
-     * and system.err will be redirected to the logger during a servlet
-     * execution.
-     *
-     * @param swallowOuptut The new value
-     */
-    public void setSwallowOutput(boolean swallowOutput) {
-
-        boolean oldSwallowOutput = this.swallowOutput;
-        this.swallowOutput = swallowOutput;
-        support.firePropertyChange("swallowOutput",
-                                   Boolean.valueOf(oldSwallowOutput),
-                                   Boolean.valueOf(this.swallowOutput));
 
     }
 

@@ -73,7 +73,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.security.SecurityUtil;
-import org.apache.tomcat.util.log.SystemLogHandler;
 
 
 /**
@@ -260,19 +259,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         }
         // END PWC 1.2
 
-        if (context.getSwallowOutput()) {
-            try {
-                SystemLogHandler.startCapture();
-                filter.init(this);
-            } finally {
-                String log = SystemLogHandler.stopCapture();
-                if (log != null && log.length() > 0) {
-                    getServletContext().log(log);
-                }
-            }
-        } else {
-            filter.init(this);
-        }
+        filter.init(this);
 
         // START PWC 1.2
         if (context != null) {

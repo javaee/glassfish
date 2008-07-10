@@ -80,7 +80,7 @@
                 <configuration>
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
-                        <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*;groupId=commons-collections;inline=true,*;groupId=commons-digester;inline=true,*;groupId=commons-logging;inline=true,*;groupId=commons-modeler;inline=true</Embed-Dependency>
+                        <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*;groupId=commons-collections;inline=true,*;groupId=commons-digester;inline=true,*;groupId=commons-modeler;inline=true</Embed-Dependency>
                         <Export-Package>org.apache.commons.*</Export-Package>
                         <Import-Package>org.apache.log4j;resolution:=optional,*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
@@ -137,12 +137,6 @@
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
             <version>${commons.digester.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging-api</artifactId>
-            <version>${commons.logging.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

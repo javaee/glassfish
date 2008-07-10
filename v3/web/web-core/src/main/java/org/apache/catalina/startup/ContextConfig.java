@@ -92,8 +92,6 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.SchemaResolver;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.RuleSet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -413,9 +411,6 @@ public class ContextConfig
                     }
                     webDigester.setUseContextClassLoader(false);
                     webDigester.push(context);
-                    // START PWC 6390776
-                    webDigester.setLogger(new DigesterLogger(context.getName()));
-                    // END PWC 6390776
                     webDigester.parse(is);
                 } else {
                     log.info("No web.xml, using defaults " + context );
@@ -1265,98 +1260,3 @@ public class ContextConfig
 
 
 } //end of public class
-
-// START PWC 6390776
-/**
- * This class is to override log.error method that Digester uses.
- * With log.error call, we don't want the Digester to log the entire stack
- * trace at the default log level. We are interested in only error message. 
- * If log-level is debug, then only stack trace is shown.
- */
-class DigesterLogger implements Log {
-
-    public Log log;
-    public String contextMsg = null;
-
-    public DigesterLogger(String contextName) {
-        log = LogFactory.getLog(Digester.class.getName());
-        contextMsg = "In context [" + contextName + "]: ";
-    }
-    
-    public void debug(Object message) {
-        log.debug(contextMsg + message);
-    }
-
-    public void debug(Object message, Throwable t) {
-        log.debug(contextMsg + message,t);
-    }
-
-    public void error(Object message) {
-        log.error(contextMsg + message);
-    }
-
-    public void error(Object message, Throwable t) {
-        if (log.isDebugEnabled()) {
-            log.error(contextMsg + message, t);
-        } else {
-            log.error(contextMsg + message);
-        }
-    }
-
-    public void fatal(Object message) {
-        log.fatal(contextMsg + message);
-    }
-
-    public void fatal(Object message, Throwable t) {
-        log.fatal(contextMsg + message, t);
-    }
-
-    public void info(Object message) {
-        log.info(contextMsg + message);
-    }
-
-    public void info(Object message, Throwable t) {
-        log.info(contextMsg + message, t);
-    }
-
-    public void trace(Object message) {
-        log.trace(contextMsg + message);
-    }
-
-    public void trace(Object message, Throwable t) {
-        log.trace(contextMsg + message, t);
-    }
-
-    public void warn(Object message) {
-        log.warn(contextMsg + message);
-    }
-
-    public void warn(Object message, Throwable t) {
-        log.warn(contextMsg + message, t);
-    }
-
-    public boolean isDebugEnabled() {
-        return log.isDebugEnabled();
-    }
-
-    public boolean isErrorEnabled() {
-        return log.isErrorEnabled();
-    }
-
-    public boolean isFatalEnabled() {
-        return log.isFatalEnabled();
-    }
-
-    public boolean isInfoEnabled() {
-        return log.isInfoEnabled();
-    }
-
-    public boolean isTraceEnabled() {
-        return log.isTraceEnabled();
-    }
-
-    public boolean isWarnEnabled() {
-        return log.isWarnEnabled();
-    }
-}
-// END PWC 6390776

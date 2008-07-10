@@ -86,7 +86,6 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.tomcat.util.log.SystemLogHandler;
 // START GlassFish 1343
 import org.glassfish.web.valve.GlassFishValve;
 // END GlassFish 1343
@@ -233,21 +232,7 @@ final class StandardContextValve
             }
         }
         
-        // Normal request processing
-        if (((StandardContext) container).getSwallowOutput()) {
-            try {
-                SystemLogHandler.startCapture();
-                return invokeInternal(wrapper, request, response);
-            } finally {
-                String log = SystemLogHandler.stopCapture();
-                if (log != null && log.length() > 0) {
-                    container.getLogger().log(log);
-                }
-            }
-        } else {
-            return invokeInternal(wrapper, request, response);
-        }
-
+        return invokeInternal(wrapper, request, response);
     }
 
 
