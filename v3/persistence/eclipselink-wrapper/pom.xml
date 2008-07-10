@@ -70,31 +70,31 @@
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>org.eclipse.persistence.core</artifactId>
-          <version>1.0-M10</version>
+          <version>1.0</version>
           <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>org.eclipse.persistence.jpa</artifactId>
-          <version>1.0-M10</version>
+          <version>1.0</version>
           <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>org.eclipse.persistence.oracle</artifactId>
-          <version>1.0-M10</version>
+          <version>1.0</version>
           <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>org.eclipse.persistence.antlr</artifactId>
-          <version>1.0-M10</version>
+          <version>1.0</version>
           <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>org.eclipse.persistence.asm</artifactId>
-          <version>1.0-M10</version>
+          <version>1.0</version>
           <scope>compile</scope>
         </dependency>
     </dependencies>
