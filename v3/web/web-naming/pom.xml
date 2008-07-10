@@ -132,11 +132,6 @@
         </resources>
 	</build>
 	<dependencies>
-	    <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>apache-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
