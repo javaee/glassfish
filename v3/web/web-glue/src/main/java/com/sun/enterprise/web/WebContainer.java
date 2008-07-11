@@ -443,6 +443,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         try {
             ParserUtils.setSchemaResourcePrefix(schemas.toURL().toString());
+            ParserUtils.setDtdResourcePrefix(dtds.toURL().toString());
         } catch(MalformedURLException e) {
             _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
         }
