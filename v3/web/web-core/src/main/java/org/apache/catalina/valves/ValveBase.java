@@ -65,6 +65,7 @@ import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 
+import org.apache.catalina.CometEvent;
 import org.apache.catalina.Contained;
 import org.apache.catalina.Container;
 // START CR 6411114
@@ -80,6 +81,7 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Service;
 import org.apache.catalina.Host;
 import org.apache.catalina.Context;
+import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
 // START CR 6411114
@@ -109,7 +111,7 @@ public abstract class ValveBase
     implements Contained, Valve, MBeanRegistration {
 */
 // START CR 6411114
-    implements Contained, Lifecycle, GlassFishValve, MBeanRegistration {
+    implements Contained, Lifecycle, Valve, GlassFishValve, MBeanRegistration {
 // END CR 6411114
     private static Logger log = Logger.getLogger(ValveBase.class.getName());
 
@@ -151,6 +153,12 @@ public abstract class ValveBase
 
 
     /**
+     * The next Valve in the pipeline this Valve is a component of.
+     */
+    protected Valve next = null;
+
+
+    /**
      * The string manager for this package.
      */
     protected final static StringManager sm =
@@ -159,14 +167,12 @@ public abstract class ValveBase
 
     //-------------------------------------------------------------- Properties
 
-
     /**
      * Return the Container with which this Valve is associated, if any.
      */
     public Container getContainer() {
 
         return (container);
-
     }
 
 
@@ -178,7 +184,6 @@ public abstract class ValveBase
     public void setContainer(Container container) {
 
         this.container = container;
-
     }
 
 
@@ -188,7 +193,6 @@ public abstract class ValveBase
     public int getDebug() {
 
         return (this.debug);
-
     }
 
 
@@ -200,7 +204,6 @@ public abstract class ValveBase
     public void setDebug(int debug) {
 
         this.debug = debug;
-
     }
 
 
@@ -210,11 +213,40 @@ public abstract class ValveBase
     public String getInfo() {
 
         return (info);
+    }
 
+
+    /**
+     * Return the next Valve in this pipeline, or <code>null</code> if this
+     * is the last Valve in the pipeline.
+     */
+    public Valve getNext() {
+
+        return next;
+    }
+
+
+    /**
+     * Set the Valve that follows this one in the pipeline it is part of.
+     *
+     * @param valve The new next valve
+     */
+    public void setNext(Valve valve) {
+
+        this.next = valve;
     }
 
 
     //---------------------------------------------------------- Public Methods
+
+    /**
+     * Execute a periodic task, such as reloading, etc. This method will be
+     * invoked inside the classloading context of this container. Unexpected
+     * throwables will be caught and logged.
+     */
+    public void backgroundProcess() {
+        // Deliberate no-op
+    }
 
 
     /**
@@ -243,11 +275,54 @@ public abstract class ValveBase
      * is used for request processing.
      */
     public void postInvoke(Request request, Response response)
-        throws IOException, ServletException {
-
-
+            throws IOException, ServletException {
+        // Deliberate no-op
     }
     // END OF IASRI 4665318
+
+
+    /**
+     * The implementation-specific logic represented by this Valve.  See the
+     * Valve description for the normal design patterns for this method.
+     * <p>
+     * This method <strong>MUST</strong> be provided by a subclass.
+     *
+     * @param request The servlet request to be processed
+     * @param response The servlet response to be created
+     *
+     * @exception IOException if an input/output error occurs
+     * @exception ServletException if a servlet error occurs
+     */
+    public void invoke(org.apache.catalina.connector.Request request,
+                       org.apache.catalina.connector.Response response)
+            throws IOException, ServletException {
+        // Deliberate no-op
+    }
+
+
+    /**
+     * Process a Comet event. This method will rarely need to be provided by
+     * a subclass, unless it needs to reassociate a particular object with
+     * the thread that is processing the request.
+     *
+     * @param request The servlet request to be processed
+     * @param response The servlet response to be created
+     *
+     * @exception IOException if an input/output error occurs, or is thrown
+     *  by a subsequently invoked Valve, Filter, or Servlet
+     * @exception ServletException if a servlet error occurs, or is thrown
+     *  by a subsequently invoked Valve, Filter, or Servlet
+     */
+    public void event(org.apache.catalina.connector.Request request,
+                      org.apache.catalina.connector.Response response,
+                      CometEvent event)
+            throws IOException, ServletException {
+        // Perform the request
+        if (getNext() != null) {
+            getNext().event(request, response, event);
+        }
+    }
+
 
     // START CR 6411114
     // ------------------------------------------------------ Lifecycle Methods
@@ -261,7 +336,6 @@ public abstract class ValveBase
     public void addLifecycleListener(LifecycleListener listener) {
 
         lifecycle.addLifecycleListener(listener);
-
     }
 
 
@@ -272,7 +346,6 @@ public abstract class ValveBase
     public LifecycleListener[] findLifecycleListeners() {
 
         return lifecycle.findLifecycleListeners();
-
     }
 
 
@@ -284,7 +357,6 @@ public abstract class ValveBase
     public void removeLifecycleListener(LifecycleListener listener) {
 
         lifecycle.removeLifecycleListener(listener);
-
     }
 
 
