@@ -2,7 +2,7 @@ package org.glassfish.javaee.services;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
-import com.sun.grizzly.http.AsyncFilter;
+import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.grizzly.comet.CometAsyncFilter;
 
 /**

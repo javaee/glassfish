@@ -42,8 +42,8 @@ import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
-import com.sun.grizzly.http.AsyncHandler;
-import com.sun.grizzly.http.AsyncFilter;
+import com.sun.grizzly.arp.AsyncHandler;
+import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.logging.LogDomains;
 import java.util.LinkedList;
 

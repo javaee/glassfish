@@ -53,8 +53,8 @@
     <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly Optionals Module for GlassFish</description>
     <properties>
-        <grizzly.version>1.7.3.3-rev1</grizzly.version>    
-        <grizzly.original-version>1.7.3.3</grizzly.original-version>    
+        <grizzly.version>1.8.2</grizzly.version>    
+        <grizzly.original-version>1.8.2</grizzly.original-version>    
         <servlet-api.version>2.5</servlet-api.version>    
     </properties>    
     <build>
@@ -150,18 +150,14 @@
             <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-compat</artifactId>
             <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-servlet</artifactId>
-            <version>${grizzly.original-version}</version>
-            <scope>provided</scope>
-        </dependency>        
+        -->
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-messagesbus</artifactId>
