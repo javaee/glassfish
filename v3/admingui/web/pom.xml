@@ -40,15 +40,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-	<artifactId>glassfish-parent</artifactId>
-	<version>10.0-SNAPSHOT</version>
+        <groupId>org.glassfish.admingui</groupId>
+        <artifactId>admingui</artifactId>
+        <version>10.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-web-plugin</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin GUI Web Container Plugin</name>
-    <description>Web container  Plugin module for Glassfish V3 Admin Console</description>
+    <name>Admin Console Web Container Plugin</name>
+    <description>Web container plugin bundle for Glassfish V3 Admin Console</description>
+
+    <developers>
+        <developer>
+            <id>anilam</id>
+            <name>Anissa Lam</name>
+            <url>http://blogs.sun.com/anilam</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kenpaulsen</id>
+            <name>Ken Paulsen</name>
+            <url>http://blogs.sun.com/paulsen</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
@@ -108,18 +128,6 @@
         </resources>
     </build>
 
-    <developers>
-        <developer>
-            <id>anilam</id>
-            <name>Anissa Lam</name>
-            <url>http://blogs.sun.com/anilam</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-
     <dependencies>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -130,13 +138,6 @@
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>${glassfish.version}</version>
-	    <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-core</artifactId>
-            <version>${glassfish.version}</version>
-	    <optional>true</optional>
 	    <scope>provided</scope>
         </dependency>
     </dependencies>
