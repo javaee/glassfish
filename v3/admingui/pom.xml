@@ -218,13 +218,14 @@
         </dependency>
     </dependencies>
 
-<!--
     <properties>
-	<hk2.version>0.3.8</hk2.version>
-	<hk2.plugin.version>0.3.8</hk2.plugin.version>
+	<!--
+	    We are overriding these values here so we can support a range
+	    of versions.  Anything after these version numbers is supported.
+	-->
+	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
 	<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 	<amx-api.version>10.0-SNAPSHOT</amx-api.version>
-	<jsp-api.version>2.1</jsp-api.version>
+	<hk2.version>0.3.8</hk2.version>
     </properties>
--->
 </project>
