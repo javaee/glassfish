@@ -45,7 +45,7 @@
     </parent>
 
     <artifactId>eclipselink-wrapper</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <name>Repackaging of EclipseLink as a module</name>
     <developers>
         <developer>

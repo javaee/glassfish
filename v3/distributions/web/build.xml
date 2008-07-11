@@ -115,6 +115,8 @@
         <resolveAll todir="target/stage/glassfish/modules">
             <!-- first filter out all the distribution fragments and their transitive dependencies -->
             <packaging not="distribution-fragment" />
+            <!-- Also filter our projects with pom packaging to avoid packaging the .pom--> 
+            <packaging not="pom" />
             <!-- then get rid of all the dependencies that are in the webtier -->
             <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
