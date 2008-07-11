@@ -47,7 +47,7 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-plugin-service</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin GUI Integration</name>
+    <name>Admin Console Integration</name>
     <description>Glassfish V3 Admin Console Integration</description>
 
     <build>
@@ -101,6 +101,15 @@
     </build>
     <developers>
         <developer>
+            <id>anilam</id>
+            <name>Anissa Lam</name>
+            <url>http://blogs.sun.com/anilam</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
             <id>kenpaulsen</id>
             <name>Ken Paulsen</name>
             <url>http://blogs.sun.com/paulsen</url>
@@ -121,6 +130,8 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
 	    <version>${glassfish-api.version}</version>
+	    <!--<version>10.0.0-rev6</version>-->
+	    <!--<version>[10.0*,11.0)</version> -->
         </dependency>
     </dependencies>
 
