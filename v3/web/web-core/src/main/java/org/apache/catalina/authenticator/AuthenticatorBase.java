@@ -479,15 +479,8 @@ public abstract class AuthenticatorBase
      * @exception IOException if an input/output error occurs
      * @exception ServletException if thrown by a processing element
      */
-    /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-    */
-    // START OF IASRI 4665318
     public int invoke(Request request, Response response)
     throws IOException, ServletException {
-        // END OF IASRI 4665318
                 
         // START GlassFish 247
         if (!context.getAvailable()) {
@@ -507,19 +500,11 @@ public abstract class AuthenticatorBase
         // If this is not an HTTP request, do nothing
         if (!(request instanceof HttpRequest) ||
                 !(response instanceof HttpResponse)) {
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
-            // return;
             return INVOKE_NEXT;
-            // END OF IASRI 4665318
         }
         if (!(request.getRequest() instanceof HttpServletRequest) ||
                 !(response.getResponse() instanceof HttpServletResponse)) {
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
-            // return;
             return INVOKE_NEXT;
-            // END OF IASRI 4665318
         }
         */
         
@@ -561,11 +546,7 @@ public abstract class AuthenticatorBase
             (!Constants.FORM_METHOD.equals(config.getAuthMethod())) */ ) {
             if (log.isLoggable(Level.FINE))
                 log.fine(" Not subject to any constraint");
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
-            // return;
             return processSecurityCheck(hrequest,hresponse,config);
-            // END OF IASRI 4665318
         }
         
         // Make sure that constrained resources are not cached by web proxies
@@ -594,10 +575,7 @@ public abstract class AuthenticatorBase
                 log.fine(" Failed hasUserDataPermission() test");
             // ASSERT: Authenticator already set the appropriate
             // HTTP status code, so we do not have to do anything special
-            // START OF IASRI 4665318
-            // return;
             return END_PIPELINE;
-            // END OF IASRI 4665318
         }
         
         //START SJSAS 6202703
@@ -613,10 +591,7 @@ public abstract class AuthenticatorBase
                         log.debug(" Failed authenticate() test");
                     //ASSERT: Authenticator already set the appropriate
                     //HTTP status code, so we do not have to do anything special
-                    // START OF IASRI 4665318
-                    // return;
                     return END_PIPELINE;
-                    // END OF IASRI 4665318
                 } else {
                     break;
                 }
@@ -673,11 +648,7 @@ public abstract class AuthenticatorBase
              * appropriate HTTP status code, so we do not have to do
              * anything special
              */
-            // START OF IASRI 4665318
-            // return;
             return END_PIPELINE;
-            // END OF IASRI 4665318
-
         }
         
         // START IASRI 4823322
@@ -700,11 +671,7 @@ public abstract class AuthenticatorBase
         // Any and all specified constraints have been satisfied
         if (log.isLoggable(Level.FINE))
             log.fine("Successfully passed all security constraints");
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
         return INVOKE_NEXT;
-        // END OF IASRI 4665318
-        
     }
 
     /**
@@ -1030,10 +997,7 @@ public abstract class AuthenticatorBase
             if (!authenticate(hrequest, hresponse, config)) {
                 if (log.isLoggable(Level.FINE))
                     log.fine(" Failed authenticate() test ??" + requestURI );
-                // START OF IASRI 4665318
-                // return;
                 return END_PIPELINE;
-                // END OF IASRI 4665318
             }
         }
 	return INVOKE_NEXT;

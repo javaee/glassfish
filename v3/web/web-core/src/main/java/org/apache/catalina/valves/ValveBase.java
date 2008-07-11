@@ -263,7 +263,6 @@ public abstract class ValveBase
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-    // START OF IASRI 4665318
     public abstract int invoke(Request request, Response response)
         throws IOException, ServletException;
 
@@ -278,20 +277,10 @@ public abstract class ValveBase
             throws IOException, ServletException {
         // Deliberate no-op
     }
-    // END OF IASRI 4665318
 
 
     /**
-     * The implementation-specific logic represented by this Valve.  See the
-     * Valve description for the normal design patterns for this method.
-     * <p>
-     * This method <strong>MUST</strong> be provided by a subclass.
-     *
-     * @param request The servlet request to be processed
-     * @param response The servlet response to be created
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
+     * Tomcat-style invocation.
      */
     public void invoke(org.apache.catalina.connector.Request request,
                        org.apache.catalina.connector.Response response)

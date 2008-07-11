@@ -353,24 +353,14 @@ public class SingleSignOn
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-    /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-    */
-    // START OF IASRI 4665318
     public int invoke(Request request, Response response)
         throws IOException, ServletException {
-    // END OF IASRI 4665318
 
         // If this is not an HTTP request and response, just pass them on
         /* GlassFish 6386229
         if (!(request instanceof HttpRequest) ||
             !(response instanceof HttpResponse)) {
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
             return INVOKE_NEXT;
-            // END OF IASRI 4665318
         }
         */
         HttpServletRequest hreq =
@@ -386,11 +376,7 @@ public class SingleSignOn
             if (debug >= 1)
                 log(" Principal '" + hreq.getUserPrincipal().getName() +
                     "' has already been authenticated");
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
             return END_PIPELINE;
-            // END OF IASRI 4665318
-
         }
 
         // Check for the single sign on cookie
@@ -409,11 +395,7 @@ public class SingleSignOn
         if (cookie == null) {
             if (debug >= 1)
                 log(" SSO cookie is not present");
-            // START OF IASRI 4665318
-            // context.invokeNext(request, response);
             return INVOKE_NEXT;
-            // END OF IASRI 4665318
-
         }
 
         // Look up the cached Principal associated with this cookie value
@@ -436,11 +418,7 @@ public class SingleSignOn
         }
 
         // Invoke the next Valve in our pipeline
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
         return INVOKE_NEXT;
-        // END OF IASRI 4665318
-
     }
 
 

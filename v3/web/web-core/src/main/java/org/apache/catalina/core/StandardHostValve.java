@@ -174,15 +174,8 @@ final class StandardHostValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
-     /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext valveContext)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Select the Context to be used for this Request
         Context context = request.getContext();
@@ -197,10 +190,7 @@ final class StandardHostValve
                 (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setDetailMessage(sm.getString("standardHost.noContext"));
             // END S1AS 4878272
-            // START OF IASRI 4665318
-            // return;     // NOTE - Not much else we can do generically
             return END_PIPELINE;
-            // END OF IASRI 4665318
         }
 
         // Bind the context CL to the current thread
@@ -218,7 +208,6 @@ final class StandardHostValve
         // END GlassFish Issue 1057
 
         // Ask this Context to process this request
-        // START OF IASRI 4665318
         context.getPipeline().invoke(request, response);
         return END_PIPELINE;
     }
@@ -236,7 +225,7 @@ final class StandardHostValve
         // END SJSAS 6374990
 
         HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
-        // END OF IASRI 4665318
+
         // Error page processing
         response.setSuspended(false);
 

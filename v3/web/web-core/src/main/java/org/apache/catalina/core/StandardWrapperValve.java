@@ -132,15 +132,8 @@ final class StandardWrapperValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
-    /** IASRI 4665318
-    public void invoke(Request request, Response response,
-                        ValveContext valveContext)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
     public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Initialize local variables we may need
         boolean unavailable = false;
@@ -416,10 +409,8 @@ final class StandardWrapperValve
         processingTimeMillis += time;
         if( time > maxTimeMillis) maxTimeMillis = time;
         if( time < minTimeMillis) minTimeMillis = time;
-        // START OF IASRI 4665318
+
         return END_PIPELINE;
-        // END OF IASRI 4665318
- 
     }
 
 

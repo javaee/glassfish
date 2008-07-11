@@ -168,15 +168,8 @@ final class StandardContextValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
-    /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-    */
-    // START OF IASRI 4665318
     public int invoke(Request request, Response response)
         throws IOException, ServletException {
-    // END OF IASRI 4665318
 
         // Disallow any direct access to resources under WEB-INF or META-INF
         HttpRequest hreq = (HttpRequest) request;
@@ -278,10 +271,7 @@ final class StandardContextValve
                         t);
                     ServletRequest sreq = request.getRequest();
                     sreq.setAttribute(Globals.EXCEPTION_ATTR,t);
-                    // START OF IASRI 4665318
-                    // return;
                     return END_PIPELINE;
-                    // END OF IASRI 4665318
                 // START SJSAS 6329662
                 } finally {
                     container.fireContainerEvent(
@@ -292,7 +282,6 @@ final class StandardContextValve
             }
         }
 
-        // START OF IASRI 4665318
         /* GlassFish 1343
         wrapper.getPipeline().invoke(request, response);
         */
@@ -303,14 +292,13 @@ final class StandardContextValve
             basic.postInvoke(request, response);
         }
         // END GlassFish 1343
-        return END_PIPELINE;
-        // END OF IASRI 4665318
 
+        return END_PIPELINE;
    } 
 
     public void postInvoke(Request request, Response response)
         throws IOException, ServletException {
-    // END OF IASRI 4665318
+
         Object instances[] = 
             ((Context) container).getApplicationEventListeners();
 

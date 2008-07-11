@@ -138,26 +138,15 @@ public class RequestDumperValve
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-     /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Skip logging for non-HTTP requests and responses
         if (!(request instanceof HttpRequest) ||
             !(response instanceof HttpResponse)) {
-             // START OF IASRI 4665318
-             // context.invokeNext(request, response);
-             // return;
              return INVOKE_NEXT;
-             // END OF IASRI 4665318
-
         }
+
         HttpRequest hrequest = (HttpRequest) request;
         HttpResponse hresponse = (HttpResponse) response;
         HttpServletRequest hreq =
@@ -217,8 +206,6 @@ public class RequestDumperValve
         log("---------------------------------------------------------------");
 
         // Perform the request
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
         return INVOKE_NEXT;
     }
 
@@ -234,7 +221,7 @@ public class RequestDumperValve
             (HttpServletRequest) hrequest.getRequest();
         HttpServletResponse hres =
             (HttpServletResponse) hresponse.getResponse();
-        // END OF IASRI 4665318
+
         // Log post-service information
         log("---------------------------------------------------------------");
         log("          authType=" + hreq.getAuthType());

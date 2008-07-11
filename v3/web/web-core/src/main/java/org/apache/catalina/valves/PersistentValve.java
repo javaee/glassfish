@@ -137,15 +137,8 @@ public class PersistentValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
-     /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Select the Context to be used for this Request
         StandardHost host = (StandardHost) getContainer();
@@ -154,9 +147,7 @@ public class PersistentValve
             ((HttpServletResponse) response.getResponse()).sendError
                 (HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                  sm.getString("standardHost.noContext"));
-            // START OF IASRI 4665318
             return END_PIPELINE;
-            // END OF IASRI 4665318
         }
 
         // Bind the context CL to the current thread
@@ -197,9 +188,6 @@ public class PersistentValve
         log("sessionId: " + sessionId);
 
         // Ask the next valve to process the request.
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
-        // return;
         return INVOKE_NEXT;
     }
 
@@ -222,7 +210,6 @@ public class PersistentValve
         HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
         String sessionId = hreq.getRequestedSessionId();
         Manager manager = context.getManager();
-        // END OF IASRI 4665318
 
         // Read the sessionid after the response.
         // HttpSession hsess = hreq.getSession(false);

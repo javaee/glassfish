@@ -307,20 +307,14 @@ public abstract class RequestFilterValve
                 if (sres instanceof HttpServletResponse) {
                     HttpServletResponse hres = (HttpServletResponse) sres;
                     hres.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    // START OF IASRI 4665318
-                    // return;
                     return END_PIPELINE;
-                    // END OF IASRI 4665318
                 }
                 */
                 // START GlassFish 6386229 
                 HttpServletResponse hres = (HttpServletResponse) sres;
                 hres.sendError(HttpServletResponse.SC_FORBIDDEN);
                 // END GlassFish 6386229                 
-                // START OF IASRI 4665318
-                // return;
                 return END_PIPELINE;
-                // END OF IASRI 4665318
                 // GlassFish 638622                   
             }
         }
@@ -328,21 +322,13 @@ public abstract class RequestFilterValve
         // Check the allow patterns, if any
         for (int i = 0; i < allows.length; i++) {
             if (allows[i].matcher(property).matches()) {
-                // START OF IASRI 4665318
-                //context.invokeNext(renuest
-                // return;
                 return INVOKE_NEXT;
-                // END OF IASRI 4665318
             }
         }
 
         // Allow if denies specified but not allows
         if ((denies.length > 0) && (allows.length == 0)) {
-            // START OF IASRI 4665318
-            //context.invokeNext(renuest
-            // return;
             return INVOKE_NEXT;
-            // END OF IASRI 4665318
         }
 
         // Deny this request
@@ -351,21 +337,14 @@ public abstract class RequestFilterValve
         if (sres instanceof HttpServletResponse) {
             HttpServletResponse hres = (HttpServletResponse) sres;
             hres.sendError(HttpServletResponse.SC_FORBIDDEN);
-            // START OF IASRI 4665318
-            // return;
             return END_PIPELINE;
-            // END OF IASRI 4665318
         }
         */
         // START GlassFish 6386229 
         HttpServletResponse hres = (HttpServletResponse) sres;
         hres.sendError(HttpServletResponse.SC_FORBIDDEN);
         // END GlassFish 6386229        
-        // START OF IASRI 4665318
-        // return;
         return END_PIPELINE;
-        // END OF IASRI 4665318
-
     }
 
 

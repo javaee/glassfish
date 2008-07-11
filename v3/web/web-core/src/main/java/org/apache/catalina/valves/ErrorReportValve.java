@@ -156,26 +156,16 @@ public class ErrorReportValve
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-     /** IASRI 4665318
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Perform the request
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
         return INVOKE_NEXT;
 
      }
 
      public void postInvoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         ServletRequest sreq = (ServletRequest) request;
         Throwable throwable =

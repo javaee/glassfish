@@ -363,6 +363,9 @@ public final class AccessLogValve
      */
     private String fileDateFormat = null;
 
+    private long t1;
+
+
     // ------------------------------------------------------------- Properties
 
 
@@ -578,33 +581,20 @@ public final class AccessLogValve
      * @exception IOException if an input/output error has occurred
      * @exception ServletException if a servlet error has occurred
      */
-     /** IASRI 4665318
-    public void invoke(Request request, Response response,
-                       ValveContext context)
-        throws IOException, ServletException {
-    */
-    // START OF IASRI 4665318
-    
-    long t1;
-
     public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Pass this request on to the next valve in our pipeline
-        t1=System.currentTimeMillis();
+        t1 = System.currentTimeMillis();
 
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
-        // return;
         return INVOKE_NEXT;
     }
 
 
     public void postInvoke(Request request, Response response){
-        // END OF IASRI 4665318
-        long t2=System.currentTimeMillis();
-        long time=t2-t1;
+
+        long t2 = System.currentTimeMillis();
+        long time = t2 - t1;
 
         if (condition!=null &&
                 null!=request.getRequest().getAttribute(condition)) {

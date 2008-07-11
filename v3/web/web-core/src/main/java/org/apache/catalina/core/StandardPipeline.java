@@ -98,11 +98,7 @@ import org.apache.commons.modeler.Registry;
  */
 
 public class StandardPipeline
-    // START OF IASRI 4665318
-    // ValveContext is not needed as it's use increases stack depth
-    // implements Pipeline, Contained, Lifecycle, ValveContext {
     implements Pipeline, Contained, Lifecycle {
-    // END OF IASRI 4665318
 
     private static Logger log = Logger.getLogger(
         StandardPipeline.class.getName());
@@ -585,7 +581,6 @@ public class StandardPipeline
     public void invoke(Request request, Response response)
         throws IOException, ServletException {
 
-        // START PWC 4665318
         doInvoke(request, response);
     }
 
@@ -603,9 +598,7 @@ public class StandardPipeline
 
     private void doInvoke(Request request, Response response,
         boolean chaining) throws IOException, ServletException {
-        // END PWC 4665318
 
-        // START OF IASRI 4665318
         if ((valves.length > 0) || (basic != null)) {
             // Set the status so that if there are no valves (other than the
             // basic one), the basic valve's request processing logic will
@@ -669,8 +662,6 @@ public class StandardPipeline
             throw new ServletException
                 (sm.getString("standardPipeline.noValve"));
         }
-        // END OF IASRI 4665318
-
     }
 
 

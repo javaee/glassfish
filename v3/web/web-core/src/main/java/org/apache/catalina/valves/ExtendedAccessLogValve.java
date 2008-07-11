@@ -363,6 +363,9 @@ public final class ExtendedAccessLogValve
     private String fileDateFormat = null;
 
 
+    private long startTime;
+
+
     // ------------------------------------------------------------- Properties
 
 
@@ -569,32 +572,18 @@ public final class ExtendedAccessLogValve
      * @exception IOException if an input/output error has occurred
      * @exception ServletException if a servlet error has occurred
      */
-     /**
-     public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
-
-     private long startTime;
-
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
         // Pass this request on to the next valve in our pipeline
-        startTime=System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
-        // return;
         return INVOKE_NEXT;
     }
 
 
     public void postInvoke(Request request, Response response)
                                     throws IOException, ServletException{
-        // END OF IASRI 4665318
 
         long endTime = System.currentTimeMillis();
         long runTime = endTime-startTime;

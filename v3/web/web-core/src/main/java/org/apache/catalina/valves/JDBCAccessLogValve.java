@@ -443,26 +443,15 @@ public final class JDBCAccessLogValve
      * @exception ServletException Database SQLException is wrapped 
      * in a ServletException.
      */    
-    /** IASRI 4665318
-    public void invoke(Request request, Response response,
-                        ValveContext context)
-         throws IOException, ServletException {
-     */
-     // START OF IASRI 4665318
      public int invoke(Request request, Response response)
          throws IOException, ServletException {
-     // END OF IASRI 4665318
 
-        // START OF IASRI 4665318
-        // context.invokeNext(request, response);
-        // return;
         return INVOKE_NEXT;
     }
 
 
     public void postInvoke(Request request, Response response)
                                     throws IOException, ServletException{
-        // END OF IASRI 4665318
 
         ServletRequest req = request.getRequest();
         HttpServletRequest hreq = null;

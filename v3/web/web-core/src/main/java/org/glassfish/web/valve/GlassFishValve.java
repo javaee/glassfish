@@ -77,7 +77,6 @@ import org.apache.catalina.Response;
 
 public interface GlassFishValve {
 
-    // START OF IASRI 4665318
     // ----------------------------------------------------- Manifest Constants
 
     /**
@@ -97,7 +96,6 @@ public interface GlassFishValve {
     public static final int END_PIPELINE = 2;
 
 
-    // END OF IASRI 4665318
     //-------------------------------------------------------------- Properties
 
     /**
@@ -156,20 +154,6 @@ public interface GlassFishValve {
      *  by a subsequently invoked Valve, Filter, or Servlet
      * @exception ServletException if a servlet error occurs, or is thrown
      *  by a subsequently invoked Valve, Filter, or Servlet
-     */
-    /** START IASRI 4665318
-    public void invoke(Request request, Response response,
-                       ValveContext context)
-        throws IOException, ServletException;
-    */
-    // START OF IASRI 4665318
-    /**
-     * <li>In order to reduce the stack depth, a ValveContext is no longer
-     *     passed into the <code>invoke()</code> method. Instead, the method
-     *     returns either INVOKE_NEXT or END_PIPELINE to the caller
-     *     (<code>Pipeline.invoke()</code>). This return code is used to
-     *     determine whether the next valve in the pipeline should be
-     *     invoked.
      *
      * @return <code>INVOKE_NEXT</code> or <code>END_PIPELINE</code>
      */
@@ -187,6 +171,5 @@ public interface GlassFishValve {
      */
     public void postInvoke(Request request, Response response)
         throws IOException, ServletException;
-    // END OF IASRI 4665318
 }
 
