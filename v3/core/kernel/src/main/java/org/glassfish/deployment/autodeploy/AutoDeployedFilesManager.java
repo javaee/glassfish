@@ -82,7 +82,6 @@ public class AutoDeployedFilesManager {
     public static AutoDeployedFilesManager loadStatus(String autoDeploymentDir) throws Exception {
 
         String statusDir = autoDeploymentDir + File.separator + STATUS_DIR_NAME;
-        File fileObj = new File(statusDir);
    
         AutoDeployedFilesManager adfm = new AutoDeployedFilesManager(statusDir);
         return adfm;
