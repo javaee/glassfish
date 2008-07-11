@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.logging.*;
 
 import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.StringManager;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.util.buf.B2CConverter;
 import com.sun.grizzly.util.buf.ByteChunk;
@@ -82,6 +83,13 @@ public class InputBuffer extends Reader
                CharChunk.CharOutputChannel {
 
     private static Logger log = Logger.getLogger(InputBuffer.class.getName());
+
+    /**
+     * The string manager for this package.
+     */
+    private static final StringManager sm =
+        StringManager.getManager(Constants.Package);
+
 
     // -------------------------------------------------------------- Constants
 
@@ -121,27 +129,9 @@ public class InputBuffer extends Reader
 
 
     /**
-     * Number of bytes read.
-     */
-    private int bytesRead = 0;
-
-
-    /**
-     * Number of chars read.
-     */
-    private int charsRead = 0;
-
-
-    /**
      * Flag which indicates if the input buffer is closed.
      */
     private boolean closed = false;
-
-
-    /**
-     * Byte chunk used to input bytes.
-     */
-    private ByteChunk inputChunk = new ByteChunk();
 
 
     /**
@@ -159,7 +149,8 @@ public class InputBuffer extends Reader
     /**
      * List of encoders.
      */
-    protected HashMap encoders = new HashMap();
+    protected HashMap<String, B2CConverter> encoders =
+        new HashMap<String, B2CConverter>();
 
 
     /**
@@ -259,8 +250,6 @@ public class InputBuffer extends Reader
             log.finest("recycle()");
 
         state = INITIAL_STATE;
-        bytesRead = 0;
-        charsRead = 0;
 
         // START OF SJSAS 6231069
         /*
@@ -348,12 +337,18 @@ public class InputBuffer extends Reader
 
     public int readByte()
         throws IOException {
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         return bb.substract();
     }
 
 
     public int read(byte[] b, int off, int len)
         throws IOException {
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         return bb.substract(b, off, len);
     }
 
@@ -403,18 +398,16 @@ public class InputBuffer extends Reader
             }
         }
 
-        int limit = bb.getLength()+cb.getStart();
-        if ( cb.getLimit() < limit )
-            cb.setLimit(limit);
-
         if (markPos == -1) {
             cb.setOffset(0);
             cb.setEnd(0);
         }
-
-        conv.convert(bb, cb);
-        bb.setOffset(bb.getEnd());
+        int limit = bb.getLength()+cb.getStart();
+        if ( cb.getLimit() < limit )
+            cb.setLimit(limit);
         state = CHAR_STATE;
+        conv.convert(bb, cb, bb.getLength());
+        bb.setOffset(bb.getEnd());
 
         return cb.getLength();
 
@@ -423,6 +416,10 @@ public class InputBuffer extends Reader
 
     public int read()
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         // START OF SJSAS 6231069
         initChar();
         // END OF SJSAS 6231069
@@ -432,6 +429,10 @@ public class InputBuffer extends Reader
 
     public int read(char[] cbuf)
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         // START OF SJSAS 6231069
         initChar();
         // END OF SJSAS 6231069
@@ -441,6 +442,10 @@ public class InputBuffer extends Reader
 
     public int read(char[] cbuf, int off, int len)
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         // START OF SJSAS 6231069
 	initChar();
         // END OF SJSAS 6231069
@@ -450,6 +455,9 @@ public class InputBuffer extends Reader
 
     public long skip(long n)
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
 
         if (n < 0) {
             throw new IllegalArgumentException();
@@ -485,6 +493,10 @@ public class InputBuffer extends Reader
 
     public boolean ready()
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         // START OF SJSAS 6231069
         initChar();
         // END OF SJSAS 6231069
@@ -514,17 +526,17 @@ public class InputBuffer extends Reader
                 cb.setOffset(0);
             }
         }
-        int offset = readAheadLimit;
-        if (offset < size) {
-            offset = size;
-        }
-        cb.setLimit(cb.getStart() + offset);
+        cb.setLimit(cb.getStart() + readAheadLimit + size);
         markPos = cb.getStart();
     }
 
 
     public void reset()
         throws IOException {
+
+        if (closed)
+            throw new IOException(sm.getString("inputBuffer.streamClosed"));
+
         if (state == CHAR_STATE) {
             if (markPos < 0) {
                 cb.recycle();
@@ -560,14 +572,14 @@ public class InputBuffer extends Reader
         gotEnc = true;
         if (enc == null)
             enc = DEFAULT_ENCODING;
-        conv = (B2CConverter) encoders.get(enc);
+        conv = encoders.get(enc);
         if (conv == null) {
             if (SecurityUtil.isPackageProtectionEnabled()){
                 try{
-                    conv = (B2CConverter)AccessController.doPrivileged(
-                            new PrivilegedExceptionAction(){
+                    conv = AccessController.doPrivileged(
+                            new PrivilegedExceptionAction<B2CConverter>(){
 
-                                public Object run() throws IOException{
+                                public B2CConverter run() throws IOException{
                                     return new B2CConverter(enc);
                                 }
 
