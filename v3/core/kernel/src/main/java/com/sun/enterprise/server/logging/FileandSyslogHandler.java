@@ -102,7 +102,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     // Initially the LogRotation will be off until the domain.xml value is read.
     private int limitForFileRotation = 0;
 
-    private BlockingQueue<LogRecord> pendingRecords = new ArrayBlockingQueue<LogRecord>(500);
+    private BlockingQueue<LogRecord> pendingRecords = new ArrayBlockingQueue<LogRecord>(5000);
 
     // Rotation can be done in 3 ways
     // 1. Based on the Size: Rotate when some Threshold number of bytes are 

@@ -215,7 +215,7 @@ public class CLIMain
     }
 
 
-    public void displayClosestMatch(final String commandName)
+    public static void displayClosestMatch(final String commandName)
         throws InvalidCommandException
     {
         try {
@@ -281,7 +281,7 @@ public class CLIMain
         throws InvalidCommandException, CommandException
     {
         if (validCommand == null) {
-            displayClosestMatch(commandName);
+            //displayClosestMatch(commandName);
                 //throw an empty exception so that exit code is 1.
             throw new InvalidCommandException(commandName);
         }
@@ -308,7 +308,7 @@ public class CLIMain
      *  @param key, the string to be localized
      *  @param toInsert, the strings to be inserted in the placeholders
      */
-    private String getLocalizedString(String key, Object[] toInsert)
+    private static String getLocalizedString(String key, Object[] toInsert)
     {
         try
         {

@@ -26,11 +26,8 @@ package org.glassfish.api;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * A Startup service is an HK2 component invoked at application server startup.
  * Implementation of this interface will be run during the application server 
- * startup sequence. To do so, an implementation of this interface must also 
- * declare itself using META-INF/services file as described in the JDK 
- * jar file specification.
+ * startup sequence.
  *
  * @author Jerome Dochez
  */

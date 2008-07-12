@@ -68,6 +68,11 @@ public class AsadminMain {
         }
         
         if(exitCode == ERROR) {
+            try {
+                CLIMain.displayClosestMatch(args[0]);
+            } catch (InvalidCommandException e) {
+                // not a big deal if we cannot help
+            }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", args[0]));
         }

@@ -217,7 +217,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link ModuleLogLevels }
      */
-    @Attribute
+    @Element
     public ModuleLogLevels getModuleLogLevels();
 
     /**
