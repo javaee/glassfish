@@ -1204,7 +1204,7 @@ public class ApplicationHandlers {
             String appType = amxRoot.getAppType(appName);
             
             if(includeAppRef(appName, appType, null)){
-                if ("true".equalsIgnoreCase(refObject.getLBEnabled()));
+                if ("true".equalsIgnoreCase(refObject.getLBEnabled()))
                     totalEnabled++;
                 totalCount++;
             }
