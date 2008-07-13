@@ -401,7 +401,7 @@ public class TargetUtil {
         return disp;
     }
     
-     
+    /*
     public static String getNumberLBInstancesByTarget(String cluster){
         Map<String,ServerRefConfig> serverRefMap = AMXRoot.getInstance().getClustersConfig().getClusterConfigMap().get(cluster).getServerRefConfigMap();
         Collection <ServerRefConfig> refs = serverRefMap.values();
@@ -409,12 +409,12 @@ public class TargetUtil {
         if (totalCount == 0) return GuiUtil.getMessage("loadBalancer.noInstance");
         int totalEnabled = 0;
         for(ServerRefConfig ref : refs){
-            if (Boolean.valueOf(ref.getLBEnabled()));
+            if (Boolean.valueOf(ref.getLBEnabled()))
                 totalEnabled++;
         }
         return GuiUtil.getMessage("loadBalancer.numLBInstance", new Object[]{""+totalEnabled, ""+totalCount});
     }
-    
+     */
     
     public static String getDomainRoot() {
         String domainRoot = System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY);
