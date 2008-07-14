@@ -173,6 +173,7 @@ import org.glassfish.api.container.RequestDispatcher;
 
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.security.common.CipherInfo;
+import org.xml.sax.EntityResolver;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
 
@@ -444,6 +445,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             ParserUtils.setSchemaResourcePrefix(schemas.toURL().toString());
             ParserUtils.setDtdResourcePrefix(dtds.toURL().toString());
+            ParserUtils.setEntityResolver(_serverContext.getDefaultHabitat().getComponent(EntityResolver.class, "web"));
         } catch(MalformedURLException e) {
             _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
         }
