@@ -287,114 +287,144 @@ public final class IntrospectionUtils {
         return cp;
     }
 
-    /** Find a method with the right name
-	If found, call the method ( if param is int or boolean we'll convert
-	value to the right type before) - that means you can have setDebug(1).
-    */
-    public static void setProperty( Object o, String name, String value ) {
-	if( dbg > 1 ) d("setProperty(" +
-			o.getClass() + " " +  name + "="  +
-			value  +")" );
 
-	String setter= "set" +capitalize(name);
+    /**
+     * Find a method with the right name If found, call the method ( if param is
+     * int or boolean we'll convert value to the right type before) - that means
+     * you can have setDebug(1).
+     */
+    public static boolean setProperty(Object o, String name, String value) {
+        if (dbg > 1)
+            d("setProperty(" + o.getClass() + " " + name + "=" + value + ")");
 
-	try {
-	    Method methods[]=findMethods( o.getClass() );
-	    Method setPropertyMethod=null;
+        String setter = "set" + capitalize(name);
 
-	    // First, the ideal case - a setFoo( String ) method
-	    for( int i=0; i< methods.length; i++ ) {
-		Class paramT[]=methods[i].getParameterTypes();
-		if( setter.equals( methods[i].getName() ) &&
-		    paramT.length == 1 &&
-		    "java.lang.String".equals( paramT[0].getName())) {
-		    
-		    methods[i].invoke( o, new Object[] { value } );
-		    return;
-		}
-	    }
-	    
-	    // Try a setFoo ( int ) or ( boolean )
-	    for( int i=0; i< methods.length; i++ ) {
-		boolean ok=true;
-		if( setter.equals( methods[i].getName() ) &&
-		    methods[i].getParameterTypes().length == 1) {
+        try {
+            Method methods[] = findMethods(o.getClass());
+            Method setPropertyMethodVoid = null;
+            Method setPropertyMethodBool = null;
 
-		    // match - find the type and invoke it
-		    Class paramType=methods[i].getParameterTypes()[0];
-		    Object params[]=new Object[1];
+            // First, the ideal case - a setFoo( String ) method
+            for (int i = 0; i < methods.length; i++) {
+                Class paramT[] = methods[i].getParameterTypes();
+                if (setter.equals(methods[i].getName()) && paramT.length == 1
+                        && "java.lang.String".equals(paramT[0].getName())) {
 
-		    // Try a setFoo ( int )
-		    if ("java.lang.Integer".equals( paramType.getName()) ||
-			"int".equals( paramType.getName())) {
-			try {
-			    params[0]= Integer.valueOf(value);
-			} catch( NumberFormatException ex ) {ok=false;}
+                    methods[i].invoke(o, new Object[] { value });
+                    return true;
+                }
+            }
 
-		    // Try a setFoo ( boolean )
-		    } else if ("java.lang.Boolean".
-			       equals( paramType.getName()) ||
-			"boolean".equals( paramType.getName())) {
-			params[0] = Boolean.valueOf(value);
+            // Try a setFoo ( int ) or ( boolean )
+            for (int i = 0; i < methods.length; i++) {
+                boolean ok = true;
+                if (setter.equals(methods[i].getName())
+                        && methods[i].getParameterTypes().length == 1) {
 
-		    // Try a setFoo ( long )
-		    } else if ("java.lang.Long".equals( paramType.getName()) ||
-			"long".equals( paramType.getName())) {
-			try {
-			    params[0]= Long.valueOf(value);
-			} catch( NumberFormatException ex ) {ok=false;}
-                    } else if ("java.net.InetAddress".
-				equals( paramType.getName())){
-			try{
- 			    params[0]= InetAddress.getByName(value);
- 			}catch(UnknownHostException exc) {
- 			    d("Unable to resolve host name:" + value);
- 			    ok=false;
- 			} 
- 		    // Unknown type
-		    } else {
-			d("Unknown type " + paramType.getName() );
-		    }
+                    // match - find the type and invoke it
+                    Class paramType = methods[i].getParameterTypes()[0];
+                    Object params[] = new Object[1];
 
-		    if( ok ) {
-			methods[i].invoke( o, params );
-			return;
-		    }
-		}
+                    // Try a setFoo ( int )
+                    if ("java.lang.Integer".equals(paramType.getName())
+                            || "int".equals(paramType.getName())) {
+                        try {
+                            params[0] = new Integer(value);
+                        } catch (NumberFormatException ex) {
+                            ok = false;
+                        }
+                    // Try a setFoo ( long )
+                    }else if ("java.lang.Long".equals(paramType.getName())
+                                || "long".equals(paramType.getName())) {
+                            try {
+                                params[0] = new Long(value);
+                            } catch (NumberFormatException ex) {
+                                ok = false;
+                            }
 
-		// save "setProperty" for later
-		if( "setProperty".equals( methods[i].getName())) {
-		    setPropertyMethod=methods[i];
-		}
-	    }
+                        // Try a setFoo ( boolean )
+                    } else if ("java.lang.Boolean".equals(paramType.getName())
+                            || "boolean".equals(paramType.getName())) {
+                        params[0] = new Boolean(value);
 
-	    // Ok, no setXXX found, try a setProperty("name", "value")
-	    if( setPropertyMethod != null ) {
-		Object params[]=new Object[2];
-		params[0]=name;
-		params[1]=value;
-		setPropertyMethod.invoke( o, params );
-	    }
+                        // Try a setFoo ( InetAddress )
+                    } else if ("java.net.InetAddress".equals(paramType
+                            .getName())) {
+                        try {
+                            params[0] = InetAddress.getByName(value);
+                        } catch (UnknownHostException exc) {
+                            d("Unable to resolve host name:" + value);
+                            ok = false;
+                        }
 
-	} catch( IllegalArgumentException ex2 ) {
-            log.log(Level.WARNING, "IAE " + o + " " + name + " " + value,
-                    ex2);
-	} catch( SecurityException ex1 ) {
-	    if( dbg > 0 )
-		d("SecurityException for " + o.getClass() + " " +
-			name + "="  + value  +")" );
-	    if( dbg > 1 ) ex1.printStackTrace();
-	} catch (IllegalAccessException iae) {
-	    if( dbg > 0 )
-		d("IllegalAccessException for " +
-			o.getClass() + " " +  name + "="  + value  +")" );
-	    if( dbg > 1 ) iae.printStackTrace();
-	} catch (InvocationTargetException ie) {
-	    if( dbg > 0 )
-		d("InvocationTargetException for " + o.getClass() +
-			" " +  name + "="  + value  +")" );
-	    if( dbg > 1 ) ie.printStackTrace();
-	}
+                        // Unknown type
+                    } else {
+                        d("Unknown type " + paramType.getName());
+                    }
+
+                    if (ok) {
+                        methods[i].invoke(o, params);
+                        return true;
+                    }
+                }
+
+                // save "setProperty" for later
+                if ("setProperty".equals(methods[i].getName())) {
+                    if (methods[i].getReturnType()==Boolean.TYPE){
+                        setPropertyMethodBool = methods[i];
+                    }else {
+                        setPropertyMethodVoid = methods[i];    
+                    }
+                    
+                }
+            }
+
+            // Ok, no setXXX found, try a setProperty("name", "value")
+            if (setPropertyMethodBool != null || setPropertyMethodVoid != null) {
+                Object params[] = new Object[2];
+                params[0] = name;
+                params[1] = value;
+                if (setPropertyMethodBool != null) {
+                    try {
+                        return (Boolean) setPropertyMethodBool.invoke(o, params);
+                    }catch (IllegalArgumentException biae) {
+                        //the boolean method had the wrong
+                        //parameter types. lets try the other
+                        if (setPropertyMethodVoid!=null) {
+                            setPropertyMethodVoid.invoke(o, params);
+                            return true;
+                        }else {
+                            throw biae;
+                        }
+                    }
+                } else {
+                    setPropertyMethodVoid.invoke(o, params);
+                    return true;
+                }
+            }
+
+        } catch (IllegalArgumentException ex2) {
+            log.warning("IAE " + o + " " + name + " " + value + " " + ex2.getMessage());
+        } catch (SecurityException ex1) {
+            if (dbg > 0)
+                d("SecurityException for " + o.getClass() + " " + name + "="
+                        + value + ")");
+            if (dbg > 1)
+                ex1.printStackTrace();
+        } catch (IllegalAccessException iae) {
+            if (dbg > 0)
+                d("IllegalAccessException for " + o.getClass() + " " + name
+                        + "=" + value + ")");
+            if (dbg > 1)
+                iae.printStackTrace();
+        } catch (InvocationTargetException ie) {
+            if (dbg > 0)
+                d("InvocationTargetException for " + o.getClass() + " " + name
+                        + "=" + value + ")");
+            if (dbg > 1)
+                ie.printStackTrace();
+        }
+        return false;
     }
 
     public static Object getProperty( Object o, String name ) {
@@ -974,7 +1004,41 @@ public final class IntrospectionUtils {
 	}
 	return o;
     }
-    
+
+    public static Object convert(String object, Class paramType) {
+        Object result = null;
+        if ("java.lang.String".equals(paramType.getName())) {
+            result = object;
+        } else if ("java.lang.Integer".equals(paramType.getName())
+                || "int".equals(paramType.getName())) {
+            try {
+                result = new Integer(object);
+            } catch (NumberFormatException ex) {
+            }
+            // Try a setFoo ( boolean )
+        } else if ("java.lang.Boolean".equals(paramType.getName())
+                || "boolean".equals(paramType.getName())) {
+            result = new Boolean(object);
+
+            // Try a setFoo ( InetAddress )
+        } else if ("java.net.InetAddress".equals(paramType
+                .getName())) {
+            try {
+                result = InetAddress.getByName(object);
+            } catch (UnknownHostException exc) {
+                d("Unable to resolve host name:" + object);
+            }
+
+            // Unknown type
+        } else {
+            d("Unknown type " + paramType.getName());
+        }
+        if (result == null) {
+            throw new IllegalArgumentException("Can't convert argument: " + object);
+        }
+        return result;
+    }
+        
     // -------------------- Get property --------------------
     // This provides a layer of abstraction
 
