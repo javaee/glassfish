@@ -73,6 +73,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.logging.*;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
@@ -472,11 +473,11 @@ public class CoyoteProcessor implements Processor, ActionHook {
     private void addStringArray(String sArray[], String value) {
         if (sArray == null)
             sArray = new String[0];
-        String[] results = new String[sArray.length + 1];
+        ArrayList<String> results = new ArrayList<String>(sArray.length + 1);
         for (int i = 0; i < sArray.length; i++)
-            results[i] = sArray[i];
-        results[sArray.length] = value;
-        sArray = results;
+            results.add(i, sArray[i]);
+        results.add(sArray.length, value);
+        sArray = (String[])results.toArray();
     }
 
     /**
