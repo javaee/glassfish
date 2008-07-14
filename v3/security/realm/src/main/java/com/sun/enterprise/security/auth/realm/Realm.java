@@ -38,6 +38,9 @@ package com.sun.enterprise.security.auth.realm;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -51,22 +54,23 @@ import com.sun.enterprise.util.*;
  * @author Shing Wai Chan
  *
  */
+@Contract
 public abstract class Realm implements Comparable {
 
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(Realm.class);
 
-    private static Hashtable loadedRealms = new Hashtable();
+//    private static Hashtable loadedRealms = new Hashtable();
     private String myName;
 
     // Keep track of name of default realm. This is updated during startup
     // using value from server.xml
-    private static String defaultRealmName="default";
+//    private static String defaultRealmName="default";
     
     // Keep a mapping from "default" to default realm (if no such named
     // realm is present) for the sake of all the hardcoded accesses to it.
     // This needs to be removed as part of RI security service cleanup.
-    private final static String RI_DEFAULT="default";
+    final static String RI_DEFAULT="default";
 
     // All realms have a set of properties from config file, consolidate.
     private Properties ctxProps;
@@ -219,18 +223,42 @@ public abstract class Realm implements Comparable {
                                        Properties props)
         throws BadRealmException
     {
-        try {            
-            Class realmClass = Class.forName(className);
+        try {
+            Class realmClass = null;
+            try {
+                realmClass = Class.forName(className);
+            } catch (ClassNotFoundException ex) {
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                if (loader != null) {
+                    realmClass = loader.loadClass(className);
+                } else {
+                    throw ex;
+                }
+            }
+
             Object obj = realmClass.newInstance();
             Realm r = (Realm) obj;
             r.setName(name);
             r.init(props);
 
-            loadedRealms.put(name, r);            
+            Habitat habitat = Globals.getDefaultHabitat();
+            RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+            if (mgr == null) {
+                throw new BadRealmException("Unable to locate RealmsManager Service");
+            }
+            mgr.putIntoLoadedRealms(name, r);
             return r;
 
-        } catch(Exception e) {
-            throw new BadRealmException(e);
+        } catch (NoSuchRealmException ex) {
+            throw new BadRealmException(ex);
+        } catch (InstantiationException ex) {
+            throw new BadRealmException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new BadRealmException(ex);
+        } catch (ClassNotFoundException ex) {
+            //try a HK2 route
+            // Realm realm = Util.getDefaultHabitat().
+            throw new BadRealmException(ex);
         }
     }
 
@@ -251,14 +279,20 @@ public abstract class Realm implements Comparable {
      */
     protected static void updateInstance(Realm realm, String name)
     {
-        Realm oldRealm = (Realm)loadedRealms.get(name);
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr == null) {
+             throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
+        
+        Realm oldRealm = mgr.getFromLoadedRealms(name);
         if (!oldRealm.getClass().equals(realm.getClass())) {
             // would never happen unless bug in realm subclass
             throw new Error("Incompatible class "+realm.getClass()+
                             " in replacement realm "+name);
         }
         realm.setName(oldRealm.getName());
-        loadedRealms.put(name, realm);
+        mgr.putIntoLoadedRealms(name, realm);
     }
 
     
@@ -272,7 +306,7 @@ public abstract class Realm implements Comparable {
      */
     public static Realm getDefaultInstance() throws NoSuchRealmException
     {
-        return getInstance(defaultRealmName);
+        return getInstance(getDefaultRealm());
     }
 
     
@@ -283,7 +317,13 @@ public abstract class Realm implements Comparable {
      *
      */
     public static String getDefaultRealm() {
-        return defaultRealmName;
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+            return mgr.getDefaultRealmName();
+        } else {
+            throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
     }
 
     
@@ -294,7 +334,14 @@ public abstract class Realm implements Comparable {
      *
      */
     public static void setDefaultRealm(String realmName) {
-        defaultRealmName = realmName;
+        //defaultRealmName = realmName;
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+             mgr.setDefaultRealmName(realmName);
+        } else  {
+           throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
     }
 
     /**
@@ -302,10 +349,16 @@ public abstract class Realm implements Comparable {
      * @param realmName
      * @exception NoSuchRealmException
      */
-    static void unloadInstance(String realmName) throws NoSuchRealmException {
+    public static void unloadInstance(String realmName) throws NoSuchRealmException {
         //make sure instance exist
         getInstance(realmName);
-        loadedRealms.remove(realmName);
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+             mgr.removeFromLoadedRealms(realmName);
+        } else {
+           throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
     }
 
 
@@ -391,21 +444,13 @@ public abstract class Realm implements Comparable {
      * @return the requested realm
      */
     private static Realm _getInstance(String name) {
-	Realm retval = null;
-	retval = (Realm) loadedRealms.get (name);
-
-        // Some tools as well as numerous other locations assume that
-        // getInstance("default") always works; keep them from breaking
-        // until code can be properly cleaned up. 4628429
-
-        // Also note that for example the appcontainer will actually create
-        // a Subject always containing realm='default' so this notion
-        // needs to be fixed/handled.
-        if ( (retval == null) && (RI_DEFAULT.equals(name)) ) {
-            retval = (Realm) loadedRealms.get (defaultRealmName);
+	Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+            return mgr._getInstance(name);
+        } else  {
+           throw new RuntimeException("Unable to locate RealmsManager Service");
         }
-
-        return retval;
     }
 
 
@@ -416,7 +461,12 @@ public abstract class Realm implements Comparable {
      * @return set of realm names
      */
     public static Enumeration	getRealmNames() {
-	return loadedRealms.keys();
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+            return mgr.getRealmNames();
+        }
+        throw new RuntimeException("Unable to locate RealmsManager Service");
     }
 
 
@@ -461,12 +511,13 @@ public abstract class Realm implements Comparable {
      * @param String name of the realm to check.
      * @return true if realm present, false otherwise.
      */
-    public static boolean isValidRealm(String name){
-        if(name == null){
-            return false;
-        } else {
-            return loadedRealms.containsKey(name);
+    public static boolean isValidRealm(String name) {
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+        if (mgr != null) {
+            return mgr.isValidRealm(name);
         }
+        throw new RuntimeException("Unable to locate RealmsManager Service");
     }
 
     /**

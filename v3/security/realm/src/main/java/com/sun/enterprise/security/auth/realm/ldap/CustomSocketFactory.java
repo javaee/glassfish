@@ -52,9 +52,8 @@ import java.security.SecureRandom;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
-
-
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.Globals;
 /**
  * Custom socket factory for ldaps (SSL).
  *
@@ -66,21 +65,19 @@ import org.jvnet.hk2.component.PostConstruct;
  * @see com.sun.enterprise.security.auth.realm.ldap.LDAPRealm
  *
  */
-@Service
-public class CustomSocketFactory extends SocketFactory implements Comparator<SocketFactory>, PostConstruct {
+public class CustomSocketFactory extends SocketFactory implements Comparator<SocketFactory> {
     private SocketFactory socketFactory;
-
-    @Inject
-    SSLUtils sslUtils;
 
     public static final String SSL = "SSL";
     protected static final Logger _logger =
         LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     //TODO:V3, make sure second argument is correct
     protected static final StringManager sm =
-        StringManager.getManager("com.sun.enterprise.security.auth.realm", Thread.currentThread().getContextClassLoader());
+        StringManager.getManager(CustomSocketFactory.class);
 
-    public void postConstruct() {
+    public  void CustomSocketFactory() {
+        Habitat habitat = Globals.getDefaultHabitat();
+        SSLUtils sslUtils = habitat.getComponent(SSLUtils.class);
         SSLContext sc = null;
         try {
             sc = SSLContext.getInstance(SSL);

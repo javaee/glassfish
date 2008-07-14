@@ -69,6 +69,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  *  Handy class containing static functions.
@@ -77,6 +79,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Shing Wai Chan
  */
 @Service
+@Scoped(Singleton.class)
 public final class SSLUtils implements PostConstruct {
     private static final String DEFAULT_KEYSTORE_PASS = "changeit";
     private static final String DEFAULT_TRUSTSTORE_PASS = "changeit";

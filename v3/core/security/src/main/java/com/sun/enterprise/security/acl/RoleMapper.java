@@ -134,20 +134,8 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
          }
          
         if (defaultRole == null) {
-
             defaultRoleName = DEFAULT_ROLE_NAME;
-
             try {
-                /*V3:Commented                
-                ConfigContext configContext =
-                ApplicationServer.getServerContext().getConfigContext();
-                assert(configContext != null);
-                Server configBean =
-                ServerBeansFactory.getServerBean(configContext);
-                assert(configBean != null);
-                SecurityService securityBean =
-                ServerBeansFactory.getSecurityServiceBean(configContext);
-                assert(securityBean != null);*/
                 if (serverContext != null) {
                     SecurityService secService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
                     assert (secService != null);
@@ -454,14 +442,9 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      private String getDefaultP2RMappingClassName() {
         String className = null;
         try {
-//V3:Commented            ServerContext serverContext = ApplicationServer.getServerContext();
             if (serverContext != null) {
-//V3:Commented                ConfigContext configContext = serverContext.getConfigContext();
                 SecurityService securityService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
 
-//V3:Commented                if (configContext != null) {
-//V3:Commented                    SecurityService securityService =
-//V3:Commented                        ServerBeansFactory.getSecurityServiceBean(configContext);
                 if (securityService != null && Boolean.parseBoolean(securityService.getActivateDefaultPrincipalToRoleMapping())) {
 //V3:Commented                       securityService.isActivateDefaultPrincipalToRoleMapping()==true) {
                     className = securityService.getMappedPrincipalClass();
@@ -584,6 +567,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         currentMapping = null;
     }
 
+    //TODO:V3 Fixme.
     private boolean isEJBContainer(ServerContext serverContext) {
         return false;
     }

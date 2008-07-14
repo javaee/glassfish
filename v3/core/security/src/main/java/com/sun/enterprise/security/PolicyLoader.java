@@ -62,13 +62,13 @@ import org.jvnet.hk2.component.Singleton;
 @Service
 @Scoped(Singleton.class)
 public class PolicyLoader{
+    
+    @Inject 
+    private SecurityService securityService;
 
     @Inject
-    private ServerContext serverContext;
-    
-//    @Inject(name="default")
-//    private JaccProvider defaultProvider; 
-    
+    private JaccProvider[] jaccProviders;
+     
     private static Logger _logger = null;
     static {
         _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
@@ -85,20 +85,6 @@ public class PolicyLoader{
         "com.sun.enterprise.jaccprovider.property.";
     private static boolean isPolicyInstalled = false;
 
-    //V3:Commented private static PolicyLoader _policyLoader = null;
-    /* V3:Commented: Not sure if this is right way to do it (it can remain VM wide Singleton?)
-    private PolicyLoader(){
-    }*/
-    
-    /**V3:Commented
-     *  gets the PolicyLoader instance
-     
-    public static synchronized PolicyLoader getInstance(){
-        if(_policyLoader == null){
-            _policyLoader = new PolicyLoader();
-        }
-        return _policyLoader;
-    }*/
     
     /**
      * Attempts to install the policy-provider. The policy-provider
@@ -207,37 +193,32 @@ public class PolicyLoader{
      *
      */
     private JaccProvider getConfiguredJaccProvider() {
-        //TODO: revisit this and make it more generic
-        SecurityService secService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
-        return secService.getJaccProvider().iterator().next();
-        
-        /*V3:Commented
         JaccProvider jacc = null;
-
-        domain.getConfigs().getConfig().iterator().
         try {
-            ConfigContext configContext =
-                ApplicationServer.getServerContext().getConfigContext();
-            assert(configContext != null);
-            SecurityService securityBean =
-                ServerBeansFactory.getSecurityServiceBean(configContext);
-            assert(securityBean != null);
-            
-            String name = securityBean.getJacc();
-            jacc = securityBean.getJaccProviderByName(name);
-
+            String name = securityService.getJacc();
+            jacc = getJaccProviderByName(name);
             if (jacc == null) {
                 _logger.log(Level.WARNING, "policy.nosuchname", name);
             }
-                    
         } catch (Exception e) {
             _logger.warning("policy.errorreading");
-            jacc =  null;
-        }            
-
-        return jacc;*/
+            jacc = null;
+        }
+        return jacc;
     }
 
+    private JaccProvider getJaccProviderByName(String name) {
+       if (jaccProviders == null || name == null) {
+           return null;    
+       }
+
+       for (int i=0; i < jaccProviders.length; i++) {
+           if (jaccProviders[i].getName().equals(name)) {
+               return jaccProviders[i];
+           }
+       }
+       return null;
+    }
     
     /**
      * Set internal properties based on domain.xml configuration.

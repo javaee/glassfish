@@ -50,6 +50,8 @@ import com.sun.logging.LogDomains;
 import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * This implements SecuritySupport used in PluggableFeatureFactory.
@@ -58,6 +60,7 @@ import org.jvnet.hk2.annotations.Inject;
 // TODO: when we have two SecuritySupport implementations,
 // we create Habitat we'll select which SecuritySupport implementation to use.
 @Service
+@Scoped(Singleton.class)
 public class SecuritySupportImpl implements SecuritySupport {
 
     private static final String keyStoreProp = "javax.net.ssl.keyStore";

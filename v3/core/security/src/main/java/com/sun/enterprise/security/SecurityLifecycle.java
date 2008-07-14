@@ -88,7 +88,11 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject
     private SecurityServicesUtil secServUtil;
     
-    @Inject Util util;
+    @Inject 
+    private Util util;
+    
+    @Inject
+    private SecurityConfigListener configListener;
     
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);
@@ -159,8 +163,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             // this is because a DummyRoleMapperFactory is register due
             // to invocation of ConnectorRuntime.createActiveResourceAdapter
             // initRoleMapperFactory is called after it
-           // TODO:V3 i have moved it here : instantiate and register the server-side RoleMapperFactory
-           //initRoleMapperFactory();
+            //initRoleMapperFactory();
            
            if (_logger.isLoggable(Level.INFO)) {
                  _logger.log(Level.INFO, "Security service(s) started successfully....");
@@ -307,7 +310,5 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             }
         }
     }
-    
-    
     
 }

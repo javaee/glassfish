@@ -56,8 +56,11 @@ import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.annotations.Scoped;
 
 @Service
+@Scoped(Singleton.class)
 public class SecurityServicesUtil {
 
     private static Habitat habitat = Globals.getDefaultHabitat();

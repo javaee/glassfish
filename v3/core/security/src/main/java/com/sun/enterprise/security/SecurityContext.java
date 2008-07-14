@@ -59,7 +59,6 @@ import java.security.AccessController;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
 * This  class that extends AbstractSecurityContext that gets 
@@ -79,7 +78,7 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 @Service
 @Scoped(PerLookup.class)
-public class SecurityContext extends AbstractSecurityContext implements PostConstruct {
+public class SecurityContext extends AbstractSecurityContext  {
    
     private static Logger _logger=null;
     static {
@@ -167,7 +166,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
                 }
             });
 
-       
+            postConstruct();
     }
     
     private void initDefaultCallerPrincipal() {

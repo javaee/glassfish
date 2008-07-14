@@ -124,8 +124,8 @@ abstract class BaseContainerCallbackHandler
     protected HandlerContext handlerContext = null;
 
     // TODO: inject them once this class becomes a component
-    protected final SSLUtils sslUtils = Globals.get(SSLUtils.class);
-    protected final SecuritySupport secSup = Globals.get(SecuritySupport.class);
+    protected final SSLUtils sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
+    protected final SecuritySupport secSup = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
 
     public void setHandlerContext(HandlerContext handlerContext) {
         this.handlerContext = handlerContext;
@@ -559,18 +559,20 @@ abstract class BaseContainerCallbackHandler
         List list = new ArrayList();
         CollectionCertStoreParameters ccsp;
         try{
-            Enumeration enu = certStore.aliases();
-            while (enu.hasMoreElements()) {
-                String alias = (String)enu.nextElement();
-                if(certStore.isCertificateEntry(alias)){
-                    try{
-                        Certificate cert = certStore.getCertificate(alias);
-                        list.add(cert);
-                    }catch(KeyStoreException kse){
-                        // ignore and move to next
-                        if (_logger.isLoggable(Level.FINE)) {
-                            _logger.log(Level.FINE, "JAMAC: Cannot retrieve" +
-                                "certificate for alias "+alias);
+            if (certStore != null) {
+                Enumeration enu = certStore.aliases();
+                while (enu.hasMoreElements()) {
+                    String alias = (String) enu.nextElement();
+                    if (certStore.isCertificateEntry(alias)) {
+                        try {
+                            Certificate cert = certStore.getCertificate(alias);
+                            list.add(cert);
+                        } catch (KeyStoreException kse) {
+                            // ignore and move to next
+                            if (_logger.isLoggable(Level.FINE)) {
+                                _logger.log(Level.FINE, "JAMAC: Cannot retrieve" +
+                                        "certificate for alias " + alias);
+                            }
                         }
                     }
                 }

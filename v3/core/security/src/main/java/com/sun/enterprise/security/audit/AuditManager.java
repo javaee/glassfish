@@ -190,7 +190,7 @@ public final class AuditManager {
      * successfully loaded into the system.
      * @exception 
      */
-    void addAuditModule(String name, String classname, Properties props)
+    public void addAuditModule(String name, String classname, Properties props)
             throws Exception {
         // make sure only a name corresponding to only one auditModule
         removeAuditModule(name);
@@ -209,7 +209,7 @@ public final class AuditManager {
      * Remove the audit module of given name from the loaded list.
      * @param name of auditModule
      */
-    void removeAuditModule(String name) {
+    public void removeAuditModule(String name) {
         Object am = nameToModuleMap.get(name);
         if (am != null) {
             nameToModuleMap.remove(name);
@@ -436,7 +436,7 @@ public final class AuditManager {
         }
     }
 
-    void setAuditOn(boolean auditOn) {
+    public void setAuditOn(boolean auditOn) {
         this.auditOn = auditOn;
     }
     
