@@ -79,6 +79,7 @@ import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
+import org.glassfish.web.valve.TomcatValveAdapter;
 
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
 import org.apache.commons.modeler.Registry;
@@ -513,6 +514,12 @@ public class StandardPipeline
      */
     public void addValve(GlassFishValve valve) {
     
+        if (firstTcValve != null) {
+            // Wrap GlassFish-style valve inside Tomcat-style valve
+            addValve(new TomcatValveAdapter(valve));
+            return;
+        }
+
         // Validate that we can add this Valve
         if (valve instanceof Contained)
             ((Contained) valve).setContainer(this.container);
