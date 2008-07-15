@@ -386,7 +386,7 @@ public class CoyoteProcessor implements Processor, ActionHook {
      * @param userAgent user-agent string
      */
     public void addNoCompressionUserAgent(String userAgent) {
-    	addStringArray(noCompressionUserAgents, userAgent);
+        addStringArray(noCompressionUserAgents, userAgent);
     }
 
 
@@ -473,13 +473,14 @@ public class CoyoteProcessor implements Processor, ActionHook {
     private void addStringArray(String sArray[], String value) {
         if (sArray == null)
             sArray = new String[0];
-        ArrayList<String> results = new ArrayList<String>(sArray.length + 1);
+        String[] results = new String[sArray.length + 1];
         for (int i = 0; i < sArray.length; i++)
-            results.add(i, sArray[i]);
-        results.add(sArray.length, value);
-        sArray = (String[])results.toArray();
+            results[i] = sArray[i];
+        results[sArray.length] = value;
+        sArray = results;
     }
 
+    
     /**
      * General use method
      * 

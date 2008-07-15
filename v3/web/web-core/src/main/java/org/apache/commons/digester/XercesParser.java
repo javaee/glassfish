@@ -81,7 +81,7 @@ public class XercesParser{
     /**
      * The Log to which all SAX event related logging calls will be made.
      */
-    protected static Logger log =
+    protected static final Logger log =
         Logger.getLogger("org.apache.commons.digester.Digester.sax");
 
 
@@ -95,21 +95,21 @@ public class XercesParser{
     /**
      * The JAXP 1.2 property to set up the schemaLanguage used.
      */
-    protected static String JAXP_SCHEMA_LANGUAGE =
+    protected static final String JAXP_SCHEMA_LANGUAGE =
         "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
 
     /**
      * Xerces dynamic validation property
      */
-    protected static String XERCES_DYNAMIC = 
+    protected static final String XERCES_DYNAMIC = 
         "http://apache.org/xml/features/validation/dynamic";
 
 
     /**
      * Xerces schema validation property
      */
-    protected static String XERCES_SCHEMA =
+    protected static final String XERCES_SCHEMA =
         "http://apache.org/xml/features/validation/schema";
 
 

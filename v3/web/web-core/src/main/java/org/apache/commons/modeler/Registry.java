@@ -112,7 +112,7 @@ import org.apache.commons.modeler.modules.ModelerSource;
 public class Registry implements RegistryMBean, MBeanRegistration  {
     /** Experimental support for manifest-based discovery.
      */
-    public static String MODELER_MANIFEST="/META-INF/mbeans-descriptors.xml";
+    public static final String MODELER_MANIFEST="/META-INF/mbeans-descriptors.xml";
 
     /**
      * The Log instance to which we will write our log messages.
@@ -542,7 +542,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
      * @deprecated Use the instance method
      */
     public static void setServer(MBeanServer mbeanServer) {
-        Registry.getRegistry().setServer(mbeanServer);
+        Registry.getRegistry().setMBeanServer(mbeanServer);
     }
 
     /**

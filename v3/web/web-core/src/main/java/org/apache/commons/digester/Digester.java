@@ -2944,7 +2944,7 @@ public class Digester extends DefaultHandler {
             return bodyText; // return unchanged data
         }
 
-        if (out == in)  {
+        if (out.equals(in)) {
             // No substitutions required. Don't waste memory creating
             // a new buffer
             return bodyText;

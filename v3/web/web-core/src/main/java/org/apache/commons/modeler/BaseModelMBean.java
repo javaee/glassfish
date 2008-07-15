@@ -713,7 +713,6 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
                  "Attributes list is null");
 
         // Prepare and return our response, eating all exceptions
-        AttributeList response = new AttributeList();
         String names[] = new String[attributes.size()];
         int n = 0;
         Iterator items = attributes.iterator();
