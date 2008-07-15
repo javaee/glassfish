@@ -105,7 +105,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
         String[] otherExportedPackages = new String[] {
                 "org.glassfish.common.glassfish-api",
-                "org.glassfish.web.webtier",
+                "org.glassfish.web.web-glue",
                 "org.glassfish.web.jsf-connector",
                 "org.glassfish.web.jstl-impl",
                 "org.glassfish.web.jspimpl",

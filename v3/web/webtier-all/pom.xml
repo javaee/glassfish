@@ -77,7 +77,7 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
+            <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
