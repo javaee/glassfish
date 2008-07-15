@@ -91,6 +91,7 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
+import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.logger.LoggerBase;
 import org.apache.catalina.util.LifecycleSupport;
@@ -1386,6 +1387,20 @@ public abstract class ContainerBase
             fireContainerEvent(ADD_VALVE_EVENT, valve);
         }
     }
+
+
+    /**
+     * Add Tomcat-style valve.
+     */
+    public synchronized void addValve(Valve valve) {
+
+        pipeline.addValve(valve);
+
+        if (notifyContainerListeners) {
+            fireContainerEvent(ADD_VALVE_EVENT, valve);
+        }
+    }
+
 
     public ObjectName[] getValveObjectNames() {
         return ((StandardPipeline)pipeline).getValveObjectNames();

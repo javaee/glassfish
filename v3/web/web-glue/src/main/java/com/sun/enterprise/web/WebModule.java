@@ -75,6 +75,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
+import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
@@ -344,7 +345,12 @@ public class WebModule extends PwcWebModule {
     public synchronized void start() throws LifecycleException {
         // Start and register Tomcat mbeans
         super.start();
+
+        // Configure catalina listeners and valves. This can only happen
+        // after this web module has been started, in order to be able to
+        // load the specified listener and valve classes.
         configureCatalinaProperties();
+
         // Register monitoring mbeans, which delegate to the Tomcat mbeans
         webContainer.enableMonitoring(this,
                                       ((VirtualServer) getParent()).getID());
@@ -811,11 +817,16 @@ public class WebModule extends PwcWebModule {
      * @param valveName the fully qualified class name of the Valve.  
      */
     protected void addValve(String valveName) {
-        GlassFishValve valve = (GlassFishValve)loadInstance(valveName);  
-        
-        if (valve == null) return;
-        
-        super.addValve(valve); 
+        Object valve = loadInstance(valveName);
+        if (valve instanceof Valve) {
+            super.addValve((Valve) valve); 
+        } else if (valve instanceof GlassFishValve) {
+            super.addValve((GlassFishValve) valve);       
+        } else {
+            logger.log(Level.WARNING,
+                        "Object of type classname " + valveName +
+                        " not an instance of Valve or GlassFishValve");
+        }     
     }    
     
     
@@ -1029,6 +1040,109 @@ public class WebModule extends PwcWebModule {
         } else {
             return (false);
         }
+    }
+
+
+    /**
+     * Configure miscellaneous settings such as the pool size for
+     * single threaded servlets, specifying a temporary directory other
+     * than the default etc.
+     *
+     * Since the work directory is used when configuring the session manager
+     * persistence settings, this method must be invoked prior to
+     * <code>configureSessionSettings</code>.
+     */
+    void configureMiscSettings(SunWebApp bean, VirtualServer vs,
+                               String contextPath) {
+
+        /*
+         * Web app inherits setting of allowLinking property from vs on which
+         * it is being deployed, but may override it using allowLinking
+         * property in its sun-web.xml
+         */
+        boolean allowLinking = vs.getAllowLinking();
+
+        if ((bean != null) && (bean.sizeWebProperty() > 0)) {
+            WebProperty[] props = bean.getWebProperty();
+            for (int i = 0; i < props.length; i++) {
+
+                String name = props[i].getAttributeValue("name");
+                String value = props[i].getAttributeValue("value");
+                if (name == null || value == null) {
+                    throw new IllegalArgumentException(
+                            _rb.getString("webcontainer.nullWebProperty"));
+                }
+
+                if (name.equalsIgnoreCase("singleThreadedServletPoolSize")) {
+                    int poolSize = getSTMPoolSize();
+                    try {
+                        poolSize = Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        Object[] params =
+                        { value, contextPath, Integer.toString(poolSize) };
+                        logger.log(Level.WARNING,
+                                   "webcontainer.invalidServletPoolSize",
+                                   params);
+                    }
+                    if (poolSize > 0) {
+                        setSTMPoolSize(poolSize);
+                    }
+
+                } else if (name.equalsIgnoreCase("tempdir")) {
+                    setWorkDir(value);
+                } else if (name.equalsIgnoreCase("crossContextAllowed")) {
+                    boolean crossContext = Boolean.parseBoolean(value);
+                    setCrossContext(crossContext);
+                } else if (name.equalsIgnoreCase("allowLinking")) {
+                    allowLinking = ConfigBeansUtilities.toBoolean(value);
+                    // START S1AS8PE 4817642
+                } else if (name.equalsIgnoreCase("reuseSessionID")) {
+                    boolean reuse = ConfigBeansUtilities.toBoolean(value);
+                    setReuseSessionID(reuse);
+                    if (reuse) {
+                        Object[] params = { contextPath,
+                        vs.getID() };
+                        logger.log(Level.WARNING,
+                                   "webcontainer.sessionIDsReused",
+                                   params);
+                    }
+                    // END S1AS8PE 4817642
+                } else if(name.equalsIgnoreCase("useResponseCTForHeaders")) {
+                    if(value.equalsIgnoreCase("true")) {
+                        setResponseCTForHeaders();
+                    }
+                } else if(name.equalsIgnoreCase("encodeCookies")) {
+                    boolean flag = ConfigBeansUtilities.toBoolean(value);
+                    setEncodeCookies(flag);
+                    // START RIMOD 4642650
+                } else if (name.equalsIgnoreCase("relativeRedirectAllowed")) {
+                    boolean relativeRedirect = ConfigBeansUtilities.toBoolean(value);
+                    setAllowRelativeRedirect(relativeRedirect);
+                    // END RIMOD 4642650
+                } else if (name.equalsIgnoreCase("fileEncoding")) {
+                    setFileEncoding(value);
+                } else if (name.equalsIgnoreCase("enableTldValidation")
+                &&  ConfigBeansUtilities.toBoolean(value)) {
+                    setTldValidation(true);
+                } else if (name.equalsIgnoreCase("enableTldNamespaceAware")
+                &&  ConfigBeansUtilities.toBoolean(value)) {
+                    setTldNamespaceAware(true);
+                } else if (name.equalsIgnoreCase("securePagesWithPragma")){
+                    boolean securePagesWithPragma = ConfigBeansUtilities.toBoolean(value);
+                    setSecurePagesWithPragma(securePagesWithPragma);
+                } else if (name.equalsIgnoreCase("useMyFaces")){
+                    setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
+                } else if (name.startsWith("alternatedocroot_")) {
+                    parseAlternateDocBase(name, value);
+                } else {
+                    Object[] params = { name, value };
+                    logger.log(Level.WARNING, "webcontainer.invalidProperty",
+                               params);
+                }
+            }
+        }
+
+        setAllowLinking(allowLinking);
     }
 
 

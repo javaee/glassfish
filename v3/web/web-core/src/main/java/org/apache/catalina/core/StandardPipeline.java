@@ -74,6 +74,7 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
+import org.apache.catalina.Valve;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
@@ -192,6 +193,14 @@ public class StandardPipeline
      * this Pipeline.
      */
     protected GlassFishValve valves[] = new GlassFishValve[0];
+
+
+    // The first Tomcat-style valve in the pipeline, if any
+    private Valve firstTcValve;
+
+    // The last Tomcat-style valve (immediately preceding the basic valve)
+    // in the pipeline, if any
+    private Valve lastTcValve;
 
 
     // --------------------------------------------------------- Public Methods
@@ -536,6 +545,39 @@ public class StandardPipeline
 
 
     /**
+     * Add Tomcat-style valve.
+     */
+    public synchronized void addValve(Valve valve) {
+
+        if (valve instanceof Contained)
+            ((Contained) valve).setContainer(this.container);
+
+        // Start the new Valve if necessary
+        if (started) {
+            if (valve instanceof Lifecycle) {
+                try {
+                    ((Lifecycle) valve).start();
+                } catch (LifecycleException e) {
+                    log.log(Level.SEVERE,
+                            "StandardPipeline.addValve: start: ", e);
+                }
+            }
+        }
+
+        if (firstTcValve == null) {
+            firstTcValve = lastTcValve = valve;
+        } else {
+            lastTcValve.setNext(valve);
+            lastTcValve = valve;
+        }
+
+        if (basic != null) {
+            valve.setNext((Valve) basic);
+        }
+    }
+
+
+    /**
      * Return the set of Valves in the pipeline associated with this
      * Container, including the basic Valve (if any).  If there are no
      * such Valves, a zero-length array is returned.
@@ -632,16 +674,26 @@ public class StandardPipeline
 
             // Invoke the basic valve's request processing and post-request
             // logic only if the pipeline was not aborted (i.e. no valve
-            // returned END_PIPELINE)
-            if ((status == GlassFishValve.INVOKE_NEXT) && (basic != null)) {
-                Request req = request;
-                Response resp = response;
-                if (chaining) {
-                    req = getRequest(request);
-                    resp = getResponse(request, response);
+            // returned END_PIPELINE).
+            // In addition, the basic valve needs to be invoked by the
+            // pipeline only if no Tomcat-style valves have been added.
+            // Otherwise, it will be invoked by the last Tomcat-style valve
+            // directly.
+            if (status == GlassFishValve.INVOKE_NEXT) {
+                if (firstTcValve != null) {
+                    firstTcValve.invoke(
+                        (org.apache.catalina.connector.Request) request,
+                        (org.apache.catalina.connector.Response) response);
+                } else if (basic != null) {
+                    Request req = request;
+                    Response resp = response;
+                    if (chaining) {
+                        req = getRequest(request);
+                        resp = getResponse(request, response);
+                    }
+                    basic.invoke(req, resp);
+                    basic.postInvoke(req, resp);
                 }
-                basic.invoke(req, resp);
-                basic.postInvoke(req, resp);
             }
 
             // Invoke the post-request processing logic only on those valves

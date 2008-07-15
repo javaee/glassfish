@@ -168,11 +168,11 @@ import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.Method;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
-
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.security.common.CipherInfo;
+import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.EntityResolver;
 
 import com.sun.enterprise.security.integration.RealmInitializer;
@@ -1243,7 +1243,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             globalAccessLogBufferSize, globalAccessLogWriteInterval);
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
-            vs.addValve(accessLogValve);
+            vs.addValve((GlassFishValve) accessLogValve);
         }
 
         if (_logger.isLoggable(Level.FINEST)) {
@@ -2855,7 +2855,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ctx.setID(wmName);
 
             // Configure SingleThreadedServletPools, work/tmp directory etc
-            configureMiscSettings(ctx, iasBean, vs, displayContextPath);
+            ctx.configureMiscSettings(iasBean, vs, displayContextPath);
 
             // Configure alternate docroots if dummy web module
             if (Constants.DEFAULT_WEB_MODULE_NAME.equals(ctx.getID())) {
@@ -3106,108 +3106,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ctx.setLoader(loader);
 
         return loader;
-    }
-
-    /**
-     * Configure miscellaneous settings such as the pool size for
-     * single threaded servlets, specifying a temporary directory other
-     * than the default etc.
-     *
-     * Since the work directory is used when configuring the session manager
-     * persistence settings, this method must be invoked prior to
-     * <code>configureSessionSettings</code>.
-     */
-    private void configureMiscSettings(WebModule ctx, SunWebApp bean,
-            VirtualServer vs, String contextPath) {
-
-        /*
-         * Web app inherits setting of allowLinking property from vs on which
-         * it is being deployed, but may override it using allowLinking
-         * property in its sun-web.xml
-         */
-        boolean allowLinking = vs.getAllowLinking();
-
-        if ((bean != null) && (bean.sizeWebProperty() > 0)) {
-            WebProperty[] props = bean.getWebProperty();
-            for (int i = 0; i < props.length; i++) {
-
-                String name = props[i].getAttributeValue("name");
-                String value = props[i].getAttributeValue("value");
-                if (name == null || value == null) {
-                    throw new IllegalArgumentException(
-                            _rb.getString("webcontainer.nullWebProperty"));
-                }
-
-                if (name.equalsIgnoreCase("singleThreadedServletPoolSize")) {
-                    int poolSize = ctx.getSTMPoolSize();
-                    try {
-                        poolSize = Integer.parseInt(value);
-                    } catch (NumberFormatException e) {
-                        Object[] params =
-                        { value, contextPath, Integer.toString(poolSize) };
-                        _logger.log(Level.WARNING,
-                                "webcontainer.invalidServletPoolSize",
-                                params);
-                    }
-                    if (poolSize > 0) {
-                        ctx.setSTMPoolSize(poolSize);
-                    }
-
-                } else if (name.equalsIgnoreCase("tempdir")) {
-                    ctx.setWorkDir(value);
-                } else if (name.equalsIgnoreCase("crossContextAllowed")) {
-                    boolean crossContext = Boolean.parseBoolean(value);
-                    ctx.setCrossContext(crossContext);
-                } else if (name.equalsIgnoreCase("allowLinking")) {
-                    allowLinking = ConfigBeansUtilities.toBoolean(value);
-                    // START S1AS8PE 4817642
-                } else if (name.equalsIgnoreCase("reuseSessionID")) {
-                    boolean reuse = ConfigBeansUtilities.toBoolean(value);
-                    ctx.setReuseSessionID(reuse);
-                    if (reuse) {
-                        Object[] params = { contextPath,
-                        vs.getID() };
-                        _logger.log(Level.WARNING,
-                                "webcontainer.sessionIDsReused",
-                                params);
-                    }
-                    // END S1AS8PE 4817642
-                } else if(name.equalsIgnoreCase("useResponseCTForHeaders")) {
-                    if(value.equalsIgnoreCase("true")) {
-                        ctx.setResponseCTForHeaders();
-                    }
-                } else if(name.equalsIgnoreCase("encodeCookies")) {
-                    boolean flag = ConfigBeansUtilities.toBoolean(value);
-                    ctx.setEncodeCookies(flag);
-                    // START RIMOD 4642650
-                } else if (name.equalsIgnoreCase("relativeRedirectAllowed")) {
-                    boolean relativeRedirect = ConfigBeansUtilities.toBoolean(value);
-                    ctx.setAllowRelativeRedirect(relativeRedirect);
-                    // END RIMOD 4642650
-                } else if (name.equalsIgnoreCase("fileEncoding")) {
-                    ctx.setFileEncoding(value);
-                } else if (name.equalsIgnoreCase("enableTldValidation")
-                &&  ConfigBeansUtilities.toBoolean(value)) {
-                    ctx.setTldValidation(true);
-                } else if (name.equalsIgnoreCase("enableTldNamespaceAware")
-                &&  ConfigBeansUtilities.toBoolean(value)) {
-                    ctx.setTldNamespaceAware(true);
-                } else if (name.equalsIgnoreCase("securePagesWithPragma")){
-                    boolean securePagesWithPragma = ConfigBeansUtilities.toBoolean(value);
-                    ctx.setSecurePagesWithPragma(securePagesWithPragma);
-                } else if (name.equalsIgnoreCase("useMyFaces")){
-                    ctx.setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
-                } else if (name.startsWith("alternatedocroot_")) {
-                    ctx.parseAlternateDocBase(name, value);
-                } else {
-                    Object[] params = { name, value };
-                    _logger.log(Level.WARNING, "webcontainer.invalidProperty",
-                            params);
-                }
-            }
-        }
-
-        ctx.setAllowLinking(allowLinking);
     }
 
 

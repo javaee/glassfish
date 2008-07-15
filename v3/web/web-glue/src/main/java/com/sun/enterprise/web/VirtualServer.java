@@ -58,6 +58,7 @@ import org.apache.catalina.ContainerListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
+import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
@@ -401,21 +402,37 @@ public class VirtualServer extends StandardHost {
 
         // Remove the descriptor bindings for all the web applications
         // in this virtual server
-/*        Switch sw = Switch.getSwitch();
+        /*
+        Switch sw = Switch.getSwitch();
         ContractProvider children[] = findChildren();
         if (children != null) {
             for (int i = 0; i < children.length; i++) {
                 sw.removeDescriptorFor(children[i]);
             }
-        }*/
+        }
+        */
     }
 
 
     /**
      * Adds the given valve to the currently active pipeline, keeping the
-     * valve that is not currently active in sync.
+     * pipeline that is not currently active in sync.
      */
     public synchronized void addValve(GlassFishValve valve) {
+        super.addValve(valve);
+        if (pipeline == vsPipeline) {
+            origPipeline.addValve(valve);
+        } else {
+            vsPipeline.addValve(valve);
+        }
+    }
+
+
+    /**
+     * Adds the given Tomcat-style valve to the currently active pipeline,
+     * keeping the pipeline that is not currently active in sync.
+     */
+    public synchronized void addValve(Valve valve) {
         super.addValve(valve);
         if (pipeline == vsPipeline) {
             origPipeline.addValve(valve);
@@ -976,11 +993,16 @@ public class VirtualServer extends StandardHost {
      * @param valveName The valve's fully qualified class name
      */
     protected void addValve(String valveName) {
-        GlassFishValve valve = (GlassFishValve)loadInstance(valveName);  
-        
-        if (valve == null) return;
-        
-        super.addValve(valve); 
+        Object valve = loadInstance(valveName);
+        if (valve instanceof Valve) {
+            addValve((Valve) valve); 
+        } else if (valve instanceof GlassFishValve) {
+            addValve((GlassFishValve) valve);       
+        } else {
+            _logger.log(Level.WARNING,
+                        "Object of type classname " + valveName +
+                        " not an instance of Valve or GlassFishValve");
+        }     
     }    
     
     
@@ -1294,7 +1316,7 @@ public class VirtualServer extends StandardHost {
                     }
                 }
 
-                addValve(sso);
+                addValve((GlassFishValve) sso);
 
             } catch (Exception e) {
                 _logger.log(Level.WARNING, "webcontainer.ssobadconfig", e);
@@ -1390,7 +1412,7 @@ public class VirtualServer extends StandardHost {
                     break;
                 }
             }
-            addValve(remoteAddrValve);
+            addValve((GlassFishValve) remoteAddrValve);
         }
     }
 
@@ -1447,7 +1469,7 @@ public class VirtualServer extends StandardHost {
                     break;
                 }
             }
-            addValve(remoteHostValve);
+            addValve((GlassFishValve) remoteHostValve);
         }
     }
 
@@ -1524,7 +1546,7 @@ public class VirtualServer extends StandardHost {
      */
     void enableAccessLogging() {
         if (!isAccessLogValveActivated()) {
-            addValve(accessLogValve);
+            addValve((GlassFishValve) accessLogValve);
         } else {
             try {
                 if (accessLogValve.isStarted()) {

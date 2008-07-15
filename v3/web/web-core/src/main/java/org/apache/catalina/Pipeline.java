@@ -136,6 +136,14 @@ public interface Pipeline {
 
 
     /**
+     * Add Tomcat-style valve.
+     *
+     * @param The Tomcat-style valve to be added
+     */
+    public void addValve(Valve valve);
+
+
+    /**
      * Return the set of Valves in the pipeline associated with this
      * Container, including the basic Valve (if any).  If there are no
      * such Valves, a zero-length array is returned.
