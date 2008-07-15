@@ -130,8 +130,40 @@ final class StandardEngineValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
+    @Override
     public int invoke(Request request, Response response)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+
+        Host host = preInvoke(request, response);
+        if (host == null) {
+            return END_PIPELINE;
+        }
+
+        host.invoke(request, response);
+
+        return END_PIPELINE;
+    }
+
+
+    /**
+     * Tomcat style invocation.
+     */
+    @Override
+    public void invoke(org.apache.catalina.connector.Request request,
+                       org.apache.catalina.connector.Response response)
+            throws IOException, ServletException {
+
+        Host host = preInvoke(request, response);
+        if (host == null) {
+            return;
+        }
+
+        host.invoke(request, response);
+    }
+
+
+    private Host preInvoke(Request request, Response response)
+            throws IOException, ServletException {
 
         // Select the Host to be used for this Request
         Host host = request.getHost();
@@ -149,10 +181,9 @@ final class StandardEngineValve
                  sm.getString("standardEngine.noHost",
                               request.getRequest().getServerName()));
             // END S1AS 4878272
-            return END_PIPELINE;
+            return null;
         }
 
-        host.invoke(request, response);
-        return END_PIPELINE;
+        return host;
     }
 }

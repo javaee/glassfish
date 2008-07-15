@@ -174,45 +174,43 @@ final class StandardHostValve
      * @exception IOException if an input/output error occurred
      * @exception ServletException if a servlet error occurred
      */
-     public int invoke(Request request, Response response)
-         throws IOException, ServletException {
+    @Override
+    public int invoke(Request request, Response response)
+            throws IOException, ServletException {
 
-        // Select the Context to be used for this Request
-        Context context = request.getContext();
+        Context context = preInvoke(request, response);
         if (context == null) {
-            /* S1AS 4878272
-            ((HttpServletResponse) response.getResponse()).sendError
-                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                 sm.getString("standardHost.noContext"));
-            */
-            // BEGIN S1AS 4878272
-            ((HttpServletResponse) response.getResponse()).sendError
-                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setDetailMessage(sm.getString("standardHost.noContext"));
-            // END S1AS 4878272
             return END_PIPELINE;
         }
 
-        // Bind the context CL to the current thread
-        if( context.getLoader() != null ) {
-            // Not started - it should check for availability first
-            // This should eventually move to Engine, it's generic.
-            Thread.currentThread().setContextClassLoader
-                    (context.getLoader().getClassLoader());
-        }
-                 
-        // START GlassFish Issue 1057
-        // Update the session last access time for our session (if any)
-        HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
-        hreq.getSession(false);
-        // END GlassFish Issue 1057
-
         // Ask this Context to process this request
         context.getPipeline().invoke(request, response);
+
         return END_PIPELINE;
     }
 
 
+    /**
+     * Tomcat style invocation.
+     */
+    @Override
+    public void invoke(org.apache.catalina.connector.Request request,
+                       org.apache.catalina.connector.Response response)
+            throws IOException, ServletException {
+
+        Context context = preInvoke(request, response);
+        if (context == null) {
+            return;
+        }
+
+        // Ask this Context to process this request
+        context.getPipeline().invoke(request, response);
+
+        postInvoke(request, response);
+    }
+
+
+    @Override
     public void postInvoke(Request request, Response response)
         // START SJSAS 6374691
         throws IOException, ServletException
@@ -652,4 +650,40 @@ final class StandardHostValve
     }
     // END SJSAS 6374691
 
+
+    private Context preInvoke(Request request, Response response)
+            throws IOException, ServletException {
+
+        // Select the Context to be used for this Request
+        Context context = request.getContext();
+        if (context == null) {
+            /* S1AS 4878272
+            ((HttpServletResponse) response.getResponse()).sendError
+                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                 sm.getString("standardHost.noContext"));
+            */
+            // BEGIN S1AS 4878272
+            ((HttpServletResponse) response.getResponse()).sendError
+                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setDetailMessage(sm.getString("standardHost.noContext"));
+            // END S1AS 4878272
+            return null;
+        }
+
+        // Bind the context CL to the current thread
+        if( context.getLoader() != null ) {
+            // Not started - it should check for availability first
+            // This should eventually move to Engine, it's generic.
+            Thread.currentThread().setContextClassLoader
+                    (context.getLoader().getClassLoader());
+        }
+                 
+        // START GlassFish Issue 1057
+        // Update the session last access time for our session (if any)
+        HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
+        hreq.getSession(false);
+        // END GlassFish Issue 1057
+
+        return context;
+    }
 }
