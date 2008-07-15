@@ -3,5 +3,6 @@
 
 <sun-web-app>
     <property name="valve_1" value="valves.TomcatValveBase_1"/>
-    <property name="valve_2" value="valves.TomcatValveBase_2"/>
+    <property name="valve_2" value="valves.GlassFishValveImpl"/>
+    <property name="valve_3" value="valves.TomcatValveBase_2"/>
 </sun-web-app>

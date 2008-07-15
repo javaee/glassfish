@@ -4,6 +4,15 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for testing support for Tomcat-style valves.
+ * 
+ * This test deploys a webapp that specifies 3 valves in its sun-web.xml:
+ * 2 Tomcat-style valves, and 1 GlassFish-style valve. The GlassFish-style
+ * valve is added in between the two Tomcat-style valves, causing it to be
+ * wrapped (by the container) inside a TomcatValveAdapter.
+ * 
+ * When the test accesses the webapp's servlet, it checks for the presence
+ * of these attributes in the request, and will cause the test to fail if
+ * any of them are missing.
  */
 public class WebTest {
 
