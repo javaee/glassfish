@@ -1,0 +1,23 @@
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>request#getReader test.</TITLE>
+</HEAD>
+<BODY>
+<FORM method="GET" action="test.jsp" >
+Characters size:<input type="text" name="size" value="8192" /><BR>
+Use MultiByte Character:
+<input value="false" type="radio" checked name="ascii"/>yes
+<input value="true" type="radio" name="ascii"/>no
+<BR>
+<input type="submit" value="send" /></FORM>
+<HR>
+Note:
+ The real post body will be added followings:<BR>
+<ul>
+<li>multipart boundary.
+<li>Content-Disposition: form-data; name="[text form area name]"
+<li>Some CR/LFs.
+</ul>
+</BODY>
+</HTML>
