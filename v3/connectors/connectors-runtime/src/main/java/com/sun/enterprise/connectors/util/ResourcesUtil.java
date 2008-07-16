@@ -119,9 +119,7 @@ public class ResourcesUtil {
         //check if its XA
         if ("javax.sql.XADataSource".equals(pool.getResType())) {
             if (javax.sql.XADataSource.class.isAssignableFrom(dsClass)) {
-                /* TODO V3 handle XA Later
-                return ConnectorConstants.JDBCXA_RA_NAME; */
-                throw new UnsupportedOperationException("XA is not supported yet");
+                return ConnectorConstants.JDBCXA_RA_NAME;
             }
         }
 

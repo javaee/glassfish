@@ -49,6 +49,7 @@ import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.NoTxConnectorAllocator;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.allocator.LocalTxConnectorAllocator;
+import com.sun.enterprise.resource.allocator.ConnectorAllocator;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.security.SecurityContext;
@@ -298,6 +299,14 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 }
                 alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
                 break;
+            case ConnectorConstants.XA_TRANSACTION_INT:
+                if (rarName.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {
+                    shareable = false;
+                }
+                spec.markAsXA();
+                alloc = new ConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
+                return poolmgr.getResource(spec, alloc, info);
+            
             default:
                 String i18nMsg = localStrings.getString("con_mgr.illegal_tx_level", txLevel + " ");
                 throw new IllegalStateException(i18nMsg);

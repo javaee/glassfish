@@ -403,12 +403,9 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     private int getTxSupport(String moduleName) {
         if (ConnectorConstants.JDBCXA_RA_NAME.equals(moduleName)) {
-            /*    TODO V3 handle XA later
            return ConnectionPoolObjectsUtils.parseTransactionSupportString(
-               ConnectorConstants.XA_TRANSACTION_TX_SUPPORT_STRING );*/
-            throw new UnsupportedOperationException("XA is not supported yet");
+               ConnectorConstants.XA_TRANSACTION_TX_SUPPORT_STRING );
         }
-
         return ConnectionPoolObjectsUtils.parseTransactionSupportString(
                 ConnectorConstants.LOCAL_TRANSACTION_TX_SUPPORT_STRING);
     }
