@@ -223,7 +223,7 @@ public class PluginHandlers {
 		}
 		LayoutDefinition def =
 		    LayoutDefinitionManager.getLayoutDefinition(ctx,
-			point.getConsoleConfigId() + "/" + content);
+			"/" + point.getConsoleConfigId() + "/" + content);
 		LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
 	    }
 
