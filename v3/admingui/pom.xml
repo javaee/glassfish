@@ -70,6 +70,8 @@
     </developers>
 
     <modules>
+    	<module>dataprovider</module>
+    	<module>jsftemplating</module>
     	<module>plugin-service</module>
         <module>core</module>
         <module>web</module>
@@ -79,21 +81,6 @@
 
     <build>
         <plugins>
-            <!-- Have to repeat this pluguin configuration here, because
-                 this POM does not extend glassfish-parent POM.
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions> // bnd instructions
-                        // Let every module specify the OSGi manifest details
-                        //     in a bnd config file called osgi.bundle
-                        <_include>osgi.bundle</_include>
-                    </instructions>
-                </configuration>
-            </plugin>
-		 -->
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -111,13 +98,13 @@
         </plugins>
     </build>
     <repositories>
-        <repository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://download.java.net/maven/glassfish</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
+	<repository>
+	    <id>glassfish-repository</id>
+	    <name>Java.net Repository for Glassfish</name>
+	    <url>http://download.java.net/maven/glassfish</url>
+	    <snapshots>
+		<updatePolicy>never</updatePolicy>
+	    </snapshots>
         </repository>
     </repositories>
     <dependencies>
@@ -128,15 +115,16 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.jsftemplating</groupId>
-            <artifactId>jsftemplating-dt</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <groupId>org.glassfish.jsftemplating</groupId>
+            <artifactId>jsftemplating</artifactId>
+            <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
-            <artifactId>jsftemplating</artifactId>
+            <artifactId>jsftemplating-dt</artifactId>
             <version>1.2-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
@@ -191,12 +179,6 @@
                     <groupId>com.sun.woodstock.dependlibs</groupId>
                     <artifactId>portlet</artifactId>
                 </exclusion>
-		<!-- we don't want to exclude this. We need this jar in WEB-INF/lib
-                <exclusion>
-                    <groupId>commons-fileupload</groupId>
-                    <artifactId>commons-fileupload</artifactId>
-                </exclusion>
-                -->
                 <exclusion>
                     <groupId>commons-beanutils</groupId>
                     <artifactId>commons-beanutils</artifactId>
@@ -220,20 +202,23 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.sun.woodstock</groupId>
+            <groupId>org.glassfish.admingui</groupId>
             <artifactId>dataprovider</artifactId>
-            <version>1.4.2-SNAPSHOT</version>
+            <version>${dataprovider.version}</version>
+	    <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <properties>
 	<!--
-	    We are overriding these values here so we can support a range
+	    We are defining these values here so we can support a range
 	    of versions.  Anything after these version numbers is supported.
 	-->
+	<jsftemplating.version>1.2.0-1</jsftemplating.version>
 	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
 	<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 	<amx-api.version>10.0-SNAPSHOT</amx-api.version>
 	<hk2.version>0.3.8</hk2.version>
+	<dataprovider.version>1.4.2-SNAPSHOT</dataprovider.version>
     </properties>
 </project>
