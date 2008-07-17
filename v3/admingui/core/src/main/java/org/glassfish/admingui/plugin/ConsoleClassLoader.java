@@ -142,24 +142,10 @@ public class ConsoleClassLoader extends ClassLoader {
 	// Get the Habitat from the ServletContext
 	Habitat habitat = (Habitat) servletCtx.getAttribute(HABITAT_ATTRIBUTE);
 
-	// Use the Habitat to fine the ConsolePluginService and return the
+	// Use the Habitat to find the ConsolePluginService and return the
 	// correct ClassLoader for the requested module (or null)
-	Object cps = habitat.getByType(ConsolePluginService.class);
-
-	// Treat cps as an Object b/c it is loaded by a different ClassLoader
-// FIXME: If the ClassLoader issue gets fixed, I should avoid reflection here
-	ClassLoader loader = null;
-	try {
-	    loader = (ClassLoader) cps.getClass().getMethod(
-		"getModuleClassLoader", String.class).invoke(cps, moduleName);
-	} catch (Exception ex) {
-	    throw new RuntimeException("Unable to get ClassLoader for module '"
-		    + moduleName + "'!", ex);
-	}
-
-//System.out.println("Found: " + loader);
-	// Return the ClassLoader, or null
-	return loader;
+	return habitat.getByType(ConsolePluginService.class).
+	    getModuleClassLoader(moduleName);
     }
 
 // FIXME: I need to finish implementing this class!  So far I only support getResource()
