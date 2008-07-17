@@ -56,7 +56,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 @Scoped(PerLookup.class)
 public class ListApplicationsCommand extends ListComponentsCommand {
 
-    @Param(optional=true, acceptableValues="application, ejb, web, connector, webservice, jruby")
+    @Param(optional=true)
     String type = null;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
@@ -64,9 +64,6 @@ public class ListApplicationsCommand extends ListComponentsCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        if (!checkTypeValue(type, report)) {
-            return;
-        }
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
         for (Module module : applications.getModules()) {

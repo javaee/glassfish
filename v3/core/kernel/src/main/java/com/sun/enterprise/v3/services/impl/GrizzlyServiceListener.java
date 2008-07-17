@@ -24,14 +24,21 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Controller;
+import com.sun.grizzly.ControllerStateListener;
 import com.sun.grizzly.http.portunif.HttpProtocolFinder;
 import com.sun.grizzly.portunif.PUPreProcessor;
 import com.sun.grizzly.portunif.ProtocolFinder;
 import com.sun.grizzly.portunif.ProtocolHandler;
 import com.sun.grizzly.portunif.TLSPUPreProcessor;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.enterprise.util.Result;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.net.ssl.SSLContext;
 
 /**
@@ -64,8 +71,25 @@ public class GrizzlyServiceListener {
         this.controller = controller;
     }
 
-    public void start() throws IOException, InstantiationException {
-        embeddedHttp.initEndpoint();
+    public void start(final GrizzlyProxy.GrizzlyFuture future) throws IOException, InstantiationException {
+        final Thread t = Thread.currentThread();
+        embeddedHttp.initEndpoint();;
+        embeddedHttp.getController().addStateListener(new ControllerStateListener() {
+            public void onStarted() {
+            }
+
+            public void onReady() {
+                future.setResult(new Result<Thread>(t));
+            }
+
+            public void onStopped() {
+
+            }
+
+            public void onException(Throwable throwable) {
+                future.setResult(new Result<Thread>(throwable));
+            }
+        });
         embeddedHttp.startEndpoint();
     }
     

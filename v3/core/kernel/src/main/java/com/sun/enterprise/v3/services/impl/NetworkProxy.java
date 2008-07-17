@@ -23,6 +23,10 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.enterprise.util.Result;
+
+import java.util.concurrent.Future;
+
 /**
  * Generic interface used by the GrizzlyService to start the tcp/udp/tcl stack.
  * By default, we are starting Grizzly, but we might allow other framework to
@@ -45,7 +49,7 @@ public interface NetworkProxy extends EndpointMapper<com.sun.grizzly.tcp.Adapter
     /** 
      * Start the proxy. 
      */
-    public void start();
+    public Future<Result<Thread>> start();
     
     
     /**

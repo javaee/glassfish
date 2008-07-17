@@ -202,7 +202,7 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
                      * Either start the currently stopped reloader or stop the
                      * currently running one.
                      */
-                    newEnabled = new Boolean((String) event.getNewValue());
+                    newEnabled = Boolean.valueOf((String) event.getNewValue());
                 } else if (event.getPropertyName().equals("dynamic-reload-poll-interval-in-seconds")) {
                     newPollIntervalInSeconds = new Integer((String) event.getNewValue());
                 }

@@ -30,7 +30,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.internal.data.ApplicationRegistry;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
@@ -95,7 +95,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter
         implements Adapter, PostConstruct, EventListener {
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Inject
     AdminService as; //need to take care of injecting the right AdminService
@@ -144,7 +144,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter
     private static final String MYURL_TOKEN      = "%%%MYURL%%%";
     private static final String STATUS_TOKEN     = "%%%STATUS%%%";
 
-    static final String ADMIN_APP_NAME           = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_APP_NAME;
+    static final String ADMIN_APP_NAME           = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
     static final String ADMIN_APP_WAR            = ADMIN_APP_NAME + ".war";
     public AdminConsoleAdapter() throws IOException {
         initHtml   = Utils.packageResource2String("downloadgui.html");
@@ -219,6 +219,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter
                     ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION + ", " +
                     ServerTags.ADMIN_CONSOLE_LOCATION_ON_DISK;
             log.info(msg);
+            return;
         }
         List<Property> props = as.getProperty();
         for (Property prop : props) {
@@ -263,7 +264,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter
     }
     private void setContextRoot(Property prop) {
         if (prop == null) {
-            contextRoot = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
+            contextRoot = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
             return;
         }
         if(ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
@@ -271,8 +272,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter
                 contextRoot = prop.getValue();
                 log.info("Admin Console Adapter: context root: " + contextRoot);
             } else {
-                log.info("Invalid context root for the admin console application, using default:" + ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT);
-                contextRoot = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
+                log.info("Invalid context root for the admin console application, using default:" + ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT);
+                contextRoot = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
             }
         }
     }

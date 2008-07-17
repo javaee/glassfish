@@ -126,24 +126,20 @@ public class WebProtocolHandler extends AbstractHttpHandler
         return true;
     }
     
-    private void initDefaultHttpArtifactsIfRequired() {
+    private synchronized void initDefaultHttpArtifactsIfRequired() {
         if (defaultProtocolFilters == null) {
-            synchronized (this) {
-                if (defaultProtocolFilters == null) {
-                    grizzlyEmbeddedHttp.initAlgorithm();
-                    List<ProtocolFilter> tmpProtocolFilters = new ArrayList<ProtocolFilter>(4);
-                    tmpProtocolFilters.addAll(grizzlyEmbeddedHttp.getDefaultHttpProtocolFilters());
+                grizzlyEmbeddedHttp.initAlgorithm();
+                List<ProtocolFilter> tmpProtocolFilters = new ArrayList<ProtocolFilter>(4);
+                tmpProtocolFilters.addAll(grizzlyEmbeddedHttp.getDefaultHttpProtocolFilters());
 
-                    StaticResourcesAdapter adapter = new StaticResourcesAdapter();
-                    adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
- 
-                    fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
-                            null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
-                            StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));
-                    
-                    defaultProtocolFilters = tmpProtocolFilters;
-                }
-            }
+                StaticResourcesAdapter adapter = new StaticResourcesAdapter();
+                adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
+
+                fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
+                        null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
+                        StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));
+
+                defaultProtocolFilters = tmpProtocolFilters;
         }
     }
     

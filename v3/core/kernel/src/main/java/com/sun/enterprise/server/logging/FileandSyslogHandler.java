@@ -40,7 +40,7 @@ import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;
 import org.glassfish.config.support.TranslatedConfigView;
@@ -79,7 +79,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     ServerContext serverContext;
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Inject(optional=true)
     Agent agent;
@@ -307,7 +307,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     // A metered stream is a subclass of OutputStream that
     //   (a) forwards all its output to a target stream
     //   (b) keeps track of how many bytes have been written
-    private class MeteredStream extends OutputStream {
+    private final class MeteredStream extends OutputStream {
         OutputStream out;
         long written;
 

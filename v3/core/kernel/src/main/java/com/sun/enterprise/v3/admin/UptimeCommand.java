@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -57,7 +57,7 @@ import com.sun.enterprise.universal.Duration;
 @I18n("uptime")
 public class UptimeCommand implements AdminCommand {
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();

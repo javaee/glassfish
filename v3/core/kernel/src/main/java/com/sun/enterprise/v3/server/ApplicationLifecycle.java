@@ -46,7 +46,7 @@ import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.EnableCommand;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
@@ -141,7 +141,7 @@ public class ApplicationLifecycle {
     protected Server server;
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -433,8 +433,8 @@ public class ApplicationLifecycle {
                     Deployer deployer = getDeployer(containerInfo);
                     containerInfosByDeployers.put(deployer, containerInfo);
                     final MetaData metadata = deployer.getMetaData();
-                    Class[] requires = metadata.requires();
-                    Class[] provides = metadata.provides();
+                    Class[] requires = (metadata==null?null:metadata.requires());
+                    Class[] provides = (metadata==null?null:metadata.provides());
                     if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
                         // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
                         // they would effectively end up being in the middle of the list (see the sorting below)
@@ -450,13 +450,15 @@ public class ApplicationLifecycle {
                             requesters.add(deployer);
                         }
                     }
-                    for (Class metadataType : metadata.provides()) {
-                        Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
-                        if (currentProvidindDeployer != null) {
-                            report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
-                                    + "] provide same metadata : " + metadataType, null);
+                    if (metadata!=null) {
+                        for (Class metadataType : metadata.provides()) {
+                            Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
+                            if (currentProvidindDeployer != null) {
+                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
+                                        + "] provide same metadata : " + metadataType, null);
+                            }
+                            metaDataProvided.put(metadataType, deployer);
                         }
-                        metaDataProvided.put(metadataType, deployer);
                     }
                 } finally {
                     Thread.currentThread().setContextClassLoader(original);
@@ -465,18 +467,17 @@ public class ApplicationLifecycle {
         }
 
         // now sort...
-        for (Class required : metaDataRequired.keySet()) {
-            if (metaDataProvided.containsKey(required)) {
-                Deployer provider = metaDataProvided.get(required);
+        for (Map.Entry<Class, List<Deployer>> entry  : metaDataRequired.entrySet()) {
+            if (metaDataProvided.containsKey(entry.getKey())) {
+                Deployer provider = metaDataProvided.get(entry.getKey());
                 // TODO : better sorting job.
                 sortedContainerInfos.addFirst(containerInfosByDeployers.get(provider));
-                List<Deployer> requesters = metaDataRequired.get(required);
-                for (Deployer requester : requesters) {
+                for (Deployer requester : entry.getValue()) {
                     sortedContainerInfos.add(containerInfosByDeployers.get(requester));
                 }
 
             } else {
-                report.failure(logger, "Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null);
+                report.failure(logger, "Deployer " + metaDataRequired.get(entry.getKey()) + " requires " + entry.getKey() + " but no other deployer provides it", null);
                 return null;
             }
         }
@@ -509,11 +510,14 @@ public class ApplicationLifecycle {
 
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            final MetaData metadata = deployer.getMetaData();
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
-                    for (Class<?> metadata : deployer.getMetaData().provides()) {
-                        context.addModuleMetaData(deployer.loadMetaData(metadata, context));
+                    if (metadata!=null) {
+                        for (Class<?> provide : metadata.provides()) {
+                            context.addModuleMetaData(deployer.loadMetaData(provide, context));
+                        }
                     }
                 } catch(Exception e) {
                     report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
@@ -530,14 +534,17 @@ public class ApplicationLifecycle {
             // get the deployer
             Deployer deployer = containerInfo.getDeployer();
 
+            final MetaData metadata = deployer.getMetaData();
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
                     deployer.prepare(context);
-                    if (deployer.getMetaData().invalidatesClassLoader()) {
-                        invalidated = true;
+                    if (metadata!=null) {
+                        if (metadata.invalidatesClassLoader()) {
+                            invalidated = true;
+                        }
                     }
                     // construct an incomplete ModuleInfo which will be later
                     // filled in at loading time
@@ -1147,7 +1154,7 @@ public class ApplicationLifecycle {
      * absolute paths.  The relative path is relative to instance-root/lib/applibs.
      * The libraries  are made available to the application in the order specified.
      *
-     * @param libraries is a comma-separated list of library JAR files
+     * @param librariesStr is a comma-separated list of library JAR files
      * @return array of URL
      */
     private URL[] convertToURL(String librariesStr) {

@@ -30,7 +30,8 @@ import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.util.zip.ZipFile;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+
 import java.beans.PropertyVetoException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -61,12 +62,12 @@ final class InstallerThread extends Thread {
     private final int proxyPort;
     private final ProgressObject progress;
     private final Domain domain;
-    private final ServerEnvironment env;
+    private final ServerEnvironmentImpl env;
     private final String contextRoot;
     
     InstallerThread(List<URL> urls, File toFile, String proxyHost, 
             int proxyPort, ProgressObject progress, Domain domain,
-            ServerEnvironment env, String contextRoot) {
+            ServerEnvironmentImpl env, String contextRoot) {
         this.urls        = urls;
         this.toFile      = toFile;
         this.toFile.getParentFile().mkdirs();

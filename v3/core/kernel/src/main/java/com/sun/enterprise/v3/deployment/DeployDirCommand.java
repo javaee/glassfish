@@ -48,10 +48,6 @@ public class DeployDirCommand implements AdminCommand {
 
     @Inject
     CommandRunner commandRunner;
-
-        //define this variable to skip parameter valadation.
-        //Param validation will be done when referening deploy command.
-    boolean skipParamValidation = true;
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
     

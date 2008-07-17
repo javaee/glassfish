@@ -87,7 +87,6 @@ public class ResourcesXMLParser implements EntityResolver
     private File resourceFile = null;
     private Document document;
     private List<Resource> vResources;
-    private boolean isDoctypePresent = false;
     /* list of resources that needs to be created prior to module deployment. This 
      * includes all non-Connector resources and resource-adapter-config
      */
@@ -1126,7 +1125,7 @@ public class ResourcesXMLParser implements EntityResolver
      }
     
     
-      class AddResourcesErrorHandler implements ErrorHandler {
+      final class AddResourcesErrorHandler implements ErrorHandler {
           public void error(SAXParseException e) throws org.xml.sax.SAXException{
            throw e ;
         }

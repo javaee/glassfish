@@ -112,7 +112,7 @@ public class ASMainFelix extends ASMainOSGi {
         // non-daemon thread started yet. The first non-daemon thread is started
         // when our hk2 osgi-adapter is started.
         launcherThread.join();
-        logger.info("Framework successfully started");
+        logger.fine("Framework successfully started");
     }
 
     private String getFWMainClassName() {

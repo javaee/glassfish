@@ -236,21 +236,19 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
 
             return;
         }
-    //    FileServer handler = getHandlerFor(req);
+        //FileServer handler = getHandlerFor(req);
         FileServer handler = null;
-        if (handler!=null) {
-            ClassLoader currentCl = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(handler.getClass().getClassLoader());
-                DynamicContentAdapter adapter = DynamicContentAdapter.class.cast(handler);
-                adapter.setRootFolder(docRoot);
-                adapter.service(req, res);
-                return;
-            } catch(Exception e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Exception while servicing " + file, e);
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCl);
-            }
+        ClassLoader currentCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(handler.getClass().getClassLoader());
+            DynamicContentAdapter adapter = DynamicContentAdapter.class.cast(handler);
+            adapter.setRootFolder(docRoot);
+            adapter.service(req, res);
+            return;
+        } catch(Exception e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Exception while servicing " + file, e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentCl);
         }
 
         // set headers
@@ -262,12 +260,16 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
         res.sendHeaders();
 
         FileInputStream fis = new FileInputStream(file);
-        byte b[] = new byte[8192];
-        ByteChunk chunk = new ByteChunk();
-        int rd = 0;
-        while ((rd = fis.read(b)) > 0) {
-            chunk.setBytes(b, 0, rd);
-            res.doWrite(chunk);
+        try {
+            byte b[] = new byte[8192];
+            ByteChunk chunk = new ByteChunk();
+            int rd = 0;
+            while ((rd = fis.read(b)) > 0) {
+                chunk.setBytes(b, 0, rd);
+                res.doWrite(chunk);
+            }
+        } finally {
+            fis.close();
         }
 
         try{

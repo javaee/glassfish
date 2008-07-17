@@ -45,8 +45,8 @@ package com.sun.enterprise.v3.admin;
  */
 public class ResourceStatus {
 
-    public static int SUCCESS = 0;
-    public static int FAILURE = 1;
+    public final static int SUCCESS = 0;
+    public final static int FAILURE = 1;
     
     int status = SUCCESS;
     String message;

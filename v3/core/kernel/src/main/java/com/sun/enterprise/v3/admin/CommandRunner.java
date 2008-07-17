@@ -834,19 +834,20 @@ public class CommandRunner {
          * @return true if to skip param validation, else return false.
          */
     boolean skipValidation(AdminCommand command) {
-        try {
-            final Field f = command.getClass().getDeclaredField("skipParamValidation");
-            f.setAccessible(true);
-            if (f.getType().isAssignableFrom(boolean.class)) {
-                return f.getBoolean(command);
+            try {
+                final Field f = command.getClass().getDeclaredField("skipParamValidation");
+                f.setAccessible(true);
+                if (f.getType().isAssignableFrom(boolean.class)) {
+                    return f.getBoolean(command);
+                }
+            } catch (NoSuchFieldException e) {
+                return false;
+            } catch (IllegalAccessException e) {
+                return false;
             }
-        }
-        catch (Exception e) {
+            //all else return false
             return false;
         }
-            //all else return false
-        return false;
-    }
 
     // bnevins Apr 8, 2008
     private String encodeManPage(InputStream in) {

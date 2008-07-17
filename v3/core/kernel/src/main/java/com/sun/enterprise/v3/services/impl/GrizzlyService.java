@@ -31,6 +31,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.Startup;
+import org.glassfish.api.FutureProvider;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -39,11 +40,13 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.Result;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +61,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
-public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy {
+public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
 
     @Inject(name="server-config") // for now
     Config config;
@@ -70,6 +73,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     Habitat habitat;
 
     List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
+
+    List<Future<Result<Thread>>> futures;
     
     private final Controller controller  = new Controller();
            
@@ -127,8 +132,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void postConstruct() {
         HttpService httpService = config.getHttpService();
         try {
+            futures = new ArrayList<Future<Result<Thread>>>();
             for (HttpListener listener : httpService.getHttpListener()) {
-                createNetworkProxy(listener, httpService);
+               futures.add(createNetworkProxy(listener, httpService));
             }
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
@@ -144,14 +150,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             throw e;
         }
     }
-    
-    
+
+    public List<Future<Result<Thread>>> getFutures() {
+        return futures;
+    }
+
     /*
      * Creates a new NetworkProxy for a particular HttpListner
      * @param listener HttpListener
      * @param httpService HttpService
      */
-    public void createNetworkProxy(HttpListener listener, HttpService httpService) {
+    public Future<Result<Thread>> createNetworkProxy(HttpListener listener, HttpService httpService) {
         // create the proxy for the port.
         NetworkProxy proxy = new GrizzlyProxy(logger, habitat, listener, 
                 controller, httpService);
@@ -166,9 +175,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 proxy.getVsMapper().addVirtualServer(vs);
             }
         }
-        proxy.start();
+        Future<Result<Thread>> future =  proxy.start();
         // add the new proxy to our list of proxies.
         proxies.add(proxy);
+
+        return future;
     }
     
     

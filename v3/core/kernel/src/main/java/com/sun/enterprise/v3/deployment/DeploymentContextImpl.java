@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.io.File;
 
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.ModuleDefinition;
 
 /**
@@ -45,7 +45,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;
-    final ServerEnvironment env;
+    final ServerEnvironmentImpl env;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -53,7 +53,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     List<ModuleDefinition> publicAPIs = new ArrayList<ModuleDefinition>();
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironmentImpl env) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;
@@ -144,7 +144,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      *
      * @return the application's properties.
      */
-    public synchronized Properties getProps() {
+    public Properties getProps() {
         if (props==null) {
             props = new Properties();
         }

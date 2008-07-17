@@ -26,10 +26,13 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.enterprise.util.Result;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.api.FutureProvider;
 import org.glassfish.api.event.EventListener.Event;
 
 import org.glassfish.internal.api.Init;
@@ -38,8 +41,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +63,7 @@ public class AppServerStartup implements ModuleStartup {
     final static Logger logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Inject
     Habitat habitat;
@@ -82,10 +84,11 @@ public class AppServerStartup implements ModuleStartup {
     
     public void run() {
 
-        logger.fine("Module subsystem initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
+            return;
         }
+        logger.fine("Module subsystem initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
@@ -118,13 +121,24 @@ public class AppServerStartup implements ModuleStartup {
             }
         });
 
+        boolean shutdownRequested=false;
+        ArrayList<Future<Result<Thread>>> futures = new ArrayList<Future<Result<Thread>>>();
+        final List<Inhabitant<? extends Startup>> executedStartups = new ArrayList<Inhabitant<? extends Startup>>();
         for (final Inhabitant<? extends Startup> i : startups) {
             if (i.type().getAnnotation(Async.class)==null) {
-                i.get();
+                try {
+                    Startup startup = i.get();
+                    // the synchronous service was started successfully, let's check that it's not in fact a FutureProvider
+                    if (startup instanceof FutureProvider) {
+                        futures.addAll(((FutureProvider) startup).getFutures());
+                    }
+                } catch(RuntimeException e) {
+                        logger.info("Startup service failed to start : " + e.getMessage());
+                }
                 if (logger.isLoggable(Level.FINE)) {
                     logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
                 }
-
+                executedStartups.add(i);
             }
         }
 
@@ -138,7 +152,41 @@ public class AppServerStartup implements ModuleStartup {
             // do nothing, we are probably shutting down
         }
 
+        // all the synchronous and asynchronous services have started correctly, time to check
+        // if a severe error happened that should trigger shutdown.
+        if (shutdownRequested) {
+            shutdown(startups, executedStartups);
+        }   else {
+            for (Future<Result<Thread>> future : futures) {
+                try {
+                    if (future.get().isFailure()) {
+                        final Throwable t = future.get().exception();
+                        logger.log(Level.SEVERE, "Shutting down v3 due to startup exception : " + t.getMessage());
+                        logger.log(Level.FINE, future.get().exception().getMessage(), t);
+                        shutdown(startups, executedStartups);
+                        return;
+                    }
+                } catch(Throwable t) {
+                    logger.log(Level.SEVERE, t.getMessage(), t);    
+                }
+            }
+        }
+
         events.send(new Event(EventTypes.SERVER_READY));
 
+    }
+
+
+    private final void shutdown(Collection<Inhabitant<? extends Startup>> startups, Collection<Inhabitant<? extends Startup>> executedServices) {
+
+        CommandRunner runner = habitat.getByType(CommandRunner.class);
+        if (runner!=null) {
+           final Properties params = new Properties();
+            if (context.getArguments().containsKey("--noforcedshutdown")) {
+                params.put("force", "false");    
+            }
+            runner.doCommand("stop-domain", params, new PlainTextActionReporter());
+            return;
+        }
     }
 }

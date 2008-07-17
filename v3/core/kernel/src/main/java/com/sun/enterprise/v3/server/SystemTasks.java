@@ -136,8 +136,7 @@ public class SystemTasks implements Init, PostConstruct {
                     break;
                 }
             }
-            
-            return config.getSystemProperty();
+            return (List<SystemProperty>)  (config != null ? config.getSystemProperty() : Collections.emptyList());
         }
         catch(Exception e) {  //possible NPE if domain.xml has issues!
             return Collections.emptyList();

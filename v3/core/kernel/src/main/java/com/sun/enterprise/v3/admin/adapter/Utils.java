@@ -43,13 +43,17 @@ final class Utils {
     static String packageResource2String(String name) throws IOException {
         String file = Utils.class.getPackage().getName().replace('.', '/') + "/" + name;
         InputStream is = Utils.class.getClassLoader().getResourceAsStream(file);
-        BufferedInputStream bis = new BufferedInputStream(is);
-        byte[] bytes = new byte[1024];
-        int read;
-        StringBuffer sb = new StringBuffer();
-        while ((read = bis.read(bytes)) != -1) {
-            sb.append(new String(bytes, 0, read, "UTF-8"));
+        try {
+            BufferedInputStream bis = new BufferedInputStream(is);
+            byte[] bytes = new byte[1024];
+            int read;
+            StringBuffer sb = new StringBuffer();
+            while ((read = bis.read(bytes)) != -1) {
+                sb.append(new String(bytes, 0, read, "UTF-8"));
+            }
+            return ( sb.toString());
+        } finally {
+            is.close();
         }
-        return ( sb.toString());
     }
 }

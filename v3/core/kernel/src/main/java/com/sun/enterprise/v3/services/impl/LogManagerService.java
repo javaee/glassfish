@@ -29,7 +29,7 @@ import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
 import org.glassfish.internal.api.Init;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -59,7 +59,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     Logger logger;    
 
     @Inject
-    ServerEnvironment  env;
+    ServerEnvironmentImpl env;
 
     @Inject
     Habitat habitat;
@@ -79,7 +79,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         
         // logging.properties nassaging.
         LogManager logMgr = LogManager.getLogManager();
-        File logging = new File(env.getConfigDirPath(), ServerEnvironment.kLoggingPropertiesFileNAme);
+        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
         try {

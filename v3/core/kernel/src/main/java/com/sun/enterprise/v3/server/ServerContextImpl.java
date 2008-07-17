@@ -46,7 +46,7 @@ import java.util.Map;
 public class ServerContextImpl implements ServerContext, PostConstruct {
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Inject
     StartupContext startupContext;
@@ -55,7 +55,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     Habitat habitat;
 
     File instanceRoot;
-    final String instanceName = "server"; // weird
+    String instanceName = "server"; // weird
     String[] args;
 
     /** Creates a new instance of ServerContextImpl */
@@ -87,8 +87,8 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public String getServerConfigURL() {
-        File domainXML = new File(instanceRoot, ServerEnvironment.kConfigDirName);
-        domainXML = new File(domainXML, ServerEnvironment.kConfigXMLFileName);
+        File domainXML = new File(instanceRoot, ServerEnvironmentImpl.kConfigDirName);
+        domainXML = new File(domainXML, ServerEnvironmentImpl.kConfigXMLFileName);
         return domainXML.toURI().toString();
     }
 

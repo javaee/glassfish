@@ -6,8 +6,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 
 /**
  * Locations command to indicate where this server is installed.
@@ -18,7 +17,7 @@ import com.sun.enterprise.v3.server.ServerEnvironment;
 public class LocationsCommand implements AdminCommand {
     
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();

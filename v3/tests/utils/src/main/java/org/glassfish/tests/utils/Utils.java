@@ -62,11 +62,7 @@ public class Utils {
     final static String inhabitantPath = "META-INF/inhabitants";
 
     Map<String, Habitat> habitats = new HashMap<String, Habitat>();
-    public static Utils instance;
-
-    static {        
-        instance = new Utils();
-    }
+    public static final Utils instance = new Utils();
 
     public synchronized Habitat getHabitat(ConfigApiTest test) {
 

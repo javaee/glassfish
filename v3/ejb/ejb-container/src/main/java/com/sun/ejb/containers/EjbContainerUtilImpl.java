@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -109,7 +109,7 @@ public class EjbContainerUtilImpl
     private EjbContainer ejbContainer;
 
     @Inject
-    private ServerEnvironment env;
+    private ServerEnvironmentImpl env;
 
     @Inject(optional=true)
     private Agent callFlowAgent;
@@ -245,7 +245,7 @@ public class EjbContainerUtilImpl
         return ejbContainer;
     }
 
-    public ServerEnvironment getServerEnvironment() {
+    public ServerEnvironmentImpl getServerEnvironment() {
         return env;
     }
 

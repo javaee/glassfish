@@ -27,7 +27,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ContainerInfo;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
@@ -64,7 +64,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     /**
      * Retuns the lifecyle of the service.
@@ -83,7 +83,11 @@ public class ApplicationLoaderService extends ApplicationLifecycle
      * Invoke the deployer load() method for each application.
      */
     public void postConstruct() {
+/*        throw new RuntimeException("Just for fun !");
+    }
 
+    public void foo() {
+*/
         assert env!=null;
         for (Module m : applications.getModules()) {
             if (m instanceof Application) {
@@ -181,6 +185,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             uri = new URI(source);
         } catch (URISyntaxException e) {
             logger.severe("Cannot determine original location for application : " + e.getMessage());
+            return;
         }
         File sourceFile = new File(uri);
         if (sourceFile.exists()) {

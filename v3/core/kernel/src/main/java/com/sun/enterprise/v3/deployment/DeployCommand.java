@@ -30,7 +30,7 @@ import com.sun.enterprise.v3.admin.CommandRunner;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
@@ -69,10 +69,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
     
     @Inject
-    ServerEnvironment env;
-
-    @Inject
-    ArchiveFactory archiveFactory;
+    ServerEnvironmentImpl env;
 
     @Inject
     CommandRunner commandRunner;
@@ -243,7 +240,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 return;
             }
 
-            final String docBase = archive.getURI().toURL().toString();
             final ReadableArchive sourceArchive = archive; 
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     sourceArchive, parameters, env);

@@ -27,7 +27,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -61,7 +61,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
     
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Param(primary = true, name=ParameterNames.NAME)
     String name=null;
@@ -71,8 +71,6 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     
     @Param(optional=true, defaultValue="false")
     Boolean keepreposdir;
-
-    Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
     public void execute(AdminCommandContext context) {
         

@@ -306,7 +306,7 @@ public class AutoDeployer {
      *@param verify whether to verify the app during deployment
      */
     public void setVerify(boolean verify) {
-        this.verify = new Boolean(verify);
+        this.verify =  Boolean.valueOf(verify);
     }
     
     /**
@@ -314,7 +314,7 @@ public class AutoDeployer {
      *@param jspPreCompilation precompilation setting
      */
     public void setJspPreCompilation(boolean jspPreCompilation) {
-        this.jspPreCompilation = new Boolean(jspPreCompilation);
+        this.jspPreCompilation = Boolean.valueOf(jspPreCompilation);
     }
     
     /**

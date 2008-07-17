@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.v3.deployment;
 
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
@@ -64,7 +64,7 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);    
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Param(primary=true, name="component")
     String component = null;
@@ -106,8 +106,8 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
 
         ReadableArchive archive;
         File file = null;
-        Properties commandParams = new Properties();
-        Properties contextProps = new Properties();
+        Properties commandParams;
+        Properties contextProps;
         try {
             String path = null;
             Application app = null; 

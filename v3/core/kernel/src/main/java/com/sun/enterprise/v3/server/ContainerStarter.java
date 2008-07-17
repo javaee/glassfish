@@ -66,7 +66,7 @@ public class ContainerStarter {
     Logger logger;
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
@@ -123,15 +123,21 @@ public class ContainerStarter {
                     try {
                         Class<? extends Container> containerClass = containerClassLoader.loadClass(name).asSubclass(Container.class);
                         if (containerClass!=null) {
-                            provider = habitat.getInhabitant(containerClass, null);
+                            provider = habitat.getInhabitantByType(containerClass);
+                            if (provider==null) {
+                                logger.severe("Cannot find the container " + name + " in the habitat, is it annotated with @Service");
+                                return null;
+                            }
                         }
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
 
-                    logger.severe("Cannot find Container named " + sniffer.getModuleType());
-                    logger.severe("Cannot start " + sniffer.getModuleType() + " container");
-                    return null;
+                    if (provider==null) {
+                        logger.severe("Cannot find Container named " + name);
+                        logger.severe("Cannot start " + sniffer.getModuleType() + " container");
+                        return null;
+                    }
                 }
                 Thread.currentThread().setContextClassLoader(containerClassLoader);
                 if (provider!=null) {

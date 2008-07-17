@@ -48,10 +48,10 @@ import com.sun.logging.LogDomains;
  */
 public class ModuleExploder {
 
-    protected static StringManager localStrings =
+    protected static final StringManager localStrings =
             StringManager.getManager(ModuleExploder.class );
 
-    protected static Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    protected static final Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
     protected static final String PRESERVED_MANIFEST_NAME = java.util.jar.JarFile.MANIFEST_NAME + ".preserved";
 

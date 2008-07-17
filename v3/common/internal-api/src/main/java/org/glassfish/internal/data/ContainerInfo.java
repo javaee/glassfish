@@ -169,7 +169,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
         Set<Integer> existingEntries = null;
         for (Map.Entry<WeakReference<Thread>, Set<Integer>> entry : addedThreadLocals.entrySet()) {
             if (entry.getKey().get()!=null) {
-                if (entry.getKey().equals(t)) {
+                if (entry.getKey().get().equals(t)) {
                     // found our guy
                     existingEntries = entry.getValue();
                     break;

@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.util.Result;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -122,7 +124,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * @param port the port on which we need to listen.
      */
     private void configureGrizzly(int port, Controller controller) {
-        grizzlyListener = new GrizzlyServiceListener();
+        grizzlyListener = new GrizzlyServiceListener(controller);
         
         GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(grizzlyListener, 
                 httpService, httpListener, port, controller);
@@ -187,23 +189,27 @@ public class GrizzlyProxy implements NetworkProxy {
     }
 
     
-    public void start() {
-        Thread thread = new Thread() {
+    public Future<Result<Thread>> start() {
+        final GrizzlyFuture future = new GrizzlyFuture();
+        final Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
-                    grizzlyListener.start();
+                    grizzlyListener.start(future);
                 } catch(InstantiationException e) {
                     logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
                 } catch(IOException e) {
                     logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
                 } catch (RuntimeException e) {
                     logger.log(Level.INFO, "Exception in grizzly thread", e);
+                }  catch(Throwable e) {
+                    logger.log(Level.INFO, e.getMessage(), e);
                 }
             }
         };
         thread.start();
         logger.info("Listening on port " + grizzlyListener.getPort());
+        return future;
     }
 
     
@@ -221,4 +227,33 @@ public class GrizzlyProxy implements NetworkProxy {
         return portNumber;
     }
 
+    public  final class  GrizzlyFuture  implements Future<Result<Thread>> {
+            Result<Thread> result;
+            CountDownLatch latch = new CountDownLatch(1);
+            public void setResult(Result<Thread>result) {
+                this.result = result;
+                latch.countDown();
+            }
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+
+            public boolean isCancelled() {
+                return false;
+            }
+
+            public boolean isDone() {
+                return latch.getCount()==0;
+            }
+
+            public Result<Thread> get() throws InterruptedException, ExecutionException {
+                latch.await();
+                return result;
+            }
+
+            public Result<Thread> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                latch.await(timeout, unit);
+                return result;
+            }
+        }
 }

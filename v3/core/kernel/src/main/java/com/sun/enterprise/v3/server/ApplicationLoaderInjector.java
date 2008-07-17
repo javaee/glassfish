@@ -4,6 +4,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.api.Startup;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
@@ -46,12 +47,19 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct {
         service.archiveFactory = habitat.getComponent(ArchiveFactory.class);
         service.habitat = habitat;
         service.appRegistry = habitat.getComponent(ApplicationRegistry.class);
-        service.adapter = habitat.getComponent(GrizzlyService.class);
+        Inhabitant<GrizzlyService> grizzly = habitat.getInhabitantByType(GrizzlyService.class);
+        service.adapter = grizzly.get();
+
         service.modulesRegistry = habitat.getComponent(ModulesRegistry.class);
         service.containerRegistry = habitat.getComponent(ContainerRegistry.class);
-        service.env = habitat.getComponent(ServerEnvironment.class);
+        service.env = habitat.getComponent(ServerEnvironmentImpl.class);
         service.snifferManager = habitat.getComponent(SnifferManager.class);
         habitat.add(new ExistingSingletonInhabitant<ApplicationLoaderService>(service));
-        service.postConstruct();
+        try {
+            service.postConstruct();
+        } catch(RuntimeException e) {
+            grizzly.release();
+            throw e;
+        }            
     }
 }

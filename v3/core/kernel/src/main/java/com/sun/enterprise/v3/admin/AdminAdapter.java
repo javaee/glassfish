@@ -53,7 +53,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
@@ -97,7 +98,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     CommandRunner commandRunner;
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     @Inject(optional=true)
     AdminAuthenticator authenticator=null;
@@ -173,7 +174,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         }
     }
 
-    public boolean authenticate(Request req, ServerEnvironment serverEnviron)
+    public boolean authenticate(Request req, ServerEnvironmentImpl serverEnviron)
             throws Exception {
 
         File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
@@ -334,7 +335,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
      * This class constructs a unique temporary directory, then creates one
      * temp file per ZipEntry in the stream to hold the uploaded content.  
      */
-    private class UploadedFilesInfo {
+    private final class UploadedFilesInfo {
         private File tempFolder = null;
         private ArrayList<File> uploadedFiles;
         

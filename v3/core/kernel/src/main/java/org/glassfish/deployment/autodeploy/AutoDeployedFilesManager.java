@@ -247,7 +247,7 @@ public class AutoDeployedFilesManager {
      * A marker class to indicate that the file is to be undeployed and then
      * deleted by the autodeployer.
      */
-    protected class UndeployRequestedFile extends File {
+    protected final class UndeployRequestedFile extends File {
         public UndeployRequestedFile(File parent, String child) {
             super(parent, child);
         }

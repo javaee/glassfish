@@ -30,6 +30,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * Defines various global configuration for the running GlassFish instance.
@@ -40,7 +41,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Jerome Dochez
  */
 @Service
-public class ServerEnvironment implements org.glassfish.api.admin.ServerEnvironment, PostConstruct {
+public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     @Inject
     StartupContext startupContext;
 
@@ -73,10 +74,10 @@ public class ServerEnvironment implements org.glassfish.api.admin.ServerEnvironm
     /**
      * Compute all the values per default.
      */
-    public ServerEnvironment() {
+    public ServerEnvironmentImpl() {
     }
 
-    public ServerEnvironment(File root) {
+    public ServerEnvironmentImpl(File root) {
         // the getParentFile() that we do later fails to work correctly if
         // root is for example "new File(".")
         this.root = root.getAbsoluteFile();

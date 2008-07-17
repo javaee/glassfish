@@ -70,7 +70,7 @@ public class AutodeployRetryManager implements PostConstruct {
     /**
      *Specifies the default value for the retry limit.
      */
-    private final int RETRY_LIMIT_DEFAULT = 30; // 30 seconds
+    private static final int RETRY_LIMIT_DEFAULT = 30; // 30 seconds
 
     /** Maps an invalid File to its corresponding Info object. */
     private HashMap<File,Info> invalidFiles = new HashMap<File,Info>();

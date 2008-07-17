@@ -128,7 +128,7 @@ public class V2DottedNameSupport {
                             // no more dotted names, better be done with the pattern
                             return !patternToken.hasMoreElements();
                         } else {
-                            remaining.substring(1);
+                            remaining = remaining.substring(1);
                         }
                         if (patternToken.hasMoreElements()) {
                             return matches(remaining, pattern.substring(token.length()+1));

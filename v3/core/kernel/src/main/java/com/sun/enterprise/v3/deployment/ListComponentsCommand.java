@@ -59,14 +59,8 @@ import java.util.List;
 @Scoped(PerLookup.class)
 public class ListComponentsCommand extends ApplicationLifecycle implements AdminCommand {
 
-    @Inject
-    Applications applications;
-
-        // [--type application|ejb|web|connector|webservice|jruby]
-    @Param(optional=true, acceptableValues="application, ejb, web, connector, webservice, jruby")
+    @Param(optional=true)
     String type = null;
-
-    private final String VALID_TYPES = "application|ejb|web|connector|webservice|jruby";
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 
@@ -74,9 +68,6 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
         
         final ActionReport report = context.getActionReport();
 
-        if (!checkTypeValue(type, report)) {
-            return;
-        }
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
         for (Module module : applications.getModules()) {
@@ -96,25 +87,6 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
             part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    
-        /**
-         *  check if type option value is valid.
-         *  Valid type :  application, ejb, web, connector, webservice
-         *  @param type - type of application
-         *  @param report - if type is not valid then repot is returned with FAILURE
-         *  @return true if valid else false.
-         **/
-    boolean checkTypeValue(final String type, final ActionReport report) {
-        if (type != null) {
-            if (!type.matches(VALID_TYPES)) {
-                report.setMessage(localStrings.getLocalString("list.components.command.invalid.type","Invalid type value, " + type, type));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return false;
-            }
-        }
-        return true;
     }
 
         /**

@@ -82,7 +82,7 @@ public class DomainXml implements Populator {
     XMLInputFactory xif;
 
     @Inject
-    ServerEnvironment env;
+    ServerEnvironmentImpl env;
 
     public void run(ConfigParser parser) {
         if (logger.isLoggable(Level.FINE)) {
@@ -103,8 +103,8 @@ public class DomainXml implements Populator {
     /**
      * Determines the location of <tt>domain.xml</tt> to be parsed.
      */
-    protected URL getDomainXml(ServerEnvironment env) throws IOException {
-        return new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName).toURI().toURL();
+    protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
+        return new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileName).toURI().toURL();
     }
 
     /**
