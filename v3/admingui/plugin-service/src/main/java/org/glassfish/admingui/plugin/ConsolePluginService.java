@@ -102,7 +102,6 @@ public class ConsolePluginService {
 		// Read the contents from the URL
 		url = provider.getConfiguration();
 		if (url == null) {
-// FIXME: When this is the JDBC ClassLoader, it resolves to the "core" URL!!!!  Why does it find the console-config.xml file from core?
 		    url = provider.getClass().getClassLoader().getResource(
 			ConsoleProvider.DEFAULT_CONFIG_FILENAME);
 		}
@@ -175,14 +174,6 @@ public class ConsolePluginService {
     public List<IntegrationPoint> getIntegrationPoints(String type) {
 	init();	// Ensure it is initialized.
 	return pointsByType.get(type);
-    }
-
-    /**
-     *	<p> Method used to avoid CCE b/c we don't have the corrent ClassLoaders yet.</p>
-     */
-// FIXME: Delete this method!
-    public IntegrationPointComparator getIntegrationPointComparator() {
-	return IntegrationPointComparator.getInstance();
     }
 
     /**
