@@ -1510,7 +1510,7 @@ public class VirtualServer extends StandardHost {
     void reconfigureAccessLog(
             HttpService httpService,
             WebContainerFeatureFactory webcontainerFeatureFactory) {
-
+        
         try {
             boolean restart = false;
             if (accessLogValve.isStarted()) {

@@ -1610,7 +1610,23 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }            
     }
+    
+    /**
+     * Configures the keep-alive properties on all HTTP connectors  
+     * from the given keep-alive config.
+     *
+     * @param httpService http-service config to use
+     */
+    public void configureKeepAlive(HttpService httpService){
 
+        KeepAlive keepAlive = httpService.getKeepAlive();
+        Connector[] connectors = _embedded.findConnectors();
+                    
+        for (int i=0; i < connectors.length; i++){    
+            configureKeepAlive((PECoyoteConnector)connectors[i], keepAlive);
+        }
+    }
+    
     /*
      * Configures the keep-alive properties on the given PECoyoteConnector
      * from the given keep-alive config.
@@ -1676,6 +1692,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector.setKeepAliveTimeoutInSeconds(timeoutInSeconds);
         connector.setMaxKeepAliveRequests(maxConnections);
         connector.setKeepAliveThreadCount(threadCount);
+    }
+    
+    /**
+     * Configures all HTTP connectors with connection-pool related info.
+     *
+     * @param httpService http-service config to use
+     */
+    public void configureConnectionPool(HttpService httpService){
+
+        ConnectionPool cp = httpService.getConnectionPool();
+        Connector[] connectors = _embedded.findConnectors();
+                    
+        for (int i=0; i < connectors.length; i++){    
+            configureConnectionPool((PECoyoteConnector)connectors[i], cp);
+        }
     }
     
     /*
@@ -1773,8 +1804,23 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     Integer.toString(connector.getMaxHttpHeaderSize()));
             _logger.log(Level.WARNING, msg, ex);
         }
+    }     
+     
+    /**
+     * Configures all HTTP connectors with http-protocol related info.
+     *
+     * @param httpService http-service config to use
+     */
+    public void configureHttpProtocol(HttpService httpService){
+
+        HttpProtocol httpProtocol = httpService.getHttpProtocol();
+        Connector[] connectors = _embedded.findConnectors();
+                    
+        for (int i=0; i < connectors.length; i++){    
+            configureHttpProtocol((PECoyoteConnector)connectors[i], httpProtocol);
+        }
     }
-        
+    
     /*
      * Configures the given HTTP connector with the given http-protocol
      * config.
@@ -1793,6 +1839,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector.setForcedRequestType(httpProtocol.getForcedType());
         connector.setDefaultResponseType(httpProtocol.getDefaultType());
          */
+    }
+    
+     /**
+     * Configures the Grizzly FileCache mechanism on all HTTP connectors 
+     *
+     * @param httpService http-service config to use
+     */
+    public void configureFileCache(HttpService httpService){
+
+        HttpFileCache httpFileCache = httpService.getHttpFileCache();
+        Connector[] connectors = _embedded.findConnectors();
+                    
+        for (int i=0; i < connectors.length; i++){    
+            configureFileCache((PECoyoteConnector)connectors[i], httpFileCache);
+        }
     }
     
     /**
@@ -1846,7 +1907,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      *
      * @param httpService http-service config to use
      */
-    protected void configureRequestProcessing(HttpService httpService){
+    public void configureRequestProcessing(HttpService httpService){
 
         RequestProcessing rp = httpService.getRequestProcessing();
         Connector[] connectors = _embedded.findConnectors();
@@ -4965,9 +5026,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Container[] virtualServers = _embedded.getEngines()[0].findChildren();
         for (int i=0; i<virtualServers.length; i++) {
             ((VirtualServer) virtualServers[i]).reconfigureAccessLog(
-                httpService,
-                _serverContext.getDefaultHabitat().getComponent(
-                        WebContainerFeatureFactory.class));
+                httpService, webContainerFeatureFactory);
         }
     }
 

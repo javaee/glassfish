@@ -40,9 +40,15 @@ import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.ConnectionPool;
+import com.sun.enterprise.config.serverbeans.HttpFileCache;
 import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.Property; 
+import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.web.WebContainer;
 
 import org.apache.catalina.LifecycleException;
@@ -64,6 +70,24 @@ public class HttpServiceConfigListener implements ConfigListener {
     @Inject
     public HttpService httpService;
     
+    @Inject
+    public AccessLog accessLog;
+    
+    @Inject
+    public ConnectionPool connectionPool;
+    
+    @Inject
+    public HttpFileCache httpFileCache;
+    
+    @Inject 
+    public HttpProtocol httpProtocol;
+    
+    @Inject
+    public KeepAlive keepAlive;
+    
+    @Inject
+    public RequestProcessing requestProcessing;
+ 
     private WebContainer container;
     
     private Logger logger;
@@ -112,7 +136,20 @@ public class HttpServiceConfigListener implements ConfigListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateConnector((HttpListener)t, httpService);
                         }
-                    }
+                    } else if (t instanceof AccessLog) {
+                        container.updateAccessLog(httpService);
+                    } else if (t instanceof RequestProcessing) {
+                        container.configureRequestProcessing(httpService);
+                    } else if (t instanceof KeepAlive) {
+                        container.configureKeepAlive(httpService);
+                    } else if (t instanceof ConnectionPool) {
+                        container.configureConnectionPool(httpService);
+                    } else if (t instanceof HttpProtocol) {
+                        container.configureHttpProtocol(httpService);
+                    } else if (t instanceof HttpFileCache) {
+                        container.configureFileCache(httpService);
+                    } 
+                    container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
                 }    

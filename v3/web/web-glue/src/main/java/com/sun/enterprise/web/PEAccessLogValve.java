@@ -818,14 +818,14 @@ public final class PEAccessLogValve
      */
     void updateAccessLogAttributes(HttpService httpService,
                                    WebContainerFeatureFactory fac) {
-
         HttpProtocol httpProtocol = httpService.getHttpProtocol();
+        
         if (httpProtocol != null) {
             setResolveHosts(Boolean.valueOf(httpProtocol.getDnsLookupEnabled()));
         } else {
             setResolveHosts(false);
         }
-
+        
         AccessLog accessLogConfig = httpService.getAccessLog();
 
         // access-log format
