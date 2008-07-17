@@ -41,6 +41,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /** 
  * Utility methods for deployment. 
@@ -51,13 +52,23 @@ public class DeploymentUtils {
     private static final String WEB_XML = "WEB-INF/web.xml";
     private static final String WEB_INF_CLASSES = "WEB-INF/classes";
     private static final String WEB_INF_LIB = "WEB-INF/lib";
+    private static final String JSP_SUFFIX = ".jsp";
 
     // checking whether the archive is a web archive
     public static boolean isWebArchive(ReadableArchive archive) {
         try {
-            return (archive.exists(WEB_XML) || 
-                    archive.exists(WEB_INF_CLASSES) || 
-                    archive.exists(WEB_INF_LIB));
+            if (archive.exists(WEB_XML) || archive.exists(WEB_INF_CLASSES) || 
+                archive.exists(WEB_INF_LIB) ) {
+                return true;
+            } 
+            Enumeration<String> entries = archive.entries();
+            while (entries.hasMoreElements()) {
+                String entryName = entries.nextElement();
+                if (entryName.endsWith(JSP_SUFFIX)) {
+                    return true;
+                }
+            }
+            return false;
         } catch (IOException ioe) {
             // ignore
         }

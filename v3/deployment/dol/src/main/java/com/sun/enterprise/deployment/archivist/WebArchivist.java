@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.util.ModuleContentValidator;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -81,10 +82,6 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
 
     private WebBundleDescriptor defaultBundleDescriptor = null;
-
-    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
-    private static final String WEB_INF_LIB = "WEB-INF/lib";
-
 
     /**
      * @return the  module type handled by this archivist
@@ -199,8 +196,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
-        return (abstractArchive.exists(WEB_INF_CLASSES) || 
-                abstractArchive.exists(WEB_INF_LIB));
+        return DeploymentUtils.isWebArchive(abstractArchive);
     }
 
     @Override
