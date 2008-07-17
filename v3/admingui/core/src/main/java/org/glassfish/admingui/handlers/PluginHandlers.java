@@ -77,12 +77,19 @@ public class PluginHandlers {
     }
 
     /**
-     *	<p> Obtain the ConsolePluginService, however, we treat it as an Object
-     *	    since it is loaded by a different ClassLoader.</p>
+     *	<p> Find and return the <code>ConsolePluginService</code>.  This method
+     *	    uses the HK2 <code>Habitat</code> to locate the
+     *	    <code>ConsolePluginService</code>.</p>
+     *
+     *	@param	ctx The <code>FacesContext</code>.
+     *
+     *	@returns The <code>ConsolePluginService</code>.
      */
-    private static Object getPluginService(FacesContext ctx) {
+    private static ConsolePluginService getPluginService(FacesContext ctx) {
+	// We need to get the ServletContext to find the Habitat
 	ServletContext servletCtx = (ServletContext)
 	    (ctx.getExternalContext()).getContext();
+
 	// Get the Habitat from the ServletContext
 	Habitat habitat = (Habitat) servletCtx.getAttribute(
 	    org.glassfish.admingui.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
@@ -114,16 +121,7 @@ public class PluginHandlers {
      *
      */
     public static List<IntegrationPoint> getIntegrationPoints(FacesContext context, String type) {
-	Object value = null;
-	try {
-// FIXME: Clean up all this reflection!
-	    Object obj = getPluginService(context);
-	    Method meth = obj.getClass().getMethod("getIntegrationPoints", String.class);
-	    value = meth.invoke(obj, type);
-	} catch (Exception ex) {
-	    ex.printStackTrace();
-	}
-	return (List<IntegrationPoint>) value;
+	return getPluginService(context).getIntegrationPoints(type);
     }
 
     /**
@@ -163,37 +161,29 @@ public class PluginHandlers {
 	    root = ctx.getViewRoot();
 	}
 
-// FIXME: Remove this hack!  Need ClassLoader support, help!
-	Object ps = getPluginService(ctx);
-	java.util.Comparator comp = null;
-	try {
-	comp = (java.util.Comparator) ps.getClass().getMethod("getIntegrationPointComparator").invoke(ps);
-	} catch (Exception ex) {
-	    ex.printStackTrace();
-	}
 	// Use a TreeSet to sort automatically
 	SortedSet<IntegrationPoint> sortedSet =
 	    new TreeSet<IntegrationPoint>(
-		comp);
-		//IntegrationPointComparator.getInstance());
+		IntegrationPointComparator.getInstance());
 // FIXME: Check for duplicates! Modify "id" if there is a duplicate?
 	sortedSet.addAll(points);
 
 	// Iterate
 	IntegrationPoint point;
+	Iterator<IntegrationPoint> it = null;
 	int lastSize = 0;
 	int currSize = sortedSet.size();
+	String lastParentId = null;
 	while (currSize != lastSize) {
 	    // Stop loop by comparing previous size
 	    lastSize = currSize;
-	    Iterator it = sortedSet.iterator();
-	    String lastParentId = "";
+	    it = sortedSet.iterator();
+	    lastParentId = "";
 	    UIComponent parent = null;
 
 	    // Iterate through the IntegrationPoints
 	    while (it.hasNext()) {
-// FIXME: Instead of using generics or casting to IntegrationPoint, I am working around classloader configuration problems by instantiating an IntegrationPoint from an Object (which is an integration point).  This copies over all the values via reflection.
-		point = new IntegrationPoint(it.next());
+		point = it.next();
 
 		// Optimize for multiple plugins for the same parent
 		String parentId = point.getParentId();
@@ -206,7 +196,7 @@ public class PluginHandlers {
 		    if (parent == null) {
 			// Didn't find the one specified!
 // FIXME: log FINE!  Note this may not be a problem, keep iterating to see if we find it later.
-			System.out.println("The specified parentId (" + parentId + ") was not found!"); 
+System.out.println("The specified parentId (" + parentId + ") was not found!"); 
 			lastParentId = null;
 			continue;
 		    }
