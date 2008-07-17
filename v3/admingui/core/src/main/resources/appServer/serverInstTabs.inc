@@ -36,9 +36,9 @@
 -->
 <!-- appServer/serverInstTabs.jsf -->
 
-<sun:tabSet id="serverInstTabs" immediate="$boolean{true}" selected="#{sessionScope.serverInstTabs}">
+<sun:tabSet id="serverInstTabs" immediate="true" selected="#{sessionScope.serverInstTabs}">
 
-    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" >
     	    <!command
                 setSessionAttribute(key="serverInstTabs" value="general");
 		navigate(page="/appServer/serverInstGeneralPe.jsf");
@@ -46,135 +46,140 @@
     </sun:tab>
 
 
-    <sun:tab id="jvmSettings" immediate="$boolean{true}" text="$resource{i18n.jvm.JvmSettings}">
+    <sun:tab id="jvmSettings" immediate="true" text="$resource{i18n.jvm.JvmSettings}">
 	<!command
             setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
-	    redirect(page="serverInstJvmGeneral.jsf?configName=server-config");
+	    redirect(page="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf?configName=server-config");
 	/>
-	<sun:tab id="jvmGeneral" immediate="$boolean{true}" text="$resource{i18n.common.General}">
+	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}">
 	<!command
             setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
-	    redirect(page="serverInstJvmGeneral.jsf?configName=server-config");
+	    redirect(page="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf?configName=server-config");
 	/>
 	</sun:tab>
-	<sun:tab id="pathSettings" immediate="$boolean{true}" text="$resource{i18n.jvm.PathSettings}">
+	<sun:tab id="pathSettings" immediate="true" text="$resource{i18n.jvm.PathSettings}">
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="pathSettings");
-		redirect(page="serverInstJvmPathSettings.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstJvmPathSettings.jsf?configName=server-config");
 	    />        
 
 	</sun:tab>
-	<sun:tab id="jvmOptions" immediate="$boolean{true}" text="$resource{i18n.jvm.Options}" >
+	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18n.jvm.Options}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="jvmOptions");
-		redirect(page="serverJvmOptions.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config");
 	    />        
 	</sun:tab>
-	<sun:tab id="profiler" immediate="$boolean{true}" text="$resource{i18n.jvm.Profiler}" >
+	<sun:tab id="profiler" immediate="true" text="$resource{i18n.jvm.Profiler}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="profiler");
-		redirect(page="serverInstProfiler.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstProfiler.jsf?configName=server-config");
 	    />        
 	</sun:tab>
     </sun:tab>
 
 
     <!--
-    <sun:tab id="logging" immediate="$boolean{true}" text="$resource{i18n.log.Logging}">
+    <sun:tab id="logging" immediate="true" text="$resource{i18n.log.Logging}">
          <!command
                 setSessionAttribute(key="serverInstTabs" value="loggingGeneral");
-		redirect(page="serverInstLogging.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstLogging.jsf?configName=server-config");
 	    />    
-	<sun:tab id="loggingGeneral" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+	<sun:tab id="loggingGeneral" immediate="true" text="$resource{i18n.common.General}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="loggingGeneral");
-		redirect(page="serverInstLogging.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstLogging.jsf?configName=server-config");
 	    />       
 	</sun:tab>
-	<sun:tab id="logLevels" immediate="$boolean{true}" text="$resource{i18n.log.LogLevels}" >
+	<sun:tab id="logLevels" immediate="true" text="$resource{i18n.log.LogLevels}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="logLevels");
-		redirect(page="serverInstLoggingLevels.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstLoggingLevels.jsf?configName=server-config");
 	    />             
 	</sun:tab>
     </sun:tab>
 
 
-    <sun:tab id="monitor" immediate="$boolean{true}" text="$resource{i18n.monitor.Monitor}">
+    <sun:tab id="monitor" immediate="true" text="$resource{i18n.monitor.Monitor}">
          <!command
                 setSessionAttribute(key="serverInstTabs" value="log");
-		redirect(page="logAnalyzer.jsf?instanceName=server");
+		redirect(page="#{request.contextPath}/appServer/logAnalyzer.jsf?instanceName=server");
          />   
-        <sun:tab id="log" immediate="$boolean{true}" text="$resource{i18n.log.Log}" >
+        <sun:tab id="log" immediate="true" text="$resource{i18n.log.Log}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="log");
-		redirect(page="logAnalyzer.jsf?instanceName=server");
+		redirect(page="#{request.contextPath}/appServer/logAnalyzer.jsf?instanceName=server");
 	    />             
 	</sun:tab>
-	<sun:tab id="callFlow" immediate="$boolean{true}" text="$resource{i18n.monitor.CallFlow}" >
+	<sun:tab id="callFlow" immediate="true" text="$resource{i18n.monitor.CallFlow}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="callFlow");
-		redirect(page="callFlowConfig.jsf?instanceName=server");
+		redirect(page="#{request.contextPath}/appServer/callFlowConfig.jsf?instanceName=server");
 	    />             
 	</sun:tab>
-	<sun:tab id="runtime" immediate="$boolean{true}" text="$resource{i18n.monitor.Runtime}" >
+	<sun:tab id="runtime" immediate="true" text="$resource{i18n.monitor.Runtime}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="runtime");
-		redirect(page="monitorRuntime.jsf?instanceName=server&configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/monitorRuntime.jsf?instanceName=server&configName=server-config");
 	    />             
 	</sun:tab>
-	<sun:tab id="applications" immediate="$boolean{true}" text="$resource{i18n.monitor.Applications}" >
+	<sun:tab id="applications" immediate="true" text="$resource{i18n.monitor.Applications}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="applications");
-		redirect(page="monitorApps.jsf?instanceName=server&configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/monitorApps.jsf?instanceName=server&configName=server-config");
 	    />             
 	</sun:tab>
-	<sun:tab id="resources" immediate="$boolean{true}" text="$resource{i18n.monitor.Resources}" >
+	<sun:tab id="resources" immediate="true" text="$resource{i18n.monitor.Resources}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="resources");
-		redirect(page="monitorResources.jsf?instanceName=server&configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/monitorResources.jsf?instanceName=server&configName=server-config");
 	    />             
 	</sun:tab>
-	<sun:tab id="transactions" immediate="$boolean{true}" text="$resource{i18n.monitor.Transactions}" >
+	<sun:tab id="transactions" immediate="true" text="$resource{i18n.monitor.Transactions}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="transactions");
-		redirect(page="monitorTransactions.jsf?instanceName=server&configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/monitorTransactions.jsf?instanceName=server&configName=server-config");
 	    />             
 	</sun:tab>
     </sun:tab>
 
-    <sun:tab id="diagnostics" immediate="$boolean{true}" text="$resource{i18n.headings.Diagnostics}" >
+    <sun:tab id="diagnostics" immediate="true" text="$resource{i18n.headings.Diagnostics}" >
     	    <!command
                 setSessionAttribute(key="serverInstTabs" value="diagnostics");
-		redirect(page="diagReport.jsf");
+		redirect(page="#{request.contextPath}/appServer/diagReport.jsf");
 	    />
     </sun:tab>
 
-    <sun:tab id="adminPassword" immediate="$boolean{true}" text="$resource{i18n.headings.AdminPassword}" >
+    <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" >
 	    <!command
                 setSessionAttribute(key="serverInstTabs" value="adminPassword");
-		redirect(page="serverInstAdminPassword.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstAdminPassword.jsf?configName=server-config");
 	    />      
     </sun:tab>
 
     -->
 
-    <sun:tab id="advanced" immediate="$boolean{true}" text="$resource{i18n.headings.Advanced}">
+    <sun:tab id="advanced" immediate="true" text="$resource{i18n.headings.Advanced}">
         <!command
                 setSessionAttribute(key="serverInstTabs" value="advanced");
-            redirect(page="serverInstAppsConfig.jsf?configName=server-config");
+            redirect(page="#{request.contextPath}/appServer/serverInstAppsConfig.jsf?configName=server-config");
         />     
-	<sun:tab id="appConfig" immediate="$boolean{true}" text="$resource{i18n.headings.AppConfig}" >
+	<sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" >
             <!command
                 setSessionAttribute(key="serverInstTabs" value="appConfig");
-		redirect(page="serverInstAppsConfig.jsf?configName=server-config");
+		redirect(page="#{request.contextPath}/appServer/serverInstAppsConfig.jsf?configName=server-config");
 	    />         
 	</sun:tab>
-	<sun:tab id="domainAttrs" immediate="$boolean{true}" text="$resource{i18n.headings.DomainAttributes}" >
+	<sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" >
             <!command
                 setSessionAttribute(key="serverInstTabs" value="domainAttrs");
-		redirect(page="serverInstDomainAttrs.jsf");
+		redirect(page="#{request.contextPath}/appServer/serverInstDomainAttrs.jsf");
 	    />           
 	</sun:tab>
     </sun:tab>
 </sun:tabSet>
+<event>
+    <!afterCreate
+	includeIntegrations(type="serverInstTab");
+    />
+</event>
