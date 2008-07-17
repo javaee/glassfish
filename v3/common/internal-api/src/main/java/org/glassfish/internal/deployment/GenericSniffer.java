@@ -147,4 +147,8 @@ public abstract class GenericSniffer implements Sniffer {
     public boolean isUserVisible() {
         return false;
     }
+
+    public boolean equals(Sniffer other) {
+        return getModuleType().equals(other.getModuleType());
+    }
 }

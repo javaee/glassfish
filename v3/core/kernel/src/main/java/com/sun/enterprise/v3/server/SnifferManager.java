@@ -109,8 +109,23 @@ public class SnifferManager {
     public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader) {
 
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
+
+        // scan for registered annotations and retrieve applicable sniffers
+        SnifferAnnotationScanner snifferAnnotationScanner = 
+            new SnifferAnnotationScanner();
+
         for (Sniffer sniffer : getSniffers()) {
-            if (sniffer.handles(archive, cloader )) {
+            snifferAnnotationScanner.register(sniffer, 
+                sniffer.getAnnotationTypes());        
+        }
+        snifferAnnotationScanner.scanArchive(archive);      
+        appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+ 
+
+        // call handles method of the sniffers
+        for (Sniffer sniffer : getSniffers()) {
+            if (!appSniffers.contains(sniffer) && 
+                sniffer.handles(archive, cloader )) {
                 appSniffers.add(sniffer);
             }
         }
