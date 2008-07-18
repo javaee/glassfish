@@ -5037,7 +5037,7 @@ public class StandardContext
                 log.fine("Configuring default Resources");
             try {
                 if ((docBase != null) && (docBase.endsWith(".war")) && 
-                    (!(new File(docBase).isDirectory()))) 
+                        (!(new File(docBase).isDirectory()))) 
                     setResources(new WARDirContext());
                 else
                     setResources(new FileDirContext());
@@ -5065,8 +5065,8 @@ public class StandardContext
                     log.fine("Configuring alternate resources");
                 }
                 try {
-                    if (docBase != null
-                            && docBase.endsWith(".war")) {
+                    if (docBase != null && docBase.endsWith(".war") &&
+                            (!(new File(docBase).isDirectory()))) {
                         setAlternateResources(alternateDocBase,
                                               new WARDirContext());
                     } else {
