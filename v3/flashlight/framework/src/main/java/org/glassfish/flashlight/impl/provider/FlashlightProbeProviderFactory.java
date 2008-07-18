@@ -51,7 +51,7 @@ import java.lang.reflect.Method;
 public class FlashlightProbeProviderFactory
     implements ProbeProviderFactory {
 
-        public <T> T createProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
+        public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
 
             return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
