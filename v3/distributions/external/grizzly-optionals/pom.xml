@@ -69,7 +69,7 @@
                         <Embed-Dependency>
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
-                        <Export-Package>!com.sun.grizzly.standalone,com.sun.grizzly.comet*;split-package:=error,com.sun.grizzly.standalone*;split-package:=error</Export-Package>
+                        <Export-Package>com.sun.grizzly.comet*;split-package:=error</Export-Package>
                         <Import-Package>*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>

@@ -74,7 +74,7 @@
                              to grizzly-optionals module. Remove this after
                              tp2 branch is merged.
                         -->
-                        <Import-Package>!com.sun.grizzly.standalone.servlet,*</Import-Package>
+                        <Import-Package>*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,
