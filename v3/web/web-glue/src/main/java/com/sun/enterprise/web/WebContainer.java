@@ -1202,8 +1202,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         MimeMap mm = null;
         String vs_id = vsBean.getId();
 
-        String docroot =
-                vsBean.getPropertyValue("docroot");
+        String docroot = vsBean.getDocroot();
+        if (docroot == null) {
+            docroot = vsBean.getPropertyValue("docroot");
+        }
         
         validateDocroot(docroot,
                         vs_id,
@@ -4624,8 +4626,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         virtualServer.clearAliases();
         virtualServer.configureAliases();
-
+            
+        virtualServer.reconfigureAccessLog(globalAccessLogBufferSize,
+                                    globalAccessLogWriteInterval,
+                                    _serverContext.getDefaultHabitat(),
+                                    domain,
+                                    globalAccessLoggingEnabled);
+            
         String docroot = vsBean.getDocroot();
+        if (docroot == null) {
+            vsBean.getPropertyValue("docroot");
+        }
         if (docroot != null) {
             updateDocroot(docroot, virtualServer, vsBean);
         }
