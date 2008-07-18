@@ -38,23 +38,33 @@ package com.sun.enterprise.web.connector.coyote;
 
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.Constants;
 import org.apache.catalina.connector.MapperListener;
+import org.apache.tomcat.util.IntrospectionUtils;
 
-import org.apache.catalina.LifecycleException;
-
-public class PECoyoteConnector extends Connector{
+public class PECoyoteConnector extends Connector {
 
 
     private static final String DUMMY_CONNECTOR_LAUNCHER = 
                 com.sun.enterprise.web.
                     connector.grizzly.DummyConnectorLauncher.class.getName();
 
-   
+    protected static final ResourceBundle _rb = log.getResourceBundle();
+
     /**
      * Are we recycling objects
      */
@@ -923,6 +933,65 @@ public class PECoyoteConnector extends Connector{
      */
     public MapperListener getMapperListener() {
         return mapperListener;
+    }
+
+    /*
+     * Configures this connector for modJK.
+     */
+    public void configureJKProperties() {
+
+        String propertiesURL = System.getProperty(
+            "com.sun.enterprise.web.connector.enableJK.propertyFile");
+
+        if (propertiesURL == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("com.sun.enterprise.web.connector.enableJK.propertyFile not defined");
+            }
+            return;
+        } 
+
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Loading glassfish-jk.properties from " +
+                       propertiesURL);
+        }
+
+        File propertiesFile   = new File(propertiesURL);
+        if ( !propertiesFile.exists() ) {
+            String msg = _rb.getString("pewebcontainer.missingJKProperties");
+            msg = MessageFormat.format(msg, propertiesURL);
+            log.log(Level.WARNING, msg);
+            return;
+        }
+
+        Properties properties = null;
+        InputStream is = null;
+ 
+        try {
+            FileInputStream fis = new FileInputStream(propertiesFile);
+            is = new BufferedInputStream(fis);
+            properties = new Properties();
+            properties.load(is);
+
+        } catch (Exception ex) {
+            String msg = _rb.getString("pewebcontainer.configureJK");
+            msg = MessageFormat.format(msg, getPort());
+            log.log(Level.SEVERE, msg, ex);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ioe) {}
+            }
+        }
+
+        Enumeration enumeration = properties.keys();
+        while (enumeration.hasMoreElements()) {
+            String name = (String) enumeration.nextElement();
+            String value = properties.getProperty(name);
+            if (value != null) {
+                IntrospectionUtils.setProperty(this, name, value);
+            }
+        }
     }
 }
 

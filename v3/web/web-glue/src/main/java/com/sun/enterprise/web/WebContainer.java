@@ -36,9 +36,7 @@
 
 package com.sun.enterprise.web;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -47,7 +45,6 @@ import java.net.UnknownHostException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -74,7 +71,6 @@ import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.connector.CoyoteAdapter;
 import org.apache.catalina.connector.Request;
-import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
 
@@ -782,7 +778,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
                                             port, "ajp");
 
-            configureJKProperties(jkConnector);
+            jkConnector.configureJKProperties();
 
             String defaultHost = "server";
             jkConnector.setDefaultHost(defaultHost);        
@@ -2033,68 +2029,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    /*
-     * Load the glassfish-jk.properties
-     *
-     * @param connector The JK connector to configure
-     */
-    private void configureJKProperties(PECoyoteConnector connector) {
-
-        String propertiesURL =
-            System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile");
-
-        if (propertiesURL == null) {
-            if (_logger.isLoggable(Level.FINEST)) {
-                 _logger.finest(
-                 "com.sun.enterprise.web.connector.enableJK.propertyFile not defined");
-            }
-            return;
-        } 
-
-        if (_logger.isLoggable(Level.FINEST)) {
-             _logger.finest("Loading glassfish-jk.properties from " +propertiesURL);
-        }
-
-        File propertiesFile   = new File(propertiesURL);
-        if ( !propertiesFile.exists() ) {
-            String msg = _rb.getString( "pewebcontainer.missingJKProperties" );
-            msg = MessageFormat.format(msg, propertiesURL);
-            _logger.log(Level.WARNING, msg);
-            return;
-        }
-
-        Properties properties = null;
-        InputStream is = null;
- 
-        try {
-            FileInputStream fis = new FileInputStream(propertiesFile);
-            is = new BufferedInputStream(fis);
-            properties = new Properties();
-            properties.load(is);
-
-        } catch (Exception ex) {
-            String msg = _rb.getString("pewebcontainer.configureJK");
-            msg = MessageFormat.format(msg, connector.getPort());
-            _logger.log(Level.SEVERE, msg, ex);
-
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ioe) {}
-                }
-            }
-
-        Enumeration enumeration = properties.keys();
-        while (enumeration.hasMoreElements()) {
-            String name = (String) enumeration.nextElement();
-            String value = properties.getProperty(name);
-            if (value != null) {
-                IntrospectionUtils.setProperty(connector, name, value);
-            }
-
-        }
-    }    
 
     // ------------------------------------------------------------ Properties
 
