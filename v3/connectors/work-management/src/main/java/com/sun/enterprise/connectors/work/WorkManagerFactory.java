@@ -78,7 +78,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     private static final StringManager localStrings =
             StringManager.getManager(WorkManagerFactory.class);
 
-    protected static Map<String, WorkManager> workManagers;
+    protected static final Map<String, WorkManager> workManagers;
 
     static {
         workManagers = Collections.synchronizedMap(new HashMap<String, WorkManager>());
