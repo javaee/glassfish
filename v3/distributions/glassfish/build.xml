@@ -30,7 +30,7 @@
     </target>
 
     <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
-        <resolveAll todir="target/stage/glassfish/modules">
+        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true">
             <fullGraph />
             <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
@@ -41,7 +41,7 @@
 
         <delete dir="target/stage/glassfish/modules" includes="*.zip" />
 
-        <graphDef id="generate-picture">
+        <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
                 <scope level="compile,runtime" />
                 <subGraph color="red">
