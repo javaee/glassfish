@@ -80,7 +80,9 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.web.admin.monitor.WebContainerProvider;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -142,6 +144,7 @@ public class WebModule extends PwcWebModule {
     private String compEnvId = null;
     private ServerContext serverContext = null;
 
+    private WebContainerProvider wcProbeProvider = null;
 
     /**
      * Constructor.
@@ -159,6 +162,8 @@ public class WebModule extends PwcWebModule {
         this.adHocPipeline.setBasic(new AdHocContextValve(this));
 
         notifyContainerListeners = false;
+
+        createProbeProviders(webContainer.getProbeProviderFactory());
     }
 
     
@@ -1329,6 +1334,29 @@ public class WebModule extends PwcWebModule {
                     setSessionCookieConfig(cookieConfig);
                 }
             }
+        }
+    }
+
+    private void createProbeProviders(ProbeProviderFactory fac) {
+        try {
+            wcProbeProvider = fac.getProbeProvider("web", "web-container",
+                getName(), WebContainerProvider.class);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                       "Unable to create probe provider for interface " +
+                       WebContainerProvider.class.getName(),
+                       e);
+        }
+    }
+
+    /**
+     * Passes the servletLoaded event on to the appropriate probe provider.
+     *
+     * @param servletName the name of the servlet that was loaded
+     */
+    public void servletLoadedEvent(String servletName) {
+        if (wcProbeProvider != null) {
+            wcProbeProvider.servletLoadedEvent(servletName, getName());
         }
     }
 }

@@ -195,6 +195,16 @@
         </resources>
     </build>
     <dependencies>
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>

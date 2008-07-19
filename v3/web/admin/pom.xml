@@ -80,7 +80,8 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
-                        org.glassfish.web.admin.cli
+                        org.glassfish.web.admin.cli,
+                        org.glassfish.web.admin.monitor
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -124,6 +125,11 @@
     </build>
     
     <dependencies>
+         <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>

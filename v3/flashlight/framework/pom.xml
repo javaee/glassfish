@@ -94,7 +94,8 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
-                            org.glassfish.flashlight.provider
+                            org.glassfish.flashlight.provider,
+                            org.glassfish.flashlight.provider.annotations
                         </Export-Package>
                         <Import-Package>
                             org.glassfish.flashlight.agent

@@ -136,6 +136,7 @@ import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 // Begin EE: 4927099 load only associated applications
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -405,6 +406,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private ServerConfigLookup serverConfigLookup;
 
+    @Inject
+    protected ProbeProviderFactory probeProviderFactory = null;
+
+
     /**
      * Static initialization
      */
@@ -664,6 +669,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
         _timer.cancel();
+    }
+
+    ProbeProviderFactory getProbeProviderFactory() {
+        return probeProviderFactory;
     }
 
     public String getName() {
@@ -5065,8 +5074,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // since setting this to true might result in undeployment problems
         return true;
     }
-  
-
 }
 
 class V3WebappLoader extends WebappLoader {

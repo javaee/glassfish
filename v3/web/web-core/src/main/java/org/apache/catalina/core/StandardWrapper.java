@@ -1047,6 +1047,8 @@ public class StandardWrapper
      */
     public synchronized Servlet loadServlet() throws ServletException {
 
+        ((StandardContext) getParent()).servletLoadedEvent(getName());
+
         // Nothing to do if we already have an instance or an instance pool
         if (!singleThreadModel && (instance != null))
             return instance;
