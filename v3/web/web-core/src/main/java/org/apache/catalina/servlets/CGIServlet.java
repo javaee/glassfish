@@ -309,7 +309,7 @@ public final class CGIServlet extends HttpServlet {
     static Object expandFileLock = new Object();
 
     /** the shell environment variables to be passed to the CGI script */
-    static Hashtable shellEnv = new Hashtable();
+    static Hashtable<String, String> shellEnv = new Hashtable<String, String>();
 
     /**
      * Sets instance variables.
@@ -339,7 +339,6 @@ public final class CGIServlet extends HttpServlet {
                 ("Cannot invoke CGIServlet through the invoker");
         
         // Set our properties from the initialization parameters
-        String value = null;
         if (getServletConfig().getInitParameter("debug") != null)
             debug = Integer.parseInt(getServletConfig().getInitParameter("debug"));
         if (getServletConfig().getInitParameter("cgiPathPrefix") != null) {
@@ -721,7 +720,7 @@ public final class CGIServlet extends HttpServlet {
         private File workingDirectory = null;
 
         /** cgi command's command line parameters */
-        private ArrayList cmdLineParameters = new ArrayList();
+        private ArrayList<String> cmdLineParameters = new ArrayList<String>();
 
         /** whether or not this object is valid or not */
         private boolean valid = false;
@@ -777,9 +776,24 @@ public final class CGIServlet extends HttpServlet {
         protected void setupFromRequest(HttpServletRequest req)
                 throws UnsupportedEncodingException {
             
-            this.contextPath = req.getContextPath();
-            this.servletPath = req.getServletPath();
-            this.pathInfo = req.getPathInfo();
+            boolean isIncluded = false;
+
+            // Look to see if this request is an include
+            if (req.getAttribute(Globals.INCLUDE_REQUEST_URI_ATTR) != null) {
+                isIncluded = true;
+            }
+            if (isIncluded) {
+                this.contextPath = (String)req.getAttribute(
+                        Globals.INCLUDE_CONTEXT_PATH_ATTR);
+                this.servletPath = (String)req.getAttribute(
+                        Globals.INCLUDE_SERVLET_PATH_ATTR);
+                this.pathInfo = (String)req.getAttribute(
+                        Globals.INCLUDE_PATH_INFO_ATTR);
+            } else {
+                this.contextPath = req.getContextPath();
+                this.servletPath = req.getServletPath();
+                this.pathInfo = req.getPathInfo();
+            }
             // If getPathInfo() returns null, must be using extension mapping
             // In this case, pathInfo should be same as servletPath
             if (this.pathInfo == null) {
@@ -793,7 +807,13 @@ public final class CGIServlet extends HttpServlet {
             if (req.getMethod().equals("GET")
                 || req.getMethod().equals("POST")
                 || req.getMethod().equals("HEAD")) {
-                String qs = req.getQueryString();
+                String qs;
+                if (isIncluded) {
+                    qs = (String)req.getAttribute(
+                            Globals.INCLUDE_QUERY_STRING_ATTR);
+                } else {
+                    qs = req.getQueryString();
+                }
                 if (qs != null && qs.indexOf("=") == -1) {
                     StringTokenizer qsTokens = new StringTokenizer(qs, "+");
                     while ( qsTokens.hasMoreTokens() ) {
@@ -901,14 +921,13 @@ public final class CGIServlet extends HttpServlet {
             if (debug >= 3) {
                 log("findCGI: currentLoc=" + currentLocation);
             }
-            boolean pathTokenConsumed = false;
             while (!currentLocation.isFile() && dirWalker.hasMoreElements()) {
                 if (debug >= 3) {
                     log("findCGI: currentLoc=" + currentLocation);
                 }
-                currentLocation = new File(currentLocation,
-                                           (String) dirWalker.nextElement());
-                pathTokenConsumed = true;
+                String nextElement = (String)dirWalker.nextElement();
+                currentLocation = new File(currentLocation, nextElement);
+                cginame = cginame + "/" + nextElement;
             }
             if (!currentLocation.isFile()) {
                 return new String[] { null, null, null, null };
@@ -918,18 +937,13 @@ public final class CGIServlet extends HttpServlet {
                 }
                 path = currentLocation.getAbsolutePath();
                 name = currentLocation.getName();
-                if (pathTokenConsumed) {
-                    cginame = currentLocation.getParent().substring(
-                                            webAppRootDir.length())
-                        + File.separator
-                        + name;
-                } else {
-                    cginame = "";
-                }
                 if (".".equals(contextPath)) {
-                    scriptname = servletPath + cginame;
+                    scriptname = servletPath;
                 } else {
-                    scriptname = contextPath + servletPath + cginame;
+                    scriptname = contextPath + servletPath;
+                }
+                if (!servletPath.equals(cginame)) {
+                    scriptname = scriptname = cginame;
                 }
             }
 
@@ -958,7 +972,7 @@ public final class CGIServlet extends HttpServlet {
              * (apologies to Marv Albert regarding MJ)
              */
 
-            Hashtable envp = new Hashtable();
+            Hashtable<String, String> envp = new Hashtable<String, String>();
 
             // Add the shell environment variables (if any)
             envp.putAll(shellEnv);
@@ -1557,7 +1571,7 @@ public final class CGIServlet extends HttpServlet {
          */
         protected String[] hashToStringArray(Hashtable h)
             throws NullPointerException {
-            Vector v = new Vector();
+            Vector<String> v = new Vector<String>();
             Enumeration e = h.keys();
             while (e.hasMoreElements()) {
                 String k = e.nextElement().toString();
@@ -1780,14 +1794,20 @@ public final class CGIServlet extends HttpServlet {
                     }
                 } //replacement for Process.waitFor()
     
-                // Close the output stream used
-                cgiOutput.close();
             }
             catch (IOException e){
                 log ("Caught exception " + e);
                 throw e;
             }
             finally{
+                // Close the output stream used if used
+                if (cgiOutput != null) {
+                    try {
+                        cgiOutput.close();
+                    } catch(IOException ioe) {
+                        log("Exception closing output stream " + ioe);
+                    }
+                }
                 if (debug > 4) {
                     log ("Running finally block");
                 }
