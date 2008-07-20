@@ -1,9 +1,12 @@
 package com.sun.appserv.server.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
+import org.glassfish.api.branding.Branding;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
 *
@@ -11,17 +14,9 @@ import java.util.Properties;
 * as well as the individual parts that make up the version
 *
 */
-public class Version {
-
-    /**
-     * Name of the property resources that contain version information. The
-     * property resources are searched in their order the array. As soon as
-     * a property resource is found, the search stops. Note that if EE
-     * property resource is present in the classpath it will take precedence.
-     */
-    private static final String[] resourceClassNames = 
-            {"com/sun/enterprise/ee/server/Version.properties",
-            "com/sun/enterprise/server/Version.properties"};
+@Service
+@Scoped(Singleton.class)
+public class Version implements PostConstruct {
 
     /**
      * Name of the properties used to override build time values.
@@ -34,54 +29,39 @@ public class Version {
     private static final String BUILD_ID = "build.id";
 
     /**
-    * version strings populated during build
-    */
-    private static String product_name          = "@PRODUCT_NAME@";
-    private static String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
-    private static String full_version          = "@FULL_VERSION@";
-    private static String major_version         = "@MAJOR_VERSION@";
-    private static String minor_version         = "@MINOR_VERSION@"; 
-    private static String build_id              = "@BUILD_ID@";
+     * version strings populated during build
+     */
+    private static final String product_name          = "@PRODUCT_NAME@";
+    private static final String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
+    private static final String full_version          = "@FULL_VERSION@";
+    private static final String major_version         = "@MAJOR_VERSION@";
+    private static final String minor_version         = "@MINOR_VERSION@"; 
+    private static final String build_id              = "@BUILD_ID@";
 
-/*    static {
-        for (int i = 0; i < resourceClassNames.length; i++) {
-            Properties props = new Properties();
-            boolean found = false;
-            InputStream is = Version.class.getClassLoader().
-                               getResourceAsStream(resourceClassNames[i]);
-            
-            if (is != null) {
-                try {
-                    props.load(is);
-                    found = true;
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                    // Ignore this IOException. 
-                } finally {
-                    try {
-                        is.close();
-                    } catch (IOException ee) {
-                        // Ignore exception in closing stream
-                    }
-                }
-            }
-            if (found) {
-                product_name = props.getProperty(PRODUCT_NAME, product_name);
-                abbrev_product_name = props.getProperty(ABBREV_PRODUCT_NAME,
-                        abbrev_product_name);
-                full_version = props.getProperty(FULL_VERSION, full_version);
-                major_version = props.getProperty(MAJOR_VERSION, major_version);
-                minor_version = props.getProperty(MINOR_VERSION, minor_version);
-                // Build id should always come from build. 
-                break;
+    /**
+     * Check if Branding implementation exists and set the value for
+     * Branding interface variable
+     */
+    private static Branding br = null;
+
+    @Inject
+    private static Habitat mHabitat;
+
+    public void postConstruct() {
+        if (br == null) {
+            if (mHabitat != null) {
+                br = mHabitat.getByContract(Branding.class);
             }
         }
     }
-*/
+
     /**
     * Returns version
     */ 
     public static String getVersion() {
+        if (br != null) {
+            return br.getVersion();
+        }
         return product_name + " " + full_version;
     }
 
@@ -89,6 +69,9 @@ public class Version {
     * Returns full version including build id
     */
     public static String getFullVersion() {
+        if (br != null) {
+            return br.getFullVersion();
+        }
         return (getVersion() + " (build " + build_id + ")");
     }
 
@@ -96,6 +79,9 @@ public class Version {
     * Returns abbreviated version.
     */
     public static String getAbbreviatedVersion() {
+        if (br != null) {
+            return br.getAbbreviatedVersion();
+        }
         return abbrev_product_name + major_version +
                "." + minor_version;
     }
@@ -104,6 +90,9 @@ public class Version {
     * Returns Major version
     */ 
     public static String getMajorVersion() {
+        if (br != null) {
+            return br.getMajorVersion();
+        }
     	return major_version;
     }
 
@@ -111,6 +100,9 @@ public class Version {
     * Returns Minor version
     */ 
     public static String getMinorVersion() {
+        if (br != null) {
+            return br.getMinorVersion();
+        }
     	return minor_version;
     }
 
@@ -118,6 +110,9 @@ public class Version {
     * Returns Build version
     */ 
     public static String getBuildVersion() {
+        if (br != null) {
+            return br.getBuildVersion();
+        }
     	return build_id;
     }
 
@@ -125,6 +120,9 @@ public class Version {
     * Returns Proper Product Name
     */
     public static String getProductName() {
+        if (br != null) {
+            return br.getProductName();
+        }
     	return product_name;
     }
 
@@ -132,6 +130,9 @@ public class Version {
     * Returns Abbreviated Product Name
     */
     public static String getAbbrevProductName() {
+        if (br != null) {
+            return br.getAbbrevProductName();
+        }
     	return abbrev_product_name;
     }
 

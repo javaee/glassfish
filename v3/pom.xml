@@ -165,6 +165,7 @@
         <module>tests</module>
         <module>osgi-platforms</module>
         <module>flashlight</module>
+        <module>branding</module>
     </modules>
     <repositories>
         <repository>
