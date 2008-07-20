@@ -102,7 +102,8 @@
                         org.glassfish.api.invocation,
                         org.glassfish.api.logging,
                         org.glassfish.api.naming,
-                        org.glassfish.api.web
+                        org.glassfish.api.web,
+                        org.glassfish.api.branding
                         </Export-Package>
                     </instructions>
                 </configuration>
