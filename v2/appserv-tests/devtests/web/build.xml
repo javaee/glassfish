@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="308"/>
+    <property name="TOTAL_EXPECTED" value="309"/>
 
     &commonSetup;
     &commonBuild;
@@ -280,6 +280,7 @@
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
+        <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
     </target>
 
