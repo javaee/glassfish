@@ -272,7 +272,7 @@ public class WebSecurityManager {
 		PermissionCacheFactory.createPermissionCache
 		(this.CONTEXT_ID, codesource, protoPerms, null);
 
-	    if (uncheckedPermissionCache != null) {
+	    //if (uncheckedPermissionCache != null) {
  
 		allResourcesCP = 
 		    new CachedPermissionImpl(uncheckedPermissionCache,
@@ -280,7 +280,7 @@ public class WebSecurityManager {
 		allConnectionsCP = 
 		    new CachedPermissionImpl(uncheckedPermissionCache,
 					     allConnections);
-	    }
+	    //}
 
  	} else {
  	    uncheckedPermissionCache.reset();
@@ -294,7 +294,10 @@ public class WebSecurityManager {
 
     public boolean permitAll(HttpServletRequest req) {
         WebResourcePermission webResPerm = new WebResourcePermission(req);
-        boolean ret = uncheckedPermissionCache.checkPermission(webResPerm);
+        boolean ret = false;
+        if (uncheckedPermissionCache != null) {
+           ret = uncheckedPermissionCache.checkPermission(webResPerm);
+        }
         if (ret == false) {
             ret = checkPermissionWithoutCache(webResPerm, null);
         } 
@@ -309,7 +312,10 @@ public class WebSecurityManager {
      * @return true if granted, false if denied.
      */
     protected boolean checkPermission(Permission perm, Set principalSet) {   
-        boolean ret = uncheckedPermissionCache.checkPermission(perm);
+        boolean ret = false;
+        if (uncheckedPermissionCache != null) {
+            ret = uncheckedPermissionCache.checkPermission(perm);
+        }
         if (ret == false) {
             ret = checkPermissionWithoutCache(perm, principalSet);
         } else {
@@ -658,6 +664,12 @@ public class WebSecurityManager {
         return (Principal)ADMIN_GROUP.get(realmName+group);
     }
     
+    /**
+      * returns true to indicate that a policy check was made
+      * and there were no constrained resources.
+      * when caching is disabled must always return false, which will
+      * ensure that policy is consulted to authorize each request.
+      */
     public boolean hasNoConstrainedResources() {
 	if (allResourcesCP != null && allConnectionsCP != null) {
 	    boolean x = allResourcesCP.checkPermission();

@@ -151,28 +151,43 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 
 	AuthConfigProvider provider = null;
         String regisID = getRegistrationID(layer, appContext);
+	rLock.lock();
+        boolean providerFound = false;
 	try {
-	    rLock.lock();
-
-	    provider = id2ProviderMap.get(regisID);
-            if (provider == null) {
-                provider = id2ProviderMap.get(getRegistrationID(null, appContext));
+            if (id2ProviderMap.containsKey(regisID)) {
+                provider = id2ProviderMap.get(regisID);
+                providerFound = true;
             }
-	    if (provider == null) {
-		provider = id2ProviderMap.get(getRegistrationID(layer, null));
-	    }
-	    if (provider == null) {
-		provider = id2ProviderMap.get(getRegistrationID(null, null));
-	    }
-	} finally {
-	    rLock.unlock();
-	}
+            String tmpID = null;
+            if (!providerFound) {
+                tmpID = getRegistrationID(null, appContext);
+                if (id2ProviderMap.containsKey(tmpID)) {
+                    provider = id2ProviderMap.get(tmpID);
+                    providerFound = true;
+                }
+            }
+            if (!providerFound) {
+                tmpID = getRegistrationID(layer, null);
+                if (id2ProviderMap.containsKey(tmpID)) {
+                    provider = id2ProviderMap.get(tmpID);
+                    providerFound = true;
+                }
+            }
+            if (!providerFound) {
+                tmpID = getRegistrationID(null, null);
+                if (id2ProviderMap.containsKey(tmpID)) {
+                    provider = id2ProviderMap.get(tmpID);
+                }
+            }
+        } finally {
+            rLock.unlock();
+        }
 
         if (listener != null) {
             // do this check first to try to optimize the multiple thread env
             boolean lregister = false;
+            rLock.lock();
             try {
-                rLock.lock();
                 List<RegistrationListener> listeners =
                     id2RegisListenersMap.get(regisID);
                 if (listeners != null) {
@@ -183,8 +198,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
             }
 
             if (!lregister) {
+                wLock.lock();
                 try {
-                    wLock.lock();
                     List<RegistrationListener> listeners =
                         id2RegisListenersMap.get(regisID);
                     if (listeners == null) {
@@ -319,8 +334,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
     public String[] detachListener(RegistrationListener listener,
             String layer, String appContext) {
         String regisID = getRegistrationID(layer, appContext);
+        wLock.lock();
         try {
-            wLock.lock();
             RegistrationListener ler = null;
             List<RegistrationListener> listeners =
                 id2RegisListenersMap.get(regisID);
@@ -348,8 +363,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * factory for the identified provider.
      */
     public String[] getRegistrationIDs(AuthConfigProvider provider) {
+        rLock.lock();
         try {
-            rLock.lock();
             Collection<String> regisIDs = null;
             if (provider != null) {
                 regisIDs = provider2IdsMap.get(provider);
@@ -384,8 +399,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * not correpond to an active registration
       */
     public RegistrationContext getRegistrationContext(String registrationID) {
-	try {
-	    rLock.lock();
+	rLock.lock();
+        try {
 	    return id2RegisContextMap.get(registrationID);
 	} finally {
 	    rLock.unlock();
@@ -522,18 +537,18 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 	    new RegistrationContextImpl(layer,appContext,description,persist);
 	RegistrationContext prevRegisContext = null; 
         List<RegistrationListener> listeners = null;
+        wLock.lock();
 	try {
-	    wLock.lock();
 	    prevRegisContext = id2RegisContextMap.get(regisID);
             AuthConfigProvider prevProvider = id2ProviderMap.get(regisID);
+            boolean wasRegistered = id2ProviderMap.containsKey(regisID);
 	    id2ProviderMap.put(regisID, provider);
 	    id2RegisContextMap.put(regisID, rc);
 
-            if (prevProvider != null) {
+            if (wasRegistered) {
                 List<String> prevRegisIDs = provider2IdsMap.get(prevProvider);
                 prevRegisIDs.remove(regisID);
-                if ((!prevProvider.equals(provider)) &&
-                        prevRegisIDs.size() == 0) { // cleanup
+                if (prevRegisIDs.size() == 0) { // cleanup
                     provider2IdsMap.remove(prevProvider);
                 }
             }
@@ -544,8 +559,7 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
             }
             regisIDs.add(regisID);
 
-            if ((provider != null && (!provider.equals(prevProvider))) ||
-                    (provider == null && prevProvider != null)) {
+            if (wasRegistered && (provider != prevProvider)) {
                 listeners = id2RegisListenersMap.get(regisID);
             }
 	} finally {
@@ -573,9 +587,10 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 	RegistrationContext rc = null;;
         List<RegistrationListener> listeners = null;
         String[] dIds = decomposeRegisID(regisID);
+        wLock.lock();
 	try {
-	    wLock.lock();
 	    rc = id2RegisContextMap.remove(regisID);
+            rvalue = id2ProviderMap.containsKey(regisID);
 	    AuthConfigProvider provider = id2ProviderMap.remove(regisID);
             List<String> regisIDs = provider2IdsMap.get(provider);
             if (regisIDs != null) {
@@ -586,7 +601,6 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
             }
 
             listeners = id2RegisListenersMap.remove(regisID);
-	    rvalue = (provider != null);
 	} finally {
 	    wLock.unlock();
 	    if (rc != null && rc.isPersistent()) {
@@ -610,8 +624,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
     // XXX the WSIT and GF providers should not (ubtimately) be hardwired
 
     private void _loadFactory() {
+        wLock.lock();
 	try {
-	    wLock.lock();
 	    id2ProviderMap = new HashMap<String, AuthConfigProvider>();
 	    id2RegisContextMap = new HashMap<String, RegistrationContext>();
             id2RegisListenersMap =
