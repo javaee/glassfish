@@ -1245,13 +1245,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		{
 			throw new RuntimeException( e );
 		}
-		finally
-		{
-		    if ( failure )
-		    {
-		    }
-		}
-	}
+    }
 	
 	/**
 		Set an Attribute value, first by looking for a setter method
