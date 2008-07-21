@@ -470,6 +470,26 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         ccp.setConnectionLeakTracingTimeout(adminPool.getConnectionLeakTimeoutInSeconds());
         ccp.setConnectionReclaim(Boolean.valueOf(adminPool.getConnectionLeakReclaim()));
 
+        boolean lazyConnectionEnlistment = Boolean.valueOf(adminPool.getLazyConnectionEnlistment());
+        boolean lazyConnectionAssociation = Boolean.valueOf(adminPool.getLazyConnectionAssociation());
+
+        //lazy-connection-enlistment need to be ON for lazy-connection-association to work.
+        if (lazyConnectionAssociation) {
+            if (lazyConnectionEnlistment) {
+                ccp.setLazyConnectionAssoc(true);
+                ccp.setLazyConnectionEnlist(true);
+            } else {
+                _logger.log(Level.SEVERE, "conn_pool_obj_utils.lazy_enlist-lazy_assoc-invalid-combination",
+                        adminPool.getName());
+                String i18nMsg = sm.getString(
+                        "cpou.lazy_enlist-lazy_assoc-invalid-combination", adminPool.getName());
+                throw new RuntimeException(i18nMsg);
+            }
+        } else {
+            ccp.setLazyConnectionAssoc(lazyConnectionAssociation);
+            ccp.setLazyConnectionEnlist(lazyConnectionEnlistment);
+        }
+
         ccp.setMaxConnectionUsage(adminPool.getMaxConnectionUsageCount());
 
         ccp.setConCreationRetryAttempts(adminPool.getConnectionCreationRetryAttempts());

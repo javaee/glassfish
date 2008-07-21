@@ -51,9 +51,19 @@ public class ConnectionManagerFactory {
             String poolName, boolean forceNoLazyAssoc)
             throws ConnectorRuntimeException {
 
+        ConnectorRegistry registry = ConnectorRegistry.getInstance();
+        PoolMetaData pmd = registry.getPoolMetaData(poolName);
+        boolean isLazyEnlist = pmd.isLazyEnlistable();
+
         ConnectionManagerImpl mgr = null;
-        logFine("Creating plain ConnectionManager");
-        mgr = new ConnectionManagerImpl(poolName);
+
+        if (isLazyEnlist) {
+            logFine("Creating LazyEnlistableConnectionManager");
+            mgr = new LazyEnlistableConnectionManagerImpl(poolName);
+        } else {
+            logFine("Creating plain ConnectionManager");
+            mgr = new ConnectionManagerImpl(poolName);
+        }
         return mgr;
     }
 

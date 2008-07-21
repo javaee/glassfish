@@ -242,6 +242,27 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         ccp.setMatchConnections(Boolean.valueOf(domainCcp.getMatchConnections()));
         ccp.setAssociateWithThread(Boolean.valueOf(domainCcp.getAssociateWithThread()));
 
+
+        boolean lazyConnectionEnlistment = Boolean.valueOf(domainCcp.getLazyConnectionEnlistment());
+        boolean lazyConnectionAssociation = Boolean.valueOf(domainCcp.getLazyConnectionAssociation());
+
+        if (lazyConnectionAssociation) {
+            if (lazyConnectionEnlistment) {
+                ccp.setLazyConnectionAssoc(true);
+                ccp.setLazyConnectionEnlist(true);
+            } else {
+                _logger.log(Level.SEVERE,
+                        "conn_pool_obj_utils.lazy_enlist-lazy_assoc-invalid-combination",
+                        domainCcp.getName());
+                String i18nMsg = localStrings.getString(
+                        "cpou.lazy_enlist-lazy_assoc-invalid-combination",  domainCcp.getName());
+                throw new RuntimeException(i18nMsg);
+            }
+        } else {
+            ccp.setLazyConnectionAssoc(lazyConnectionAssociation);
+            ccp.setLazyConnectionEnlist(lazyConnectionEnlistment);
+        }
+
         ccp.setMaxConnectionUsage(domainCcp.getMaxConnectionUsageCount());
         ccp.setValidateAtmostOncePeriod(
                 domainCcp.getValidateAtmostOncePeriodInSeconds());

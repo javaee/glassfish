@@ -363,4 +363,17 @@ public interface JavaEETransactionManager extends TransactionManager {
      */
     public boolean recoverIncompleteTx(boolean delegated, String logPath, 
             XAResource[] xaresArray) throws Exception;
+
+    /**
+     * get the resources being used in the calling component's invocation context
+     * @param instance calling component instance
+     * @param inv Calling component's invocation information
+     * @return List of resources
+     */
+    public List getResourceList(Object instance, ComponentInvocation inv);
+
+    /**
+     * Clears the transaction associated with the caller thread
+     */
+    public void clearThreadTx();
 }

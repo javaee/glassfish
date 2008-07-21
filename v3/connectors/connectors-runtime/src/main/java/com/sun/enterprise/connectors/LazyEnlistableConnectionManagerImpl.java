@@ -33,38 +33,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.connectors.internal.api;
+package com.sun.enterprise.connectors;
 
-import javax.transaction.xa.XAResource;
+import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.LazyEnlistableConnectionManager;
 
 /**
- * ResourceHandle interface to be used by transaction manager components
- *
- * @author Marina Vatkina
+ * @author Aditya Gore
  */
-
-public interface ResourceHandle {
-
-    public boolean isTransactional();
-
-    //TODO V3 not needed as of now.
-    public boolean isEnlistmentSuspended();
-
-    public void setEnlistmentSuspended(boolean enlistmentSuspended);
-
-    public XAResource getXAResource();
-
-    public boolean supportsXA();
-
-    public Object getComponentInstance();
-
-    public void setComponentInstance(Object instance);
-
-    public void closeUserConnection() throws PoolingException;
-
-    public boolean isEnlisted();
-
-    public boolean isShareable();
-
-    public void destroyResource();
+public class LazyEnlistableConnectionManagerImpl extends ConnectionManagerImpl
+        implements LazyEnlistableConnectionManager 
+{
+    public LazyEnlistableConnectionManagerImpl( String poolName ) {
+        super( poolName );
+    }
+    
+    public void lazyEnlist( javax.resource.spi.ManagedConnection mc ) throws ResourceException {
+        ConnectorRuntime.getRuntime().getPoolManager().lazyEnlist( mc );
+    }
 }

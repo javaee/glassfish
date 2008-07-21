@@ -209,6 +209,9 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
+    /**
+     * Clears the transaction associated with the caller thread
+     */
     public void clearThreadTx() {
         transactions.set(null);
         delegates.set(null);
@@ -388,6 +391,12 @@ public class JavaEETransactionManagerSimplified
         }
 **/
 
+    /**
+     * get the resources being used in the calling component's invocation context
+     * @param instance Calling component instance
+     * @param inv Calling component's invocation information
+     * @return List of resources
+     */
     public List getResourceList(Object instance, ComponentInvocation inv) {
         if (inv == null)
             return new ArrayList(0);

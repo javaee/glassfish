@@ -42,10 +42,7 @@ import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
-import com.sun.enterprise.resource.rm.NoTxResourceManagerImpl;
-import com.sun.enterprise.resource.rm.ResourceManager;
-import com.sun.enterprise.resource.rm.ResourceManagerImpl;
-import com.sun.enterprise.resource.rm.SystemResourceManagerImpl;
+import com.sun.enterprise.resource.rm.*;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -57,6 +54,8 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.ResourceException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,6 +74,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
     private ResourceManager resourceManager;
     private ResourceManager sysResourceManager;
     private ResourceManager noTxResourceManager;
+    private LazyEnlistableResourceManagerImpl lazyEnlistableResourceManager;
 
     private static Logger _logger = null;
 
@@ -87,6 +87,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
         resourceManager    = new ResourceManagerImpl();
         sysResourceManager = new SystemResourceManagerImpl();
         noTxResourceManager = new NoTxResourceManagerImpl();
+        lazyEnlistableResourceManager = new LazyEnlistableResourceManagerImpl();
     }
 
     public void createEmptyConnectionPool(String poolName,
@@ -131,6 +132,12 @@ public class PoolManagerImpl extends AbstractPoolManager {
 
         ResourceHandle handle =
                 getResourceFromPool(spec, alloc, info, tran);
+
+        //If the ResourceAdapter does not support lazy enlistment
+        //we cannot either
+        if ( ! handle.supportsLazyEnlistment() ) {
+            spec.setLazyEnlistable( false );
+        }
 
         handle.setResourceSpec(spec);
 
@@ -218,7 +225,10 @@ public class PoolManagerImpl extends AbstractPoolManager {
         } else if (spec.isPM()) {
             logFine( "Returning sysResourceManager");
             return sysResourceManager;
-        } else {
+        }  else if (spec.isLazyEnlistable() ) {
+            logFine( "Returning LazyEnlistableResourceManager");
+            return lazyEnlistableResourceManager;
+        }  else {
             logFine( "Returning resourceManager");
             return resourceManager;
         }
@@ -268,6 +278,15 @@ public class PoolManagerImpl extends AbstractPoolManager {
             }
         }
     }
+
+    /**
+     * This method gets called by the LazyEnlistableConnectionManagerImpl when
+     * a connection needs enlistment, i.e on use of a Statement etc.
+     */
+    public void lazyEnlist( ManagedConnection mc ) throws ResourceException {
+        lazyEnlistableResourceManager.lazyEnlist( mc );
+    }
+    
 
     /*
      * Called by the InvocationManager at methodEnd. This method

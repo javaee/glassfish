@@ -73,10 +73,15 @@ public class ResourceHandle implements
     private int shareCount;   // sharing within a component (XA only)
     private boolean supportsXAResource = false;
 
+
     private Subject subject = null;
 
     private ResourceState state = null;
     private ConnectionEventListener listener = null;
+
+    private boolean enlistmentSuspended = false;
+
+    private boolean supportsLazyEnlistment_ = false;
 
     private static Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
@@ -107,6 +112,12 @@ public class ResourceHandle implements
 	else
 	    supportsXAResource = true;
 
+        if ( resource instanceof
+            javax.resource.spi.LazyEnlistableManagedConnection ) {
+            supportsLazyEnlistment_ = true;
+        }
+
+
     }
 
 	public ResourceHandle(Object resource,
@@ -132,10 +143,19 @@ public class ResourceHandle implements
         return alloc.isTransactional();
     }
 
-    public boolean isEnlistmentSuspended() {
-        //throw new UnsupportedOperationException("Transaction is not supported yet");
-        //TODO V3 till lazy enlistment is done
-        return false;
+    /**
+     * To check whether lazy enlistment is suspended or not.<br>
+     * If true, TM will not do enlist/lazy enlist.
+     * @return boolean
+     */
+    public boolean isEnlistmentSuspended()
+    {
+        return enlistmentSuspended;
+    }
+
+    public void setEnlistmentSuspended(boolean enlistmentSuspended)
+    {
+        this.enlistmentSuspended = enlistmentSuspended;
     }
 
     public boolean supportsXA() {
@@ -311,6 +331,10 @@ public class ResourceHandle implements
 
     public String getName() {
         return spec.getResourceId();
+    }
+
+    public boolean supportsLazyEnlistment() {
+        return supportsLazyEnlistment_;
     }
 
     public void enlistedInTransaction(Transaction tran) throws IllegalStateException {

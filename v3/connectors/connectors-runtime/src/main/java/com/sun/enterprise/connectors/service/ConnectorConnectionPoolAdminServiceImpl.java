@@ -824,8 +824,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                             connectorConnectionPool.getSecurityMaps();
                     RuntimeSecurityMap runtimeSecurityMap =
                             SecurityMapUtils.processSecurityMaps(securityMaps);
-                    boolean lazyEnlistable = false;
-                    boolean lazyAssoc = false;
+                    boolean lazyEnlistable = connectorConnectionPool.isLazyConnectionEnlist();
+                    boolean lazyAssoc = connectorConnectionPool.isLazyConnectionAssoc();
 
                     PoolMetaData pmd = new PoolMetaData(poolName, mcf, s, txSupport, prin,
                             isPM, isNonTx, lazyEnlistable, runtimeSecurityMap, lazyAssoc);

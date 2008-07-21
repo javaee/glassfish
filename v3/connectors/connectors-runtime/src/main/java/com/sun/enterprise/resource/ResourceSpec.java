@@ -52,6 +52,8 @@ public class ResourceSpec implements Serializable {
     private boolean nonTxResource;
     private boolean isXA_;
 
+    private boolean lazyEnlistable_;
+
     private String connectionPoolName;
 
     static public final int JDBC_URL = 0;
@@ -86,6 +88,11 @@ public class ResourceSpec implements Serializable {
         if (pmd.isNonTx()) {
             nonTxResource = true;
         }
+
+        if( pmd.isLazyEnlistable() && !nonTxResource && !pmResource ) {
+            lazyEnlistable_ = true;
+        }
+
     }
 
     public String getConnectionPoolName() {
@@ -163,6 +170,14 @@ public class ResourceSpec implements Serializable {
         isXA_ = true;
     }
 
+    public boolean isLazyEnlistable() {
+        return lazyEnlistable_;
+    }
+
+    public void setLazyEnlistable( boolean lazyEnlist ) {
+        lazyEnlistable_ = lazyEnlist;
+    }
+
 
     public String toString() {
         StringBuffer sb = new StringBuffer("ResourceSpec :- ");
@@ -172,7 +187,7 @@ public class ResourceSpec implements Serializable {
         sb.append("\nresoureIdType : ").append(resourceIdType);
         sb.append("\npmResource : ").append(pmResource);
         sb.append("\nnonTxResource : ").append(nonTxResource);
-
+        sb.append("\nlazyEnlistable : ").append(lazyEnlistable_);
         return sb.toString();
     }
 }

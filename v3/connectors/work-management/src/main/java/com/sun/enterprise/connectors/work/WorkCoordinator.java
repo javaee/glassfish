@@ -211,17 +211,14 @@ public final class WorkCoordinator {
         boolean txImported = (ec != null && ec.getXid() != null);
         try {
             JavaEETransactionManager tm = getTransactionManager();
-            /* TODO V3
+            // TODO V3
             if (txImported) {
                 tm.release(ec.getXid());
             }
-            */
-        } catch (Exception e) {
-            setException(e);
-        }
-        /*catch (WorkException ex) {
+
+        } catch (WorkException ex) {
             setException(ex);
-        } */ finally {
+        } finally {
             try {
                 if (workStats != null) {
                     workStats.setActiveWorkCount
@@ -239,15 +236,13 @@ public final class WorkCoordinator {
                 }
 
                 //Also release the TX from the record of TX Optimizer
-                /* TODO V3
+                // TODO V3
                 if (txImported) {
                     JavaEETransactionManager tm = getTransactionManager();
                     //TODO V3 check whether J2EETxMgrOpt is available 
-                    if (tm instanceof J2EETransactionManagerOpt) {
-                        ((J2EETransactionManagerOpt) tm).clearThreadTx();
-                    }
+                    tm.clearThreadTx();
                 }
-                */
+
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage());
             }
