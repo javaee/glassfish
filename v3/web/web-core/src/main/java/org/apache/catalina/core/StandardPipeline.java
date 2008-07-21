@@ -59,6 +59,7 @@ package org.apache.catalina.core;
 
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.logging.*;
 
 import javax.management.ObjectName;
@@ -79,6 +80,7 @@ import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
+import org.glassfish.web.valve.GlassFishValveAdapter;
 import org.glassfish.web.valve.TomcatValveAdapter;
 
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
@@ -556,6 +558,22 @@ public class StandardPipeline
      */
     public synchronized void addValve(Valve valve) {
 
+        /*
+         * Check if this is a GlassFish-style valve that was compiled
+         * against the old org.apache.catalina.Valve interface (from
+         * GlassFish releases prior to V3), which has since been renamed
+         * to org.glassfish.web.valve.GlassFishValve (in V3)
+         */
+        if (isGlassFishValve(valve)) {
+            try {
+                addValve(new GlassFishValveAdapter(valve));
+            } catch (Exception e) {
+                log.log(Level.SEVERE,
+                        "Unable to add valve " + valve, e);
+            }
+            return;
+        }
+
         if (valve instanceof Contained)
             ((Contained) valve).setContainer(this.container);
 
@@ -846,5 +864,44 @@ public class StandardPipeline
 	    r = response;
 	}
 	return r;
+    }
+
+    /*
+     * Checks if the give valve is a GlassFish-style valve that was compiled
+     * against the old org.apache.catalina.Valve interface (from
+     * GlassFish releases prior to V3), which has since been renamed
+     * to org.glassfish.web.valve.GlassFishValve (in V3).
+     *
+     * The check is done by reflectively calling the valve's invoke method
+     * that returns an int. If this throws an AbstractMethodError, we
+     * know that the given valve is Tomcat-based, since the invoke method
+     * in the original Valve interface from Tomcat is declared to be void.
+     *
+     * @param valve the valve to check
+     *
+     * @return true if the given valve is a GlassFish-style valve, false
+     * otherwise
+     */
+    private boolean isGlassFishValve(Valve valve) {
+        try {
+            Method m = valve.getClass().getMethod(
+                        "invoke",
+                        org.apache.catalina.Request.class,
+                        org.apache.catalina.Response.class);
+            if (m != null && int.class.equals(m.getReturnType())) {
+                try {
+                    m.invoke(valve, null, null);
+                    return true;
+                } catch (AbstractMethodError ame) {
+                    return false;
+                } catch (Exception e) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

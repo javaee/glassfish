@@ -37,71 +37,68 @@
 package org.glassfish.web.valve;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import javax.servlet.ServletException;
-import org.apache.catalina.CometEvent;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 import org.apache.catalina.Valve;
 
 /**
- * Tomcat-style wrapper valve around GlassFish-style valve.
- *
- * This allows Tomcat- and GlassFish-style valves to be added to a 
- * pipeline in arbitrary order.
+ * Adapter valve for wrapping a GlassFish-style valve that was compiled
+ * against the "old" org.apache.catalina.Valve interface from GlassFish
+ * releases prior to V3 (which has been renamed to
+ * org.glassfish.web.valve.GlassFishValve in GlassFish V3).
  *
  * @author jluehe
  */
-public class TomcatValveAdapter implements Valve {
-
-    // The next valve in the pipeline to be invoked
-    private Valve next = null;
+public class GlassFishValveAdapter implements GlassFishValve {
 
     // The wrapped GlassFish-style valve to which to delegate
-    private GlassFishValve gfValve;
+    private Valve gfValve;
+
+    private Method invokeMethod;
+    private Method postInvokeMethod;
 
     /**
      * Constructor.
      *
-     * @param gfValve The GlassFish-style valve to wrap
+     * @param gfValve The GlassFish valve to which to delegate
      */
-    public TomcatValveAdapter(GlassFishValve gfValve) {
+    public GlassFishValveAdapter(Valve gfValve) throws Exception {
         this.gfValve = gfValve;
+        invokeMethod = gfValve.getClass().getMethod("invoke", Request.class,
+                                                    Response.class);
+        postInvokeMethod = gfValve.getClass().getMethod("postInvoke",
+                                                        Request.class,
+                                                        Response.class);
     }
 
     public String getInfo() {
         return gfValve.getInfo();
     }
 
-    public Valve getNext() {
-        return next;
-    }
-
-    public void setNext(Valve valve) {
-        this.next = valve;
-    }
-
-    public void backgroundProcess() {
-        // Deliberate no-op
+    /**
+     * Delegates to the invoke() of the wrapped GlassFish-style valve.
+     */
+    public int invoke(Request request,
+                      Response response)
+                throws IOException, ServletException {
+        try {
+            return ((Integer) invokeMethod.invoke(gfValve, request, response)).intValue();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
     /**
-     * Delegates to the invoke() and postInvoke() methods of the wrapped
-     * GlassFish-style valve.
+     * Delegates to the postInvoke() of the wrapped GlassFish-style valve.
      */
-    public void invoke(org.apache.catalina.connector.Request request,
-                       org.apache.catalina.connector.Response response)
-            throws IOException, ServletException {
-        int rc = gfValve.invoke(request, response);
-        if (rc != GlassFishValve.INVOKE_NEXT) {
-            return;
+    public void postInvoke(Request request, Response response)
+                throws IOException, ServletException {
+        try {
+            postInvokeMethod.invoke(gfValve, request, response);
+        } catch (Exception e) {
+            throw new ServletException(e);
         }
-        getNext().invoke(request, response);
-        gfValve.postInvoke(request, response);
     }
-
-    public void event(org.apache.catalina.connector.Request request,
-                      org.apache.catalina.connector.Response response,
-                      CometEvent event)
-            throws IOException, ServletException {
-        // Deliberate no-op
-    }
-
 }
