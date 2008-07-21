@@ -226,6 +226,12 @@ public interface DomainRoot extends Container
       @since Glassfish V3
      */
     public String getConfigDir();
+    
+    /**
+      @return the installation directory
+      @since Glassfish V3
+     */
+    public String getInstallDir();
 }
 
 
