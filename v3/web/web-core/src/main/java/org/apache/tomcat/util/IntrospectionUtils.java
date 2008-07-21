@@ -940,6 +940,7 @@ public final class IntrospectionUtils {
     {
 	if( target==null || param1==null ) {
 	    d("Assert: Illegal params " + target + " " + param1 );
+            throw new Exception("Illegal params " + target + " " + param1 );
 	}
 	if( dbg > 0 ) d("callMethod1 " + target.getClass().getName() +
 			" " + param1.getClass().getName() +
