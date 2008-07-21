@@ -40,6 +40,7 @@ import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.ArrayList;
+import java.lang.annotation.Annotation;
 
 /**
  * This is the Sniffer for Webservices
@@ -47,6 +48,9 @@ import java.util.ArrayList;
  */
 @Service(name="webservices")
 public class WebServicesSniffer extends GenericSniffer {
+
+    private static final Class[]  handledAnnotations = new Class[] {javax.jws.WebService.class,
+            javax.xml.ws.WebServiceProvider.class};
 
     final String[] containers = { "org.glassfish.webservices.WebServicesContainer" };
 
@@ -68,11 +72,12 @@ public class WebServicesSniffer extends GenericSniffer {
     }
 
      public java.lang.Class<? extends java.lang.annotation.Annotation>[] getAnnotationTypes() {
-         ArrayList webserviceAnnotations = new ArrayList();
-         webserviceAnnotations.add(javax.jws.WebService.class);
-         webserviceAnnotations.add(javax.xml.ws.WebServiceProvider.class);
-         return (Class<? extends java.lang.annotation.Annotation>[]) webserviceAnnotations.toArray();
+         return handledAnnotations;
 
          
      }
+
+     public boolean isUserVisible() {
+        return true;
+    }
 }
