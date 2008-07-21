@@ -228,6 +228,7 @@ final class LoaderRegThread extends Thread
             if ( mInProgress == null )
             {
                 mQuit   = true; // a null item signals that we should quit
+                break;
             }
             
             //debug( "PROCESS: " + (item.mRegister? "register" : "unregister") + " : " + JMXUtil.toString(item.mObjectName) );
