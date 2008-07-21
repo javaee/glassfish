@@ -219,14 +219,20 @@ public interface DomainRoot extends Container
     /**
       @since Glassfish V3
      */
-    public String getApplicationServerFullVersion();
+    public String getApplicationServerFullVersion();  
+      
+    /**
+       @return the directory for the domain
+      @since Glassfish V3
+     */
+    public String getDomainDir();
     
     /**
-        @return the configuration directory
+      @return the configuration directory, typically 'config' subdirectory of {@link #getDomainDir}
       @since Glassfish V3
      */
     public String getConfigDir();
-    
+
     /**
       @return the installation directory
       @since Glassfish V3

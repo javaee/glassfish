@@ -53,6 +53,7 @@ import org.glassfish.admin.amx.util.ObjectNames;
 import javax.management.ObjectName;
 import java.util.Set;
 
+import java.io.File;
 
 /**
  */
@@ -270,13 +271,38 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     {
         return Version.getFullVersion();
     }
+    
+        private static String
+    getCanonicalPath( final File f )
+    {
+        try {
+            return f.getCanonicalPath();
+        }
+        catch( final java.io.IOException e )
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getDomainDir()
+    {
+        return getCanonicalPath( BootUtil.getInstance().getInstanceRoot() );
+    }
 
     public String getConfigDir()
     {
-        Issues.getAMXIssues().notDone( "DomainRootImpl.getConfigDir" );
-        
         final String pathSep = System.getProperty( "file.separator" );
-        return BootUtil.getInstance().getInstanceRoot() + pathSep + "config";
+        return getDomainDir() + pathSep + "config";
+    }
+    
+    public String getInstallDir()
+    {
+        Issues.getAMXIssues().notDone( "DomainRootImpl.getInstallDir:  incorrect implementation" );
+        final File domainPath = BootUtil.getInstance().getInstanceRoot();
+        
+        // this is WRONG; it assumes that the domain dir lives in ${INSTALL_DIR}/domains
+        final File installDir = domainPath.getParentFile().getParentFile();
+        return getCanonicalPath( installDir );
     }
 }
 
