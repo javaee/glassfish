@@ -102,6 +102,8 @@ final class ConnectorsStarter
         }
     }
     
+    static void ignore( Throwable t) {}
+    
         private JMXConnectorServer
     startJMXMPConnectorServer( int port)
         throws MalformedURLException, IOException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
@@ -130,8 +132,8 @@ final class ConnectorsStarter
                 // we do it this way so that the original exeption will be thrown out
                 if ( ! startedOK )
                 {
-                    try { jmxmp.stop(); } catch( Exception e ) { /* OK */ }
-                    try { mMBeanServer.unregisterMBean( objectName ); objectName = null;}  catch( Exception e ) { /* OK */}
+                    try { jmxmp.stop(); } catch( Exception e ) { ignore(e); }
+                    try { mMBeanServer.unregisterMBean( objectName ); objectName = null;}  catch( Exception e ) { ignore(e); }
                 }
             }
             
