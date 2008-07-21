@@ -33,27 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.flashlight.impl.core;
+package org.glassfish.flashlight.client;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
 
 /**
+ *
  * @author Mahesh Kannan
- *         Date: Jul 15, 2008
+ *         Date: Jan 26, 2008
  */
-public class FlashlightBundleActivator
-    implements BundleActivator {
 
-    BundleContext myBundleContext;
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface ProbeListener {
 
-    public void start(BundleContext bCtx) {
-        this.myBundleContext = bCtx;
-    }
-
-    public void stop(BundleContext bCtx) {
-        
-    }
-
+    public abstract String value();
 
 }

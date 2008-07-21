@@ -40,22 +40,18 @@ import org.glassfish.gfprobe.client.handler.ProbeClientMethodHandler;
 import org.glassfish.gfprobe.common.HandlerRegistry;
 */
 
-import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.client.*;
+import org.glassfish.flashlight.impl.core.Probe;
+import org.glassfish.flashlight.impl.core.ProbeRegistry;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.instrument.Instrumentation;
-
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
 
 /*
 import com.sun.tools.attach.spi.AttachProvider;
@@ -71,7 +67,7 @@ import com.sun.tools.attach.VirtualMachine;
 public class FlashlightProbeClientMediator
         implements ProbeClientMediator, PostConstruct {
 
-    private static ProbeClientMediator _me;
+    private static ProbeClientMediator _me = new FlashlightProbeClientMediator();
 
     private AtomicBoolean agentInitialized =
             new AtomicBoolean(false);
@@ -92,11 +88,16 @@ public class FlashlightProbeClientMediator
         _me = this;
     }
 
+
+    public static ProbeClientMediator getInstance() {
+        return _me;
+    }
+
     public static Object getClient(int id) {
         return clients.get(id);
     }
 
-    public void registerListener(Object listener) {
+    public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
 
         if (!agentInitialized.get()) {
             synchronized (agentInitialized) {
@@ -133,13 +134,13 @@ public class FlashlightProbeClientMediator
 
                         }
                     }
-                    */
+
                     try {
-                    Class agentClazz = Class.forName("org.glassfish.flashlight.agent.ProbeAgentMain");
-                    Method m = agentClazz.getMethod("getInstrumentation()", null);
-                    this.inst = (Instrumentation) m.invoke(null);
-                    System.out.println("Got Instrumentation: " + inst);
-                    agentInitialized.set(true);
+                        Class agentClazz = Class.forName("org.glassfish.flashlight.agent.ProbeAgentMain");
+                        Method m = agentClazz.getMethod("getInstrumentation()", null);
+                        this.inst = (Instrumentation) m.invoke(null);
+                        System.out.println("Got Instrumentation: " + inst);
+                        agentInitialized.set(true);
                     } catch (ClassNotFoundException cnfEx) {
                         //TODO
                     } catch (NoSuchMethodException nsmEx) {
@@ -149,48 +150,41 @@ public class FlashlightProbeClientMediator
                     } catch (InvocationTargetException invtEx) {
                         //TODO
                     }
+                    */
                 }
             }
         }
 
-        /*
         int clientID = clientIdGenerator.incrementAndGet();
         clients.put(clientID, listener);
 
         Class clientClz = listener.getClass();
-        Collection<Class> redefClasses =
-                new HashSet<Class>();
-        Collection<ProbeClientMethodHandler> pcms =
-                new ArrayList<ProbeClientMethodHandler>();
-        */
 
-        /*
+        Collection<ProbeClientMethodHandle> pcms =
+                new ArrayList<ProbeClientMethodHandle>();
+
         for (java.lang.reflect.Method clientMethod : clientClz.getDeclaredMethods()) {
-            for (ProbeClientMethodHandler h :
-                    _handlerRegistry.getHandlers()) {
-                if (h.processClientMethod(clientID,
-                        redefClasses, clientMethod)) {
-                    //redefClasses.add(clientClz);
-                }
-            }
-        }
-        */
+            ProbeListener probeAnn = clientMethod.getAnnotation(ProbeListener.class);
 
-        /*
-        if (redefClasses.size() >= 0) {
-            Class[] clazzez = redefClasses.toArray(new Class[0]);
-            try {
-                Class agentClz = Class.forName("org.glassfish.gfprobe.agent.ProbeAgentMain");
-                Method m = agentClz.getMethod("getInstance", null);
-                Object agent = m.invoke(null);
-                //Method retransformMethod = agentClz.getMethod("retransform", new Class[] {Class.class});
-                System.out.println("agentClazz: " + System.identityHashCode(agentClz));
-                //agent.retransform();
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            if (probeAnn != null) {
+                String probeStr = probeAnn.value();
+                String[] probeDesc = probeStr.split(":");
+                Probe probe = ProbeRegistry.getInstance().getProbe(probeStr);
+
+                if (probe == null) {
+                    throw new RuntimeException("Invalid probe desc: " + probeStr);
+                }
+
+                ProbeClientInvoker invoker = ProbeClientInvokerFactory.createInvoker(listener, clientMethod, probe);
+                ProbeClientMethodHandleImpl hi = new ProbeClientMethodHandleImpl(
+                        invoker.getId(), invoker, probe);
+                pcms.add(hi);
+
+                probe.addInvoker(invoker);
             }
         }
-        */
+
+        return pcms;
     }
 
 }

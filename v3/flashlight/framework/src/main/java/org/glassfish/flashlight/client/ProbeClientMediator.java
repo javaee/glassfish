@@ -38,6 +38,8 @@ package org.glassfish.flashlight.client;
 
 import org.jvnet.hk2.annotations.Contract;
 
+import java.util.Collection;
+
 /**
  * @author Mahesh Kannan
  *         Date: Jan 27, 2008
@@ -45,6 +47,6 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ProbeClientMediator {
 
-    public void registerListener(Object listener);
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener);
 
 }

@@ -36,31 +36,130 @@
 
 package org.glassfish.flashlight.impl.provider;
 
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.flashlight.client.EjbContainerListener;
+import org.glassfish.flashlight.client.EjbContainerProvider;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
+import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.annotations.ProbeName;
+import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.jvnet.hk2.annotations.Service;
 
-import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Mahesh Kannan
- *
  */
 @Service
 public class FlashlightProbeProviderFactory
-    implements ProbeProviderFactory {
+        implements ProbeProviderFactory {
 
-        public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
+    private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
+
+    public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
 
-            return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
-                                          new Class[] {providerClazz},
-                                          new InvocationHandler() {
-                                              public Object invoke(Object proxy, Method m, Object[] args) {
-                                                  return null;
-                                              }
-                                          });
-        }
-}
+        ProbeProvider provider = new ProbeProvider(moduleName, providerName, appName);
 
+        for (Method m : providerClazz.getDeclaredMethods()) {
+            int sz = m.getParameterTypes().length;
+            ProbeName pnameAnn = m.getAnnotation(ProbeName.class);
+            if (pnameAnn == null) {
+                continue;
+            }
+            String probeName = pnameAnn.value();
+            String[] probeParamNames = new String[sz];
+            int index = 0;
+            Annotation[][] anns2 = m.getParameterAnnotations();
+            for (Annotation[] ann1 : anns2) {
+                for (Annotation ann : ann1) {
+                    if (ann instanceof ProbeParam) {
+                        ProbeParam pParam = (ProbeParam) ann;
+                        probeParamNames[index++] = pParam.value();
+                        break;
+                    }
+                }
+            }
+
+            Probe probe = ProbeFactory.createProbe(
+                    moduleName, providerName, appName, probeName,
+                    probeParamNames, m.getParameterTypes());
+            probe.setProviderJavaMethodName(m.getName());
+            System.out.println("\tProbe: " + probe);
+            provider.addProbe(probe);
+        }
+
+
+        ProviderImplGenerator gen = new ProviderImplGenerator();
+        String genClassName = gen.defineClass(provider, providerClazz);
+
+        Class<T> tClazz = null;
+        try {
+            tClazz = (Class<T>) Class.forName(genClassName);
+        } catch (ClassNotFoundException cnfEx) {
+            throw new RuntimeException(cnfEx);
+        }
+
+
+        ProbeProviderRegistry.getInstance().registerProbeProvider(
+                provider, tClazz);
+        return tClazz.newInstance();
+
+    }
+
+    public static void main(String[] args)
+            throws Exception {
+        FlashlightProbeProviderFactory factory = new FlashlightProbeProviderFactory();
+        EjbContainerProvider<String, Date> provider =
+                (EjbContainerProvider<String, Date>) factory.getProbeProvider("ejb", "container", "", EjbContainerProvider.class);
+
+        ComputedParamsHandlerManager cphm =
+                ComputedParamsHandlerManager.getInstance();
+        cphm.addComputedParamHandler(
+                new ComputedParamHandler() {
+                    public boolean canHandle(String name) {
+                        return "$appName".equals(name);
+                    }
+
+                    public Object compute(String name) {
+                        return "TestFlashlight";
+                    }
+                }
+        );
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+        EjbContainerListener listener = new EjbContainerListener();
+        ProbeClientMediator pcm = FlashlightProbeClientMediator.getInstance();
+        Collection<ProbeClientMethodHandle> handles = pcm.registerListener(listener);
+
+        System.out.println("Handles.size(): " + handles.size());
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+
+        ProbeClientMethodHandle[] hs = handles.toArray(new ProbeClientMethodHandle[0]);
+        hs[0].disable();
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+        hs[0].enable();
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+    }
+
+}

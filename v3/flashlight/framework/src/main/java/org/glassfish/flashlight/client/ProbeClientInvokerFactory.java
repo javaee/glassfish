@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,27 +33,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.flashlight.impl.core;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+package org.glassfish.flashlight.client;
+
+import org.glassfish.flashlight.impl.client.ReflectiveClientInvoker;
+import org.glassfish.flashlight.impl.core.Probe;
+import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.jvnet.hk2.annotations.Service;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Mahesh Kannan
- *         Date: Jul 15, 2008
  */
-public class FlashlightBundleActivator
-    implements BundleActivator {
+@Service
+public class ProbeClientInvokerFactory {
 
-    BundleContext myBundleContext;
+    private static AtomicInteger clientMethodIdCounter =
+            new AtomicInteger();
 
-    public void start(BundleContext bCtx) {
-        this.myBundleContext = bCtx;
+    public static ProbeClientInvoker createInvoker(Object target, Method method,
+                                                   Probe probe) {
+        int invokerId = clientMethodIdCounter.incrementAndGet();
+
+        String[] clientParamNames = new String[method.getParameterTypes().length];
+        int index = 0;
+        Annotation[][] anns2 = method.getParameterAnnotations();
+        for (Annotation[] ann1 : anns2) {
+            for (Annotation ann : ann1) {
+                if (ann instanceof ProbeParam) {
+                    ProbeParam pParam = (ProbeParam) ann;
+                    clientParamNames[index++] = pParam.value();
+                    break;
+                }
+            }
+        }
+
+        ProbeClientInvoker pci = new ReflectiveClientInvoker(invokerId, target, method, clientParamNames, probe);
+
+        return pci;
     }
-
-    public void stop(BundleContext bCtx) {
-        
-    }
-
-
 }
