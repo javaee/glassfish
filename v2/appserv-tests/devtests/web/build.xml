@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="311"/>
+    <property name="TOTAL_EXPECTED" value="312"/>
 
     &commonSetup;
     &commonBuild;
@@ -310,6 +310,7 @@
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
         <ant dir="formLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="formLoginTransportGuaranteeConfidential" target="all"/>
+        <ant dir="jspForwardNormalizePath" target="all"/>
     </target>
 
     <target name="http-connector">
