@@ -362,7 +362,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (contextRoot == null) {            
                 contextRoot = ConfigBeansUtilities.getContextRoot(name);
                 if (contextRoot != null) {
-                    parameters.put(ParameterNames.CONTEXT_ROOT, contextRoot);
+                    parameters.put(ParameterNames.PREVIOUS_CONTEXT_ROOT, 
+                        contextRoot);
                 }
             }
             if (libraries == null) {
