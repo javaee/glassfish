@@ -35,10 +35,10 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <parent>
+    <parent>
         <groupId>org.glassfish.admin</groupId>
         <artifactId>admin</artifactId>
         <version>10.0-SNAPSHOT</version>
@@ -48,7 +48,6 @@
     <packaging>hk2-jar</packaging>
     <name>Appserver Monitoring Infrastructure</name>
     <description>Glassfish Appserver Admin Monitoring Infrastructure</description>
-
     <developers>
         <developer>
             <id>sirajg</id>
@@ -60,7 +59,17 @@
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>    
+        <developer>
+            <id>harpreet</id>
+            <name>Harpreet Singh</name>
+            <url>http://blogs.sun.com/harpreet/</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
     <build>
         <plugins>
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
@@ -88,7 +97,12 @@
                         com.sun.enterprise.admin.monitor.stats,
                         com.sun.enterprise.admin.monitor.stats.lb,
                         com.sun.enterprise.admin.monitor.util,
-                        com.sun.enterprise.management.support
+                        com.sun.enterprise.management.support,
+			org.glassfish.flashlight,
+			org.glassfish.flashlight.datatree,
+			org.glassfish.flashlight.datatree.factory,
+			org.glassfish.flashlight.statistics,
+			org.glassfish.flashlight.statistics.factory
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -134,5 +148,5 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>
