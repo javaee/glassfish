@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="310"/>
+    <property name="TOTAL_EXPECTED" value="311"/>
 
     &commonSetup;
     &commonBuild;
@@ -263,6 +263,7 @@
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
+        <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
         <ant dir="classloaderMemoryLeak" target="all"/>
