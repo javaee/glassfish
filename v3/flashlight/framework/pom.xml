@@ -97,9 +97,6 @@
                             org.glassfish.flashlight.provider,
                             org.glassfish.flashlight.provider.annotations
                         </Export-Package>
-                        <Import-Package>
-                            org.glassfish.flashlight.agent
-                        </Import-Package>
                         <Bundle-Activator>org.glassfish.flashlight.impl.core.FlashlightBundleActivator
                         </Bundle-Activator>
                     </instructions>
@@ -135,11 +132,6 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>asm-all-repackaged</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.flashlight</groupId>
