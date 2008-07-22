@@ -128,6 +128,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                                     (com.sun.enterprise.config.serverbeans.VirtualServer)t, 
                                     httpService);
                         }
+                        return;
                     } else if (t instanceof HttpListener) {
                         if (type==TYPE.ADD) {
                             container.addConnector((HttpListener)t, httpService);
@@ -136,6 +137,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateConnector((HttpListener)t, httpService);
                         }
+                        return;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof RequestProcessing) {
