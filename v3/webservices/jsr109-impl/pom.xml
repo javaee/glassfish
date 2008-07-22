@@ -50,50 +50,20 @@
     <name>JSR-109 implementation to deploy Metro</name>
     <build>
         <plugins>
-            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
-                 Please note: we use the manifest goal only and not the bundle goal.
-                  The bundle goal can lead to very surprising results if the
-                  package names are not correctly specified. So,
-                  we use the jar plugin to generate the jar.-->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <!-- Enable the plugin for hk2-jar packaging type -->
-                    <supportedProjectTypes>
-                        <supportedProjectType>hk2-jar</supportedProjectType>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
-                    <instructions>
-                        <!-- _include does not work. See Felix-620.
-                        <_include>osgi.bundle</_include>
-                        -->
-                        <Export-Package>
-                        org.glassfish.webservices,
-                        org.glassfish.webservices.monitoring
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${hk2.plugin.version}</version>
                 <configuration>
-                    <archive>
-                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
+                    <!-- We don't use maven-bundle-plugin to generate the OSGi h
+eaders,
+                         as it does not generate Require-Bundle style dependenci
+es.
+                         Currently, gf-web-connector needs Require-Bundle so tha
+t
+                         resource loading works. 
+                    -->
+                    <generateOSGiHeaders>true</generateOSGiHeaders>
                 </configuration>
             </plugin>
         </plugins>
@@ -111,6 +81,16 @@
         </developer>
     </developers>
     <dependencies>
+     <dependency>
+        <groupId>org.glassfish.web</groupId>
+         <artifactId>web-core</artifactId>
+         <version>${project.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.glassfish.external</groupId>
+         <artifactId>grizzly-module</artifactId>
+         <version>${grizzly.version}</version>
+     </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
