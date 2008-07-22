@@ -323,7 +323,7 @@
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
-        <ant dir="httpListenerDynamicCongig" target="all"/>
+        <ant dir="v3HttpListenerDynamicConfig" target="all"/>
         <ant dir="caseSensitiveHostMapping" target="all"/>
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="getLocalPort" target="all"/>
