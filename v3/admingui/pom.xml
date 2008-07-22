@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dynafaces</artifactId>
-            <version>0.1-1.2-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
