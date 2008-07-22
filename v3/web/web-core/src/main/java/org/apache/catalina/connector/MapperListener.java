@@ -80,13 +80,11 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.util.StringManager;
 
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
-
-import com.sun.grizzly.util.res.StringManager;
-
 
 /**
  * Mapper listener.
