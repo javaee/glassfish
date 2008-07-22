@@ -157,6 +157,11 @@
             <version>1.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>com.sun</groupId>
