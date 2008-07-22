@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.web.admin.monitor;
 
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
@@ -43,6 +44,7 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
 public interface JspProvider {
 
     public void jspLoadedEvent(
-        @ProbeParam("jspName")String jspName,
-        @ProbeParam("appName")String appName);
+        @ProbeParam("jspName") String jspName,
+        @ProbeParam("appName") String appName
+    );
 }

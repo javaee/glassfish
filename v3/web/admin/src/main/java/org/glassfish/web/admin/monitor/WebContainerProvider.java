@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.web.admin.monitor;
 
 import java.security.Principal;
@@ -44,25 +45,29 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
 public interface WebContainerProvider {
 
     public void responseCode(
-        @ProbeParam("responseCode")String responseCode,
-        @ProbeParam("appName")String appName);
+        @ProbeParam("responseCode") String responseCode,
+        @ProbeParam("appName") String appName
+    );
 
     public void requestStart(
-        @ProbeParam("requestId")String requestId,
-        @ProbeParam("uri")String uri,
-        @ProbeParam("ipAddress")String ipAddress,
-        @ProbeParam("principal")Principal principal,
-        @ProbeParam("appName")String appName);
-
+        @ProbeParam("requestId") String requestId,
+        @ProbeParam("uri") String uri,
+        @ProbeParam("ipAddress") String ipAddress,
+        @ProbeParam("principal") Principal principal,
+        @ProbeParam("appName") String appName
+    );
     
     public void requestEnd(
-        @ProbeParam("requestId")String requestId);
+        @ProbeParam("requestId") String requestId
+    );
         
     public void servletLoadedEvent(
-        @ProbeParam("servletName")String servletName,
-        @ProbeParam("appName")String appName);
+        @ProbeParam("servletName") String servletName,
+        @ProbeParam("appName") String appName
+    );
     
     public void servletReloadedEvent(
-        @ProbeParam("servletName")String servletName,
-        @ProbeParam("appName")String appName);
+        @ProbeParam("servletName") String servletName,
+        @ProbeParam("appName") String appName
+    );
 }
