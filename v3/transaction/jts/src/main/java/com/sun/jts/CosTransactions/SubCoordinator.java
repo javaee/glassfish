@@ -1980,7 +1980,7 @@ class SubCoordinator extends CoordinatorImpl {
         // Compare the global identifiers.
 
         if (otherTID != null) {
-            return superInfo.globalTID.equals(otherTID);
+            return superInfo.globalTID.isSameTID(otherTID);
         }
 
         return false;

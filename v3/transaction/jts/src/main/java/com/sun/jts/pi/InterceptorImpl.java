@@ -320,6 +320,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
             // load a null context and discard the current tx context.
             hctx.value = nullContext;
         } else {
+		    /*
 	    IOR ior = ((com.sun.corba.ee.spi.orb.ORB)txOrb).getIOR( target, false ) ;
 	    IIOPProfile prof = ior.getProfile() ;
 	    ObjectKeyTemplate oktemp = prof.getObjectKeyTemplate() ;
@@ -327,7 +328,6 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
 	    {
                 hctx.value = nullContext;
 	    } else {
-		    /*
 	        ObjectAdapterId oaid = oktemp.getObjectAdapterId() ;
 	        String[] adapterName = oaid.getAdapterName() ;
 	        boolean isEjbCall = isEjbAdapterName(adapterName);
@@ -338,7 +338,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
                     sender.sending_request(ri.request_id(), hctx);
 	        } */
                 sender.sending_request(ri.request_id(), hctx);
-	    }
+	    // }
         }
 
         // add service context.

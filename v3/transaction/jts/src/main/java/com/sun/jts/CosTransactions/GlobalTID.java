@@ -241,6 +241,14 @@ public class GlobalTID extends Object {
         else
             return false;
 
+        return isSameTID(otherTID);
+    }
+
+    public final boolean isSameTID( otid_t otherTID ) {
+
+        if (otherTID == null)
+            return false;
+        
         boolean result = false;
 
         // If the references are equal, return immediately.

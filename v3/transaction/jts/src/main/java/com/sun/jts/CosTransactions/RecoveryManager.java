@@ -310,10 +310,17 @@ public class RecoveryManager {
         if (coord != null) {
             try {
                 if (coord.is_top_level_transaction()) {
-                    if (Configuration.isDBLoggingEnabled()) 
-                        LogDBHelper.getInstance().deleteRecord(localTID.longValue());
-                    else
-                        CoordinatorLog.removeLog(localTID);
+                    if (inCompleteTxMap.get(coord) == null) {
+                        if (Configuration.isDBLoggingEnabled())
+                            LogDBHelper.getInstance().deleteRecord(localTID.longValue());
+                        else
+                            CoordinatorLog.removeLog(localTID);
+                    } else {
+                        if(_logger.isLoggable(Level.FINE)) {
+                            _logger.logp(Level.FINE,"RecoveryManager","removeCoordinator()",
+                                         "Transaction hasn't completed, let it stay in active logs");
+                        }
+                    }
                 }
             } catch(SystemException exc) {
                 result = false;
@@ -1414,10 +1421,10 @@ public class RecoveryManager {
             try {
                 resyncInProgress.waitEvent();
             } catch (InterruptedException exc) {
-				_logger.log(Level.SEVERE,"jts.wait_for_resync_complete_interrupted");
-				 String msg = LogFormatter.getLocalizedMessage(_logger,
-											"jts.wait_for_resync_complete_interrupted");
-				  throw  new org.omg.CORBA.INTERNAL(msg);
+		_logger.log(Level.SEVERE,"jts.wait_for_resync_complete_interrupted");
+		 String msg = LogFormatter.getLocalizedMessage(_logger,
+			"jts.wait_for_resync_complete_interrupted");
+                 throw  new org.omg.CORBA.INTERNAL(msg);
             }
         }
     }
@@ -1433,6 +1440,10 @@ public class RecoveryManager {
                 return Boolean.TRUE;
 	    }
     } 
+
+    public static int sizeOfInCompleTx() {
+        return inCompleteTxMap.size();
+    }
    
     public static void recoverIncompleteTx(XAResource[] xaresArray) {
         if ((xaresArray == null) || (xaresArray.length == 0))

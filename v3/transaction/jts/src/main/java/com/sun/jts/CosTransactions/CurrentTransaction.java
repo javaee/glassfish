@@ -930,7 +930,7 @@ public class CurrentTransaction {
             // If the global id is different from the one in the context, then raise the
             // org.omg.CORBA.WrongTransaction exception.
 
-            if( !globalTID.equals(context.current.otid) ) {
+            if( !globalTID.isSameTID(context.current.otid) ) {
                 //      org.omg.CORBA.WrongTransaction exc = new org.omg.CORBA.WrongTransaction(0,CompletionStatus.COMPLETED_YES);
                 org.omg.CORBA.WrongTransaction exc = new org.omg.CORBA.WrongTransaction();
                 throw exc;
@@ -1074,7 +1074,7 @@ public class CurrentTransaction {
         try {
             if( importedTID == null ||
                 current == null ||
-                !importedTID.equals(current.getGlobalTID(outStatus)) ||
+                !importedTID.isSameTID(current.getGlobalTID(outStatus)) ||
                 outStatus.value != Status.StatusActive ) {
                 INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.WrongContextOnReply,CompletionStatus.COMPLETED_YES);
                 throw exc;
@@ -1245,7 +1245,7 @@ public class CurrentTransaction {
         StatusHolder outStatus = new StatusHolder();
         try {
             if (importedTID == null || control == null ||
-                    !importedTID.equals(control.getGlobalTID(outStatus)) ||
+                    !importedTID.isSameTID(control.getGlobalTID(outStatus)) ||
                     outStatus.value != Status.StatusActive) {
                 INVALID_TRANSACTION exc = 
                     new INVALID_TRANSACTION(MinorCode.WrongContextOnReply,
