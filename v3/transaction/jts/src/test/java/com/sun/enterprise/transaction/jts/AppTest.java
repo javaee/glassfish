@@ -124,7 +124,54 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testWrongTMCommit() {
+        System.out.println("**Testing Wrong TM commit ===>");
+        try {
+            System.out.println("**Calling TM commit ===>");
+            t.commit();
+            System.out.println("**WRONG: TM commit successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
 
+    public void testWrongTMRollback() {
+        System.out.println("**Testing Wrong TM Rollback ===>");
+        try {
+            System.out.println("**Calling TM rollback ===>");
+            t.rollback();
+            System.out.println("**WRONG: TM rollback successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testWrongUTXCommit() {
+        System.out.println("**Testing Wrong UTX commit ===>");
+        try {
+            UserTransaction utx = createUtx();
+            System.out.println("**Calling UTX commit ===>");
+            utx.commit();
+            System.out.println("**WRONG: UTX commit successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
     public void testBegin() {
         System.out.println("**Testing TM begin ===>");
         try {

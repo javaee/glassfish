@@ -99,19 +99,27 @@ public class JavaEETransactionManagerSimplifiedDelegate
         lao = b;
     }
 
-    /** XXX Throw an exception if called ??? XXX
-     *  it might be a JTS imported global tx or an error
+    /** Throws an exception if called as it means that there is
+     *  no active local transaction to commit.
      */
     public void commitDistributedTransaction() throws 
             RollbackException, HeuristicMixedException, 
             HeuristicRollbackException, SecurityException, 
-            IllegalStateException, SystemException {} 
+            IllegalStateException, SystemException {
 
-    /** XXX Throw an exception if called ??? XXX
-     *  it might be a JTS imported global tx or an error
+        throw new IllegalStateException(sm.getString(
+                "enterprise_distributedtx.transaction_notactive"));
+    } 
+
+    /** Throws an exception if called as it means that there is
+     *  no active local transaction to rollback.
      */
     public void rollbackDistributedTransaction() throws IllegalStateException, 
-            SecurityException, SystemException {} 
+            SecurityException, SystemException {
+
+        throw new IllegalStateException(sm.getString(
+                "enterprise_distributedtx.transaction_notactive"));
+    } 
 
     public int getStatus() throws SystemException {
         JavaEETransaction tx = tm.getCurrentTransaction();
@@ -137,15 +145,24 @@ public class JavaEETransactionManagerSimplifiedDelegate
         return false;
     }
 
+    /** Throws an exception if called as it means that there is
+     *  no active local transaction.
+     */
     public void setRollbackOnlyDistributedTransaction()
             throws IllegalStateException, SystemException {
-        /** XXX Throw an exception ??? XXX **/
+
+        throw new IllegalStateException(sm.getString(
+                "enterprise_distributedtx.transaction_notactive"));
     }
 
     public Transaction suspend(JavaEETransaction tx) throws SystemException {
-        if ( tx != null )
+        if ( tx != null ) {
             tm.setCurrentTransaction(null);
-        return tx;
+            return tx;
+        }
+
+        throw new IllegalStateException(sm.getString(
+                "enterprise_distributedtx.transaction_notactive"));
     }
 
     public void resume(Transaction tx)
