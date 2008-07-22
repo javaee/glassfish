@@ -1140,7 +1140,7 @@ public final class PEAccessLogValve
      */
     private void threadSleep() {
         
-        if (writerThread != null || writeInterval == 0)
+        if (writerThread == null || writeInterval == 0)
             return;
         
         try {
