@@ -96,8 +96,8 @@ public class ContainerMapper {
     public void register(String contextRoot, Collection<String> vs, Adapter adapter,
             ApplicationContainer container, List<ProtocolFilter> contextProtocolFilters) {
 
-        if (logger.isLoggable(Level.INFO)) {
-            logger.info("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
                     " adapter: " + adapter + " container: " + container +
                     " contextProtocolFilters: " + contextProtocolFilters);
         }
