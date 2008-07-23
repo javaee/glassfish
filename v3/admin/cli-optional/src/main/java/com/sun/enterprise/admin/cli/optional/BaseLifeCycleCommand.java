@@ -267,9 +267,9 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand {
                 true, true, true, false);
     }
 
-    protected HashMap getExtraPasswords(String[] optionNames)
+    protected HashMap<String, String> getExtraPasswords(String[] optionNames)
             throws CommandValidationException, CommandException {
-        HashMap result = new HashMap();
+        HashMap<String, String> result = new HashMap<String, String>();
         String password;
         String optionName;
         for (int i = 0; i < optionNames.length; i++) {
