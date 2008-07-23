@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="updateCenter">
+        <integration-point 
+                id="uc" 
+                type="tree" 
+                priority="100" 
+                parentId="tree" 
+                content="updateCenterNode.jsf" 
+        />
+       
+</console-config>
