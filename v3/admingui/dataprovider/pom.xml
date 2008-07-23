@@ -44,11 +44,12 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
 
+    <!-- version 4.0 means this is the dataprovider used in Woodstock 4.2 release -->
+    <groupId>org.glassfish.admingui</groupId>
     <artifactId>dataprovider</artifactId>
     <name>DataProvider</name>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>4.2</version>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.admingui</groupId>
     <description>DataProvider Repackaged as OSGi bundle for GlassFish</description>
 
     <packaging>jar</packaging>
@@ -97,9 +98,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.sun.woodstock</groupId>
+            <groupId>com.sun.woodstock.dependlibs</groupId>
             <artifactId>dataprovider</artifactId>
-            <version>1.4.2-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
