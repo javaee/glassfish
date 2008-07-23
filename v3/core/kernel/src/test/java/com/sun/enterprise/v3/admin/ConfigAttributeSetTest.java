@@ -60,22 +60,25 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
         }
         assertNotNull(listener);        
 
-        // Let's regiter a listener
+        // Let's register a listener
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(listener);
         bean.addListener(this);
 
+        // parameters to the command
         Properties parameters = new Properties();
         parameters.put("value", "8090");
         parameters.put("DEFAULT", "configs.config.server-config.http-service.http-listener.http-listener-1.port");
 
         ActionReport report = new HTMLActionReporter();
 
+        // execute the set command.
         runner.doCommand("set",  parameters, report);
                                                                                                                                                                                                                            
         // check the result.
         String port = listener.getPort();
         assertEquals(port, "8090");
 
+        // ensure events are delivered.
        Transactions.get().waitForDrain();
         
         // finally
@@ -89,8 +92,9 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
         
     }
 
-    public void changed(PropertyChangeEvent[] propertyChangeEvents) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
         assertEquals("Array size", propertyChangeEvents.length, 1 );
         event = propertyChangeEvents[0];
+        return null;
     }
 }

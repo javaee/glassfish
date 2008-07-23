@@ -26,8 +26,10 @@ public class SnifferAnnotationScanner implements ClassVisitor {
 
     public void register(Sniffer sniffer, Class[] annotationClasses) {
         SnifferStatus stat = new SnifferStatus(sniffer);
-        for (Class annClass : annotationClasses) {
-            annotations.put(Type.getDescriptor(annClass), stat);
+        if (annotationClasses!=null) {
+            for (Class annClass : annotationClasses) {
+                annotations.put(Type.getDescriptor(annClass), stat);
+            }
         }
     }
 

@@ -227,7 +227,9 @@ public class ApplicationLifecycle {
                 for (String token : new Tokenizer(requestedWiring, ",")) {
                     for (Inhabitant<?> impl : habitat.getInhabitantsByContract(token)) {
                         Module wiredBundle = modulesRegistry.find(impl.get().getClass());
-                        defs.add(wiredBundle.getModuleDefinition());
+                        if (wiredBundle!=null) {
+                            defs.add(wiredBundle.getModuleDefinition());
+                        }
                     }
                 }
             }
@@ -846,9 +848,6 @@ public class ApplicationLifecycle {
         }
         for (ModuleInfo moduleInfo : info.getModuleInfos()) {
             unloadModule(moduleInfo, info, context, report);
-            if (!moduleInfo.getContainerInfo().getApplications().iterator().hasNext()) {
-                stopContainer(context.getLogger(), moduleInfo.getContainerInfo());
-            }
         }
 
 

@@ -1,9 +1,6 @@
 package com.sun.enterprise.configapi.tests;
 
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.beans.PropertyChangeEvent;
@@ -25,7 +22,7 @@ public class HttpServiceContainer implements ConfigListener {
 
     volatile boolean received=false;
 
-    public synchronized void changed(PropertyChangeEvent[] events) {
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         if (received) {
             // I am alredy happy
         }
@@ -38,5 +35,6 @@ public class HttpServiceContainer implements ConfigListener {
             }
         }
         , Logger.getAnonymousLogger());
+        return null;
     }
 }

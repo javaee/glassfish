@@ -163,6 +163,12 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 }
             }
         }
+
+        public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+            // amx probably does not care that some changes were not processed successfully
+            // and will require a restart
+        }
+
         List<PropertyChangeEvent>  getChangeEvents() { return mChangeEvents; }
     };
 

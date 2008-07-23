@@ -242,7 +242,12 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         //changes.toArray( changesArray );
         sortAndDispatch( changes, System.currentTimeMillis() );
     }
-    
+
+        public void 
+    unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+        // don't care
+    }
+
     @Override
 		protected void
 	postRegisterHook( Boolean registrationDone )

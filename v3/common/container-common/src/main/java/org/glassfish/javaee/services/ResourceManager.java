@@ -40,10 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Changed;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.*;
 import org.glassfish.api.naming.NamingObjectsProvider;
 
 import java.beans.PropertyChangeEvent;
@@ -288,7 +285,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      *
      * @param events list of changes
      */
-    public void changed(PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         // I am not so interested with the list of events, just sort who got added or removed for me.
         ConfigSupport.sortAndDispatch(events, new Changed() {
             /**
@@ -350,6 +347,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 }
             }
         }, logger);
+        return null;
     }
 
     /**

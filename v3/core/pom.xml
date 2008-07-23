@@ -53,5 +53,6 @@
         <module>bootstrap</module>
 		<module>kernel</module>
         <module>security</module>
+        <module>branding</module>
     </modules>
 </project>

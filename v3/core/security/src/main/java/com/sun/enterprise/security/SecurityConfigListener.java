@@ -38,10 +38,8 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import java.util.logging.Level;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Changed;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Service;
@@ -109,7 +107,7 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
      *
      * @param events list of changes
      */
-    public void changed(PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         // I am not so interested with the list of events, just sort who got added or removed for me.
         ConfigSupport.sortAndDispatch(events, new Changed() {
             /**
@@ -203,6 +201,7 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
                 }
             }
         }, logger);
+         return null;
     }
     
     /**

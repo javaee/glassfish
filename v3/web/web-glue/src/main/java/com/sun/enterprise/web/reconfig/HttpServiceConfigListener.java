@@ -53,10 +53,7 @@ import com.sun.enterprise.web.WebContainer;
 
 import org.apache.catalina.LifecycleException;
 
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.annotations.Inject;
 
 
@@ -111,7 +108,7 @@ public class HttpServiceConfigListener implements ConfigListener {
      * Handles HttpService change events
      * @param events the PropertyChangeEvent
      */
-    public synchronized void changed(PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         
         ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> tClass, T t) {
@@ -158,7 +155,7 @@ public class HttpServiceConfigListener implements ConfigListener {
             }
         }
         , logger);
-       
+         return null;
     }
     
 }

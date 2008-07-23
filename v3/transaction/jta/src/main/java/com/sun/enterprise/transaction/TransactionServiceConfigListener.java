@@ -49,6 +49,7 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.annotations.Inject;
 
 /*
@@ -63,7 +64,7 @@ public class TransactionServiceConfigListener implements ConfigListener
 
     @Inject private TransactionService ts;
 
-    public synchronized void changed(PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         for (PropertyChangeEvent event : events) {
             System.err.println("XXX event ======== "+event.getSource()+ " "+event.getPropertyName()+" "+
                     event.getOldValue()+" "+event.getNewValue());
@@ -99,6 +100,7 @@ public class TransactionServiceConfigListener implements ConfigListener
                 // XXX AdminEventMulticaster.notifyFailure(event, AdminEventResult.RESTART_NEEDED);
             }
         }
+        return null;
     }
 
 /** XXX

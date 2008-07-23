@@ -59,7 +59,7 @@ public class GlassFishBranding implements Branding {
     private final String full_version          = "10.0-SNAPSHOT";
     private final String major_version         = "10";
     private final String minor_version         = "0"; 
-    private final String build_id              = "sreeni-private";
+    private final String build_id              = "dochez-private";
 
     /**
      * Returns version

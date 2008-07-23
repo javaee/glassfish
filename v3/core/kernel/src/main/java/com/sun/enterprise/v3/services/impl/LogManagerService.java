@@ -29,6 +29,8 @@ import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
 import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.api.branding.Branding;
 import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -72,6 +74,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
      */
     public void postConstruct() {
 
+        // get the branding info and set it on the UniformLogFormatter
+        UniformLogFormatter.branding = habitat.getByContract(Branding.class);
+        
         // if the system property is already set, we don't need to do anything
         if (System.getProperty("java.util.logging.config.file")!=null) {
             return;

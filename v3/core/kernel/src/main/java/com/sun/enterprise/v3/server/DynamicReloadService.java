@@ -39,6 +39,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * A service wrapper around the dynamic reload processor.
@@ -185,7 +186,7 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
         start(pollIntervalInSeconds);
     }
 
-    public synchronized void changed(PropertyChangeEvent[] events) {
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         /*
          * Deal with any changes to the DasConfig that might affect whether
          * the reloader should be stopped or started or rescheduled with a
@@ -225,5 +226,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
                 reschedule(newPollIntervalInSeconds);
             }
         }
+        return null;
     }
 }

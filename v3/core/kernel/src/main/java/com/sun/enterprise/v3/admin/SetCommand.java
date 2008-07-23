@@ -44,8 +44,17 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             return;
         }
         final String attrName = target.substring(target.lastIndexOf('.')+1);
-        Map<Dom, String> nodes = getAllDottedNodes(domain);
-        Map<Dom, String> matchingNodes = getMatchingNodes(nodes, target.substring(0, target.lastIndexOf('.')));
+        String pattern =  target.substring(0, target.lastIndexOf('.'));
+        // first let's get the parent for this pattern.
+        TreeNode[] parentNodes = getAliasedParent(domain, pattern);
+        Map<Dom, String> dottedNames =  new HashMap<Dom, String>();
+        for (TreeNode parentNode : parentNodes) {
+               dottedNames.putAll(getAllDottedNodes(parentNode.node));
+        }
+
+        // reset the pattern.
+        pattern = parentNodes[0].relativeName;
+        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames,pattern );
 
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
 
@@ -54,12 +63,12 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
-            for (Map.Entry<String, String> name : getNodeAttributes(targetNode, null).entrySet()) {
-                String finalDottedName = node.getValue()+"."+name.getKey();
-                if (matches(finalDottedName, target)) {
+
+            for (String name : targetNode.getAttributeNames()) {
+                if (attrName.equals(name)) {
                     ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
-                    part.setMessage(node.getValue() + "." + name.getKey() + "=" + value);
+                    part.setMessage(node.getValue() + "." + name + "=" + value);
                     changes.put((ConfigBean) node.getKey(), attrChanges);                    
                 }
             }

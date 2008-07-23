@@ -22,7 +22,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject
-    Habitat habitat;
+    Domain domain;
 
     @Param(primary = true)
     String pattern="";
@@ -32,11 +32,14 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         ActionReport report = context.getActionReport();
 
         // first let's get the parent for this pattern.
-        TreeNode parentNode = getAliasedParent(habitat, pattern);
-        Map<Dom, String> dottedNames = getAllDottedNodes(parentNode.node);
+        TreeNode[] parentNodes = getAliasedParent(domain, pattern);
+        Map<Dom, String> dottedNames =  new HashMap<Dom, String>();
+        for (TreeNode parentNode : parentNodes) {
+               dottedNames.putAll(getAllDottedNodes(parentNode.node));
+        }
 
         // reset the pattern.
-        pattern = parentNode.relativeName;
+        pattern = parentNodes[0].relativeName;
 
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty() && pattern.lastIndexOf('.')!=-1) {
@@ -45,15 +48,22 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
         }
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
-            for (Map.Entry<String, String> name : getNodeAttributes(node.getKey(), pattern).entrySet()) {
-                String finalDottedName = node.getValue()+"."+name.getKey();
-                if (matches(finalDottedName, pattern)) {
-                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setChildrenType("DottedName");
-                    part.setMessage(node.getValue() + "." + name.getKey() + "=" + name.getValue());
+            // if we get more of these special cases, we should switch to a Renderer pattern
+            if (node.getKey().model.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Property")) {
+                 // special display for properties...
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setChildrenType("DottedName");
+                part.setMessage(node.getValue() + "=" + node.getKey().attribute("value"));
+            }   else {
+                for (Map.Entry<String, String> name : getNodeAttributes(node.getKey(), pattern).entrySet()) {
+                    String finalDottedName = node.getValue()+"."+name.getKey();
+                    if (matches(finalDottedName, pattern)) {
+                        ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                        part.setChildrenType("DottedName");
+                        part.setMessage(node.getValue() + "." + name.getKey() + "=" + name.getValue());
+                    }
                 }
             }
-            
         }
     }
 }

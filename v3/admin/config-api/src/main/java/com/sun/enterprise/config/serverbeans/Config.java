@@ -50,6 +50,7 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.admin.config.Named;
 
 
 /**
@@ -81,7 +82,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigConfig" )
 @Configured
-public interface Config extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named {
 
     /**
      * Gets the value of the name property.
@@ -91,14 +92,6 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute(required = true, key=true)
     public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.

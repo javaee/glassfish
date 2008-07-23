@@ -6,6 +6,8 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.util.*;
 
@@ -140,15 +142,20 @@ public class V2DottedNameSupport {
                     }
                 } else {
                     if (patternToken.hasMoreElements()) {
-                        if (dottedName.lastIndexOf('.')==-1) {
-                            // more pattern, but no more dotted names.
-                            return false;
-                        }
                         // now this can be tricky, seems like the get/set can accept something like *.config
                         // which really means *.*.*.config for the pattern matching mechanism.
                         // so instead of jumping one dotted name token, we may need to jump multiple tokens
                         // until we find the next delimiter, let's find this first.
                         String delim = (String) patternToken.nextElement();
+                        if (dottedName.lastIndexOf('.')==-1) {
+                            // more pattern, but no more dotted names.
+                            // unless the pattern is "*", we don't have a match
+                            if (delim.equals("*")) {
+                                return true;
+                            }  else {
+                                return false;
+                            }
+                        }
                         // we are not going to check if the delim is a attribute, it has to be an element name.
                         // we will leave the attribute checking to someone else.
                         if (dottedName.contains(delim)) {
@@ -172,8 +179,12 @@ public class V2DottedNameSupport {
                 if (dottedName.startsWith(delim)) {
                     if (patternToken.hasMoreElements()) {
                         if (dottedName.length()<=delim.length()+1) {
-                            // end of our name and more pattern to go...
-                            return false;
+                            if ((pattern.substring(token.length()+1)).equals("*")) {
+                                return true;
+                            }  else {
+                                // end of our name and more pattern to go...
+                                return false;
+                            }
                         }
                         String remaining = dottedName.substring(delim.length()+1);
                         return matches(remaining, pattern.substring(token.length()+1));
@@ -196,11 +207,9 @@ public class V2DottedNameSupport {
         }
     }
 
-    public TreeNode getAliasedParent(Habitat habitat, String prefix) throws ComponentException {
+    public TreeNode[] getAliasedParent(Domain domain, String prefix) throws ComponentException {
 
-        Domain domain = habitat.getComponent(Domain.class);
-
-        // let's look first if we are dealing with a server or a cluster-name
+        // let's get the potential aliased element name
         String name;
         String newPrefix;
         if (prefix.indexOf('.')!=-1) {
@@ -211,18 +220,56 @@ public class V2DottedNameSupport {
             newPrefix="";
         }
 
-        for (Server server : domain.getServers().getServer()) {
-            if (server.getName().equals(name)) {
-                return new TreeNode(Dom.unwrap(server), newPrefix);
-            }
+        // server-config
+         for (Config config : domain.getConfigs().getConfig()) {
+             if (config.getName().equals(name)) {
+                 return new TreeNode[] {
+                        new  TreeNode(Dom.unwrap(config), newPrefix)
+                 };
+             }
+         }
+
+        // this is getting a bit more complicated, as the name can be the server or cluster name
+        // yet, the aliasing should return both the server-config
+
+        // server                                `
+        Named[] nodes = getNamedNodes(domain.getServers().getServer(),
+                domain.getConfigs().getConfig(), name);
+
+        if (nodes==null && domain.getClusters()!=null) {
+            // no luck with server, try cluster.
+            nodes = getNamedNodes(domain.getClusters().getCluster(),
+                    domain.getConfigs().getConfig(), name);
         }
-        if (domain.getClusters()!=null) {
-            for (Cluster cluster : domain.getClusters().getCluster()) {
-                if (cluster.getName().equals(name)) {
-                    return new TreeNode(Dom.unwrap(cluster), newPrefix);
+        if (nodes!=null) {
+            TreeNode[] result = new TreeNode[nodes.length];
+            for (int i=0;i<nodes.length;i++) {
+                result[i] = new TreeNode(Dom.unwrap((ConfigBeanProxy) nodes[i]), newPrefix);
+            }
+            return result;
+        }
+
+        return new TreeNode[] {
+            new TreeNode(Dom.unwrap(domain), prefix)
+        };
+    }
+
+    public Named[] getNamedNodes(List<? extends Named> target, List<? extends Named>references,  String name) {
+        for (Named config : target) {
+            if (config.getName().equals(name)) {
+                if (config instanceof ReferenceContainer) {
+                    for (Named reference : references) {
+                        if (reference.getName().equals(((ReferenceContainer) config).getReference())) {
+                            return new Named[] {
+                                    config, reference
+                            };
+                        }
+                    }
+                } else {
+                    return new Named[] { config };
                 }
             }
         }
-        return new TreeNode(Dom.unwrap(domain), prefix);
+        return null;
     }
 }

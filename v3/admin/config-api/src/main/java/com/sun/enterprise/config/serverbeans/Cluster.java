@@ -38,11 +38,10 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -62,7 +61,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
 @Configured
-public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, ReferenceContainer {
 
     /**
      * Gets the value of the name property.
@@ -72,14 +71,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag  {
      */
     @Attribute(required = true, key=true)
     public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.
@@ -240,4 +231,13 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag  {
      */
     @Element
     public List<SystemProperty> getSystemProperty();
+
+    @DuckTyped
+    public String getReference();
+
+    public class Duck {
+        public static String getReference(Cluster cluster) {
+            return cluster.getConfigRef();
+        }
+    }    
 }

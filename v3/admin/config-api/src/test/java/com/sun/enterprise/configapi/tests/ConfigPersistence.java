@@ -42,11 +42,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.IndentingXMLStreamWriter;
-import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -88,6 +84,10 @@ public abstract class ConfigPersistence extends ConfigApiTest {
                 } catch (XMLStreamException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+            }
+
+            public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+
             }
         };
         try {

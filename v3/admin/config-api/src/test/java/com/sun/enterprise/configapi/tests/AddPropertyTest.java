@@ -70,7 +70,10 @@ public class AddPropertyTest extends ConfigApiTest {
                 public void transactionCommited(List<PropertyChangeEvent> changes) {
                     events = changes;
                 }
-            };
+
+            public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+            }
+        };
 
         try {
             Transactions.get().addTransactionsListener(listener);

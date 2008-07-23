@@ -10,6 +10,9 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 
 import java.util.Map;
+import java.util.HashMap;
+
+import com.sun.enterprise.config.serverbeans.Domain;
 
 /**
  * User: Jerome Dochez
@@ -20,7 +23,7 @@ import java.util.Map;
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject
-    Habitat habitat;
+    Domain domain;
 
     @Param(primary = true)
     String pattern="";
@@ -30,11 +33,13 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         ActionReport report = context.getActionReport();
 
         // first let's get the parent for this pattern.
-        TreeNode parentNode = getAliasedParent(habitat, pattern);
-        Map<Dom, String> dottedNames = getAllDottedNodes(parentNode.node);
-
+         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
+        Map<Dom, String> dottedNames =  new HashMap<Dom, String>();
+        for (TreeNode parentNode : parentNodes) {
+               dottedNames.putAll(getAllDottedNodes(parentNode.node));
+        }
         // reset the pattern.
-        pattern = parentNode.relativeName;
+        pattern = parentNodes[0].relativeName;
 
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty() && pattern.lastIndexOf('.')!=-1) {

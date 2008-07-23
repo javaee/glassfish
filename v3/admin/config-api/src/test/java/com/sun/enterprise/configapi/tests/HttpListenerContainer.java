@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -60,16 +61,17 @@ public class HttpListenerContainer implements ConfigListener {
 
     volatile boolean received=false;
     
-    public synchronized void changed(PropertyChangeEvent[] events) {
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         if (received) {
             // I am alredy happy
-            return;
+            return null;
         }
         assertTrue(events.length==1);
         String listenerName = ((HttpListener) events[0].getSource()).getId();
         assertEquals("http-listener-1",listenerName);
         assertEquals("8989",events[0].getNewValue().toString());
         received = true;
+        return null;
     }
 
 }

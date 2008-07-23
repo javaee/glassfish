@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.server.logging;
 
+
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.LogManager;
@@ -38,6 +39,7 @@ import java.text.MessageFormat;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import org.glassfish.api.branding.Branding;
 /**
  * UniformLogFormatter conforms to the logging format defined by the
  * Log Working Group in Java Webservices Org. 
@@ -77,6 +79,10 @@ public class UniformLogFormatter extends Formatter {
     private static boolean RECORD_NUMBER_IN_KEY_VALUE = false;
 
     private FormatterDelegate _delegate = null;
+
+    // it would be lovely to use injection here, but this lifecycle
+    // of this formatter is handled by the jdk.
+    public static Branding branding;
 
     static {
         String logSource = System.getProperty(
@@ -150,7 +156,7 @@ public class UniformLogFormatter extends Formatter {
      * Sun One AppServer SE/EE can override to specify their product version
      */
     protected String getProductId( ) {
-        return PRODUCT_VERSION;
+        return (branding!=null?branding.getAbbreviatedVersion():"");
     }
 
     

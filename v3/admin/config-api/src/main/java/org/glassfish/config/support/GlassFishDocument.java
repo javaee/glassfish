@@ -67,7 +67,11 @@ public class GlassFishDocument extends DomDocument {
                     }
                 }
             }
-        });        
+
+            public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+
+            }
+        });
     }
 
     public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
