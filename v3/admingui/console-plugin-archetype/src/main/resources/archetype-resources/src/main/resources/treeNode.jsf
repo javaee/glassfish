@@ -1,0 +1,12 @@
+<sun:treeNode	id="tabtest"
+		text="TabTest TreeNode"
+		url="tabtest/jdbcLists.jsf"
+		imageURL="resource/images/instance.gif" />
+<sun:treeNode	id="tabtest2"
+		text="#{someValue}"
+		url="tabtest/jdbcLists.jsf"
+		imageURL="resource/images/instance.gif" >
+<!beforeCreate
+   tabTestHandler(someValue=>$attribute{someValue});
+/>
+</sun:treeNode>

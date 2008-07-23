@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="tabtest">
+    <integration-point id="tabtestTreeNode" type="tree" priority="40" parentId="Resources" content="treeNode.jsf" />
+    <integration-point id="tab2" type="serverInstTab" priority="22" parentId="jvmSettings" content="newTab2.jsf" />
+    <integration-point id="tab1" type="serverInstTab" priority="28" parentId="serverInstTabs" content="newTab1.jsf" />
+</console-config> 
