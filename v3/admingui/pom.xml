@@ -89,7 +89,7 @@
                         <processor>
                             <groupId>com.sun.jsftemplating</groupId>
                             <artifactId>jsftemplating-dt</artifactId>
-                            <version>1.2-SNAPSHOT</version>
+                            <version>1.2.1</version>
                         </processor>
                     </processors>
                 </configuration>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2.1</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
@@ -148,12 +148,12 @@
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf-suntheme</artifactId>
-            <version>4.2-SNAPSHOT</version>
+            <version>4.2</version>
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf</artifactId>
-            <version>4.2-SNAPSHOT</version>
+            <version>4.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sun.faces.extensions</groupId>
@@ -214,11 +214,11 @@
 	    We are defining these values here so we can support a range
 	    of versions.  Anything after these version numbers is supported.
 	-->
-	<jsftemplating.version>1.2.0-1</jsftemplating.version>
+	<jsftemplating.version>1.2.1</jsftemplating.version>
 	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
 	<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 	<amx-api.version>10.0-SNAPSHOT</amx-api.version>
 	<hk2.version>0.3.8</hk2.version>
-	<dataprovider.version>1.4.2-SNAPSHOT</dataprovider.version>
+	<dataprovider.version>4.2</dataprovider.version>
     </properties>
 </project>
