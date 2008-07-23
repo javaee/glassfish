@@ -904,13 +904,13 @@ public class RepositoryManager extends MasterPasswordFileManager {
         final File mqVarHome = layout.getImqVarHome();
         try {
             mqVarHome.mkdirs();
-            final List cmdInput = new ArrayList();
+            final List<String> cmdInput = new ArrayList<String>();
             cmdInput.add(broker.getAbsolutePath()); 
             cmdInput.add("-init");
             cmdInput.add("-varhome");
             cmdInput.add(mqVarHome.getAbsolutePath());
             ProcessExecutor pe = new ProcessExecutor
-            ((String[])cmdInput.toArray(new String[cmdInput.size()]));
+            (cmdInput.toArray(new String[cmdInput.size()]));
             pe.execute(false, false);
         } catch (Exception ioe) {
              /*
