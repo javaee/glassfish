@@ -21,6 +21,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 /**
@@ -135,6 +136,7 @@ public class TreeNodeTest {
     
    
     @Test 
+    @Ignore
     public void testTimeStatsInTree (){
         System.out.println ("test:testTimeStatsInTree");
         long returnValue = 2000;
