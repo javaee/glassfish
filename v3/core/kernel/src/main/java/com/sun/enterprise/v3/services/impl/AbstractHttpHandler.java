@@ -27,7 +27,6 @@ import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -49,7 +48,7 @@ public abstract class AbstractHttpHandler {
     /**
      *  Fallback context-root information
      */
-    protected ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
+    protected ContainerMapper.ContextRootInfo fallbackContextRootInfo;
     
     /** 
      * The number of default ProcessorFilter a ProtocolChain contains.
@@ -75,22 +74,16 @@ public abstract class AbstractHttpHandler {
             }
 
             SelectionKey selectionKey = context.getSelectionKey();
-            
-            String contextRoot = slashed(HttpUtils.readContextRoot(
-                    selectionKey, byteBuffer, 
-                    ByteBufferInputStream.getDefaultReadTimeout()));
-            
-            if (contextRoot == null) {
-                context.setKeyRegistrationState(
-                        Context.KeyRegistrationState.CANCEL);
-                return false;
+                        
+            boolean wasMap = true;
+            try{
+                wasMap = grizzlyEmbeddedHttp.getContainerMapper().map(selectionKey
+                        ,byteBuffer,(GlassfishProtocolChain) context.getProtocolChain(),
+                        null,fallbackContextRootInfo);
+            } catch (Exception ex){
+                GrizzlyEmbeddedHttp.logger().log(Level.FINE, "Mapper exception", ex);
+                wasMap = false;
             }
-
-            boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
-                    contextRoot,
-                    (GlassfishProtocolChain) context.getProtocolChain(),
-                    null,
-                    fallbackContextRootInfo);
             
             if (!wasMap) {
                 //TODO: Some Application might not have Adapter. Might want to
@@ -108,9 +101,6 @@ public abstract class AbstractHttpHandler {
             }
             
             return true;
-        } catch (IOException e) {
-            GrizzlyEmbeddedHttp.logger().log(Level.FINE, 
-                    "IOException happened, when parsing context-root", e);
         } catch (Exception e) {
             GrizzlyEmbeddedHttp.logger().log(Level.WARNING, 
                     "Unexpected exception happened, when parsing context-root", e);
@@ -158,10 +148,10 @@ public abstract class AbstractHttpHandler {
         return(new String(dump)); 
     }
     
-    protected final static String slashed(String s) {
+    protected final static String notSlashed(String s) {
         if (s != null && 
-                (s.length() == 0 || s.charAt(0) != ROOT)) {
-            return ROOT + s;
+                (s.length() == 0 || s.charAt(0) == ROOT)) {
+            return s.substring(1);
         }
         
         return s;

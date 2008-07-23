@@ -56,14 +56,10 @@
 package org.apache.catalina.connector;
 
 import java.io.IOException;
-import java.util.logging.*;
 
-// START S1AS 6188932
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
-// END S1AS 6188932
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -74,22 +70,15 @@ import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.StringManager;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
-/* CR 6309511
-import org.apache.tomcat.util.buf.B2CConverter;
- */
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
-// START GlassFish 936
 import com.sun.grizzly.util.buf.UEncoder;
-// END GlassFish 936
-/* CR 6309511
-import org.apache.tomcat.util.http.Cookies;
-import org.apache.tomcat.util.http.ServerCookie;
- */
-// START S1AS 6188932
 import com.sun.appserv.security.provider.ProxyHandler;
-// END S1AS 6188932
+import com.sun.grizzly.util.WorkerThread;
+import com.sun.grizzly.util.http.mapper.MappingData;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -108,7 +97,10 @@ public class CoyoteAdapter
 
     // -------------------------------------------------------------- Constants
 
-
+    protected boolean v3Enabled = 
+        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true")).booleanValue();
+    
+    
     public static final int ADAPTER_NOTES = 1;
 
     static final String JVM_ROUTE = System.getProperty("jvmRoute");
@@ -381,56 +373,78 @@ public class CoyoteAdapter
         }
 
         // URI decoding
-        MessageBytes decodedURI = req.decodedURI();
-        decodedURI.duplicate(req.requestURI());
-        try {
-          req.getURLDecoder().convert(decodedURI, false);
-        } catch (IOException ioe) {
-          res.setStatus(400);
-          res.setMessage("Invalid URI: " + ioe.getMessage());
-          return false;
+        MessageBytes decodedURI = null;   
+        
+        // Grizzly already parsed and decoded the request. Let's just re-use it.
+        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
+            WorkerThread wt = (WorkerThread) Thread.currentThread();
+            decodedURI = (MessageBytes)wt.getAttachment()
+                    .getAttribute("decodedURI");
+            
+            // May happens when Grizzly ARP is used, as the Adapter might be 
+            // called from another thread. Hence we need to re-parse/map the request.
+            if (decodedURI == null){
+                v3Enabled = false;
+            }
         }
+        
+        
+        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
+            ByteChunk cc = decodedURI.getByteChunk(); 
+            req.decodedURI().setBytes(cc.getBytes(), cc.getStart(), cc.getEnd());
+            decodedURI = req.decodedURI();
+        } else { /*mod_jk or Grizzly ARP*/            
+            decodedURI = req.decodedURI();
+            decodedURI.duplicate(req.requestURI());
+            try {
+              req.getURLDecoder().convert(decodedURI, false);
+            } catch (IOException ioe) {
+              res.setStatus(400);
+              res.setMessage("Invalid URI: " + ioe.getMessage());
+              return false;
+            }
 
-        /* GlassFish Issue 2339
-        // Normalize decoded URI
-        if (!normalize(req.decodedURI())) {
-            res.setStatus(400);
-            res.setMessage("Invalid URI");
-            return false;
+            /* GlassFish Issue 2339
+            // Normalize decoded URI
+            if (!normalize(req.decodedURI())) {
+                res.setStatus(400);
+                res.setMessage("Invalid URI");
+                return false;
+            }
+            */
+
+            // Set the remote principal
+            String principal = req.getRemoteUser().toString();
+            if (principal != null) {
+                request.setUserPrincipal(new CoyotePrincipal(principal));
+            }
+
+            // Set the authorization type
+            String authtype = req.getAuthType().toString();
+            if (authtype != null) {
+                request.setAuthType(authtype);
+            }
+
+            /* CR 6309511
+            // URI character decoding
+            convertURI(decodedURI, request);
+
+            // Parse session Id
+            parseSessionId(req, request);
+             */
+            // START CR 6309511
+            // URI character decoding
+            request.convertURI(decodedURI);
+
+            // START GlassFish Issue 2339
+            // Normalize decoded URI
+            if (!normalize(decodedURI)) {
+                res.setStatus(400);
+                res.setMessage("Invalid URI");
+                return false;
+            }
+            // END GlassFish Issue 2339
         }
-        */
-
-        // Set the remote principal
-        String principal = req.getRemoteUser().toString();
-        if (principal != null) {
-            request.setUserPrincipal(new CoyotePrincipal(principal));
-        }
-
-        // Set the authorization type
-        String authtype = req.getAuthType().toString();
-        if (authtype != null) {
-            request.setAuthType(authtype);
-        }
-
-        /* CR 6309511
-        // URI character decoding
-        convertURI(decodedURI, request);
-
-        // Parse session Id
-        parseSessionId(req, request);
-         */
-        // START CR 6309511
-        // URI character decoding
-        request.convertURI(decodedURI);
-
-        // START GlassFish Issue 2339
-        // Normalize decoded URI
-        if (!normalize(decodedURI)) {
-            res.setStatus(400);
-            res.setMessage("Invalid URI");
-            return false;
-        }
-        // END GlassFish Issue 2339
 
         // Parse session Id
         request.parseSessionId();
@@ -447,10 +461,18 @@ public class CoyoteAdapter
             decodedURI.setChars
                 (uriCC.getBuffer(), uriCC.getStart(), semicolon);
         }
-
-        // Request mapping.
-        connector.getMapper().map(req.serverName(), decodedURI, 
+        
+        // Grizzly already parsed and decoded the request. Let's just re-use it.
+        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
+            WorkerThread wt = (WorkerThread) Thread.currentThread();
+            MappingData md = (MappingData)wt.getAttachment()
+                    .getAttribute("mappingData");
+            request.setMappingData(md);
+        } else { /*mod_jk*/
+            connector.getMapper().map(req.serverName(), decodedURI, 
                                   request.getMappingData());
+        }
+
         // START GlassFish 1024
         request.setDefaultContext(request.getMappingData().isDefaultContext);
         // END GlassFish 1024

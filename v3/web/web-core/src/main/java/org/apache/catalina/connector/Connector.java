@@ -59,7 +59,6 @@ import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.*;
 
 // START OF SJSAS 8.1 PE 6191830
 import java.security.cert.X509Certificate;
@@ -69,7 +68,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanRegistration;
 import javax.management.MalformedObjectNameException;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.modeler.Registry;
 
@@ -94,6 +92,9 @@ import org.apache.catalina.util.StringManager;
 // START S1AS 6188932
 import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6188932
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jvnet.hk2.annotations.Inject;
 
 
 
@@ -401,13 +402,13 @@ public class Connector
     /**
      * Mapper.
      */
-    protected Mapper mapper = new Mapper();
+    protected Mapper mapper;
 
 
     /**
      * Mapper listener.
      */
-    protected MapperListener mapperListener = new MapperListener(mapper);
+    protected MapperListener mapperListener;
 
 
     /**
@@ -818,6 +819,15 @@ public class Connector
          return (mapper);
 
      }
+     
+     
+     /**
+      * Set the {@link Mapper}.
+      * @param mapper
+      */
+     public void setMapper(Mapper mapper){
+         this.mapper = mapper;
+     }     
 
 
     /**
@@ -1474,7 +1484,9 @@ public class Connector
         }
 
         this.initialized = true;
+        mapperListener = new MapperListener(mapper);
 
+        
         if( oname == null && (container instanceof StandardEngine)) {
             try {
                 // we are loaded directly, via API - and no name was given to us

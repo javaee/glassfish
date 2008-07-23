@@ -102,7 +102,7 @@ public class GrizzlyEmbeddedHttpConfigurator {
     
         //TODO: Use the grizzly-config name.
         grizzlyListener.initializeEmbeddedHttp(isSecure);
-        grizzlyListener.setName("grizzly-v3-" + port);
+        grizzlyListener.setName("v3-" + port);
         
         GrizzlyEmbeddedHttp grizzlyEmbeddedHttp = grizzlyListener.getEmbeddedHttp();
         

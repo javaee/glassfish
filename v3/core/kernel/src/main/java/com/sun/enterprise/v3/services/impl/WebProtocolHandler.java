@@ -128,18 +128,18 @@ public class WebProtocolHandler extends AbstractHttpHandler
     
     private synchronized void initDefaultHttpArtifactsIfRequired() {
         if (defaultProtocolFilters == null) {
-                grizzlyEmbeddedHttp.initAlgorithm();
-                List<ProtocolFilter> tmpProtocolFilters = new ArrayList<ProtocolFilter>(4);
-                tmpProtocolFilters.addAll(grizzlyEmbeddedHttp.getDefaultHttpProtocolFilters());
+            grizzlyEmbeddedHttp.initAlgorithm();
+            List<ProtocolFilter> tmpProtocolFilters = new ArrayList<ProtocolFilter>(4);
+            tmpProtocolFilters.addAll(grizzlyEmbeddedHttp.getDefaultHttpProtocolFilters());
 
-                StaticResourcesAdapter adapter = new StaticResourcesAdapter();
-                adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
+            StaticResourcesAdapter adapter = new StaticResourcesAdapter();
+            adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
 
-                fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
-                        null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
-                        StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));
+            fallbackContextRootInfo = new ContainerMapper.ContextRootInfo(adapter,
+                    null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
+                    StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));
 
-                defaultProtocolFilters = tmpProtocolFilters;
+            defaultProtocolFilters = tmpProtocolFilters;
         }
     }
     

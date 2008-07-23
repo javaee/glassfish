@@ -77,6 +77,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     List<Future<Result<Thread>>> futures;
     
     private final Controller controller  = new Controller();
+    
+    
+    private Collection<String> hosts = new ArrayList<String>();
            
     /**
      * Add the new proxy to our list of proxies.
@@ -160,7 +163,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param listener HttpListener
      * @param httpService HttpService
      */
-    public Future<Result<Thread>> createNetworkProxy(HttpListener listener, HttpService httpService) {
+    public synchronized Future<Result<Thread>> createNetworkProxy(HttpListener listener, 
+            HttpService httpService) {
         // create the proxy for the port.
         NetworkProxy proxy = new GrizzlyProxy(logger, habitat, listener, 
                 controller, httpService);
@@ -173,6 +177,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             if (vsListeners == null || vsListeners.size() == 0 || 
                 vsListeners.contains(listener.getId())) {
                 proxy.getVsMapper().addVirtualServer(vs);
+                if (!hosts.contains(vs.getId())){
+                    hosts.add(vs.getId());
+                }
+            }
+            
+            List<String> aliases = 
+                    StringUtils.parseStringList(vs.getHosts(), " ,");  
+            for (String alias: aliases){
+                if (!hosts.contains(alias)){
+                    hosts.add(alias);
+                }    
             }
         }
         Future<Result<Thread>> future =  proxy.start();
@@ -194,7 +209,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
-                registerEndpoint(subAdapter.getContextRoot(), null, 
+                registerEndpoint(subAdapter.getContextRoot(), hosts, 
                         subAdapter, null);
             } catch(EndpointRegistrationException e) {
                 logger.log(Level.WARNING, 
@@ -223,7 +238,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
-        registerEndpoint(contextRoot, null, endpointAdapter, container);
+        registerEndpoint(contextRoot, hosts, endpointAdapter, container);
     }
 
     /*

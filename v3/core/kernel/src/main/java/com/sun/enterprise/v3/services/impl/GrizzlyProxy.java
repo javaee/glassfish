@@ -28,18 +28,25 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.util.Result;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.container.EndpointRegistrationException;
 
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * The Grizzly Service is responsible for starting Grizzly Port Unification 
@@ -86,7 +93,7 @@ public class GrizzlyProxy implements NetworkProxy {
     // WebContainer already supports it.
     static{
         nvVsMapper.add("org.apache.catalina.connector.CoyoteAdapter");
-        nvVsMapper.add("com.sun.enterprise.v3.admin.AdminAdapter");
+        nvVsMapper.add(com.sun.enterprise.v3.admin.AdminAdapter.class.getName());
     }
     
     
@@ -114,7 +121,7 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
         
-        configureGrizzly(portNumber, controller);  
+        configureGrizzly(portNumber, controller, habitat);  
     }
 
     
@@ -123,13 +130,24 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly(int port, Controller controller) {
+    private void configureGrizzly(int port, Controller controller, Habitat habitat) {
         grizzlyListener = new GrizzlyServiceListener(controller);
         
         GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(grizzlyListener, 
                 httpService, httpListener, port, controller);
         
         endPointMapper = grizzlyListener.configureEndpointMapper(isWebProfile);
+        GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
+        Mapper mapper = new V3Mapper(logger);
+        mapper.setPort(port);
+        geh.getContainerMapper().setMapper(mapper);
+        geh.getContainerMapper().configureMapper();
+        
+        Inhabitant<Mapper> onePortMapper = 
+                new ExistingSingletonInhabitant<Mapper>(mapper);
+        
+        habitat.addIndex(onePortMapper,"com.sun.grizzly.util.http.mapper.Mapper",
+                String.valueOf(port));
     }
     
   
@@ -167,6 +185,7 @@ public class GrizzlyProxy implements NetworkProxy {
             vsMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
             endpointAdapter = vsMapper;
         }
+
         endPointMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
     }
 

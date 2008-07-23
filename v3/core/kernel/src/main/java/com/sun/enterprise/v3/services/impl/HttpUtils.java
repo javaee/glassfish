@@ -20,10 +20,12 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.util.buf.Ascii;
+import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.HexUtils;
+import com.sun.grizzly.util.buf.MessageBytes;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -33,25 +35,27 @@ import java.nio.channels.SelectionKey;
  * @author Jeanfrancois
  */
 public class HttpUtils {
+ 
     private static final int MAX_CONTEXT_ROOT_LENGTH = 2048;
     
     private final static String CSS =
-        "H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +
-        "H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} " +
-        "H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} " +
-        "BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} " +
-        "B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} " +
-        "P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}" +
-        "A {color : black;}" +
-        "HR {color : #525D76;}";
+            "H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +
+            "H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} " +
+            "H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} " +
+            "BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} " +
+            "B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} " +
+            "P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}" +
+            "A {color : black;}" +
+            "HR {color : #525D76;}";
+
     
-    public static String readContextRoot(SelectionKey selectionKey,
+    public static byte[] readRequestLine(SelectionKey selectionKey,
             ByteBuffer byteBuffer, int timeout) throws IOException {
 
         int readBytes = -1;
 
         do {
-            String contextRoot = findContextRoot(byteBuffer);
+            byte[] contextRoot = findContextRoot(byteBuffer);
             if (contextRoot == null) {
                 if (byteBuffer.position() > MAX_CONTEXT_ROOT_LENGTH ||
                         (readBytes = GrizzlyUtils.readToWorkerThreadBuffers(selectionKey,
@@ -61,33 +65,59 @@ public class HttpUtils {
             } else {
                 return contextRoot;
             }
-            
+
         } while (readBytes > 0);
         return null;
     }
+
+    
+    public static byte[] readHost(SelectionKey selectionKey,
+            ByteBuffer byteBuffer, int timeout) throws IOException {
+
+        int readBytes = -1;
+
+        do {
+            byte[] host = findHost(byteBuffer);
+            if (host == null) {
+                // TODO: We must parse until /r/n/r/n
+                if (byteBuffer.position() > MAX_CONTEXT_ROOT_LENGTH ||
+                        (readBytes = GrizzlyUtils.readToWorkerThreadBuffers(selectionKey,
+                        timeout)) <= 0) {
+                    return null;
+                }
+            } else {
+                return host;
+            }
+
+        } while (readBytes > 0);
+        return null;
+    }
+
     
     /** 
-     * Return the Context root of the request.
+     * Parse the raw request line and return the context-root, without any 
+     * query parameters.
+     * @param byteBuffer The raw bytes.
      */
-    public static String findContextRoot(ByteBuffer byteBuffer) throws IOException{                          
+    public static byte[] findContextRoot(ByteBuffer byteBuffer) throws IOException {
         int curPosition = byteBuffer.position();
         int curLimit = byteBuffer.limit();
-      
+
         if (byteBuffer.position() == 0) {
             return null;
         }
-       
+
         byteBuffer.flip();
-        int state =0;
-        int start =0;
-        int end = 0;  
+        int state = 0;
+        int start = 0;
+        int end = 0;
         int separatorPos = -1;
-        try {                         
-            byte c = -1;            
+        try {
+            byte c = -1;
             byte prev = -1;
             byte prevPrev;
             // Rule b - try to determine the context-root
-            while(byteBuffer.hasRemaining()) {
+            while (byteBuffer.hasRemaining()) {
                 prevPrev = prev;
                 prev = c;
                 c = byteBuffer.get();
@@ -96,9 +126,9 @@ public class HttpUtils {
                 //     the request URI
                 // 1 - Search for the second SPACE ' ' between the request URI
                 //     and the method
-                switch(state) {
+                switch (state) {
                     case 0: // Search for first ' '
-                        if (c == 0x20){
+                        if (c == 0x20) {
                             state = 1;
                             start = byteBuffer.position();
                         }
@@ -118,25 +148,18 @@ public class HttpUtils {
                                     start = byteBuffer.position();
                                 }
                             }
-                         } else if (c == 0x20 || c == 0x3b) {
-                            // ' ' or ';' met
-                            if (separatorPos != -1){
-                                end = separatorPos;
-                            } else {
-                                end = byteBuffer.position() - 1;
-                            }
+                        // Search for ? , space ' ' or /
+                        } else if (c == 0x20 || c == 0x3b || c == 0x3f) {
+                            // Grab the first '/'
+                            start = start -1;
+                            end = byteBuffer.position() - 1;
                             
-                            if (byteBuffer.hasArray()) { // Optimization, if ByteBuffer has underlying array
-                                return new String(byteBuffer.array(), 
-                                        byteBuffer.arrayOffset() + start, 
-                                        end - start);
-                            } else {
-                                byte[] contextRoot = new byte[end - start];
-                                byteBuffer.position(start);
-                                byteBuffer.limit(end);
-                                byteBuffer.get(contextRoot);
-                                return new String(contextRoot);
-                            }
+                            byteBuffer.position(start);
+                            byteBuffer.limit(end);
+                                                       
+                            byte[] contextRoot = new byte[end - start];
+                            byteBuffer.get(contextRoot);
+                            return contextRoot;
                         }
                         break;
                     default:
@@ -144,16 +167,101 @@ public class HttpUtils {
                 }
             }
             return null;
-        } finally {     
+        } finally {
             byteBuffer.limit(curLimit);
-            byteBuffer.position(curPosition);                               
-        }       
-    }        
+            byteBuffer.position(curPosition);
+        }
+    }
+
+
+    /**
+     * Return the host value, or null if not found.
+     * @param byteBuffer the request bytes.
+     */
+    public static byte[] findHost(ByteBuffer byteBuffer) {
+        int curPosition = byteBuffer.position();
+        int curLimit = byteBuffer.limit();
+
+        // Rule a - If nothing, return to the Selector.
+        if (byteBuffer.position() == 0) {
+            return null;
+        }
+        byteBuffer.position(0);
+        byteBuffer.limit(curPosition);
+
+        int state = 0;
+        try {
+            byte c;
+
+            // Rule b - try to determine the host header
+            while (byteBuffer.hasRemaining()) {
+                c = (byte) Ascii.toLower(byteBuffer.get());
+                switch (state) {
+                    case 0: // Search for first 'h'
+                        if (c == 0x68) {
+                            state = 1;
+                        } else {
+                            state = 0;
+                        }
+                        break;
+                    case 1: // Search for next 'o'
+                        if (c == 0x6f) {
+                            state = 2;
+                        } else {
+                            state = 0;
+                        }
+                        break;
+                    case 2: // Search for next 's'
+                        if (c == 0x73) {
+                            state = 3;
+                        } else {
+                            state = 0;
+                        }
+                        break;
+                    case 3: // Search for next 't'
+                        if (c == 0x74) {
+                            state = 4;
+                        } else {
+                            state = 0;
+                        }
+                        break;
+                    case 4: // Search for next ':'
+                        if (c == 0x3a) {
+                            state = 5;
+                        } else {
+                            state = 0;
+                        }
+                        break;
+                    case 5: // Get the Host
+                        int startPos = byteBuffer.position();
+                        int endPos = startPos;
+                        while (c != 0x3a && c != 0x0d && c != 0x0a) {
+                            endPos++;
+                            c = byteBuffer.get();
+                        }
+                        endPos--;
+                        
+                        byte[] host = new byte[endPos - startPos];
+                        byteBuffer.position(startPos);
+                        byteBuffer.limit(endPos);
+                        byteBuffer.get(host);
+                        return host;
+
+                    default:
+                        throw new IllegalArgumentException("Unexpected state");
+                }
+            }
+            return null;
+        } finally {
+            byteBuffer.limit(curLimit);
+            byteBuffer.position(curPosition);
+        }
+    }
     
     
     /**
      * Specialized utility method: find a sequence of lower case bytes inside
-     * a ByteChunk.
+     * a {@link ByteBuffer}.
      */
     public static int findBytes(ByteBuffer byteBuffer, byte[] b) {
         int curPosition = byteBuffer.position();
@@ -189,109 +297,64 @@ public class HttpUtils {
             byteBuffer.position(curPosition);                
         }
     }
-    
+      
     
     /**
-     * Return the host value, or null if not found.
-     * @param byteBuffer the request bytes.
+     * Parse host.
      */
-    public static String findHost(ByteBuffer byteBuffer){
-         int curPosition = byteBuffer.position();
-        int curLimit = byteBuffer.limit();
+    public static void parseHost(MessageBytes hostMB) throws IOException{
 
-        // Rule a - If nothing, return to the Selector.
-        if (byteBuffer.position() == 0)
-            return null;
-       
-        byteBuffer.position(0);
-        byteBuffer.limit(curPosition);
-        
+        if (hostMB == null || hostMB.isNull()) {
+            throw new IOException("Invalid Host");
+        }
 
-        int state =0;
-        int start =0;
-        int end = 0;        
+        ByteChunk valueBC = hostMB.getByteChunk();
+        byte[] valueB = valueBC.getBytes();
+        int valueL = valueBC.getLength();
+        int valueS = valueBC.getStart();
+        int colonPos = -1;
         
-        try {                         
-            byte c;            
-            
-            // Rule b - try to determine the host header
-            while(byteBuffer.hasRemaining()) {
-                c = (byte)Ascii.toLower(byteBuffer.get());
-                switch(state) {
-                    case 0: // Search for first 'h'
-                        if (c == 0x68){
-                            state = 1;      
-                        } else {
-                            state = 0;
-                        }
-                        break;
-                    case 1: // Search for next 'o'
-                        if (c == 0x6f){
-                            state = 2;
-                        } else {
-                            state = 0;
-                        }
-                        break;
-                    case 2: // Search for next 's'
-                        if (c == 0x73){
-                            state = 3;
-                        } else {
-                            state = 0;
-                        }
-                        break;
-                    case 3: // Search for next 't'
-                        if (c == 0x74){
-                            state = 4;
-                        } else {
-                            state = 0;
-                        }
-                        break; 
-                    case 4: // Search for next ':'
-                        if (c == 0x3a){
-                            state = 5;
-                        } else {
-                            state = 0;
-                        }
-                        break;     
-                    case 5: // Get the Host
-                        String result;
-                        if (byteBuffer.hasArray()) {// Optimization, if ByteBuffer has underlying array
-                            int startPos = byteBuffer.position();
-                            int endPos = startPos;
-                            while (c != 0x0d && c != 0x0a) {
-                                endPos++;
-                                c = byteBuffer.get();
-                            }
-                            result = new String(byteBuffer.array(), 
-                                    byteBuffer.arrayOffset() + startPos, 
-                                    endPos - startPos);
-                        } else {
-                            StringBuilder sb = new StringBuilder();
-                            while (c != 0x0d && c != 0x0a) {
-                                sb.append((char) c);
-                                c = byteBuffer.get();
-                            }
-                            result = sb.toString();
-                        }
-                        return result.trim();                        
-                    default:
-                        throw new IllegalArgumentException("Unexpected state");
-                }      
+        // TODO: Cache instance?
+        char[] hostNameC = new char[0];
+        if (hostNameC.length < valueL) {
+            hostNameC = new char[valueL];
+        }
+
+        boolean ipv6 = (valueB[valueS] == '[');
+        boolean bracketClosed = false;
+        for (int i = 0; i < valueL; i++) {
+            char b = (char) valueB[i + valueS];
+            hostNameC[i] = b;
+            if (b == ']') {
+                bracketClosed = true;
+            } else if (b == ':') {
+                if (!ipv6 || bracketClosed) {
+                    colonPos = i;
+                    break;
+                }
             }
-            return null;
-        } finally {     
-            if ( end > 0 ){
-                byteBuffer.position(start);
-                byteBuffer.limit(end);
-            } else {
-                byteBuffer.limit(curLimit);
-                byteBuffer.position(curPosition);                               
+        }
+
+        if (colonPos < 0) {
+            hostMB.setChars(hostNameC, 0, valueL);
+        } else {
+            hostMB.setChars(hostNameC, 0, colonPos);
+
+            int port = 0;
+            int mult = 1;
+            for (int i = valueL - 1; i > colonPos; i--) {
+                int charValue = HexUtils.DEC[(int) valueB[i + valueS]];
+                if (charValue == -1) {
+                    throw new IOException("Invalid Host");
+                }
+                port = port + (charValue * mult);
+                mult = 10 * mult;
             }
-        }       
-    }    
+         }
+    }  
+
     
-    
-    public final static byte[] getErrorPage(String serverName, String message){
+    public final static byte[] getErrorPage(String serverName, String message) {
         StringBuffer sb = new StringBuffer();
         sb.append("<html><head><title>");
         sb.append(serverName);
@@ -311,3 +374,4 @@ public class HttpUtils {
     }
     
 }
+

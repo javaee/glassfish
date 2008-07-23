@@ -58,7 +58,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     /**
      * The Mapper used to find and configure the endpoint.
      */
-    private ContextRootMapper mapper;
+    private ContainerMapper containerMapper;
     
     protected volatile ProtocolFilter httpProtocolFilterWrapper;
     
@@ -78,8 +78,10 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     
     public GrizzlyEmbeddedHttp(Controller controller) {
         this.controller = controller;
-        this.mapper = new ContextRootMapper(this);  
-    }
+        containerMapper = new ContainerMapper(this);
+   }
+    
+    
     /**
      * Load using reflection the <code>Algorithm</code> class.
      */
@@ -305,8 +307,8 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      * 
      * @return context-root mapper
      */
-    public ContextRootMapper getContextRootMapper() {
-        return mapper;
+    public ContainerMapper getContainerMapper() {
+        return containerMapper;
     }
 
     /*
@@ -318,22 +320,14 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      */
     public void registerEndpoint(String contextRoot, Collection<String> vs, Adapter adapter,
                                  ApplicationContainer container) {
-        mapper.register(ensureStartsWithSlash(contextRoot), adapter, null, null);
-    }
-
+        containerMapper.register(contextRoot, vs, adapter, null, null);
+    }   
+ 
     
     /**
      * Removes the context-root from our list of adapters.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        mapper.unregister(ensureStartsWithSlash(contextRoot));
-    }
-    
-    private String ensureStartsWithSlash(String path) {
-        if (!path.startsWith(ROOT)) {
-            return ROOT + path;
-        }
-        
-        return path;
+        containerMapper.unregister(contextRoot);
     }
 }

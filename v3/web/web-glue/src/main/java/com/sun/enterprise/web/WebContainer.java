@@ -144,12 +144,8 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.v3.services.impl.NetworkProxy;
-import com.sun.enterprise.v3.services.impl.GrizzlyProxy;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.v3.services.impl.VirtualHostMapper;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
-import com.sun.grizzly.Controller;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import org.jvnet.hk2.annotations.Inject;
@@ -226,6 +222,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // ----------------------------------------------------- Instance Variables
 
+    @Inject
+    Mapper[] mappers;
+    
     @Inject
     Domain domain;
 
@@ -731,6 +730,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         connector = (WebConnector)_embedded.createConnector(address, port,
                                                             isSecure);
+        
+        for(Mapper m: mappers){
+            if (m.getPort() == port){
+                connector.setMapper(m);
+                break;
+            }
+        }
         
         _logger.info("Created HTTP listener " + httpListener.getId());
         connector.setName(httpListener.getId());

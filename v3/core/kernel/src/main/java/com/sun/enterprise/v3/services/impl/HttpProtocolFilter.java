@@ -67,7 +67,7 @@ public class HttpProtocolFilter extends AbstractHttpHandler
         };
         adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
                         
-        fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
+        fallbackContextRootInfo = new ContainerMapper.ContextRootInfo(adapter,
                 null, null);
         
     }
