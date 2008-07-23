@@ -58,7 +58,7 @@ public abstract class FileLister
     FileLister(File root)
     {
         mainRoot = root;
-        fileList = new ArrayList();
+        fileList = new ArrayList<File>();
     }
     
     /**
@@ -88,7 +88,7 @@ public abstract class FileLister
         
         for(int i = 0; i < files.length; i++)
         {
-            files[i] = ((File)fileList.get(i)).getPath().substring(len).replace('\\', '/');
+            files[i] = (fileList.get(i)).getPath().substring(len).replace('\\', '/');
         }
         
         Arrays.sort(files, String.CASE_INSENSITIVE_ORDER);
@@ -118,7 +118,7 @@ public abstract class FileLister
     
     ///////////////////////////////////////////////////////////////////////////
     
-    private	ArrayList	fileList	= null;
-    private File		mainRoot	= null;
-    private boolean		keepEmpty	= false;
+    private	ArrayList<File>	fileList = null;
+    private File		mainRoot	 = null;
+    private boolean		keepEmpty	 = false;
 }

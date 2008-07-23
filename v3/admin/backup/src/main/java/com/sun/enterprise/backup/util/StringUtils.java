@@ -198,7 +198,7 @@ public class StringUtils
 		if(s == null)
 			return new String[0];
 
-		Vector v = new Vector();
+		Vector<String> v = new Vector<String>();
 
 		int start	= 0;
 		int end		= 0;
@@ -450,7 +450,7 @@ public class StringUtils
      * @return     Returns the list containing the individual strings that
      *             the input string was split into.
      */
-    public static List parseStringList(String line, String sep)
+    public static List<String> parseStringList(String line, String sep)
     {
         if (line == null)
             return null;
@@ -463,7 +463,7 @@ public class StringUtils
 
         String token;
 
-        List tokens = new Vector();
+        List<String> tokens = new Vector<String>();
         while (st.hasMoreTokens())
         {
             token = st.nextToken().trim();

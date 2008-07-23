@@ -43,7 +43,6 @@ package com.sun.enterprise.backup.util;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
-import java.util.jar.JarFile;
 
 //import com.sun.enterprise.util.io.FileUtils;
 //import com.sun.enterprise.util.Assertion;
@@ -98,9 +97,9 @@ public class ZipFile
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public ArrayList explode() throws ZipFileException
+	public ArrayList<String> explode() throws ZipFileException
 	{
-		files = new ArrayList();
+		files = new ArrayList<String>();
 		ZipInputStream zin = null;
 
 		try
@@ -193,10 +192,10 @@ public class ZipFile
 	/***********************************************************************
 	/******************************** Private ******************************
 	/***********************************************************************/
-	private static ArrayList doExplode(ZipFile zf) throws ZipFileException
+	private static ArrayList<String> doExplode(ZipFile zf) throws ZipFileException
         {
-            ArrayList finalList = new ArrayList(50);
-            ArrayList zipFileList = new ArrayList();
+            ArrayList<String> finalList = new ArrayList<String>(50);
+            ArrayList<ZipFile> zipFileList = new ArrayList<ZipFile>();
             ArrayList tmpList = null;
             ZipFile tmpZf = null;
             Iterator itr = null;
@@ -206,7 +205,7 @@ public class ZipFile
             while (zipFileList.size() > 0)
             {
                 // get "last" jar to explode
-                tmpZf = (ZipFile)zipFileList.remove(zipFileList.size() - 1);
+                tmpZf = zipFileList.remove(zipFileList.size() - 1);
                 tmpList = tmpZf.explode();
 
                 // traverse list of files
@@ -393,7 +392,7 @@ public class ZipFile
 
         private static final int BUFFER_SIZE = 0x10000; //64k
 	private					File			explodeDir		= null;
-	private					ArrayList		files			= null;
+	private					ArrayList<String>files			= null;
 	private static final	String			specialDir		= "META-INF/";//NOI18N
 	private					byte[]			buffer			= new byte[BUFFER_SIZE];
 	private					ZipInputStream	zipStream		= null;

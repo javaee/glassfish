@@ -95,7 +95,7 @@ public class ZipWriter
 		}
 		
 		// copy all the items we will retain into list
-		List list = new ArrayList(items.length);
+		List<ZipItem> list = new ArrayList<ZipItem>(items.length);
 		
 		for(int i = 0; i < items.length; i++)
 		{
@@ -112,7 +112,7 @@ public class ZipWriter
 		if(list.size() != items.length)
 		{
 			items = new ZipItem[list.size()];
-			items = (ZipItem[])list.toArray(items);
+			items = list.toArray(items);
 		}
 	}
 

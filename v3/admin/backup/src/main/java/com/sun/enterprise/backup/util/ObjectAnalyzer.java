@@ -435,11 +435,11 @@ class FieldInfo
 
 class FieldInfoVector // { extends Vector
 {
-    Vector v = null;
+    Vector<Object> v = null;
     
 	FieldInfoVector()
 	{
-	    v = new Vector();
+	    v = new Vector<Object>();
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
