@@ -37,6 +37,8 @@
 
 package com.sun.enterprise.module.impl;
 
+import com.sun.enterprise.module.common_impl.FlattenEnumeration;
+
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.*;
@@ -173,25 +175,26 @@ public class ClassLoaderProxy extends URLClassLoader {
     }
 
     public Enumeration<URL> findResources(String name) throws IOException {
-        // TODO: this is broken. We need to enumerate all of them, not just the first one discovered.
-        Enumeration<URL> enumerat = super.findResources(name);
+        // Let's build our list of enumerations first.
+        Vector<Enumeration<URL>> sources = new Vector<Enumeration<URL>>();
+        Enumeration< URL> enumerat = super.findResources(name);
         if (enumerat!=null && enumerat.hasMoreElements()) {
-             return enumerat;
+             sources.add(enumerat);
         }
         for (ClassLoaderFacade classLoader : facadeSurrogates) {
             enumerat = classLoader.getResources(name);
             if (enumerat!=null && enumerat.hasMoreElements()) {
-                return enumerat;
+                sources.add(enumerat);
             }
         }
         for (ClassLoader classLoader : surrogates) {
             enumerat = classLoader.getResources(name);
             if (enumerat!=null && enumerat.hasMoreElements()) {
-                return enumerat;
+                sources.add(enumerat);
             }
-
         }
-        return enumerat;
+        // return a flattened enumeration now.
+        return new FlattenEnumeration<URL>(sources.elements());
     }
 
     public void addDelegate(ClassLoader cl) {

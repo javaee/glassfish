@@ -49,6 +49,7 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import org.osgi.framework.BundleActivator;
@@ -111,7 +112,7 @@ public class HK2Main extends Main implements
 
         mr = createModulesRegistry();
         Habitat habitat = createHabitat(mr, startupContext);
-        // createServiceTracker(habitat); Don't track service, as there are issues with GlassFish services
+        createServiceTracker(habitat); 
         launch(mr,habitat,null,startupContext);
     }
 
@@ -253,9 +254,26 @@ public class HK2Main extends Main implements
 
         public Object addingService(final ServiceReference reference) {
             final Object object = ctx.getService(reference);
-            habitat.add(new ExistingSingletonInhabitant(object));
-            logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
-                    "addingService", "object = {0}", object);
+
+            // let's get the list of implemented contracts
+            String[] contractNames = (String[]) reference.getProperty("objectclass");
+            if (contractNames!=null && contractNames.length>0) {
+                // we will register this service under each contract it implements
+                for (String contractName : contractNames) {
+                    // let's get a name if possible, that will only work with Spring OSGi services
+                    // we may need to find a better way to get a potential name.
+                    String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
+                    habitat.addIndex(new ExistingSingletonInhabitant (object), contractName, name );
+                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                            "addingService", "registerring service = {0}, contract = {1}, name = {2}", new Object[] {
+                                object, contractName, name} );
+                    }
+            } else {
+                // this service does not implement a specific contract, let's register it by its type.
+                habitat.add(new ExistingSingletonInhabitant(object));
+                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                        "addingService", "registering service = {0}", object);
+            }
             return object;
         }
 
@@ -264,7 +282,26 @@ public class HK2Main extends Main implements
         }
 
         public void removedService(ServiceReference reference, Object service) {
-            // remove from habitat (not supported yet)
+            // we need to unregister the service for each contract it implements.
+            String[] contractNames = (String[]) reference.getProperty("objectclass");
+            if (contractNames!=null && contractNames.length>0) {
+                for (String contractName : contractNames) {
+                    habitat.removeIndex(contractName, service);
+                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                            "removingService", "removing service = {0}, contract = {1}",
+                                new Object[] {service, contractName});
+                    
+                }
+            } else {
+                // it was registered by type
+                Inhabitant<?> inhabitant = habitat.getInhabitantByType(service.getClass());
+                if (inhabitant!=null) {
+                    habitat.remove(inhabitant);
+                } else {
+                    logger.logp(Level.WARNING,  "HK2Main$HK2ServiceTrackerCustomizer",
+                            "removedService", "cannot removed singleton service = {0}", service);
+                }
+            }
         }
     }
 }
