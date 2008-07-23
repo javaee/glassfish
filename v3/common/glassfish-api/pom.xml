@@ -62,7 +62,7 @@
         </developer>
     </developers>
     <properties>
-    	<glassfish-api.version>10.0.400</glassfish-api.version>
+    	<glassfish-api.version>10.0.401</glassfish-api.version>
         <grizzly.version>1.8.4</grizzly.version>  
         <hk2.plugin.version>0.3.8</hk2.plugin.version>    
         <hk2.version>0.3.8</hk2.version>    
@@ -92,6 +92,7 @@
                         com.sun.appserv.jdbc,
                         org.glassfish.api,
                         org.glassfish.api.admin,
+                        org.glassfish.api.admin.config,                        
                         org.glassfish.api.admingui,
                         org.glassfish.api.amx,
                         org.glassfish.api.container,
