@@ -62,7 +62,7 @@ public class CLIUtil {
         
         File file = new File(passwordFileName);
         
-        Map passwordOptions = new HashMap<String, String>();
+        Map<String, String> passwordOptions = new HashMap<String, String>();
         InputStream is = null;
         try {
             is = new BufferedInputStream(new FileInputStream(file));

@@ -38,7 +38,6 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
-import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -47,8 +46,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * A local ListCommands Command
- * Hacked in for TP2
- * 
+ *  
  * @author bnevins
  */
 public class ListCommandsCommand extends AbstractCommand {
