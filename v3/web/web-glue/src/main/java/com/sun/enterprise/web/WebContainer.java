@@ -1620,6 +1620,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             loadStandaloneWebModule(vs, wmInfo);
                         }
                         for (int port : vs.getPorts()) {
+                            if ((jkConnector!=null) && (port==jkConnector.getPort())) {
+                                // Do not registerEndpoint for jk connector port
+                                continue;
+                            }
                             CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
                             WebApplication application = new WebApplication(this, 
                                     wmInfo, dispatcher);
