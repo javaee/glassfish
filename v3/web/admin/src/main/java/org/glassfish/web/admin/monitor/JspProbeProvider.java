@@ -36,70 +36,15 @@
 
 package org.glassfish.web.admin.monitor;
 
-import javax.servlet.http.HttpSession;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 
 /**
- * Provider interface for HTTP session related probes.
+ * Provider interface for JSP related probes.
  */
-public interface SessionProvider {
+public interface JspProbeProvider {
 
-    public void onException(
-        @ProbeParam("exception") String exception,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionCreated(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("sessionSize") int size,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionDestroyed(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionRejected(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionExpired(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionPersisted(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("timeTakenToPersistMillis") long timeTakenToPersistMillis,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionActivated(
-        @ProbeParam("session") HttpSession session,
-        @ProbeParam("timeTakenToActivateMillis") long timeTakenToActivateMillis,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionPassivated(
-        @ProbeParam("session") HttpSession session, 
-        @ProbeParam("timeTakenToPassivateMillis") long timeTakenToPassivateMillis,
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionCached(
-        @ProbeParam("session") HttpSession session, 
-        @ProbeParam("appName") String appName
-    );
-
-    public void sessionRemovedFromCache(
-        @ProbeParam("session") HttpSession session, 
-        @ProbeParam("appName") String appName
-    );
-
-    public void maxSessionThresholdReached(
-        @ProbeParam("maxThresholdSize") int maxThresholdSize,
+    public void jspLoadedEvent(
+        @ProbeParam("jspName") String jspName,
         @ProbeParam("appName") String appName
     );
 }

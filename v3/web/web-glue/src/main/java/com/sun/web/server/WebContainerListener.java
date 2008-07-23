@@ -108,8 +108,9 @@ public final class WebContainerListener
     private InvocationManager invocationMgr;
     private InjectionManager injectionMgr;
 
-    public WebContainerListener(InvocationManager invocationMgr,
-            InjectionManager injectionMgr) {
+    public WebContainerListener(WebModule context,
+                                InvocationManager invocationMgr,
+                                InjectionManager injectionMgr) {
         this.invocationMgr = invocationMgr;
         this.injectionMgr = injectionMgr;
     }

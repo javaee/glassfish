@@ -36,15 +36,23 @@
 
 package org.glassfish.web.admin.monitor;
 
+import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 
 /**
- * Provider interface for JSP related probes.
+ * Provider interface for request/response related probes.
  */
-public interface JspProvider {
+public interface RequestProbeProvider {
 
-    public void jspLoadedEvent(
-        @ProbeParam("jspName") String jspName,
-        @ProbeParam("appName") String appName
+    public void requestStartEvent(
+        @ProbeParam("request") HttpServletRequest request,
+        @ProbeParam("response") HttpServletResponse response
     );
+    
+    public void requestEndEvent(
+        @ProbeParam("request") HttpServletRequest request,
+        @ProbeParam("response") HttpServletResponse response
+    );        
 }

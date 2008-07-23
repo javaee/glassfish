@@ -287,6 +287,14 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      */
     private static final IOUtilsCaller webUtilsCaller;
 
+
+    /**
+     * Number of times a session was not created because the maximum number
+     * of active sessions had been reached.
+     */
+    protected int rejectedSessions = 0;
+
+
     /**
      * Creates the utility class used to call into services from
      * com.sun.ejb.base.io.IOUtils
@@ -628,6 +636,29 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                                    Integer.valueOf(oldSessionIdLength),
                                    Integer.valueOf(this.sessionIdLength));
 
+    }
+
+
+    /**
+     * Gets the number of session creations that failed due to
+     * maxActiveSessions
+     *
+     * @return number of session creations that failed due to
+     * maxActiveSessions
+     */
+    public int getRejectedSessions() {
+        return rejectedSessions;
+    }
+
+
+    /**
+     * Sets the number of sessions that were not created because the maximum
+     * number of active sessions was reached.
+     *
+     * @param rejectedSessions Number of rejected sessions
+     */
+    public void setRejectedSessions(int rejectedSessions) {
+        this.rejectedSessions = rejectedSessions;
     }
 
 

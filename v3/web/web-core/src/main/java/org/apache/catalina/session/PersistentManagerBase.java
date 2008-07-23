@@ -233,13 +233,6 @@ public abstract class PersistentManagerBase
     private int maxIdleSwap = -1;
 
 
-    /**
-     * Number of sessions that were not created because the maximum allowed
-     * number of sessions was active
-     */
-    private int rejectedSessions = 0;
-
-
     // START SJSAS 6406580
     /**
      * The set of invalidated Sessions for this Manager, keyed by
@@ -471,29 +464,6 @@ public abstract class PersistentManagerBase
         support.firePropertyChange("maxActiveSessions",
                                    Integer.valueOf(oldMaxActiveSessions),
                                    Integer.valueOf(this.maxActiveSessions));
-
-    }
-
-
-    /**
-     * Gets the number of sessions that were not created because the maximum
-     * number of active sessions was reached.
-     *
-     * @return Number of rejected sessions
-     */
-    public int getRejectedSessions() {
-        return rejectedSessions;
-    }
-
-
-    /**
-     * Sets the number of sessions that were not created because the maximum
-     * number of active sessions was reached.
-     *
-     * @param rejectedSessions Number of rejected sessions
-     */
-    public void setRejectedSessions(int rejectedSessions) {
-        this.rejectedSessions = rejectedSessions;
     }
 
 
@@ -501,9 +471,7 @@ public abstract class PersistentManagerBase
      * Return the descriptive short name of this Manager implementation.
      */
     public String getName() {
-
         return (name);
-
     }
 
 
@@ -511,9 +479,7 @@ public abstract class PersistentManagerBase
      * Get the started status.
      */
     protected boolean isStarted() {
-
         return started;
-
     }
 
 
@@ -521,9 +487,7 @@ public abstract class PersistentManagerBase
      * Set the started flag
      */
     protected void setStarted(boolean started) {
-
         this.started = started;
-
     }
 
 
@@ -536,7 +500,6 @@ public abstract class PersistentManagerBase
     public void setStore(Store store) {
         this.store = store;
         store.setManager(this);
-
     }
 
 
@@ -1159,6 +1122,9 @@ public abstract class PersistentManagerBase
             return;
         }
 
+        ((StandardContext)getContainer()).sessionPersistedStartEvent(
+            (StandardSession) session);
+
         try {
             if (SecurityUtil.isPackageProtectionEnabled()){
                 try{
@@ -1178,12 +1144,14 @@ public abstract class PersistentManagerBase
                                  session.getIdInternal(),
                     e));
             throw e;
+        } finally {
+            ((StandardContext)getContainer()).sessionPersistedEndEvent(
+                (StandardSession) session);
         }
-
     }
 
 
-    // ------------------------------------------------------ Lifecycle Methods
+    // -------------------------------------------------- Lifecycle Methods
 
 
     /**

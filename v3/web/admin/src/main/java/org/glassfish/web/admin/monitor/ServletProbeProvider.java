@@ -40,34 +40,12 @@ import java.security.Principal;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 
 /**
- * Provider interface for webcontainer related probes.
+ * Provider interface for servlet related probes.
  */
-public interface WebContainerProvider {
+public interface ServletProbeProvider {
 
-    public void responseCode(
-        @ProbeParam("responseCode") String responseCode,
-        @ProbeParam("appName") String appName
-    );
-
-    public void requestStart(
-        @ProbeParam("requestId") String requestId,
-        @ProbeParam("uri") String uri,
-        @ProbeParam("ipAddress") String ipAddress,
-        @ProbeParam("principal") Principal principal,
-        @ProbeParam("appName") String appName
-    );
-    
-    public void requestEnd(
-        @ProbeParam("requestId") String requestId
-    );
-        
     public void servletLoadedEvent(
         @ProbeParam("servletName") String servletName,
         @ProbeParam("appName") String appName
-    );
-    
-    public void servletReloadedEvent(
-        @ProbeParam("servletName") String servletName,
-        @ProbeParam("appName") String appName
-    );
+    );    
 }
