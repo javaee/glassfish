@@ -62,6 +62,8 @@ public interface ConfigListener {
      * Notification that @Configured objects that were injected have changed
      *
      * @param events list of changes
+     * @return the list of unprocessed events (requiring a restart) or null if all reconfiguration
+     * was processed successfully
      */
-    public void changed(PropertyChangeEvent[] events);
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) ;
 }

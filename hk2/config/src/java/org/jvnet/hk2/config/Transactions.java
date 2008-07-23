@@ -137,13 +137,14 @@ public final class Transactions {
         A job contains an optional CountdownLatch so that a caller can learn when the
         transaction has "cleared" by blocking until that time.
      */
-    private abstract static class Job<T> {
-        protected final List<PropertyChangeEvent> mEvents;
+    private abstract static class Job<T,U> {
+
         private final CountDownLatch mLatch;
+        protected final List<U> mEvents;
         
-        public Job( final List<PropertyChangeEvent> events, final CountDownLatch latch ) {
-            mEvents = events;
+        public Job(List events, final CountDownLatch latch ) {
             mLatch  = latch;
+            mEvents = events;
         }
         
         public void waitForLatch() throws InterruptedException {
@@ -161,10 +162,10 @@ public final class Transactions {
         public abstract void process(T target);
     }
     
-    private static class TransactionListenerJob extends Job<TransactionListener> {
+    private static class TransactionListenerJob extends Job<TransactionListener, PropertyChangeEvent> {
 
         public TransactionListenerJob(List<PropertyChangeEvent> events, CountDownLatch latch) {
-            super(events, latch);
+            super(events,  latch);
         }
         
         @Override
@@ -176,8 +177,25 @@ public final class Transactions {
             }            
         }
     }
+
+    private static class UnprocessedEventsJob extends Job<TransactionListener, UnprocessedChangeEvents> {
+
+        public UnprocessedEventsJob(List<UnprocessedChangeEvents> events, CountDownLatch latch) {
+            super(events, latch);
+        }
+
+        @Override
+        public void process(TransactionListener listener) {
+            try {
+                listener.unprocessedTransactedEvents(mEvents);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
-    private static class ConfigListenerJob extends Job<Object> {
+    private   class ConfigListenerJob extends Job<Object, PropertyChangeEvent> {
+
 
         public ConfigListenerJob(List events, CountDownLatch latch) {
             super(events, latch);
@@ -186,6 +204,7 @@ public final class Transactions {
         @Override
         public void process(Object target) {
             Set<ConfigListener> notifiedListeners = new HashSet<ConfigListener>();
+            List<UnprocessedChangeEvents> unprocessedEvents  = new ArrayList<UnprocessedChangeEvents>();
             for (final PropertyChangeEvent evt : mEvents) {
                 final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
                 if (dom.getListeners() != null) {
@@ -193,12 +212,25 @@ public final class Transactions {
                         if (!notifiedListeners.contains(listener)) {
                             try {
                                 // create a new array each time to avoid any potential array changes?
-                                listener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
+                                UnprocessedChangeEvents unprocessed = listener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
+                                if (unprocessed!=null) {
+                                    unprocessedEvents.add(unprocessed);
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                         notifiedListeners.add(listener);
+                    }
+                }
+            }
+            // all the config listeners have been notified, let's see if we have
+            // some unprocessed events to notifiy the transation listeners.
+            if (!unprocessedEvents.isEmpty()) {
+                synchronized(listeners) {
+                    UnprocessedEventsJob job = new UnprocessedEventsJob(unprocessedEvents, null);
+                    for (ListenerInfo listener : listeners) {
+                        listener.addTransaction(job);
                     }
                 }
             }

@@ -47,14 +47,8 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 
 import java.lang.annotation.Annotation;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -191,6 +185,24 @@ public class Habitat {
             }
         }
         return false;
+    }
+
+    /**
+     *  Removes a Contracted service
+     *
+     *  @param index the contract name
+     * @param service the instance
+     */
+    public boolean removeIndex(String index, Object service) {
+        if (byContract.containsKey(index)) {
+             List<NamedInhabitant> contracted = byContract.get(index);
+             for (NamedInhabitant i : contracted) {
+                 if (i.inhabitant.get().equals(service)) {
+                     return contracted.remove(i);
+                 }
+             }
+         }
+         return false;
     }
 
     /**
@@ -409,6 +421,33 @@ public class Habitat {
                 return services.size();
             }
         };
+    }
+
+    private class MultiMapIterator implements Iterator {
+        final Iterator<Entry<String, List<NamedInhabitant>>> itr;
+        MultiMapIterator(MultiMap map) {
+            itr = map.entrySet().iterator();
+        }
+
+        public boolean hasNext() {
+            return itr.hasNext();
+        }
+
+        public Object next() {
+            return itr.next().getKey();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public Iterator<String> getAllContracts() {
+        return new MultiMapIterator(byContract);
+    }
+
+    public Iterator<String> getAllTypes() {
+        return new MultiMapIterator(byType);
     }
 
     private Inhabitant _getInhabitant(Class contract, String name) {

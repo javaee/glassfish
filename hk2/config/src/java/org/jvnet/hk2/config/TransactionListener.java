@@ -49,5 +49,18 @@ import java.util.List;
 @Contract
 public interface TransactionListener {
 
+    /**
+     *  Notification of a transaction with the list of property changes.
+     *
+     * @param changes
+     */
     public void transactionCommited(List<PropertyChangeEvent> changes);
+
+    /**
+     *  Nofication of unprocessed events by ConfigListener, usually requiring a server
+     * restart.
+     * 
+     * @param changes
+     */
+    public void unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes);
 }
