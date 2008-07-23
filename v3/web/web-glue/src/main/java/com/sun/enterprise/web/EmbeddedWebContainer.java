@@ -256,8 +256,8 @@ public final class EmbeddedWebContainer extends Embedded {
         context.addLifecycleListener(new WebModuleListener(serverContext,
                 location, wbd));
 
-        context.addContainerListener(new WebContainerListener(
-            context, invocationManager, injectionManager));
+        context.addContainerListener(
+                new WebContainerListener(invocationManager, injectionManager));
 
         for( WebModuleDecorator d : habitat.getAllByContract(WebModuleDecorator.class)) {
             d.decorate(context);
