@@ -36,10 +36,11 @@
 package com.sun.appserv.management.base;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
-    The DottedNames MBean--resolves dotted names to AMX MBeans.  Each AMX MBean
-    has a "dotted name"; see {@link AMX#getDottedName} and {@link AMX#getDottedNamePart}.  These
+    The Pathnames MBean--resolves path names to AMX MBeans.  Each AMX MBean
+    has a "pathname"; see {@link AMX#getPathname} and {@link AMX#getPathnamePart}.  These
     dotted names are typically used by the 'asadmin' command line, but can be used by other
     clients as well.
     <p>
@@ -55,54 +56,59 @@ import java.util.Map;
     <p>
    @since GlassFish V3
  */
-public interface DottedNames extends AMX, Singleton
+public interface Pathnames extends AMX, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.DOTTED_NAMES;
+	public static final String	J2EE_TYPE	= "X-Pathnames";
+    
+    public static final String SEPARATOR = "/";
     
     /**
-       Resolve a single dotted name to an AMX.  Wildcards may <em>not</em> be used. 
+       Resolve a single pathname to an AMX.  Wildcards may <em>not</em> be used.
        
-       @see AMX#getDottedName
-       @see AMX#getDottedNamePart
+       @see AMX#getPathname
+       @see AMX#getPathnamePart
        @return the AMX, or null if not found
         @since GlassFish V3
      */
-    public AMX  getDottedNameTarget( final String dottedName );
+    public AMX  getPathnameTarget( final String pathname );
     
     /**
-       Resolve any number of dotted names.  The resulting Map is keyed by dotted name,
-       and values are of type {@link AMX}.  Wildcards may <em>not</em> be used.  Dotted names which
-       do not resolve will have a null value in the Map.
+       Resolve any number of path names.  The resulting Map is keyed by path name,
+       and values are of type {@link AMX}.  Wildcards may <em>not</em> be used.  Path names which
+       do not resolve will have a null value in the Map.  Attribute specifies should not
+       be included in the pathname.
        
        @see #getTarget
-       @see AMX#getDottedName
-       @see AMX#getDottedNamePart
+       @see AMX#getPathname
+       @see AMX#getPathnamePart
      */
-    public Map<String,AMX>  getDottedNameTargetMap( final String[] dottedNames );
+    public Map<String,AMX>  getPathnameTargetMap( final String[] pathnames );
     
     /**
-        Get all AMX MBeans, keyed by their dotted names.
+        Get all AMX MBeans, keyed by their path names.
         @since GlassFish V3
      */
-    public Map<String,AMX>  getAllDottedNameTargetsMap();
+    public Map<String,AMX>  getAllPathnameTargetsMap();
     
     /**
-        Get all dotted names.  This is equivalent to {@link #getAllDottedNameTargetsMap}.keySet().
+        Get all dotted names.  This is equivalent to {@link #getAllPathnameTargetsMap}.keySet().
         <b>Will be removed (probably)</b>
         @since GlassFish V3
      */
-    public String[]  getAllDottedNames();
+    public String[]  getAllPathnames();
+    
+    
     
     /**
-        Get values for all the requested dotted names.  If a dotted name value does not exist,
+        Get values for all the requested path names.  If a dotted name value does not exist,
         then it is not returned in the Map.  Passing null for the Set returns all values
         for all dotted names (relatively expensive operation).
         <p>
         <b>NOTE:</b> this method does not support wildcards.
         @since GlassFish V3
      */
-    public Map<String,String> getDottedNameValuesMap( final String[] dottedNames );
+    public Map<String,String> getPathnameValuesMap( final Set<String> pathnames );
     
     
     /** temporary, will be removed */
@@ -111,27 +117,27 @@ public interface DottedNames extends AMX, Singleton
     /**
         Get the value of a single dotted name.
      */
-    public String getDottedNameValue( final String dottedName );
+    public String pathnameGetSingleValue( final String dottedName );
     
     
 	/**
 		Return an array of values corresponding to each dotted-name.
 		Each slot in the array will contain either an Attribute or an Exception.
 	 */
-	public Object[]	dottedNameGet( String[] names );
+	public Object[]	pathnameGet( String[] names );
 	
 	/**
 		Return a value for a dotted-name.  If a name does not exist,
 		then null is returned.
 		@param name
 	 */
-	public Object	dottedNameGet( String name );
+	public Object	pathnameGet( String name );
 	
 	/**
 		List all valid prefixes for dotted names
 		@param names
 	 */
-	public Object[]	dottedNameList( String[] names );
+	public Object[]	pathnameList( String[] names );
 	
 	
 	/**
@@ -141,7 +147,7 @@ public interface DottedNames extends AMX, Singleton
         </pre> 
 		@param nameValuePairs
 	 */
-	public Object[]	dottedNameSet( String[] nameValuePairs );
+	public Object[]	pathnameSet( String[] nameValuePairs );
 
 }
 

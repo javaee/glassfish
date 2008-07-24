@@ -35,43 +35,70 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import javax.management.ObjectName;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.SUBSCRIPT_CHARS;
 
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /*
-	A registry for DottedName-to-ObjectName mapping.
+	Represents the attribute portion of a V3 path name
  */
-public interface DottedNameRegistry extends DottedNameQuery
+public final class PathPart
 {
-	/*
-		Add a mapping from a dotted name to an ObjectName.  If an existing
-		mapping is present, it is replaced.  An exception may also
-		be thrown if the dotted name is illegal or either parameter is null,
-		or in general the implementing class does not allow such a mapping.
-		
-		Multiple dotted names may be associated with the same ObjectName; it is
-		a policy decision of the caller whether to use that facility.
-		
-		@param dottedName	the dotted name to which the ObjectName should be associated
-		@param objectName	the name of the MBean which associates with the dotted name.
-	 */
-	void	add( String dottedName, ObjectName objectName );
-	
-	/*
-		Removes the entry associating the dotted name with an ObjectName. No error
-		is produced if there is no such mapping.
-		
-		@param dottedName	the dotted name to which the ObjectName should be associated
-	 */
-	void	remove( String dottedName );
-	
-	/*
-		Removes all dotted names associated with this ObjectName.  No error
-		is produced if there is no such mapping.
-		
-		@param objectName	the ObjectName associated with one or more dotted names
-	 */
-	void	remove( ObjectName objectName );
+    final String mPart;
+    final String mType;
+    final String mName;
+													  
+		public
+	PathPart( final String part ) {
+        if ( part.length() == 0 ) {
+            throw new IllegalArgumentException(part);
+        }
+        
+        mPart  = part;
+        
+        String[] typeAndName = parse(part);
+        mType = typeAndName[0];
+        mName = typeAndName[1];
+	}
+    
+    /** could be "servers" or "servers[name]". */
+    private static String[] parse( final String s ) {
+        String type = null;
+        String name = null;
+        
+        final int b1 = s.indexOf( SUBSCRIPT_CHARS.charAt(0) );
+        if ( b1 > 0 ) {
+            final int b2 = s.indexOf( SUBSCRIPT_CHARS.charAt(1) );
+            if ( b2 == s.length() - 1 ) {
+                type = s.substring(0,b1);
+                name = s.substring(b1+1,b2);
+            }
+        }
+        else {
+            type = s;
+        }
+        
+        return new String[] { type, name };
+    }
+    
+    public String toString()        { return mPart; }
+    
+    public boolean isNamed() {
+        return getName() != null;
+    }
+    
+    public String getType() {
+        return mType;
+    }
+    
+    public String getName() {
+        return mName;
+    }
 }
+
+
+
+
 

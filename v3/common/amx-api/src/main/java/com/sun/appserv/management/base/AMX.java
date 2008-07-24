@@ -73,7 +73,7 @@ import javax.management.NotificationEmitter;
     @see com.sun.appserv.management.monitor.MonitoringStats
     @see com.sun.appserv.management.j2ee.J2EEDomain
  */
-public interface AMX extends NotificationEmitter, AMXMBeanLogging, Dotted
+public interface AMX extends NotificationEmitter, AMXMBeanLogging, PathnameSupport
 {
     /**
         The prefix for all Notification types issued by AMX.

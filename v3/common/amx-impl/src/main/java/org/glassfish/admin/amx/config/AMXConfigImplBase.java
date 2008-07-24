@@ -45,7 +45,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.*;
 import com.sun.appserv.management.helper.AttributeResolverHelper;
 
-import org.glassfish.admin.amx.dotted.DottedName;
+import org.glassfish.admin.amx.dotted.V3Pathname;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.ContainerSupport;
 import org.glassfish.admin.amx.mbean.Delegate;
@@ -122,33 +122,10 @@ public class AMXConfigImplBase extends AMXImplBase
 	}
       
     @Override
-    /**
-        By default take a camel-case name and insert dashes
-     */
-        protected String
-    _getDottedNamePart()
+         protected String
+    _getPathnameType()
     {
-        String result = super._getDottedNamePart();
-        
-        if ( isSingletonMBean( getInterface() ) )
-        {
-            result = DottedName.hyphenate(getTypeString());
-        }
-        else
-        {
-            final Container container = getContainer();
-            if ( container instanceof ConfigCollectionElement )
-            {
-                // an intermediate MBean is already in place (self), providing a grouping
-                result = getName();
-            }
-            else
-            {
-                // we need to insert the type of the element to group them uniquely
-                result = DottedName.hyphenate(getTypeString()) + ":" + getName();
-            }
-        }
-        return result;
+        return V3Pathname.hyphenate(getTypeString());
     }
 
 
@@ -1246,10 +1223,10 @@ cdebug( "removeConfig: by  j2eeType + name" );
      */
     @Override
         protected String
-    attributeNameToDottedValueName( final String amxAttrName )
+    attributeNameToPathNameValueName( final String amxAttrName )
     {
         final String xmlName = NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( amxAttrName );
-        return xmlName == null ? super.attributeNameToDottedValueName(amxAttrName) : xmlName;
+        return xmlName == null ? super.attributeNameToPathNameValueName(amxAttrName) : xmlName;
     }
 
 

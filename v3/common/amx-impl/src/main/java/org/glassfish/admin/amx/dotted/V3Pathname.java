@@ -39,34 +39,42 @@ import com.sun.appserv.management.util.misc.Tokenizer;
 import com.sun.appserv.management.util.misc.TokenizerException;
 import com.sun.appserv.management.util.misc.TokenizerImpl;
 import com.sun.appserv.management.util.misc.TokenizerParams;
-import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.ESCAPE_CHAR;
-import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.WILDCARDS;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /*
-	Represents a dotted name.  The dotted name consists of a domain (usually empty),
-	a scope (server name, config name, "domain") and parts.
-	
-	Parts is parts--it is up to the user to decide if the last part is the name of a value
-	or if the dotted name is a prefix to which value names may be appended.
+	Represents a GlassFish V3 dotted name.
+    <p>
+    V3DottedName := [<scope-part>][<name-part>]+[<attr-part>]
+    (A full formal grammar should be defined)
+    <p>
+    Examples:<br>
+    <pre>
+    /domain/servers[server1]@name
+    /domain@locale
+    </pre>
+	<p>
+    Initial implementation is "brain dead": no formal parsing, only a simple splitting
+    of the string textually.  Once a formal grammar is defined, real parsing should
+    be done.
  */
-public final class DottedName
+public final class V3Pathname
 {
 	final String			mSourceString;
-	final ParsedDottedName	mParsed;
-													  
+	final ParsedV3Pathname	mParsed;
+    
 		public
-	DottedName( final String sourceString )
+	V3Pathname( final String sourceString )
 	{
 		mSourceString	= sourceString;
 		try
 		{
-			mParsed	= parse( sourceString );
+			mParsed	= ParsedV3Pathname.parse( sourceString );
 		}
-		catch( TokenizerException e )
+		catch( final Exception e )
 		{
 			final String	msg	= DottedNameStrings.getString(
 					DottedNameStrings.MALFORMED_DOTTED_NAME_KEY,
@@ -75,14 +83,14 @@ public final class DottedName
 			throw new IllegalArgumentException( msg );
 		}
 		
-		checkWellFormed( sourceString, toStringFromParsed( mParsed ) );
+		//checkWellFormed( sourceString, toStringFromParsed( mParsed ) );
 	}
 	
 	/*
 		Certain malformed escape constructs will parse OK, but are not acceptable
 		as dotted names.  Example: "Foo\Bar" is acceptable to the Tokenizer, but
 		must be written as "Foo\\Bar" to be a valid dotted name.
-	 */
+	 *
 		private void
 	checkWellFormed( String sourceString, String correctValue )
 	{
@@ -95,6 +103,9 @@ public final class DottedName
 			throw new IllegalArgumentException( msg );
 		}
 	}
+    */
+    
+    /*
 	
 		public static String
 	toString( DottedName dn, int numParts )
@@ -129,6 +140,7 @@ public final class DottedName
 		
 		return( buf.toString() );
 	}
+    */
 	
 		public String
 	toString()
@@ -136,6 +148,7 @@ public final class DottedName
 		return( mSourceString );
 	}
 
+/*
         public static String
     toString(final String domain,
              final String scope,
@@ -162,6 +175,7 @@ public final class DottedName
 
         return( buf.toString() );
     }
+*/
 
 		static boolean
 	needsEscaping( String part )
@@ -173,7 +187,7 @@ public final class DottedName
 		{
 			final char theChar	= part.charAt( i );
 			
-			if ( ESCAPEABLE_CHARS.indexOf( theChar ) >= 0 )
+			if ( ESCAPEABLE_CHARS_STR.indexOf( (int)theChar ) >= 0 )
 			{
 				needsEscaping	= true;
 				break;
@@ -199,7 +213,7 @@ public final class DottedName
 			{
 				final char theChar	= part.charAt( i );
 				
-				if ( ESCAPEABLE_CHARS.indexOf( theChar ) >= 0 )
+				if ( ESCAPEABLE_CHARS_STR.indexOf( (int)theChar ) >= 0 )
 				{
 					buf.append( ESCAPE_CHAR );
 				}
@@ -256,106 +270,29 @@ public final class DottedName
 
 	
 	
-		static String
-	toStringFromParsed( ParsedDottedName pn )
-	{
-		return( toString( pn.mDomain, pn.mScope, pn.mParts, pn.mParts.size() ) );
-	}
-	
-	
-	private final static String	NO_DOMAIN	= "";
-	private final static char	DOMAIN_DELIM	= ':';
-	private final static char	SEPARATOR			= '.';
-	private final static String	ESCAPEABLE_CHARS	= "" + SEPARATOR + ESCAPE_CHAR;
-	
-	
-	
-		static ParsedDottedName
-	parse( String sourceString )
-		throws TokenizerException
-	{
-        final TokenizerParams params = new TokenizerParams();
-        params.mEscapeChar = ESCAPE_CHAR;
-        params.mEscapableChars = ESCAPEABLE_CHARS;
-        params.mDelimiters = "" + SEPARATOR;
-        
-		final Tokenizer	tk	= new TokenizerImpl( sourceString, params );
-		
-		final String []	tokens	= tk.getTokens();
-		
-		if ( tokens.length == 0 )
-		{
-			final String	msg	= DottedNameStrings.getString(
-					DottedNameStrings.DOTTED_NAME_MUST_HAVE_ONE_PART_KEY,
-					sourceString );
-					
-			throw new IllegalArgumentException( msg );
-		}
-		
-		// first token is the scope, last one is the value name, 2nd-to-last can
-		// be special case of "property" qualifier, but is still considered
-		// a name-part, not a value-name.
-		
-		// if the scope contains a ':' then it's preceeded by a domain name.
-		final int	domainDelimIndex	= tokens[ 0 ].indexOf( DOMAIN_DELIM );
-		String	scope	= null;
-		String	domain	= NO_DOMAIN;
-		if ( domainDelimIndex >= 0 )
-		{
-			domain	= tokens[ 0 ].substring( 0, domainDelimIndex );
-			scope	= tokens[ 0 ].substring( domainDelimIndex + 1, tokens[ 0 ].length() );
-		}
-		else
-		{
-			scope		= tokens[ 0 ];
-		}
-		
-		final ArrayList<String>	parts	= new ArrayList<String>();
-		for( int i = 1; i < tokens.length; ++i )
-		{
-			parts.add( tokens[ i ] );
-		}
-		
-		final ParsedDottedName	parsedName	= new ParsedDottedName( domain,
-												scope, parts );
-		
-		return( parsedName );
-	}
-	
-		public String
-	getDomain()
-	{
-		return( mParsed.mDomain );
-	}
-	
-		public String
-	getScope()
-	{
-		return( mParsed.mScope );
-	}
-	
-	
 	/*
 		Return a list of the parts.  Each part is the unescaped part as
 		parsed and unescaped from the original name.
 		
 		@returns	List of Strings, each representing the name part.
 	 */
-		public List<String>
+		public List<PathPart>
 	getParts()
 	{
-		return( Collections.unmodifiableList( mParsed.mParts ) );
+		return( Collections.unmodifiableList( mParsed.getParts() ) );
 	}
+    
+    public ParsedV3Pathname getParsed() { return mParsed; }
 	
 	/*
 		Return the part given by its index
 		
 		@returns	the part at the specified index
 	 */
-		public String
+		public PathPart
 	getPart( int i )
 	{
-		return mParsed.mParts.get( i );
+		return mParsed.getParts().get( i );
 	}
 	
 		public static boolean
@@ -402,7 +339,7 @@ public final class DottedName
 	{
 		boolean	equals	= false;
 		
-		if ( ! (other instanceof DottedName) )
+		if ( ! (other instanceof V3Pathname) )
 		{
 			equals	= false;
 		}

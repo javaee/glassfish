@@ -35,41 +35,101 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.LEGAL_CHARS;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+
 /*
  */
-final class ParsedDottedName
+final class ParsedV3Pathname
 {
-	public final String         mDomain;
-	public final String         mScope;
-	public final List<String>	mParts;
+    private static void cdebug( final String s ) { System.out.println(s); }
+    
+    private final boolean           mIsFullPath;
+    
+    /** */
+	private final List<PathPart>	mParts;
+    
+    /**  */
+    private final AttrPart          mAttr;
 	
-		public
-	ParsedDottedName(
-        final String domain,
-        final String scope,
-        final List<String> parts )
+    public ParsedV3Pathname( final boolean fullPath, final List<PathPart> parts)
 	{
-		if ( domain.length() != 0 )
+        this( fullPath, parts, null );
+    }
+    
+		public
+	ParsedV3Pathname(
+        final boolean       fullPath,
+        final List<PathPart> parts,
+        final AttrPart       attrPart )
+	{
+		for( final PathPart part : parts )
 		{
-			checkLegalNamePart( domain );
-		}
-
-		checkLegalNamePart( scope );
-	
-		for( int i = 0; i < parts.size(); ++i )
-		{
-			checkLegalNamePart( parts.get( i ) );
-		}
+    cdebug( "checkLegalNamePart: " + part.getType() );
+			checkLegalNamePart( part.getType() );
+            if ( part.getName() != null )
+            {
+    cdebug( "checkLegalNamePart: " + part.getName() );
+                checkLegalNamePart( part.getName() );
+            }
+		}        
 		
-		mDomain		= domain;
-		mScope		= scope;
-		mParts		= Collections.unmodifiableList( parts );
+		mParts		  = parts;
+        mAttr         = attrPart;
+        mIsFullPath   = fullPath;
+	}
+    
+    /**
+        This is *not* a parse, it's a crude proof of concept.
+    */
+    	static ParsedV3Pathname
+	parse( final String sourceString )
+	{
+        int idx = sourceString.indexOf(ATTRIBUTE_CHAR);
+        if ( idx == 0 ) { 
+            throw new IllegalArgumentException(sourceString);
+        }
+        String attr = null;
+        String path = null;
+        if ( idx < 0 ) {
+            path = sourceString;
+        }
+        else {
+            path = sourceString.substring(0,idx);
+            attr = sourceString.substring( idx + 1, sourceString.length() );
+        }
+        if ( path.length() == 0 ) {
+            throw new IllegalArgumentException(sourceString);
+        }
+        
+        final boolean isFullPath = path.indexOf(SEPARATOR_CHAR) == 0;
+        if ( isFullPath ) {
+            path = path.substring(1, path.length());
+        }
+cdebug( "fullpath = " + isFullPath + ", path = " + path + ", attr = " + attr );
+        
+        final List<PathPart> parts = new ArrayList<PathPart>();
+        final String[] splits = path.split( "/" );
+        for( final String s : splits ) {
+            parts.add( new PathPart(s) );
+            cdebug( "part: /" + s );
+        }
+        
+        final AttrPart attrPart = attr == null ? null : new AttrPart(attr);
+cdebug( "attrPart = " + attrPart );
+        final ParsedV3Pathname  parsed = new ParsedV3Pathname( isFullPath, parts, attrPart );
+        
+cdebug( "ParsedV3Pathname = " + parsed );
+        return parsed;
 	}
 	
+    public List<PathPart> getParts() { return mParts; }
+    public AttrPart  getAttrPart()      { return mAttr; }
+    public boolean  isFullPath()      { return mIsFullPath; }
+    
 		boolean
 	isLegalChar( final char theChar )
 	{
@@ -115,11 +175,11 @@ final class ParsedDottedName
 	{
         // trying to come up with a good hash code
         // see Effective Java, pp 36-41
-
         int hashcode = 17;
-        hashcode = 37 * hashcode + mDomain.hashCode();
-        hashcode = 37 * hashcode + mScope.hashCode();
         hashcode = 37 * hashcode + mParts.hashCode();
+        if ( mAttr != null ) {
+            hashcode ^= mAttr.hashCode();
+        }
         
         return hashcode;
         
@@ -130,7 +190,7 @@ final class ParsedDottedName
 	{
 		boolean	equals	= false;
 		
-		if ( ! (other instanceof ParsedDottedName) )
+		if ( ! (other instanceof ParsedV3Pathname) )
 		{
 			equals	= false;
 		}
@@ -149,7 +209,21 @@ final class ParsedDottedName
 		public String
 	toString()
 	{
-		return( DottedName.toString( mDomain, mScope, mParts ) );
+        final StringBuffer buf = new StringBuffer();
+        
+        // part names should be escaped!
+        
+        for( final PathPart part : mParts ) {
+            buf.append(SEPARATOR_CHAR);
+            buf.append( part.toString() );
+        }
+        
+        if ( mAttr != null ) {
+            buf.append(ATTRIBUTE_CHAR);
+            buf.append(mAttr.toString());
+        }
+        
+		return buf.toString();
 	}
 }
 

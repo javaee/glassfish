@@ -33,7 +33,9 @@ import org.jvnet.hk2.annotations.Inject;
 
 import javax.management.MBeanServer;
 
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.client.AMXBooter;
+import com.sun.appserv.management.client.ProxyFactory;
 
 /**
     Base class for AMX commands.
@@ -74,6 +76,12 @@ abstract class AMXCommandBase implements AdminCommand {
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
         
         AMXBooter.bootAMX( mMBeanServer );
+    }
+    
+    protected DomainRoot
+    getDomainRoot()
+    {
+        return ProxyFactory.getInstance(getMBeanServer()).getDomainRoot();
     }
     
     protected abstract void _execute(final AdminCommandContext context);

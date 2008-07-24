@@ -48,9 +48,10 @@ import com.sun.appserv.management.util.jmx.stringifier.AttributeChangeNotificati
 import com.sun.appserv.management.util.jmx.stringifier.MBeanInfoStringifier;
 import com.sun.appserv.management.util.misc.*;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import org.glassfish.admin.amx.dotted.DottedName;
 import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.util.ObjectNames;
+
+import org.glassfish.admin.amx.dotted.*;
 
 import javax.management.*;
 import java.lang.reflect.InvocationTargetException;
@@ -235,68 +236,86 @@ public class AMXImplBase extends MBeanImplBase
 		// the delegate has fatally failed
 	}
     
-    private volatile String mDottedName = null;
-    private volatile String mDottedNamePart = null;
+    private volatile String mPathname = null;
+    private volatile String mPathnamePart = null;
     
     /**
-        A subclass may override this method.
+        A subclass may override this method.  For example, configuration
+        MBeans might want to use the element name instead.
      */
         protected String
-    _getDottedNamePart()
+    _getPathnameType()
     {
-        String result = null;
+        String result = getJ2EEType();
         
-        if ( isSingletonMBean( getInterface() ) )
+        if ( result.startsWith( XTypes.PREFIX ) )
         {
-            result = getJ2EEType();
-            if ( result.startsWith( XTypes.PREFIX ) )
-            {
-                // strip "X-"
-                result = result.substring( XTypes.PREFIX.length(), result.length() );
-            }
-        }
-        else
-        {
-            result = getName();
+            // strip "X-"
+            result = result.substring( XTypes.PREFIX.length(), result.length() );
         }
         return result;
     }
     
         public final String
-    getDottedNamePart()
+    getPathnameType()
     {
-        if ( mDottedNamePart != null )  // thread safe because it's 'volatile'
-        {
-            return mDottedNamePart;
-        }
+        return _getPathnameType();
+    }
     
-        final String result = DottedName.escapePart( _getDottedNamePart() );
-                
-        mDottedNamePart = result;
-        return mDottedNamePart;
+        protected String
+    _getPathnameName()
+    {
+        String name = getName();
+        if ( name.equals(AMX.NO_NAME) )
+        {
+            name = null;
+        }
+        
+        //return name == null ? name : V3Pathname.escapePart( getName() );
+        return name;
     }
     
         public final String
-    getDottedName()
+    getPathnameName()
     {
-        if ( mDottedName != null )  // thread safe because it's 'volatile'
+        return _getPathnameName();
+    }
+    
+        protected String
+    getPathnamePart()
+    {
+        String part = getPathnameType();
+        final String name =  getPathnameName();
+        if ( name != null )
         {
-            return mDottedName;
+            part = part + DottedNameSpecialChars.SUBSCRIPT_LEFT + V3Pathname.escapePart(name) + DottedNameSpecialChars.SUBSCRIPT_RIGHT;
+        }
+        return part;
+    }
+    
+        public final String
+    getPathname()
+    {
+        if ( mPathname != null )  // thread safe because it's 'volatile'
+        {
+            return mPathname;
         }
             
         String result = null;
+        final String pathnamePart = getPathnamePart();
         final Container container = getContainer();
         if ( container != null )
         {
-            result = container.getDottedName() + "." + getDottedNamePart();
+            result = container.getPathname() + Pathnames.SEPARATOR + pathnamePart;
         }
         else
         {
-            result = getDottedNamePart();
+            result = Pathnames.SEPARATOR + pathnamePart;
         }
         
-        mDottedName = result;
-        return mDottedName;
+        mPathname = result;
+        
+        return mPathname;
     }
 	
     /**
@@ -310,7 +329,7 @@ public class AMXImplBase extends MBeanImplBase
         the dotted name listing.
      */
         protected String
-    attributeNameToDottedValueName( final String attrName )
+    attributeNameToPathNameValueName( final String attrName )
     {
         String dottedName = attrName;
         
@@ -324,7 +343,7 @@ public class AMXImplBase extends MBeanImplBase
     }
     
         public final Map<String,String>
-    getDottedToAttributes()
+    getPathnameToAttributes()
     {
         final Map<String,String> dottedToAttr = new HashMap<String, String>();
         
@@ -333,7 +352,7 @@ public class AMXImplBase extends MBeanImplBase
         for (final String attrName : attrNames )
         {
             // all dotted names are case insensitive
-            final String dottedValueName = attributeNameToDottedValueName( attrName );
+            final String dottedValueName = attributeNameToPathNameValueName( attrName );
             //cdebug( "Attribute mapping: " + attrName + " => " + dottedValueName );
             if ( dottedValueName != null )
             {
@@ -349,7 +368,7 @@ public class AMXImplBase extends MBeanImplBase
         as well as any formal dotted names.
      */
         private final String
-    _getDottedValue(
+    _getPathnameValue(
         final Map<String,String> dottedToAttrs,
         final String dottedName )
     {
@@ -392,15 +411,15 @@ public class AMXImplBase extends MBeanImplBase
     }
     
         public final String
-    getDottedValue( final String dottedName )
+    getPathnameValue( final String name )
     {
-        return _getDottedValue( getDottedToAttributes(), dottedName );
+        return _getPathnameValue( getPathnameToAttributes(), name );
     }
     
         public final Map<String,String>
-    getDottedValues( final Set<String> dottedValueNamesIn )
+    getPathnameValues( final Set<String> dottedValueNamesIn )
     {
-        final Map<String,String> dottedToAttr = getDottedToAttributes();
+        final Map<String,String> dottedToAttr = getPathnameToAttributes();
         
         // allow null for input set
         final Set<String> dottedNames = dottedValueNamesIn != null ? dottedValueNamesIn : dottedToAttr.keySet();
@@ -410,7 +429,7 @@ public class AMXImplBase extends MBeanImplBase
         {
             try
             {
-                results.put( dottedName, "" + _getDottedValue( dottedToAttr, dottedName ) );
+                results.put( dottedName, "" + _getPathnameValue( dottedToAttr, dottedName ) );
             }
             catch( Exception e )
             {

@@ -61,7 +61,7 @@ public final class DottedNameStrings
 		}
 		catch( MissingResourceException e)
 		{
-			DottedNameLogger.logException( e );
+			e.printStackTrace();
 		}
 		
 		return( src );

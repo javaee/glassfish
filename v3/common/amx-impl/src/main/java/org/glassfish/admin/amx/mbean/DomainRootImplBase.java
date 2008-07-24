@@ -40,10 +40,11 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.NotificationEmitterService;
 import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Pathnames;
 import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.server.util.Version;
-import org.glassfish.admin.amx.dotted.DottedNamesImpl;
+import org.glassfish.admin.amx.dotted.PathnamesImpl;
 import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
 import org.glassfish.admin.amx.loader.BootUtil;
 import com.sun.appserv.management.util.misc.FeatureAvailability;
@@ -77,9 +78,16 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     
     @Override
         protected String
-    _getDottedNamePart()
+    _getPathnameType()
     {
         return "root";
+    }
+    
+    @Override
+        public String
+    _getPathnameName()
+    {
+        return null;
     }
 	     
 		public ObjectName
@@ -91,10 +99,6 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 	    return selfObjectName;
 	}
 	
-    public String getInstanceRoot()
-    {
-        return "" + System.getProperty("com.sun.aas.instanceRoot");
-    }
     
 	    public void
 	preRegisterDone( )
@@ -188,8 +192,8 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         registerChild( mbean, childObjectName );
         
 		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
-                XTypes.DOTTED_NAMES, AMX.NO_NAME, false );
-		mbean	= new DottedNamesImpl(self);
+                Pathnames.J2EE_TYPE, AMX.NO_NAME, false );
+		mbean	= new PathnamesImpl(self);
         registerChild( mbean, childObjectName );
 	}
     
@@ -284,6 +288,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         }
     }
 
+    public String getInstanceRoot()
+    {
+        return "" + System.getProperty("com.sun.aas.instanceRoot");
+    }
+    
     public String getDomainDir()
     {
         return getCanonicalPath( BootUtil.getInstance().getInstanceRoot() );

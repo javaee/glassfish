@@ -39,10 +39,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
-    Mixin interface indicating that this item participates in a dotted-name hierarchy.
+    Mixin interface indicating that this item participates in a path-name hierarchy.
     @since Glassfish V3
  */
-public interface Dotted
+public interface PathnameSupport
 {
     /**
         This character separates the path portion from the attribute name portion.
@@ -52,44 +52,52 @@ public interface Dotted
     public static final char WILDCHARD     = '*';
     
     /**
-        Return the dotted name part for this AMX MBean.
+        Return the pathname type for this AMX MBean.
         <p>
         The name part is escaped as necessary.  For example, if the name is
-        "com.foo.Bar", then the the escaped value might be com\.foo\.Bar or "com.foo.bar" (quotes included).
+        "com/foo/Bar", then the the escaped value might be com\/foo\/Bar or "com.foo.bar" (quotes included).
         
         @return the name part, suitably escaped
      */
-    public String getDottedNamePart();
+    public String getPathnameType();
     
     /**
-        Return the entire dotted name for this AMX MBean, suitably escaped.
+        The name part (if any) is escaped as necessary.  The PathnameName will be the same as
+        the result of getName(), except that it will be null if the item is a singleton.
+        
+        @return the name part
+        @see AMX#getName
+     */
+    public String getPathnameName();
+    
+    /**
+        Return the entire path name for this AMX MBean, suitably escaped.
         
         @see #getDottedNamePart
-        @return the dotted name
+        @return the path name
      */
-    public String getDottedName();
+    public String getPathname();
     
     /**
-        Return the value of a dotted name.
+        Return the value of a path name.
         @param valueName the name of the value *only* (does not include the path portion)
-        @see getDottedValueNames
         @return the value.  An exception is thrown if valueName is illegal
      */
-    public String getDottedValue( final String valueName );
+    public String getPathnameValue( final String valueName );
     
     /**
-        Return the value of dotted names.  If a value cannot be obtained, it is not returned
+        Return the value of path names.  If a value cannot be obtained, it is not returned
         in the Map; only values obtained successfully are returned.
         <p>
         A null Set indicates that all values should be returned.
         @see getDottedValueNames
      */
-    public Map<String,String> getDottedValues( final Set<String> values );
+    public Map<String,String> getPathnameValues( final Set<String> values );
     
     /**
-        Return a Map from dotted-value names to Attribute names.
+        Return a Map from path-value names to Attribute names.
      */
-    public Map<String,String> getDottedToAttributes();
+    public Map<String,String> getPathnameToAttributes();
 }
 
 

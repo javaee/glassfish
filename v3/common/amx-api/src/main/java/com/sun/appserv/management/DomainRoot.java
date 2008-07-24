@@ -78,13 +78,6 @@ public interface DomainRoot extends Container
       @return the name of the Appserver domain
      */
     public String	getAppserverDomainName();
-    
-    
-    /**
-       @since Glassfish V3
-     */
-    public String getInstanceRoot();
-
 
 
     /**
@@ -162,9 +155,9 @@ public interface DomainRoot extends Container
     public UploadDownloadMgr		getUploadDownloadMgr();
 
     /**
-        @return the singleton {@link DottedNames}.
+        @return the singleton {@link PathNames}.
      */
-    public DottedNames		getDottedNames() ;
+    public Pathnames		getPathnames();
         
     /**
         @return the singleton {@link MonitoringRoot}.
@@ -221,6 +214,13 @@ public interface DomainRoot extends Container
      */
     public String getApplicationServerFullVersion();  
       
+    
+    
+    /**
+       @since Glassfish V3
+     */
+    public String getInstanceRoot();
+
     /**
        @return the directory for the domain
       @since Glassfish V3

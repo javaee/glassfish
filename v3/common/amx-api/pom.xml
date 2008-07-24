@@ -75,7 +75,7 @@
                         com.sun.appserv.management.annotation,
                         com.sun.appserv.management.base,
                         com.sun.appserv.management.client,
-                        com.sun.appserv.management.client.handler,
+                        <!--com.sun.appserv.management.client.handler, -->
                         com.sun.appserv.management.config,
                         com.sun.appserv.management.ext.coverage,
                         com.sun.appserv.management.ext.lb,

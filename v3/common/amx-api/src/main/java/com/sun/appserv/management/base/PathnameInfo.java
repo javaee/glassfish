@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,88 +33,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.dotted;
+package com.sun.appserv.management.base;
 
-import javax.management.ObjectName;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+/**
+    Annotation for specifying something other than the default path name.
 
-/*
-	This implementation understands that some names are aliased.  For example,
-	"server.xxx" is aliased to "config.xxx".
+ * @author llc
  */
- 
-public class DottedNameResolverForAliases implements DottedNameResolver
-{
-	final DottedNameQuery				mQuery;
-	final DottedNameServerInfo			mServerInfo;
-	
-		public
-	DottedNameResolverForAliases(
-		final DottedNameQuery		query,
-		final DottedNameServerInfo	serverInfo )
-	{
-		mQuery			= query;
-		mServerInfo		= serverInfo;
-	}
-
-	
-	/*
-		Change the dotted name into its "true" name.  For example "server-name.xxx" translates
-		to "config-name.xxx".
-	 */
-		protected String
-	getUnaliasedName( final String dottedNameString )
-	{
-		final DottedName	dn	= DottedNameFactory.getInstance().get( dottedNameString );
-		DottedName			actualDN	= dn;
-		
-		if ( ! DottedName.isWildcardName( dottedNameString ) )
-		{
-			try
-			{
-				final String	actualScope	=
-					DottedNameAliasSupport.resolveScope( mServerInfo, dn );
-				
-				if ( ! actualScope.equals( dn.getScope() ) )
-				{
-					actualDN	= DottedNameFactory.getInstance().get(
-						DottedName.toString( dn.getDomain(), actualScope, dn.getParts() ) );
-				}
-			}
-			catch( Exception e )
-			{
-				DottedNameLogger.logException( e );
-			}
-		}
-		
-		return( actualDN.toString() );
-	}
-	
-	/*
-	static java.util.logging.Logger		sLogger	= null;
-		static void
-	dm( Object o )
-	{
-		if (sLogger == null )
-		{
-        	sLogger	= java.util.logging.Logger.getLogger( "DottedNameGetSetMBeanImplLogger" );
-        	sLogger.setLevel( java.util.logging.Level.INFO );
-        }
-        
-        sLogger.info( o.toString() );
-	}
-	*/
-	
-		public ObjectName
-	resolveDottedName( final String dottedName )
-	{
-		final String		unaliasedName	= getUnaliasedName( dottedName );
-		
-		final ObjectName	result	= mQuery.dottedNameToObjectName( unaliasedName );
-		
-		return( result );
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface PathnameInfo {
+    /**
+      Specify the desired name.  Note that this will still be used for named items as a
+      prefix.
+     */
+    public String pathname() default "";
 }
+
+
+
+
+
+
 
 
 

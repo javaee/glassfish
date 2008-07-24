@@ -86,6 +86,7 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
+                        <!--
                         org.glassfish.admin.amx.cmd,
                         org.glassfish.admin.amx.config,
                         org.glassfish.admin.amx.dotted,
@@ -96,6 +97,7 @@
                         org.glassfish.admin.amx.mbean,
                         org.glassfish.admin.amx.monitor,
                         org.glassfish.admin.amx.util
+                        -->
                         </Export-Package>
                     </instructions>
                 </configuration>

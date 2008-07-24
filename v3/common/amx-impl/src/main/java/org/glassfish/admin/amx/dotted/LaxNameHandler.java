@@ -35,100 +35,63 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.ESCAPE_CHAR;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.WILDCARDS;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /*
-	This class caches dotted name strings against their DottedName counterparts.
+	Represents a dotted name.  The dotted name consists of a domain (usually empty),
+	a scope (server name, config name, "domain") and parts.
 	
-	This helps avoid the fairly expensive parse of the string, as well as minimizing
-	creation of new objects.
+	Parts is parts--it is up to the user to decide if the last part is the name of a value
+	or if the dotted name is a prefix to which value names may be appended.
  */
-public final class DottedNameFactory
+public final class LaxNameHandler
 {
-	static final Factory	sImpl	= newInstance();
-	
-	public interface Factory
+    private static void cdebug( final String s ) { System.out.println(s); }
+    
+    final String mRoot;
+													  
+		public
+	LaxNameHandler( final String root )
 	{
-		//public DottedName	lookup( final String dottedNameString );
-		public DottedName	get( final String dottedNameString );
-		public void			clear();
-		public void			add( final DottedName dn );
+        mRoot = root;
 	}
-	
-	
-		private
-	DottedNameFactory()
-	{
-		// disallow instantiation outside newInstance()
-	}
-	
-		public static Factory
-	newInstance()
-	{
-		return( new Impl() );
-	}
-	
-		public static Factory
-	getInstance()
-	{
-		return( sImpl );
-	}
-		
-	
-	/* implements the cache */
-	private static final class Impl implements Factory
-	{
-		final Map<String,DottedName>	mMapping;
-		
-			public
-		Impl()
-		{
-			// disallow outside instantiation
-			mMapping	= new HashMap<String,DottedName>( 600 );
-		}
-		
-			public synchronized void
-		add( final DottedName dottedName )
-		{
-			mMapping.put( dottedName.toString(), dottedName );
-		}
-		
-			public synchronized void
-		clear()
-		{
-			mMapping.clear();
-		}
-		
-		
-			public DottedName
-		get( final String dottedNameString )
-		{
-			DottedName	dn	= lookup( dottedNameString );
-			
-			if ( dn == null )
-			{
-				dn	= new DottedName( dottedNameString );
-				add( dn );
-			}
-			
-			return( dn );
-		}
-		
-		
-			synchronized DottedName
-		lookup( final String dottedNameString )
-		{
-			final DottedName	dn	= mMapping.get( dottedNameString );
-			
-			assert( dn == null || dn.toString().equals( dottedNameString ) );
-			
-			return( dn );
-		}
+    
+    /**
+        Forgive certain transgressions, such as ommission of the 'root' prefix, use
+        of the old property-style syntax, etc.  Simple textual substitution.
+     */
+        public String
+    laxName( final String pathname )
+    {
+        // be friendly: allow the root name to be omitted
+        String name = pathname;
+        if ( ! pathname.startsWith( mRoot ) )
+        {
+            name = mRoot + "." + name;
+        }
+        
+        final int idx = name.indexOf( ".property." );
+        if ( idx > 0 )
+        {
+            name    = name.replace( ".property.", ".property:" );
+        }
+        
+        if ( ! pathname.equals(name) )
+        {
+            cdebug( "laxName: translated " + pathname + " => " + name );
+        }
+        
+        return name;
+    }
 
-	}
 }
+
+
 
 
 

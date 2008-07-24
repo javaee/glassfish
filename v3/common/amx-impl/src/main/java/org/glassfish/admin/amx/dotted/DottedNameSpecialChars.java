@@ -35,18 +35,26 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-final class DottedNameSpecialChars
+public final class DottedNameSpecialChars
 {
+	public final static String	SCOPE_DELIM	        = ":/";
+	public final static char	ATTRIBUTE_CHAR	    = '@';
+	public final static char	SEPARATOR_CHAR		= '/';
+    public final static char    SUBSCRIPT_LEFT      = '[';
+    public final static char    SUBSCRIPT_RIGHT     = ']';
+    public final static String SUBSCRIPT_CHARS      = "[]";
+    
 	public final static String WILDCARDS			= "*";
 	public final static char BACKSLASH				= '\\';
 	public final static char ESCAPE_CHAR			= BACKSLASH;
-	public final static String SPECIALS				= "(){}[];<>@$#:";
 	public final static String LEGAL_CHARS			= "abcdefghijklmnopqrstuvwxyz" +
 													  "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 													  "0123456789" +
-													  "-_./" +
+													  "-_." +
 													  BACKSLASH +
-													  WILDCARDS + 
-													  SPECIALS;
+													  WILDCARDS;
+                                                      
+	public static final char[]	ESCAPEABLE_CHARS	= {SEPARATOR_CHAR, ESCAPE_CHAR, ATTRIBUTE_CHAR};
+    public static final String ESCAPEABLE_CHARS_STR = new String(ESCAPEABLE_CHARS);
 };
 

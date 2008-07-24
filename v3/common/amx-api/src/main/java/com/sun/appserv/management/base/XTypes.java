@@ -225,21 +225,6 @@ public final class XTypes
 	/* other */
 	
 	/**
-		ID for {@link com.sun.appserv.management.base.DottedNames}
-	 */
-	public final static String	DOTTED_NAMES			=  P + "DottedNames";
-
-	/**
-		ID for {@link com.sun.appserv.management.config.ConfigDottedNames}
-	 */
-	public final static String	CONFIG_DOTTED_NAMES			=  P + "ConfigDottedNames";
-	
-	/**
-		ID for {@link com.sun.appserv.management.monitor.MonitoringDottedNames}
-	 */
-	public final static String	MONITORING_DOTTED_NAMES		=  P + "MonitoringDottedNames";
-	
-	/**
 		ID for {@link com.sun.appserv.management.deploy.DeploymentMgr}
 	 */
 	public final static String	DEPLOYMENT_MGR				=  P + "Deployment" + M;
