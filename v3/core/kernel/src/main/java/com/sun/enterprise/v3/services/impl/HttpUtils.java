@@ -27,6 +27,8 @@ import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.HexUtils;
 import com.sun.grizzly.util.buf.MessageBytes;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 
@@ -302,10 +304,16 @@ public class HttpUtils {
     /**
      * Parse host.
      */
-    public static void parseHost(MessageBytes hostMB) throws IOException{
+    public static void parseHost(MessageBytes hostMB, Socket socket) throws IOException{
 
         if (hostMB == null || hostMB.isNull()) {
-            throw new IOException("Invalid Host");
+            // HTTP/1.0
+            // Default is what the socket tells us. Overriden if a host is 
+            // found/parsed
+            InetAddress localAddress = socket.getLocalAddress();
+            byte[] host = localAddress.getHostName().getBytes();
+            hostMB.setBytes(host,0,host.length);
+            return;
         }
 
         ByteChunk valueBC = hostMB.getByteChunk();

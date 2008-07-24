@@ -40,6 +40,7 @@ import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Collection;
 
 /**
@@ -151,14 +152,12 @@ public class ContainerMapper {
             ContextRootInfo fallbackContextRootInfo) throws Exception {
 
         // Read available bytes and try to find the host header.
-        byte[] hostBytes = HttpUtils.readHost(
-                selectionKey, byteBuffer,
-                InputReader.getDefaultReadTimeout());
+        // HTTP 1.0 doesn't have any hos, hence the time out must be small.
+        byte[] hostBytes = HttpUtils.readHost(selectionKey, byteBuffer,1000);
                 
         // Read the request line, and parse the context root by removing 
         // all trailling // or ?
-        byte[] contextBytes = HttpUtils.readRequestLine(
-                selectionKey, byteBuffer,
+        byte[] contextBytes = HttpUtils.readRequestLine(selectionKey, byteBuffer,
                 InputReader.getDefaultReadTimeout());
         
         // No bytes then fail.
@@ -170,10 +169,9 @@ public class ContainerMapper {
         decodedURI.setBytes(contextBytes, 0, contextBytes.length);
 
         MessageBytes hostMB = MessageBytes.newInstance();
-        if (hostBytes == null) {
-            hostBytes = new byte[0];
+        if (hostBytes != null) {
+            hostMB.setBytes(hostBytes, 0, hostBytes.length);
         }
-        hostMB.setBytes(hostBytes, 0, hostBytes.length);
         
         // Decode the request to make sure this is not an attack like
         // a directory traversal vulnerability.
@@ -187,7 +185,7 @@ public class ContainerMapper {
             return false;
         }
         // Parse the host. If not found, add it based on the current host.
-        HttpUtils.parseHost(hostMB);
+        HttpUtils.parseHost(hostMB, ((SocketChannel)selectionKey.channel()).socket());
 
         // Copy the decoded bytes so it can be later re-used by the CoyoteAdapter
         MessageBytes fullDecodedUri = MessageBytes.newInstance();
