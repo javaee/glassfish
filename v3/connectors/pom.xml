@@ -15,7 +15,6 @@
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
         <module>work-management</module>
-        <!-- JDBC RA is built separately outside the main build and binary-integrate, due to a tricky JDK dependency issues -->
-        <!--module>jdbc-ra</module-->
+        <module>jdbc-ra</module>
   </modules>
 </project>
