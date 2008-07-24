@@ -63,12 +63,15 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.Constants;
 import org.apache.catalina.connector.MapperListener;
 import org.apache.tomcat.util.IntrospectionUtils;
 import org.glassfish.security.common.CipherInfo;
+import org.glassfish.web.admin.monitor.RequestProbeProvider;
 
 public class PECoyoteConnector extends Connector {
 
@@ -256,10 +259,17 @@ public class PECoyoteConnector extends Connector {
     private String trustMaxCertLength;
 
 
+    private WebContainer webContainer;
+
+
+    private RequestProbeProvider requestProbeProvider;
+
+
     /**
      * Constructor
      */   
-    public PECoyoteConnector() {
+    public PECoyoteConnector(WebContainer webContainer) {
+        this.webContainer = webContainer;
         setProtocolHandlerClassName(DUMMY_CONNECTOR_LAUNCHER);
     }
     
@@ -766,10 +776,11 @@ public class PECoyoteConnector extends Connector {
      * Initialize this connector.
      */
     @Override
-    public void initialize() throws LifecycleException{
+    public void initialize() throws LifecycleException {
         super.initialize();
         // Set the monitoring.
         grizzlyMonitor = new GrizzlyConfig(domain,getPort());
+        createProbeProvider();
     }
 
 
@@ -935,8 +946,7 @@ public class PECoyoteConnector extends Connector {
      * otherwise
      * @param httpServiceProps The http-service properties
      */
-    public void configure(WebContainer webContainer,
-                          HttpListener httpListener,
+    public void configure(HttpListener httpListener,
                           boolean isSecure,
                           HttpService httpService) {
 
@@ -1493,6 +1503,23 @@ public class PECoyoteConnector extends Connector {
 
 
     /*
+     * Request/response related probe events
+     */
+
+    public void requestStartEvent(HttpServletRequest request,
+                                  HttpServletResponse response) {
+        requestProbeProvider.requestStartEvent(request, response);
+    };
+
+
+    public void requestEndEvent(HttpServletRequest request,
+                                HttpServletResponse response,
+                                int statusCode) {
+        requestProbeProvider.requestEndEvent(request, response, statusCode);
+    };
+
+
+    /*
      * Configures the SSL properties on this PECoyoteConnector from the
      * SSL config of the given HTTP listener.
      *
@@ -1731,6 +1758,17 @@ public class PECoyoteConnector extends Connector {
         }
 
         return jsseCipher;
+    }
+
+
+    private void createProbeProvider() throws LifecycleException {
+        try {
+            requestProbeProvider =
+                webContainer.getProbeProviderFactory().getProbeProvider(
+                    "web", "request", null, RequestProbeProvider.class);
+        } catch (Exception e) {
+            throw new LifecycleException(e);
+        }
     }
 }
 

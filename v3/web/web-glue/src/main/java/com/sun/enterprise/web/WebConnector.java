@@ -45,6 +45,13 @@ import javax.management.MalformedObjectNameException;
  */ 
 public class WebConnector extends PECoyoteConnector {
 
+    /**
+     * Constructor
+     */
+    public WebConnector(WebContainer webContainer) {
+        super(webContainer);
+    }
+
     @Override
     public void start() throws LifecycleException {    
         if( !initialized )

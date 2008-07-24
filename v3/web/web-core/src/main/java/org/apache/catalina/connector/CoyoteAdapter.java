@@ -191,7 +191,7 @@ public class CoyoteAdapter
      */
     public void service(com.sun.grizzly.tcp.Request req,
                         com.sun.grizzly.tcp.Response res)
-        throws Exception {
+            throws Exception {
 
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
@@ -217,6 +217,35 @@ public class CoyoteAdapter
                 (connector.getURIEncoding());
         }
 
+        connector.requestStartEvent(request.getRequest(),
+                                    response.getResponse());
+        try {
+            doService(req, request, res, response);
+        } catch (IOException e) {
+            connector.requestEndEvent(request.getRequest(),
+                                      response.getResponse(),
+                                      response.getStatus());
+            // Recycle the wrapper request and response
+            request.recycle();
+            response.recycle();
+        } catch (Throwable t) {
+            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
+            connector.requestEndEvent(request.getRequest(),
+                                      response.getResponse(),
+                                      response.getStatus());
+            // Recycle the wrapper request and response
+            request.recycle();
+            response.recycle();
+        }
+    }
+
+
+    private void doService(com.sun.grizzly.tcp.Request req,
+                           Request request,
+                           com.sun.grizzly.tcp.Response res,
+                           Response response)
+            throws Exception {
+        
         // START SJSAS 6331392
         // Check connector for disabled state
         if (!connector.isEnabled()) {
@@ -234,77 +263,56 @@ public class CoyoteAdapter
             response.addHeader("X-Powered-By", "Servlet/2.5");
         }
 
-        try {
 
-            // Parse and set Catalina and configuration specific 
-            // request parameters
-            if ( postParseRequest(req, request, res, response) ) {
+        // Parse and set Catalina and configuration specific 
+        // request parameters
+        if ( postParseRequest(req, request, res, response) ) {
 
-                // START S1AS 6188932
-                boolean authPassthroughEnabled = 
-                    connector.getAuthPassthroughEnabled();
-                ProxyHandler proxyHandler = connector.getProxyHandler();
-                if (authPassthroughEnabled && proxyHandler != null) {
+            // START S1AS 6188932
+            boolean authPassthroughEnabled = 
+                connector.getAuthPassthroughEnabled();
+            ProxyHandler proxyHandler = connector.getProxyHandler();
+            if (authPassthroughEnabled && proxyHandler != null) {
 
-                    // START SJSAS 6397218
-                    if (proxyHandler.getSSLKeysize(
-                            (HttpServletRequest)request.getRequest()) > 0) {
-                        request.setSecure(true);
-                    }
-                    // END SJSAS 6397218
-
-                    X509Certificate[] certs = null;
-                    try {
-                        certs = proxyHandler.getSSLClientCertificateChain(
-                                    request.getRequest());
-                    } catch (CertificateException ce) {
-                        log.log(Level.SEVERE,
-                                sm.getString("coyoteAdapter.proxyAuthCertError"),
-                                ce);
-                    }
-                    if (certs != null) {
-                        request.setAttribute(Globals.CERTIFICATES_ATTR,
-                                             certs);
-                    }
-                    
+                // START SJSAS 6397218
+                if (proxyHandler.getSSLKeysize(
+                        (HttpServletRequest)request.getRequest()) > 0) {
+                    request.setSecure(true);
                 }
-                // END S1AS 6188932
-                
-                response.addHeader("Server",serverName);
-                
-                // Calling the container
-                connector.getContainer().invoke(request, response);
-            }
-         /* GlassFish Issue 79    
-            response.finishResponse();
-            req.action( ActionCode.ACTION_POST_REQUEST , null);
+                // END SJSAS 6397218
 
-         } catch (IOException e) {
-            ;
-         } catch (Throwable t) {
-             log.error(sm.getString("coyoteAdapter.service"), t);
-         } finally {
-             // Recycle the wrapper request and response
-             request.recycle();
-             response.recycle();
-         }*/
-        // START GlassFish Issue 798
-        } catch (IOException e) {
-            // Recycle the wrapper request and response
-            request.recycle();
-            response.recycle();
-        } catch (Throwable t) {
-            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
-                        // Recycle the wrapper request and response
-            request.recycle();
-            response.recycle();
-        } 
-        // END GlassFish Issue 798
-        
-        if ( compatWithTomcat ) {
-            afterService(req,res);
+                X509Certificate[] certs = null;
+                try {
+                    certs = proxyHandler.getSSLClientCertificateChain(
+                                request.getRequest());
+                } catch (CertificateException ce) {
+                    log.log(Level.SEVERE,
+                            sm.getString("coyoteAdapter.proxyAuthCertError"),
+                            ce);
+                }
+                if (certs != null) {
+                    request.setAttribute(Globals.CERTIFICATES_ATTR,
+                                         certs);
+                }
+                    
+            }
+            // END S1AS 6188932
+            
+            response.addHeader("Server",serverName);
+                
+            // Calling the container
+            connector.getContainer().invoke(request, response);
         }
-        
+
+        /* GlassFish Issue 798
+        response.finishResponse();
+        req.action( ActionCode.ACTION_POST_REQUEST , null);
+         */
+        // START GlassFish Issue 798
+        if (compatWithTomcat) {
+            afterService(req, res);
+        }
+        // END GlassFish Issue 798    
     }
 
     // START GlassFish Issue 798
@@ -315,6 +323,7 @@ public class CoyoteAdapter
     public void afterService(com.sun.grizzly.tcp.Request req,
                              com.sun.grizzly.tcp.Response res)
             throws Exception{
+
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
         
@@ -323,9 +332,12 @@ public class CoyoteAdapter
         try{
             response.finishResponse();
             req.action( ActionCode.ACTION_POST_REQUEST , null);
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
         } finally {
+            connector.requestEndEvent(request.getRequest(),
+                                      response.getResponse(),
+                                      response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
             response.recycle();

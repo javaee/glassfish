@@ -378,7 +378,7 @@ public final class EmbeddedWebContainer extends Embedded {
                   ((address == null) ? "ALL" : address) +
                   "' port='" + port + "' protocol='" + protocol + "'");
 
-        WebConnector connector = new WebConnector();
+        WebConnector connector = new WebConnector(webContainer);
 
         if (address != null) {
             connector.setAddress(address);

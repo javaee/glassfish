@@ -59,6 +59,8 @@ import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 // START OF SJSAS 8.1 PE 6191830
 import java.security.cert.X509Certificate;
@@ -1378,7 +1380,6 @@ public class Connector
         Request request = new Request();
         request.setConnector(this);
         return (request);
-
     }
 
 
@@ -1391,11 +1392,25 @@ public class Connector
         Response response = new Response();
         response.setConnector(this);
         return (response);
-
     }
 
 
-    // -------------------------------------------------------- Private Methods
+    // -------------------------------------------------- Monitoring Methods
+
+    public void requestStartEvent(HttpServletRequest request,
+                                  HttpServletResponse response) {
+        // Deliberate noop
+    };
+
+
+    public void requestEndEvent(HttpServletRequest request,
+                                HttpServletResponse response,
+                                int statusCode) {
+        // Deliberate noop
+    };
+
+
+    // -------------------------------------------------- Private Methods
 
 
     /**

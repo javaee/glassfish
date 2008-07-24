@@ -1340,6 +1340,7 @@ public class WebModule extends PwcWebModule {
         }
     }
 
+
     private void createProbeProviders(ProbeProviderFactory fac) {
         try {
             servletProbeProvider = fac.getProbeProvider("web", "servlet",
@@ -1364,7 +1365,7 @@ public class WebModule extends PwcWebModule {
 
 
     /*
-     * Servlet related monitoring events
+     * Servlet related probe events
      */
 
     public void servletLoadedEvent(String servletName) {
@@ -1373,7 +1374,7 @@ public class WebModule extends PwcWebModule {
 
 
     /*
-     * HTTP session related monitoring events
+     * HTTP session related probe events
      */
 
     public void sessionCreatedEvent(HttpSession session) {

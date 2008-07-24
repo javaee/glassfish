@@ -655,6 +655,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         configListener.setLogger(_logger);
     }
 
+
     public void preDestroy() {
         try {
             _embedded.stop();
@@ -665,17 +666,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _timer.cancel();
     }
 
-    ProbeProviderFactory getProbeProviderFactory() {
+
+    public ProbeProviderFactory getProbeProviderFactory() {
         return probeProviderFactory;
     }
+
 
     public String getName() {
         return "Web";
     }
 
+
     public Class<? extends WebDeployer> getDeployer() {
         return WebDeployer.class;
     }
+
     
     /**
      * Use an http-listener subelements and creates a corresponding 
@@ -741,7 +746,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _logger.info("Created HTTP listener " + httpListener.getId());
         connector.setName(httpListener.getId());
 
-        connector.configure(this, httpListener, isSecure, httpService);
+        connector.configure(httpListener, isSecure, httpService);
 
         if ( _logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "create.listenerport",
