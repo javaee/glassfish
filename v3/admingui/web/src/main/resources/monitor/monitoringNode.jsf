@@ -1,0 +1,6 @@
+<sun:treeNode	id="monitor"
+		text="$resource{i18n.tree.monitoring}"
+		url="monitor/monitoringPage.jsf"
+		imageURL="resource/images/monitor.gif"
+                target="main"
+                expanded="$boolean{true}" />

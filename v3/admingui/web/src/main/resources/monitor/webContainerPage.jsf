@@ -1,0 +1,22 @@
+<!initPage
+setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings");
+setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
+setAttribute(key="helpKey" value="$resource{help.monitoringService}" );
+/>
+
+<sun:page id="page1">
+#include "/shared/restart.inc"
+    <sun:html id="html93">
+        <sun:head id="propertyhead" title="$resource{i18n.monitoring.webContainer.pageTitle}" >
+            <sun:script url="/resource/js/adminjsf.js" />
+        </sun:head>
+        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+            <sun:form id="propertyForm">
+#include "/shared/treeBreadcrumbs.inc"
+
+#include "/shared/alertMsg.inc"      
+                <sun:title id="propertyContentPage" title="$resource{i18n.monitoring.webContainer.pageTitle}"
+                    helpText="Some help for text for monitor tab">
+		</sun:title>
+"Test monitor tab!
+	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
