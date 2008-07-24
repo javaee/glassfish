@@ -81,7 +81,7 @@ public abstract class AbstractHttpHandler {
                         ,byteBuffer,(GlassfishProtocolChain) context.getProtocolChain(),
                         null,fallbackContextRootInfo);
             } catch (Exception ex){
-                GrizzlyEmbeddedHttp.logger().log(Level.FINE, "Mapper exception", ex);
+                GrizzlyEmbeddedHttp.logger().log(Level.WARNING, "Mapper exception", ex);
                 wasMap = false;
             }
             
