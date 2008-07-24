@@ -174,7 +174,7 @@ public interface JavaEETransactionManagerDelegate {
      * associated with it.
      * @return the new JTS Transaction instance.
      */
-    public Transaction startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout)
+    public TransactionInternal startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout)
             throws RollbackException, IllegalStateException, SystemException;
 
     /**

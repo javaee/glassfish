@@ -60,7 +60,10 @@ import org.omg.CORBA.INVALID_TRANSACTION;
 import org.omg.CORBA.NO_PERMISSION;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.transaction.spi.TransactionInternal;
+
 /**
  * An implementation of javax.transaction.Transaction using JTS
  * XXX TODO should catch all org.omg.CORBA.SystemException
@@ -68,7 +71,7 @@ import com.sun.logging.LogDomains;
  *
  * @author Tony Ng
  */
-public class TransactionImpl implements Transaction {
+public class TransactionImpl implements TransactionInternal {
 
     /**
      * OTS Control object for this transaction

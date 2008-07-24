@@ -51,6 +51,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.spi.TransactionInternal;
 
 import com.sun.enterprise.util.i18n.StringManager;
 
@@ -182,7 +183,7 @@ public class JavaEETransactionManagerSimplifiedDelegate
         _logger = ((JavaEETransactionManagerSimplified)tm).getLogger();
     }
 
-    public Transaction startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout) 
+    public TransactionInternal startJTSTx(JavaEETransaction t, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
         throw new UnsupportedOperationException("startJTSTx");
     }

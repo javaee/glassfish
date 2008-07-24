@@ -51,6 +51,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.spi.TransactionInternal;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -353,7 +354,7 @@ public class JavaEETransactionManagerSimplified
             throws RollbackException, IllegalStateException, SystemException {
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)t;
-        Transaction jtsTx = getDelegate().startJTSTx(tx, tx.isAssociatedTimeout());
+        TransactionInternal jtsTx = getDelegate().startJTSTx(tx, tx.isAssociatedTimeout());
 
         // The local Transaction was promoted to global Transaction
         if (tx!=null && monitoringEnabled){
@@ -887,7 +888,7 @@ public class JavaEETransactionManagerSimplified
         return getDelegate().getTransaction();
 
 /** XXX CHECK WHAT'S NEEDED FOR XA DELEGATE XXX **
-            Transaction jtsTx = super.getTransaction();
+            TransactionInternal jtsTx = super.getTransaction();
             if ( jtsTx == null )
                 return null;
             else {
@@ -1444,7 +1445,7 @@ public class JavaEETransactionManagerSimplified
             curr.setTransactionCompeting(b);
     }
     
-    public JavaEETransaction createImportedTransaction(Transaction jtsTx) 
+    public JavaEETransaction createImportedTransaction(TransactionInternal jtsTx) 
             throws SystemException { 
         JavaEETransactionImpl tx = new JavaEETransactionImpl(jtsTx);
         tx.setImportedTransaction();
@@ -1466,10 +1467,11 @@ public class JavaEETransactionManagerSimplified
 /** Implementation of javax.transaction.Synchronization *********************/
 /****************************************************************************/
     private class JTSSynchronization implements Synchronization {
-        private Transaction jtsTx;
+        private TransactionInternal jtsTx;
         private JavaEETransactionManagerSimplified javaEETM;
     
-        JTSSynchronization(Transaction jtsTx, JavaEETransactionManagerSimplified javaEETM){
+        JTSSynchronization(TransactionInternal jtsTx, 
+                JavaEETransactionManagerSimplified javaEETM){
             this.jtsTx = jtsTx;
             this.javaEETM = javaEETM;
         }

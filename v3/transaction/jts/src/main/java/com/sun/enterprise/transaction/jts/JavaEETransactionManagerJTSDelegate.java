@@ -63,6 +63,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.spi.TransactionInternal;
 
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionImpl;
@@ -232,9 +233,9 @@ public class JavaEETransactionManagerJTSDelegate
             return tx;
 
         // Check for a JTS imported tx
-        Transaction jtsTx = null;
+        TransactionInternal jtsTx = null;
         if (tm != null) {
-            jtsTx = tm.getTransaction();
+            jtsTx = (TransactionInternal)tm.getTransaction();
         }
 
         if ( jtsTx == null )
@@ -335,7 +336,7 @@ public class JavaEETransactionManagerJTSDelegate
         _logger = ((JavaEETransactionManagerSimplified)javaEETM).getLogger();
     }
 
-    public Transaction startJTSTx(JavaEETransaction tran, boolean isAssociatedTimeout) 
+    public TransactionInternal startJTSTx(JavaEETransaction tran, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
         if (tm == null)
             tm = TransactionManagerImpl.getTransactionManagerImpl();
@@ -356,7 +357,7 @@ public class JavaEETransactionManagerJTSDelegate
             throw new RuntimeException(sm.getString("enterprise_distributedtx.lazy_transaction_notstarted"),ex);
         }
 
-        Transaction jtsTx = tm.getTransaction();
+        TransactionInternal jtsTx = (TransactionInternal)tm.getTransaction();
         globalTransactions.put(jtsTx, tx);
 
         return jtsTx;

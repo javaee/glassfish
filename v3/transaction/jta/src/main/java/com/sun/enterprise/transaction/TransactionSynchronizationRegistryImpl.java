@@ -39,6 +39,7 @@ package com.sun.enterprise.transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.RollbackException;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 
@@ -192,6 +193,9 @@ public class TransactionSynchronizationRegistryImpl
         } catch (SystemException ex) {
             throw new IllegalStateException(
                       sm.getString("enterprise_distributedtx.no_transaction"));
+        } catch (RollbackException ex) {
+            throw new IllegalStateException(
+                      sm.getString("enterprise_distributedtx.mark_rollback"));
         }
     }
 

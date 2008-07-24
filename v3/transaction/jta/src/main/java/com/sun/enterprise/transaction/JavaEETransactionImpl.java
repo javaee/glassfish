@@ -50,6 +50,7 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 import com.sun.enterprise.transaction.spi.TransactionalResource;
+import com.sun.enterprise.transaction.spi.TransactionInternal;
 import com.sun.logging.LogDomains;
 
 /**
@@ -82,7 +83,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
 
     private long txId;
     private JavaEEXid xid;
-    private Transaction jtsTx;
+    private TransactionInternal jtsTx;
     private TransactionalResource nonXAResource;
     private TransactionalResource laoResource;
     private int localTxStatus;
@@ -149,7 +150,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
     }
     // END: local transaction timeout
 
-    JavaEETransactionImpl(Transaction jtsTx) {
+    JavaEETransactionImpl(TransactionInternal jtsTx) {
         this();
         this.jtsTx = jtsTx;
     }
@@ -248,8 +249,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return userResourceMap.get(key);
     }
 
-    void registerInterposedSynchronization(Synchronization sync) {
+    void registerInterposedSynchronization(Synchronization sync) 
+                                          throws RollbackException,
+                                          SystemException {
         interposedSyncs.add(sync);
+        if (jtsTx != null)
+            jtsTx.registerInterposedSynchronization(sync);
     }
 
     void setComponentName(String componentName) {
@@ -332,7 +337,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return (jtsTx==null);
     }
 
-    void setJTSTx(Transaction jtsTx) throws RollbackException, SystemException {
+    void setJTSTx(TransactionInternal jtsTx) throws RollbackException, SystemException {
         this.jtsTx = jtsTx;
     
         if ( !commitStarted ) {
@@ -340,15 +345,13 @@ public final class JavaEETransactionImpl extends TimerTask implements
             for ( int i=0; i<syncs.size(); i++ )
                 jtsTx.registerSynchronization((Synchronization)syncs.elementAt(i));
 
-/** XXX TransactionImpl XXX
             for ( int i=0; i<interposedSyncs.size(); i++ )
-                ((TransactionImpl)jtsTx).registerInterposedSynchronization(
+                jtsTx.registerInterposedSynchronization(
                         (Synchronization)interposedSyncs.elementAt(i));
-** XXX TransactionImpl XXX **/
         }
     }
 
-    Transaction getJTSTx() {
+    TransactionInternal getJTSTx() {
         return jtsTx;
     }
 
