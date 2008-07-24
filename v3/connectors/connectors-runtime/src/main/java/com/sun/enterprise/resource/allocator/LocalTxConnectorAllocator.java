@@ -65,31 +65,31 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         super(poolMgr, mcf, spec, subject, reqInfo, info, desc);
     }
 
-    
+
     public ResourceHandle createResource()
-         throws PoolingException {
+            throws PoolingException {
         try {
             ManagedConnection mc = mcf.createManagedConnection(subject, reqInfo);
-            
-            ResourceHandle resource =  createResourceHandle(mc, spec, this, info);
-            ConnectionEventListener l =  new LocalTxConnectionEventListener(resource);
+
+            ResourceHandle resource = createResourceHandle(mc, spec, this, info);
+            ConnectionEventListener l = new LocalTxConnectionEventListener(resource);
             mc.addConnectionEventListener(l);
             resource.setListener(l);
 
-            XAResource xares =  new ConnectorXAResource(resource, spec, this, info);
+            XAResource xares = new ConnectorXAResource(resource, spec, this, info);
             resource.fillInResourceObjects(null, xares);
 
             return resource;
         } catch (ResourceException ex) {
-            Object[]  params = new Object[]{spec.getConnectionPoolName(), ex.getMessage()};
-            _logger.log(Level.WARNING,"poolmgr.create_resource_error", params);
-            _logger.log(Level.FINE,"Resource Exception while creating resource",ex);
+            Object[] params = new Object[]{spec.getConnectionPoolName(), ex.getMessage()};
+            _logger.log(Level.WARNING, "poolmgr.create_resource_error", params);
+            _logger.log(Level.FINE, "Resource Exception while creating resource", ex);
 
             if (ex.getLinkedException() != null) {
-                _logger.log(Level.WARNING,"poolmgr.create_resource_error",ex.getLinkedException().getMessage());
+                _logger.log(Level.WARNING, "poolmgr.create_resource_error", ex.getLinkedException().getMessage());
             }
             throw new PoolingException(ex);
-        } 
+        }
     }
 
     public void fillInResourceObjects(ResourceHandle resource)
@@ -113,8 +113,8 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             ConnectorXAResource.freeListener(mc);
             mc.destroy();
-            if (_logger.isLoggable( Level.FINEST ) ) {
-                _logger.finest( "destroyResource for LocalTxConnectorAllocator done");
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("destroyResource for LocalTxConnectorAllocator done");
             }
 
         } catch (Exception ex) {
@@ -123,10 +123,10 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         }
     }
 
-   
+
     public boolean shareableWithinComponent() {
         //For local transactions, a resource is always shareable within components 
-	    //within the same transaction
+        //within the same transaction
         return true;
     }
 

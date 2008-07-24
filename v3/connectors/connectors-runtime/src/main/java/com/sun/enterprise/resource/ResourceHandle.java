@@ -56,7 +56,7 @@ import java.util.logging.Level;
  *
  * @author Tony Ng
  */
-public class ResourceHandle implements 
+public class ResourceHandle implements
         com.sun.appserv.connectors.internal.api.ResourceHandle, TransactionalResource {
 
     // unique ID for resource handles
@@ -64,10 +64,10 @@ public class ResourceHandle implements
 
     private long id;
     private ClientSecurityInfo info;
-    private Object resource;  // XAConnection for JDBC 2.0
+    private Object resource;  // represents MC
     private ResourceSpec spec;
     private XAResource xares;
-    private Object usercon;   // Connection for JDBC 2.0
+    private Object usercon;   // represents connection-handle to user
     private ResourceAllocator alloc;
     private Object instance;  // the component instance holding this resource
     private int shareCount;   // sharing within a component (XA only)
@@ -82,6 +82,7 @@ public class ResourceHandle implements
     private boolean enlistmentSuspended = false;
 
     private boolean supportsLazyEnlistment_ = false;
+    private boolean supportsLazyAssoc_ = false;
 
     private static Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
@@ -107,33 +108,45 @@ public class ResourceHandle implements
         this.resource = resource;
         this.alloc = alloc;
 
-	if ( alloc instanceof LocalTxConnectorAllocator)
-	    supportsXAResource = false;
-	else
-	    supportsXAResource = true;
+        if (alloc instanceof LocalTxConnectorAllocator)
+            supportsXAResource = false;
+        else
+            supportsXAResource = true;
 
-        if ( resource instanceof
-            javax.resource.spi.LazyEnlistableManagedConnection ) {
+        if (resource instanceof
+                javax.resource.spi.LazyEnlistableManagedConnection) {
             supportsLazyEnlistment_ = true;
         }
 
-
+        if (resource instanceof
+                javax.resource.spi.DissociatableManagedConnection) {
+            supportsLazyAssoc_ = true;
+        }
     }
 
-	public ResourceHandle(Object resource,
+/*    public ResourceHandle(Object resource,
                           ResourceSpec spec,
                           ResourceAllocator alloc,
                           ClientSecurityInfo info,
-			  boolean supportsXA) {
+                          boolean supportsXA) {
         this.id = getNextId();
         this.spec = spec;
         this.info = info;
         this.resource = resource;
         this.alloc = alloc;
 
-		supportsXAResource = supportsXA;
+        supportsXAResource = supportsXA;
 
-    }    
+        if (resource instanceof
+                javax.resource.spi.LazyEnlistableManagedConnection) {
+            supportsLazyEnlistment_ = true;
+        }
+
+        if (resource instanceof
+                javax.resource.spi.DissociatableManagedConnection) {
+            supportsLazyAssoc_ = true;
+        }
+    } */
 
 
     /**
@@ -146,15 +159,14 @@ public class ResourceHandle implements
     /**
      * To check whether lazy enlistment is suspended or not.<br>
      * If true, TM will not do enlist/lazy enlist.
+     *
      * @return boolean
      */
-    public boolean isEnlistmentSuspended()
-    {
+    public boolean isEnlistmentSuspended() {
         return enlistmentSuspended;
     }
 
-    public void setEnlistmentSuspended(boolean enlistmentSuspended)
-    {
+    public void setEnlistmentSuspended(boolean enlistmentSuspended) {
         this.enlistmentSuspended = enlistmentSuspended;
     }
 
@@ -206,20 +218,20 @@ public class ResourceHandle implements
                                       XAResource xaRes) {
         if (userConnection != null) usercon = userConnection;
 
-        if (xaRes !=null) {
-           if(logger.isLoggable(Level.FINEST)){
-             //When Log level is Finest, XAResourceWrapper is used to log
-             //all XA interactions - Don't wrap XAResourceWrapper if it is 
-             //already wrapped
-               if ((xaRes instanceof XAResourceWrapper) ||
-                       (xaRes instanceof ConnectorXAResource)) {
-                   this.xares = xaRes;
-               } else {
-                   this.xares = new XAResourceWrapper(xaRes);
-               }
-           } else {
-            this.xares = xaRes;
-           }
+        if (xaRes != null) {
+            if (logger.isLoggable(Level.FINEST)) {
+                //When Log level is Finest, XAResourceWrapper is used to log
+                //all XA interactions - Don't wrap XAResourceWrapper if it is
+                //already wrapped
+                if ((xaRes instanceof XAResourceWrapper) ||
+                        (xaRes instanceof ConnectorXAResource)) {
+                    this.xares = xaRes;
+                } else {
+                    this.xares = new XAResourceWrapper(xaRes);
+                }
+            } else {
+                this.xares = xaRes;
+            }
         }
 
     }
@@ -335,6 +347,10 @@ public class ResourceHandle implements
 
     public boolean supportsLazyEnlistment() {
         return supportsLazyEnlistment_;
+    }
+
+    public boolean supportsLazyAssociation() {
+        return supportsLazyAssoc_;
     }
 
     public void enlistedInTransaction(Transaction tran) throws IllegalStateException {

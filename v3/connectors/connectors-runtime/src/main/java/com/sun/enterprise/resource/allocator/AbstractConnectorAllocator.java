@@ -188,18 +188,18 @@ public abstract class AbstractConnectorAllocator
     }
 
     protected ResourceHandle createResourceHandle(Object resource, ResourceSpec spec,
-                                               ResourceAllocator alloc, ClientSecurityInfo info){
+                                                  ResourceAllocator alloc, ClientSecurityInfo info) {
 
         ConnectorConstants.PoolType pt = ConnectorConstants.PoolType.STANDARD_POOL;
-        try{
+        try {
             pt = ConnectorRuntime.getRuntime().getPoolType(spec.getConnectionPoolName());
-        }catch(ConnectorRuntimeException cre){
+        } catch (ConnectorRuntimeException cre) {
             //TODO V3 log cre +  setting default pool type
         }
-        if(pt == ConnectorConstants.PoolType.ASSOCIATE_WITH_THREAD_POOL){
+        if (pt == ConnectorConstants.PoolType.ASSOCIATE_WITH_THREAD_POOL) {
             return new AssocWithThreadResourceHandle(resource, spec, alloc, info);
-        }else{
-            return new ResourceHandle(resource, spec, alloc, info);    
+        } else {
+            return new ResourceHandle(resource, spec, alloc, info);
         }
     }
 }

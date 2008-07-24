@@ -35,46 +35,24 @@
  */
 package com.sun.enterprise.connectors;
 
-import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import javax.resource.ResourceException;
+import javax.resource.spi.LazyAssociatableConnectionManager;
 
-import javax.resource.spi.ConnectionManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/* Authors : Binod P G, Aditya Gore
- *
+/**
+ * @author Aditya Gore
  */
-public class ConnectionManagerFactory {
-
-    public static ConnectionManager getAvailableConnectionManager(
-            String poolName, boolean forceNoLazyAssoc)
-            throws ConnectorRuntimeException {
-
-        ConnectorRegistry registry = ConnectorRegistry.getInstance();
-        PoolMetaData pmd = registry.getPoolMetaData(poolName);
-        boolean isLazyEnlist = pmd.isLazyEnlistable();
-        boolean isLazyAssoc = pmd.isLazyAssociatable();
-
-        ConnectionManagerImpl mgr = null;
-
-        if (isLazyAssoc && !forceNoLazyAssoc) {
-            logFine("Creating LazyAssociatableConnectionManager");
-            mgr = new LazyAssociatableConnectionManagerImpl(poolName);
-        }else if (isLazyEnlist) {
-            logFine("Creating LazyEnlistableConnectionManager");
-            mgr = new LazyEnlistableConnectionManagerImpl(poolName);
-        } else {
-            logFine("Creating plain ConnectionManager");
-            mgr = new ConnectionManagerImpl(poolName);
-        }
-        return mgr;
+public class LazyAssociatableConnectionManagerImpl extends ConnectionManagerImpl
+        implements LazyAssociatableConnectionManager {
+    public LazyAssociatableConnectionManagerImpl(String poolName) {
+        super(poolName);
     }
 
-    private static void logFine(String message) {
-        Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine(message);
-        }
+    public void associateConnection(Object connection,
+                                    javax.resource.spi.ManagedConnectionFactory mcf,
+                                    javax.resource.spi.ConnectionRequestInfo info)
+            throws ResourceException {
+        //the following call will also take care of associating "connection"
+        //with a new ManagedConnection instance
+        allocateConnection(mcf, info, jndiName, connection);
     }
 }

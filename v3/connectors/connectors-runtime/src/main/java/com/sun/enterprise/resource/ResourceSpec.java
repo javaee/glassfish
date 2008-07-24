@@ -53,6 +53,9 @@ public class ResourceSpec implements Serializable {
     private boolean isXA_;
 
     private boolean lazyEnlistable_;
+    private boolean lazyAssociatable_;
+    private Object connectionToAssoc_;
+
 
     private String connectionPoolName;
 
@@ -92,6 +95,16 @@ public class ResourceSpec implements Serializable {
         if( pmd.isLazyEnlistable() && !nonTxResource && !pmResource ) {
             lazyEnlistable_ = true;
         }
+
+        if ( pmd.isLazyAssociatable() && !nonTxResource && !pmResource) {
+            lazyAssociatable_ = true;
+            //The rationale behind doing this is that in the PoolManagerImpl
+            //when we return from getResource called by associateConnections,
+            //enlistment should happen immediately since we are associating on
+            //first use anyway,
+            lazyEnlistable_ = false;
+        }
+
 
     }
 
@@ -178,6 +191,22 @@ public class ResourceSpec implements Serializable {
         lazyEnlistable_ = lazyEnlist;
     }
 
+    public boolean isLazyAssociatable() {
+        return lazyAssociatable_;
+    }
+
+
+    public void setLazyAssociatable( boolean lazyAssoc ) {
+        lazyAssociatable_ = lazyAssoc;
+    }
+
+    public void setConnectionToAssociate( Object conn ) {
+        connectionToAssoc_ = conn;
+    }
+
+    public Object getConnectionToAssociate() {
+        return connectionToAssoc_;
+    }
 
     public String toString() {
         StringBuffer sb = new StringBuffer("ResourceSpec :- ");
@@ -188,6 +217,7 @@ public class ResourceSpec implements Serializable {
         sb.append("\npmResource : ").append(pmResource);
         sb.append("\nnonTxResource : ").append(nonTxResource);
         sb.append("\nlazyEnlistable : ").append(lazyEnlistable_);
+        sb.append("\nlazyAssociatable : ").append(lazyAssociatable_);
         return sb.toString();
     }
 }

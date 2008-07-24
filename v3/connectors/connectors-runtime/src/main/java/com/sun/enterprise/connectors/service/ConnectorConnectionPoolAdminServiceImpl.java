@@ -827,6 +827,31 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     boolean lazyEnlistable = connectorConnectionPool.isLazyConnectionEnlist();
                     boolean lazyAssoc = connectorConnectionPool.isLazyConnectionAssoc();
 
+                    if ( isPM || isNonTx ) {
+                        /*
+                        We should not do lazyEnlistment if we are an __pm
+                        resource since we won't have an InvocationContext and
+                        the lazy enlistment depends upon an InvocationContext
+                        For a nonTx resource enlistment (lazy or otherwise)
+                        doesn't come into the picture at all
+                        */
+                        lazyEnlistable = false;
+                    }
+
+                    if (isPM) {
+                        //We need to switch off lazy association here because of
+                        //the way our Persistence layer behaves. Adding a system
+                        //property here to allow other persistence layers to use
+                        //lazy association with PM resources
+                        if (lazyAssoc) {
+                            String str = System.getProperty(
+                                    "com.sun.enterprise.resource.AllowLazyAssociationWithPM", "FALSE");
+                            if (str.toUpperCase().trim().equals("FALSE")) {
+                                lazyAssoc = false;
+                            }
+                        }
+                    }
+
                     PoolMetaData pmd = new PoolMetaData(poolName, mcf, s, txSupport, prin,
                             isPM, isNonTx, lazyEnlistable, runtimeSecurityMap, lazyAssoc);
                     logFine(pmd.toString());

@@ -84,7 +84,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
 
     public PoolManagerImpl() {
         this.poolTable = new ConcurrentHashMap<String, ResourcePool>();
-        resourceManager    = new ResourceManagerImpl();
+        resourceManager = new ResourceManagerImpl();
         sysResourceManager = new SystemResourceManagerImpl();
         noTxResourceManager = new NoTxResourceManagerImpl();
         lazyEnlistableResourceManager = new LazyEnlistableResourceManagerImpl();
@@ -133,10 +133,32 @@ public class PoolManagerImpl extends AbstractPoolManager {
         ResourceHandle handle =
                 getResourceFromPool(spec, alloc, info, tran);
 
+        if (!handle.supportsLazyAssociation()) {
+            spec.setLazyAssociatable(false);
+        }
+
+        if (spec.isLazyAssociatable() &&
+                spec.getConnectionToAssociate() != null) {
+            //If getConnectionToAssociate returns a connection that means
+            //we need to associate a new connection with it
+            try {
+                Object connection = spec.getConnectionToAssociate();
+                ManagedConnection dmc
+                        = (ManagedConnection) handle.getResource();
+                dmc.associateConnection(connection);
+            } catch (ResourceException e) {
+                putbackDirectToPool(handle, spec.getConnectionPoolName());
+                PoolingException pe = new PoolingException(
+                        e.getMessage());
+                pe.initCause(e);
+                throw pe;
+            }
+        }
+
         //If the ResourceAdapter does not support lazy enlistment
         //we cannot either
-        if ( ! handle.supportsLazyEnlistment() ) {
-            spec.setLazyEnlistable( false );
+        if (!handle.supportsLazyEnlistment()) {
+            spec.setLazyEnlistable(false);
         }
 
         handle.setResourceSpec(spec);
@@ -192,10 +214,10 @@ public class PoolManagerImpl extends AbstractPoolManager {
      * @param poolName Name of the pool
      */
     public boolean switchOnMatching(String poolName) {
-	ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
+        ResourcePool pool = (ResourcePool) getPoolTable().get(poolName);
 
-	if (pool != null ) {
-	    pool.switchOnMatching();
+        if (pool != null) {
+            pool.switchOnMatching();
             return true;
         } else {
             return false;
@@ -223,13 +245,13 @@ public class PoolManagerImpl extends AbstractPoolManager {
             logFine("Returning noTxResourceManager");
             return noTxResourceManager;
         } else if (spec.isPM()) {
-            logFine( "Returning sysResourceManager");
+            logFine("Returning sysResourceManager");
             return sysResourceManager;
-        }  else if (spec.isLazyEnlistable() ) {
-            logFine( "Returning LazyEnlistableResourceManager");
+        } else if (spec.isLazyEnlistable()) {
+            logFine("Returning LazyEnlistableResourceManager");
             return lazyEnlistableResourceManager;
-        }  else {
-            logFine( "Returning resourceManager");
+        } else {
+            logFine("Returning resourceManager");
             return resourceManager;
         }
     }
@@ -239,28 +261,28 @@ public class PoolManagerImpl extends AbstractPoolManager {
         try {
             tran.registerSynchronization(sync);
         } catch (Exception ex) {
-            _logger.fine( "Error adding syncListener : " +
-	        (ex.getMessage() != null ? ex.getMessage() : " "));
+            _logger.fine("Error adding syncListener : " +
+                    (ex.getMessage() != null ? ex.getMessage() : " "));
         }
     }
 
     // called by EJB Transaction Manager
     public void transactionCompleted(Transaction tran, int status)
-    throws IllegalStateException {
+            throws IllegalStateException {
 
-	Iterator iter = ((JavaEETransaction)tran).getAllParticipatingPools().iterator();
+        Iterator iter = ((JavaEETransaction) tran).getAllParticipatingPools().iterator();
         while (iter.hasNext()) {
-            ResourcePool pool = getPool((String)iter.next());
-            if (_logger.isLoggable(Level.FINE)){
-                _logger.fine( "calling transactionCompleted on " + pool.getPoolName() );
+            ResourcePool pool = getPool((String) iter.next());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("calling transactionCompleted on " + pool.getPoolName());
             }
-        pool.transactionCompleted( tran, status );
+            pool.transactionCompleted(tran, status);
         }
     }
 
     public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.internal.api.ResourceHandle h)
             throws IllegalStateException {
-        ResourceHandle res = (ResourceHandle)h;
+        ResourceHandle res = (ResourceHandle) h;
 
         String poolName = res.getResourceSpec().getConnectionPoolName();
         try {
@@ -283,37 +305,67 @@ public class PoolManagerImpl extends AbstractPoolManager {
      * This method gets called by the LazyEnlistableConnectionManagerImpl when
      * a connection needs enlistment, i.e on use of a Statement etc.
      */
-    public void lazyEnlist( ManagedConnection mc ) throws ResourceException {
-        lazyEnlistableResourceManager.lazyEnlist( mc );
+    public void lazyEnlist(ManagedConnection mc) throws ResourceException {
+        lazyEnlistableResourceManager.lazyEnlist(mc);
     }
-    
+
 
     /*
-     * Called by the InvocationManager at methodEnd. This method
-     * will disassociate ManagedConnection instances from Connection
-     * handles if the ResourceAdapter supports that.
-     */
+    * Called by the InvocationManager at methodEnd. This method
+    * will disassociate ManagedConnection instances from Connection
+    * handles if the ResourceAdapter supports that.
+    */
     public void postInvoke() throws InvocationException {
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         JavaEETransactionManager tm = runtime.getTransactionManager();
-        ComponentInvocation invToUse =  runtime.getInvocationManager().getCurrentInvocation();
+        ComponentInvocation invToUse = runtime.getInvocationManager().getCurrentInvocation();
 
-        if ( invToUse == null ) {
+        if (invToUse == null) {
             return;
         }
 
         Object comp = invToUse.getInstance();
 
-        if ( comp == null ) {
+        if (comp == null) {
             return;
         }
 
 
-        List list = tm.getExistingResourceList(comp, invToUse );
-        if (list == null ) {
+        List list = tm.getExistingResourceList(comp, invToUse);
+        if (list == null) {
             //For invocations of asadmin the ComponentInvocation does not
             //have any resources and hence the existingResourcesList is null
             return;
+        }
+
+        if (list.size() == 0) return;
+
+        ResourceHandle[] handles = (ResourceHandle[]) list.toArray(
+                new ResourceHandle[0]);
+        for (ResourceHandle h : handles) {
+            ResourceSpec spec = h.getResourceSpec();
+            if (spec.isLazyAssociatable()) {
+                //In this case we are assured that the managedConnection is
+                //of type DissociatableManagedConnection
+                javax.resource.spi.DissociatableManagedConnection mc =
+                        (javax.resource.spi.DissociatableManagedConnection) h.getResource();
+                if (h.isEnlisted()) {
+                    getResourceManager(spec).delistResource(
+                            h, XAResource.TMSUCCESS);
+                }
+                try {
+                    mc.dissociateConnections();
+                } catch (ResourceException re) {
+                    InvocationException ie = new InvocationException(
+                            re.getMessage());
+                    ie.initCause(re);
+                    throw ie;
+                } finally {
+                    if (h.getResourceState().isBusy()) {
+                        putbackDirectToPool(h, spec.getConnectionPoolName());
+                    }
+                }
+            }
         }
     }
 
@@ -324,7 +376,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
 
     public void unregisterResource(ResourceHandle resource, int xaresFlag) {
         ResourceManager rm = getResourceManager(resource.getResourceSpec());
-        rm.unregisterResource(resource,xaresFlag);
+        rm.unregisterResource(resource, xaresFlag);
     }
 
     public void resourceClosed(ResourceHandle resource) {
@@ -333,7 +385,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
         putbackResourceToPool(resource, false);
     }
 
-    public void badResourceClosed(ResourceHandle resource){
+    public void badResourceClosed(ResourceHandle resource) {
         ResourceManager rm = getResourceManager(resource.getResourceSpec());
         rm.delistResource(resource, XAResource.TMSUCCESS);
         putbackBadResourceToPool(resource);
@@ -440,7 +492,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {
         Set descriptors = ConnectorRuntime.getRuntime().getResourceReferenceDescriptor();
 
-        if(descriptors != null){
+        if (descriptors != null) {
             for (Object descriptor : descriptors) {
                 ResourceReferenceDescriptor ref =
                         (ResourceReferenceDescriptor) descriptor;
@@ -465,8 +517,8 @@ public class PoolManagerImpl extends AbstractPoolManager {
             try {
                 transactionCompleted(tran, status);
             } catch (Exception ex) {
-                _logger.fine( "Exception in afterCompletion : " +
-		    (ex.getMessage() != null ? ex.getMessage() : " " ));
+                _logger.fine("Exception in afterCompletion : " +
+                        (ex.getMessage() != null ? ex.getMessage() : " "));
             }
         }
 

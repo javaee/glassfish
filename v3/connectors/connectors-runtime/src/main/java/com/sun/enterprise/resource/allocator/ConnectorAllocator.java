@@ -59,11 +59,11 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 public class ConnectorAllocator extends AbstractConnectorAllocator {
 
     private boolean shareable;
-   
+
 
     class ConnectionListenerImpl extends com.sun.enterprise.resource.listener.ConnectionEventListener {
         private ResourceHandle resource;
-        
+
         public ConnectionListenerImpl(ResourceHandle resource) {
             this.resource = resource;
         }
@@ -80,13 +80,14 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
 
         /**
          * Resource adapters will signal that the connection being closed is bad.
+         *
          * @param evt ConnectionEvent
          */
-        public void badConnectionClosed(ConnectionEvent evt){
+        public void badConnectionClosed(ConnectionEvent evt) {
 
             if (resource.hasConnectionErrorOccurred()) {
-	            return;
-    	    }
+                return;
+            }
             resource.decrementCount();
             if (resource.getShareCount() == 0) {
                 ManagedConnection mc = (ManagedConnection) evt.getSource();
@@ -94,7 +95,7 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
                 poolMgr.badResourceClosed(resource);
             }
         }
-        
+
         public void connectionErrorOccurred(ConnectionEvent evt) {
             resource.setConnectionErrorOccurred();
 
@@ -133,18 +134,17 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
         this.shareable = shareable;
     }
 
-    
+
     public ResourceHandle createResource()
-         throws PoolingException
-    {
+            throws PoolingException {
         try {
             ManagedConnection mc =
-                mcf.createManagedConnection(subject, reqInfo);
-            
+                    mcf.createManagedConnection(subject, reqInfo);
+
             ResourceHandle resource =
-                new ResourceHandle(mc, spec, this, info);
-            ConnectionEventListener l = 
-                new ConnectionListenerImpl(resource);
+                    createResourceHandle(mc, spec, this, info);
+            ConnectionEventListener l =
+                    new ConnectionListenerImpl(resource);
             mc.addConnectionEventListener(l);
             return resource;
         } catch (ResourceException ex) {
@@ -153,28 +153,27 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
     }
 
     public void fillInResourceObjects(ResourceHandle resource)
-        throws PoolingException
-    {
+            throws PoolingException {
         try {
-	    ManagedConnection mc = (ManagedConnection) resource.getResource();
-	    Object con = mc.getConnection( subject, reqInfo );
-	    resource.incrementCount();
+            ManagedConnection mc = (ManagedConnection) resource.getResource();
+            Object con = mc.getConnection(subject, reqInfo);
+            resource.incrementCount();
             XAResource xares = mc.getXAResource();
             resource.fillInResourceObjects(con, xares);
-        } catch( ResourceException ex ) {
-	    throw new PoolingException( ex );
-	}
+        } catch (ResourceException ex) {
+            throw new PoolingException(ex);
+        }
     }
 
     public void destroyResource(ResourceHandle resource)
-        throws PoolingException {
+            throws PoolingException {
 
         try {
             closeUserConnection(resource);
         } catch (Exception ex) {
             // ignore error
         }
-        
+
         try {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             mc.destroy();
