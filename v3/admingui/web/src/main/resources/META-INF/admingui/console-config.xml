@@ -8,5 +8,22 @@
                 parentId="configuration" 
                 content="webContainerNode.jsf" 
         />
-       
+       <integration-point 
+                id="monitor" 
+                type="tree" 
+                priority="200"
+                parentId="tree" 
+                content="monitor/monitoringNode.jsf"/>
+       <integration-point 
+                id="monitor_web" 
+                type="tree" 
+                priority="10"
+                parentId="monitor" 
+                content="monitor/webContainerNode.jsf"/>
+       <integration-point 
+                id="monitor_http" 
+                type="tree" 
+                priority="20"
+                parentId="monitor" 
+                content="monitor/httpServiceNode.jsf"/>
 </console-config>
