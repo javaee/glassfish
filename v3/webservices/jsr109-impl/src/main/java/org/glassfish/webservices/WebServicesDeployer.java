@@ -333,17 +333,17 @@ public class WebServicesDeployer extends WebDeployer {
     public MetaData getMetaData() {
 
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();       
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
+        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null)   ;
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
 
         String[] otherExportedPackages = new String[] {
-                 "org.glassfish.webservices:jsr109-impl",
-                 "org.glassfish.web:webtier" ,
-                 "com.sun.xml.ws:webservices-rt",
-                 "com.sun.tools.ws:webservices-tools",
-                 "javax.xml:webservices-api"
+                 "org.glassfish.webservices.jsr109-impl",
+                 "org.glassfish.web.web-glue",
+                 "com.sun.xml.ws.webservices-rt",
+                 "com.sun.tools.ws.webservices-tools",
+                 "javax.xml.webservices-api"
 
                  };
 
@@ -715,11 +715,12 @@ public class WebServicesDeployer extends WebDeployer {
                              File wsdlDir, QName sQname, QName port,DeploymentContext dc) {
 
 
-        Thread.currentThread().setContextClassLoader(dc.getClassLoader())      ;
+       // Thread.currentThread().setContextClassLoader(dc.getClassLoader())      ;
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add("-cp");
         argsList.add(classPath);
         argsList.add("-keep");
+        argsList.add("-verbose");
         if(!skipGenWsdl) {
             argsList.add("-wsdl");
             argsList.add("-r");
