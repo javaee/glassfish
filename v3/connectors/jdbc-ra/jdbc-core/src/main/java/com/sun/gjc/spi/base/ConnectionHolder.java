@@ -745,16 +745,18 @@ public abstract class ConnectionHolder implements Connection {
     }
 
     protected void performLazyAssociation() throws SQLException {
-        try {
-            this.lazyAssocCm_.associateConnection(this, mcf_, cxReqInfo_);
-        } catch (ResourceException re) {
-            String msg = sm.getString(
-                    "jdbc.cannot_assoc", re.getMessage() +
-                    " Cannnot Associate ManagedConnection");
+        if (mc == null) {
+            try {
+                this.lazyAssocCm_.associateConnection(this, mcf_, cxReqInfo_);
+            } catch (ResourceException re) {
+                String msg = sm.getString(
+                        "jdbc.cannot_assoc", re.getMessage() +
+                        " Cannnot Associate ManagedConnection");
 
-            SQLException sqle = new SQLException(msg);
-            sqle.initCause(re);
-            throw sqle;
+                SQLException sqle = new SQLException(msg);
+                sqle.initCause(re);
+                throw sqle;
+            }
         }
     }
 
