@@ -89,7 +89,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         mConnectorsStarter = null;
     }
     
-    private void startConnector( final JmxConnector conn )
+    private JMXConnectorServer startConnector( final JmxConnector conn )
         throws IOException
     {
         final String protocol = conn.getProtocol();
@@ -115,6 +115,8 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         dr.setAuthentication( false );
         dr.setRmiRegistrySecureFlag( false );
         final JMXConnectorServer  server = dr.startConnectorServer();
+        
+        return server;
     }
     
     public void postConstruct()

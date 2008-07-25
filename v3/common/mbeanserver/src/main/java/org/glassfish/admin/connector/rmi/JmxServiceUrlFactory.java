@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 public class JmxServiceUrlFactory {
     /** Field */
     public static final String RMI_JSR160_CS_JNDI_SUFFIX = "/management/rmi-jmx-connector";
-    public static final String JCONSOLE_RMI_JSR160_CS_JNDI_SUFFIX = "/jmxrmi"; 
+    public static final String JCONSOLE_RMI_JSR160_CS_JNDI_SUFFIX = "/jmxrmi";
     //hard-coding the logger name.
     private static final Logger logger      = Logger.getLogger("javax.enterprise.system.tools.admin");
     private JmxServiceUrlFactory() {

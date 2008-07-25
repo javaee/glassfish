@@ -232,8 +232,14 @@ public class JmxConnectorServerDriver {
         }
     }
     private void prepare() {
-        if (protocol == RemoteJmxProtocol.RMIJRMP) {
+        if (protocol.equals( RemoteJmxProtocol.RMIJRMP) ) {
+            debug ("prepare(): creating RmiStubRegistryHandler on port "  + port );
             new RmiStubRegistryHandler(port, secureRegistry, logger);
+            debug ("prepare(): created RmiStubRegistryHandler on port "  + port );
+        }
+        else
+        {
+            debug( "prepare(): protocol is something other than RMIJRMP: " + protocol );
         }
     }
     
