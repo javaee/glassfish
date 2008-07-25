@@ -37,7 +37,16 @@ import java.util.logging.Level;
  */
 public class GlassfishProtocolChain extends DefaultProtocolChain {
     
+    // Allow disabling the continuous execution optimization from Grizzly.
+    protected final static boolean ce = 
+        Boolean.valueOf(System.getProperty("v3.grizzly.readFilter.continuousExecution", "true")).booleanValue();
+    
+    public GlassfishProtocolChain(){
+        setContinuousExecution(ce);
+    }
+    
     private List<ProtocolFilter> dynamicProtocolFilters;
+     
     
     /**
      * Execute the ProtocolFilter.execute method. If a ProtocolFilter.execute
