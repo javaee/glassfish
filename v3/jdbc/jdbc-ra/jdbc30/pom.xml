@@ -1,11 +1,11 @@
 <?xml version="1.0"?><project>
   <parent>
     <artifactId>jdbc-ra</artifactId>
-    <groupId>org.glassfish.connectors.jdbc-ra</groupId>
+    <groupId>org.glassfish.jdbc.jdbc-ra</groupId>
     <version>10.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.glassfish.connectors.jdbc-ra.jdbc30</groupId>
+  <groupId>org.glassfish.jdbc.jdbc-ra.jdbc30</groupId>
   <artifactId>jdbc30</artifactId>
   <name>JDBC 30 related classes for JDBC Resource Adapter</name>
 
@@ -33,7 +33,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.glassfish.connectors.jdbc-ra.jdbc-core</groupId>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-core</groupId>
       <artifactId>jdbc-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>

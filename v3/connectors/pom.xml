@@ -15,6 +15,5 @@
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
         <module>work-management</module>
-        <module>jdbc-ra</module>
   </modules>
 </project>

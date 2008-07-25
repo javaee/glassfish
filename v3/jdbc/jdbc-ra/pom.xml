@@ -7,7 +7,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.glassfish.connectors.jdbc-ra</groupId>
+  <groupId>org.glassfish.jdbc.jdbc-ra</groupId>
   <artifactId>jdbc-ra</artifactId>
   <name>JDBC Resource Adapter</name>
   <packaging>pom</packaging>

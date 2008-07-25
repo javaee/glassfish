@@ -158,6 +158,7 @@
       	<module>web</module>
       	<module>ejb</module>
       	<module>connectors</module>
+      	<module>jdbc</module>
       	<module>persistence</module>
       	<module>extras</module>
       	<module>distributions</module>
