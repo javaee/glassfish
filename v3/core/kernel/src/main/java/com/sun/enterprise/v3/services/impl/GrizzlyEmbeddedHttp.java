@@ -33,7 +33,6 @@ import com.sun.grizzly.http.DefaultProcessorTask;
 import com.sun.grizzly.http.HttpWorkerThread;
 import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Adapter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     protected void initAlgorithm(){
         
         if (!algorithInitialized.getAndSet(true)) {
-            algorithmClass = StaticStreamAlgorithm.class;
+            algorithmClass = ContainerStaticStreamAlgorithm.class;
             defaultAlgorithmInstalled = true;
         }
     }
