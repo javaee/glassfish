@@ -51,41 +51,32 @@ import java.util.Map;
 public final class KitchenSinkImpl extends AMXNonConfigImplBase
 	implements KitchenSink
 {
-    public KitchenSinkImpl(final ObjectName parentObjectName)
-	{
+    public KitchenSinkImpl(final ObjectName parentObjectName) {
         super( KitchenSink.J2EE_TYPE, KitchenSink.J2EE_TYPE, parentObjectName, KitchenSink.class, null );
 	}
     
         public Map<String,Object>
-    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName )
-    {
+    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName ) {
         final Map<String,Object> result = new HashMap<String,Object>();
-        Map connProps = null;
         final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
-        ConnectorRuntime connRuntime;
 
-        // habitat
         if (habitat == null) {
-            result.put( PROPERTY_MAP_KEY, connProps );
+            result.put( PROPERTY_MAP_KEY, null );
             result.put( REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
 
         // get connector runtime
         try {
-            connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
-        } catch (ComponentException e) {
+            final ConnectorRuntime connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
+            final Map<String,Object>  connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
             result.put( PROPERTY_MAP_KEY, connProps );
+        } catch (ComponentException e) {
+            result.put( PROPERTY_MAP_KEY, null );
             result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
-            return result;
         }
         
-        // get properties
-        // NOTE: DOCUMENT THE TYPE: is it Map<String,String>?  What are the legal keys?
-        // See also com.sun.appserv.management.misc.util.TypeCast.checkMap()
-        //
-        connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
-        result.put( PROPERTY_MAP_KEY, connProps );
+        // got everything, now get properties
         return result;
     }
 }
