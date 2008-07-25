@@ -136,6 +136,9 @@ import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.web.admin.monitor.RequestProbeProvider;
+import org.glassfish.web.admin.monitor.ServletProbeProvider;
+import org.glassfish.web.admin.monitor.SessionProbeProvider;
 
 // Begin EE: 4927099 load only associated applications
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -404,6 +407,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected ProbeProviderFactory probeProviderFactory = null;
 
 
+    protected RequestProbeProvider requestProbeProvider = null;
+    protected ServletProbeProvider servletProbeProvider = null;
+    protected SessionProbeProvider sessionProbeProvider = null;
+
+
     /**
      * Static initialization
      */
@@ -415,6 +423,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
     
     public void postConstruct() {
+
+        createProbeProviders();
 
         setJspFactory();
 
@@ -667,8 +677,27 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
 
-    public ProbeProviderFactory getProbeProviderFactory() {
-        return probeProviderFactory;
+    /**
+     * Gets the probe provider for servlet related events.
+     */
+    public ServletProbeProvider getServletProbeProvider() {
+        return servletProbeProvider;
+    }
+
+
+    /**
+     * Gets the probe provider for session related events.
+     */
+    public SessionProbeProvider getSessionProbeProvider() {
+        return sessionProbeProvider;
+    }
+
+
+    /**
+     * Gets the probe provider for request/response related events.
+     */
+    public RequestProbeProvider getRequestProbeProvider() {
+        return requestProbeProvider;
     }
 
 
@@ -4320,7 +4349,52 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // since setting this to true might result in undeployment problems
         return true;
     }
+
+
+    /**
+     * Creates probe providers for servlet, session, and 
+     * request/response related events.
+     * 
+     * The generated servlet and session related probe providers are shared
+     * by all webapps. Each webapp will qualify a probe event with its app
+     * name.
+     *
+     * The generated request/response related probe provider is shared by
+     * all http connectors.
+     */
+    private void createProbeProviders() {
+        try {
+            servletProbeProvider = probeProviderFactory.getProbeProvider(
+                "web", "servlet", null, ServletProbeProvider.class);
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        ServletProbeProvider.class.getName(),
+                        e);
+        }
+
+        try {
+            sessionProbeProvider = probeProviderFactory.getProbeProvider(
+                "web", "session", null, SessionProbeProvider.class);
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        SessionProbeProvider.class.getName(),
+                        e);
+        }
+
+        try {
+            requestProbeProvider = probeProviderFactory.getProbeProvider(
+                "web", "request", null, RequestProbeProvider.class);
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        RequestProbeProvider.class.getName(),
+                        e);
+        }
+    }
 }
+
 
 class V3WebappLoader extends WebappLoader {
 

@@ -37,6 +37,7 @@
 package org.glassfish.web.admin.monitor;
 
 import java.security.Principal;
+import javax.servlet.Servlet;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 
 /**
@@ -44,8 +45,19 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
  */
 public interface ServletProbeProvider {
 
+    /**
+     * Emits notification that a servlet has been loaded.
+     *
+     * To get additional information (such as the servlet name) about the
+     * servlet that was loaded, call servlet.getServletConfig(),
+     * and on the returned ServletConfig, getServletName() (or some of the
+     * other getters).
+     *
+     * @param servlet the servlet that was loaded
+     * @param appName the name of the app to which the servlet belongs
+     */
     public void servletLoadedEvent(
-        @ProbeParam("servletName") String servletName,
+        @ProbeParam("servlet") Servlet servlet,
         @ProbeParam("appName") String appName
     );    
 }

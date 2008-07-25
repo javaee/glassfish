@@ -270,6 +270,7 @@ public class PECoyoteConnector extends Connector {
      */   
     public PECoyoteConnector(WebContainer webContainer) {
         this.webContainer = webContainer;
+        this.requestProbeProvider = webContainer.getRequestProbeProvider();
         setProtocolHandlerClassName(DUMMY_CONNECTOR_LAUNCHER);
     }
     
@@ -780,7 +781,6 @@ public class PECoyoteConnector extends Connector {
         super.initialize();
         // Set the monitoring.
         grizzlyMonitor = new GrizzlyConfig(domain,getPort());
-        createProbeProvider();
     }
 
 
@@ -1758,17 +1758,6 @@ public class PECoyoteConnector extends Connector {
         }
 
         return jsseCipher;
-    }
-
-
-    private void createProbeProvider() throws LifecycleException {
-        try {
-            requestProbeProvider =
-                webContainer.getProbeProviderFactory().getProbeProvider(
-                    "web", "request", null, RequestProbeProvider.class);
-        } catch (Exception e) {
-            throw new LifecycleException(e);
-        }
     }
 }
 

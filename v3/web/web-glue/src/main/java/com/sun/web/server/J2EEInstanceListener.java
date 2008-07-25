@@ -44,6 +44,7 @@ import java.security.ProtectionDomain;
 import java.security.Principal;
 import java.text.MessageFormat;
 import javax.transaction.Transaction;
+import javax.servlet.Servlet;
 import javax.servlet.ServletRequest; // IASRI 4713234
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
@@ -335,6 +336,11 @@ public final class J2EEInstanceListener implements InstanceListener {
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
+        }
+
+        if (eventType == InstanceEvent.EventType.AFTER_INIT_EVENT
+                && (instance instanceof Servlet)) {
+            wm.servletLoadedEvent((Servlet) instance);
         }
 
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);

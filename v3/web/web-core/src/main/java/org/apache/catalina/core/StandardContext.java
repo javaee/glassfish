@@ -6727,18 +6727,6 @@ public class StandardContext
     }
 
 
-    // Servlet related monitoring events
-
-    /**
-     * Emits servletLoaded event.
-     *
-     * @param servletName the name of the servlet that was loaded
-     */
-    public void servletLoadedEvent(String servletName) {
-        // Deliberate noop
-    }
-
-
     // HTTP session related monitoring events
 
     public void sessionCreatedEvent(HttpSession session) {

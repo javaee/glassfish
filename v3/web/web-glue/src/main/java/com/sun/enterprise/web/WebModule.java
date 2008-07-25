@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -81,7 +82,6 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
-import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -157,6 +157,8 @@ public class WebModule extends PwcWebModule {
     public WebModule(WebContainer webContainer) {
 
         this.webContainer = webContainer;
+        this.servletProbeProvider = webContainer.getServletProbeProvider();
+        this.sessionProbeProvider = webContainer.getSessionProbeProvider();
 
         this.adHocPaths = new HashMap<String,AdHocServletInfo>();
         this.adHocSubtrees = new HashMap<String,AdHocServletInfo>();
@@ -165,8 +167,6 @@ public class WebModule extends PwcWebModule {
         this.adHocPipeline.setBasic(new AdHocContextValve(this));
 
         notifyContainerListeners = false;
-
-        createProbeProviders(webContainer.getProbeProviderFactory());
     }
 
     
@@ -1341,35 +1341,12 @@ public class WebModule extends PwcWebModule {
     }
 
 
-    private void createProbeProviders(ProbeProviderFactory fac) {
-        try {
-            servletProbeProvider = fac.getProbeProvider("web", "servlet",
-                getName(), ServletProbeProvider.class);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE,
-                       "Unable to create probe provider for interface " +
-                       ServletProbeProvider.class.getName(),
-                       e);
-        }
-
-        try {
-            sessionProbeProvider = fac.getProbeProvider("web", "session",
-                getName(), SessionProbeProvider.class);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE,
-                       "Unable to create probe provider for interface " +
-                       SessionProbeProvider.class.getName(),
-                       e);
-        }
-    }
-
-
     /*
      * Servlet related probe events
      */
 
-    public void servletLoadedEvent(String servletName) {
-        servletProbeProvider.servletLoadedEvent(servletName, getName());
+    public void servletLoadedEvent(Servlet servlet) {
+        servletProbeProvider.servletLoadedEvent(servlet, name);
     }
 
 
@@ -1378,43 +1355,43 @@ public class WebModule extends PwcWebModule {
      */
 
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session, getName());
+        sessionProbeProvider.sessionCreatedEvent(session, name);
     }
 
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session, getName());
+        sessionProbeProvider.sessionDestroyedEvent(session, name);
     }
 
     public void sessionRejectedEvent(int maxSessions) {
-        sessionProbeProvider.sessionRejectedEvent(maxSessions, getName());
+        sessionProbeProvider.sessionRejectedEvent(maxSessions, name);
     }
 
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session, getName());
+        sessionProbeProvider.sessionExpiredEvent(session, name);
     }
 
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session, getName());
+        sessionProbeProvider.sessionPersistedStartEvent(session, name);
     }
 
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session, getName());
+        sessionProbeProvider.sessionPersistedEndEvent(session, name);
     }
 
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session, getName());
+        sessionProbeProvider.sessionActivatedStartEvent(session, name);
     }
 
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session, getName());
+        sessionProbeProvider.sessionActivatedEndEvent(session, name);
     }
 
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session, getName());
+        sessionProbeProvider.sessionPassivatedStartEvent(session, name);
     }
 
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session, getName());
+        sessionProbeProvider.sessionPassivatedEndEvent(session, name);
     }
 }
 
