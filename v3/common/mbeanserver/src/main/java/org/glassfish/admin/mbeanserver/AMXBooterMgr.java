@@ -55,7 +55,6 @@ final class AMXBooterMgr
     private final MBeanServer         mMBeanServer;
     private final Habitat             mHabitat;
     private volatile Booter           mAMXBooter;
-    private final ConnectorsStarter   mConnectorsStarter;
     
     public AMXBooterMgr( final Habitat habitat, final MBeanServer mbeanServer)
     {
@@ -63,32 +62,9 @@ final class AMXBooterMgr
         mMBeanServer    = mbeanServer;
         mHabitat        = habitat;
         
-        // create the connectors.  Use a thread since this network stuff could take time
-        mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
-        
         mAMXBooter = Booter.create( mHabitat, mMBeanServer );
         
-        new ConnectorsStarterThread(mConnectorsStarter).start();
-        
-        //debug( "AppserverMBeanServerFactory: MBeanServer, AMX booter and JMXConnector started" );
-    }
-    
-    private static final class ConnectorsStarterThread extends Thread
-    {
-        private final ConnectorsStarter mConnectorsStarter;
-        public ConnectorsStarterThread( final ConnectorsStarter cs ) { mConnectorsStarter = cs; }
-        
-        public void run()
-        {
-            try
-            {
-                mConnectorsStarter.startConnectors();
-            }
-            catch( Throwable t )
-            {
-                t.printStackTrace();
-            }
-        }
+        //debug( "AppserverMBeanServerFactory: MBeanServer, AMX booter started" );
     }
 }
 
