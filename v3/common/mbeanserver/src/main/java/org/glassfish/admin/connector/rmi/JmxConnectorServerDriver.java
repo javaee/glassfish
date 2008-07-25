@@ -32,7 +32,9 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXServiceURL;
+import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXAuthenticator;
@@ -66,6 +68,57 @@ public class JmxConnectorServerDriver {
     private JMXAuthenticator authenticator;
     private Logger logger;
     private MBeanServer mbs;
+    
+    // java -cp target/classes org.glassfish.admin.connector.rmi.JmxConnectorServerDriver <port> [<protocol>]
+    public static void main(final String[] args) {
+        int port = 8686;
+        String protocol = RemoteJmxProtocol.RMIJRMP.toString();
+        
+        if ( args.length >= 1 )
+        {
+            port = Integer.parseInt(args[0]);
+        }
+        
+        if ( args.length >= 2 )
+        {
+            protocol = args[1];
+        }
+        
+        debug( "JmxConnectorServerDriver.main(): port: " + port + ", protocol: " + protocol );
+        testStart( port, protocol );
+    }
+    
+    public static void testStart( final int port, final String protocol ) {
+        try
+        {
+            final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
+            dr.setMBeanServer( java.lang.management.ManagementFactory.getPlatformMBeanServer() );
+            dr.setProtocol( RemoteJmxProtocol.instance(protocol) );
+            dr.setPort( port );
+            //dr.setddress( address );
+            dr.setSsl( false );
+            dr.setAuthentication( false );
+            dr.setRmiRegistrySecureFlag( false );
+            final JMXConnectorServer  server = dr.startConnectorServer();
+            debug( "testStartRMI: created RMI connector @ " + server.getAddress() );
+            
+            if ( RemoteJmxProtocol.instance(protocol) == RemoteJmxProtocol.RMIJRMP )
+            {
+                final JMXConnectorServer  server2 = dr.startJconsoleConnectorServer();
+                debug( "testStartRMI: created RMI connector @ " + server2.getAddress() );
+            }
+            
+            final JMXConnector conn = server.toJMXConnector(null);
+            conn.connect();
+            final MBeanServerConnection mbsc = conn.getMBeanServerConnection();
+            
+            debug( "testStartRMI: connected client over RMI connector @ " + server.getAddress() );
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+    }
     
     /** Creates a JMXConnectorServerDriver instance with default values for
      * the various parameters. The protocol defaults to "rmi/jrmp". The rmi
@@ -171,12 +224,11 @@ public class JmxConnectorServerDriver {
         formJmxServiceUrl();
         createEnvironment();
         
-        debug( "Starting JMXConnectorServer using URL " + url );
         final JMXConnectorServer cs = 
             JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
 
         cs.start();
-        logStartup(cs);
+        logger.info( "Started JMXConnectorServer @ " + url );
         return ( cs );
     }
     
@@ -189,7 +241,7 @@ public class JmxConnectorServerDriver {
         final JMXConnectorServer jconsolecs = 
             JMXConnectorServerFactory.newJMXConnectorServer(jconsoleurl, jconsoleenv, mbs);
         jconsolecs.start();
-        logJconsoleStartup(jconsolecs);
+        logger.info( "Started JMXConnectorServer @ " + jconsoleurl );
         return ( jconsolecs );
     }
 
@@ -210,17 +262,6 @@ public class JmxConnectorServerDriver {
             logger.fine(msg);
         }
     }
-    /* Private Methods - Start */
-    private void logStartup(final JMXConnectorServer cs) {
-        logger.log(Level.FINE, "rjmx.lc.address", cs.getAddress().toString());
-        logger.log(Level.FINE, "rjmx.lc.status", "" + cs.isActive());
-    }
-    
-    
-    private void logJconsoleStartup(final JMXConnectorServer cs) {
-        logger.log(Level.INFO, "rjmx.std.address", cs.getAddress().toString());
-        logger.log(Level.INFO, "rjmx.std.status", "" + cs.isActive());
-    }
     
     private void formJmxServiceUrl() {
         //Note that the Connector Server can only be started on the host where this method is called
@@ -230,19 +271,23 @@ public class JmxConnectorServerDriver {
             this.jconsoleurl = JmxServiceUrlFactory.forJconsoleOverRmiWithJndiInAppserver(
                 JmxServiceUrlFactory.localhost(), this.port);
         }
-    }
-    private void prepare() {
-        if (protocol.equals( RemoteJmxProtocol.RMIJRMP) ) {
-            debug ("prepare(): creating RmiStubRegistryHandler on port "  + port );
-            new RmiStubRegistryHandler(port, secureRegistry, logger);
-            debug ("prepare(): created RmiStubRegistryHandler on port "  + port );
-        }
-        else
-        {
-            debug( "prepare(): protocol is something other than RMIJRMP: " + protocol );
+        else if ( protocol == RemoteJmxProtocol.JMXMP ) {
+            this.url = JmxServiceUrlFactory.forJmxmp( this.port );
         }
     }
     
+    private void prepare() {
+        if (protocol.equals( RemoteJmxProtocol.RMIJRMP) ) {
+           // debug ("prepare(): creating RmiStubRegistryHandler on port "  + port );
+            new RmiStubRegistryHandler(port, secureRegistry, logger);
+            //debug ("prepare(): created RmiStubRegistryHandler on port "  + port );
+        }
+        else
+        {
+            //debug( "prepare(): protocol is something other than RMIJRMP: " + protocol );
+        }
+    }
+
     private void createEnvironment() {
         env.clear();
         handleSsl();        

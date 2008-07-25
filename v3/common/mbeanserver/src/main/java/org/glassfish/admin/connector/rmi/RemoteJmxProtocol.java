@@ -46,7 +46,7 @@ package org.glassfish.admin.connector.rmi;
  */
 public class RemoteJmxProtocol {
 
-    private final String prtr;
+    private final String protocol;
     /** Field */
     public static final RemoteJmxProtocol RMIJRMP	= new RemoteJmxProtocol("rmi_jrmp");
     /** Field */
@@ -55,22 +55,24 @@ public class RemoteJmxProtocol {
     public static final RemoteJmxProtocol JMXMP         = new RemoteJmxProtocol("jmxmp");
     /*Implementation note: The fields above are defined per default values in DTD */
     /** Creates a new instance of RemoteJmxProtocol */
-    private RemoteJmxProtocol(final String prtr) {
-        this.prtr = prtr;
+    private RemoteJmxProtocol(final String prot) {
+        this.protocol = prot;
     }
 
     public String getName() {
-        return ( this.prtr );
+        return ( this.protocol );
     }
 
-    public static RemoteJmxProtocol instance(final String prtr) {
-        if (RMIJRMP.getName().equals(prtr))
+    public static RemoteJmxProtocol instance(final String protocol) {
+        if (RMIJRMP.getName().equals(protocol))
             return ( RMIJRMP );
-        else if (RMIIIOP.getName().equals(prtr))
+        else if (RMIIIOP.getName().equals(protocol))
             return ( RMIIIOP );
-        else if (JMXMP.getName().equals(prtr))
+        else if (JMXMP.getName().equals(protocol))
             return ( JMXMP );
         else
-            throw new UnsupportedOperationException("Unsupported: " + prtr);
+            throw new UnsupportedOperationException("Unsupported protocol: \"" + protocol + "\"");
     }
+    
+    public String toString() { return protocol; }
 }

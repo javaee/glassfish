@@ -76,10 +76,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     
     @Inject
     private MBeanServer     mMBeanServer;
-    
-    @Inject
-    Habitat mHabitat;
-    
+
     @Inject
     AdminService    mAdminService;
     
@@ -111,6 +108,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         dr.setMBeanServer(mMBeanServer);
         dr.setProtocol( RemoteJmxProtocol.instance(protocol) );
         dr.setPort( port );
+        //dr.setddress( address );
         dr.setSsl( securityEnabled );
         dr.setAuthentication( false );
         dr.setRmiRegistrySecureFlag( false );
@@ -126,7 +124,6 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             throw new IllegalStateException( "MBeanServer must be the Platform one" );
         }
         
-        /*
         final List<JmxConnector> l = mAdminService.getJmxConnector();
         debug( "SystemJmxConnectorName: " + mAdminService.getSystemJmxConnectorName() + ", " + l.size() + " connectors found");
         for( final JmxConnector c : l )
@@ -146,15 +143,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 t.printStackTrace();
             }
         }
-        */
         
         // pull the code above into this class....
         mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
         
         new ConnectorsStarterThread(mConnectorsStarter).start();
-        
-        // start AMX booter, JMX Connectors, etc
-        //mAMXBooterMgr = new AMXBooterMgr( mHabitat, mMBeanServer );
     }
     
     private static final class ConnectorsStarterThread extends Thread
