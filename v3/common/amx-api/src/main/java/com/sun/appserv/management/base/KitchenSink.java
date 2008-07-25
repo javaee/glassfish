@@ -48,15 +48,15 @@ public interface KitchenSink extends AMX, Utility, Singleton
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.KITCHEN_SINK;
         
-    /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
     public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
+    /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults} */
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     
     /**
         Get properties of JDBC Data Source
         @see #PROPERTY_MAP_KEY
         @see #REASON_FAILED_KEY
-
      */
     public Map<String,Object> 
         getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
