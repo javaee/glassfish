@@ -67,7 +67,7 @@ public class HttpServiceConfigListener implements ConfigListener {
     @Inject
     public HttpService httpService;
     
-    @Inject
+    @Inject(optional=true)
     public AccessLog accessLog;
     
     @Inject
