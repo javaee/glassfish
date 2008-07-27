@@ -14,7 +14,8 @@
               <!-- use a custom compiler to generate META-INF/services -->
               <compile>com.sun.enterprise:hk2-maven-plugin:hk2-compile</compile>
               <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
-              <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
+              <!--test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile-->
+              <test-compile>com.sun.enterprise:hk2-maven-plugin:hk2-test-compile</test-compile>
               <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
               <!-- this creates proper MANIFEST.MF file -->
               <package>com.sun.enterprise:hk2-maven-plugin:package</package>
