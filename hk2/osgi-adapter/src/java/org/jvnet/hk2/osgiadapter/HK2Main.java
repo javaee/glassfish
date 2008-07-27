@@ -38,16 +38,16 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.RepositoryChangeListener;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
@@ -83,6 +83,7 @@ public class HK2Main extends Main implements
     private BundleContext ctx;
 
     private ModulesRegistry mr;
+    private Habitat habitat;
 
     private String repName = "modules";
 
@@ -111,7 +112,7 @@ public class HK2Main extends Main implements
         OSGiFactoryImpl.initialize(ctx);
 
         mr = createModulesRegistry();
-        Habitat habitat = createHabitat(mr, startupContext);
+        habitat = createHabitat(mr, startupContext);
         createServiceTracker(habitat); 
         launch(mr,habitat,null,startupContext);
     }
@@ -193,17 +194,42 @@ public class HK2Main extends Main implements
         // which is stopped when stop-domain is issued.
         for (Repository repo : reps) {
             repo.addListener(new RepositoryChangeListener() {
+                
+                public void added(URI location) {
+                    try {
+                        File file = new File(location);
+                        if (file.isDirectory()) {
+                           DirectoryBasedRepository newRepo = new OSGiDirectoryBasedRepository(file.getName(), file);
+                            newRepo.initialize();
+                            mr.addRepository(newRepo);
 
-                public void jarAdded(URI location) {
-                    //TODO: Not Yet Implemented
+                            InhabitantsParser parser = new InhabitantsParser(habitat);
+                            for (ModuleDefinition md : newRepo.findAll()) {
+                                Module module = mr.makeModuleFor(md.getName(), md.getVersion());
+                                if (module != null) {
+                                    ((AbstractModulesRegistryImpl) mr).parseInhabitants(module, "default", parser);
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        logger.log(Level.SEVERE, "Exception while adding new repository of modules", e);
+                    }
                 }
 
-                public void jarRemoved(URI location) {
-                    //TODO: Not Yet Implemented
+                public void removed(URI location) {
+                    //TODO: Not yet implemented
                 }
 
                 public void moduleAdded(ModuleDefinition definition) {
-                    //TODO: Not Yet Implemented
+                InhabitantsParser parser = new InhabitantsParser(habitat);
+                        Module module = mr.makeModuleFor(definition.getName(), definition.getVersion());
+                        if (module != null) {
+                            try {
+                                ((AbstractModulesRegistryImpl) mr).parseInhabitants(module, "default", parser);
+                            } catch (IOException e) {
+                                logger.log(Level.INFO, "Exception while processing new added module ", e);
+                            }
+                        }
                 }
 
                 public void moduleRemoved(ModuleDefinition definition) {
