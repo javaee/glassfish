@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+   Copyright 2005-2008 Sun Microsystems, Inc.  All rights reserved.
    Use is subject to license terms.
 -->
-<!-- Generated from default-domain.xml.template -->
-<!-- Avoid manual edits of this file. Run "asadmin verify-domain-xml" otherwise.-->
-
-<domain application-root="${com.sun.aas.instanceRoot}/applications" log-root="${com.sun.aas.instanceRoot}/logs"> 
+<domain application-root="${com.sun.aas.instanceRoot}/applications" log-root="${com.sun.aas.instanceRoot}/logs" version="10.0"> 
  <applications>
   <web-module name="adminapp" context-root="/web1" location="${com.sun.aas.installRoot}/lib/install/applications/adminapp/adminapp_war" object-type="system-admin" enabled="true" directory-deployed="true" availability-enabled="false">
   <!-- System Web Module - DO NOT DELETE! -->

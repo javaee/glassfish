@@ -122,6 +122,14 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
     public void setLocale(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the version property. It is read-only.
+     * Tools are not to depend on this property. It is only for reference.
+     * @return String representing version of the Domain.
+     */
+    @Attribute
+    public String getVersion();
+
+    /**
      * Gets the value of the applications property.
      *
      * @return possible object is
