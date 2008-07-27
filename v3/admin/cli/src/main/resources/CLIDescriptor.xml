@@ -59,6 +59,9 @@
         </Option>
     	<Option name="localonly" type="boolean" value-required="false" default="false"/>
     	<Option name="remoteonly" type="boolean" value-required="false" default="false"/>
+    	<Option name="interval" type="string" value-required="true" default="30"/>
+    	<Option name="type" type="string" value-required="true"/>
+    	<Option name="filter" type="string" value-required="true"/>
     </Options>
     <Commands>
 	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?"
@@ -153,6 +156,20 @@
              <ValidOption name="remoteonly"/>
              <ValidOption name="user"/>
              <ValidOption name="passwordfile"/>
+        </Command>
+        <Command name="monitor" classname="com.sun.enterprise.admin.cli.MonitorCommand"
+              numberofoperands="1"
+              usage-text="monitor [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--user user] [--passwordfile filename] --type=monitor_type [target]">
+             <RequiredOption name="type"/>
+             <ValidOption name="interval"/>
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="host"/>
+             <ValidOption name="port"/>
+             <ValidOption name="user"/>
+             <ValidOption name="passwordfile"/>
+             <ValidOption name="filter"/>
+             <ValidOption name="filename"/>
         </Command>
     </Commands>
 </CommandsAndOptions>
