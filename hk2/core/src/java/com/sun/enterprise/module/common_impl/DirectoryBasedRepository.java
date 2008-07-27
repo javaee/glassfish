@@ -189,7 +189,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
             if (!originalLibraries.contains(location)) {
                 addLibrary(location);
                 for (RepositoryChangeListener listener : listeners) {
-                    listener.added(location);
+                    listener.jarAdded(location);
                 }
             }
         }
@@ -200,7 +200,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
                 if (!libraries.contains(originalLocation)) {
                     removeLibrary(originalLocation);
                     for (RepositoryChangeListener listener : listeners) {
-                        listener.removed(originalLocation);
+                        listener.jarRemoved(originalLocation);
                     }
                 }
             }
