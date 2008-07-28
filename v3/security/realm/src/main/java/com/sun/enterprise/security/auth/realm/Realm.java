@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.auth.realm;
 
+import com.sun.enterprise.security.util.IASSecurityException;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
@@ -223,7 +224,11 @@ public abstract class Realm implements Comparable {
                                        Properties props)
         throws BadRealmException
     {
+        
+        Habitat habitat = Globals.getDefaultHabitat();
+        RealmsManager mgr = null;
         try {
+            mgr = habitat.getComponent(RealmsManager.class);
             Class realmClass = null;
             try {
                 realmClass = Class.forName(className);
@@ -240,9 +245,7 @@ public abstract class Realm implements Comparable {
             Realm r = (Realm) obj;
             r.setName(name);
             r.init(props);
-
-            Habitat habitat = Globals.getDefaultHabitat();
-            RealmsManager mgr = habitat.getComponent(RealmsManager.class);
+            
             if (mgr == null) {
                 throw new BadRealmException("Unable to locate RealmsManager Service");
             }
@@ -258,6 +261,20 @@ public abstract class Realm implements Comparable {
         } catch (ClassNotFoundException ex) {
             //try a HK2 route
             // Realm realm = Util.getDefaultHabitat().
+            try {
+                Realm r = habitat.getComponent(Realm.class, name);
+                if (r != null) {
+                    r.setName(name);
+                    r.init(props);
+                    if (mgr == null) {
+                        throw new BadRealmException("Unable to locate RealmsManager Service");
+                    }
+                    mgr.putIntoLoadedRealms(name, r);
+                    return r;
+                }
+            } catch (NoSuchRealmException e) {
+                throw new BadRealmException(e);
+            }
             throw new BadRealmException(ex);
         }
     }
@@ -611,6 +628,48 @@ public abstract class Realm implements Comparable {
      * @exception BadRealmException if realm data structures are bad
      */
     public abstract void  refresh() throws BadRealmException;
+    
+    /**
+     * Adds new user to file realm. User cannot exist already.
+     *
+     * @param name User name.
+     * @param password Cleartext password for the user.
+     * @param groupList List of groups to which user belongs.
+     * @throws BadRealmException If there are problems adding user.
+     *
+     */
+    public abstract void addUser(String name, String password, String[] groupList)
+        throws BadRealmException, IASSecurityException;
+    
+    /**
+     * Remove user from file realm. User must exist.
+     *
+     * @param name User name.
+     * @throws NoSuchUserException If user does not exist.
+     *
+     */
+     public abstract void removeUser(String name)
+        throws NoSuchUserException, BadRealmException;
+     
+     /**
+     * Update data for an existing user. User must exist.
+     *
+     * @param name Current name of the user to update.
+     * @param newName New name to give this user. It can be the same as
+     *     the original name. Otherwise it must be a new user name which
+     *     does not already exist as a user.
+     * @param password Cleartext password for the user. If non-null the user
+     *     password is changed to this value. If null, the original password
+     *     is retained.
+     * @param groupList List of groups to which user belongs.
+     * @throws BadRealmException If there are problems adding user.
+     * @throws NoSuchUserException If user does not exist.
+     *
+     */
+    public abstract void updateUser(String name, String newName, String password,
+                           String[] groups)
+        throws NoSuchUserException, BadRealmException,
+                               IASSecurityException;
     
 }
 

@@ -36,10 +36,16 @@
 
 package com.sun.enterprise.security.auth.realm;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Singleton;
 
 /**
@@ -107,7 +113,7 @@ public class RealmsManager {
         loadedRealms.put(realmName, realm);
     }
     
-    Realm getFromLoadedRealms(String realmName) {
+    public Realm getFromLoadedRealms(String realmName) {
         return loadedRealms.get(realmName);
     }
     public String getDefaultRealmName() {
@@ -117,5 +123,30 @@ public class RealmsManager {
     public void setDefaultRealmName(String defaultRealmName) {
         this.defaultRealmName = defaultRealmName;
     }
+    
+   /**
+    * Returns names of predefined AuthRealms' classes supported by security service.
+    * @returns array of predefind AuthRealms' classes
+    *
+    */
+   public  List<String> getPredefinedAuthRealmClassNames()
+   {
+       //!!!!!!!!!!!! (hardcoded for now until ss will implement backemnd support)
+      /* return new String[]{
+               "com.sun.enterprise.security.auth.realm.file.FileRealm",
+               "com.sun.enterprise.security.auth.realm.certificate.CertificateRealm",
+               "com.sun.enterprise.security.auth.realm.ldap.LDAPRealm",
+               "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm",
+               "com.sun.enterprise.security.auth.realm.solaris.SolarisRealm"};*/
+       Habitat habitat = Globals.getDefaultHabitat();
+       Collection<Inhabitant<? extends Realm>> collection = habitat.getInhabitants(Realm.class);
+       List<String> arr = new ArrayList<String>();
+       for (Inhabitant<? extends Realm> it : collection) {
+           arr.add(it.typeName());
+       }
+      
+       return arr;
+       
+   } 
 
 }

@@ -40,6 +40,7 @@ import java.util.*;
 
 import com.sun.enterprise.security.auth.realm.*;
 
+import com.sun.enterprise.security.util.IASSecurityException;
 import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -154,6 +155,59 @@ public abstract class AppservRealm extends Realm
      */
     public void refresh() throws BadRealmException
     {
+        String msg = sm.getString("iasrealm.notsupported");
+        throw new BadRealmException(msg);
+    }
+    
+    /**
+     * Adds new user to file realm. User cannot exist already.
+     *
+     * @param name User name.
+     * @param password Cleartext password for the user.
+     * @param groupList List of groups to which user belongs.
+     * @throws BadRealmException If there are problems adding user.
+     *
+     */
+    public  void addUser(String name, String password, String[] groupList)
+        throws BadRealmException, IASSecurityException  {
+        String msg = sm.getString("iasrealm.notsupported");
+        throw new BadRealmException(msg);
+    }
+        
+        
+    
+    /**
+     * Remove user from file realm. User must exist.
+     *
+     * @param name User name.
+     * @throws NoSuchUserException If user does not exist.
+     *
+     */
+     public void removeUser(String name)
+        throws NoSuchUserException, BadRealmException {
+        String msg = sm.getString("iasrealm.notsupported");
+        throw new BadRealmException(msg);
+     }
+     
+     /**
+     * Update data for an existing user. User must exist.
+     *
+     * @param name Current name of the user to update.
+     * @param newName New name to give this user. It can be the same as
+     *     the original name. Otherwise it must be a new user name which
+     *     does not already exist as a user.
+     * @param password Cleartext password for the user. If non-null the user
+     *     password is changed to this value. If null, the original password
+     *     is retained.
+     * @param groupList List of groups to which user belongs.
+     * @throws BadRealmException If there are problems adding user.
+     * @throws NoSuchUserException If user does not exist.
+     *
+     */
+    public void updateUser(String name, String newName, String password,
+                           String[] groups)
+        throws NoSuchUserException, BadRealmException,
+                               IASSecurityException {
         String msg = sm.getString("iasrealm.notsupported");
         throw new BadRealmException(msg);
     }

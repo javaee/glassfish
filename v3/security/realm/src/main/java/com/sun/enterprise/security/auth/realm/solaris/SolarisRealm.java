@@ -45,6 +45,7 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
+import org.jvnet.hk2.annotations.Service;
 
 
 /**
@@ -59,6 +60,7 @@ import com.sun.enterprise.security.auth.realm.InvalidOperationException;
  * @see com.sun.enterprise.security.auth.login.SolarisLoginModule
  *
  */
+@Service
 public final class SolarisRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.

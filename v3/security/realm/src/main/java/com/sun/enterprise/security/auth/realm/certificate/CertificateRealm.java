@@ -57,6 +57,7 @@ import com.sun.enterprise.security.auth.realm.IASRealm;
 
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
+import org.jvnet.hk2.annotations.Service;
 import sun.security.x509.X500Name;
 
 
@@ -90,7 +91,7 @@ import sun.security.x509.X500Name;
  *
  */
 
-
+@Service
 public final class CertificateRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.

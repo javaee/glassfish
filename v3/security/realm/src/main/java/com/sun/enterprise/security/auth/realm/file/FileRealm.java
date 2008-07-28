@@ -49,6 +49,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import org.jvnet.hk2.annotations.Service;
 
 
 /**
@@ -76,7 +77,7 @@ import com.sun.enterprise.security.auth.realm.IASRealm;
  * @author Jyri Virkki
  * @author Shing Wai Chan
  */
-
+@Service
 final public class FileRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.
@@ -573,7 +574,7 @@ final public class FileRealm extends IASRealm
      *
      */
     public synchronized void removeUser(String name)
-        throws NoSuchUserException
+        throws NoSuchUserException, BadRealmException
     {
         if (!userTable.containsKey(name)) {
             String msg = sm.getString("filerealm.nouser", name);

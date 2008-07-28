@@ -67,6 +67,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * Realm for supporting JDBC authentication.
@@ -90,7 +91,7 @@ import com.sun.enterprise.security.common.Util;
  * @see com.sun.enterprise.security.auth.login.SolarisLoginModule
  *
  */
-
+@Service
 public final class JDBCRealm extends DigestRealmBase {
     // Descriptive string of the authentication type of this realm.
     public static final String AUTH_TYPE = "jdbc";

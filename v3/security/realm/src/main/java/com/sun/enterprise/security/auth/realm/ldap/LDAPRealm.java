@@ -59,6 +59,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import org.jvnet.hk2.annotations.Service;
 
 
 /**
@@ -102,6 +103,7 @@ import com.sun.enterprise.security.auth.realm.IASRealm;
  * @see com.sun.enterprise.security.auth.login.LDAPLoginModule
  *
  */
+@Service
 public final class LDAPRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.
