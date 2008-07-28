@@ -161,11 +161,96 @@
                 >
             </sun:treeNode>
             
+            <sun:treeNode id="security"
+                text="$resource{i18n.tree.security}"
+                url="/security/security.jsf?configName=#{configName}"
+                target="main"
+                imageURL="resource/images/security.gif"
+                >
+            
+                <sun:treeNode id="realms"
+                    text="$resource{i18n.tree.realms}"
+                    url="/security/realms.jsf?configName=#{configName}"
+                    target="main"
+                    imageURL="resource/images/security.gif"
+                    >
+                </sun:treeNode>
+            </sun:treeNode>
+            
+            <!--
                 
+                <dynamicTreeNode id="realms"
+
+                    treeAdaptorClass="com.sun.enterprise.tools.admingui.tree.MBeanTreeAdaptor"
+                    objectName="com.sun.appserv:type=configs,category=config"   
+                    methodName="listAuthRealms"
+                    parameters=""
+                    paramTypes="java.lang.String"
+
+                    attributeName="name"
+                    childImageURL="resource/images/Security.gif"
+                    childTarget="main"
+                    childExpanded="$boolean{false}"
+                    childURL="configuration/realmEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+                    text="$resource{i18n.tree.realms}"
+                    url="/configuration/realms.jsf?configName=#{configName}"
+                    target="main"
+                    >
+                    <!facet image>
+                        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/realms.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                    </facet>
+                </dynamicTreeNode>
+
+                <dynamicTreeNode id="jaccProviders"
+
+                    treeAdaptorClass="com.sun.enterprise.tools.admingui.tree.MBeanTreeAdaptor"
+                    objectName="com.sun.appserv:type=configs,category=config"   
+                    methodName="listJaccProviders"
+                    parameters=""
+                    paramTypes="java.lang.String"
+
+                    attributeName="name"
+                    childImageURL="resource/images/Security.gif"
+                    childTarget="main"
+                    childExpanded="$boolean{false}"
+                    childURL="configuration/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                    
+                    text="$resource{i18n.tree.jaccProviders}"
+                    url="/configuration/jaccProviders.jsf?configName=#{configName}"
+                    target="main"
+                    >
+                    <!facet image>
+                        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/jaccProviders.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                    </facet>
+                </dynamicTreeNode>
+
+                <dynamicTreeNode id="auditModules"
+
+                    treeAdaptorClass="com.sun.enterprise.tools.admingui.tree.MBeanTreeAdaptor"
+                    objectName="com.sun.appserv:type=configs,category=config"  
+                    methodName="listAuditModules"
+                    parameters=""
+                    paramTypes="java.lang.String"
+
+                    attributeName="name"
+                    childImageURL="resource/images/Security.gif"
+                    childTarget="main"
+                    childExpanded="$boolean{false}"
+                    childURL="configuration/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+                    text="$resource{i18n.tree.auditModules}"
+                    url="/configuration/auditModules.jsf?configName=#{configName}"
+                    target="main"
+                    >
+                    <!facet image>
+                        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/auditModules.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                    </facet>
+                </dynamicTreeNode>
+                -->
+
 	</sun:tree>
 	<event>
 	    <!afterCreate
-		includeIntegrations(type="tree");
+                getUIComponent(clientId="form:tree"  component=>$attribute{component})
+		includeIntegrations(type="tree" root="#{component}");
 	    />
 	</event>
       </sun:form>

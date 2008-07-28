@@ -58,7 +58,7 @@
 	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
 	     <sun:form id="form"> 
 <!-- #include "/shared/treeBreadcrumbs.inc" -->
-		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
+		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" id="cts"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
 		    <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
 			<sun:commonTask rendered="$session{showRegistration}"
 			    text="#{registrationNodeText}"
@@ -97,6 +97,12 @@
                         
 #include "/commonTaskDoc.inc"                    
 		</sun:commonTasksSection>
+                 <event>
+                    <!afterCreate
+                        getUIComponent(clientId="form:cts"  component=>$attribute{component})
+                        includeIntegrations(type="commonTask" root="#{component}");
+                    />
+                </event>
 #include "/sysnet/regReminder.inc"
             <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
 	     </sun:form>           
