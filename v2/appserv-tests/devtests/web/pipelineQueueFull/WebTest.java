@@ -5,7 +5,10 @@ import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
 
-// Issue 25071
+/*
+ * Unit test for https://glassfish.dev.java.net/issues/show_bug.cgi?id=2507
+ * ("NPE When stressing GlassFish and the Pipeline Queue is full")
+ */
 public class WebTest {
     
     private static int count = 0;
@@ -29,7 +32,7 @@ public class WebTest {
 
         try{
             System.out.println("Running test");
-            url = new URL("http://" + host  + ":" + port + "/" + contextRoot + "/ServletTest");
+            url = new URL("http://" + host  + ":" + port + contextRoot + "/ServletTest");
             String originalLoc = url.toString();
             System.out.println("\n Invoking url: " + url.toString());
             conn = url.openConnection();
@@ -37,16 +40,19 @@ public class WebTest {
                HttpURLConnection urlConnection = (HttpURLConnection)conn;
                urlConnection.setDoOutput(true);
                int responseCode=  urlConnection.getResponseCode();
-               System.out.println("Response code: " + responseCode + " Expected code: 200"); 
+               System.out.println("Response code: " + responseCode + " Expected code: 503"); 
                if (responseCode != 503){
                     stat.addStatus("pipelineQueueFull", stat.FAIL);
                } else {
                     stat.addStatus("pipelineQueueFull", stat.PASS);
                }
             }
-        }catch(Exception ex){
+        } catch (SocketException e) {
             stat.addStatus("pipelineQueueFull", stat.PASS);
+        } catch (Exception e) {
+            stat.addStatus("pipelineQueueFull", stat.FAIL);
         }
+
         stat.printSummary("web/pipelineQueueFull");
     }
 }
