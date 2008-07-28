@@ -186,6 +186,16 @@ public class WebModule extends PwcWebModule {
     }
 
 
+    /** 
+     * Gets the web container in which this web module was loaded.
+     *
+     * @return the web container in which this web module was loaded
+     */
+    public WebContainer getWebContainer() {
+        return webContainer;
+    }
+
+
     /**
      * Sets the parameter encoding (i18n) info from sun-web.xml.
      */

@@ -61,6 +61,7 @@ import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
 import com.sun.enterprise.web.Constants;
+import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
@@ -150,7 +151,7 @@ final class WebModuleListener
             
             //loadPersistenceUnits(webModule);
             configureDefaultServlet(webModule);
-            configureJspParameters(webModule);
+            configureJsp(webModule);
             startCacheManager(webModule);
         } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
             //unloadPersistenceUnits(webModule);
@@ -254,7 +255,7 @@ final class WebModuleListener
      * Configure the jsp config settings for the jspServlet  using the values
      * in sun-web.xml's jsp-config
      */
-    private void configureJspParameters(WebModule webModule) {
+    private void configureJsp(WebModule webModule) {
         // Find tld URL and set it to ServletContext attribute
         Collection<TldProvider> tldProviders =
                 serverContext.getDefaultHabitat().getAllByContract(
@@ -326,6 +327,11 @@ final class WebModuleListener
                                      sysClassPath);
             // END SJSAS 6311155
         }
+
+        // Configure JSP monitoring
+        webModule.getServletContext().setAttribute(
+            "org.glassfish.jsp.monitor.probeEmitter",
+            new JspProbeEmitterImpl(webModule));        
     }
 
     /**

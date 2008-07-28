@@ -136,6 +136,7 @@ import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -406,7 +407,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     protected ProbeProviderFactory probeProviderFactory = null;
 
-
+    protected JspProbeProvider jspProbeProvider = null;
     protected RequestProbeProvider requestProbeProvider = null;
     protected ServletProbeProvider servletProbeProvider = null;
     protected SessionProbeProvider sessionProbeProvider = null;
@@ -682,6 +683,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public ServletProbeProvider getServletProbeProvider() {
         return servletProbeProvider;
+    }
+
+
+    /**
+     * Gets the probe provider for jsp related events.
+     */
+    public JspProbeProvider getJspProbeProvider() {
+        return jspProbeProvider;
     }
 
 
@@ -4352,17 +4361,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
 
     /**
-     * Creates probe providers for servlet, session, and 
+     * Creates probe providers for servlet, jsp, session, and 
      * request/response related events.
      * 
-     * The generated servlet and session related probe providers are shared
-     * by all webapps. Each webapp will qualify a probe event with its app
-     * name.
+     * The generated servlet, jsp, and session related probe providers are
+     * shared by all webapps. Each webapp will qualify a probe event with
+     * its app name.
      *
      * The generated request/response related probe provider is shared by
      * all http connectors.
      */
     private void createProbeProviders() {
+
         try {
             servletProbeProvider = probeProviderFactory.getProbeProvider(
                 "web", "servlet", null, ServletProbeProvider.class);
@@ -4370,6 +4380,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE,
                         "Unable to create probe provider for interface " +
                         ServletProbeProvider.class.getName(),
+                        e);
+        }
+
+        try {
+            jspProbeProvider = probeProviderFactory.getProbeProvider(
+                "web", "jsp", null, JspProbeProvider.class);
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        JspProbeProvider.class.getName(),
                         e);
         }
 
