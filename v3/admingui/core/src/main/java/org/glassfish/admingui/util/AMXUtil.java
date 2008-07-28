@@ -74,6 +74,12 @@ public class AMXUtil {
         return defaultValue;
     }
     
+    public static String getPropValue( Map<String, PropertyConfig> propMap, String key){
+        if (propMap.get(key) != null)
+            return propMap.get(key).getValue();
+        return "";
+    }
+    
     
     /**
      *  Change the property of a config mbean
