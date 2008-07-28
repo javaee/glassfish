@@ -86,6 +86,19 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         mConnectorsStarter = null;
     }
     
+    private static String toString( final JmxConnector c )
+    {
+        return "JmxConnector config: { name = " + c.getName() +
+            ", Protocol = " + c.getProtocol() +
+            ", Address = " + c.getAddress() +
+            ", Port = " + c.getPort() +
+            ", AcceptAll = " + c.getAcceptAll() +
+            ", AuthRealmName = " + c.getAuthRealmName() +
+            ", SecurityEnabled = " + c.getSecurityEnabled() +
+            "}";
+
+    }
+    
     private JMXConnectorServer startConnector( final JmxConnector conn )
         throws IOException
     {
@@ -95,14 +108,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         final String authRealmName = conn.getAuthRealmName();
         final boolean securityEnabled = Boolean.parseBoolean(conn.getSecurityEnabled());
         
-        debug( "JmxConnector: " + conn.getName() +
-            ", Protocol = " + protocol +
-            ", Address = " + address +
-            ", Port = " + port +
-            ", AcceptAll = " + conn.getAcceptAll() +
-            ", AuthRealmName = " + authRealmName +
-            ", SecurityEnabled = " + securityEnabled +
-            "");
+        debug( toString(conn) );
         
         final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
         dr.setMBeanServer(mMBeanServer);
@@ -140,7 +146,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             }
             catch( final Throwable t )
             {
-                t.printStackTrace();
+                System.err.println( "ERROR starting JMX connector: " + toString(c) + ": " + t);
             }
         }
         
