@@ -110,7 +110,6 @@
                         com.sun.enterprise.util.net,
                         com.sun.enterprise.util.shared,
                         com.sun.enterprise.util.uuid,
-                        com.sun.enterprise.util.web,
                         com.sun.enterprise.util.zip,
                         com.sun.logging,
                         org.glassfish.resource.common,

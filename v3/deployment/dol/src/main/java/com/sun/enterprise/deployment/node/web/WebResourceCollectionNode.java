@@ -46,7 +46,7 @@ import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.util.web.URLPattern;
+import com.sun.enterprise.util.net.URLPattern;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**

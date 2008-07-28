@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
-import com.sun.enterprise.util.web.JarURLPattern;
+import com.sun.enterprise.util.net.JarURLPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 

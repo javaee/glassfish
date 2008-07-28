@@ -44,7 +44,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 
 
 import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.util.web.URLPattern;
+import com.sun.enterprise.util.net.URLPattern;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.Level;
 
