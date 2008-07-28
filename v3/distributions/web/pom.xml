@@ -206,6 +206,11 @@
             <artifactId>flashlight-agent</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.jdbc</groupId>
+            <artifactId>jdbc-admin</artifactId>
+            <version>10.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
 

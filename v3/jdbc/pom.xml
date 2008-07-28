@@ -89,5 +89,6 @@
 
     <modules>
         <module>jdbc-ra</module>
+        <module>admin</module>
     </modules>
 </project>

@@ -141,7 +141,8 @@
                         <Export-Package>
                         com.sun.enterprise.admin.cli,
                         com.sun.enterprise.admin.cli.remote,
-                        com.sun.enterprise.admin.cli.util
+                        com.sun.enterprise.admin.cli.util,
+                        org.glassfish.admin.cli.resources
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -208,6 +209,11 @@
             <groupId>org.glassfish.admin</groupId>
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>10.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
