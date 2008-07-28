@@ -42,6 +42,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Contaier's mapper which maps {@link ByteBuffer} bytes representation 
@@ -63,9 +64,11 @@ public class ContainerMapper {
     private Logger logger;
     private UDecoder urlDecoder = new UDecoder();
 
+    private ConcurrentLinkedQueue<HttpParserState> parserStates;
     
     public ContainerMapper(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
+        parserStates = new ConcurrentLinkedQueue<HttpParserState>();
         logger = GrizzlyEmbeddedHttp.logger();
     }
 
@@ -151,15 +154,34 @@ public class ContainerMapper {
             List<ProtocolFilter> defaultProtocolFilters,
             ContextRootInfo fallbackContextRootInfo) throws Exception {
 
-        // Read available bytes and try to find the host header.
-        // HTTP 1.0 doesn't have any hos, hence the time out must be small.
-        byte[] hostBytes = HttpUtils.readHost(selectionKey, byteBuffer,1000);
-                
-        // Read the request line, and parse the context root by removing 
-        // all trailling // or ?
-        byte[] contextBytes = HttpUtils.readRequestLine(selectionKey, byteBuffer,
-                InputReader.getDefaultReadTimeout());
+        HttpParserState state = parserStates.poll();
+        if (state == null) {
+            state = new HttpParserState();
+        } else {
+            state.reset();
+        }
         
+        state.setBuffer(byteBuffer);
+        
+        byte[] contextBytes = null;
+        byte[] hostBytes = null;
+        
+        try {
+            // Read the request line, and parse the context root by removing 
+            // all trailling // or ?
+            contextBytes = HttpUtils.readRequestLine(selectionKey, state,
+                    InputReader.getDefaultReadTimeout());
+
+            if (contextBytes != null) {
+                state.setState(0);
+                // Read available bytes and try to find the host header.
+                // HTTP 1.0 doesn't have any hos?, hence the time out must be small.
+                hostBytes = HttpUtils.readHost(selectionKey, state, 1000);
+            }
+        } finally {
+            parserStates.offer(state);
+        }
+                        
         // No bytes then fail.
         if (contextBytes == null) {
             return false;
