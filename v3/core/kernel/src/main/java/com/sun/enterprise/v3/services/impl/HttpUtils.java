@@ -133,9 +133,10 @@ public class HttpUtils {
                 c = byteBuffer.get();
                 lastState.setPosition(byteBuffer.position());
                 // State Machine
-                // 0 - Search for the first SPACE ' ' between the method and the
+                // SPACE may be a sequence of consecutve ' '
+                // 0 - Search for the first SPACE between the method and the
                 //     the request URI
-                // 1 - Search for the second SPACE ' ' between the request URI
+                // 1 - Search for the second SPACE between the request URI
                 //     and the method
                 switch (lastState.getState()) {
                     case 0: // Search for first ' '
@@ -146,7 +147,11 @@ public class HttpUtils {
                         }
                         break;
                     case 1: // Search for next valid '/', and then ' '
-                        if (c == 0x2f) {
+                        // whitespace tolerance
+                        if (prev == 0x20 && c == 0x20) {
+                            lastState.setStateParameter(START_PARAM_IDX,
+                                    byteBuffer.position());
+                        } else if (c == 0x2f) {
                             // check for '://', which we should skip
                             if (prev == 0x2f && prevPrev == 0x3a) {
                                 lastState.setStateParameter(START_PARAM_IDX, -1);
