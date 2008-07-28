@@ -45,7 +45,7 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	 Configuration for the &lt;auth-realm&gt; element.
 */
-
+@AMXCreateInfo(paramNames={"name", "classname" })
 public interface AuthRealmConfig extends PropertiesAccess, NamedConfigElement 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
