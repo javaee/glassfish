@@ -50,7 +50,7 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
 
-            <sun:button id="newButton" disabled="#{true}" text="$resource{i18n.button.New}" >
+            <sun:button id="newButton" text="$resource{i18n.button.New}" >
                 <!command redirect(page="#{createLink}?configName=#{configName}"); />
             </sun:button>
 

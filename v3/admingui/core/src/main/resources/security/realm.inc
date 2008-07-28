@@ -58,7 +58,7 @@
 <sun:html id="html">
     <sun:head id="propertyhead" title="#{pageTitle}">
         <sun:script url="/resource/js/selectElements.js" />
-        <sun:script url="/resource/js/restart.js" />
+        <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
 
     <sun:body id="body" 

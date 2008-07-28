@@ -34,113 +34,113 @@
  holder.
 -->
 
+<f:verbatim>
+    <script type="text/javascript">
 
-"<SCRIPT language = "Javascript" >
-
-" function initClassname(option) {\
-alert('in initClassname'); \
-    var selectedOption = getSelectedValue("classnameOption");\
-    enableClassnameFields(option);   \
-    if (option == 'input'){ \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optB', true);  \
-    }else{  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optA', true);  \
-    }  \
+ function initClassname(option) {
+    var selectedOption = getSelectedValue("classnameOption");
+    enableClassnameFields(option);   
+    if (option == 'input'){ 
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optB', true);  
+    }else{  
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{rbPropId}:optA', true);  
+    }  
   }
 
-" function enableClassnameFields(opt){	\
-    if(opt == 'input') {\
-	enableComponent('#{classnameTextId}', 'text');  \
-	getTextElement('#{classnameTextId}').focus();  \
-	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', true); \
-        showDisplay('none'); \
-        document.getElementById('form1:option').value='input'; \
-    }else{ \
-	disableComponent('#{classnameTextId}', 'text'); \
-	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', false); \
-        showDisplay(''); \
-        document.getElementById('form1:option').value='predefine'; \
-    }\
+ function enableClassnameFields(opt){	
+    if(opt == 'input') {
+	enableComponent('#{classnameTextId}', 'text');  
+	getTextElement('#{classnameTextId}').focus();  
+	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', true); 
+        showDisplay('none'); 
+        document.getElementById('form1:option').value='input'; 
+    }else{ 
+	disableComponent('#{classnameTextId}', 'text'); 
+	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', false); 
+        showDisplay(''); 
+        document.getElementById('form1:option').value='predefine'; 
+    }
  }
 
-" function checkClassname(){ \
-    var opt = getSelectedValue("classnameOption");\
-    if (opt == 'predefine'){ \
-        type = getSelectElement('#{classnameDropdownId}').value; \
-        rtype = type.match('FileRealm');  \
-        if (rtype != null){  \
-            return (checkRequired('form1:fileSection:jaax:jaax', '#{reqMsg}')  && \
-                    checkRequired('form1:fileSection:keyFile:keyFile',  '#{reqMsg}')  ) \
-        }  \
-        rtype = type.match('LDAPRealm');  \
-        if (rtype != null){  \
-            return ( checkRequired(id="form1:ldapSection:jaax:jaax" , '#{reqMsg}') &&   \
-                checkRequired(id="form1:ldapSection:directory:directory" , '#{reqMsg}')  &&  \
-                checkRequired(id="form1:ldapSection:baseDn:baseDn" , '#{reqMsg}'))   \
-        }  \
-        rtype = type.match('SolarisRealm');  \
-        if (rtype != null){  \
-            return checkRequired(id="form1:solarisSection:jaax:jaax" , '#{reqMsg}') ; \
-        }  \
-        rtype = type.match('JDBCRealm');  \
-        if (rtype != null){  \
-            return  checkRequired(id="form1:jdbcSection:jaax:jaax" , '#{reqMsg}' ) &&  \
-                checkRequired(id="form1:jdbcSection:jndi:jndi" , '#{reqMsg}' )  && \
-                checkRequired(id="form1:jdbcSection:userTable:userTable" , '#{reqMsg}' )  && \
-                checkRequired(id="form1:jdbcSection:userName:userName", '#{reqMsg}' )  && \
-                checkRequired(id="form1:jdbcSection:pswd:pswd" , '#{reqMsg}' )  &&  \
-                checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&  \
-                checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );  \
-        }  \
-        return true; \
-    }  \
-    if(opt == 'input' ){ \
-	cla = getTextElement('#{classnameTextId}').value;  \
-	if(checkForSelectedValue('#{classnameTextId}')){   \
-	    return true;   \
-	}else{   \
-	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');   \
-	}   \
-    }\
+ function checkClassname(){ 
+    var opt = getSelectedValue("classnameOption");
+    if (opt == 'predefine'){ 
+        type = getSelectElement('#{classnameDropdownId}').value; 
+        rtype = type.match('FileRealm');  
+        if (rtype != null){  
+            return (checkRequired('form1:fileSection:jaax:jaax', '#{reqMsg}')  && 
+                    checkRequired('form1:fileSection:keyFile:keyFile',  '#{reqMsg}')  ) 
+        }  
+        rtype = type.match('LDAPRealm');  
+        if (rtype != null){  
+            return ( checkRequired(id="form1:ldapSection:jaax:jaax" , '#{reqMsg}') &&   
+                checkRequired(id="form1:ldapSection:directory:directory" , '#{reqMsg}')  &&  
+                checkRequired(id="form1:ldapSection:baseDn:baseDn" , '#{reqMsg}'))   
+        }  
+        rtype = type.match('SolarisRealm');  
+        if (rtype != null){  
+            return checkRequired(id="form1:solarisSection:jaax:jaax" , '#{reqMsg}') ; 
+        }  
+        rtype = type.match('JDBCRealm');  
+        if (rtype != null){  
+            return  checkRequired(id="form1:jdbcSection:jaax:jaax" , '#{reqMsg}' ) &&  
+                checkRequired(id="form1:jdbcSection:jndi:jndi" , '#{reqMsg}' )  && 
+                checkRequired(id="form1:jdbcSection:userTable:userTable" , '#{reqMsg}' )  && 
+                checkRequired(id="form1:jdbcSection:userName:userName", '#{reqMsg}' )  && 
+                checkRequired(id="form1:jdbcSection:pswd:pswd" , '#{reqMsg}' )  &&  
+                checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&  
+                checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );  
+        }  
+        return true; 
+    }  
+    if(opt == 'input' ){ 
+	cla = getTextElement('#{classnameTextId}').value;  
+	if(checkForSelectedValue('#{classnameTextId}')){   
+	    return true;   
+	}else{   
+	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');   
+	}   
+    }
 }
 
-"function showDisplay(testtype) { \
-    document.getElementById('#{fileSectionId}').style.display = 'none'; \
-    document.getElementById('#{ldapSectionId}').style.display = 'none'; \
-    document.getElementById('#{jdbcSectionId}').style.display = 'none'; \
-    document.getElementById('#{certSectionId}').style.display = 'none'; \
-    document.getElementById('#{solarisSectionId}').style.display = 'none'; \
-  \
-    if (testtype.match('none')){  \
-        return;  \
-    }  \
-    type = getSelectElement('#{classnameDropdownId}').value; \
-    rtype = type.match('FileRealm');  \
-    if (rtype != null){  \
-        document.getElementById('#{fileSectionId}').style.display = 'block';   \
-        return;  \
-    }  \
-    rtype = type.match('LDAPRealm');  \
-    if (rtype != null){  \
-        document.getElementById('#{ldapSectionId}').style.display = 'block';   \
-        return;  \
-    }  \
-    rtype = type.match('SolarisRealm');  \
-    if (rtype != null){  \
-        document.getElementById('#{solarisSectionId}').style.display = 'block';   \
-        return;  \
-    }  \
-    rtype = type.match('JDBCRealm');  \
-    if (rtype != null){  \
-        document.getElementById('#{jdbcSectionId}').style.display = 'block';   \
-        return;  \
-    }  \
-    rtype = type.match('CertificateRealm');  \
-    if (rtype != null){  \
-        document.getElementById('#{certSectionId}').style.display = 'block';   \
-        return;  \
-    }  \
+function showDisplay(testtype) { 
+    document.getElementById('#{fileSectionId}').style.display = 'none'; 
+    document.getElementById('#{ldapSectionId}').style.display = 'none'; 
+    document.getElementById('#{jdbcSectionId}').style.display = 'none'; 
+    document.getElementById('#{certSectionId}').style.display = 'none'; 
+    document.getElementById('#{solarisSectionId}').style.display = 'none'; 
+  
+    if (testtype.match('none')){  
+        return;  
+    }  
+    type = getSelectElement('#{classnameDropdownId}').value; 
+    rtype = type.match('FileRealm');  
+    if (rtype != null){  
+        document.getElementById('#{fileSectionId}').style.display = 'block';   
+        return;  
+    }  
+    rtype = type.match('LDAPRealm');  
+    if (rtype != null){  
+        document.getElementById('#{ldapSectionId}').style.display = 'block';   
+        return;  
+    }  
+    rtype = type.match('SolarisRealm');  
+    if (rtype != null){  
+        document.getElementById('#{solarisSectionId}').style.display = 'block';   
+        return;  
+    }  
+    rtype = type.match('JDBCRealm');  
+    if (rtype != null){  
+        document.getElementById('#{jdbcSectionId}').style.display = 'block';   
+        return;  
+    }  
+    rtype = type.match('CertificateRealm');  
+    if (rtype != null){  
+        document.getElementById('#{certSectionId}').style.display = 'block';   
+        return;  
+    }  
 }    
 
+</script>
+</f:verbatim>
 
-"</SCRIPT>
