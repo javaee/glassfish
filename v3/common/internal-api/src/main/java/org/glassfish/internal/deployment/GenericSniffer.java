@@ -148,7 +148,11 @@ public abstract class GenericSniffer implements Sniffer {
         return false;
     }
 
-    public boolean equals(Sniffer other) {
-        return getModuleType().equals(other.getModuleType());
+    public boolean equals(Object other) {
+        if (other instanceof Sniffer) {
+            Sniffer otherSniffer = (Sniffer)other;
+            return getModuleType().equals(otherSniffer.getModuleType());
+        } 
+        return false;
     }
 }
