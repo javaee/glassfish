@@ -62,7 +62,8 @@ import java.util.logging.Logger;
 @Service
 @Scoped(Singleton.class)
 public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
-
+    public static final int ALL_PORTS = Integer.MAX_VALUE;
+    
     @Inject(name="server-config") // for now
     Config config;
 
@@ -251,10 +252,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
             Adapter endpointAdapter,
             ApplicationContainer container) throws EndpointRegistrationException {
-
-        for (NetworkProxy proxy : proxies) {
-            proxy.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
-        }
+            
+        registerEndpoint(contextRoot, ALL_PORTS, vsServers, endpointAdapter, container);
     }
 
 
@@ -268,7 +267,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                                  Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
-            if (proxy.getPort() == port) {
+            if (port == ALL_PORTS || proxy.getPort() == port) {
                 proxy.registerEndpoint(contextRoot, vsServers,
                                        endpointAdapter, container);
             }
