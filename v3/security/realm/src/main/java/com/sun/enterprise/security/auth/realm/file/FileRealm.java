@@ -674,6 +674,13 @@ final public class FileRealm extends IASRealm
     
         
     /**
+     * @return true if the realm implementation support User Management (add,remove,update user)
+     */
+    public boolean supportsUserManagement() {
+        //File Realm supports UserManagement
+        return true;
+    }
+    /**
      * Write keyfile data out to disk. The file generation is sychronized
      * within this class only, caller is responsible for any other
      * file locking or revision management as deemed necessary.

@@ -211,4 +211,12 @@ public abstract class AppservRealm extends Realm
         String msg = sm.getString("iasrealm.notsupported");
         throw new BadRealmException(msg);
     }
+    
+    /**
+     * @return true if the realm implementation support User Management (add,remove,update user)
+     */
+    public boolean supportsUserManagement() {
+        //false by default.
+        return false;
+    }
 }

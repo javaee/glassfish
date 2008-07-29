@@ -670,6 +670,10 @@ public abstract class Realm implements Comparable {
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException;
+    /**
+     * @return true if the realm implementation support User Management (add,remove,update user)
+     */
+    public abstract boolean supportsUserManagement();
     
 }
 
