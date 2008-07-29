@@ -67,9 +67,11 @@ import java.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import javax.servlet.ServletContext;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DeploymentFacilityFactory;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -476,6 +478,16 @@ public class GuiUtil {
         if (pMap.get(name) == null)
             return Boolean.FALSE;
         return (Boolean)pMap.get(name);
+    }
+    
+    
+    public static Habitat getHabitat() {
+        ServletContext servletCtx = (ServletContext) 
+            FacesContext.getCurrentInstance().getExternalContext().getContext();
+        // Get the Habitat from the ServletContext
+        Habitat habitat = (Habitat) servletCtx.getAttribute(
+            org.glassfish.admingui.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
+        return habitat;
     }
     
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
