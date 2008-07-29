@@ -35,7 +35,9 @@
  */
 package org.glassfish.admin.amx.dotted;
 
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.*;
+
 import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
@@ -188,15 +190,40 @@ public final class PathnamesImpl  extends AMXNonConfigImplBase
         return m;
     }
     
+        private void
+    getInOrderPathnames( final AMX amx, final List<String> pathnames)
+    {
+        if ( amx instanceof Container )
+        {
+            final Set<AMX> containees = ((Container)amx).getContaineeSet();
+            final Map<String,AMX>   m = new HashMap<String,AMX>();
+            final String[]  paths = new String[containees.size()];
+            int i = 0;
+            for( final AMX containee : containees )
+            {
+                paths[i] = containee.getPathname();
+                m.put( paths[i], containee );
+                ++i;
+            }
+            
+            // add them in sort order, depth first traversal
+            java.util.Arrays.sort( paths );
+            for( final String path : paths )
+            {
+                pathnames.add(path);
+                getInOrderPathnames( m.get(path), pathnames);
+            }
+        }
+    }
+    
         public String[]
     getAllPathnames()
     {
-        // make sure it's the right kind of Set
-        final Set<String> all = getAllPathnameTargetsObjectNameMap().keySet();
+        final List<String> pathnames = new ArrayList<String>();
+        pathnames.add( getDomainRoot().getPathname() );
+        getInOrderPathnames( getDomainRoot(), pathnames );
         
-        final String[] allStrings = new String[all.size()];
-        all.toArray( allStrings );
-        return allStrings;
+        return (String[])pathnames.toArray( new String[pathnames.size()] );
     }
 
     public String testResolve()
@@ -315,7 +342,7 @@ public final class PathnamesImpl  extends AMXNonConfigImplBase
         that operate on the same MBean so it can make a single invocation on that MBean.
      */
         public Map<String,String>
-    getPathnameValuesMap( final Set<String> pathnames )
+    getManyPathnameValues( final Set<String> pathnames )
     {
         final Map<String,String> results = new HashMap<String,String>();
         
@@ -345,12 +372,25 @@ public final class PathnamesImpl  extends AMXNonConfigImplBase
        return results;
     }
     
+        public Map<String,String>
+    getPathnameValues( final String pathname )
+    {
+        final V3Pathname p = new V3Pathname( pathname );
+        final AMX amx = resolveToAnAMX( p );
+        
+        final Map<String,String>  items = amx.getPathnameToAttributes();
+        
+        final Map<String,String>  nameValuePairs = amx.getPathnameValues( items.keySet() );
+        
+        return nameValuePairs;
+    }
+    
          public String
     pathnameGetSingleValue( final String pathname )
     {
         // slow way, treat it as multiple-item case
         final Set<String> temp = Collections.singleton( pathname );
-        final Map<String,String> results = getPathnameValuesMap( temp );
+        final Map<String,String> results = getManyPathnameValues( temp );
         
         final String result = results.get( pathname );
         
@@ -438,6 +478,45 @@ public final class PathnamesImpl  extends AMXNonConfigImplBase
 	}
 
 */
+
+
+    public String dumpPathnames()
+    {
+        final StringBuffer buf = new StringBuffer();
+        final String[] all = getAllPathnames();
+        
+        final Pathnames self = getSelf(Pathnames.class);
+        for( final String pn : all )
+        {
+            buf.append( "\n" + pn + "\n" );
+            try
+            {
+                final AMX amx = self.getPathnameTarget(pn);
+    
+                final Map<String,String> allValues = self.getPathnameValues(pn);
+                for( final String pnAttrName : allValues.keySet() )
+                {
+                    String msg = "\t@" + pnAttrName + " = " + allValues.get(pnAttrName);
+                    buf.append( msg + "\n" );
+                }
+                
+                if ( amx instanceof Container )
+                {
+                    final Set<AMX> containees = ((Container)amx).getContaineeSet();
+                    for( final AMX containee : containees )
+                    {
+                        buf.append( "\t/" + containee.getPathnamePart() + "\n" );
+                    }
+                }
+                
+            }
+            catch( Exception e )
+            {
+                buf.append( pn + " FAILED: " + ExceptionUtil.getRootCause(e) );
+            }
+        }
+        return buf.toString();
+    }
 }
 
 

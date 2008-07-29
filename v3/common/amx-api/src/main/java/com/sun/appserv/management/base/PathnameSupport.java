@@ -70,6 +70,9 @@ public interface PathnameSupport
      */
     public String getPathnameName();
     
+    /** the composition of the type and name eg bar or foo[name] */
+    public String getPathnamePart();
+    
     /**
         Return the entire path name for this AMX MBean, suitably escaped.
         

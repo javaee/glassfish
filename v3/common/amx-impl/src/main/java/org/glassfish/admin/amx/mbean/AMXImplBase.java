@@ -281,7 +281,7 @@ public class AMXImplBase extends MBeanImplBase
         return _getPathnameName();
     }
     
-        protected String
+        public String
     getPathnamePart()
     {
         String part = getPathnameType();

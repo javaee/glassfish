@@ -98,7 +98,10 @@ public interface Pathnames extends AMX, Singleton
      */
     public String[]  getAllPathnames();
     
-    
+    /**
+        Get all values for a pathname.
+     */
+    public Map<String,String>  getPathnameValues( final String pathname );
     
     /**
         Get values for all the requested path names.  If a dotted name value does not exist,
@@ -108,7 +111,7 @@ public interface Pathnames extends AMX, Singleton
         <b>NOTE:</b> this method does not support wildcards.
         @since GlassFish V3
      */
-    public Map<String,String> getPathnameValuesMap( final Set<String> pathnames );
+    public Map<String,String> getManyPathnameValues( final Set<String> pathnames );
     
     
     /** temporary, will be removed */
@@ -149,6 +152,7 @@ public interface Pathnames extends AMX, Singleton
 	 */
 	public Object[]	pathnameSet( String[] nameValuePairs );
 
+    public String dumpPathnames();
 }
 
 

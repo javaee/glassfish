@@ -245,7 +245,10 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
 
         public void 
     unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
-        // don't care
+        debug( "AMXConfigLoader: UnprocessedChangeEvents: " + changes.size() );
+        for( int i = 0; i < changes.size(); ++i ) {
+            debug( changes.get(i).toString() );
+        }
     }
 
     @Override

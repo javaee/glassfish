@@ -24,6 +24,8 @@ package org.glassfish.admin.amx.cmd;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.base.AMX;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
@@ -44,18 +46,17 @@ import com.sun.appserv.management.base.Pathnames;
 import com.sun.appserv.management.util.misc.StringUtil;
 
 /**
-    Get pathname values
+    List pathnames.
  */
-
-@Service(name="pget", metadata="mode=debug")   // must match the value of amx_list.command in LocalStrings.properties
-@I18n("pget.command")
+@Service(name="pndump", metadata="mode=debug")   // must match the value of amx_list.command in LocalStrings.properties
 @Scoped(PerLookup.class)
-public class PGetCommand extends AMXCommandBase implements AdminCommand
+public class PNDumpCommand extends AMXCommandBase implements AdminCommand
 {
-    @Param(primary=true)    
-    List<String> expr; // NOTE: framework bug eats all but the last operand
+    // stupid framework won't allow 0 or N arguments
+    //@Param(primary=true)    
+    //List<String> expr; // NOTE: framework bug eats all but the last operand
 
-    public PGetCommand()
+    public PNDumpCommand()
     {
     }
     
@@ -67,32 +68,60 @@ public class PGetCommand extends AMXCommandBase implements AdminCommand
         final java.util.Properties params = context.getCommandParameters();
         
         final ActionReport report = getActionReport();
-        report.setMessage( "pget " + StringUtil.quote(expr));
-        
+        report.setMessage( "plist ");
         final ActionReport.MessagePart listHeader = report.getTopMessagePart().addChild();
-        listHeader.setMessage("Results:" );
-        System.out.println( "Operands: " + expr.size() );
         
-        if ( expr.size() == 0 || (expr.size() == 1 && expr.get(0).equals("*")) )
+        // framework is buggy; it scrambles a large test message and scrambles lots of 
+        // other variants. Ugg..
+        // listHeader.setMessage( pathnames.dumpPathnames() );
+        
+        listHeader.setMessage("Results:" );
+        
+        // note that the framework has some kind of bug that truncates our messages inexplicably
+        // maintain a large buffer for output purposes
+        final StringBuffer buf = new StringBuffer();
+        
+        final String[] all = pathnames.getAllPathnames();
+        for( final String pn : all )
         {
-            final String[] pns = pathnames.getAllPathnames();
-            final Map<String,String> m = pathnames.getManyPathnameValues( null );   // not working yet!
-            for( final String pn : m.keySet() )
+            buf.append( "\n" + pn + "\n" );
+            final ActionReport.MessagePart part = listHeader.addChild();
+            part.setMessage( pn );
+            try
             {
-                final ActionReport.MessagePart part = listHeader.addChild();
-                part.setMessage( pn + " = " + m.get(pn) );
+                final AMX amx = pathnames.getPathnameTarget(pn);
+                final Map<String,String> allValues = pathnames.getPathnameValues(pn);
+                for( final String pnAttrName : allValues.keySet() )
+                {
+                    final ActionReport.MessagePart item = part.addChild();
+                    String msg = "\t@" + pnAttrName + " = " + allValues.get(pnAttrName);
+                    
+                    item.setMessage( msg );
+                    buf.append( msg + "\n" );
+                }
             }
-        }
-        else
-        {
-            for( final String e : expr )
+            catch( Exception e )
             {
-                final ActionReport.MessagePart part = listHeader.addChild();
-                part.setMessage( e + " = " + pathnames.pathnameGetSingleValue(e) );
+                part.setMessage( pn + "FAILURE: " + ExceptionUtil.getRootCause(e) );
             }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
