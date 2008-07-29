@@ -595,11 +595,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 if ("admin-listener".equals(httpListener.getId())) {
                     // XXX TBD
                     continue;
+                } else if ("jk-connector".equals(httpListener.getId())) {
+                    createJKConnector(httpListener, httpService);
                 } else {
                     createHttpListener(httpListener, httpService);
                 }
             }
-            createJKConnector(httpService);
             setDefaultRedirectPort(defaultRedirectPort);
             
             // Configure virtual servers
@@ -720,6 +721,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     
+    public WebConnector getJkConnector() {
+        return jkConnector;
+    }
+    
+    
     /**
      * Use an http-listener subelements and creates a corresponding 
      * Tomcat Connector for each.
@@ -774,7 +780,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector = (WebConnector)_embedded.createConnector(address, port,
                                                             isSecure);
         
-        for(Mapper m: mappers){
+        for (Mapper m: mappers){
             if (m.getPort() == port){
                 connector.setMapper(m);
                 break;
@@ -811,40 +817,31 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Starts the AJP connector that will listen to call from Apache using
      * mod_jk, mod_jk2 or mod_ajp.
      */
-    private void createJKConnector(HttpService httpService) {
+    private void createJKConnector(HttpListener httpListener, HttpService httpService) {
 
-        String portString = System.getProperty("com.sun.enterprise.web.connector.enableJK");
+        int port = Integer.parseInt(httpListener.getPort());
 
-        if (portString == null) {
-            // do not create JK Connector if property is not set
-            return;
-        } else {
-            int port = 8009;
-            try {
-                port = Integer.parseInt(portString);
-            } catch (NumberFormatException ex) {
-                // use default port 8009
-                port = 8009;
-            }
-
-            jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
+        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
                                             port, "ajp");
 
-            jkConnector.configureJKProperties();
+        jkConnector.configureJKProperties();
 
-            String defaultHost = "server";
-            jkConnector.setDefaultHost(defaultHost);        
-            jkConnector.setDomain(_serverContext.getDefaultDomainName());
-            jkConnector.setName("httpd-listener");
-        
-            jkConnector.configureHttpProtocol(httpService.getHttpProtocol());
-
-            _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
+        String defaultHost = "server";
+        jkConnector.setDefaultHost(defaultHost);        
+        jkConnector.setDomain(_serverContext.getDefaultDomainName());
+        jkConnector.configureHttpProtocol(httpService.getHttpProtocol());
+        _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
-                                + portString);
-
-            _embedded.addConnector(jkConnector);       
+                                + port);
+            
+        for (Mapper m: mappers){
+            if (m.getPort() == port){
+                jkConnector.setMapper(m);
+                break;
+            }
         }
+
+        _embedded.addConnector(jkConnector);      
     }
 
     /**

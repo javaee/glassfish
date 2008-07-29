@@ -102,6 +102,11 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                     if (loadToAll || vsList.contains(vs.getName())
                             || isAliasMatched(vsList,vs)) {
                         for (int port : vs.getPorts()) {
+                            if ((container.getJkConnector()!=null) && 
+                                    (port==container.getJkConnector().getPort())) {
+                                // Do not registerEndpoint for jk connector port
+                                continue;
+                            }
                             CoyoteAdapter adapter =
                                 container.adapterMap.get(Integer.valueOf(port));
                             //@TODO change EndportRegistrationException processing if required

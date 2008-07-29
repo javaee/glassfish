@@ -91,6 +91,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
+import org.apache.coyote.ProtocolHandlerAdapter;
 // START S1AS 6188932
 import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6188932
@@ -1552,7 +1553,8 @@ public class Connector
              
                 // use no-arg constructor for JkCoyoteHandler
                 if (protocolHandlerClassName.equals("org.apache.jk.server.JkCoyoteHandler")) {
-                    protocolHandler = (ProtocolHandler) clazz.newInstance();
+                    protocolHandler = new ProtocolHandlerAdapter(
+                            (org.apache.coyote.ProtocolHandler) clazz.newInstance());
                     if (adapter instanceof CoyoteAdapter){
                         ((CoyoteAdapter)adapter).setCompatWithTomcat(true);
                     } else {
