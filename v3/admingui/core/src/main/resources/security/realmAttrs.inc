@@ -38,7 +38,7 @@
 
     <sun:propertySheet id="propertySheet">			 
         <sun:propertySheetSection id="propertySectionTextField">
-            <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
+            <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.realm.realmName}" >
                 <sun:staticText id="NameStatic" text="#{name}"/> 
             </sun:property> 
 

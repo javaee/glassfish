@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!--  configuration/realmEdit.jsf -->
+<!--  security/realmEdit.jsf -->
 
 #include "/security/realmEditInitPage.inc"
 
@@ -51,8 +51,8 @@
         getRealmAttrForEdit(configName="#{configName}", realmName="#{name}", outName=>$page{name}, attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props} );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-        #hasManageUserButton(configName="$pageSession{configName}" realmName="$pageSession{name}" result=>$page{showUserButton});
-        setPageSessionAttribute(key="showUserButton", value="#{false}");
+        hasManageUserButton(realmName="$pageSession{name}" result=>$page{showUserButton});
+        #setPageSessionAttribute(key="showUserButton", value="#{showUserButton}");
     />
     
 #include "/shared/restart.inc"

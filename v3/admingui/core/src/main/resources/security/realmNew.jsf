@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!--  configuration/realmNew.jsf -->
+<!--  security/realmNew.jsf -->
 
 <!-- 
    # set the component required to false so that when ok button is pressed, it won't enforce the required field

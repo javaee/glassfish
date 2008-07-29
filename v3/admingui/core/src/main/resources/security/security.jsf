@@ -58,7 +58,7 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.security.Security}" 
                 helpText="$resource{i18n.security.SecurityPageHelp}">
-                    <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
+                    <sun:button id="loadDefaults" rendered="#{false}" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
                         <!command
                             getSecurityDefaultAttributes(
                                 ConfigName="#{configName}", 
