@@ -315,6 +315,21 @@ public class ApplicationLifecycle {
             };
 
             try {
+                // construct application classloader and store in the context
+                List<Deployer> deployers = new ArrayList<Deployer>();
+
+                for (Sniffer sniffer : sniffers) {
+                    ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
+                    Deployer deployer = getDeployer(containerInfo);
+                    deployers.add(deployer);
+                }
+
+                ClassLoader parentCL = createApplicationParentCL(null, context, 
+                    deployers);
+                ArchiveHandler handler = getArchiveHandler(context.getSource());
+                context.setClassLoader(handler.getClassLoader(parentCL, 
+                    context.getSource()));
+
                 return startModules(appInfo, context, report, tracker);
             } catch (Exception e) {
                 report.failure(logger, "Exception while enabling the app", e);
