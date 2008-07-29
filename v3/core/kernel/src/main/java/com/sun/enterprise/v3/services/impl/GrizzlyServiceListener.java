@@ -35,10 +35,6 @@ import com.sun.enterprise.util.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import javax.net.ssl.SSLContext;
 
 /**
@@ -73,7 +69,7 @@ public class GrizzlyServiceListener {
 
     public void start(final GrizzlyProxy.GrizzlyFuture future) throws IOException, InstantiationException {
         final Thread t = Thread.currentThread();
-        embeddedHttp.initEndpoint();;
+        embeddedHttp.initEndpoint();
         embeddedHttp.getController().addStateListener(new ControllerStateListener() {
             public void onStarted() {
             }
