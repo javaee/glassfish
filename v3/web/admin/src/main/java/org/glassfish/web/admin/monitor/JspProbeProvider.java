@@ -48,11 +48,4 @@ public interface JspProbeProvider {
         @ProbeParam("jsp") Servlet jsp,
         @ProbeParam("appName") String appName
     );
-
-
-    public void jspUnloadedEvent(
-        @ProbeParam("jsp") Servlet jsp,
-        @ProbeParam("appName") String appName
-    );
-
 }

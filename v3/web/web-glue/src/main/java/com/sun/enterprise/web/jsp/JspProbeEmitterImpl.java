@@ -66,8 +66,4 @@ public class JspProbeEmitterImpl implements JspProbeEmitter {
     public void jspLoadedEvent(Servlet jspServlet) {
         jspProbeProvider.jspLoadedEvent(jspServlet, appName);
     }
-
-    public void jspUnloadedEvent(Servlet jspServlet) {
-        jspProbeProvider.jspUnloadedEvent(jspServlet, appName);
-    }
 }
