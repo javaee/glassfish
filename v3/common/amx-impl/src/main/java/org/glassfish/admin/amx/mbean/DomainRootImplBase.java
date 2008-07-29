@@ -56,6 +56,9 @@ import java.util.Set;
 
 import java.io.File;
 
+import com.sun.enterprise.universal.io.SmartFile;
+
+
 /**
  */
 public class DomainRootImplBase extends AMXNonConfigImplBase
@@ -276,42 +279,25 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         return Version.getFullVersion();
     }
     
-        private static String
-    getCanonicalPath( final File f )
-    {
-        try {
-            return f.getCanonicalPath();
-        }
-        catch( final java.io.IOException e )
-        {
-            throw new RuntimeException(e);
-        }
-    }
 
     public String getInstanceRoot()
     {
-        return "" + System.getProperty("com.sun.aas.instanceRoot");
+        return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.instanceRoot")) ;
     }
     
     public String getDomainDir()
     {
-        return getCanonicalPath( BootUtil.getInstance().getInstanceRoot() );
+        return SmartFile.sanitize( BootUtil.getInstance().getInstanceRoot().toString() );
     }
 
     public String getConfigDir()
     {
-        final String pathSep = System.getProperty( "file.separator" );
-        return getDomainDir() + pathSep + "config";
+        return getDomainDir() + "/" + "config";
     }
     
     public String getInstallDir()
     {
-        Issues.getAMXIssues().notDone( "DomainRootImpl.getInstallDir:  incorrect implementation" );
-        final File domainPath = BootUtil.getInstance().getInstanceRoot();
-        
-        // this is WRONG; it assumes that the domain dir lives in ${INSTALL_DIR}/domains
-        final File installDir = domainPath.getParentFile().getParentFile();
-        return getCanonicalPath( installDir );
+        return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.installRoot")) ;
     }
 }
 
