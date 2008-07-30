@@ -101,9 +101,10 @@ public class GrizzlyProxy implements NetworkProxy {
      * TODO: We must configure Grizzly using the HttpService element,
      * <strong>not HttpListener only</strong>.
      */
-    public GrizzlyProxy(final Logger logger, Habitat habitat, 
-            HttpListener httpListener, Controller controller, HttpService httpService) {
-        this.logger = logger;
+    public GrizzlyProxy(GrizzlyService grizzlyService,
+                        HttpListener httpListener,
+                        HttpService httpService) {
+        this.logger = grizzlyService.getLogger();
         this.httpListener = httpListener;
         this.httpService = httpService;
 
@@ -121,7 +122,7 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
         
-        configureGrizzly(portNumber, controller, habitat);  
+        configureGrizzly(portNumber, grizzlyService);  
     }
 
     
@@ -130,11 +131,12 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly(int port, Controller controller, Habitat habitat) {
-        grizzlyListener = new GrizzlyServiceListener(controller);
+    private void configureGrizzly(int port, GrizzlyService grizzlyService) {
+        grizzlyListener = new GrizzlyServiceListener(grizzlyService);
         
-        GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(grizzlyListener, 
-                httpService, httpListener, port, controller);
+        GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(
+                grizzlyListener, httpService, httpListener, port,
+                grizzlyService.getController());
         
         endPointMapper = grizzlyListener.configureEndpointMapper(isWebProfile);
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
@@ -146,8 +148,9 @@ public class GrizzlyProxy implements NetworkProxy {
         Inhabitant<Mapper> onePortMapper = 
                 new ExistingSingletonInhabitant<Mapper>(mapper);
         
-        habitat.addIndex(onePortMapper,"com.sun.grizzly.util.http.mapper.Mapper",
-                String.valueOf(port));
+        grizzlyService.getHabitat().addIndex(
+            onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
+            String.valueOf(port));
     }
     
   

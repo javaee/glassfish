@@ -69,18 +69,31 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     
     private UDPSelectorHandler udpSelectorHandler;
 
+    protected GrizzlyService grizzlyService;
+
+
     // ---------------------------------------------------------------------/.
 
-    public GrizzlyEmbeddedHttp() {
-        this(null);
+    /**
+     * Constructor
+     */    
+    public GrizzlyEmbeddedHttp(GrizzlyService grizzlyService) {
+        this.grizzlyService = grizzlyService;
+        this.controller = grizzlyService.getController();
+        this.containerMapper = new ContainerMapper(this);
+        this.pipelineClassName = GrizzlyProbePipeline.class.getName();
+        setClassLoader(getClass().getClassLoader()); 
     }
     
-    public GrizzlyEmbeddedHttp(Controller controller) {
-        this.controller = controller;
-        containerMapper = new ContainerMapper(this);
-   }
-    
-    
+
+    @Override    
+    protected void initPipeline() { 
+        super.initPipeline();
+        ((GrizzlyProbePipeline)processorPipeline).setThreadPoolProbeProvider(
+            grizzlyService.getThreadPoolProbeProvider());
+    }
+
+
     /**
      * Load using reflection the <code>Algorithm</code> class.
      */

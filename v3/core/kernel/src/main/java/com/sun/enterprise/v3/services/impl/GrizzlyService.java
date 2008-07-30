@@ -35,6 +35,8 @@ import org.glassfish.api.FutureProvider;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
@@ -73,15 +75,20 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     @Inject
     Habitat habitat;
 
+    @Inject
+    ProbeProviderFactory probeProviderFactory;
+
     List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
 
     List<Future<Result<Thread>>> futures;
     
     private final Controller controller  = new Controller();
     
-    
     private Collection<String> hosts = new ArrayList<String>();
-           
+
+    private ThreadPoolProbeProvider threadPoolProbeProvider;
+
+
     /**
      * Add the new proxy to our list of proxies.
      * @param proxy new proxy to be added
@@ -109,7 +116,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
     
     
-     /**
+    /**
      * Returns the controller
      *
      * @return the controller.
@@ -119,6 +126,36 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
     
     
+    /**
+     * Gets the logger.
+     *
+     * @return the logger
+     */   
+    public Logger getLogger() {
+        return logger;
+    }
+
+
+    /**
+     * Gets the habitat.
+     *
+     * @return the habitat
+     */   
+    public Habitat getHabitat() {
+        return habitat;
+    }
+
+
+    /**
+     * Gets the ThreadPoolProbeProvider
+     *
+     * @return the ThreadPoolProbeProvider
+     */   
+    public ThreadPoolProbeProvider getThreadPoolProbeProvider() {
+        return threadPoolProbeProvider;
+    }
+
+
     /**
      * Returns the life expectency of the service
      *
@@ -140,6 +177,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             for (HttpListener listener : httpService.getHttpListener()) {
                futures.add(createNetworkProxy(listener, httpService));
             }
+            createProbeProviders();
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.WARNING, "Closing initialized network proxies");
@@ -159,6 +197,24 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         return futures;
     }
 
+
+    /**
+     * Creates probe providers for monitoring purposes.
+     */
+    private void createProbeProviders() {
+
+        try {
+            threadPoolProbeProvider = probeProviderFactory.getProbeProvider(
+                "grizzly", "thread", null, ThreadPoolProbeProvider.class);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                       "Unable to create probe provider for interface " +
+                       ThreadPoolProbeProvider.class.getName(),
+                       e);
+        }
+    }
+
+
     /*
      * Creates a new NetworkProxy for a particular HttpListner
      * @param listener HttpListener
@@ -167,8 +223,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public synchronized Future<Result<Thread>> createNetworkProxy(HttpListener listener, 
             HttpService httpService) {
         // create the proxy for the port.
-        NetworkProxy proxy = new GrizzlyProxy(logger, habitat, listener, 
-                controller, httpService);
+        NetworkProxy proxy = new GrizzlyProxy(this, listener, httpService);
         proxy.setVsMapper(new VirtualHostMapper(logger, listener));
       
         // attach all virtual servers to this port

@@ -184,5 +184,10 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

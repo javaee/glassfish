@@ -55,6 +55,7 @@ public class GrizzlyServiceListener {
     
     private int port;
     
+    private GrizzlyService grizzlyService;
     private boolean isEmbeddedHttpSecured;
     private GrizzlyEmbeddedHttp embeddedHttp;
     
@@ -63,8 +64,9 @@ public class GrizzlyServiceListener {
     public GrizzlyServiceListener() {
     }
     
-    public GrizzlyServiceListener(Controller controller) {
-        this.controller = controller;
+    public GrizzlyServiceListener(GrizzlyService grizzlyService) {
+        this.grizzlyService = grizzlyService; 
+        this.controller = grizzlyService.getController();
     }
 
     public void start(final GrizzlyProxy.GrizzlyFuture future) throws IOException, InstantiationException {
@@ -96,9 +98,9 @@ public class GrizzlyServiceListener {
     public void initializeEmbeddedHttp(boolean isSecured) {
         this.isEmbeddedHttpSecured = isSecured;
         if (isSecured) {
-            embeddedHttp = new GrizzlyEmbeddedHttps();
+            embeddedHttp = new GrizzlyEmbeddedHttps(grizzlyService);
         } else {
-            embeddedHttp = new GrizzlyEmbeddedHttp();
+            embeddedHttp = new GrizzlyEmbeddedHttp(grizzlyService);
         }
         
         embeddedHttp.setPort(port);

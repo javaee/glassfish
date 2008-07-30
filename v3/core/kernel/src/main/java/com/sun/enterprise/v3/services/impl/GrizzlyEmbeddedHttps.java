@@ -83,7 +83,15 @@ public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureS
     
 
     // ---------------------------------------------------------------------/.
-    
+
+    /**
+     * Constructor
+     */    
+    public GrizzlyEmbeddedHttps(GrizzlyService grizzlyService) {
+        super(grizzlyService);
+    }
+
+
     /**
      * {@inheritDoc}
      */
