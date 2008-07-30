@@ -1,14 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @author Harpreet Singh
  */
-
 package org.glassfish.flashlight.datatree;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.statistics.Average;
 import org.glassfish.flashlight.statistics.Counter;
@@ -52,16 +50,18 @@ public class TreeNodeTest {
     @Test
     public void testSimpleTree() {
         System.out.println("test:simpleTree");
-        TreeNode wto = setupSimpleTree ();
-        TreeNode grandson = wto.getNode("wto.wtoson.wtograndson");
+        TreeNode server = setupSimpleTree ();
+        TreeNode grandson = server.getNode("wto.wtoson.wtograndson");
+//        System.out.println ("Retreived :"+grandson.getName()+ " should be "+
+//                "wtograndson");
         assertEquals ("wtograndson", grandson.getName());
     }
     
     @Test
     public void testSimpleTreeWrongElement (){
         System.out.println("test:simpleTreeWrongElement");
-        TreeNode wto = setupSimpleTree ();
-        TreeNode grandson = wto.getNode("wto.foobar.wtograndson");
+        TreeNode server = setupSimpleTree ();
+        TreeNode grandson = server.getNode("wto.foobar.wtograndson");
         assertNull (grandson);    
     }
 
@@ -70,15 +70,16 @@ public class TreeNodeTest {
     public void testSimpleTreeWithMethodInvoker (){
         try {
             System.out.println("test:simpleTreeWithMethodInvoker");
-            TreeNode wto = setupSimpleTree();
+            TreeNode server = setupSimpleTree();
             Method m = this.getClass().getMethod("helloWorld", (Class[])null);
             TreeNode methodInv = 
                     TreeNodeFactory.createMethodInvoker("helloWorld", this,
                     "categoryName", m);
+            TreeNode wto = server.getNode ("wto");
             wto.addChild (methodInv);
             
-            TreeNode child = wto.getNode("wto:helloWorld");
-            System.out.println ("Invoking hello world. Got Value: " + child.getValue ());
+            TreeNode child = server.getNode("wto.helloWorld");
+//            System.out.println ("Invoking hello world. Got Value: " + child.getValue ());
             assertEquals(child.getValue(), "Hello World");
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(TreeNodeTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -96,17 +97,16 @@ public class TreeNodeTest {
     public void testCounterInTree (){
         System.out.println ("test:testCounterInTree");
         long returnValue = 13;
-        TreeNode wto = setupSimpleTree ();
+        TreeNode server = setupSimpleTree ();
         Counter counter = CounterFactory.createCount(10);
-        TreeNode counterNode = (TreeNode) counter;
         for (int i=0; i<3; i++)
             counter.increment();
         
-        TreeNode grandson = wto.getNode ("wto.wtoson.wtograndson");
-        grandson.addChild(counterNode);
+        TreeNode grandson = server.getNode ("wto.wtoson.wtograndson");
+        grandson.addChild((TreeNode)counter);
         
-        TreeNode greatGrandSon = wto.getNode ("wto.wtoson.wtograndson.counter");
-        assertEquals (returnValue, greatGrandSon.getValue());
+        TreeNode counterNode = server.getNode ("wto.wtoson.wtograndson.counter");
+        assertEquals (returnValue, counterNode.getValue());
         
         
     }
@@ -115,60 +115,136 @@ public class TreeNodeTest {
     public void testAverageInTree (){
         System.out.println ("test:testAverageInTree");
         long returnValue = 6;
-        TreeNode wto = setupSimpleTree ();
-        Average average = AverageFactory.createAverage(3);
-        TreeNode averageNode = (TreeNode) average;
+        TreeNode server = setupSimpleTree ();
+        Average average = AverageFactory.createAverage();
         for (int i=0; i<3; i++)
             average.addDataPoint((i+1)*3);
         
         
-        TreeNode grandson = wto.getNode ("wto.wtoson.wtograndson");
-        grandson.addChild(averageNode);
+        TreeNode grandson = server.getNode ("wto.wtoson.wtograndson");
+        grandson.addChild((TreeNode)average);
         
-        System.out.println ("Running average: "+average.getRunningAverage());
-        System.out.println ("Minimum : "+ average.getMin()+ " Maximum : "+
-                average.getMax());
-        TreeNode greatGrandSon = wto.getNode ("wto.wtoson.wtograndson.average");
-        assertEquals (returnValue, greatGrandSon.getValue());
+//        System.out.println ("Average: "+average.getAverage());
+//        System.out.println ("Minimum : "+ average.getMin()+ " Maximum : "+
+//                average.getMax());
+        TreeNode averageNode = server.getNode ("wto.wtoson.wtograndson.average");
+        assertEquals (returnValue, averageNode.getValue());
         
     
     }
     
-   
-    @Test 
-    @Ignore
-    public void testTimeStatsInTree (){
-        System.out.println ("test:testTimeStatsInTree");
-        long returnValue = 2000;
-        TreeNode wto = setupSimpleTree ();
-        TimeStats timeStats = TimeStatsFactory.createTimeStatsMilli();
-        
-        TreeNode timeStatsNode = (TreeNode) timeStats;
-        timeStats.entry();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-       // Logger.getLogger(TreeNodeTest.class.getName()).log(Level.SEVERE, null, ex);
+    @Test
+    public void testIncorrectGetCompletePathName() {
+        System.out.println("test:IncorrectGetCompletePathName");
+        TreeNode server = setupSimpleTree ();
+        TreeNode grandson = server.getNode("wto:wtoson.wtograndson");
+        assertNull (grandson);
+    }
+      @Test
+    public void testGetCompletePathName() {
+        System.out.println("test:getCompletePathName");
+        TreeNode server = setupSimpleTree ();
+        TreeNode grandson = server.getNode("wto.wtoson.wtograndson");
+//        System.out.println ("Retreived :"+grandson.getName()+ " should be "+
+//                "wtograndson");
+//        System.out.println ("Complete Path Name: " + 
+//                grandson.getCompletePathName());
+         assertEquals ("server.wto.wtoson.wtograndson", 
+                grandson.getCompletePathName());
+    }
+  
+    @Test
+    public void testTravsere() {
+        System.out.println("test:traverse");
+        TreeNode server = setupComplexTree ();
+        List<TreeNode> list = server.traverse();
+        String[] expected = new String [7];
+        expected[0] = new String ("server");
+        expected[1] = new String ("server.wto");
+        expected[2] = new String ("server.wto.wtoson");
+        expected[3] = new String ("server.wto.wtoson.wtosonsdaughter");
+        expected[4] = new String ("server.wto.wtoson.wtosonsson");
+        expected[5] = new String ("server.wto.wtodaughter");
+        expected[6] = new String ("server.wto.wtodaughter.wtodaughtersdaughter");
+        // System.out.println ("---- Printing Traversed Tree ---");
+        String[] actual = new String[7];
+        int i=0;
+        for (TreeNode node:list){
+      //      System.out.println ("Node: "+ node.getName()+ 
+      //              " Complete Path: "+node.getCompletePathName());
+            actual[i++] = new String (node.getCompletePathName());
         }
-         timeStats.exit();
-         
-        TreeNode grandson = wto.getNode ("wto.wtoson.wtograndson");
-        grandson.addChild(timeStatsNode);
-        
-        System.out.println ("TimeStats: "+timeStats.getTime());
+        assertEquals (expected, actual );
+    }
  
-        TreeNode greatGrandSon = wto.getNode ("wto.wtoson.wtograndson.timeStatsMillis");
-        assertEquals (returnValue, greatGrandSon.getValue());
-        
-    
-    }    
+   @Test
+    public void testGetSonsAndGrandSons() {
+        System.out.println("test:GetSonsAndGrandSons");
+        TreeNode server = setupComplexTree ();
+        List<TreeNode> list = server.getNodes(".*son.*");
+        int expectedCount = 3;
+        int actualCount = 0;
+        for (TreeNode node:list){
+            if (node.getCompletePathName().contains("son"))
+                actualCount++;
+        }
+        assertEquals (expectedCount, actualCount);
+       }
+   
+    @Test
+    public void testGetDaughter() {
+        System.out.println("test:GetDaughter");
+        TreeNode server = setupComplexTree ();
+        List<TreeNode> list = server.getNodes(".*wtodaughter");
+        int expectedCount = 1;
+        int actualCount = 0;
+        for (TreeNode node:list){
+            if (node.getCompletePathName().contains("wtodaughter"))
+                actualCount++;
+        }
+        assertEquals (expectedCount, actualCount);
+       }
     private TreeNode setupSimpleTree (){
+        TreeNode server = TreeNodeFactory.createTreeNode ("server", this, "server");
         TreeNode wto = TreeNodeFactory.createTreeNode("wto", this, "web");
         TreeNode wtoson = TreeNodeFactory.createTreeNode ("wtoson", this, "web");
         TreeNode wtograndson = TreeNodeFactory.createTreeNode ("wtograndson", 
                 this, "web");
         wtoson.addChild(wtograndson);
         wto.addChild(wtoson);
-        return wto;
+        server.addChild(wto);
+        return server;
+    }
+    
+        private TreeNode setupComplexTree (){
+        TreeNode server = TreeNodeFactory.createTreeNode ("server", this, "server");
+
+        
+        TreeNode wto = TreeNodeFactory.createTreeNode("wto", this, "web");
+        server.addChild(wto);
+        
+        TreeNode wtoson = TreeNodeFactory.createTreeNode ("wtoson", this, "web");
+        wto.addChild(wtoson);
+        
+        TreeNode wtodaughter = TreeNodeFactory.createTreeNode ("wtodaughter", this, "web");
+        wto.addChild(wtodaughter);
+        
+        TreeNode wtosonsson = TreeNodeFactory.createTreeNode ("wtosonsson", 
+                this, "web");
+                
+        wtoson.addChild(wtosonsson);
+        
+        TreeNode wtodaughtersdaughter = TreeNodeFactory.
+                createTreeNode ("wtodaughtersdaughter", 
+                this, "web");
+        
+        wtodaughter.addChild(wtodaughtersdaughter);
+        
+        TreeNode wtosonsdaughter = TreeNodeFactory.createTreeNode ("wtosonsdaughter", 
+                this, "web");
+       
+        wtoson.addChild(wtosonsdaughter);
+        
+        return server;
     }
 }

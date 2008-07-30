@@ -5,11 +5,14 @@
 
 package org.glassfish.flashlight.statistics;
 
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.jvnet.hk2.annotations.Contract;
+
 /**
- * TBD: Implement Average
  * @author Harpreet Singh
  */
-public interface TimeStats {
+
+public interface TimeStats extends TreeNode {
     
     public long getTime ();
     public void entry ();
@@ -24,7 +27,6 @@ public interface TimeStats {
     public int getRunningAverageBucketSize ();
     */
     // for testing purposes only
-    public void setTime (long time);
     public void setReset (boolean reset);
     
 }

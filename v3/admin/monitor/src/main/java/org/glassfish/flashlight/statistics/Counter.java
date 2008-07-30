@@ -5,11 +5,15 @@
 
 package org.glassfish.flashlight.statistics;
 
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * TBD Implement Java EE Statistics
  * @author Harpreet Singh
  */
-public interface Counter {
+@Contract 
+public interface Counter extends TreeNode {
 
     public void decrement();
 

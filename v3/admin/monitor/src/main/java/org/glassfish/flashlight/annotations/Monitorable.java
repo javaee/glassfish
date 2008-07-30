@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.flashlight;
+package org.glassfish.flashlight.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

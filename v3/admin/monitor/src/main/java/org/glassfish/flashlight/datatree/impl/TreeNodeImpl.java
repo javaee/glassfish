@@ -7,7 +7,7 @@ package org.glassfish.flashlight.datatree.impl;
 
 /**
  *
- * @author hsingh
+ * @author Harpreet Singh
  */
 public class TreeNodeImpl extends AbstractTreeNode {
     

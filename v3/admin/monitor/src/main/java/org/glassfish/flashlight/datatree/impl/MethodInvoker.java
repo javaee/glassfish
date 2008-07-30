@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 /**
  *
- * @author hsingh
+ * @author Harpreet Singh
  */
 public class MethodInvoker extends AbstractTreeNode {
     Method method;

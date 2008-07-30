@@ -8,10 +8,15 @@ package org.glassfish.flashlight.statistics.impl;
 import org.glassfish.flashlight.statistics.*;
 import java.util.concurrent.atomic.AtomicLong;
 import org.glassfish.flashlight.datatree.impl.AbstractTreeNode;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * @author Harpreet Singh
  */
+@Service (name="counter")
+@Scoped (PerLookup.class)
 public class CounterImpl extends AbstractTreeNode implements Counter {
 
     private AtomicLong count = new AtomicLong (0);

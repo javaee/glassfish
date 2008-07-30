@@ -5,15 +5,23 @@
 
 package org.glassfish.flashlight.statistics.impl;
 
+import org.glassfish.flashlight.statistics.TimeStatsMillis;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 /**
  *
  * @author Harpreet Singh
  */
-public class TimeStatsMilli extends TimeStatsAbstractImpl {
+@Service (name="timeStatsMillis")
+@Scoped (PerLookup.class)
+public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
+    implements TimeStatsMillis {
     
     private static final String NAME = "timeStatsMillis";
     
-    public TimeStatsMilli (){
+    public TimeStatsMillisImpl (){
         super.setName(NAME);
         super.setEnabled(true);
     }

@@ -6,8 +6,8 @@
 package org.glassfish.flashlight.statistics.factory;
 
 import org.glassfish.flashlight.statistics.TimeStats;
-import org.glassfish.flashlight.statistics.impl.TimeStatsMilli;
-import org.glassfish.flashlight.statistics.impl.TimeStatsNano;
+import org.glassfish.flashlight.statistics.impl.TimeStatsMillisImpl;
+import org.glassfish.flashlight.statistics.impl.TimeStatsNanosImpl;
 
 /**
  *
@@ -16,10 +16,10 @@ import org.glassfish.flashlight.statistics.impl.TimeStatsNano;
 public class TimeStatsFactory {
 
     public static TimeStats createTimeStatsMilli (){
-        return new TimeStatsMilli ();
+        return new TimeStatsMillisImpl ();
     }
     
     public static TimeStats createTimeStatsNano (){
-        return new TimeStatsNano ();
+        return new TimeStatsNanosImpl ();
     }
 }

@@ -8,13 +8,13 @@ import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.impl.AverageImpl;
 import org.glassfish.flashlight.statistics.Average;
 /**
- *
+ * 
  * @author hsingh
  */
 public class AverageFactory {
     
-    public static Average createAverage (int bucketSize){
-        Average average = new AverageImpl (bucketSize);
+    public static Average createAverage (){
+        Average average = new AverageImpl ();
         return average;
     }
  

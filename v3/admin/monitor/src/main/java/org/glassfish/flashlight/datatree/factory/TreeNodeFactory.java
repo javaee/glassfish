@@ -10,7 +10,7 @@ import org.glassfish.flashlight.datatree.impl.MethodInvoker;
 import org.glassfish.flashlight.datatree.impl.TreeNodeImpl;
 /**
  *
- * @author hsingh
+ * @author Harpreet Singh
  */
 public class TreeNodeFactory {
     

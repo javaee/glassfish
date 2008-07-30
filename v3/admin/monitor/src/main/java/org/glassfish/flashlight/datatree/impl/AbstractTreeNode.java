@@ -5,7 +5,7 @@
 package org.glassfish.flashlight.datatree.impl;
 
 import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.Monitorable;
+import org.glassfish.flashlight.annotations.Monitorable;
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -24,11 +27,12 @@ public abstract class AbstractTreeNode implements TreeNode {
             new ConcurrentHashMap<String, TreeNode>();
     protected String name;    // The node object itself
     protected Object instance;
-    
     protected String category;
     protected boolean enabled = false;
-    
-    private static char NAME_SEPARATOR = '.';
+    private static String NAME_SEPARATOR = ".";
+    private static String REGEX =
+            NAME_SEPARATOR.equals(".") ? "\\." : NAME_SEPARATOR;
+    private TreeNode parent = null;
 
     public String getName() {
         return this.name;
@@ -46,7 +50,7 @@ public abstract class AbstractTreeNode implements TreeNode {
     public Object getValue() {
         if (enabled) {
             return this.instance;
-        } 
+        }
         return null;
     }
 
@@ -73,7 +77,32 @@ public abstract class AbstractTreeNode implements TreeNode {
     }
 
     public TreeNode addChild(TreeNode newChild) {
+        if (newChild == null) {
+            return null;
+        } else if (newChild.getName() == null) {
+            // log it and return null
+            return null;
+        }
+        newChild.setParent(this);
         return children.put(newChild.getName(), newChild);
+    }
+
+    public String getCompletePathName() {
+
+        if (getParent() != null) {
+            return getParent().getCompletePathName() +
+                    this.NAME_SEPARATOR + getName();
+        } else {
+            return getName();
+        }
+    }
+
+    public void setParent(TreeNode parent) {
+        this.parent = parent;
+    }
+
+    public TreeNode getParent() {
+        return this.parent;
     }
 
     /**
@@ -96,8 +125,9 @@ public abstract class AbstractTreeNode implements TreeNode {
 
     public void removeChild(TreeNode oldChild) {
         String child = oldChild.getName();
-        if (child != null)
+        if (child != null) {
             children.remove(child);
+        }
     }
 
     public String getCategory() {
@@ -117,41 +147,28 @@ public abstract class AbstractTreeNode implements TreeNode {
     }
 
     public TreeNode getNode(String completeName) {
-        
-        if (completeName == null)
+
+        if (completeName == null) {
             return null;
-        
-        char regex = NAME_SEPARATOR;
-        // dots mean any character in regex. Replacing them to make 
-        // final regex easier
-        String split = completeName.replace(regex, ':');
-        String[] tokens = split.split(":");
-        TreeNode n = null;
-        if (tokens.length == 1) {
-            if (this.getName().equals(tokens[0])) {
-                n = this;
-            }
-        } else {
-
-            n = findNodeInTree(dropFirstStringToken(tokens));
-
         }
+        Pattern pattern = Pattern.compile(this.REGEX);
+        String[] tokens = pattern.split(completeName);
+        TreeNode n = findNodeInTree(tokens);
         return n;
     }
 
-    public TreeNode findNodeInTree(String[] tokens) {
-        if (tokens == null)
+    private TreeNode findNodeInTree(String[] tokens) {
+        if (tokens == null) {
             return null;
-        
+        }
         TreeNode child = getChild(tokens[0]);
         if (child == null) {
             return null;
         }
         if (tokens.length > 1) {
-            child = ((AbstractTreeNode)child).
-                    findNodeInTree(dropFirstStringToken(tokens));
+            child = ((AbstractTreeNode) child).findNodeInTree(dropFirstStringToken(tokens));
         }
-        
+
         return child;
 
     }
@@ -169,6 +186,42 @@ public abstract class AbstractTreeNode implements TreeNode {
         }
         return newToken;
     }
+
+    public List<TreeNode> traverse() {
+        // System.out.println ("Node: " + this.getName ());
+        List<TreeNode> list = new ArrayList<TreeNode>();
+        list.add(this);
+
+        if (!hasChildNodes()) {
+            return list;
+        }
+
+        Collection<TreeNode> childList = children.values();
+        for (TreeNode node : childList) {
+            list.addAll(node.traverse());
+        }
+        return list;
+    }
+
+    public List<TreeNode> getNodes(String regex) {
+        List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
+
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            List<TreeNode> completeTree = traverse();
+
+            for (TreeNode node : completeTree) {
+                Matcher matcher = pattern.matcher(node.getName());
+
+                if (matcher.matches()) {
+                    regexMatchedTree.add(node);
+                }
+            }
+        } catch (java.util.regex.PatternSyntaxException e) {
+            // log this
+            e.printStackTrace ();
+        }
+        return regexMatchedTree;
+    }
 }
 
-  

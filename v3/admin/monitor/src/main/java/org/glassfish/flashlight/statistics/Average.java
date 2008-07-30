@@ -1,40 +1,29 @@
 
 package org.glassfish.flashlight.statistics;
 
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author Harpreet SIngh
  */
 
-public interface Average {
+@Contract
+public interface Average extends TreeNode {
 
     public void addDataPoint(long value);
 
-    public int getBucketSize ();
+    public double getAverage();
 
-    public double getRunningAverage();
+    public long getSize();
 
-    public int getSize();
-
-    public void setReset(int bucketSize);
-
-    public void setBucketSize(int bucketSize);
+    public void setReset ();
     
     public long getMin ();
     
     public long getMax ();
 
-    /**
-     * Heavier operation than getMin
-     * @return
-     */
-    public long getMinInCurrentDataSet ();
-    /**
-     * Heavier operation than getMax
-     * @return
-     */
-    public long getMaxInCurrentDataSet ();
-    
+    @Override
     public String toString();    
     
 }

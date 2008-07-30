@@ -3,27 +3,38 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.flashlight;
+package org.glassfish.flashlight.impl;
 
+import org.glassfish.flashlight.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
- * XXX Need to make this @Service
- * @author hsingh
+ * @author Harpreet Singh
  */
-public class FlashlightRegistryImpl implements FlashlightRegistry {
+
+@Service (name="MonitoringRuntimeDataRegistry")
+@Scoped(Singleton.class)
+public class MonitoringRuntimeDataRegistryImpl 
+        implements MonitoringRuntimeDataRegistry {
+    
     
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
 
 
+    public MonitoringRuntimeDataRegistryImpl (){      
+    }
+    
     public void add(String name, TreeNode node) {
         if (name != null )
              children.put(name, node);
         else {
-            throw new RuntimeException ("FlashlightMonitoringRegistry does not take null keys");
+            throw new RuntimeException ("MonitoringRuntimeDataRegistry does not take null keys");
         }
     }
 
@@ -32,9 +43,8 @@ public class FlashlightRegistryImpl implements FlashlightRegistry {
             children.remove(name);
     }
 
-    public TreeNode getNodeFromRegistry (String name) {
+    public TreeNode get (String name) {
         TreeNode node = (name != null)? children.get(name): null;
         return node;
     }
-
 }

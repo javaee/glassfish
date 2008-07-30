@@ -5,16 +5,24 @@
 
 package org.glassfish.flashlight.statistics.impl;
 
+import org.glassfish.flashlight.statistics.TimeStatsNanos;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 
 /**
  *
  * @author Harpreet Singh
  */
-public class TimeStatsNano extends TimeStatsAbstractImpl {
+@Service (name="timeStatsNanos")
+@Scoped (PerLookup.class)
+public class TimeStatsNanosImpl extends TimeStatsAbstractImpl
+    implements TimeStatsNanos {
     
     private static final String NAME = "timeStatsNanos";
     
-    public TimeStatsNano (){
+    public TimeStatsNanosImpl (){
         super.setName(NAME);
         super.setEnabled(true);
     }

@@ -6,20 +6,23 @@
 package org.glassfish.flashlight;
 
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * A registry that has all the nodes registered. It is rooted at "/"
- * TBD: Convert this to a Contract
  * @author Harpreet Singh
  */
-public interface FlashlightRegistry {
+@Contract
+public interface MonitoringRuntimeDataRegistry {
     
     public void add (String name, TreeNode node);
+    /*
     public void remove (String name);
+    */
     
     /**
+     * @param name of the top node in the registry
      * @return TreeNode
      */
-    public TreeNode getNodeFromRegistry (String name);
+    public TreeNode get (String name);
 
 }

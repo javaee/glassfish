@@ -6,6 +6,8 @@
 package org.glassfish.flashlight.datatree;
 
 import java.util.Collection;
+import java.util.List;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * 
@@ -28,24 +30,25 @@ public interface TreeNode {
     
     // Children utility methods
     public TreeNode addChild (TreeNode newChild);
-
-    public boolean hasChildNodes ();
+    
+    public void setParent (TreeNode parent);
+    public TreeNode getParent ();
+    
     /**
      * 
+     * @return the complete dotted name to this node
+     */
+    public String getCompletePathName ();
+
+    public boolean hasChildNodes ();
+    /*
+     * Removed it due to security issues. 
      * @param oldChild
      * @return oldChild
      */
+    /*
     public void removeChild (TreeNode oldChild);
-
-/**
- * 
- *    Returns an immutable view of the children
-     * 
-     * @return Enumeration<TreeNode>
-     
-    public Enumeration<TreeNode> getChildNodesImmutable();
-**/
-        
+    */
     /**
      * Returns a mutable view of the children
      * @return Collection<TreeNode>
@@ -54,8 +57,7 @@ public interface TreeNode {
     
     public TreeNode getNode (String completeName);
     
-    /*
-     * XXX
-    public void traverseTree (TreeNode node);
-    */
+    public List<TreeNode> traverse ();
+    
+    public List<TreeNode> getNodes (String regex);    
 }
