@@ -106,8 +106,11 @@ public class ContainerMapper {
                     " contextProtocolFilters: " + contextProtocolFilters);
         }
 
-        // Avoid double request mapping by considering the CoyoteAdapter a 
-        // special case.
+        /*
+         * In the case of CoyoteAdapter, return, because the context will
+         * have already been registered with the mapper by the connector's
+         * MapperListener, in response to a JMX event
+         */
         if (adapter.getClass().getName().equals("org.apache.catalina.connector.CoyoteAdapter")) {
             coyoteAdapter = adapter;
             return;
@@ -134,14 +137,6 @@ public class ContainerMapper {
             logger.fine("MAPPER (" + this + ") UNREGISTER contextRoot: " + contextRoot);
         }
         mapper.removeContext(defaultHostName,slash(contextRoot));
-    }
-
-    
-    /**
-     * Set a {@link V3Mapper}
-     */
-    public void setMapper(V3Mapper mapper) {
-        this.mapper = mapper;
     }
 
     
@@ -227,7 +222,7 @@ public class ContainerMapper {
         // another adapter like grail/rail.
         if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
             contextRootInfo = (ContextRootInfo) mappingData.context;
-            adapter = ((ContextRootInfo) mappingData.context).getAdapter();
+            adapter = contextRootInfo.getAdapter();
         } else if (mappingData.context != null && mappingData.context.getClass()
                 .getName().equals("com.sun.enterprise.web.WebModule")) {
             
