@@ -115,7 +115,7 @@ public class ContainerMapper {
 
         for (String host : vs) {
             mapper.addContext(host, slash(contextRoot),
-                    new ContextRootInfo(adapter, container, contextProtocolFilters), null, null);
+                    new ContextRootInfo(adapter, container, contextProtocolFilters), new String[0], null);
         }
     }
 
