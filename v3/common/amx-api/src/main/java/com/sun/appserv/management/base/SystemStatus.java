@@ -36,6 +36,7 @@
 package com.sun.appserv.management.base;
 
 import java.util.Map;
+import java.util.List;
 
 
 /**
@@ -60,6 +61,48 @@ public interface SystemStatus extends AMX, Utility, Singleton
 
      */
     public Map<String,Object> pingJDBCConnectionPool( final String poolName );
+    
+    
+    /**
+        <em>Note: this API is highly volatile and subject to change<em>.
+        <p>
+        Determine configuration that has changed but that has not been responded
+        to by functionality using it.  A module that fails to listen to config-change events
+        will inherently be blind to all changes to its configuration.  And even modules
+        that do listen for config-change events might incorrectly claims they've processed
+        all changes when they have not.  So this information should be
+        considered suggestive/advisory only.
+        <p>
+        Changes are listed oldest first.  The system may drop older changes in order to limit the size
+        of the list and/or merge related changes to the most recent.
+        <p>
+        Over the wire transmission of 'UnprocessedConfigChange' requires the client to have its class.
+        See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
+        Clients with access to the class can use {@link #Helper#toUnprocessedConfigChange}
+        <p>
+        With a switch to JDK 6 required, an MXBean can be used to automate this.
+     */
+    public List<Object[]>  getUnprocessedConfigChanges(int howMany);
+    
+    /** helper class, in particular to convert results from {@link #getUnprocessedConfigChanges} */
+    public final class Helper {
+        private Helper() {}
+        public List<UnprocessedConfigChange>  toUnprocessedConfigChange( final List<Object[]> items) {
+            final List<UnprocessedConfigChange> l = new java.util.ArrayList<UnprocessedConfigChange>();
+            for( final Object[] a : items ) {
+                l.add( new UnprocessedConfigChange(a) );
+            }
+            return l;
+        }
+    }
 }
+
+
+
+
+
+
+
+
 
 
