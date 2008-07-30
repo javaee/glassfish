@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.mbean;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.management.base.SystemStatus;
+import com.sun.appserv.management.base.UnprocessedConfigChange;
 import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import org.jvnet.hk2.component.ComponentException;
@@ -46,6 +47,11 @@ import javax.management.ObjectName;
 import javax.resource.ResourceException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
+
+import org.glassfish.admin.amx.util.Issues;
 
 /**
     
@@ -103,6 +109,18 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
         // success
         result.put( PING_SUCCEEDED_KEY, pingable);
         return result;
+    }
+    
+        public List<Object[]>
+    getUnprocessedConfigChanges(final int howMany) {
+        Issues.getAMXIssues().notDone( "SystemStatusImpl.getUnprocessedConfigChanges() needs to get all the config changes and morph them appropriately" );
+        
+        final List<Object[]> changes = new ArrayList<Object[]>();
+        
+        final UnprocessedConfigChange test = new UnprocessedConfigChange( "TEST", "old", "new", getObjectName(), "for testing" );
+        changes.add(test.toArray());
+        
+        return changes;
     }
 }
 
