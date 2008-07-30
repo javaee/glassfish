@@ -261,7 +261,7 @@ public class FileUserHandler {
         
         String realmName = (String) handlerCtx.getInputValue("realmName");
         Realm realm = getRealm(realmName);
-        handlerCtx.setOutputValue("result", realm.supportsUserManagement());
+        handlerCtx.setOutputValue("result", "true" ); //realm.supportsUserManagement());
     }
     
     private static List<String> getUserNames(String realmName){
