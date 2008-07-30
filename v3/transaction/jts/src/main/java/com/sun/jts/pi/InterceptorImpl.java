@@ -63,7 +63,6 @@ import org.omg.CosTSPortability.Receiver;
 import org.omg.CosTSInteroperation.TAG_OTS_POLICY;
 
 import com.sun.jts.CosTransactions.CurrentTransaction;
-import com.sun.corba.ee.impl.corba.EnvironmentImpl;
 import com.sun.corba.ee.impl.txpoa.TSIdentificationImpl;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.ObjectKeyTemplate;
@@ -407,7 +406,14 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
         // Set up the Environment instance with exception information.
 	// The exception can be a SystemException or an UnknownUserException.
 
-	Environment env = new EnvironmentImpl();
+	Environment env = null;
+        if (txOrb != null) {
+            env = txOrb.create_environment();
+        } else {
+            // This shouldn't happen, but we'll be cautious
+            env = ORB.init().create_environment();
+        }
+
 	env.exception(null);
 
         // call the OTS proprietary hook.
@@ -444,7 +450,14 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
 
         // Set up the Environment instance with exception information.
 	// The exception can be a SystemException or an UnknownUserException.
-	Environment env = new com.sun.corba.ee.impl.corba.EnvironmentImpl();
+	Environment env = null;
+        if (txOrb != null) {
+            env = txOrb.create_environment();
+        } else {
+            // This shouldn't happen, but we'll be cautious
+            env = ORB.init().create_environment();
+        }
+
         SystemException exception = null;
         Any any = ri.received_exception();
         InputStream strm = any.create_input_stream();
@@ -530,7 +543,14 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
         // Set up the Environment instance with exception information.
 	// The exception can be a SystemException or an UnknownUserException.
 
-	Environment env = new EnvironmentImpl();
+	Environment env = null;
+        if (txOrb != null) {
+            env = txOrb.create_environment();
+        } else {
+            // This shouldn't happen, but we'll be cautious
+            env = ORB.init().create_environment();
+        }
+
 	env.exception(null);
 
         // call the OTS proprietary hook.
