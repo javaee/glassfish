@@ -171,7 +171,13 @@
             <groupId>org.glassfish.security</groupId>
             <artifactId>websecurity</artifactId>
             <version>${glassfish.version}</version>
-	    	<scope>provided</scope>
+	    <scope>provided</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>realms</artifactId>
+            <version>${glassfish.version}</version>
+	    <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>org.glassfish.common</groupId>
