@@ -45,11 +45,11 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +64,14 @@ import java.util.logging.Logger;
 @Service
 @Scoped(Singleton.class)
 public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
+
     public static final int ALL_PORTS = Integer.MAX_VALUE;
+
+    static final ThreadPoolProbeProvider NO_OP_THREADPOOL_PROBE_PROVIDER =
+        (ThreadPoolProbeProvider) Proxy.newProxyInstance(
+            ThreadPoolProbeProvider.class.getClassLoader(),
+            new Class[] { ThreadPoolProbeProvider.class },
+            new NoopInvocationHandler());
     
     @Inject(name="server-config") // for now
     Config config;
@@ -206,11 +213,21 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         try {
             threadPoolProbeProvider = probeProviderFactory.getProbeProvider(
                 "core", "threadpool", null, ThreadPoolProbeProvider.class);
+            if (threadPoolProbeProvider == null) {
+                // Should never happen
+                logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    ThreadPoolProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE,
                        "Unable to create probe provider for interface " +
                        ThreadPoolProbeProvider.class.getName(),
                        e);
+        }
+        if (threadPoolProbeProvider == null) {
+            threadPoolProbeProvider = NO_OP_THREADPOOL_PROBE_PROVIDER;
         }
     }
 
@@ -345,5 +362,19 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         for (NetworkProxy proxy : proxies) {
             proxy.unregisterEndpoint(contextRoot, app);
         }
-    }    
+    }
+
+
+    /**
+     * Probe provider that implements each probe provider method as a 
+     * no-op.
+     */
+    public static class NoopInvocationHandler implements InvocationHandler {
+
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            // Deliberate no-op
+            return null;
+        };
+    }
+
 }

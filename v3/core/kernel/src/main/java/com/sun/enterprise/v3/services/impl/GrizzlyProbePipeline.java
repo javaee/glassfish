@@ -47,10 +47,10 @@ import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
  * @author jluehe
  */
 public class GrizzlyProbePipeline extends LinkedListPipeline {
-
-
+        
     // The ThreadPoolProbeProvider to which to emit any probe events
-    private ThreadPoolProbeProvider threadPoolProbeProvider;
+    private ThreadPoolProbeProvider threadPoolProbeProvider =
+        GrizzlyService.NO_OP_THREADPOOL_PROBE_PROVIDER;
 
 
     public void setThreadPoolProbeProvider(
@@ -61,9 +61,7 @@ public class GrizzlyProbePipeline extends LinkedListPipeline {
 
     protected void increaseWorkerThread(int increment, boolean startThread) {
         super.increaseWorkerThread(increment, startThread);
-        if (threadPoolProbeProvider != null) {
-            threadPoolProbeProvider.newThreadsAllocatedEvent(increment,
-                                                             startThread);
-        }
+        threadPoolProbeProvider.newThreadsAllocatedEvent(increment,
+                                                         startThread);
     }
 }

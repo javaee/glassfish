@@ -161,7 +161,7 @@ import org.jvnet.hk2.config.ObservableBean;
 
 import javax.naming.spi.NamingManager;
 import javax.servlet.jsp.JspFactory;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -199,6 +199,30 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private static final String DOL_DEPLOYMENT =
             "com.sun.enterprise.web.deployment.backend";
+
+    private static final ServletProbeProvider NO_OP_SERVLET_PROBE_PROVIDER =
+        (ServletProbeProvider) Proxy.newProxyInstance(
+            ServletProbeProvider.class.getClassLoader(),
+            new Class[] { ServletProbeProvider.class },
+            new NoopInvocationHandler());
+
+    private static final SessionProbeProvider NO_OP_SESSION_PROBE_PROVIDER =
+        (SessionProbeProvider) Proxy.newProxyInstance(
+            SessionProbeProvider.class.getClassLoader(),
+            new Class[] { SessionProbeProvider.class },
+            new NoopInvocationHandler());
+
+    private static final JspProbeProvider NO_OP_JSP_PROBE_PROVIDER =
+        (JspProbeProvider) Proxy.newProxyInstance(
+            JspProbeProvider.class.getClassLoader(),
+            new Class[] { JspProbeProvider.class },
+            new NoopInvocationHandler());
+
+    private static final RequestProbeProvider NO_OP_REQUEST_PROBE_PROVIDER =
+        (RequestProbeProvider) Proxy.newProxyInstance(
+            RequestProbeProvider.class.getClassLoader(),
+            new Class[] { RequestProbeProvider.class },
+            new NoopInvocationHandler());
     
     /**
      * The logger to use for logging ALL web container related messages.
@@ -4373,42 +4397,99 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             servletProbeProvider = probeProviderFactory.getProbeProvider(
                 "web", "servlet", null, ServletProbeProvider.class);
+            if (servletProbeProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    ServletProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,
                         "Unable to create probe provider for interface " +
-                        ServletProbeProvider.class.getName(),
+                        ServletProbeProvider.class.getName() +
+                        ", using no-op provider",
                         e);
+        }
+        if (servletProbeProvider == null) {
+            servletProbeProvider = NO_OP_SERVLET_PROBE_PROVIDER;
         }
 
         try {
             jspProbeProvider = probeProviderFactory.getProbeProvider(
                 "web", "jsp", null, JspProbeProvider.class);
+            if (jspProbeProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    JspProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,
                         "Unable to create probe provider for interface " +
-                        JspProbeProvider.class.getName(),
+                        JspProbeProvider.class.getName() +
+                        ", using no-op provider",
                         e);
+        }
+        if (jspProbeProvider == null) {
+            jspProbeProvider = NO_OP_JSP_PROBE_PROVIDER;
         }
 
         try {
             sessionProbeProvider = probeProviderFactory.getProbeProvider(
                 "web", "session", null, SessionProbeProvider.class);
+            if (sessionProbeProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    SessionProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,
                         "Unable to create probe provider for interface " +
-                        SessionProbeProvider.class.getName(),
+                        SessionProbeProvider.class.getName() +
+                        ", using no-op provider",
                         e);
+        }
+        if (sessionProbeProvider == null) {
+            sessionProbeProvider = NO_OP_SESSION_PROBE_PROVIDER;
         }
 
         try {
             requestProbeProvider = probeProviderFactory.getProbeProvider(
                 "web", "request", null, RequestProbeProvider.class);
+            if (requestProbeProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    RequestProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,
                         "Unable to create probe provider for interface " +
-                        RequestProbeProvider.class.getName(),
+                        RequestProbeProvider.class.getName() +
+                        ", using no-op provider",
                         e);
         }
+        if (requestProbeProvider == null) {
+            requestProbeProvider = NO_OP_REQUEST_PROBE_PROVIDER;
+        }
+    }
+
+
+    /**
+     * Probe provider that implements each probe provider method as a 
+     * no-op.
+     */
+    public static class NoopInvocationHandler implements InvocationHandler {
+
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            // Deliberate no-op
+            return null;
+        };
     }
 }
 
