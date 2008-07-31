@@ -49,7 +49,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
  * Defines the type of a {@link ProtocolChain} and describes a list of a
  * {@link ProtocolFilter}s, which will participate in a request processing
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolChainConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolChainConfig" )
 @Configured
 public interface ProtocolChain extends ConfigBeanProxy, PropertyBag, Injectable {
     /**

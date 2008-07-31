@@ -44,7 +44,7 @@ import org.jvnet.hk2.config.Configured;
 /**
  * defines single {@link ProtocolFilter} in a processing chain.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolFilterConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolFilterConfig")
 @Configured
 public interface ProtocolFilter extends ConfigBeanProxy, PropertyBag, Injectable {
     /**

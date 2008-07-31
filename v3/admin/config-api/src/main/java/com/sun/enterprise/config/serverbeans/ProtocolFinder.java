@@ -47,7 +47,7 @@ import org.jvnet.hk2.config.Configured;
  * {@link Protocol} or not. If yes - {@link ProtocolFinder} forwards request
  * processing to a specific {@link Protocol}.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolFinderConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolFinderConfig")
 @Configured
 public interface ProtocolFinder extends ConfigBeanProxy, PropertyBag, Injectable {
 
@@ -103,7 +103,7 @@ public interface ProtocolFinder extends ConfigBeanProxy, PropertyBag, Injectable
      * @param protocol the {@link Protocol}, which is responsible for handling
      * a request, which was recognized by this {@link ProtocolFinder}
      */
-    public void getProtocol(Protocol protocol);
+    public void setProtocol(Protocol protocol);
 }
   
 

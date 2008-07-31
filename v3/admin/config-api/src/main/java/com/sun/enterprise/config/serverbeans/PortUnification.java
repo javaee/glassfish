@@ -48,7 +48,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
  * {@link PortUnification} defines logic how to host
  * several protocols on a single tcp port.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.PortUnificationConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.PortUnificationConfig")
 @Configured
 public interface PortUnification extends ConfigBeanProxy, PropertyBag, Injectable {
 

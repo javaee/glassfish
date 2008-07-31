@@ -46,7 +46,7 @@ import org.jvnet.hk2.config.Element;
  * {@link Protocol} defines one single high-level protocol like:
  * http, https, iiop, etc.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolConfig" )
 @Configured
 public interface Protocol extends ConfigBeanProxy, PropertyBag, Injectable {
 

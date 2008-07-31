@@ -45,7 +45,7 @@ import org.jvnet.hk2.config.Configured;
 /**
  * {@link Transport} defines one specific transport and its properties.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.TransportConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.TransportConfig")
 @Configured
 public interface Transport extends ConfigBeanProxy, PropertyBag, Injectable {
 

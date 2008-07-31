@@ -44,7 +44,7 @@ import org.jvnet.hk2.config.Configured;
 /** 
  * Binds the {@link Transport} and the {@link Protocol}.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.NetworkListenerConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.NetworkListenerConfig" )
 @Configured
 public interface NetworkListener extends ConfigBeanProxy, Injectable, PropertyBag {
 

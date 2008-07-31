@@ -46,7 +46,7 @@ import org.jvnet.hk2.config.Configured;
  * {@link SelectionKeyHandler} defines {@link Transport}'s {@link SelectionKey}
  * events handling logic.
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.SelectionKeyHandlerConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.SelectionKeyHandlerConfig")
 @Configured
 public interface SelectionKeyHandler extends ConfigBeanProxy, PropertyBag, Injectable {
 

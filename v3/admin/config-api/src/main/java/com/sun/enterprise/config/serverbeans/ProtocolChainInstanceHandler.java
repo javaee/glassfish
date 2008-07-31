@@ -45,7 +45,7 @@ import org.jvnet.hk2.config.Element;
 /**
  * Defines a {@link ProtocolChain} instantiation and releasing logic
  */
-@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolChainInstanceHandlerConfig", nameHint="name")
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolChainInstanceHandlerConfig")
 @Configured
 public interface ProtocolChainInstanceHandler extends ConfigBeanProxy, PropertyBag, Injectable {
     /**
