@@ -95,6 +95,7 @@
                         -->
                         <Export-Package>
                             org.glassfish.flashlight.provider,
+                            org.glassfish.flashlight.client,
                             org.glassfish.flashlight.provider.annotations
                         </Export-Package>
                         <Bundle-Activator>org.glassfish.flashlight.impl.core.FlashlightBundleActivator

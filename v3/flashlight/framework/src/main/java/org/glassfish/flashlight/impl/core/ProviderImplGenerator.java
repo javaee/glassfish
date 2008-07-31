@@ -5,6 +5,8 @@ package org.glassfish.flashlight.impl.core;
  *         Date: Jul 20, 2008
  */
 
+import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -157,7 +159,7 @@ public class ProviderImplGenerator {
             String fieldName = "_flashlight_" + probe.getProbeName();
             gen.push(probe.getId());
             gen.invokeStatic(probeRegType,
-                Method.getMethod("org.glassfish.flashlight.impl.core.Probe getProbeById(int)"));
+                Method.getMethod("org.glassfish.flashlight.provider.Probe getProbeById(int)"));
 
             gen.visitFieldInsn(Opcodes.PUTFIELD,
                     generatedClassName,

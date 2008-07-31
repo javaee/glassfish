@@ -40,7 +40,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.flashlight.provider.annotations.ProbeName;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-import org.glassfish.flashlight.impl.core.Probe;
+import org.glassfish.flashlight.provider.Probe;
 import org.glassfish.flashlight.impl.core.ProbeFactory;
 import org.glassfish.flashlight.impl.core.ProbeProvider;
 import org.glassfish.flashlight.impl.core.ProbeProviderRegistry;

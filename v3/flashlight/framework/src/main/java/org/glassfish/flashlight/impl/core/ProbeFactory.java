@@ -36,6 +36,8 @@
 
 package org.glassfish.flashlight.impl.core;
 
+import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;

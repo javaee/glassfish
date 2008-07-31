@@ -36,6 +36,7 @@
 
 package org.glassfish.flashlight.impl.core;
 
+import org.glassfish.flashlight.provider.Probe;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 

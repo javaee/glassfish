@@ -38,7 +38,7 @@ package org.glassfish.flashlight.impl.client;
 
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
-import org.glassfish.flashlight.impl.core.Probe;
+import org.glassfish.flashlight.provider.Probe;
 
 /**
  * @author Mahesh Kannan

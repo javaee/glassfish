@@ -37,7 +37,7 @@
 package org.glassfish.flashlight.client;
 
 import org.glassfish.flashlight.impl.client.ReflectiveClientInvoker;
-import org.glassfish.flashlight.impl.core.Probe;
+import org.glassfish.flashlight.provider.Probe;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.jvnet.hk2.annotations.Service;
 

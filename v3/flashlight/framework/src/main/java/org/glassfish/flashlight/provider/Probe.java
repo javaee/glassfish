@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.flashlight.impl.core;
+package org.glassfish.flashlight.provider;
 
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeHandle;
@@ -73,13 +73,13 @@ public class Probe
         this.id = id;
         this.moduleName = moduleName;
         this.providerName = providerName;
-        this.appName = appName;
+        this.appName = (appName == null) ? "" : appName;
         this.probeName = probeName;
         this.probeParamNames = probeParamNames;
         this.paramTypes = paramTypes;
-
+        System.out.println("[FL]AppName = " + appName + " " + this.appName);
         this.probeStr = moduleName + ":" + providerName + ":" +
-                appName + ":" + probeName;
+                this.appName + ":" + probeName;
     }
 
     public synchronized void addInvoker(ProbeClientInvoker invoker) {
