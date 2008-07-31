@@ -1135,6 +1135,44 @@ public abstract class BaseContainer
         metadata = new EJBMetaDataImpl(ejbHomeStub, homeIntf, remoteIntf,
             primaryKeyClass, isSession, isStatelessSession);
     }
+
+    protected String getJavaGlobalJndiNamePrefix() {
+        String appName = null;
+        Application app = ejbDescriptor.getApplication();
+        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+            appName = ejbDescriptor.getApplication().getRegistrationName();
+        }
+        String modName = null;
+        if (appName == null) {
+            modName = ejbDescriptor.getApplication().getRegistrationName();
+        } else {
+            String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
+                    getModuleDescriptor().getArchiveUri();
+            modName =
+                    com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
+        }
+        String ejbName = ejbDescriptor.getName();
+
+        String specifiedMappedName = ejbDescriptor.getMappedName();
+        String actualMappedName = null;
+
+        if (specifiedMappedName == null || specifiedMappedName.length() == 0) {
+            actualMappedName = "java:global/env/";
+
+            if (appName != null) {
+                actualMappedName += appName + "/";
+            }
+
+            actualMappedName += modName + "/";
+            actualMappedName += ejbName;
+        } else {
+            actualMappedName = specifiedMappedName;
+        }
+
+        System.out.println("[BaseContainer] getJavaGlobalJndiNamePrefix: origMappedName: "
+                + specifiedMappedName + "; global: " + actualMappedName);
+        return actualMappedName;
+    }
     
     /**
      * Return the EJBObject/EJBHome Proxy for the given ejbId and instanceKey.
