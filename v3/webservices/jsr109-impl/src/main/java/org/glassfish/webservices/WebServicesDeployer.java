@@ -606,6 +606,12 @@ public class WebServicesDeployer extends WebDeployer {
                                      String appLibDirPath, String moduleDir, Application app,DeploymentContext dc) throws DeploymentException {
         // First thing in the classpath is modules' classes directory
         String classpath = classesDir.getAbsolutePath();
+        /**
+         * Hack fix me
+         * TODO BM fix this just put in momentarily so apt could find
+         * javax.jws classes 
+         */
+        classpath+=(File.pathSeparator+"javax.javaee-10.0-SNAPSHOT.jar")  ;
 
         // Next add the Jar files in WEB-INF/lib, if any
         if(webinfLibDir != null) {
