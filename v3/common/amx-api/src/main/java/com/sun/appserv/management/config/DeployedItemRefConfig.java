@@ -38,13 +38,14 @@ package com.sun.appserv.management.config;
 import java.util.Map;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Container;
 
 
 /**
 	Represents an &lt;application-ref&gt; element
 	found within a &lt;server&gt element.
 */
-public interface DeployedItemRefConfig extends RefConfig, ConfigCreator, ConfigRemover
+public interface DeployedItemRefConfig extends Container, RefConfig, ConfigCreator, ConfigRemover
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DEPLOYED_ITEM_REF_CONFIG;

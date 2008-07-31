@@ -47,9 +47,9 @@ import java.util.Map;
 	 Note that the name as reported by {@link #getName} corresponds to the
      'type' attribute in the ConfigBean/XML.
 */
+@AMXCreateInfo( paramNames={"type", "config"} )
 public interface ApplicationConfigConfig
-	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement, DefaultValues, Singleton
+	extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement, DefaultValues, Singleton
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= "X-ApplicationConfigConfig";

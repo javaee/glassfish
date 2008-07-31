@@ -64,6 +64,7 @@ import org.jvnet.hk2.config.Configured;
  * @author tjquinn
  */
 @Configured
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfigConfig", nameHint="type" )
 public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
 
     /**
