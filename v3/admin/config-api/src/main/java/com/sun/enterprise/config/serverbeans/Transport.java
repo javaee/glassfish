@@ -103,6 +103,25 @@ public interface Transport extends ConfigBeanProxy, PropertyBag, Injectable {
     public void setAcceptorThreads(String acceptorThreads);
 
     /**
+     * Gets the max. number of connections this {@link Transport} can handle
+     * at the same time.
+     *
+     * @return the max. number of connections this {@link Transport} can handle
+     *         at the same time.
+     */
+    @Attribute
+    public String getMaxConnectionsCount();
+
+    /**
+     * Sets the max. number of connections this {@link Transport} can handle
+     * at the same time.
+     *
+     * @param maxConnectionsCount the max. number of connections this
+     *        {@link Transport} can handle at the same time
+     */
+    public void setMaxConnectionsCount(String maxConnectionsCount);
+
+    /**
      * Get the name of the {@link SelectionKeyHandler}, associated
      * with the {@link Transport}
      *

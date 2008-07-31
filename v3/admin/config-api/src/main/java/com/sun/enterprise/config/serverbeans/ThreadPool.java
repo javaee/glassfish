@@ -108,6 +108,23 @@ public interface ThreadPool extends ConfigBeanProxy, PropertyBag, Injectable  {
     public void setMaxThreadPoolSize(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the threadIncrement property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="10")
+    public String getThreadIncrement();
+
+    /**
+     * Sets the value of the threadIncrement property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setThreadIncrement(String value);
+
+        /**
      * Gets the value of the idleThreadTimeoutInSeconds property.
      *
      * @return possible object is

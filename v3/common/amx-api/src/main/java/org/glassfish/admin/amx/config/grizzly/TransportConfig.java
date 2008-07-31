@@ -72,6 +72,16 @@ public interface TransportConfig extends PropertiesAccess, NamedConfigElement, D
      */
     public String getAcceptorThreads();
     public void setAcceptorThreads(String acceptorThreads);
+
+    /**
+     * Gets the max. number of connections this {@link Transport} can handle
+     * at the same time.
+     *
+     * @return the max. number of connections this {@link Transport} can handle
+     *         at the same time.
+     */
+    public String getMaxConnectionsCount();
+    public void setMaxConnectionsCount(String maxConnectionsCount);
 }
 
 

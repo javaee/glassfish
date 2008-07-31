@@ -63,6 +63,10 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 	public void	setMinThreadPoolSize( String value );
 
     @ResolveTo(Integer.class)
+	public String	getThreadIncrement();
+	public void	setThreadIncrement( String value );
+
+    @ResolveTo(Integer.class)
 	public String	getNumWorkQueues();
 	public void	setNumWorkQueues( String value );
 
