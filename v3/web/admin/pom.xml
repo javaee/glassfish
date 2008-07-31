@@ -79,7 +79,7 @@
                         <!-- _include does not work. See Felix-620.
                         <_include>osgi.bundle</_include>
                         -->
-                        <Export-Package>
+			<Export-Package>
                         org.glassfish.web.admin.cli,
                         org.glassfish.web.admin.monitor
                         </Export-Package>
@@ -130,7 +130,12 @@
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+	<dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>monitoring-core</artifactId>
+            <version>10.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
@@ -158,6 +163,11 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+	    <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
