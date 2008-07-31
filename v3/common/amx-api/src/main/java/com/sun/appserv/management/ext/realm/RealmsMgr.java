@@ -39,6 +39,8 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Utility;
 import com.sun.appserv.management.base.Singleton;
 
+import java.util.Map;
+
 /**
     @since GlassFish V3
  */
@@ -49,18 +51,24 @@ public interface RealmsMgr extends AMX, Utility, Singleton
     
     /** get the names of all realms */
     public String[] getRealmNames();
-    public String[] getRealmClassNames();
+    public String[] getPredefinedAuthRealmClassNames();
     
     public String getDefaultRealmName();
     public void   setDefaultRealmName(String realmName);
     
     public void addUser( String realm, String user, String password, String[] groupList );
     public void updateUser( String realm, String user, String newUser, String password, String[] groupList );
+    public void removeUser(String realm, String user);
 
     public String[] getUserNames(String realm);
     public String[] getGroupNames(String realm);
-    public String getUser(String realm, String name);
-    public void   removeUser(String realm, String name);
+    
+    public Map<String,Object> getUserAttributes(final String realm, final String user);
+    
+    public String[] getGroupNames(String realm, String user);
+
+    /** @return true if the realm implementation support User Management (add,remove,update user) */
+    public boolean supportsUserManagement(final String realmName);
 }
 
 

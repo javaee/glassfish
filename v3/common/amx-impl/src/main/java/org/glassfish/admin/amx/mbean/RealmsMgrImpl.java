@@ -36,6 +36,8 @@
 package org.glassfish.admin.amx.mbean;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.management.ObjectName;
@@ -47,8 +49,7 @@ import com.sun.appserv.management.ext.realm.RealmsMgr;
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.BadRealmException;
-import com.sun.enterprise.security.auth.realm.NoSuchUserException;
+import com.sun.enterprise.security.auth.realm.User;
 
 
 
@@ -71,15 +72,15 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
     public String[]
     getRealmNames()
     {
-        final List<String> items = toString( mRealmsManager.getRealmNames() );
-        return (String[])items.toArray( new String[items.size()] );
+        final List<String> items = toList( mRealmsManager.getRealmNames() );
+        return toArray(items);
     }
     
     public String[]
-    getRealmClassNames()
+    getPredefinedAuthRealmClassNames()
     {
         final List<String> items = mRealmsManager.getPredefinedAuthRealmClassNames();
-        return (String[])items.toArray( new String[items.size()] );
+        return toArray(items);
     }
     
     
@@ -141,7 +142,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
     }
 
     private List<String>
-    toString( final Enumeration<String> e )
+    toList( final Enumeration<String> e )
     {
         final List<String> items = new ArrayList<String>();
         while ( e.hasMoreElements() )
@@ -151,13 +152,18 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         return items;
     }
     
+    String[] toArray( final List<String> l )
+    {
+        return (String[])l.toArray( new String[l.size()] );
+    }
+    
     
     public String[] getUserNames(final String realmName)
     {
         try
         {
-            final List<String> names = toString( getRealm(realmName).getUserNames() );
-            return (String[])names.toArray( new String[names.size()] );
+            final List<String> names = toList( getRealm(realmName).getUserNames() );
+            return toArray( names );
         }
         catch( final Exception e )
         {
@@ -169,8 +175,8 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
     {
         try
         {
-            final List<String> names = toString( getRealm(realmName).getGroupNames() );
-            return (String[])names.toArray( new String[names.size()] );
+            final List<String> names = toList( getRealm(realmName).getGroupNames() );
+            return toArray(names);
         }
         catch( final Exception e )
         {
@@ -178,12 +184,11 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         }
     }
     
-    public String getUser(final String realmName, final String user)
+    public String[] getGroupNames(final String realmName, final String user)
     {
         try
         {
-            getRealm(realmName).getUser(user);
-            return "hello";
+            return toArray( toList( getRealm(realmName).getGroupNames(user) ) );
         }
         catch( final Exception e )
         {
@@ -191,7 +196,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         }
     }
     
-    public void   removeUser(final String realmName, final String user)
+    public void removeUser(final String realmName, final String user)
     {
         try
         {
@@ -200,6 +205,30 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         catch( final Exception e )
         {
             throw new RuntimeException(e);
+        }
+    }
+    
+    public boolean supportsUserManagement(final String realmName)
+    {
+        return getRealm(realmName).supportsUserManagement();
+    }
+    
+    public Map<String,Object> getUserAttributes(final String realmName, final String username)
+    {
+        try
+        {
+            final User user = getRealm(realmName).getUser(username);
+            final Map<String,Object> m = new HashMap<String,Object>();
+            final List<String> attrNames = toList(user.getAttributeNames());
+            for( final String attrName : attrNames ) 
+            {
+                m.put( attrName, user.getAttribute(attrName) );
+            }
+            return m;
+        }
+        catch( final Exception e )
+        {
+        throw new RuntimeException(e);
         }
     }
 }

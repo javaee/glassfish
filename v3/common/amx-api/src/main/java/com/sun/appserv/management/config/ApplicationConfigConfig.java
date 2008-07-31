@@ -56,6 +56,7 @@ public interface ApplicationConfigConfig
     
     /**
          The type is used as the name, so this is the same as getName()
+         Don't allow it to be changed; this would alter the ObjectName
     */
     public String getType();
     
