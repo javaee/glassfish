@@ -55,12 +55,12 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 	public void	setIdleThreadTimeoutInSeconds( String value );
 
     @ResolveTo(Integer.class)
-	public String	getMaxThreadPoolSize();
-	public void	setMaxThreadPoolSize( String value );
-
-    @ResolveTo(Integer.class)
 	public String	getMinThreadPoolSize();
 	public void	setMinThreadPoolSize( String value );
+
+    @ResolveTo(Integer.class)
+	public String	getMaxThreadPoolSize();
+	public void	setMaxThreadPoolSize( String value );
 
     @ResolveTo(Integer.class)
 	public String	getThreadIncrement();
@@ -76,6 +76,6 @@ public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
 	public String	getMaxQueueSize();
 	public void	setMaxQueueSize( String value );
 
-        public String   getClassname();
-        public void     setClassname( String classname );
+    public String   getClassname();
+    public void     setClassname( String classname );
 }

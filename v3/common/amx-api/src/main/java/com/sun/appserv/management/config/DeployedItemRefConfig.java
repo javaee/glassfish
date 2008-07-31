@@ -35,6 +35,8 @@
  */
 package com.sun.appserv.management.config;
 
+import java.util.Map;
+
 import com.sun.appserv.management.base.XTypes;
 
 
@@ -42,7 +44,7 @@ import com.sun.appserv.management.base.XTypes;
 	Represents an &lt;application-ref&gt; element
 	found within a &lt;server&gt element.
 */
-public interface DeployedItemRefConfig extends RefConfig
+public interface DeployedItemRefConfig extends RefConfig, ConfigCreator, ConfigRemover
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DEPLOYED_ITEM_REF_CONFIG;
@@ -87,4 +89,6 @@ public interface DeployedItemRefConfig extends RefConfig
         @since AppServer 9.0
      */
     public void     setDisableTimeoutInMinutes( final String timeout );
+    
+    public Map<String,ApplicationConfigConfig>  getApplicationConfigConfigMap();
 }

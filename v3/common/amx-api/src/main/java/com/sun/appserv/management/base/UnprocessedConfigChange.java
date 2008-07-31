@@ -40,6 +40,7 @@ import java.util.List;
 import java.beans.PropertyChangeEvent;
 
 import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.misc.ObjectUtil;
 
 /**
     <em>Note: this API is highly volatile and subject to change<em>.
@@ -136,7 +137,18 @@ public final class UnprocessedConfigChange
                 eq(mSource,x.mSource) &&
                 eq(mReason,x.mReason);
     }
+    
+    @Override
+    public int hashCode() {
+        return ObjectUtil.hashCode( mName, mOldValue, mNewValue, mSource, mReason );
+    }
 }
+
+
+
+
+
+
 
 
 

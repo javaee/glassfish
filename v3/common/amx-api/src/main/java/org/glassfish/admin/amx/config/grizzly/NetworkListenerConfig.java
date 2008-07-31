@@ -40,6 +40,7 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.NamedConfigElement;
 import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
+import com.sun.appserv.management.config.ResolveTo;
 
 /** 
  * Binds the {@link TransportConfig} and the {@link ProtocolConfig}.
@@ -47,16 +48,16 @@ import com.sun.appserv.management.config.ConfigRemover;
 public interface NetworkListenerConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
 
     /**
-     * @return the name of the {@link TransportConfig}.
+     * @return the name of the {@link TransportConfig} as a String.
      */
-    public String getTransportConfig();
-    public void setTransport(String transport);
+    public String getTransportRef();
+    public void setTransportRef(String transportRef);
 
     /**
      * @return the name of the {@link Protocol}.
      */
-    public String getProtocol();
-    public void setProtocol(String protocol);
+    public String getProtocolRef();
+    public void setProtocolRef(String protocol);
 
     /**
      * Gets the host, where the {@link TransportConfig} and the {@link ProtocolConfig}
@@ -75,6 +76,7 @@ public interface NetworkListenerConfig extends PropertiesAccess, NamedConfigElem
      * @return the port, where the {@link Transport} and the {@link Protocol}
      * will be bound to.
      */
+    @ResolveTo(Integer.class)
     public String getPort();
     public void setPort(String port);
 
@@ -85,8 +87,8 @@ public interface NetworkListenerConfig extends PropertiesAccess, NamedConfigElem
      * @return the {@link ThreadPool} name, which will be used by this
      * {@link Listener} to process incoming requests.
      */
-    public String getThreadPool();
-    public void setThreadPool(String threadPool);
+    public String getThreadPoolRef();
+    public void setThreadPoolRef(String threadPool);
 }
 
 

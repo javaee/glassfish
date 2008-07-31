@@ -41,6 +41,7 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.NamedConfigElement;
 import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
+import com.sun.appserv.management.config.ResolveTo;
 
 /**
  * {@link SelectionKeyHandler} defines {@link Transport}'s {@link SelectionKey}
@@ -62,6 +63,7 @@ public interface SelectionKeyHandlerConfig extends PropertiesAccess, NamedConfig
      * @return the timeout, in seconds, after which idle key
      * will be cancelled and channel closed
      */
+    @ResolveTo(Integer.class)
     public String getIdleKeyTimeoutSeconds();
     public void setIdleKeyTimeoutSeconds(String idleKeyTimeout);
 }

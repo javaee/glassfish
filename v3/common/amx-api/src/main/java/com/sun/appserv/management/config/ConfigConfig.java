@@ -40,6 +40,8 @@ import com.sun.appserv.management.base.XTypes;
 
 import java.util.Map;
 
+import org.glassfish.admin.amx.config.grizzly.NetworkConfig;
+
 /**
 	 Configuration for the &lt;config&gt; element.
  */
@@ -61,6 +63,11 @@ public interface ConfigConfig
 		Return the HTTPServiceConfig.
 	 */
 	public HTTPServiceConfig	getHTTPServiceConfig();
+	
+	/**
+		Return the NetworkConfig.
+	 */
+	public NetworkConfig	getNetworkConfig();
 	
 	/**
 		Return the SecurityServiceConfig.
@@ -165,7 +172,6 @@ public interface ConfigConfig
 	    @since AppServer 9.0
         */
 	public void removeDiagnosticServiceConfig();
-	
 
 	/**
 	Return the Group Management Service configuration.

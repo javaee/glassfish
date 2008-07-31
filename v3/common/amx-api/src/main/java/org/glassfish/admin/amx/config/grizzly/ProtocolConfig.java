@@ -41,6 +41,7 @@ import com.sun.appserv.management.config.NamedConfigElement;
 import com.sun.appserv.management.config.SSLConfig;
 import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
+import com.sun.appserv.management.config.ResolveTo;
 
 
 /**
@@ -56,6 +57,7 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      *
      * @return the {@link Protocol} security status
      */
+    @ResolveTo(Boolean.class)
     public String getSecurityEnabled();
     public void setSecurityEnabled(String securityEnabled);
 
@@ -66,6 +68,7 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the max temporary {@link Selector} number, which could be used by
      * this {@link Protocol}
      */
+    @ResolveTo(Integer.class)
     public String getMaxSelectors();
     public void setMaxSelectors(String maxSelectors);
 
@@ -85,6 +88,7 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the read operation timeout in seconds, which will be used for 
      * this {@link Protocol}
      */
+    @ResolveTo(Integer.class)
     public String getReadTimeoutSeconds();
     public void setReadTimeoutSeconds(String readTimeoutSeconds);
 
@@ -95,6 +99,7 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the write operation timeout in seconds, which will be used for
      * this {@link Protocol}
      */
+    @ResolveTo(Integer.class)
     public String getWriteTimeoutSeconds();
     public void setWriteTimeoutSeconds(String writeTimeoutSeconds);
 

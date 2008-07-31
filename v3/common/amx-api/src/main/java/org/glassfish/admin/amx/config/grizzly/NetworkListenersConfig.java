@@ -37,14 +37,13 @@ package org.glassfish.admin.amx.config.grizzly;
 
 import java.util.Map;
 
-import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 import com.sun.appserv.management.config.ThreadPoolConfig;
 
 /**
  */
-public interface NetworkListenersConfig extends PropertiesAccess, ConfigCreator, ConfigRemover {
+public interface NetworkListenersConfig extends ConfigCreator, ConfigRemover {
     public Map<String,NetworkListenerConfig> getNetworkListenerConfigMap();
     
     public Map<String,ThreadPoolConfig>     getThreadPoolConfigMap();
