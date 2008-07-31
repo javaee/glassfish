@@ -38,8 +38,7 @@
 package org.glassfish.embed.impl;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.loader.WebappClassLoader;
+import org.glassfish.web.loader.WebappClassLoader;
 import org.apache.naming.resources.FileDirContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -75,7 +74,7 @@ public class ScatteredWarHandler extends AbstractArchiveHandler implements Archi
 
         try {
             cloader.start();
-        } catch (LifecycleException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         

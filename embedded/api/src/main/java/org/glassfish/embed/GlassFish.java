@@ -46,19 +46,20 @@ import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.enterprise.v3.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
 import com.sun.enterprise.web.WebDeployer;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
+import java.net.URL;
 import org.glassfish.api.Startup;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
@@ -70,7 +71,6 @@ import org.glassfish.embed.impl.ProxyModuleDefinition;
 import org.glassfish.embed.impl.ServerEnvironment2;
 import org.glassfish.embed.impl.SilentActionReport;
 import org.glassfish.embed.impl.WebDeployer2;
-import org.glassfish.embed.impl.DomainXmlHolder;
 import org.glassfish.embed.impl.ScatteredWarHandler;
 import org.glassfish.internal.api.Init;
 import org.glassfish.web.WebEntityResolver;
@@ -80,6 +80,9 @@ import org.jvnet.hk2.component.Inhabitants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.embed.impl.ApplicationLifecycle2;
+import org.glassfish.api.admin.ParameterNames;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -126,19 +129,34 @@ public class GlassFish {
     /**
      * Work around until the live HTTP listener support comes back.
      */
-    private final Document domainXml;
+    private Document domainXml;
 
     /**
      * To navigate around {@link #domainXml}.
      */
     private final XPath xpath = XPathFactory.newInstance().newXPath();
+    protected URL domainXmlUrl;
+    protected URL defaultWebXml;
 
     // key components inside GlassFish. We access them all the time,
     // so we might just as well keep them here for ease of access.
     protected /*almost final*/ ApplicationLifecycle appLife;
     protected /*almost final*/ SnifferManager snifMan;
     protected /*almost final*/ ArchiveFactory archiveFactory;
-    protected /*almost  final*/ ServerEnvironment env;
+    protected /*almost  final*/ ServerEnvironmentImpl env;
+    
+    protected GlassFish(URL domainXmlUrl, boolean start) throws GFException {
+        this.domainXmlUrl = domainXmlUrl;
+        if (this.domainXmlUrl == null) { // if not defined get the default one
+            this.domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
+            if (this.domainXmlUrl == null) {
+                throw new AssertionError("domain.xml is missing from resources");
+            }
+        }
+        if (start) {
+            start();
+        }
+    }
 
     /**
      * Starts an empty do-nothing GlassFish v3.
@@ -147,7 +165,16 @@ public class GlassFish {
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
      */
-    public GlassFish() throws GFException {
+    public GlassFish(URL domainXmlUrl) throws GFException {
+        this (domainXmlUrl, true);
+    }
+
+    /**
+     * Starts GlassFish v3 with minimalistic configuration that involves
+     * single HTTP listener listening on the given port.
+     */
+    public GlassFish(int httpPort) throws GFException {
+        this(null, false);
         try {
             domainXml = parseDefaultDomainXml();
         } catch (IOException e) {
@@ -157,14 +184,6 @@ public class GlassFish {
         } catch (ParserConfigurationException e) {
             throw new GFException(e);
         }
-    }
-
-    /**
-     * Starts GlassFish v3 with minimalistic configuration that involves
-     * single HTTP listener listening on the given port.
-     */
-    public GlassFish(int httpPort) throws GFException {
-        this();
         createVirtualServer(createHttpListener(httpPort));
         start();
     }
@@ -172,7 +191,27 @@ public class GlassFish {
     private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace 
-        return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
+        //return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
+        return dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
+        
+    }
+    /**
+     * @return the domainXml URL.
+     */
+    public URL getDomainXml() {
+        return domainXmlUrl;
+    }
+
+    public void setDefaultWebXml(URL url) {
+        this.defaultWebXml = url;
+    }
+
+    public URL getDefaultWebXml() {
+        return defaultWebXml;
+    }
+
+    protected URL getDomainXML() {
+        return domainXmlUrl;
     }
 
     /**
@@ -187,6 +226,9 @@ public class GlassFish {
      * differently from normal stand-alone use.
      */
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+        // registering the server using the base class and not the current instance class
+        // (GlassFish server may be extended by the user)
+        parser.habitat.add(new ExistingSingletonInhabitant<GlassFish>(GlassFish.class, this));
         // register scattered web handler before normal WarHandler kicks in.
         Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
         parser.habitat.add(swh);
@@ -202,15 +244,17 @@ public class GlassFish {
         // don't care about auto-deploy either
         parser.drop(AutoDeployService.class);
 
+        //TODO: workaround for a bug
+        parser.replace(ApplicationLifecycle.class, ApplicationLifecycle2.class);
+
         // we don't really parse domain.xml from disk
         parser.replace(DomainXml.class, DomainXml2.class);
-        parser.habitat.add(Inhabitants.create(new DomainXmlHolder(domainXml)));
 
         // ... and we don't persist it either. 
         parser.replace(DomainXmlPersistence.class, DomainXml2.class);
 
         // we provide our own ServerEnvironment
-        parser.replace(ServerEnvironment.class, ServerEnvironment2.class);
+        parser.replace(ServerEnvironmentImpl.class, ServerEnvironment2.class);
 
         {// adjustment for webtier only bundle
             parser.drop(DecoratorForJ2EEInstanceListener.class);
@@ -259,6 +303,20 @@ public class GlassFish {
                 .element("property")
                     .attribute("name","docroot")
                     .attribute("value",".");
+        /**
+         * Write domain.xml to a temporary file. UGLY UGLY UGLY.
+         */
+        try {
+            File domainFile = File.createTempFile("domain","xml");
+            domainFile.deleteOnExit();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(this.domainXml),new StreamResult(domainFile));
+            domainXmlUrl = domainFile.toURI().toURL();
+        } catch (IOException e) {
+            throw new GFException("Failed to write domain XML",e);
+        } catch (TransformerException e) {
+            throw new GFException("Failed to write domain XML",e);
+        }
 
         return new GFVirtualServer(null);
 
@@ -367,7 +425,7 @@ public class GlassFish {
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
-            env = habitat.getComponent(ServerEnvironment.class);
+            env = habitat.getComponent(ServerEnvironmentImpl.class);
         } catch (IOException e) {
             throw new GFException(e);
         } catch (BootException e) {
@@ -428,8 +486,24 @@ public class GlassFish {
      *      that exception will be passed through.
      */
     public GFApplication deploy(ReadableArchive a) throws IOException {
-        start();
+        return deploy(a, null);
+    }
 
+    /**
+     * Deploys a {@link ReadableArchive} to this GlassFish.
+     *
+     * <p>
+     * This overloaded version of the deploy method is for advanced users.
+     * It allows you specifying additional parameters to be passed to the deploy command
+     *
+     * @param a
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public GFApplication deploy(ReadableArchive a, Properties params) throws IOException {
+        start();
+        
         ArchiveHandler h = appLife.getArchiveHandler(a);
 
         // now prepare sniffers
@@ -438,9 +512,11 @@ public class GlassFish {
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
         // TODO: we need to stop this totally type-unsafe way of passing parameters
-        Properties params = new Properties();
-        params.put(DeployCommand.NAME,a.getName());
-        params.put(DeployCommand.ENABLED,"true");
+        if (params == null) {
+            params = new Properties();
+        }
+        params.put(ParameterNames.NAME,a.getName());
+        params.put(ParameterNames.ENABLED,"true");
         final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
         deploymentContext.setClassLoader(cl);
 
@@ -451,6 +527,48 @@ public class GlassFish {
         return new GFApplication(this,appInfo,deploymentContext);
     }
 
+    
+         /**
+     * Convenience method to deploy a scattered war archive on a given virtual server
+     * and using the specified context root.
+     *
+     * @param war the scattered war
+     * @param contextRoot the context root to use
+     * @param virtualServer the virtual server ID
+     */
+    public GFApplication deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
+        Properties params = new Properties();
+        if (virtualServer == null) {
+            virtualServer = "server";
+        }
+        params.put(ParameterNames.VIRTUAL_SERVERS, virtualServer);
+        if (contextRoot != null) {
+            params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
+        }
+        return deploy(war, params);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive on the default virtual server.
+     *
+     * @param war the archive
+     * @param contextRoot the context root to use
+     * @throws IOException
+     */
+    public GFApplication deployWar(ScatteredWar war, String contextRoot) throws IOException {
+        return deployWar(war, contextRoot, null);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive on the default virtual server
+     * (as defined by the embedded domain.xml) and using the root "/" context.
+     *
+     * @param war the scattered war
+     */
+    public GFApplication deployWar(ScatteredWar war) throws IOException {
+        return deployWar(war, null, null);
+    }
+    
     /**
      * Stops the running server.
      */

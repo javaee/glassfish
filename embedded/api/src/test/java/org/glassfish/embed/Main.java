@@ -60,7 +60,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         GlassFish.setLogLevel(INFO);
 
-        GlassFish glassfish = new GlassFish(9999);
+         GlassFish glassfish = new GlassFish(9999);
+        //if you want to use your own domain.xml
+        //GlassFish glassfish = new GlassFish(new File("domain.xml").toURI().toURL());
+        //if you want to use your own default-web.xml file
+        //glassfish.setDefaultWebXml(new File("default-web.xml".toURI().toURL()));
 
         // deploy(new File("./simple.war"),habitat);
         // deploy(new File("./JSPWiki.war"),habitat);
@@ -76,7 +80,12 @@ public class Main {
                 Collections.singleton(
                     new File(killerApp,"target/classes").toURI().toURL())
             );
-            GFApplication app = glassfish.deploy(war);
+            GFApplication app = glassfish.deploy(new File("simple.war"));
+            //GFApplication app = glassfish.deploy(war);
+            // if you want to use another context root for example "/"
+            // GFApplication app = glassfish.deployWar(war, "/");
+            // if you want to use the default context root but another virtual server
+            // GFApplication app = glassfish.deployWar(war, null, "myServerId");     
 
             System.out.println("Ready!");
 

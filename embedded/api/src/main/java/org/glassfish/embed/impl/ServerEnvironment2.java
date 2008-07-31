@@ -37,14 +37,14 @@
 
 package org.glassfish.embed.impl;
 
-import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 
 import java.io.File;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class ServerEnvironment2 extends ServerEnvironment {
+public class ServerEnvironment2 extends ServerEnvironmentImpl {
     public ServerEnvironment2() {
         // TODO: we really don't want to have domainRoot, so it should be eventually just null or something
         super(new File("."));

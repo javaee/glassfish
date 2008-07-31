@@ -37,20 +37,17 @@
 
 package org.glassfish.embed.impl;
 
-import com.sun.enterprise.v3.server.DomainXml;
-import com.sun.enterprise.v3.server.ServerEnvironment;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
-
+import javax.xml.stream.XMLStreamException;
 import org.glassfish.config.support.ConfigurationPersistence;
 import org.glassfish.embed.GlassFish;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
+import com.sun.enterprise.v3.server.DomainXml;
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Loads the default empty domain.xml.
@@ -59,19 +56,15 @@ import javax.xml.stream.XMLStreamException;
  */
 public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
     @Inject
-    DomainXmlHolder domainXml;
-
+    protected GlassFish server;
+ 
     public DomainXml2() {
     }
 
     @Override
-    protected URL getDomainXml(ServerEnvironment env) {
+    protected URL getDomainXml(ServerEnvironmentImpl env) {
 //        return getClass().getResource("/org/glassfish/embed/domain.xml");
-        try {
-            return domainXml.writeDomainXml().toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new AssertionError(e);    // impossible
-        }
+        return server.getDomainXml();
     }
 
     public void save(DomDocument doc) throws IOException, XMLStreamException {
