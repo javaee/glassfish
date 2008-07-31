@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.ResourceBundle;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ConnectionPool;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.HttpFileCache;
 import com.sun.enterprise.config.serverbeans.HttpListener;
@@ -121,6 +122,7 @@ public class GrizzlyEmbeddedHttpConfigurator {
         configureHttpProtocol(grizzlyEmbeddedHttp, httpService.getHttpProtocol());     
         configureRequestProcessing(grizzlyEmbeddedHttp, httpService.getRequestProcessing());
         configureFileCache(grizzlyEmbeddedHttp, httpService.getHttpFileCache());
+        configureConnectionPool(grizzlyEmbeddedHttp, httpService.getConnectionPool());
 
         // acceptor-threads
         String acceptorThreads = httpListener.getAcceptorThreads();
@@ -546,6 +548,17 @@ public class GrizzlyEmbeddedHttpConfigurator {
                 }
             }
         }    
+    }
+
+    /**
+     * Configure connection-pool.
+     */
+    private final static void configureConnectionPool(
+            GrizzlyEmbeddedHttp grizzlyEmbeddedHttp, ConnectionPool connPool) {
+        if (connPool != null && connPool.getQueueSizeInBytes() != null) {
+            int queueSizeInBytes = Integer.parseInt(connPool.getQueueSizeInBytes());
+            grizzlyEmbeddedHttp.setMaxQueueSizeInBytes(queueSizeInBytes);
+        }
     }
     
     
