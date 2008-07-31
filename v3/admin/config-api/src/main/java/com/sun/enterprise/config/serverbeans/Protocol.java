@@ -33,21 +33,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config.grizzly;
+package com.sun.enterprise.config.serverbeans;
 
-import com.sun.appserv.management.config.DefaultValues;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.NamedConfigElement;
-import com.sun.appserv.management.config.SSLConfig;
-import com.sun.appserv.management.config.ConfigCreator;
-import com.sun.appserv.management.config.ConfigRemover;
-
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
 /**
  * {@link Protocol} defines one single high-level protocol like:
  * http, https, iiop, etc.
  */
-public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolConfig", nameHint="name")
+@Configured
+public interface Protocol extends ConfigBeanProxy, PropertyBag, Injectable {
+
+    /**
+     * Get the {@link Protocol} name, which could be used
+     * as reference
+     *
+     * @return the {@link Protocol} name, which could be used
+     * as reference
+     */
+    @Attribute(required = true, key = true)
+    public String getName();
+
+    /**
+     * Set the {@link Protocol} name, which could be used
+     * as reference
+     *
+     * @param name the {@link Protocol} name, which could be used
+     * as reference
+     */
+    public void setName(String name);
+
     /**
      * Gets the {@link Protocol} security status. True means the protocol is
      * secured and the {@link Ssl} member will be used to initialize security
@@ -56,7 +77,17 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      *
      * @return the {@link Protocol} security status
      */
+    @Attribute(defaultValue="false")
     public String getSecurityEnabled();
+
+    /**
+     * Sets the {@link Protocol} security status. True means the protocol is
+     * secured and the {@link Ssl} member will be used to initialize security
+     * settings. False means that the {@link Protocol} is not secured and
+     * the {@link Ssl} member, if present, will be ignored.
+     *
+     * @param securityEnabled the {@link Protocol} security status
+     */
     public void setSecurityEnabled(String securityEnabled);
 
     /**
@@ -66,7 +97,16 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the max temporary {@link Selector} number, which could be used by
      * this {@link Protocol}
      */
+    @Attribute
     public String getMaxSelectors();
+
+    /**
+     * Set the max temporary {@link Selector} number, which could be used by
+     * this {@link Protocol}
+     *
+     * @param maxSelectors the max temporary {@link Selector} number,
+     * which could be used by this {@link Protocol}
+     */
     public void setMaxSelectors(String maxSelectors);
 
     /**
@@ -75,7 +115,16 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      *
      * @return the type of ByteBuffer, which will be used with the protocol.
      */
+    @Attribute
     public String getByteBufferType();
+
+    /**
+     * Set the type of ByteBuffer, which will be used with the protocol.
+     * Possible values are: HEAP and DIRECT
+     *
+     * @param byteBufferType the type of ByteBuffer,
+     *        which will be used with the protocol.
+     */
     public void setByteBufferType(String byteBufferType);
 
     /**
@@ -85,7 +134,16 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the read operation timeout in seconds, which will be used for 
      * this {@link Protocol}
      */
+    @Attribute
     public String getReadTimeoutSeconds();
+
+    /**
+     * Set the read operation timeout in seconds, which will be used for this
+     * {@link Protocol}
+     *
+     * @param readTimeoutSeconds the read operation timeout in seconds,
+     * which will be used for this {@link Protocol}
+     */
     public void setReadTimeoutSeconds(String readTimeoutSeconds);
 
     /**
@@ -95,7 +153,16 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the write operation timeout in seconds, which will be used for
      * this {@link Protocol}
      */
+    @Attribute
     public String getWriteTimeoutSeconds();
+
+    /**
+     * Set the write operation timeout in seconds, which will be used for this
+     * {@link Protocol}
+     *
+     * @param writeTimeoutSeconds the write operation timeout in seconds,
+     * which will be used for this {@link Protocol}
+     */
     public void setWriteTimeoutSeconds(String writeTimeoutSeconds);
 
     /**
@@ -107,8 +174,20 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * Gets the protocol oob inline parameter
      *
      * @return the protocol oob inline parameter
+     */
     @Attribute
     public String getOobInline();
+
+    /**
+     * When the oob-inline option is set, any TCP urgent
+     * data received on the socket will be received through
+     * the socket input stream. Boolean attribute, possible
+     * values are true or false
+     *
+     * Sets the protocol oob inline parameter
+     *
+     * @param oobInline the protocol oob inline parameter
+     */
     public void setOobInline(String oobInline);
 
     /**
@@ -116,7 +195,15 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      *
      * @return the {@link Protocol> SSL configuration
      */
-    public SSLConfig getSSLConfig();
+    @Element
+    public Ssl getSsl();
+
+    /**
+     * Set the {@link Protocol> SSL configuration
+     *
+     * @param ssl the {@link Protocol> SSL configuration
+     */
+    public void setSsl(Ssl ssl);
 
     /**
      * Gets the {@link PortUnification} logic, if it is required to handle
@@ -125,16 +212,36 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * @return the {@link PortUnification} logic, if it is required to handle
      * more than one high level protocol on a single listener
      */
-    public PortUnificationConfig getPortUnificationConfig();
+    @Element
+    public PortUnification getPortUnification();
+
+    /**
+     * Sets the {@link PortUnification} logic, if it is required to handle
+     * more than one high level protocol on a single listener
+     *
+     * @param portUnification the {@link PortUnification} logic, 
+     * if it is required to handle more than one high level protocol
+     * on a single listener
+     */
+    public void setPortUnification(PortUnification portUnification);
 
     /**
      * Gets the {@link ProtocolChainInstanceHandler} configuration
      *
      * @return the {@link ProtocolChainInstanceHandler} configuration
      */
-    public ProtocolChainInstanceHandlerConfig getProtocolChainInstanceHandlerConfig();
-}
+    @Element
+    public ProtocolChainInstanceHandler getProtocolChainInstanceHandler();
 
+    /**
+     * Sets the {@link ProtocolChainInstanceHandler} configuration
+     *
+     * @param protocolChainInstanceHandler
+     *        the {@link ProtocolChainInstanceHandler} configuration
+     */
+    public void setProtocolChainInstanceHandler(
+            ProtocolChainInstanceHandler protocolChainInstanceHandler);
+}
 
 
 

@@ -33,53 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config.grizzly;
+package com.sun.enterprise.config.serverbeans;
 
-import com.sun.appserv.management.config.DefaultValues;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.NamedConfigElement;
-import com.sun.appserv.management.config.ConfigCreator;
-import com.sun.appserv.management.config.ConfigRemover;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
+
+import java.util.List;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
- * {@link Transport} defines one specific transport and its properties.
+ * {@link PortUnification} defines logic how to host
+ * several protocols on a single tcp port.
  */
-public interface TransportConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
-   /**
-     * Gets the class name of the {@link Transport} implementation
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.PortUnificationConfig", nameHint="name")
+@Configured
+public interface PortUnification extends ConfigBeanProxy, PropertyBag, Injectable {
+
+    /**
+     * Get the {@link PortUnification} config name, which could be used
+     * as reference
      *
-     * @return the class name of the {@link Transport} implementation
+     * @return the {@link PortUnification} name, which could be used
+     * as reference
      */
+    @Attribute(required = true, key = true)
+    public String getName();
+
+    /**
+     * Set the {@link PortUnification} config name, which could be used
+     * as reference
+     *
+     * @param name the {@link PortUnification} name, which could be used
+     * as reference
+     */
+    public void setName(String name);
+
+    /**
+     * Gets the class name of the {@link PortUnification} implementation
+     *
+     * @return the class name of the {@link PortUnification} implementation
+     */
+    @Attribute
     public String getClassname();
+
+    /**
+     * Sets the class name of the {@link PortUnification} implementation
+     *
+     * @param classname the class name of the
+     *        {@link PortUnification} implementation
+     */
     public void setClassname(String classname);
 
     /**
-     * Get the name of the {@link SelectionKeyHandler}, associated
-     * with the {@link Transport}
+     * Gets the {@link List} of a {@link ProtocolFinder}s, which will be
+     * responsible for protocol recognition.
      *
-     * @return the name of the {@link SelectionKeyHandler}, associated
-     *         with the {@link Transport}
+     * @return the {@link List} of a {@link ProtocolFinder}s, which will be
+     *         responsible for protocol recognition
      */
-    public String getSelectionKeyHandler();
-    public void setSelectionKeyHandler(String selectionKeyHandler);
-
-    /**
-     * Gets the number of acceptor threads listening for
-     * the {@link Transport} events.
-     *
-     * @return the number of acceptor threads listening for the
-     *         {@link Transport} events
-     */
-    public String getAcceptorThreads();
-    public void setAcceptorThreads(String acceptorThreads);
+    @Element
+    public List<ProtocolFinder> getProtocolFinder();
 }
-
-
-
-
-
-
-
-
-
-

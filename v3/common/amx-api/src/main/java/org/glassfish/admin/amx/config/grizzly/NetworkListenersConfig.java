@@ -35,57 +35,17 @@
  */
 package org.glassfish.admin.amx.config.grizzly;
 
-import com.sun.appserv.management.config.DefaultValues;
+import java.util.Map;
+
 import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.NamedConfigElement;
+import com.sun.appserv.management.config.ConfigCreator;
+import com.sun.appserv.management.config.ConfigRemover;
+import com.sun.appserv.management.config.ThreadPoolConfig;
+
 /**
- *
  */
-public interface ThreadPoolConfig extends NamedConfigElement, DefaultValues  {
-    /**
-     * Gets the value of the minThreadPoolSize property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    public String getMinThreadPoolSize();
-    public void setMinThreadPoolSize(String value);
-
-    /**
-     * Gets the value of the maxThreadPoolSize property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    public String getMaxThreadPoolSize();
-    public void setMaxThreadPoolSize(String value);
-
-    /**
-     * Gets the value of the idleThreadTimeoutInSeconds property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    public String getIdleThreadTimeoutInSeconds();
-    public void setIdleThreadTimeoutInSeconds(String value);
-
-    /**
-     * Gets the value of the numWorkQueues property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    public String getNumWorkQueues();
-    public void setNumWorkQueues(String value);
-
-    /**
-     * Gets the custom {@link ThreadPool} implementation class name
-     *
-     * @return {@link ThreadPool} implementation class name
-     */
-    public String getClassname();
-    public void setClassname(String classname);
+public interface NetworkListenersConfig extends PropertiesAccess, ConfigCreator, ConfigRemover {
+    public Map<String,NetworkListenerConfig> getNetworkListenerConfigMap();
+    
+    public Map<String,ThreadPoolConfig>     getThreadPoolConfigMap();
 }
-
-
-

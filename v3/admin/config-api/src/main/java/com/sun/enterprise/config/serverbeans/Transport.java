@@ -33,35 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config.grizzly;
 
-import com.sun.appserv.management.config.DefaultValues;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.NamedConfigElement;
-import com.sun.appserv.management.config.ConfigCreator;
-import com.sun.appserv.management.config.ConfigRemover;
+package com.sun.enterprise.config.serverbeans;
+
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 /**
  * {@link Transport} defines one specific transport and its properties.
  */
-public interface TransportConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
-   /**
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.TransportConfig", nameHint="name")
+@Configured
+public interface Transport extends ConfigBeanProxy, PropertyBag, Injectable {
+
+    /**
+     * Get the {@link Transport} name, which could be used
+     * as reference
+     *
+     * @return the {@link Transport} name, which could be used
+     * as reference
+     */
+    @Attribute(required = true, key = true)
+    public String getName();
+
+    /**
+     * Set the {@link Transport} name, which could be used
+     * as reference
+     *
+     * @param name the {@link Transport} name, which could be used
+     * as reference
+     */
+    public void setName(String name);
+
+    /**
      * Gets the class name of the {@link Transport} implementation
      *
      * @return the class name of the {@link Transport} implementation
      */
+    @Attribute
     public String getClassname();
-    public void setClassname(String classname);
 
     /**
-     * Get the name of the {@link SelectionKeyHandler}, associated
-     * with the {@link Transport}
+     * Sets the class name of the {@link Transport} implementation
      *
-     * @return the name of the {@link SelectionKeyHandler}, associated
-     *         with the {@link Transport}
+     * @param classname the class name of the {@link Transport} implementation
      */
-    public String getSelectionKeyHandler();
-    public void setSelectionKeyHandler(String selectionKeyHandler);
+    public void setClassname(String classname);
 
     /**
      * Gets the number of acceptor threads listening for
@@ -70,11 +90,37 @@ public interface TransportConfig extends PropertiesAccess, NamedConfigElement, D
      * @return the number of acceptor threads listening for the
      *         {@link Transport} events
      */
+    @Attribute
     public String getAcceptorThreads();
+
+    /**
+     * Sets the number of acceptor threads listening for
+     * the {@link Transport} events.
+     *
+     * @param acceptorThreads the number of acceptor threads
+     *        listening for the {@link Transport} events
+     */
     public void setAcceptorThreads(String acceptorThreads);
+
+    /**
+     * Get the name of the {@link SelectionKeyHandler}, associated
+     * with the {@link Transport}
+     *
+     * @return the name of the {@link SelectionKeyHandler}, associated
+     *         with the {@link Transport}
+     */
+    @Attribute
+    public String getSelectionKeyHandlerRef();
+
+    /**
+     * Set the name of the {@link SelectionKeyHandler} associated with
+     * the {@link Transport}
+     *
+     * @param selectionKeyHandler the name of the {@link SelectionKeyHandler},
+     *        associated with the {@link Transport}
+     */
+    public void setSelectionKeyHandlerRef(String selectionKeyHandler);
 }
-
-
 
 
 

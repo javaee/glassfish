@@ -49,5 +49,5 @@ public interface NetworkConfig extends PropertiesAccess, DefaultValues, ConfigCr
 
     public ProtocolsConfig getProtocolsConfig();
 
-    public ListenersConfig getListenersConfig();
+    public NetworkListenersConfig getNetworkListenersConfig();
 }

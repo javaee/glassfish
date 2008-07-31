@@ -33,18 +33,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config.grizzly;
 
-import java.util.Map;
+package com.sun.enterprise.config.serverbeans;
 
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.ConfigCreator;
-import com.sun.appserv.management.config.ConfigRemover;
+import java.util.List;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
 /**
+ * {@link Transports} describes network {@link Transport}s and its properties.
  */
-public interface ListenersConfig extends PropertiesAccess, ConfigCreator, ConfigRemover {
-    public Map<String,ListenerConfig> getListenerConfigMap();
-    
-    public Map<String,ThreadPoolConfig>     getThreadPoolConfigMap();
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.TransportsConfig", singleton=true)
+@Configured
+public interface Transports extends ConfigBeanProxy, Injectable, PropertyBag {
+
+    /**
+     * Get the list of defined {@link Transport}s
+     * 
+     * @return the list of defined {@link Transport}s
+     */
+    @Element(required=true)
+    public List<Transport> getTransport();
+
+    /**
+     * Get the list of defined {@link SelectionKeyHandler}s
+     *
+     * @return the list of defined {@link SelectionKeyHandler}s
+     */
+    @Element
+    public List<SelectionKeyHandler> getSelectionKeyHandler();
 }

@@ -33,61 +33,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config.grizzly;
+package com.sun.enterprise.config.serverbeans;
 
-import com.sun.appserv.management.config.DefaultValues;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.NamedConfigElement;
-import com.sun.appserv.management.config.ConfigCreator;
-import com.sun.appserv.management.config.ConfigRemover;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
-/** 
- * Binds the {@link TransportConfig} and the {@link ProtocolConfig}.
+/**
+ * defines single {@link ProtocolFilter} in a processing chain.
  */
-public interface ListenerConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
-
+@AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.ProtocolFilterConfig", nameHint="name")
+@Configured
+public interface ProtocolFilter extends ConfigBeanProxy, PropertyBag, Injectable {
     /**
-     * @return the name of the {@link TransportConfig}.
-     */
-    public String getTransportConfig();
-    public void setTransport(String transport);
-
-    /**
-     * @return the name of the {@link Protocol}.
-     */
-    public String getProtocol();
-    public void setProtocol(String protocol);
-
-    /**
-     * Gets the host, where the {@link TransportConfig} and the {@link ProtocolConfig}
-     * will be bound to. Default host value is "localhost".
-     * 
-     * @return the host, where the {@link TransportConfig} and the {@link ProtocolConfig}
-     * will be bound to. Default host value is "localhost".
-     */
-    public String getHost();
-    public void setHost(String host);
-
-    /**
-     * Gets the port, where the {@link Transport} and the {@link Protocol}
-     * will be bound to.
+     * Get the {@link ProtocolFilter} name, which could be used
+     * as reference
      *
-     * @return the port, where the {@link Transport} and the {@link Protocol}
-     * will be bound to.
+     * @return the {@link ProtocolFilter} name, which could be used
+     * as reference
      */
-    public String getPort();
-    public void setPort(String port);
+    @Attribute(required = true, key = true)
+    public String getName();
 
     /**
-     * Gets the {@link ThreadPool} name, which will be used by this
-     * {@link Listener} to process incoming requests.
+     * Set the {@link ProtocolFilter} name, which could be used
+     * as reference
      *
-     * @return the {@link ThreadPool} name, which will be used by this
-     * {@link Listener} to process incoming requests.
+     * @param name the {@link ProtocolFilter} name, which could be used
+     * as reference
      */
-    public String getThreadPool();
-    public void setThreadPool(String threadPool);
+    public void setName(String name);
+    
+    /**
+     * Gets the class name of the {@link ProtocolFilter} implementation
+     *
+     * @return the class name of the {@link ProtocolFilter} implementation
+     */
+    @Attribute(required=true)
+    public String getClassname();
+
+    /**
+     * Sets the class name of the {@link ProtocolFilter} implementation
+     *
+     * @param classname the class name of the {@link ProtocolFilter} implementation
+     */
+    public void setClassname(String classname);
 }
+
+
 
 
 

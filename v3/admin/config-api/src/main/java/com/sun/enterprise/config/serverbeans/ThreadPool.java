@@ -54,7 +54,7 @@ import java.io.Serializable;
 /* @XmlType(name = "") */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ThreadPoolConfig", nameHint="thread-pool-id")
 @Configured
-public interface ThreadPool extends ConfigBeanProxy, Injectable  {
+public interface ThreadPool extends ConfigBeanProxy, PropertyBag, Injectable  {
 
     /**
      * Gets the value of the threadPoolId property.
@@ -141,6 +141,36 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      */
     public void setNumWorkQueues(String value) throws PropertyVetoException;
 
+    /**
+     * Gets the max number of tasks, which could be queued on the thread pool.
+     *
+     * @return the max number of tasks, which could be queued on the thread pool.
+     *         possible object is {@link String }
+     */
+    @Attribute (defaultValue="-1")
+    public String	getMaxQueueSize();
 
+    /**
+     * Gets the max number of tasks, which could be queued on the thread pool.
+     *
+     * @param value the max number of tasks, which could be queued on the
+     *        thread pool.
+     */
+    public void	setMaxQueueSize( String value );
+
+    /**
+     * Gets the custom {@link ThreadPool} implementation class name
+     *
+     * @return {@link ThreadPool} implementation class name
+     */
+    @Attribute
+    public String getClassname();
+
+    /**
+     * Sets the custom {@link ThreadPool} implementation class name
+     *
+     * @param classname {@link ThreadPool} implementation class name
+     */
+    public void setClassname(String classname);
 
 }

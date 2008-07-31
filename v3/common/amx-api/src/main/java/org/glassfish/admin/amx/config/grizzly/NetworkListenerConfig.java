@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,45 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.config;
+package org.glassfish.admin.amx.config.grizzly;
 
-import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.config.DefaultValues;
+import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.NamedConfigElement;
+import com.sun.appserv.management.config.ConfigCreator;
+import com.sun.appserv.management.config.ConfigRemover;
 
+/** 
+ * Binds the {@link TransportConfig} and the {@link ProtocolConfig}.
+ */
+public interface NetworkListenerConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
 
+    /**
+     * @return the name of the {@link TransportConfig}.
+     */
+    public String getTransportConfig();
+    public void setTransport(String transport);
 
+    /**
+     * @return the name of the {@link Protocol}.
+     */
+    public String getProtocol();
+    public void setProtocol(String protocol);
 
-/**
-	 Configuration for a &lt;thread-pool&gt; element.
-*/
+    /**
+     * Gets the host, where the {@link TransportConfig} and the {@link ProtocolConfig}
+     * will be bound to. Default host value is "localhost".
+     * 
+     * @return the host, where the {@link TransportConfig} and the {@link ProtocolConfig}
+     * will be bound to. Default host value is "localhost".
+     */
+    public String getHost();
+    public void setHost(String host);
 
-@AMXCreateInfo(paramNames={"name", "optional"})
-public interface ThreadPoolConfig extends PropertiesAccess, NamedConfigElement
-{
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE			= XTypes.THREAD_POOL_CONFIG;
-	
-    @ResolveTo(Integer.class)
-	public String	getIdleThreadTimeoutInSeconds();
-	public void	setIdleThreadTimeoutInSeconds( String value );
+    /**
+     * Gets the port, where the {@link Transport} and the {@link Protocol}
+     * will be bound to.
+     *
+     * @return the port, where the {@link Transport} and the {@link Protocol}
+     * will be bound to.
+     */
+    public String getPort();
+    public void setPort(String port);
 
-    @ResolveTo(Integer.class)
-	public String	getMaxThreadPoolSize();
-	public void	setMaxThreadPoolSize( String value );
-
-    @ResolveTo(Integer.class)
-	public String	getMinThreadPoolSize();
-	public void	setMinThreadPoolSize( String value );
-
-    @ResolveTo(Integer.class)
-	public String	getNumWorkQueues();
-	public void	setNumWorkQueues( String value );
-
-	public String	getThreadPoolId();
-
-    @ResolveTo(Integer.class)
-	public String	getMaxQueueSize();
-	public void	setMaxQueueSize( String value );
-
-        public String   getClassname();
-        public void     setClassname( String classname );
+    /**
+     * Gets the {@link ThreadPool} name, which will be used by this
+     * {@link Listener} to process incoming requests.
+     *
+     * @return the {@link ThreadPool} name, which will be used by this
+     * {@link Listener} to process incoming requests.
+     */
+    public String getThreadPool();
+    public void setThreadPool(String threadPool);
 }
+
+
+
+
+
+
+
+
+
