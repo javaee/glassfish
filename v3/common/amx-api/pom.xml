@@ -79,6 +79,7 @@
                         com.sun.appserv.management.config,
                         com.sun.appserv.management.ext.coverage,
                         com.sun.appserv.management.ext.lb,
+                        com.sun.appserv.management.ext.realm,
                         com.sun.appserv.management.ext.logging,
                         com.sun.appserv.management.ext.update,
                         com.sun.appserv.management.ext.wsmgmt,

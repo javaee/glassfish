@@ -107,7 +107,14 @@ final class Booter implements BooterMBean
         if ( mDomainRootObjectName == null )
         {
             debug( "Booter.bootAMX: getting AMXStartupServiceMBean via contract" );
-            final AMXStartupServiceMBean loader = mHabitat.getByContract(AMXStartupServiceMBean.class);
+            AMXStartupServiceMBean loader = null;
+            try {
+                loader = mHabitat.getByContract(AMXStartupServiceMBean.class);
+            }
+            catch( Throwable t ) {
+                t.printStackTrace();
+                throw new RuntimeException(t);
+            }
             //loader.loadAMX(...)
             
             debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );

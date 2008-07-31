@@ -41,6 +41,7 @@ import com.sun.appserv.management.base.NotificationEmitterService;
 import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Pathnames;
+import com.sun.appserv.management.ext.realm.RealmsMgr;
 import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.server.util.Version;
@@ -197,6 +198,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 Pathnames.J2EE_TYPE, AMX.NO_NAME, false );
 		mbean	= new PathnamesImpl(self);
+        registerChild( mbean, childObjectName );
+        
+		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                RealmsMgr.J2EE_TYPE, AMX.NO_NAME, false );
+		mbean	= new RealmsMgrImpl(self);
         registerChild( mbean, childObjectName );
 	}
     

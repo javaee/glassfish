@@ -45,6 +45,8 @@ import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.monitor.JMXMonitorMgr;
 import com.sun.appserv.management.monitor.MonitoringRoot;
 
+import com.sun.appserv.management.ext.realm.RealmsMgr;
+
 import java.util.Map;
 
 /**
@@ -238,6 +240,8 @@ public interface DomainRoot extends Container
       @since Glassfish V3
      */
     public String getInstallDir();
+    
+    public RealmsMgr getRealmsMgr();
 }
 
 

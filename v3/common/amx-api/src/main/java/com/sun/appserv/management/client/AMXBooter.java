@@ -76,6 +76,7 @@ public final class AMXBooter
             }
             catch( final Exception e )
             {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }

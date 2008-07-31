@@ -194,6 +194,12 @@
             <artifactId>connectors-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>realms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.glassfish.tests</groupId>
