@@ -61,9 +61,9 @@ public class GrizzlyProbePipeline extends LinkedListPipeline {
 
     protected void increaseWorkerThread(int increment, boolean startThread) {
         super.increaseWorkerThread(increment, startThread);
-        /*
-        threadPoolProbeProvider.newThreadsAllocatedEvent(increment,
-                                                         startThread);
-        */
+        if (threadPoolProbeProvider != null) {
+            threadPoolProbeProvider.newThreadsAllocatedEvent(increment,
+                                                             startThread);
+        }
     }
 }

@@ -1356,7 +1356,9 @@ public class WebModule extends PwcWebModule {
      */
 
     public void servletLoadedEvent(Servlet servlet) {
-        servletProbeProvider.servletLoadedEvent(servlet, name);
+        if (servletProbeProvider != null) {
+            servletProbeProvider.servletLoadedEvent(servlet, name);
+        }
     }
 
 
@@ -1365,43 +1367,63 @@ public class WebModule extends PwcWebModule {
      */
 
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionCreatedEvent(session, name);
+        }
     }
 
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionDestroyedEvent(session, name);
+        }
     }
 
     public void sessionRejectedEvent(int maxSessions) {
-        sessionProbeProvider.sessionRejectedEvent(maxSessions, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionRejectedEvent(maxSessions, name);
+        }
     }
 
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionExpiredEvent(session, name);
+        }
     }
 
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionPersistedStartEvent(session, name);
+        }
     }
 
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionPersistedEndEvent(session, name);
+        }
     }
 
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionActivatedStartEvent(session, name);
+        }
     }
 
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionActivatedEndEvent(session, name);
+        }
     }
 
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionPassivatedStartEvent(session, name);
+        }
     }
 
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session, name);
+        if (sessionProbeProvider != null) {
+            sessionProbeProvider.sessionPassivatedEndEvent(session, name);
+        }
     }
 }
 

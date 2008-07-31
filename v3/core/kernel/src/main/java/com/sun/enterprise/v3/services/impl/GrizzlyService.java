@@ -205,7 +205,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
         try {
             threadPoolProbeProvider = probeProviderFactory.getProbeProvider(
-                "grizzly", "thread", null, ThreadPoolProbeProvider.class);
+                "core", "threadpool", null, ThreadPoolProbeProvider.class);
         } catch (Exception e) {
             logger.log(Level.SEVERE,
                        "Unable to create probe provider for interface " +

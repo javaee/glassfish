@@ -1508,14 +1508,19 @@ public class PECoyoteConnector extends Connector {
 
     public void requestStartEvent(HttpServletRequest request,
                                   HttpServletResponse response) {
-        requestProbeProvider.requestStartEvent(request, response);
+        if (requestProbeProvider != null) {
+            requestProbeProvider.requestStartEvent(request, response);
+        }
     };
 
 
     public void requestEndEvent(HttpServletRequest request,
                                 HttpServletResponse response,
                                 int statusCode) {
-        requestProbeProvider.requestEndEvent(request, response, statusCode);
+        if (requestProbeProvider != null) {
+            requestProbeProvider.requestEndEvent(request, response,
+                                                 statusCode);
+        }
     };
 
 
