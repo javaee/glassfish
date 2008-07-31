@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
  *
  * @author hsingh
  */
+@Ignore
 public class TreeNodeTest {
 
     public TreeNodeTest() {
