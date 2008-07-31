@@ -46,51 +46,61 @@ public interface SessionProbeProvider {
 
     public void sessionCreatedEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionDestroyedEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionRejectedEvent(
         @ProbeParam("maxThresholdSize") int maxSessions,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionExpiredEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionPersistedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionPersistedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionActivatedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionActivatedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionPassivatedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 
     public void sessionPassivatedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 }

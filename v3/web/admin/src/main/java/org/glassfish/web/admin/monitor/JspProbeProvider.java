@@ -46,6 +46,7 @@ public interface JspProbeProvider {
 
     public void jspLoadedEvent(
         @ProbeParam("jsp") Servlet jsp,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );
 }

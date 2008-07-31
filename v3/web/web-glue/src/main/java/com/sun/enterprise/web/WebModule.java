@@ -149,6 +149,11 @@ public class WebModule extends PwcWebModule {
     private ServletProbeProvider servletProbeProvider = null;
     private SessionProbeProvider sessionProbeProvider = null;
 
+    // The id of the parent container (i.e., virtual server) on which this
+    // web module was deployed
+    private String vsId;
+
+
     /**
      * Constructor.
      *
@@ -370,8 +375,7 @@ public class WebModule extends PwcWebModule {
         configureCatalinaProperties();
 
         // Register monitoring mbeans, which delegate to the Tomcat mbeans
-        webContainer.enableMonitoring(this,
-                                      ((VirtualServer) getParent()).getID());
+        webContainer.enableMonitoring(this, vsId);
         hasStarted = true;
     }
 
@@ -384,8 +388,7 @@ public class WebModule extends PwcWebModule {
         // successfully started, because if stop() is called during an
         // aborted start(), no monitoring mbeans will have been registered
         if (hasStarted) {
-            webContainer.disableMonitoring(
-                this, ((VirtualServer) getParent()).getID());
+            webContainer.disableMonitoring(this, vsId);
             hasStarted = false;
         }
 
@@ -408,6 +411,9 @@ public class WebModule extends PwcWebModule {
      */
     public void setParent(Container container) {
         super.setParent(container);
+
+        vsId = ((VirtualServer) container).getID();
+
         // The following assumes that the realm has been set on this WebModule
         // before the WebModule is added as a child to the virtual server on
         // which it is being deployed.
@@ -1356,7 +1362,7 @@ public class WebModule extends PwcWebModule {
      */
 
     public void servletLoadedEvent(Servlet servlet) {
-        servletProbeProvider.servletLoadedEvent(servlet, name);
+        servletProbeProvider.servletLoadedEvent(servlet, name, vsId);
     }
 
 
@@ -1365,43 +1371,43 @@ public class WebModule extends PwcWebModule {
      */
 
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session, name);
+        sessionProbeProvider.sessionCreatedEvent(session, name, vsId);
     }
 
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session, name);
+        sessionProbeProvider.sessionDestroyedEvent(session, name, vsId);
     }
 
     public void sessionRejectedEvent(int maxSessions) {
-        sessionProbeProvider.sessionRejectedEvent(maxSessions, name);
+        sessionProbeProvider.sessionRejectedEvent(maxSessions, name, vsId);
     }
 
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session, name);
+        sessionProbeProvider.sessionExpiredEvent(session, name, vsId);
     }
 
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session, name);
+        sessionProbeProvider.sessionPersistedStartEvent(session, name, vsId);
     }
 
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session, name);
+        sessionProbeProvider.sessionPersistedEndEvent(session, name, vsId);
     }
 
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session, name);
+        sessionProbeProvider.sessionActivatedStartEvent(session, name, vsId);
     }
 
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session, name);
+        sessionProbeProvider.sessionActivatedEndEvent(session, name, vsId);
     }
 
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session, name);
+        sessionProbeProvider.sessionPassivatedStartEvent(session, name, vsId);
     }
 
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session, name);
+        sessionProbeProvider.sessionPassivatedEndEvent(session, name, vsId);
     }
 }
 

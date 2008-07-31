@@ -37,6 +37,7 @@
 package com.sun.enterprise.web.jsp;
 
 import javax.servlet.Servlet;
+import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.web.WebModule;
 import org.glassfish.jsp.api.JspProbeEmitter;
 import org.glassfish.web.admin.monitor.JspProbeProvider;
@@ -49,7 +50,13 @@ import org.glassfish.web.admin.monitor.JspProbeProvider;
  */
 public class JspProbeEmitterImpl implements JspProbeEmitter {
 
+    // The web module's name
     private String appName;
+
+    // The id of the virtual server on which the web module has been
+    // deployed
+    private String vsId;
+
     private JspProbeProvider jspProbeProvider;
 
     /**
@@ -60,10 +67,13 @@ public class JspProbeEmitterImpl implements JspProbeEmitter {
      */
     public JspProbeEmitterImpl(WebModule webModule) {
         this.appName = webModule.getName();
+        if (webModule.getParent() != null) {
+            this.vsId = ((VirtualServer) webModule.getParent()).getID();
+        }
         this.jspProbeProvider = webModule.getWebContainer().getJspProbeProvider();
     }
 
     public void jspLoadedEvent(Servlet jspServlet) {
-        jspProbeProvider.jspLoadedEvent(jspServlet, appName);
+        jspProbeProvider.jspLoadedEvent(jspServlet, appName, vsId);
     }
 }

@@ -58,6 +58,7 @@ public interface ServletProbeProvider {
      */
     public void servletLoadedEvent(
         @ProbeParam("servlet") Servlet servlet,
-        @ProbeParam("appName") String appName
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
     );    
 }
