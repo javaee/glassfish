@@ -163,7 +163,7 @@ public class CatalinaDigester extends Digester {
             return bodyText; // return unchanged data
         }
 
-        if (out == in)  {
+        if (in.equals(out))  {
             // No substitutions required. Don't waste memory creating
             // a new buffer
             return bodyText;
