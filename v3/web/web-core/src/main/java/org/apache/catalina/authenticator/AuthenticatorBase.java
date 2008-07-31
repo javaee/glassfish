@@ -744,7 +744,6 @@ public abstract class AuthenticatorBase
     protected synchronized String generateSessionId() {
         
         // Generate a byte array containing a session identifier
-        Random random = getRandom();
         byte bytes[] = new byte[SESSION_ID_BYTES];
         getRandom().nextBytes(bytes);
         bytes = getDigest().digest(bytes);
