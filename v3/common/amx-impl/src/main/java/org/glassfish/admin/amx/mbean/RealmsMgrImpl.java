@@ -68,6 +68,23 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         mRealmsManager = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
 	}
     
+
+    private static List<String>
+    toList( final Enumeration<String> e )
+    {
+        final List<String> items = new ArrayList<String>();
+        while ( e.hasMoreElements() )
+        {
+            items.add( e.nextElement() );
+        }
+        return items;
+    }
+    
+    private static String[] toArray( final List<String> l )
+    {
+        return (String[])l.toArray( new String[l.size()] );
+    }
+    
     
     public String[]
     getRealmNames()
@@ -139,22 +156,6 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         {
             throw new RuntimeException(e);
         }
-    }
-
-    private List<String>
-    toList( final Enumeration<String> e )
-    {
-        final List<String> items = new ArrayList<String>();
-        while ( e.hasMoreElements() )
-        {
-            items.add( e.nextElement() );
-        }
-        return items;
-    }
-    
-    String[] toArray( final List<String> l )
-    {
-        return (String[])l.toArray( new String[l.size()] );
     }
     
     
