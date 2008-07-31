@@ -190,6 +190,8 @@ public class UpdateCenterHandlers {
             build = verInfo.substring(0, dashIndex);
         }else
             build = verInfo.substring(0, commaIndex);
+        if (dashIndex == -1)
+            return build;
         String branch = verInfo.substring(dashIndex, verInfo.length() );
         return build + branch;
     }
