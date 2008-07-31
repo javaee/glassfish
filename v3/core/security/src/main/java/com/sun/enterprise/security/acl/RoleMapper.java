@@ -62,6 +62,8 @@ import com.sun.enterprise.security.common.AppservAccessController;
 import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.security.common.Group;
 
 
 /** This Object maintains  a mapping of users and groups to application
@@ -74,12 +76,11 @@ import com.sun.logging.*;
 public class RoleMapper implements Serializable, SecurityRoleMapper {
 
     private  ServerContext serverContext;
-    
-    private static Map ROLEMAPPER = new HashMap();
+    //private static Map ROLEMAPPER = new HashMap();
     private static final String DEFAULT_ROLE_NAME = "ANYONE";
-    private static Role defaultRole = null;
-    private static String defaultRoleName = null;
-    private String appName;
+    private  Role defaultRole = null;
+    private  String defaultRoleName = null;
+    private  String appName;
     private final Map<String, Subject> roleToSubject =
             new HashMap<String, Subject>();
 
@@ -117,8 +118,12 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     private static Logger _logger =
             LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
-    private RoleMapper(String appName) {
+    private SecurityService secService = null;
+    
+    RoleMapper(String appName) {
         this.appName = appName;
+        serverContext = Globals.getDefaultHabitat().getComponent(ServerContext.class);
+        secService = Globals.getDefaultHabitat().getComponent(SecurityService.class);
         defaultP2RMappingClassName = getDefaultP2RMappingClassName();
         postConstruct();
     }
@@ -136,12 +141,8 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         if (defaultRole == null) {
             defaultRoleName = DEFAULT_ROLE_NAME;
             try {
-                if (serverContext != null) {
-                    SecurityService secService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
-                    assert (secService != null);
-                    defaultRoleName = secService.getAnonymousRole();
-                }
-
+                assert (secService != null);
+                defaultRoleName = secService.getAnonymousRole();
             } catch (Exception e) {
                 _logger.log(Level.WARNING,
                         "java_security.anonymous_role_reading_exception",
@@ -158,7 +159,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     /** Returns a RoleMapper corresponding to the AppName.
      * @param appName Application Name of this RoleMapper.
      * @return SecurityRoleMapper for the application
-     */
+     
     public static RoleMapper getRoleMapper(String appName) {
         RoleMapper r = (RoleMapper) ROLEMAPPER.get(appName);
         if (r == null) {
@@ -169,20 +170,20 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         }
         return r;
     }
-
+*/
     /** Set a RoleMapper for the application
      * @param appName Application or module name
      * @param rmap <I>SecurityRoleMapper</I> for the application or the module
-     */
+    
     public static void setRoleMapper(String appName, SecurityRoleMapper rmap) {
         synchronized (RoleMapper.class) {
             ROLEMAPPER.put(appName, rmap);
         }
-    }
+    } */
 
     /**
      * @param appName Application/module name.
-     */
+     
     public static void removeRoleMapper(String appName) {
 
         if (ROLEMAPPER.containsKey(appName)) {
@@ -190,7 +191,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
                 ROLEMAPPER.remove(appName);
             }
         }
-    }
+    }*/
 
     /**
      * @return The application/module name for this RoleMapper
@@ -441,29 +442,26 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
      */
      private String getDefaultP2RMappingClassName() {
         String className = null;
-        try {
-            if (serverContext != null) {
-                SecurityService securityService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
-
-                if (securityService != null && Boolean.parseBoolean(securityService.getActivateDefaultPrincipalToRoleMapping())) {
+         try {
+             if (secService != null && Boolean.parseBoolean(secService.getActivateDefaultPrincipalToRoleMapping())) {
 //V3:Commented                       securityService.isActivateDefaultPrincipalToRoleMapping()==true) {
-                    className = securityService.getMappedPrincipalClass();
-                    if (className == null || "".equals(className)) {
-                        className = "com.sun.enterprise.deployment.Group";
-                    }
-                }
-            }
-            if (className == null) {
-                return null;
-            }
-            Class clazz = Class.forName(className);
-            Class[] argClasses = new Class[]{String.class};
-            Object[] arg = new Object[]{"anystring"};
-            Constructor c = clazz.getConstructor(argClasses);
-            Principal principal = (Principal) c.newInstance(arg);
-            //verify that this class is a Principal class and has a constructor(string)
-            return className;
-        } catch (Exception e) {
+                 className = secService.getMappedPrincipalClass();
+                 if (className == null || "".equals(className)) {
+                     className = Group.class.getName();
+                 }
+             }
+
+             if (className == null) {
+                 return null;
+             }
+             Class clazz = Class.forName(className);
+             Class[] argClasses = new Class[]{String.class};
+             Object[] arg = new Object[]{"anystring"};
+             Constructor c = clazz.getConstructor(argClasses);
+             Principal principal = (Principal) c.newInstance(arg);
+             //verify that this class is a Principal class and has a constructor(string)
+             return className;
+         } catch (Exception e) {
             _logger.log(Level.SEVERE, "pc.getDefaultP2RMappingClass: " + e);
             return null;
         }
@@ -736,7 +734,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     }
 
     public void postConstruct() {
-        serverContext = SecurityServicesUtil.getInstance().getHabitat().getComponent(ServerContext.class);
        initDefaultRole();
     }
 
