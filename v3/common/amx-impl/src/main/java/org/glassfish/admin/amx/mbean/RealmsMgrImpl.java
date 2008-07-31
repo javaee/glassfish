@@ -54,7 +54,6 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 
 
 /**
-    DAS implementation of DomainRoot
  */
 public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsMgr
 {
@@ -81,6 +80,18 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
     {
         final List<String> items = mRealmsManager.getPredefinedAuthRealmClassNames();
         return (String[])items.toArray( new String[items.size()] );
+    }
+    
+    
+    public String getDefaultRealmName()
+    {
+        return mRealmsManager.getDefaultRealmName();
+    }
+    
+    
+    public void setDefaultRealmName(final String realmName)
+    {
+        mRealmsManager.setDefaultRealmName(realmName);
     }
     
         private Realm

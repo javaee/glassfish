@@ -40,10 +40,7 @@ import com.sun.appserv.management.base.Utility;
 import com.sun.appserv.management.base.Singleton;
 
 /**
-	Provides various routines for system status.
-    <p>
-    <b>WARNING: some of these routines may be relocated.</b>
-    @see SystemInfo
+    @since GlassFish V3
  */
 public interface RealmsMgr extends AMX, Utility, Singleton
 {
@@ -53,6 +50,9 @@ public interface RealmsMgr extends AMX, Utility, Singleton
     /** get the names of all realms */
     public String[] getRealmNames();
     public String[] getRealmClassNames();
+    
+    public String getDefaultRealmName();
+    public void   setDefaultRealmName(String realmName);
     
     public void addUser( String realm, String user, String password, String[] groupList );
     public void updateUser( String realm, String user, String newUser, String password, String[] groupList );
