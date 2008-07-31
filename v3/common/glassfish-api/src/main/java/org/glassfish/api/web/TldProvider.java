@@ -36,7 +36,7 @@
 
 package org.glassfish.api.web;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.jvnet.hk2.annotations.Contract;
@@ -51,7 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface TldProvider {
 
     /**
-     * Get a Map with key URL and value as a list of tld entries.
+     * Get a Map with key URI and value as a list of tld entries.
      */
-    public Map<URL, List<String>> getTldMap();
+    public Map<URI, List<String>> getTldMap();
 }

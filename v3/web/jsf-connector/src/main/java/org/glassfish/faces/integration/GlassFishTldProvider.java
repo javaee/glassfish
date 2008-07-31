@@ -39,7 +39,7 @@ package org.glassfish.faces.integration;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URI;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
-import com.sun.enterprise.util.net.JarURLPattern;
+import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 
@@ -70,34 +70,35 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     @Inject
     ModulesRegistry registry;
 
-    private Map<URL, List<String>> tldMap = new HashMap<URL, List<String>>();
+    private Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
  
     /**
      * Get a Map with key URL and value as a list of tld entries.
      */
-    public Map<URL, List<String>> getTldMap() {
-        return (Map<URL, List<String>>)((HashMap)tldMap).clone();
+    public Map<URI, List<String>> getTldMap() {
+        return (Map<URI, List<String>>)((HashMap)tldMap).clone();
     }
 
     public void postConstruct() {
-        URL[] urls = null;
+        URI[] uris = null;
         Module m = registry.find(getClass());
         if (m!=null) {
-            URI[] uris = m.getModuleDefinition().getLocations();
-            List<URL> urlList = new ArrayList<URL>(uris.length);
-            for (int i = 0; i< uris.length; ++i) {
-                try {
-                    urlList.add(uris[i].toURL());
-                } catch (MalformedURLException e) {
-                    // TODO(Sahoo): Use logger
-                    System.out.println("Ignoring " + uris[i] + " because of " + e);
-                }
-            }
-            urls = urlList.toArray(new URL[urlList.size()]);
+            uris = m.getModuleDefinition().getLocations();
         } else {
             ClassLoader classLoader = getClass().getClassLoader();
             if (classLoader instanceof URLClassLoader) {
-                urls = ((URLClassLoader)classLoader).getURLs();
+                URL[] urls = ((URLClassLoader)classLoader).getURLs();
+                if (urls != null && urls.length > 0) {
+                    uris = new URI[urls.length];
+                    for (int i = 0; i < urls.length; i++) {
+                        try {
+                            uris[i] = urls[i].toURI();
+                        } catch(URISyntaxException e) {
+                            // TODO(Sahoo): Use logger
+                            System.out.println("Ignoring " + uris[i] + " because of " + e);
+                        }
+                    }
+                }
             } else {
                 // TODO(Sahoo): Use logger
                 System.out.println("ClassLoader [" + classLoader +
@@ -105,12 +106,12 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
             }
         }
 
-        if (urls != null) {
+        if (uris != null && uris.length > 0) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
-            for (URL url : urls) {
-                List entries =  JarURLPattern.getJarEntries(url, pattern);
+            for (URI uri : uris) {
+                List entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
-                    tldMap.put(url, entries);
+                    tldMap.put(uri, entries);
                 }
             }
         }

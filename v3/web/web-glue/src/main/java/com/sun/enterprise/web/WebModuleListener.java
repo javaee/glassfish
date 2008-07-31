@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.net.URL;
+import java.net.URI;
 import java.io.File;
 import javax.servlet.ServletContext;
 
@@ -256,13 +256,13 @@ final class WebModuleListener
      * in sun-web.xml's jsp-config
      */
     private void configureJsp(WebModule webModule) {
-        // Find tld URL and set it to ServletContext attribute
+        // Find tld URI and set it to ServletContext attribute
         Collection<TldProvider> tldProviders =
                 serverContext.getDefaultHabitat().getAllByContract(
                 TldProvider.class);
-        Map<URL, List<String>> tldMap = new HashMap<URL, List<String>>();
+        Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
         for (TldProvider tldProvider : tldProviders) {
-            Map<URL, List<String>> tmap = tldProvider.getTldMap();
+            Map<URI, List<String>> tmap = tldProvider.getTldMap();
             if (tmap != null) {
                 tldMap.putAll(tmap);
             }

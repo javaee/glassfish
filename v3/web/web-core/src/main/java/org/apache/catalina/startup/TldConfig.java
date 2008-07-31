@@ -66,6 +66,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.JarURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -441,9 +442,9 @@ public final class TldConfig  {
         Set<String> resourcePaths = tldScanResourcePaths();              
         Map<String, JarPathElement> jarPaths = getJarPaths();
 
-        Map<URL, List<String>> tldMap = null;
+        Map<URI, List<String>> tldMap = null;
         if (scanParent || context.isJsfApplication()) {
-            tldMap = (Map<URL, List<String>>)context.getServletContext().getAttribute(
+            tldMap = (Map<URI, List<String>>)context.getServletContext().getAttribute(
                     "com.sun.appserv.tld.map");
         }
         
@@ -475,8 +476,8 @@ public final class TldConfig  {
 
         // Scan system impl jars with tlds
         if (tldMap != null) {
-            for (URL url : tldMap.keySet()) {
-                tldScan(url, tldMap.get(url));
+            for (URI uri : tldMap.keySet()) {
+                tldScan(uri, tldMap.get(uri));
             }
         }
 
@@ -523,13 +524,13 @@ public final class TldConfig  {
      *
      * @param resourcePaths
      * @param jarPaths
-     * @param tldURLs
+     * @param tldMap
      *
      * @return Last modification date
      */
     private long getLastModified(Set<String> resourcePaths,
             Map<String, JarPathElement> jarPaths,
-            Map<URL, List<String>> tldMap) throws Exception {
+            Map<URI, List<String>> tldMap) throws Exception {
 
         long lastModified = 0;
 
@@ -565,9 +566,9 @@ public final class TldConfig  {
         }
 
         if (tldMap != null) {
-            for (URL url : tldMap.keySet()) {
-                for (String tldName : tldMap.get(url)) {
-                    URL tldURL = new URL("jar:" + url.toString() + "!/" + tldName);
+            for (URI uri : tldMap.keySet()) {
+                for (String tldName : tldMap.get(uri)) {
+                    URL tldURL = new URL("jar:" + uri.toString() + "!/" + tldName);
                     long lastM = tldURL.openConnection().getLastModified();
                     if (lastM > lastModified) lastModified = lastM;
                     if (log.isLoggable(Level.FINE)) {
@@ -680,10 +681,10 @@ public final class TldConfig  {
         }
     }
 
-    private void tldScan(URL url, List<String> entries) throws Exception {
+    private void tldScan(URI uri, List<String> entries) throws Exception {
         String name = "";
         try {
-            JarFile jarFile = new JarFile(new File(url.toURI()));
+            JarFile jarFile = new JarFile(new File(uri));
             for (String entry : entries) {
                 name = entry;
                 tldScanStream(new InputSource(
@@ -693,7 +694,7 @@ public final class TldConfig  {
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     sm.getString("contextConfig.tldEntryException",
-                                 name, url.toString(), context.getPath()),
+                                 name, uri.toString(), context.getPath()),
                     e);
         }
     }

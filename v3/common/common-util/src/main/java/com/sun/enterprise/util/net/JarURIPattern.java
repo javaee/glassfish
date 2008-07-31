@@ -37,7 +37,7 @@
 package com.sun.enterprise.util.net;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -45,19 +45,19 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-public class JarURLPattern {
+public class JarURIPattern {
     /**
-     * This method is used to extract URL of jar entries that match
+     * This method is used to extract URI of jar entries that match
      * a given pattern.
-     * @param url
+     * @param uri
      * @param pattern
      */
-    public static List<String> getJarEntries(URL url, Pattern pattern) {
+    public static List<String> getJarEntries(URI uri, Pattern pattern) {
         List<String> results = new ArrayList<String>();   
 
         File file = null;
         try {
-            file = new File(url.toURI());
+            file = new File(uri);
         } catch(Exception ex) {
             // ignore
         }
@@ -70,7 +70,7 @@ public class JarURLPattern {
         // only look at jar file
         if (fileName != null && fileName.endsWith(".jar")) {
             try {
-                JarFile jarFile = new JarFile(new File(url.toURI()));
+                JarFile jarFile = new JarFile(new File(uri));
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = (JarEntry)entries.nextElement();
