@@ -126,6 +126,11 @@
             <version>${glassfish-api.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jvnet.updatecenter2</groupId>
+            <artifactId>pkg</artifactId>
+            <version>2.0.13-1005</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>${glassfish.version}</version>
