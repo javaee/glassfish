@@ -138,12 +138,6 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${glassfish.version}</version>
-	    <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-client</artifactId>
             <version>${glassfish.version}</version>
@@ -174,22 +168,10 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
-            <version>${glassfish.version}</version>
-	    <scope>provided</scope>
-        </dependency>        
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-mbeanserver</artifactId>
-            <version>${glassfish.version}</version>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-common</artifactId>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jvnet.updatecenter2</groupId>
-            <artifactId>pkg</artifactId>
-            <version>2.0.13-1005</version>
-        </dependency>
-        
     </dependencies>
 </project>
