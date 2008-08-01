@@ -48,9 +48,7 @@ import com.sun.grizzly.tcp.Adapter;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,7 +91,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     private final Controller controller  = new Controller();
     
-    private Set<String> hosts = new HashSet<String>();
+    private Collection<String> hosts = new ArrayList<String>();
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
@@ -252,13 +250,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             if (vsListeners == null || vsListeners.size() == 0 || 
                 vsListeners.contains(listener.getId())) {
                 proxy.getVsMapper().addVirtualServer(vs);
-                hosts.add(vs.getId());
+                if (!hosts.contains(vs.getId())){
+                    hosts.add(vs.getId());
+                }
             }
             
             List<String> aliases = 
                     StringUtils.parseStringList(vs.getHosts(), " ,");  
             for (String alias: aliases){
-                hosts.add(alias);
+                if (!hosts.contains(alias)){
+                    hosts.add(alias);
+                }    
             }
         }
         Future<Result<Thread>> future =  proxy.start();
@@ -276,7 +278,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         // todo : this neeed some rework...
         // now register all proxies you can find out there !
         // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
-        for (org.glassfish.api.container.Adapter subAdapter :
+        for (org.glassfish.api.container.Adapter subAdapter : 
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
