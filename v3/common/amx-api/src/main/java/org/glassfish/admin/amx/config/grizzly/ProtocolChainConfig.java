@@ -44,8 +44,8 @@ import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 
 /**
- * Defines the type of a {@link ProtocolChain} and describes a list of a
- * {@link ProtocolFilter}s, which will participate in a request processing
+ * Defines the type of a {@link ProtocolChainConfig} and describes a list of a
+ * {@link ProtocolFilterConfig}s, which will participate in a request processing
  */
 public interface ProtocolChainConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover{
     public String getClassname();

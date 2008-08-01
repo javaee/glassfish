@@ -42,10 +42,10 @@ import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 
 /**
- * {@link ProtocolFinder} describes a protocol finder/recognizer, 
+ * Ddescribes a protocol finder/recognizer, 
  * which is able to recognize whether incoming request belongs to the specific
- * {@link Protocol} or not. If yes - {@link ProtocolFinder} forwards request
- * processing to a specific {@link Protocol}.
+ * {@link ProtocolConfig} or not. If yes - {@link ProtocolFinderConfig} forwards request
+ * processing to a specific {@link ProtocolConfig}.
  */
 public interface ProtocolFinderConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
     /**

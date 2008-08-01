@@ -42,7 +42,7 @@ import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 
 /**
- * network-config element contains complete Grizzly configuration
+ * Network-config element contains complete Grizzly configuration
  */
 public interface NetworkConfig extends PropertiesAccess, DefaultValues, ConfigCreator, ConfigRemover {
     public TransportsConfig getTransportsConfig();

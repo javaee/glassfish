@@ -44,7 +44,7 @@ import com.sun.appserv.management.config.ConfigRemover;
 import com.sun.appserv.management.config.ResolveTo;
 
 /**
- * {@link SelectionKeyHandler} defines {@link Transport}'s {@link SelectionKey}
+ * Defines {@link TransportConfig}'s SelectionKey
  * events handling logic.
  */
 public interface SelectionKeyHandlerConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {

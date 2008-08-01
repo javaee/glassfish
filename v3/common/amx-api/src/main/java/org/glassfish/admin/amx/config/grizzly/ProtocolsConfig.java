@@ -42,7 +42,7 @@ import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 
 /**
- * Contains the description of higher level {@link Protocol}s
+ * Contains the description of higher level {@link ProtocolConfig}s
  * like: http, https, iiop, etc.
  */
 public interface ProtocolsConfig extends PropertiesAccess, ConfigCreator, ConfigRemover {

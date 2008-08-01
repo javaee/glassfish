@@ -43,7 +43,7 @@ import com.sun.appserv.management.config.ConfigRemover;
 import com.sun.appserv.management.config.ResolveTo;
 
 /**
- * {@link Transport} defines one specific transport and its properties.
+ * Defines one specific transport and its properties.
  */
 public interface TransportConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
    /**

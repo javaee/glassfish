@@ -45,7 +45,7 @@ import com.sun.appserv.management.config.ResolveTo;
 
 
 /**
- * {@link Protocol} defines one single high-level protocol like:
+ * Defines one single high-level protocol like:
  * http, https, iiop, etc.
  */
 public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {

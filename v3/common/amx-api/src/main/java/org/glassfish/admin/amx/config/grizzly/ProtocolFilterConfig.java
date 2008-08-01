@@ -40,7 +40,7 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.NamedConfigElement;
 
 /**
- * defines single {@link ProtocolFilterConfig} in a processing chain.
+ * Defines single {@link ProtocolFilterConfig} in a processing chain.
  */
 public interface ProtocolFilterConfig extends PropertiesAccess, NamedConfigElement, DefaultValues {
     /**
