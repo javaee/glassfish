@@ -89,6 +89,7 @@
                         <_include>osgi.bundle</_include>
                         -->
                         <Export-Package>
+			    org.glassfish.deployment.client
                         </Export-Package>
                     </instructions>
                 </configuration>
