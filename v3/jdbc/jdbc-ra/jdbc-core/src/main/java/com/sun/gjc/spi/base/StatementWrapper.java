@@ -408,7 +408,7 @@ public abstract class StatementWrapper implements Statement {
      * @since 1.2
      */
     public void setFetchSize(int rows) throws SQLException {
-        jdbcStatement.setFetchDirection(rows);
+        jdbcStatement.setFetchSize(rows);
     }
 
     /**
