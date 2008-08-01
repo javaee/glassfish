@@ -62,6 +62,8 @@ public class SerialContext implements Context {
 
     private static final String JAVA_URL = "java:";
 
+    private static final String JAVA_GLOBAL_URL = "java:global";
+
     // private InitialContext cosContext;
     private static final Boolean threadlock = new Boolean(true);
 
@@ -166,7 +168,7 @@ public class SerialContext implements Context {
      */
     private boolean isjavaURL(String name) {
 
-        if (name.startsWith(JAVA_URL)) {
+        if ((name.startsWith(JAVA_URL)) && (! name.startsWith(JAVA_GLOBAL_URL))) {
             return true;
         } else
             return false;
