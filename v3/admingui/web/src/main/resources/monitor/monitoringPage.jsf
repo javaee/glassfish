@@ -34,12 +34,33 @@
  holder.
 -->
 <!-- monitoring/monitoringPage.jsf -->
-
+<!initPage
+    if (!#{pageSession.configName}) {
+        getRequestValue(key="configName" value=>$page{configName});
+    }
+    println("#{configName}");
+    getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
+    println("#{config}");
+    setAttribute(key="mmlConfig" value="#{config.monitoringServiceConfig.moduleMonitoringLevelsConfig}");  
+/>
 <sun:page>
     <!beforeCreate 
         setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings")
         setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
-        getRequestValue(key="configName" value=>$page{configName});
+        /*
+        getMonitoringServiceSettings(ConfigName="#{configName}", 
+            Jvm=>$attribute{jvm}, 
+            Http=>$attribute{http}, 
+            Transaction=>$attribute{transaction}, 
+            JmsConnector=>$attribute{connector}, 
+            Orb=>$attribute{orb}, 
+            Web=>$attribute{web}, 
+            Ejb=>$attribute{ejb}, 
+            Jdbc=>$attribute{jdbc}, 
+            ThreadPool=>$attribute{threadPool},
+            Properties=>$page{props});  
+        //getTableList(Properties="#{props}", TableList=>$attribute{tableList});
+        */
         compare(obj1="$pageSession{configName}" obj2="server-config" objEqual=>$attribute{isServerConfig});
         setPageSessionAttribute(key="showIt" value="$boolean{false}");
         if ($session{supportCluster} & !${isServerConfig}){
@@ -54,11 +75,59 @@
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
-                <sun:title 
-                id="configPageTitle" 
-                title="$resource{i18n.monitoring}" 
-                helpText="$resource{i18n.monitoring.pageTitleHelp}"
-                />
+                <sun:title id="configPageTitle"  title="$resource{i18n.monitoring.Title}" 
+                    helpText="$resource{i18n.monitoring.PageHelp}">
+                    <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
+                        <!command
+                            getMonitoringServiceDefaultSettings(
+                                ConfigName="#{configName}", 
+                                Jvm=>$attribute{jvm}, 
+                                Http=>$attribute{http}, 
+                                Web=>$attribute{web}, 
+                            );                            
+                       />
+                    </sun:button>
+                    <!-- Buttons  -->                    
+                    <!facet pageButtonsTop>
+                    <sun:panelGroup id="topButtons">
+                        <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
+                            <!command
+                            //getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            //getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                            //convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
+                            prepareSuccessfulMsg();         
+    			    setAttribute(key="configName" value="#{configName}");  
+                            /*
+                            saveMonitoringServiceSettings(
+                                ConfigName="#{configName}",
+                                Http="#{http}",
+                                Web="#{web}",
+                            );
+                            */
+                           />
+                        </sun:button>                      
+                    </sun:panelGroup>
+                    </facet>          
+                </sun:title>
+                <!-- PropertySheet .... -->
+                <sun:propertySheet id="propertySheet">			 
+                    <!-- Text Field section -->               
+                    <sun:propertySheetSection id="propertSectionTextField">                   
+                        <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.monitoring.Http}">                           
+                            <sun:dropDown id="Http" selected="#{mmlConfig.HTTPService}" labels={"$resource{i18n.monitoring.Low}" "$resource{i18n.monitoring.High}" "$resource{i18n.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                         </sun:property>          
+                        <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.monitoring.Web}">                           
+                            <sun:dropDown id="Web" selected="#{mmlConfig.webContainer}" labels={"$resource{i18n.monitoring.Low}" "$resource{i18n.monitoring.High}" "$resource{i18n.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                         </sun:property>                               
+                        "<br /><br />
+                    </sun:propertySheetSection>
+
+                </sun:propertySheet>    
+                
+                <sun:hidden id="helpKey" value="$resource{help.monitoringService}" />
+
+
+                <!--
                 <sun:propertySheet>
                     <sun:propertySheetSection>
                         <sun:property>
@@ -82,9 +151,8 @@
                     </sun:propertySheetSection>
                 </sun:propertySheet>
                 <sun:hidden id="helpKey" value="$resource{help.monitoring}" />
+                -->
             </sun:form>           
         </sun:body> 
     </sun:html>  
 </sun:page>
-
-

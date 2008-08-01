@@ -710,7 +710,7 @@ public class CommonHandlers {
         }
     }    
     
-/**
+    /**
      *	<p> This handler checks if particular feature is supported  </p>
      *
      *  <p> Output value: "supportCluster" -- Type: <code>Boolean</code>/</p>
@@ -726,7 +726,23 @@ public class CommonHandlers {
             handlerCtx.setOutputValue("supportHADB", false);
     }
     
-        
+    /**
+     * <p> This handler returns the ConfigConfig object for the specified configuration name.</p>
+     * <p> Input value:  "ConfigName"       -- Type: <code>java.lang.String</code></p>
+     * <p> Output value: "configConfig"     -- Type: <code>com.sun.appserv.management.config.ConfigConfig</code></p>
+     */
+    @Handler(id = "getConfigConfig",
+        input = {
+            @HandlerInput(name = "configName", type = String.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "configConfig", type = ConfigConfig.class)
+        })
+    public static void getConfigConfig(HandlerContext handlerCtx) {
+        String configName = ((String) handlerCtx.getInputValue("configName"));
+        handlerCtx.setOutputValue("configConfig", AMXRoot.getInstance().getConfig(configName));
+    }
+       
     
     
     private static final String CHARTING_COOKIE_NAME = "as91-doCharting";

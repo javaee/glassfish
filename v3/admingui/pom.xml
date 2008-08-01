@@ -67,6 +67,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>jdlee</id>
+            <name>Jason Lee</name>
+            <url>http://blogs.steeplesoft..com/</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <modules>

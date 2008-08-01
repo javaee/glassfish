@@ -11,9 +11,10 @@
        <integration-point 
                 id="monitor" 
                 type="tree" 
-                priority="200"
-                parentId="tree" 
+                priority="350"
+                parentId="configuration" 
                 content="monitor/monitoringNode.jsf"/>
+       <!--
        <integration-point 
                 id="monitor_web" 
                 type="tree" 
@@ -22,8 +23,9 @@
                 content="monitor/webContainerNode.jsf"/>
        <integration-point 
                 id="monitor_http" 
-                type="tree" 
+           s     type="tree" 
                 priority="20"
                 parentId="monitor" 
                 content="monitor/httpServiceNode.jsf"/>
+        -->
 </console-config>
