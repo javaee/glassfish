@@ -7,7 +7,7 @@
   </context-param>
   <context-param>
     <param-name>com.sun.jsftemplating.CLASSLOADER</param-name>
-    <param-value>org.glassfish.admingui.plugin.ConsoleClassLoader</param-value>
+    <param-value>org.glassfish.admingui.common.plugin.ConsoleClassLoader</param-value>
   </context-param>
   <context-param>
     <param-name>com.sun.jsftemplating.RESOURCE_PREFIX</param-name>
