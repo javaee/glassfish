@@ -61,7 +61,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 
 
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 
 /**

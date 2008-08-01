@@ -58,8 +58,8 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.Map;
 
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;

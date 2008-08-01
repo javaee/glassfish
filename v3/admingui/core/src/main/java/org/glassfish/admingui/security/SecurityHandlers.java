@@ -15,13 +15,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
-import org.glassfish.admingui.util.AMXUtil;
-
 import com.sun.jsftemplating.annotation.Handler;  
 import com.sun.jsftemplating.annotation.HandlerInput; 
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
-import org.glassfish.admingui.util.AMXRoot;
+
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.util.AMXUtil;
+
 
 /**
  *

@@ -59,8 +59,8 @@ import java.util.TreeSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
@@ -409,7 +409,8 @@ public class EESupportHandlers {
         if(serverList != null) {
             availableOptions = new Option[serverList.size()];
             List<String> strList = GuiUtil.convertListOfStrings(serverList);
-            availableOptions = GuiUtil.getSunOptions(strList);
+// FIXME: 7-31-08 -- FIX by importing woodstock api's:
+//            availableOptions = GuiUtil.getSunOptions(strList);
         }
         
         String defaultTarget = (String)handlerCtx.getInputValue("defaultTarget");
@@ -465,7 +466,8 @@ public class EESupportHandlers {
 		if(targets != null) {
 			availableOptions = new Option[targets.size()];
 			List<String> strList = GuiUtil.convertListOfStrings(targets);
-			availableOptions = GuiUtil.getSunOptions(strList);
+// FIXME: 7-31-08 -- FIX by importing woodstock api's:
+//			availableOptions = GuiUtil.getSunOptions(strList);
 			selectedOptions = associatedTargets.toArray(new String[associatedTargets.size()]);
 		}
         handlerCtx.setOutputValue("availableTargets", availableOptions);        
@@ -500,7 +502,8 @@ public class EESupportHandlers {
 		String[] selectedOptions = null; 
 		if(vsList != null) {
 			availableOptions = new Option[vsList.size()];
-			availableOptions = GuiUtil.getSunOptions(vsList);
+// FIXME: 7-31-08 -- FIX by importing woodstock api's:
+//			availableOptions = GuiUtil.getSunOptions(vsList);
 			selectedOptions = GuiUtil.stringToArray(associatedVS, ",");
 			if(pe != null && pe) {
 				if(selectedOptions != null && !(selectedOptions.length > 0)) {

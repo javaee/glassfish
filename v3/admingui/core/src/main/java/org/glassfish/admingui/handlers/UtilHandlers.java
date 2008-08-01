@@ -45,12 +45,14 @@
 
 package org.glassfish.admingui.handlers;
 
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.layout.LayoutDefinitionManager;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
 
 import com.sun.webui.jsf.component.Hyperlink;
 
@@ -64,6 +66,7 @@ import java.text.DecimalFormat;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.UnsupportedEncodingException;
+
 
 
 /**
@@ -318,7 +321,30 @@ public class UtilHandlers {
             handlerCtx.setOutputValue("output", "");
         }
     }
-            
-            
-            
+
+    /**
+     *
+     */
+    @Handler(id="addHandler",
+    input={
+        @HandlerInput(name="id", type=String.class, required=true),
+        @HandlerInput(name="desc", type=String.class),
+        @HandlerInput(name="class", type=String.class, required=true),
+        @HandlerInput(name="method", type=String.class, required=true)
+	},
+    output={
+        @HandlerOutput(name="output", type=String.class)
+    })
+    public static void addHandler(HandlerContext handlerCtx) {
+	String id = (String) handlerCtx.getInputValue("id");
+	String desc = (String) handlerCtx.getInputValue("desc");
+	String cls = (String) handlerCtx.getInputValue("class");
+	String meth = (String) handlerCtx.getInputValue("method");
+	HandlerDefinition def = new HandlerDefinition(id);
+	def.setHandlerMethod(cls, meth);
+	if (desc != null) {
+	    def.setDescription(desc);
+	}
+	LayoutDefinitionManager.addGlobalHandlerDefinition(def);
+    }
 }

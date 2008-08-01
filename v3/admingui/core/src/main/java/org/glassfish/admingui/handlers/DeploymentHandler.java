@@ -74,8 +74,8 @@ import java.net.URI;
 import javax.management.ObjectName;
 
 
-import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.util.TargetUtil;
 
 /**

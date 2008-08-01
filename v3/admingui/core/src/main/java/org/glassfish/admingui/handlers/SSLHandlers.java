@@ -64,8 +64,8 @@ import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.SSLConfigContainer;
 import com.sun.appserv.management.config.SSLConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.MiscUtil;
 import org.glassfish.admingui.util.AMXUtil;
 

@@ -66,9 +66,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.glassfish.admingui.util.AMXRoot;
+import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.util.AMXUtil;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.config.JDBCConnectionPoolConfig;

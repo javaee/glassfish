@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.File; 
 
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;

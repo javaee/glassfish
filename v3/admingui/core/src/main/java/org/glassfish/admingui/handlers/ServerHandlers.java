@@ -61,8 +61,8 @@ import java.util.Vector;
 import javax.faces.model.SelectItem;
 
 
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.JavaConfig;

@@ -60,8 +60,8 @@ import java.util.ListIterator;
 import javax.faces.model.SelectItem;
 
 
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 

@@ -42,6 +42,9 @@ package org.glassfish.admingui.util;
 
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.PropertyConfig;
+
+import org.glassfish.admingui.common.util.GuiUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

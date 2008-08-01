@@ -70,8 +70,8 @@ import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 //import com.sun.enterprise.appclient.jws.NamingConventions;
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.config.AppClientModuleConfig;

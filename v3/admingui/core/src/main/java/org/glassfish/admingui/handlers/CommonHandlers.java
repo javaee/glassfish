@@ -51,8 +51,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import org.glassfish.admingui.util.AMXRoot;
-import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.AMXUtil;
 import com.sun.enterprise.util.SystemPropertyConstants;
 

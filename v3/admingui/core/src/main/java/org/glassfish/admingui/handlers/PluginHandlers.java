@@ -92,7 +92,7 @@ public class PluginHandlers {
 
 	// Get the Habitat from the ServletContext
 	Habitat habitat = (Habitat) servletCtx.getAttribute(
-	    org.glassfish.admingui.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
+	    org.glassfish.admingui.common.plugin.ConsoleClassLoader.HABITAT_ATTRIBUTE);
 
 //	System.out.println("Habitat:" + habitat);
 

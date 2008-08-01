@@ -49,8 +49,8 @@ import com.sun.webui.jsf.model.UploadedFile;
 import java.io.File;
 import java.io.IOException;
 
-import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
 
 import static org.glassfish.deployment.client.DFDeploymentProperties.*;
 
