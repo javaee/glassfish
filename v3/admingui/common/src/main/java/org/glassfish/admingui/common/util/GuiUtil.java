@@ -51,7 +51,7 @@ import com.sun.jsftemplating.resource.ResourceBundleManager;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import javax.faces.context.FacesContext;
-// FIXME: 7-21-08 -- FIX by importing woodstock api's:
+// FIXME: 7-31-08 -- FIX by importing woodstock api's:
 //import com.sun.webui.jsf.model.Option;
 
 import java.util.Locale;
@@ -325,7 +325,7 @@ public class GuiUtil {
     }
 
 /*
-FIXME: 7-21-08 -- FIX by importing woodstock api's.
+FIXME: 7-31-08 -- FIX by importing woodstock api's.
     public static Option[] getSunOptions(Collection<String> c) {
 	if (c == null){
 	    return new Option[0];
