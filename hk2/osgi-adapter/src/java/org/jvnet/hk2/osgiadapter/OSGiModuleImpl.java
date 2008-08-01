@@ -47,6 +47,7 @@ import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -291,19 +292,67 @@ public final class OSGiModuleImpl implements Module {
          * class loader.
          */
         return new ClassLoader(Bundle.class.getClassLoader()) {
+            public static final String META_INF_SERVICES = "META-INF/services/";
 
             @Override
             protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                return bundle.loadClass(name);
+                try {
+                    return bundle.loadClass(name);
+                } catch (ClassNotFoundException e) {
+                    // punch in. find the provider class, no matter where we are.
+                    OSGiModuleImpl m =
+                            (OSGiModuleImpl)registry.getProvidingModule(name);
+                    if(m!=null)
+                        return m.bundle.loadClass(name);
+                    throw e;
+                }
+
             }
 
             @Override
             public URL getResource(String name) {
-                return bundle.getResource(name);
+                URL result = bundle.getResource(name);
+                if (result != null) return result;
+
+                // If this is a META-INF/services lookup, search in every
+                // modules that we know of.
+                if(name.startsWith(META_INF_SERVICES)) {
+                    // punch in. find the service loader from any module
+                    String serviceName = name.substring(
+                            META_INF_SERVICES.length());
+
+                    for( Module m : registry.getModules() ) {
+                        List<URL> list = m.getMetadata().getDescriptors(
+                                serviceName);
+                        if(!list.isEmpty())     return list.get(0);
+                    }
+                }
+                return null;
             }
 
             @Override
             public Enumeration<URL> getResources(String name) throws IOException {
+                if(name.startsWith(META_INF_SERVICES)) {
+                    // search in the parent classloader
+                    Enumeration<URL> parentResources =
+                            Bundle.class.getClassLoader().getResources(name);
+
+                    // punch in. find the service loader from any module
+                    String serviceName = name.substring(
+                            META_INF_SERVICES.length());
+
+                    List<URL> punchedInURLs = new ArrayList<URL>();
+
+                    for( Module m : registry.getModules() )
+                        punchedInURLs.addAll(m.getMetadata().getDescriptors(
+                                serviceName));
+
+                    List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+                    enumerators.add(parentResources);
+                    enumerators.add(Collections.enumeration(punchedInURLs));
+                    Enumeration<URL> result = new CompositeEnumeration(enumerators);
+                    return result;
+                }
                 Enumeration<URL> resources = bundle.getResources(name);
                 if (resources==null) {
                     // This check is needed, because ClassLoader.getResources()

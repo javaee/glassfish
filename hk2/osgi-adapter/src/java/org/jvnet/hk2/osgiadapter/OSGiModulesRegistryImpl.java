@@ -42,16 +42,19 @@ import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.*;
+import java.util.jar.Manifest;
 import java.util.logging.*;
 import java.net.URL;
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.net.URLClassLoader;
+import java.net.URISyntaxException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -72,6 +75,25 @@ public class OSGiModulesRegistryImpl
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
         this.bctx = bctx;
+        // Populate registry with pre-installed bundles
+        for (final Bundle b : bctx.getBundles()) {
+            if (b.getLocation().equals (Constants.SYSTEM_BUNDLE_LOCATION)) {
+                continue;
+            }
+            ModuleDefinition md;
+            try {
+                md = new DummyModuleDefinition(b);
+            } catch (URISyntaxException e) {
+                logger.logp(Level.WARNING, "OSGiModulesRegistryImpl",
+                        "OSGiModulesRegistryImpl",
+                        "Not able convert bundle [{0}] having location [{1}] " +
+                                "to module because of exception: {2}",
+                        new Object[]{b, b.getLocation(), e});
+                continue;
+            }
+            Module m = new OSGiModuleImpl(this, b, md);
+            modules.put(md.getName(), m);
+        }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
         pa = PackageAdmin.class.cast(bctx.getService(ref));
     }
@@ -241,43 +263,6 @@ public class OSGiModulesRegistryImpl
                 return new CompositeEnumeration(enumerators);
             }
 
-            // We need a compound enumeration so that we can aggregate the results from
-            // various delegates.
-            class CompositeEnumeration implements Enumeration<URL> {
-                Enumeration<URL>[] enumerators;
-                int index = 0; // current position, lazily initialized
-
-                public CompositeEnumeration(List<Enumeration<URL>> enumerators) {
-                    this.enumerators = enumerators.toArray(new Enumeration[enumerators.size()]);
-                }
-
-                public boolean hasMoreElements() {
-                    Enumeration<URL> current = getCurrent();
-                    return (current!=null) ? true : false;
-                }
-
-                public URL nextElement() {
-                    Enumeration<URL> current = getCurrent();
-                    if (current != null) {
-                        return current.nextElement();
-                    } else {
-                        throw new NoSuchElementException("No more elements in this enumeration");
-                    }
-                }
-
-                private Enumeration<URL> getCurrent() {
-                    for (int start = index; start < enumerators.length; start++) {
-                        Enumeration<URL> e = enumerators[start];
-                        if (e.hasMoreElements()) {
-                            index = start;
-                            return e;
-                        }
-                    }
-                    // no one has any elements, set the index to max and return null
-                    index = enumerators.length;
-                    return null;
-                }
-            }
         };
     }
 
@@ -369,4 +354,48 @@ public class OSGiModulesRegistryImpl
         return modules.get(bundle.getHeaders().get(ManifestConstants.BUNDLE_NAME));
     }
 
+    private static class DummyModuleDefinition implements ModuleDefinition {
+        private final Bundle b;
+        private URI location;
+        public DummyModuleDefinition(Bundle b) throws URISyntaxException {
+            this.b = b;
+            location = new URI(b.getLocation());
+        }
+
+        public String getName() {
+            return b.getSymbolicName();
+        }
+
+        public String[] getPublicInterfaces() {
+            return new String[0];
+        }
+
+        public ModuleDependency[] getDependencies() {
+            return new ModuleDependency[0];
+        }
+
+        public URI[] getLocations() {
+            return new URI[]{location};
+        }
+
+        public String getVersion() {
+            return String.class.cast(b.getHeaders().get(Constants.BUNDLE_VERSION));
+        }
+
+        public String getImportPolicyClassName() {
+            return null;
+        }
+
+        public String getLifecyclePolicyClassName() {
+            return null;
+        }
+
+        public Manifest getManifest() {
+            return null;
+        }
+
+        public ModuleMetadata getMetadata() {
+            return new ModuleMetadata();
+        }
+    }
 }
