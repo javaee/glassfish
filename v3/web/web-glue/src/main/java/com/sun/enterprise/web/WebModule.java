@@ -85,6 +85,7 @@ import org.apache.catalina.deploy.FilterMaps;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
+import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -148,6 +149,7 @@ public class WebModule extends PwcWebModule {
 
     private ServletProbeProvider servletProbeProvider = null;
     private SessionProbeProvider sessionProbeProvider = null;
+    private WebModuleProbeProvider webModuleProbeProvider = null;
 
     // The id of the parent container (i.e., virtual server) on which this
     // web module was deployed
@@ -164,6 +166,8 @@ public class WebModule extends PwcWebModule {
         this.webContainer = webContainer;
         this.servletProbeProvider = webContainer.getServletProbeProvider();
         this.sessionProbeProvider = webContainer.getSessionProbeProvider();
+        this.webModuleProbeProvider =
+            webContainer.getWebModuleProbeProvider();
 
         this.adHocPaths = new HashMap<String,AdHocServletInfo>();
         this.adHocSubtrees = new HashMap<String,AdHocServletInfo>();
@@ -376,6 +380,9 @@ public class WebModule extends PwcWebModule {
 
         // Register monitoring mbeans, which delegate to the Tomcat mbeans
         webContainer.enableMonitoring(this, vsId);
+
+        webModuleStartedEvent();
+
         hasStarted = true;
     }
 
@@ -389,6 +396,7 @@ public class WebModule extends PwcWebModule {
         // aborted start(), no monitoring mbeans will have been registered
         if (hasStarted) {
             webContainer.disableMonitoring(this, vsId);
+            webModuleStoppedEvent();
             hasStarted = false;
         }
 
@@ -1409,6 +1417,20 @@ public class WebModule extends PwcWebModule {
     public void sessionPassivatedEndEvent(HttpSession session) {
         sessionProbeProvider.sessionPassivatedEndEvent(session, name, vsId);
     }
+
+
+    /*
+     * Web module lifecycle related probe events
+     */
+
+    public void webModuleStartedEvent() {
+        webModuleProbeProvider.webModuleStartedEvent(name, vsId);
+    }
+
+    public void webModuleStoppedEvent() {
+        webModuleProbeProvider.webModuleStoppedEvent(name, vsId);
+    }
+
 }
 
 

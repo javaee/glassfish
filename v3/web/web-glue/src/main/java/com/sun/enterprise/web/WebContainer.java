@@ -140,6 +140,7 @@ import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
+import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 
 // Begin EE: 4927099 load only associated applications
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -199,6 +200,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private static final String DOL_DEPLOYMENT =
             "com.sun.enterprise.web.deployment.backend";
+
+    private static final WebModuleProbeProvider NO_OP_WEBMODULE_PROBE_PROVIDER =
+        (WebModuleProbeProvider) Proxy.newProxyInstance(
+            WebModuleProbeProvider.class.getClassLoader(),
+            new Class[] { WebModuleProbeProvider.class },
+            new NoopInvocationHandler());
 
     private static final ServletProbeProvider NO_OP_SERVLET_PROBE_PROVIDER =
         (ServletProbeProvider) Proxy.newProxyInstance(
@@ -267,6 +274,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     
     @Inject
     RequestDispatcher dispatcher;
+
     @Inject
     GrizzlyService grizzlyService;
     
@@ -435,6 +443,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected RequestProbeProvider requestProbeProvider = null;
     protected ServletProbeProvider servletProbeProvider = null;
     protected SessionProbeProvider sessionProbeProvider = null;
+    protected WebModuleProbeProvider webModuleProbeProvider = null;
 
 
     /**
@@ -732,6 +741,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public RequestProbeProvider getRequestProbeProvider() {
         return requestProbeProvider;
+    }
+
+
+    /**
+     * Gets the probe provider for web module related events.
+     */
+    public WebModuleProbeProvider getWebModuleProbeProvider() {
+        return webModuleProbeProvider;
     }
 
 
@@ -4393,6 +4410,27 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * all http connectors.
      */
     private void createProbeProviders() {
+
+        try {
+            webModuleProbeProvider = probeProviderFactory.getProbeProvider(
+                "web", "webmodule", null, WebModuleProbeProvider.class);
+            if (webModuleProbeProvider == null) {
+                // Should never happen
+                _logger.log(Level.WARNING,
+                    "Unable to create probe provider for interface " +
+                    WebModuleProbeProvider.class.getName() +
+                    ", using no-op provider");
+            }
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE,
+                        "Unable to create probe provider for interface " +
+                        WebModuleProbeProvider.class.getName() +
+                        ", using no-op provider",
+                        e);
+        }
+        if (webModuleProbeProvider == null) {
+            webModuleProbeProvider = NO_OP_WEBMODULE_PROBE_PROVIDER;
+        }
 
         try {
             servletProbeProvider = probeProviderFactory.getProbeProvider(
