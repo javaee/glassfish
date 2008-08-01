@@ -229,8 +229,9 @@ public class Habitat {
     }
 
     /**
-     * Gets all the habitats registered under the given {@link Contract}.
-     *
+     * Gets all the inhabitants registered under the given {@link Contract}.
+     * This is an example of heterogeneous type-safe container.
+     * 
      * @return
      *      can be empty but never null.
      */

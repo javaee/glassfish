@@ -110,6 +110,19 @@ public @interface Attribute {
      */
     boolean variableExpansion() default true;
 
-    // TODO
+    /** Specifies the default value of the attribute.
+     * @return default value as String
+     */
     String defaultValue() default "\u0000";
+        
+    /** Specifies the data type. It should be the fully qualified name of
+     *  the class that identifies the real data type. For attributes that
+     *  are of type defined by basic Java primitives (or wrappers), there is
+     *  no need to specify this field. The default value is derived from
+     *  method/field declaration.
+     * @see {@link DataType}
+     * @return String specifying the name of the data type for the values of this
+     * attribute
+     */
+    String dataType() default "as-declared";
 }
