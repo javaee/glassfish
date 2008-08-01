@@ -45,6 +45,10 @@ import javax.management.MBeanException;
 
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.ext.realm.RealmsMgr;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.config.ConfigConfig;
+import com.sun.appserv.management.config.AuthRealmConfig;
+import com.sun.appserv.management.config.PropertyConfig;
 
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
@@ -52,6 +56,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.User;
 
 
+import com.sun.enterprise.security.auth.realm.file.FileRealm;
 
 
 /**
@@ -232,7 +237,86 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         throw new RuntimeException(e);
         }
     }
+    
+    private static void debug( final String s ) { System.out.println("##### " + s); }
+    
+    private static final String ADMIN_REALM = "admin-realm";
+    private static final String ANONYMOUS_USER = "anonymous";
+    private static final String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
+            
+    public boolean getAnonymousLogin() {
+        final DomainRoot domainRoot = getDomainRoot();
+        
+        final Map<String,ConfigConfig> configs = domainRoot.getDomainConfig().getConfigsConfig().getConfigConfigMap();
+
+        // find the ADMIN_REALM
+        AuthRealmConfig adminFileAuthRealm = null;
+        for( final ConfigConfig config : configs.values() )
+        {
+            for( final AuthRealmConfig auth : config.getSecurityServiceConfig().getAuthRealmConfigMap().values() )
+            {
+                if ( auth.getName().equals(ADMIN_REALM) )
+                {
+                    adminFileAuthRealm = auth;
+                    break;
+                }
+            } 
+        }
+        if (adminFileAuthRealm == null) {
+            // There must always be an admin realm
+            throw new IllegalStateException( "Cannot find admin realm" );
+        }
+
+        // Get FileRealm class name
+        final String fileRealmClassName = adminFileAuthRealm.getClassname();
+        if (fileRealmClassName != null && ! fileRealmClassName.equals(FILE_REALM_CLASSNAME)) {
+            // This condition can arise if admin-realm is not a File realm. Then the API to extract
+            // the anonymous user should be integrated for the logic below this line of code. for now,
+            // we treat this as an error and instead of throwing exception return false;
+            return false;
+        }
+
+        final Map<String,PropertyConfig>  props = adminFileAuthRealm.getPropertyConfigMap();
+        final PropertyConfig keyfileProp = props.get("file");
+        if ( keyfileProp == null ) {
+            throw new IllegalStateException( "Cannot find property 'file'" );
+        }
+        //System.out.println( "############### keyFileProp: " + keyfileProp.getName() + " = " + keyfileProp.getValue() );
+        final String keyFile = keyfileProp.resolveAttribute( "Value" );
+        //System.out.println( "############### keyFile: " + keyfileProp.getValue() + " ===> " + keyFile);
+        if (keyFile == null) {
+            throw new IllegalStateException( "Cannot find key file" );
+        }
+        
+        //System.out.println( "############### keyFile: " + keyFile);
+
+        /* doesn't work! 
+        final String[] usernames = getUserNames(adminFileAuthRealm.getName());
+        return usernames.length == 1 && usernames[0].equals(ANONYMOUS_USER);
+        */
+        FileRealm fr = null;
+        try {
+            fr = new FileRealm(keyFile);
+        } catch( final Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Check if the realm has only one user named annonymous.
+        // Head off to the landing page if so; else to the regular
+        // login page.
+        try {
+            final List<String>  usernames = toList( fr.getUserNames() );
+            return usernames.size() == 1  && usernames.get(0).equals(ANONYMOUS_USER);
+        } catch(final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+
+
+
+
+
 
 
 

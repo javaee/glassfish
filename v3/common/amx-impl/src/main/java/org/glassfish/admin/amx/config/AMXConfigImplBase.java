@@ -43,7 +43,7 @@ import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.helper.RefHelper;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.*;
-import com.sun.appserv.management.helper.AttributeResolverHelper;
+import org.glassfish.admin.amx.util.AttributeResolverHelper;
 
 import org.glassfish.admin.amx.dotted.V3Pathname;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
@@ -282,7 +282,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
     {
         return getSelf(SystemPropertiesAccess.class).getSystemPropertyConfigMap();
     }
-    
+        
     /**
         Resolve a template String.  See {@link AttributeResolver} for details.
      */
@@ -294,41 +294,7 @@ cdebug( "asAMXAttributeName: no match: " + name );
             return varString;
         }
         
-        String result = null;
-        final String varName = AttributeResolverHelper.extract(varString);
-        
-        // first look for a system property
-        final Object value = System.getProperty( varName );
-        if ( value != null )
-        {
-            result = "" + value;
-        }
-        else
-        {
-            // Look successively at Containers for SystemProperties
-            AMX amx = getSelf(AMXConfig.class);
-            while ( amx != null && amx instanceof AMXConfig && result == null )
-            {
-                if ( amx instanceof SystemPropertiesAccess )
-                {
-                    final Map<String,SystemPropertyConfig> props = ((SystemPropertiesAccess)amx).getSystemPropertyConfigMap();
-                    
-                    // look by calling getName().  We can't just look in the map, because the ObjectName
-                    // might not allow some characters that might be allowed in the name field
-                    for( final SystemPropertyConfig prop : props.values() )
-                    {
-                        if ( prop.getName().equals( varName ) )
-                        {
-                            result = prop.getValue();
-                            break;
-                        }
-                    }
-                }
-                // continue up the containment hierarchy until we run out of config objects
-                amx = amx.getContainer();
-            }
-        }
-        return result;
+        return new AttributeResolverHelper(this).resolve(varString); 
     }
     
         public String
@@ -339,8 +305,9 @@ cdebug( "asAMXAttributeName: no match: " + name );
             final Object value = getAttribute(attrName);
             return resolveAttributeValue( value == null ? null : "" + value );
         }
-        catch( AttributeNotFoundException e )
+        catch( final AttributeNotFoundException e )
         {
+            System.out.println( "resolveAttribute: Attribute not found: " + attrName );
             return null;
         }
     }

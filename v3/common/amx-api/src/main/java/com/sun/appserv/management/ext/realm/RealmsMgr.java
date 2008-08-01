@@ -69,6 +69,9 @@ public interface RealmsMgr extends AMX, Utility, Singleton
 
     /** @return true if the realm implementation support User Management (add,remove,update user) */
     public boolean supportsUserManagement(final String realmName);
+    
+    /** @return true if anonymous login is in use */
+    public boolean getAnonymousLogin();
 }
 
 

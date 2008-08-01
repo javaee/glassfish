@@ -33,9 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.helper;
+package org.glassfish.admin.amx.util;
 
-import com.sun.appserv.management.config.AttributeResolver;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.config.SystemPropertyConfig;
+import com.sun.appserv.management.config.SystemPropertiesAccess;
+
+import org.jvnet.hk2.config.TranslationException;
+import org.jvnet.hk2.config.VariableResolver;
+
+import java.util.Map;
+
 
 /**
 	Helper to resolve attribute configuration values eg ${com.sun.aas.installRoot} once they have
@@ -58,18 +67,57 @@ import com.sun.appserv.management.config.AttributeResolver;
     The value can also be pre-resolved by calling {@link AttributeResolver#resolveAttribute}
     @see com.sun.appserv.management.config.AttributeResolver
  */
-public class AttributeResolverHelper
+public class AttributeResolverHelper extends VariableResolver
 {
-    private final AttributeResolver mResolver;
+    private static void debug( final String s ) { System.out.println("##### " + s); }
     
-    /**
-        An AttributeResolver will usually be an {@link com.sun.appserv.management.config.AMXConfig},
-        but could be another implementation if desired.
-     */
-    public AttributeResolverHelper( final AttributeResolver resolver )
+    private final AMXConfig mTarget;
+    
+    public AttributeResolverHelper( final AMXConfig amx)
     {
-        mResolver = resolver;
+        mTarget = amx;
     }
+    
+        protected String
+    getVariableValue(final String varName) throws TranslationException
+    {
+        String result = varName;
+        
+        // first look for a system property
+        final Object value = System.getProperty( varName );
+        if ( value != null )
+        {
+            result = "" + value;
+        }
+        else
+        {
+            // Look successively at Containers for SystemProperties
+            AMX amx = mTarget;
+            while ( amx != null && (amx instanceof AMXConfig) && result == null )
+            {
+                if ( amx instanceof SystemPropertiesAccess )
+                {
+                    final Map<String,SystemPropertyConfig> props = ((SystemPropertiesAccess)amx).getSystemPropertyConfigMap();
+                    
+                    // look by calling getName().  We can't just look in the map, because the ObjectName
+                    // might not allow some characters that might be allowed in the name field
+                    for( final SystemPropertyConfig prop : props.values() )
+                    {
+                        if ( prop.getName().equals( varName ) )
+                        {
+                            result = prop.getValue();
+                            break;
+                        }
+                    }
+                }
+                // continue up the containment hierarchy until we run out of config objects
+                amx = amx.getContainer();
+            }
+        }
+        
+        return result;
+    }
+    
     
     /**
         Return true if the string is a template string of the for ${...}
@@ -77,83 +125,21 @@ public class AttributeResolverHelper
         public static boolean
     needsResolving( final String value )
     {
-        if ( value == null ) return false;
-        
-        final String temp = value.trim();
-        
-        return temp.startsWith( "${" ) && temp.endsWith( "}" );
+        return value != null && value.indexOf( "${" ) >= 0;
     }
     
-    /**
-        Extract the variable name.
-     */
-        public static String
-    extract( final String value )
-    {
-        // 2 is length of "${" and 1 is for the "}"
-        return needsResolving(value) ? value.trim().substring(2, value.length() - 1) : value;
-    }
-    
+            
     /**
         Resolve the String using the target resolver (MBean).
      */
         public String
-    resolve( final String in )
+    resolve( final String in ) throws TranslationException
     {
-        return resolve( mResolver, in );
-    }
-    
-    /**
-        Resolve the String using the specified resolver.
-     */
-        public static String
-    resolve( final AttributeResolver resolver, final String value )
-    {
-        return needsResolving(value) ? resolver.resolveAttributeValue(value) : value;
-    }
-    
-    /**
-        Resolve the String into a boolean value using the target resolver (MBean).
-     */
-        public boolean
-    resolveBoolean(final String value )
-    {   
-        return resolveBoolean( mResolver, value );
-    }
-    
-    /**
-        Resolve the String into a boolean value using the specified resolver.
-     */
-        public static boolean
-    resolveBoolean(
-        final AttributeResolver resolver,
-        final String           value )
-    {
-        final String resolved = resolve( resolver, value );
+        final String result = translate(in);
         
-        return Boolean.parseBoolean( resolved );
-    }
-
-    /**
-        Resolve the String into an int value using the target resolver (MBean).
-     */
-        public int
-    resolveInt(final String value )
-    {   
-        return resolveInt( mResolver, value );
-    }
-    
-    /**
-        Resolve the String into an int value using the specified resolver.
-     */
-        public static int
-    resolveInt(
-        final AttributeResolver resolver,
-        final String           value )
-    {
-        final String resolved = resolve( resolver, value );
+        debug( "AttributeResolverHelper.resolve(): " + in + " ===> " + result );
         
-        return Integer.parseInt( resolved );
+        return result;
     }
 }
 
