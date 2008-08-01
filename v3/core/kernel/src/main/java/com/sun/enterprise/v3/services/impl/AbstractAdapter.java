@@ -30,9 +30,6 @@ import com.sun.grizzly.util.buf.ByteChunk;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.StringTokenizer;
 
 /**
  * @author Jerome Dochez

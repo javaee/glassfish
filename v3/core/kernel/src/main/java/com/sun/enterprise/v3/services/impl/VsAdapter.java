@@ -93,6 +93,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
      * Returns a meaningful string
      * @return a meaningful String
      */
+    @Override
     public String toString() {
         return "Virtual Server " + vs.getId() + " adapter ";
     }

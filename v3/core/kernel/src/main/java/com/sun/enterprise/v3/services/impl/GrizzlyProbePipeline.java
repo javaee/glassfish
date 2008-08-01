@@ -59,6 +59,7 @@ public class GrizzlyProbePipeline extends LinkedListPipeline {
     }
 
 
+    @Override
     protected void increaseWorkerThread(int increment, boolean startThread) {
         super.increaseWorkerThread(increment, startThread);
         // FIXME: Remove this null check

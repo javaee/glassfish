@@ -46,6 +46,7 @@ public class ContainerStaticHandler extends StaticHandler {
      * Intercept the request and decide if we cache the static resource. If the
      * static resource is already cached, return it.
      */
+    @Override
     public int handle(Request req, int handlerCode) throws IOException {
         if (fileCache == null) {
             return Interceptor.CONTINUE;

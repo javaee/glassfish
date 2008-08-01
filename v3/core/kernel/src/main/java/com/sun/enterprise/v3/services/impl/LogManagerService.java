@@ -29,7 +29,6 @@ import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
 import org.glassfish.internal.api.Init;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.api.branding.Branding;
 import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -104,8 +103,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 // I need to reset the formatter for the existing console handlers
                 Enumeration<String> loggerNames = logMgr.getLoggerNames();
                 while(loggerNames.hasMoreElements()) {
-                    String loggerName = loggerNames.nextElement();
-                    Logger logger = logMgr.getLogger(loggerName);
                     for (Handler handler : logger.getHandlers()) {
                         if (handler.getFormatter() instanceof UniformLogFormatter) {
                             ((UniformLogFormatter) handler.getFormatter()).setDelegate(agentDelegate);

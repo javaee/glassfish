@@ -25,7 +25,6 @@ package com.sun.enterprise.v3.services.impl;
 
 
 import java.text.MessageFormat;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;

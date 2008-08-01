@@ -23,7 +23,6 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.ProtocolFilter;

@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -26,7 +26,6 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.util.Result;
-import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -45,58 +44,57 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.container.EndpointRegistrationException;
 
 import java.util.logging.Logger;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 /**
- * The Grizzly Service is responsible for starting Grizzly Port Unification 
+ * The Grizzly Service is responsible for starting Grizzly Port Unification
  * mechanism. It is also providing a runtime service where other
- * services (like admin for instance) can register endpoints adapter to 
- * particular context root. 
+ * services (like admin for instance) can register endpoints adapter to
+ * particular context root.
  *
  * @author Jerome Dochez
  * @author Jeanfrancois Arcand
  */
 public class GrizzlyProxy implements NetworkProxy {
-    
-    
+
+
     protected GrizzlyServiceListener grizzlyListener;
 
-    
+
     final Logger logger;
-    
-    
+
+
     final HttpListener httpListener;
-    
-    
+
+
     final HttpService httpService;
 
-    
+
     private EndpointMapper<Adapter> endPointMapper;
-    
-        
+
+
     private VirtualHostMapper vsMapper;
-    
+
 
     private int portNumber;
 
-    
+
     //TODO: This must be configurable.
-    private final static boolean isWebProfile = 
+    private final static boolean isWebProfile =
             Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
-    
-    
+
+
     private static List<String> nvVsMapper = new ArrayList<String>();
-    
-    
+
+
     // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
     // WebContainer already supports it.
     static{
         nvVsMapper.add("org.apache.catalina.connector.CoyoteAdapter");
         nvVsMapper.add(com.sun.enterprise.v3.admin.AdminAdapter.class.getName());
     }
-    
-    
+
+
     /**
      * TODO: We must configure Grizzly using the HttpService element,
      * <strong>not HttpListener only</strong>.
@@ -121,11 +119,11 @@ public class GrizzlyProxy implements NetworkProxy {
         } catch(java.lang.NumberFormatException e) {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
-        
-        configureGrizzly(portNumber, grizzlyService);  
+
+        configureGrizzly(portNumber, grizzlyService);
     }
 
-    
+
     /**
      * Create a <code>GrizzlyServiceListener</code> based on a HttpService
      * configuration object.
@@ -133,40 +131,40 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     private void configureGrizzly(int port, GrizzlyService grizzlyService) {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);
-        
+
         GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(
                 grizzlyListener, httpService, httpListener, port,
                 grizzlyService.getController());
-        
+
         endPointMapper = grizzlyListener.configureEndpointMapper(isWebProfile);
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
         Mapper mapper = new V3Mapper(logger);
         mapper.setPort(port);
         geh.getContainerMapper().setMapper(mapper);
         geh.getContainerMapper().configureMapper();
-        
-        Inhabitant<Mapper> onePortMapper = 
+
+        Inhabitant<Mapper> onePortMapper =
                 new ExistingSingletonInhabitant<Mapper>(mapper);
-        
+
         grizzlyService.getHabitat().addIndex(
             onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
             String.valueOf(port));
     }
-    
-  
+
+
     /**
      * Stops the Grizzly service.
      */
     public void stop() {
         grizzlyListener.stop();
     }
-    
-    
+
+
     @Override
     public String toString() {
         return "Grizzly on port " + httpListener.getPort();
     }
-    
+
 
     /*
      * Registers a new endpoint (adapter implementation) for a particular
@@ -178,10 +176,10 @@ public class GrizzlyProxy implements NetworkProxy {
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
                                  Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
-        
+
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
-        }        
+        }
         // THis is a hack, but we don't want to add virtual server support
         // for the Web Container as it already supports it.
         if (!nvVsMapper.contains(endpointAdapter.getClass().getName())) {
@@ -192,7 +190,7 @@ public class GrizzlyProxy implements NetworkProxy {
         endPointMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
     }
 
-    
+
     /**
      * Removes the contex-root from our list of endpoints.
      */
@@ -201,7 +199,7 @@ public class GrizzlyProxy implements NetworkProxy {
         vsMapper.unregisterEndpoint(contextRoot, app);
     }
 
-    
+
     /**
      * Returns the context root for this adapter.
      * @return the context root
@@ -210,7 +208,7 @@ public class GrizzlyProxy implements NetworkProxy {
         return "/";
     }
 
-    
+
     public Future<Result<Thread>> start() {
         final GrizzlyFuture future = new GrizzlyFuture();
         final Thread thread = new Thread() {
@@ -234,12 +232,12 @@ public class GrizzlyProxy implements NetworkProxy {
         return future;
     }
 
-    
+
     public void setVsMapper(VirtualHostMapper vsMapper) {
         this.vsMapper = vsMapper;
     }
 
-    
+
     public VirtualHostMapper getVsMapper() {
         return vsMapper;
     }
