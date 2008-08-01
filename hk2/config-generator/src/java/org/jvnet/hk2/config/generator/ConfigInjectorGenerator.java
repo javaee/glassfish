@@ -94,7 +94,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.jar.Pack200;
 
 /**
  * Generates {@link ConfigInjector} implementations for {@link Configured} objects
@@ -793,6 +792,15 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 metadata.add(xmlTokenName(),isRequired()?"required":"optional");
                 if (this.hasDefault())
                     metadata.add(xmlTokenName(), "default:" + a.defaultValue());
+                String annotated   = a.dataType();
+                String defaultType = "as-declared";
+                if (defaultType.equals(annotated)) { //attribute annotated as "as-declared" (in method decl)
+                    Property.Method m = (Property.Method)p; // Method needn't be Property's inner class
+                    String typeReturnedByMethodDecl = m.decl.getReturnType().toString();
+                    metadata.add(xmlTokenName(), "datatype:" + typeReturnedByMethodDecl);
+                } else {
+                    metadata.add(xmlTokenName(), "datatype:" + annotated);
+                }
                 super.generate();
             }
 

@@ -442,8 +442,11 @@ public final class ConfigModel {
 
     static class AttributeLeaf extends Leaf {
 
-        AttributeLeaf(String xmlName) {
+        public final String dataType;
+        
+        AttributeLeaf(String xmlName, String dataType) {
             super(xmlName);
+            this.dataType = dataType;
         }
 
         /**
@@ -475,9 +478,9 @@ public final class ConfigModel {
     }
 
     static final class AttributeLeafWithDefaultValue extends AttributeLeaf {
-        String dv;
-        AttributeLeafWithDefaultValue(String xmlName, String dv) {
-            super(xmlName);
+        public final String dv;
+        AttributeLeafWithDefaultValue(String xmlName, String dataType, String dv) {
+            super(xmlName, dataType);
             this.dv = dv;
         }
         @Override
@@ -531,11 +534,14 @@ public final class ConfigModel {
             if(name.startsWith("@")) {
                 // TODO: handle value.equals("optional") and value.equals("required") distinctively.
                 String attributeName = name.substring(1);
-                String dv = getDefaultFromMetaData(e.getValue());
+                String dv = getMetadataFieldKeyedAs(e.getValue(), "default:");  //default value
+                String dt = getMetadataFieldKeyedAs(e.getValue(), "datatype:"); //type
+                AttributeLeaf leaf = null;
                 if (dv == null)
-                    attributes.put(attributeName, new AttributeLeaf(attributeName));
+                    leaf = new AttributeLeaf(attributeName, dt);
                 else
-                    attributes.put(attributeName, new AttributeLeafWithDefaultValue(attributeName, dv));
+                    leaf = new AttributeLeafWithDefaultValue(attributeName, dt, dv);
+                attributes.put(attributeName, leaf);
             } else
             if(name.startsWith("<")) {
                 String elementName = name.substring(1, name.length() - 1);
@@ -622,16 +628,16 @@ public final class ConfigModel {
             return new SingleNode(model,elementName);
     }
     
-    private static String getDefaultFromMetaData(List<String> strings) {
-        if (strings == null || strings.size() == 0)
+    private static String getMetadataFieldKeyedAs(List<String> strings, String name) {
+        if (strings == null || strings.size() == 0 || name == null)
             return ( null );
-        String dv = null, PREFIX="default:";
+        String dv = null;
         for (String s : strings) {
-            if (s.startsWith(PREFIX)) {
-                dv = s.substring(PREFIX.length());
+            if (s.startsWith(name)) {
+                dv = s.substring(name.length());
                 break;
             }
         }
-        return ( dv );
+        return ( dv );        
     }
 }

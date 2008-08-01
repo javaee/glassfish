@@ -61,6 +61,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
+    Map<String, DataType> validators = new HashMap<String, DataType>();
 
     public WriteableView(ConfigBeanProxy readView) {
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
@@ -108,7 +109,12 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         if (currentTx==null) {
             throw new IllegalStateException("Not part of a transation");
         }
-
+        try {
+            handleValidation(property, newValue);
+        } catch(Exception v) {
+            bean.getLock().unlock();
+            throw new RuntimeException(v);
+        }
         // setter
         Object oldValue = bean.getter(property, t);
         if (newValue instanceof ConfigBeanProxy) {
@@ -405,4 +411,36 @@ private class ProtectedList extends AbstractList {
 
 }
 
+    private void handleValidation(ConfigModel.Property property, Object value) 
+        throws ValidationException { //TODO
+        if (property instanceof ConfigModel.AttributeLeaf) { //validate only attributes for now
+            ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
+            DataType validator = getValidatorFor(al.dataType);
+            if (validator != null)
+                validator.validate(value.toString());
+        }
+    }
+    
+    private DataType getValidatorFor(String dataType) {
+        synchronized(validators) {
+            DataType validator = validators.get(dataType);
+            if (validator != null)
+                return validator;
+
+            if (PRIMS.contains(dataType)) {
+                validators.put(dataType, new PrimitiveDataType(dataType));
+            } else {
+                try {
+                    Class<?> c = Class.forName(dataType);
+                    DataType d = (DataType) c.newInstance();
+                    validators.put(dataType, d);
+                } catch(Exception e) {
+                    //ignore?
+                }
+            }
+            return ( validators.get(dataType) );
+        }
+    }
+    /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(new String[] 
+    {"boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"}));
 }
