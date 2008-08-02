@@ -50,6 +50,7 @@
   <name>API for embedded GFv3</name>
 
   <build>
+    <defaultGoal>install</defaultGoal>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
