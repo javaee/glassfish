@@ -42,7 +42,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.config.support.ConfigurationPersistence;
-import org.glassfish.embed.EmbeddedServer;
+import org.glassfish.embed.AppServer;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.server.DomainXml;
@@ -56,7 +56,7 @@ import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
  */
 public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersistence {
     @Inject
-    protected EmbeddedServer server;
+    protected AppServer server;
  
     public EmbeddedDomainXml() {
     }

@@ -8,7 +8,7 @@ import com.sun.enterprise.web.WebDeployer;
 
 import java.net.URL;
 import java.io.IOException;
-import org.glassfish.embed.EmbeddedServer;
+import org.glassfish.embed.AppServer;
 import org.jvnet.hk2.annotations.Inject;
 
 
@@ -18,7 +18,7 @@ import org.jvnet.hk2.annotations.Inject;
 public class EmbeddedWebDeployer extends WebDeployer {
 
     @Inject
-    protected EmbeddedServer server;
+    protected AppServer server;
 
      protected URL getDefaultWebXML() throws IOException {
         URL url = server.getDefaultWebXml();

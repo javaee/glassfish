@@ -114,7 +114,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-public class EmbeddedServer {
+public class AppServer {
     /**
      * As of April 2008, several key configurations like HTTP listener
      * creation cannot be done once GFv3 starts running.
@@ -145,7 +145,7 @@ public class EmbeddedServer {
     protected /*almost final*/ ArchiveFactory archiveFactory;
     protected /*almost  final*/ ServerEnvironmentImpl env;
     
-    protected EmbeddedServer(URL domainXmlUrl, boolean start) throws EmbeddedException {
+    protected AppServer(URL domainXmlUrl, boolean start) throws EmbeddedException {
         this.domainXmlUrl = domainXmlUrl;
         if (this.domainXmlUrl == null) { // if not defined get the default one
             this.domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
@@ -165,7 +165,7 @@ public class EmbeddedServer {
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
      */
-    public EmbeddedServer(URL domainXmlUrl) throws EmbeddedException {
+    public AppServer(URL domainXmlUrl) throws EmbeddedException {
         this (domainXmlUrl, true);
     }
 
@@ -173,7 +173,7 @@ public class EmbeddedServer {
      * Starts GlassFish v3 with minimalistic configuration that involves
      * single HTTP listener listening on the given port.
      */
-    public EmbeddedServer(int httpPort) throws EmbeddedException {
+    public AppServer(int httpPort) throws EmbeddedException {
         this(null, false);
         try {
             domainXml = parseDefaultDomainXml();
@@ -228,7 +228,7 @@ public class EmbeddedServer {
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
         // (GlassFish server may be extended by the user)
-        parser.habitat.add(new ExistingSingletonInhabitant<EmbeddedServer>(EmbeddedServer.class, this));
+        parser.habitat.add(new ExistingSingletonInhabitant<AppServer>(AppServer.class, this));
         // register scattered web handler before normal WarHandler kicks in.
         Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
         parser.habitat.add(swh);
@@ -445,7 +445,7 @@ public class EmbeddedServer {
      *      If the given archive reports {@link IOException} from one of its methods,
      *      that exception will be passed through.
      */
-    public EmbeddedApplication deploy(File archive) throws IOException {
+    public App deploy(File archive) throws IOException {
         start();
         ReadableArchive a = archiveFactory.openArchive(archive);
 
@@ -485,7 +485,7 @@ public class EmbeddedServer {
      *      If the given archive reports {@link IOException} from one of its methods,
      *      that exception will be passed through.
      */
-    public EmbeddedApplication deploy(ReadableArchive a) throws IOException {
+    public App deploy(ReadableArchive a) throws IOException {
         return deploy(a, null);
     }
 
@@ -501,7 +501,7 @@ public class EmbeddedServer {
      * @return
      * @throws IOException
      */
-    public EmbeddedApplication deploy(ReadableArchive a, Properties params) throws IOException {
+    public App deploy(ReadableArchive a, Properties params) throws IOException {
         start();
         
         ArchiveHandler h = appLife.getArchiveHandler(a);
@@ -524,7 +524,7 @@ public class EmbeddedServer {
         ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
         r.check();
 
-        return new EmbeddedApplication(this,appInfo,deploymentContext);
+        return new App(this,appInfo,deploymentContext);
     }
 
     
@@ -536,7 +536,7 @@ public class EmbeddedServer {
      * @param contextRoot the context root to use
      * @param virtualServer the virtual server ID
      */
-    public EmbeddedApplication deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
+    public App deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
         Properties params = new Properties();
         if (virtualServer == null) {
             virtualServer = "server";
@@ -555,7 +555,7 @@ public class EmbeddedServer {
      * @param contextRoot the context root to use
      * @throws IOException
      */
-    public EmbeddedApplication deployWar(ScatteredWar war, String contextRoot) throws IOException {
+    public App deployWar(ScatteredWar war, String contextRoot) throws IOException {
         return deployWar(war, contextRoot, null);
     }
 
@@ -565,7 +565,7 @@ public class EmbeddedServer {
      *
      * @param war the scattered war
      */
-    public EmbeddedApplication deployWar(ScatteredWar war) throws IOException {
+    public App deployWar(ScatteredWar war) throws IOException {
         return deployWar(war, null, null);
     }
     

@@ -37,28 +37,39 @@
 
 package org.glassfish.embed;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.embed.impl.SilentActionReport;
 
 /**
- * HTTP Listener listens on a TCP port for incoming HTTP connection
- * and delivers requests to {@link GFVirtualServer}.
+ * An application deployed on GlassFish.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class EmbeddedHttpListener {
-    protected final HttpListener core;
-    /**
-     * Work around until we get live {@link HttpListener} addition working.
-     */
-    private final String id;
+public final class App {
+    private final AppServer owner;
+    private final ApplicationInfo app;
+    private final DeploymentContext deploymentContext;
 
-    public EmbeddedHttpListener(String id, HttpListener core) {
-        this.core = core;
-        this.id = id;
+    public App(AppServer owner, ApplicationInfo app, DeploymentContext deploymentContext) {
+        this.owner = owner;
+        this.app = app;
+        this.deploymentContext = deploymentContext;
     }
 
-    public String getId() {
-//        return core.getId();
-        return id;
+    /**
+     * Which Server is this application deployed on?
+     */
+    public AppServer getOwner() {
+        return owner;
+    }
+
+    /**
+     * Undeploys this application.
+     */
+    public void undeploy() {
+        SilentActionReport r = new SilentActionReport();
+        owner.appLife.undeploy(app.getName(),deploymentContext, r);
+        r.check();
     }
 }

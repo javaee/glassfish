@@ -54,9 +54,9 @@ import static java.util.logging.Level.INFO;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        EmbeddedServer.setLogLevel(INFO);
+        AppServer.setLogLevel(INFO);
 
-         EmbeddedServer glassfish = new EmbeddedServer(9999);
+         AppServer glassfish = new AppServer(9999);
         //if you want to use your own domain.xml
         //Server glassfish = new Server(new File("domain.xml").toURI().toURL());
         //if you want to use your own default-web.xml file
@@ -79,7 +79,7 @@ System.out.println("YYYYYYYY");
                     new File(killerApp,"target/classes").toURI().toURL())
             );
             //GFApplication app = glassfish.deploy(new File("simple.war"));
-            EmbeddedApplication app = glassfish.deploy(war);
+            App app = glassfish.deploy(war);
             // if you want to use another context root for example "/"
             // GFApplication app = glassfish.deployWar(war, "/");
             // if you want to use the default context root but another virtual server
