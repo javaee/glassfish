@@ -75,7 +75,7 @@ import com.sun.enterprise.v3.server.ProgressTracker;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ApplicationLifecycle2 extends ApplicationLifecycle {
+public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
 
     // workaround -> container registry not visible from super class
     @Inject protected ContainerRegistry creg;

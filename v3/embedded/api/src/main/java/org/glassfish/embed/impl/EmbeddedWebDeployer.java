@@ -15,7 +15,7 @@ import org.jvnet.hk2.annotations.Inject;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class WebDeployer2 extends WebDeployer {
+public class EmbeddedWebDeployer extends WebDeployer {
 
     @Inject
     protected EmbeddedServer server;

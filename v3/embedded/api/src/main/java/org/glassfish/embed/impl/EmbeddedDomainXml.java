@@ -54,11 +54,11 @@ import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
  * 
  * @author Kohsuke Kawaguchi
  */
-public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
+public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersistence {
     @Inject
     protected EmbeddedServer server;
  
-    public DomainXml2() {
+    public EmbeddedDomainXml() {
     }
 
     @Override

@@ -44,8 +44,8 @@ import java.io.File;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class ServerEnvironment2 extends ServerEnvironmentImpl {
-    public ServerEnvironment2() {
+public class EmbeddedServerEnvironment extends ServerEnvironmentImpl {
+    public EmbeddedServerEnvironment() {
         // TODO: we really don't want to have domainRoot, so it should be eventually just null or something
         super(new File("."));
     }
