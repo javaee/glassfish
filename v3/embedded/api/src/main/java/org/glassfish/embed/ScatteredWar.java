@@ -39,15 +39,9 @@ package org.glassfish.embed;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import java.util.jar.Manifest;
 
 /**
@@ -56,26 +50,7 @@ import java.util.jar.Manifest;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ScatteredWar implements ReadableArchive {
-    /**
-     * Static resources, JSP, etc.
-     */
-    public final File resources;
-
-    /**
-     * Location of <tt>web.xml</tt>
-     */
-    public final File webXml;
-
-    /**
-     * Classes and jar files that constitute the web app.
-     */
-    public final Collection<URL> classes;
-
-    /**
-     * Name of the web app.
-     */
-    public final String name;
+public class ScatteredWar extends ReadableArchiveAdapter {
 
     /**
      *
@@ -91,8 +66,17 @@ public class ScatteredWar implements ReadableArchive {
         if(webXml==null)
             webXml = new File(resources,"WEB-INF/web.xml");
         this.webXml = webXml;
-        this.classes = classes;
+        this.classpath = classes;
     }
+
+    public Iterable<URL> getClassPath() {
+        return Collections.unmodifiableCollection(classpath);
+    }
+
+    public File getResourcesDir() {
+        return resources;
+    }
+
 
     /**
      * Maps the resource within the war into physical file.
@@ -123,49 +107,10 @@ public class ScatteredWar implements ReadableArchive {
         return getFile(name).exists();
     }
 
-    public long getEntrySize(String name) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    public void open(URI uri) throws IOException {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    public ReadableArchive getSubArchive(String name) throws IOException {
-        return null;
-    }
-
-    public boolean exists() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean delete() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean renameTo(String name) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    public void close() throws IOException {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
     public Enumeration<String> entries() {
         // TODO: abstraction breakage. We need file-level abstraction for archive
         // and then more structured abstraction.
         return EMPTY_ENUMERATOR;
-    }
-
-    public Enumeration entries(String prefix) {
-        // TODO
-        throw new UnsupportedOperationException();
     }
 
     public Manifest getManifest() throws IOException {
@@ -180,14 +125,20 @@ public class ScatteredWar implements ReadableArchive {
 //        return URI.create("scattered-war:"+resources.getPath());
     }
 
-    public long getArchiveSize() throws SecurityException {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
     public String getName() {
         return name;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    
+    private final File resources;       // Static resources, JSP, etc.
+    private final File webXml;          // Location of web.xml
+    private final Collection<URL> classpath;  // Classes and jar files
+    private final String name;
     private static final Enumeration EMPTY_ENUMERATOR = new Vector().elements();
+
+
+    public Enumeration<String> entries(String arg0) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

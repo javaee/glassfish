@@ -66,9 +66,9 @@ public class ScatteredWarHandler extends AbstractArchiveHandler implements Archi
         WebappClassLoader cloader = new WebappClassLoader(parent);
 
         FileDirContext r = new FileDirContext();
-        r.setDocBase(archive.resources.getAbsolutePath());
+        r.setDocBase(archive.getResourcesDir().getAbsolutePath());
         cloader.setResources(r);
-        for (URL url : archive.classes) {
+        for (URL url : archive.getClassPath()) {
             cloader.addRepository(url.toExternalForm());
         }
 
@@ -80,4 +80,5 @@ public class ScatteredWarHandler extends AbstractArchiveHandler implements Archi
         
         return cloader;
     }
+    
 }
