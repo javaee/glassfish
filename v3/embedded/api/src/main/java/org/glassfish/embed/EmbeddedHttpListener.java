@@ -45,14 +45,14 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class GFHttpListener {
+public final class EmbeddedHttpListener {
     protected final HttpListener core;
     /**
      * Work around until we get live {@link HttpListener} addition working.
      */
     private final String id;
 
-    public GFHttpListener(String id, HttpListener core) {
+    public EmbeddedHttpListener(String id, HttpListener core) {
         this.core = core;
         this.id = id;
     }

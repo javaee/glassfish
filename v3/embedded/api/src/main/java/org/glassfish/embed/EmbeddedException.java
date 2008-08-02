@@ -37,39 +37,24 @@
 
 package org.glassfish.embed;
 
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.embed.impl.SilentActionReport;
-
 /**
- * An application deployed on GlassFish.
+ * Indicates a failure inside GlassFish.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class GFApplication {
-    private final GlassFish owner;
-    private final ApplicationInfo app;
-    private final DeploymentContext deploymentContext;
-
-    public GFApplication(GlassFish owner, ApplicationInfo app, DeploymentContext deploymentContext) {
-        this.owner = owner;
-        this.app = app;
-        this.deploymentContext = deploymentContext;
+public class EmbeddedException extends RuntimeException {
+    public EmbeddedException() {
     }
 
-    /**
-     * Which GlassFish is this application deployed on?
-     */
-    public GlassFish getOwner() {
-        return owner;
+    public EmbeddedException(String message) {
+        super(message);
     }
 
-    /**
-     * Undeploys this application.
-     */
-    public void undeploy() {
-        SilentActionReport r = new SilentActionReport();
-        owner.appLife.undeploy(app.getName(),deploymentContext, r);
-        r.check();
+    public EmbeddedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public EmbeddedException(Throwable cause) {
+        super(cause);
     }
 }

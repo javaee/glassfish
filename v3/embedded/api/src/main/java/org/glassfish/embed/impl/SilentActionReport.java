@@ -43,7 +43,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import org.glassfish.api.ActionReport;
-import org.glassfish.embed.GFException;
+import org.glassfish.embed.EmbeddedException;
 
 /**
  * {@link ActionReport} that swallows the output.
@@ -65,7 +65,7 @@ public class SilentActionReport extends ActionReporter {
                 throw (Error) t;
             if (t instanceof RuntimeException)
                 throw (RuntimeException) t;
-            throw new GFException(getMessage(),t);
+            throw new EmbeddedException(getMessage(),t);
         }
     }
 }

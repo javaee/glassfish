@@ -37,24 +37,17 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+
 /**
- * Indicates a failure inside GlassFish.
- *
+ * Virtual server.
+ * 
  * @author Kohsuke Kawaguchi
  */
-public class GFException extends RuntimeException {
-    public GFException() {
-    }
+public final class EmbeddedVirtualServer {
+    protected final VirtualServer config;
 
-    public GFException(String message) {
-        super(message);
-    }
-
-    public GFException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public GFException(Throwable cause) {
-        super(cause);
+    protected EmbeddedVirtualServer(VirtualServer config) {
+        this.config = config;
     }
 }

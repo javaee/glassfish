@@ -37,9 +37,6 @@
 
 package org.glassfish.embed;
 
-import org.glassfish.embed.GFApplication;
-import org.glassfish.embed.GlassFish;
-import org.glassfish.embed.ScatteredWar;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,7 +44,6 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Level.INFO;
-import java.util.logging.Level;
 
 /**
  * Launches a mock-up HK2 environment that doesn't provide
@@ -58,11 +54,11 @@ import java.util.logging.Level;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        GlassFish.setLogLevel(INFO);
+        EmbeddedServer.setLogLevel(INFO);
 
-         GlassFish glassfish = new GlassFish(9999);
+         EmbeddedServer glassfish = new EmbeddedServer(9999);
         //if you want to use your own domain.xml
-        //GlassFish glassfish = new GlassFish(new File("domain.xml").toURI().toURL());
+        //Server glassfish = new Server(new File("domain.xml").toURI().toURL());
         //if you want to use your own default-web.xml file
         //glassfish.setDefaultWebXml(new File("default-web.xml".toURI().toURL()));
 
@@ -70,8 +66,10 @@ public class Main {
         // deploy(new File("./JSPWiki.war"),habitat);
 
 //        GFApplication app = glassfish.deploy(new File("./hudson.war"));
+System.out.println("YYYYYYYY");
 
         while (true) {
+            //File killerApp = new File("C:/gf/v3/embedded/api/killer-app");
             File killerApp = new File("killer-app");
             ScatteredWar war = new ScatteredWar(
                 "killer-app",
@@ -80,8 +78,8 @@ public class Main {
                 Collections.singleton(
                     new File(killerApp,"target/classes").toURI().toURL())
             );
-            GFApplication app = glassfish.deploy(new File("simple.war"));
-            //GFApplication app = glassfish.deploy(war);
+            //GFApplication app = glassfish.deploy(new File("simple.war"));
+            EmbeddedApplication app = glassfish.deploy(war);
             // if you want to use another context root for example "/"
             // GFApplication app = glassfish.deployWar(war, "/");
             // if you want to use the default context root but another virtual server
