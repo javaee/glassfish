@@ -34,6 +34,7 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.InputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Enumeration;
 
 
 /**
@@ -55,26 +56,33 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
         // We do not haGenericSniffer(String containerName, String appStigma, String urlPattern
         super("jpa", null /* appStigma */, null /* urlPattern */);
     }
-
     /**
      * Returns true if the archive contains persistence.xml as defined by packaging rules of JPA
-     * Curently only scans for persitsece.xml in WEB-INF/classes/META-INF
-     * TODO : Enhance this to handle all the cases
+     * Curently only scans for persitsece.xml inside a war. That is in WEB-INF/classes/META-INF and WEB-INF/lib/pu.jar
+     * TODO : Enhance this to handle ears
      */
-    private final static String[] validPersistenceXmlLocations =
-            {
-               "WEB-INF/classes/META-INF/persistence.xml",
-               "META-INF/persistence.xml"
-            };
-    @Override public boolean handles(ReadableArchive location, ClassLoader loader) {
+    @Override
+    public boolean handles(ReadableArchive location, ClassLoader loader) {
         boolean isJPAArchive = false;
-        // scan for persistence.xml in expected locations. If at least one is found, this is 
+
+        // scan for persistence.xml in expected locations. If at least one is found, this is
         // a jpa archive
-        for (String validPersistenceXmlLocation : validPersistenceXmlLocations) {
-            isJPAArchive = isEntryPresent(location, validPersistenceXmlLocation);
-            if(isJPAArchive) {
-                //Found one. No need to scan further
-                break;
+        // First check for  "WEB-INF/classes/META-INF/persistence.xml"
+        isJPAArchive = isEntryPresent(location, "WEB-INF/classes/META-INF/persistence.xml");
+        if (!isJPAArchive) {
+            // Check in WEB-INF/lib dir
+            Enumeration<String> entries = location.entries("WEB-INF/lib");
+            while (entries.hasMoreElements() && !isJPAArchive) {
+                String entryName = entries.nextElement();
+                if (entryName.endsWith(".jar")) { // a jar in lib dir
+                    try {
+                        ReadableArchive jarInLib = location.getSubArchive(entryName);
+                        isJPAArchive = isEntryPresent(jarInLib, "META-INF/persistence.xml");
+                        jarInLib.close();
+                    } catch (IOException e) {
+                        // Something went wrong while reading the jar. Do not attempt to scan it
+                    }
+                }
             }
         }
         return isJPAArchive;
