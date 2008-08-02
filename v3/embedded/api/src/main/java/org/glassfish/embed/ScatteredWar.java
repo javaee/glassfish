@@ -51,7 +51,6 @@ import java.util.jar.Manifest;
  * @author Kohsuke Kawaguchi
  */
 public class ScatteredWar extends ReadableArchiveAdapter {
-
     /**
      *
      * @param name
