@@ -66,20 +66,19 @@ public class Main {
         // deploy(new File("./JSPWiki.war"),habitat);
 
 //        GFApplication app = glassfish.deploy(new File("./hudson.war"));
-System.out.println("YYYYYYYY");
 
         while (true) {
             //File killerApp = new File("C:/gf/v3/embedded/api/killer-app");
             File killerApp = new File("killer-app");
-            ScatteredWar war = new ScatteredWar(
+            ScatteredWar scat = new ScatteredWar(
                 "killer-app",
                 new File(killerApp,"web"),
                 new File(killerApp,"web.xml"),
                 Collections.singleton(
                     new File(killerApp,"target/classes").toURI().toURL())
             );
-            //GFApplication app = glassfish.deploy(new File("simple.war"));
-            App app = glassfish.deploy(war);
+            App app = glassfish.deploy(new File("simple.war"));
+            //App app = glassfish.deploy(scat);
             // if you want to use another context root for example "/"
             // GFApplication app = glassfish.deployWar(war, "/");
             // if you want to use the default context root but another virtual server
