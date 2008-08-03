@@ -37,11 +37,7 @@ package com.sun.ejb;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.DeploymentContext;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.transaction.TransactionManager;
-import java.util.Enumeration;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
 
 /**
  * ContainerFactory creates the appropriate Container instance
@@ -60,7 +56,7 @@ public interface ContainerFactory {
      */
     Container createContainer(EjbDescriptor ejbDescriptor, 
 			      ClassLoader loader, 
-			      com.sun.enterprise.security.SecurityManager sm,
+			      EJBSecurityManager sm,
 			      DeploymentContext deployContext)
 	throws Exception;
 

@@ -212,7 +212,7 @@ public class EjbDeployer
      * Clean any files and artifacts that were created during the execution
      * of the prepare method.
      *
-     * @param context deployment context
+     * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
 

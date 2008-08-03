@@ -136,10 +136,16 @@ public class StatelessSessionContainer
      * This constructor is called from the JarManager when a Jar is deployed.
      * @exception Exception on error
      */
-    StatelessSessionContainer(EjbDescriptor desc, ClassLoader loader) 
+    StatelessSessionContainer(EjbDescriptor desc, ClassLoader loader)
 	throws Exception
     {
-        super(ContainerType.STATELESS, desc, loader);
+        this(ContainerType.STATELESS, desc, loader);
+    }
+
+    StatelessSessionContainer(ContainerType conType, EjbDescriptor desc, ClassLoader loader)
+        throws Exception
+        {
+            super(conType, desc, loader);
 
 
         try {
@@ -159,12 +165,6 @@ public class StatelessSessionContainer
                 _logger.log(Level.SEVERE,"",ex);
             }
             throw ex;
-        }
-
-        EjbSessionDescriptor ed = (EjbSessionDescriptor)desc;
-        iased = ed.getIASEjbExtraDescriptors();
-        if( iased != null) {
-            beanPoolDes = iased.getBeanPool();
         }
 
         ejbContainer = ejbContainerUtilImpl.getEjbContainer();
@@ -292,15 +292,25 @@ public class StatelessSessionContainer
                 registerEjbWebServiceEndpoint(webServiceEndpoint);
             */
         }
-      
+
+        createBeanPool();
+
+        //TODO registerMonitorableComponents();
+    }
+
+    protected void createBeanPool() {
         ObjectFactory sessionCtxFactory = new SessionContextFactory();
+
+                iased = ejbDescriptor.getIASEjbExtraDescriptors();
+        if( iased != null) {
+            beanPoolDes = iased.getBeanPool();
+        }
+
         poolProp = new PoolProperties();
         pool= new NonBlockingPool(ejbDescriptor.getName(),
-           sessionCtxFactory, poolProp.steadyPoolSize, 
-           poolProp.poolResizeQuantity, poolProp.maxPoolSize, 
+           sessionCtxFactory, poolProp.steadyPoolSize,
+           poolProp.poolResizeQuantity, poolProp.maxPoolSize,
            poolProp.poolIdleTimeoutInSeconds, loader);
-
-	    //TODO registerMonitorableComponents();
     }
 
     protected void registerMonitorableComponents() {
@@ -861,6 +871,7 @@ public class StatelessSessionContainer
 	    ? 0
 	    : poolProp.steadyPoolSize;
     }
-    
+
+
 } // StatelessSessionContainer.java
 

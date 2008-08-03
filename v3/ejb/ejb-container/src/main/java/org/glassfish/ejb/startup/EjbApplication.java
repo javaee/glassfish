@@ -23,17 +23,21 @@
 
 package org.glassfish.ejb.startup;
 
-import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.Container;
+import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.ContainerFactoryImpl;
-import com.sun.ejb.containers.BaseContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
+import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Ejb container service
@@ -50,6 +54,9 @@ public class EjbApplication
     Collection<Container> containers = new ArrayList();
     ClassLoader ejbAppClassLoader;
     DeploymentContext dc;
+
+    @Inject
+    EJBSecurityManagerFactory ejbSMF;
 
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
@@ -83,12 +90,38 @@ public class EjbApplication
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
+
+        List<EjbSingletonDescriptor> topCandidates = new ArrayList<EjbSingletonDescriptor>();
+        List<EjbDescriptor> others = new ArrayList<EjbDescriptor>();
+
         for (EjbDescriptor desc : ejbs) {
+            if (desc instanceof EjbSingletonDescriptor) {
+                EjbSingletonDescriptor singletonEjbDesc = (EjbSingletonDescriptor) desc;
+                topCandidates.add(singletonEjbDesc);
+            } else {
+                others.add(desc);
+            }
+        }
+
+        for (EjbSingletonDescriptor sing : topCandidates) {
+            try {
+                EJBSecurityManager ejbSM = null;//ejbSMF.createSecurityManager(sing);
+                Container container = ejbContainerFactory.createContainer(sing, ejbAppClassLoader,
+                        ejbSM, dc);
+                containers.add(container);
+            } catch (Throwable th) {
+                throw new RuntimeException("Error during EjbApplication.start() ", th);
+            }
+        }
+
+        for (EjbDescriptor desc : others) {
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
             try {
+                EJBSecurityManager ejbSM = null;//ejbSMF.createSecurityManager(desc);
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
-                    null, dc);
+                        ejbSM, dc);
                 containers.add(container);
+                System.out.println("Created EJBContainer for: " + desc);
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
@@ -99,11 +132,11 @@ public class EjbApplication
         }
 
         // TODO: move restoreEJBTimers to correct location
-        synchronized(lock) {
+        synchronized (lock) {
             System.out.println("==> Restore Timers? == " + restored);
             if (!restored) {
-                com.sun.ejb.containers.EJBTimerService ejbTimerService = 
-                    com.sun.ejb.containers.EjbContainerUtilImpl.getInstance().getEJBTimerService();
+                com.sun.ejb.containers.EJBTimerService ejbTimerService =
+                        com.sun.ejb.containers.EjbContainerUtilImpl.getInstance().getEJBTimerService();
                 if (ejbTimerService != null) {
                     restored = ejbTimerService.restoreEJBTimers();
                     System.out.println("==> Restored Timers? == " + restored);
@@ -151,11 +184,11 @@ public class EjbApplication
         return ejbAppClassLoader;
     }
 
-    private static final char NAME_PART_SEPARATOR  = '_';   // NOI18N
-    private static final char NAME_CONCATENATOR    = ' ';   // NOI18N
+    private static final char NAME_PART_SEPARATOR = '_';   // NOI18N
+    private static final char NAME_CONCATENATOR = ' ';   // NOI18N
 
     private long getUniqueId(EjbDescriptor desc) {
-        
+
         com.sun.enterprise.deployment.BundleDescriptor bundle = desc.getEjbBundleDescriptor();
         com.sun.enterprise.deployment.Application application = bundle.getApplication();
 
@@ -168,7 +201,7 @@ public class EjbApplication
         // If it's not just a module, add a module name.
         if (!application.isVirtual()) {
             rc.append(NAME_CONCATENATOR).
-               append(bundle.getModuleDescriptor().getArchiveUri());
+                    append(bundle.getModuleDescriptor().getArchiveUri());
         }
 
         return rc.toString().hashCode();
@@ -178,6 +211,7 @@ public class EjbApplication
         for (Container container : containers) {
             container.undeploy();
         }
+        containers.clear();
     }
 
 }

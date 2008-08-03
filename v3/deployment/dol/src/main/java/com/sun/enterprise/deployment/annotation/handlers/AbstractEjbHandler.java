@@ -81,7 +81,7 @@ import com.sun.enterprise.deployment.annotation.context.EjbContext;
  *
  * @author Shing Wai Chan
  */
-abstract class AbstractEjbHandler extends AbstractHandler {
+public abstract class AbstractEjbHandler extends AbstractHandler {
     /**
      * Return the name attribute of given annotation.
      * @param annotation

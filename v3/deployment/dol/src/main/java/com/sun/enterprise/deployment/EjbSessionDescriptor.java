@@ -44,7 +44,7 @@ import java.util.*;
     *@author Danny Coward
     */
 
-public final class EjbSessionDescriptor extends EjbDescriptor {
+public class EjbSessionDescriptor extends EjbDescriptor {
     private boolean isStateless = false;
     private int timeout = 0;
 

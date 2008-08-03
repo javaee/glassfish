@@ -43,6 +43,8 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.security.SecurityContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
 import java.util.ArrayList;
 
@@ -50,7 +52,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 
     public Container createContainer(EjbDescriptor ejbDescriptor,
 				     ClassLoader loader, 
-				     com.sun.enterprise.security.SecurityManager sm,
+				     EJBSecurityManager sm,
 				     DeploymentContext dynamicConfigContext)
 	     throws Exception 
     {
@@ -68,7 +70,15 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 
         try {
             // instantiate container class
-            if (ejbDescriptor instanceof EjbSessionDescriptor) {
+            if (ejbDescriptor instanceof EjbSingletonDescriptor) {
+                EjbSingletonDescriptor sd = (EjbSingletonDescriptor) ejbDescriptor;
+                
+                System.out.println("** [SingletonContainer] Got EJB Descriptor: " + sd.isSingleton());
+                if (sd.isSingleton()) {
+                    System.out.println("** [SingletonContainer] isStateless: " + sd.isStateless() + " **");
+                    container = new SingletonContainer(ejbDescriptor, loader);
+                }
+            } else if (ejbDescriptor instanceof EjbSessionDescriptor) {
                 EjbSessionDescriptor sd = (EjbSessionDescriptor)ejbDescriptor;
                 if ( sd.isStateless() ) {
                     if ((ejbDescriptor.getLocalClassName() != null) &&
@@ -96,7 +106,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                 hasHome = false;
             }
 		
-            container.setSecurityManager(sm);
+            //container.setSecurityManager(sm);
 
             if ( hasHome ) {
                 container.initializeHome();
