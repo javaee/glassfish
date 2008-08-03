@@ -37,17 +37,72 @@
 package com.sun.ejb.containers;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.ejb.ComponentContext;
+import com.sun.ejb.EjbInvocation;
+
+import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Mahesh Kannan
  */
 public class SingletonContainer
-    extends StatelessSessionContainer {
+        extends StatelessSessionContainer {
+
+    private SessionContextFactory factory;
+
+    private transient ComponentContext singletonCtx;
+
+    private AtomicInteger invCount = new AtomicInteger(0);
+
+    private boolean bmcMode = true;
 
     public SingletonContainer(EjbDescriptor desc, ClassLoader cl)
-        throws Exception {
+            throws Exception {
         super(ContainerType.SINGLETON, desc, cl);
 
         System.out.println("****** [SINGLETON CONTAINER CREATED] for: " + desc.getEjbClassName());
+    }
+
+    protected ComponentContext _getContext(EjbInvocation inv) {
+        if (singletonCtx == null) {
+            synchronized (this) {
+                if (singletonCtx == null) {
+                    factory = new SessionContextFactory();
+                    singletonCtx = (ComponentContext) factory.create(null);
+                }
+            }
+        }
+
+        if (bmcMode) {
+            synchronized (invCount) {
+                invCount.incrementAndGet();
+                ((SessionContextImpl) singletonCtx).setState(EJBContextImpl.BeanState.INVOKING);
+            }
+        }
+        //For now return this as we support only BMC
+        return singletonCtx;
+    }
+
+    public void releaseContext(EjbInvocation inv) {
+        if (bmcMode) {
+            synchronized (invCount) {
+                int val = invCount.decrementAndGet();
+                if (val == 0) {
+                    ((SessionContextImpl) singletonCtx).setState(EJBContextImpl.BeanState.READY);
+                }
+            }
+        }
+    }
+
+    public void undeploy() {
+        try {
+            factory.destroy(singletonCtx);
+            super.undeploy();
+
+            System.out.println("****** [SINGLETON CONTAINER UNDEPLOYED] for: " + ejbDescriptor.getEjbClassName());
+        } catch (Throwable th) {
+            _logger.log(Level.INFO, "Error during SingletonContainer undeploy", th);
+        }
     }
 }

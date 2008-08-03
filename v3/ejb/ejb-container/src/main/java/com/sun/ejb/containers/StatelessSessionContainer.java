@@ -132,7 +132,7 @@ public class StatelessSessionContainer
 
     private PoolProperties poolProp 		 = null;
 
-    /** 
+    /**
      * This constructor is called from the JarManager when a Jar is deployed.
      * @exception Exception on error
      */
@@ -757,7 +757,7 @@ public class StatelessSessionContainer
 	return pool.getSize();
     }
 
-    private class SessionContextFactory
+    protected class SessionContextFactory
         implements ObjectFactory
     {
 

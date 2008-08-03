@@ -73,9 +73,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
             if (ejbDescriptor instanceof EjbSingletonDescriptor) {
                 EjbSingletonDescriptor sd = (EjbSingletonDescriptor) ejbDescriptor;
                 
-                System.out.println("** [SingletonContainer] Got EJB Descriptor: " + sd.isSingleton());
                 if (sd.isSingleton()) {
-                    System.out.println("** [SingletonContainer] isStateless: " + sd.isStateless() + " **");
                     container = new SingletonContainer(ejbDescriptor, loader);
                 }
             } else if (ejbDescriptor instanceof EjbSessionDescriptor) {

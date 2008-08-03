@@ -393,6 +393,8 @@ public abstract class BaseContainer
 
     protected ClassLoader optIntfClassLoader;
 
+    protected Set<String> publishedGlobalJndiNames = new HashSet<String>();
+
     /**
      * This constructor is called from ContainerFactoryImpl when an
      * EJB Jar is deployed.
@@ -1100,6 +1102,41 @@ public abstract class BaseContainer
                 Class proxyClass = Proxy.getProxyClass(loader,proxyInterfaces);
                 ejbLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
+
+                String javaGlobalName = getJavaGlobalJndiNamePrefix();
+
+                for (Class next : localBusinessIntfs) {
+                    String globalName = javaGlobalName + "#" + next.getName();
+
+                    try {
+                        JavaGlobalJndiNamingObjectProxy namingProxy =
+                                new JavaGlobalJndiNamingObjectProxy(this, next.getName());
+
+                        namingManager.publishObject(globalName, namingProxy, true);
+                        publishedGlobalJndiNames.add(globalName);
+
+                        _logger.log(Level.INFO, "Bound Java:Global name [business view] : " + globalName);
+                    } catch (Exception ex) {
+                        _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
+                    }
+                }
+
+                //The following has to move out. We should generate the
+                //  unqualified global name iff the bean implements just one interface
+                //
+                if (localBusinessIntfs.size() == 1) {
+                    try {
+                        String intfName = localBusinessIntfs.iterator().next().getName();
+                        JavaGlobalJndiNamingObjectProxy namingProxy =
+                                new JavaGlobalJndiNamingObjectProxy(this, intfName);
+                        namingManager.publishObject(javaGlobalName, namingProxy, true);
+                         publishedGlobalJndiNames.add(javaGlobalName);
+                        _logger.log(Level.INFO, "Bound Java:Global name [single business view] : " + javaGlobalName);
+                    } catch (Exception ex) {
+                        _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
+                    }
+                }
+
             }
 
             if(hasOptionalLocalBusinessView) {
@@ -1121,9 +1158,31 @@ public abstract class BaseContainer
                 Class proxyClass = Proxy.getProxyClass(optIntfClassLoader,proxyInterfaces);
                 ejbOptionalLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
+
+                String javaGlobalName = getJavaGlobalJndiNamePrefix();
+                String qJavaGlobalName = javaGlobalName + "#" + ejbClass.getName();
+
+                JavaGlobalJndiNamingObjectProxy namingProxy =
+                        new JavaGlobalJndiNamingObjectProxy(this, ejbClass.getName());
+                try {
+                    namingManager.publishObject(qJavaGlobalName, namingProxy, true);
+                } catch (Exception ex) {
+                    _logger.log(Level.WARNING, "Error while binding: " + qJavaGlobalName, ex);
+                }
+
+                try {
+                    namingManager.publishObject(javaGlobalName, namingProxy, true);
+                } catch (Exception ex) {
+                    _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
+                }
+
+                publishedGlobalJndiNames.add(javaGlobalName);
+                publishedGlobalJndiNames.add(qJavaGlobalName);
+
+                System.out.println("Java:Global name [no interface view] : " + javaGlobalName);
+
             }
-
-
+            
         }
         
         // create EJBMetaData
@@ -1134,6 +1193,42 @@ public abstract class BaseContainer
         }
         metadata = new EJBMetaDataImpl(ejbHomeStub, homeIntf, remoteIntf,
             primaryKeyClass, isSession, isStatelessSession);
+    }
+
+    protected String getJavaGlobalJndiNamePrefix() {
+        String appName = null;
+        Application app = ejbDescriptor.getApplication();
+        if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
+            appName = ejbDescriptor.getApplication().getRegistrationName();
+        }
+        String modName = null;
+        if (appName == null) {
+            modName = ejbDescriptor.getApplication().getRegistrationName();
+        } else {
+            String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
+                    getModuleDescriptor().getArchiveUri();
+            modName =
+                    com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
+        }
+        String ejbName = ejbDescriptor.getName();
+
+        String specifiedMappedName = ejbDescriptor.getMappedName();
+        String actualMappedName = null;
+
+        if (specifiedMappedName == null || specifiedMappedName.length() == 0) {
+            actualMappedName = "java:global/env/";
+
+            if (appName != null) {
+                actualMappedName += appName + "/";
+            }
+
+            actualMappedName += modName + "/";
+            actualMappedName += ejbName;
+        } else {
+            actualMappedName = specifiedMappedName;
+        }
+
+        return actualMappedName;
     }
     
     /**
@@ -2912,7 +3007,6 @@ public abstract class BaseContainer
 
         ComponentEnvManager envManager = ejbContainerUtilImpl.getComponentEnvManager();
         componentId = envManager.bindToComponentNamespace(ejbDescriptor);
-        System.out.println("****[][][][] Got CompEndId: " + componentId);
         invFactory = new EjbInvocationFactory(componentId, this);
         ejbContainerUtilImpl.registerContainer(this);
         // create envProps object to be returned from EJBContext.getEnvironment
@@ -3218,6 +3312,17 @@ public abstract class BaseContainer
                         }
       
                     }
+
+                    for (String globalName : publishedGlobalJndiNames) {
+                        try {
+                            namingManager.getInitialContext().unbind
+                                    (globalName);
+                        } catch (Exception ex) {
+                            _logger.log(Level.FINE, "Error during undind", ex);
+
+                        }
+                    }
+                    
                 } catch ( Exception ex ) {
                     _logger.log(Level.FINE, "ejb.undeploy_exception", 
                         logParams);
