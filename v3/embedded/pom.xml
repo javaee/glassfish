@@ -78,6 +78,7 @@
   </repositories>
   
   <build>    
+    <defaultGoal>install</defaultGoal>
     <extensions>
       <extension>
         <groupId>org.jvnet.wagon-svn</groupId>
