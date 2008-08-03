@@ -5,6 +5,7 @@
 
 package org.glassfish.flashlight.statistics;
 
+import javax.management.j2ee.statistics.TimeStatistic;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -12,7 +13,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author Harpreet Singh
  */
 
-public interface TimeStats extends TreeNode {
+public interface TimeStats extends TreeNode , TimeStatistic {
     
     public long getTime ();
     public void entry ();

@@ -5,6 +5,7 @@
 
 package org.glassfish.flashlight.statistics;
 
+import javax.management.j2ee.statistics.CountStatistic;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -13,7 +14,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author Harpreet Singh
  */
 @Contract 
-public interface Counter extends TreeNode {
+public interface Counter extends TreeNode, CountStatistic{
 
     public void decrement();
 

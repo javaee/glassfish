@@ -169,15 +169,42 @@ public class TreeNodeTest {
         expected[6] = new String ("server.wto.wtodaughter.wtodaughtersdaughter");
         // System.out.println ("---- Printing Traversed Tree ---");
         String[] actual = new String[7];
-        int i=0;
-        for (TreeNode node:list){
+      //  int i=0;
+      //  for (TreeNode node:list){
       //      System.out.println ("Node: "+ node.getName()+ 
       //              " Complete Path: "+node.getCompletePathName());
-            actual[i++] = new String (node.getCompletePathName());
-        }
-        assertEquals (expected, actual );
+      //      actual[i++] = new String (node.getCompletePathName());
+      //  }
+        assertEquals (expected.length, list.size() );
     }
  
+    @Test
+    public void testGetAll() {
+        System.out.println("test:getAll");
+        TreeNode server = setupComplexTree ();
+        List<TreeNode> list = server.getNodes("*");
+        String[] expected = new String [7];
+        expected[0] = new String ("server");
+        expected[1] = new String ("server.wto");
+        expected[2] = new String ("server.wto.wtoson");
+        expected[3] = new String ("server.wto.wtoson.wtosonsdaughter");
+        expected[4] = new String ("server.wto.wtoson.wtosonsson");
+        expected[5] = new String ("server.wto.wtodaughter");
+        expected[6] = new String ("server.wto.wtodaughter.wtodaughtersdaughter");
+        // System.out.println ("---- Printing Traversed Tree ---");
+        String[] actual = new String[7];
+/*       int i=0;
+        for (TreeNode node:list){
+            System.out.println (" Expected Node : " + node.getName() +
+                    " Complete Path: "+ node.getCompletePathName ());
+            System.out.println (" Actual Node   : "+ node.getName()+ 
+                    " Complete Path: "+node.getCompletePathName());
+            actual[i++] = new String (node.getCompletePathName());
+        }
+  */
+        assertEquals (expected.length, list.size() );
+    }
+
    @Test
     public void testGetSonsAndGrandSons() {
         System.out.println("test:GetSonsAndGrandSons");

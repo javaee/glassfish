@@ -19,7 +19,9 @@ import org.jvnet.hk2.component.PerLookup;
 public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
     implements TimeStatsMillis {
     
-    private static final String NAME = "timeStatsMillis";
+    private String NAME = "timeStatsMillis";
+    private String UNIT = "Milli seconds";
+    private String DESCRIPTION = "TimeStatistic Milli Seconds";
     
     public TimeStatsMillisImpl (){
         super.setName(NAME);
@@ -28,6 +30,7 @@ public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
     @Override
     public void entry (){
         entryTime = System.currentTimeMillis();
+        super.postEntry ();
     }
     
     @Override
@@ -40,4 +43,19 @@ public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
         return getTime ();
     }
 
+    public String getUnit() {
+        return this.UNIT;
+    }
+
+    public String getDescription() {
+        return this.DESCRIPTION;
+    }
+    public String toString() {
+        return "Statistic " + getClass().getName() + NEWLINE +
+                "Name: " + getName() + NEWLINE +
+                "Description: " + getDescription() + NEWLINE +
+                "Unit: " + getUnit() + NEWLINE +
+                "LastSampleTime: " + getLastSampleTime() + NEWLINE +
+                "StartTime: " + getStartTime();
+    }
 }

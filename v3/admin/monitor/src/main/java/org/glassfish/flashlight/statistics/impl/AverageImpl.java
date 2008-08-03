@@ -3,7 +3,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.glassfish.flashlight.statistics.impl;
 
 import java.util.Collection;
@@ -22,76 +21,132 @@ import org.jvnet.hk2.component.PerLookup;
  *
  * @author Harpreet Singh
  */
-@Service (name="average")
-@Scoped (PerLookup.class)
+@Service(name = "average")
+@Scoped(PerLookup.class)
 public class AverageImpl extends AbstractTreeNode implements Average {
 
-    
-    
-    long min = -1;
+    /** DEFAULT_UPPER_BOUND is maximum value Long can attain */
+    public static final long DEFAULT_MAX_BOUND = java.lang.Long.MAX_VALUE;
+    /** DEFAULT_LOWER_BOUND is same as DEFAULT_VALUE i.e. 0 */
+    public static final long DEFAULT_VALUE = java.math.BigInteger.ZERO.longValue();
+    public static final long DEFAULT_MIN_BOUND = DEFAULT_VALUE;
+    /** DEFAULT_VALUE of any statistic is 0 */
+    protected static final String NEWLINE = System.getProperty("line.separator");
+   
+    long min = DEFAULT_MIN_BOUND;
     long max = 0;
-
-    AtomicLong times = new AtomicLong (0);
     
+    AtomicLong times = new AtomicLong(0);
     AtomicLong sum = new AtomicLong(0);
+    private long startTime = 0;
+    private AtomicLong lastSampleTime = new AtomicLong(0);
     
-    private static final String NAME = "average";
-        
-    public AverageImpl (){
+    private String NAME = "average";
+    private String DESCRIPTION = "Average RangeStatistic";
+    private String UNIT = java.lang.Long.class.toString();
+    
+    public AverageImpl() {
         super.name = NAME;
         super.instance = this;
         super.enabled = true;
+        startTime = System.currentTimeMillis();
     }
-    
 
-    public void addDataPoint (long value){
-        if (min == -1) // initial seeding
+    /*
+     * 
+     * TBD: Remove reference to getSampleTime -> see comment on getSampleTime
+     * method
+     */
+    public void addDataPoint(long value) {
+        if (min == DEFAULT_MIN_BOUND) // initial seeding
+        {
             min = value;
-        
-        if (value < min)
+        }
+        if (value < min) {
             min = value;
-        
-        else if (value > max)
+        } else if (value > max) {
             max = value;
-            
-        sum.addAndGet (value);
-        times.incrementAndGet ();
+        }
+        sum.addAndGet(value);
+        times.incrementAndGet();
+        // TBD: remove this code, once getSampleTime is refactored
+        lastSampleTime.set(getSampleTime ());
     }
-    
-    public double getAverage (){  
+
+    public double getAverage() {
         double total = sum.doubleValue();
         double count = times.doubleValue();
-        return total/count;
+        return total / count;
 
     }
-    
-    public void setReset (){
-        times.set (0);
-        sum.set (0);
-           
+
+    public void setReset() {
+        times.set(0);
+        sum.set(0);
+
     }
-    
+
     public long getMin() {
         return min;
     }
-   
-    public long getMax (){
+
+    public long getMax() {
         return max;
-    }    
-    
-    public String toString() {
-        return String.valueOf(getAverage());
     }
 
+    public String toString() {
+        return "Statistic " + getClass().getName() + NEWLINE +
+                "Name: " + getName() + NEWLINE +
+                "Description: " + getDescription() + NEWLINE +
+                "Unit: " + getUnit() + NEWLINE +
+                //           "LastSampleTime: " + getLastSampleTime() + NEWLINE +
+                "StartTime: " + getStartTime();
+    }
 
     @Override
     public Object getValue() {
-        return getAverage ();
+        return getAverage();
     }
 
     public long getSize() {
         return times.get();
     }
-  
 
+    public long getHighWaterMark() {
+        return getMax();
+    }
+
+    public long getLowWaterMark() {
+        return getMin();
+    }
+
+    public long getCurrent() {
+        double avg = getAverage();
+
+        return Long.parseLong(Double.toString(avg));
+    }
+
+    public String getUnit() {
+        return this.UNIT;
+    }
+
+    public String getDescription() {
+        return this.DESCRIPTION;
+    }
+
+    public long getStartTime() {
+        return this.startTime;
+    }
+    /*
+     * TBD
+     * This is an inefficient implementation. Should schedule a Timer task
+     * that gets a timeout event every 30s or so and updates this value
+     */
+    private long getSampleTime (){
+        return System.currentTimeMillis();
+   
+    }
+    public long getLastSampleTime() {
+        return this.lastSampleTime.longValue();
+    }
 }

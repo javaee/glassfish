@@ -99,6 +99,7 @@
                         com.sun.enterprise.admin.monitor.util,
                         com.sun.enterprise.management.support,
 			org.glassfish.flashlight,
+                        org.glassfish.flashlight.annotations,
 			org.glassfish.flashlight.datatree,
 			org.glassfish.flashlight.datatree.factory,
 			org.glassfish.flashlight.statistics,
@@ -127,7 +128,7 @@
                     </archive>
                 </configuration>
             </plugin>
-       </plugins>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/java</directory>
@@ -160,6 +161,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>2.4.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>

@@ -33,6 +33,8 @@ public abstract class AbstractTreeNode implements TreeNode {
     private static String REGEX =
             NAME_SEPARATOR.equals(".") ? "\\." : NAME_SEPARATOR;
     private TreeNode parent = null;
+    // Special character Regex to be converted to .* for v2 compatibility
+    private String STAR = "*";
 
     public String getName() {
         return this.name;
@@ -49,7 +51,7 @@ public abstract class AbstractTreeNode implements TreeNode {
     // should be implemented at the sub-class level
     public Object getValue() {
         if (enabled) {
-            return this.instance;
+            return getChildNodes();
         }
         return null;
     }
@@ -186,7 +188,11 @@ public abstract class AbstractTreeNode implements TreeNode {
         }
         return newToken;
     }
-
+    
+    /**
+     * Returns all the nodes under the current tree
+     * @return List of all nodes in the current tree
+     */
     public List<TreeNode> traverse() {
         // System.out.println ("Node: " + this.getName ());
         List<TreeNode> list = new ArrayList<TreeNode>();
@@ -207,11 +213,14 @@ public abstract class AbstractTreeNode implements TreeNode {
         List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
 
         try {
+            if (regex.equals (STAR)){
+                regex = new String (".*");
+            }
             Pattern pattern = Pattern.compile(regex);
             List<TreeNode> completeTree = traverse();
 
             for (TreeNode node : completeTree) {
-                Matcher matcher = pattern.matcher(node.getName());
+                Matcher matcher = pattern.matcher(node.getCompletePathName());
 
                 if (matcher.matches()) {
                     regexMatchedTree.add(node);
@@ -219,7 +228,7 @@ public abstract class AbstractTreeNode implements TreeNode {
             }
         } catch (java.util.regex.PatternSyntaxException e) {
             // log this
-            e.printStackTrace ();
+           // e.printStackTrace ();
         }
         return regexMatchedTree;
     }
