@@ -48,7 +48,6 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.connectors.util.ConnectorClassLoader;
 import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -472,9 +471,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         if (module != null) {
             defs.add(module.getModuleDefinition());
         }
-
-        ConnectorClassLoader.getInstance(registry.getModulesClassLoader(null, defs));
-
 
         _logger.fine("Time taken to initialize connector runtime : " + (System.currentTimeMillis() - startTime));
     }

@@ -63,9 +63,6 @@ import java.util.logging.Logger;
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
 
-    @Inject
-    ServerEnvironmentImpl env;
-
     /**
      * Retuns the lifecyle of the service.
      * Once the applications are loaded, this service does not need to remain

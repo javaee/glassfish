@@ -46,10 +46,15 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.connectors.util.ConnectorClassLoader;
+import com.sun.enterprise.loader.EJBClassLoader;
 
 import javax.naming.NamingException;
 import java.util.logging.Level;
+import java.io.File;
+import java.net.MalformedURLException;
+
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 
 /**
@@ -177,8 +182,11 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-        com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().removeResourceAdapter(moduleName);
-
+//        com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().removeResourceAdapter(moduleName);
+        // TODO: If this is not a system standalone RAR, then
+        // emit an event that ApplicationLifecycle (kernel) can listen to.
+        // As part of event handling, it can either remove its classloader
+        // from appropriate connector class loader.
         /* TODO V3 handle resource destroy later
         if (errrorOccured == true) {
             ConnectorRuntimeException cre =
@@ -235,8 +243,15 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 + moduleName + " at " + moduleDir + " loader :: " + loader);
         if (loader == null) {
             if (environment == SERVER) {
-                com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().addResourceAdapter(moduleName, moduleDir);
-                loader = ConnectorClassLoader.getInstance();
+//                com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().addResourceAdapter(moduleName, moduleDir);
+//                loader = ConnectorClassLoader.getInstance();
+                // TODO: I don't like the fact that we are creating the
+                // class loader here by passing ApplicationLifecycle.
+                loader = createRARClassLoader(moduleName, moduleDir);
+                // TODO: If this is not a system standalone RAR, then
+                // emit an event that ApplicationLifecycle (kernel) can listen to.
+                // As part of event handling, it can either add its classloader
+                // from appropriate connector class loader.
                 if (loader == null) {
                     ConnectorRuntimeException cre =
                             new ConnectorRuntimeException("Failed to obtain the class loader");
@@ -300,6 +315,42 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 connectorDescriptor.setModuleDescriptor(moduleDescriptor);
                 connectorDescriptor.setApplication(application);
                 connectorDescriptor.setClassLoader(loader);
+            }
+        }
+    }
+
+    private ClassLoader createRARClassLoader(String moduleName, String moduleDir) {
+        /*
+         * This method does not belong to this file.
+         * We should really use ApplicationLifecycle to create classloader
+         * for all kinds of applications.
+         */
+        ClassLoaderHierarchy cls =
+                Globals.getDefaultHabitat().getByContract(ClassLoaderHierarchy.class);
+        ClassLoader parentCL = cls.getCommonClassLoader();
+        EJBClassLoader cl = new EJBClassLoader(parentCL);
+        File file = new File(moduleDir);
+        try {
+            cl.appendURL(file.toURI().toURL());
+            appendJars(file, cl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return cl;
+    }
+
+    //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
+    private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
+        /*
+         * This method has been moved verbatim from ConnectorClassLoader to here.
+         */
+        if (moduleDir.isDirectory()) {
+            for (File file : moduleDir.listFiles()) {
+                if (file.getName().toUpperCase().endsWith(".JAR")) {
+                    cl.appendURL(file.toURI().toURL());
+                } else if (file.isDirectory()) {
+                    appendJars(file, cl); //recursive add
+                }
             }
         }
     }

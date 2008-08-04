@@ -90,6 +90,7 @@
                             So explicitly reset them so that the build.xml can see this value.
                         -->
                         <property name="hk2.version" value="${hk2.version}" />
+                        <property name="project.version" value="${project.version}" />
                         <ant dir="." antfile="build.xml" target="create.bundle"/>
                     </tasks>
                 </configuration>

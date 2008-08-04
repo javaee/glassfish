@@ -26,6 +26,7 @@ own identifying information: Portions Copyright [yyyy]
             <fileset dir="src/main/resources" />
             <filterset begintoken="@" endtoken="@">
                 <filter token="HK2.VERSION" value="${hk2.version}" />
+                <filter token="PROJECT.VERSION" value="${project.version}" />
             </filterset>
         </copy>
         <zip destfile="target/felix.zip" basedir="target/classes/"/>

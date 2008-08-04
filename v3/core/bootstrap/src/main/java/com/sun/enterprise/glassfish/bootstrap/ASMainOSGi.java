@@ -36,16 +36,11 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.Which;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -76,12 +71,12 @@ public abstract class ASMainOSGi {
     //
     /**
      * The following jars in the modules directory are to be added to {@link #launcherCL}.
-     *
+     * <p/>
      * These are the prefixes of the jar names (to avoid hard-coding versions),
      * and so for entry "foo", we'll find "foo*.jar"
      */
     private String[] additionalJars = {
-        "wstx-asl-*.jar" // needed by config module in HK2
+        "javax.xml.stream-*.jar", "wstx-asl-*.jar" // needed by config module in HK2
     };
 
 
@@ -100,7 +95,7 @@ public abstract class ASMainOSGi {
     protected abstract void setFwDir();
 
     public ASMainOSGi(String... args) {
-        this(Logger.getAnonymousLogger(),args);
+        this(Logger.getAnonymousLogger(), args);
     }
 
     /**
@@ -127,21 +122,20 @@ public abstract class ASMainOSGi {
      * Our hierarchy looks like this:
      * bootstrap class loader (a.k.a. null)
      * extension class loader (for processing contents of -Djava.ext.dirs)
-     * shared classloader (for loading javaee API and jdk tools.jar OSGi
-     * framework classes and shared libraries available in lib and domain/lib dir)
+     * launcher classloader (for loading jdk tools.jar, derby classes (why?) and
+     * OSGi framework classes)
      */
     private void setupLauncherClassLoader() throws Exception {
-        ClassLoader commonCL = createCommonClassLoader(ClassLoader.getSystemClassLoader().getParent());
-        // ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
+        ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
+        ClassPathBuilder cpb = new ClassPathBuilder(extCL);
 
         try {
-            ClassPathBuilder cpb = new ClassPathBuilder(commonCL);
             addFrameworkJars(cpb);
-
+            addJDKToolsJar(cpb);
+            findDerbyClient(cpb);
             File moduleDir = context.getRootDirectory().getParentFile();
-            cpb.addGlob(moduleDir,additionalJars);
-
-            this.launcherCL = cpb.createExtensible(getSharedRepos());
+            cpb.addGlob(moduleDir, additionalJars);
+            this.launcherCL = cpb.create();
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -149,20 +143,10 @@ public abstract class ASMainOSGi {
     }
 
     /**
-     * Creates a class loader from JavaEE API and tools.jar.
+     * Adds JDK tools.jar to classpath.
      */
-    protected ClassLoader createCommonClassLoader(ClassLoader parent) {
+    protected void addJDKToolsJar(ClassPathBuilder cpb) {
         try {
-            ClassPathBuilder cpb = new ClassPathBuilder(parent);
-
-            File modulesDir = new File(glassfishDir, "modules");
-            cpb.addGlob(modulesDir, "javax.javaee-*.jar");
-
-            // on jdk 1.5, I need stax apis, might be duplicated if javax.javaee is present.
-            if (System.getProperty("java.version").compareTo("1.6")<0)
-                cpb.addGlob(modulesDir, "stax-api-*.jar");
-
-            findDerbyClient(cpb);
 
             File jdkToolsJar = helper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
@@ -171,8 +155,6 @@ public abstract class ASMainOSGi {
                 // on the mac, it happens all the time
                 logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
             }
-
-            return cpb.create();
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -180,22 +162,22 @@ public abstract class ASMainOSGi {
 
     private void findDerbyClient(ClassPathBuilder cpb) throws IOException {
         String derbyHome = System.getProperty("AS_DERBY_INSTALL");
-        File derbyLib=null;
-        if (derbyHome!=null) {
+        File derbyLib = null;
+        if (derbyHome != null) {
             derbyLib = new File(derbyHome, "lib");
         }
-        if (derbyLib==null || !derbyLib.exists()) {
+        if (derbyLib == null || !derbyLib.exists()) {
             // maybe the jdk...
-            if (System.getProperty("java.version").compareTo("1.6")>0) {
+            if (System.getProperty("java.version").compareTo("1.6") > 0) {
                 File jdkHome = new File(System.getProperty("java.home"));
                 derbyLib = new File(jdkHome, "db/lib");
             }
-        } 
+        }
         if (!derbyLib.exists()) {
             logger.info("Cannot find javadb client jar file, jdbc driver not available");
             return;
         }
-        cpb.addGlob(derbyLib,"derbyclient*.jar");
+        cpb.addGlob(derbyLib, "derbyclient*.jar");
     }
 
     private void findBootstrapFile() {
@@ -206,47 +188,5 @@ public abstract class ASMainOSGi {
                     + getClass() + " class location, aborting");
         }
     }
-
-    private List<Repository> getSharedRepos() {
-        List<Repository> libs = new ArrayList<Repository>();
-        // by default we add lib directory repo
-        File libDir = new File(glassfishDir, "lib");
-        logger.fine("Path to library directory is " + libDir);
-        if (libDir.exists()) {
-            // Note: we pass true as the last argument, which indicates that the
-            // timer thread for this repo will be daemon thread. This is necessary
-            // because we don't get any notification about server shutdown. Hence,
-            // if we start a non-daemon thread, the server process won't exit atall.
-            Repository libRepo = new DirectoryBasedRepository("lib", libDir, true);
-            try {
-                libRepo.initialize();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            libs.add(libRepo);
-        } else {
-            logger.info(libDir + " does not exist");
-        }
-        // do we have a domain lib ?
-        File domainlib = new File(domainDir, "lib");
-        logger.fine("Path to domain library directory is " + domainlib);
-        if (domainlib.exists()) {
-            // Note: we pass true as the last argument, which indicates that the
-            // timer thread for this repo will be daemon thread. This is necessary
-            // because we don't get any notification about server shutdown. Hence,
-            // if we start a non-daemon thread, the server process won't exit atall.
-            Repository domainLib = new DirectoryBasedRepository("domnainlib", domainlib, true);
-            try {
-                domainLib.initialize();
-                libs.add(domainLib);
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error while initializing domain lib repository", e);
-            }
-        } else {
-            logger.info(domainlib + " does not exist");
-        }
-        return libs;
-    }
-
 
 }

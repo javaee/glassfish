@@ -39,21 +39,15 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.Tokenizer;
 import com.sun.enterprise.util.io.FileUtils;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ContainerInfo;
-import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.EnableCommand;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
-import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
@@ -62,6 +56,12 @@ import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.ContainerRegistry;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
@@ -77,6 +77,10 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,8 +93,6 @@ import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -143,6 +145,9 @@ public class ApplicationLifecycle {
     @Inject
     ServerEnvironmentImpl env;
 
+    @Inject
+    ClassLoaderHierarchy clh;
+
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
@@ -186,15 +191,18 @@ public class ApplicationLifecycle {
 
         final ReadableArchive source = context.getSource();
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
-        for (Deployer deployer : deployers) {
-            final MetaData deployMetadata = deployer.getMetaData();
-            if (deployMetadata!=null) {
-                ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
-                if (moduleDefs!=null) {
-                    defs.addAll(Arrays.asList(moduleDefs));
-                }
-            }
-        }
+        // We no longer have to add deployer APIs to our class loader,
+        // as they will be visible via APIClassLoader which is higher
+        // up in the hierarchy.
+//        for (Deployer deployer : deployers) {
+//            final MetaData deployMetadata = deployer.getMetaData();
+//            if (deployMetadata!=null) {
+//                ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
+//                if (moduleDefs!=null) {
+//                    defs.addAll(Arrays.asList(moduleDefs));
+//                }
+//            }
+//        }
         // now let's see if the application is requesting any module imports
         Manifest m=null;
         try {
@@ -235,15 +243,11 @@ public class ApplicationLifecycle {
             }
         }
 
-        // now maybe the deployer's have added extra APIs...
-        defs.addAll(context.getPublicAPIs());
-
-        final String libraries = context.getProps().getProperty(ServerTags.LIBRARIES);
-        URL[] urls = null;
-        if (libraries != null) {
-            urls = convertToURL(libraries);
-        }
-        return modulesRegistry.getModulesClassLoader(parent, defs, urls);
+        // Not needed, as they are visible via APIClassLoader
+//        // now maybe the deployer's have added extra APIs...
+//        defs.addAll(context.getPublicAPIs());
+//
+        return modulesRegistry.getModulesClassLoader(parent, defs);
 
     }
 
@@ -514,9 +518,13 @@ public class ApplicationLifecycle {
             deployers.add(deployer);
         }
 
+        final String appName = context.getCommandParameters().getProperty(
+            ParameterNames.NAME);
+        ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs(context));
+
         // Ok we now have all we need to create the parent class loader for our application
         // which will be stored in the deployment context.
-        ClassLoader parentCL = createApplicationParentCL(null, context, deployers);
+        ClassLoader parentCL = createApplicationParentCL(applibCL, context, deployers);
         ArchiveHandler handler = getArchiveHandler(context.getSource());
         context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
 
@@ -602,9 +610,6 @@ public class ApplicationLifecycle {
                 logger.severe("TODO : add dependencies on the fly");
             }
         }
-
-        final String appName = context.getCommandParameters().getProperty(
-            ParameterNames.NAME);
 
         ApplicationInfo appInfo = new ApplicationInfo(context.getSource(),
             appName, tracker.get(ModuleInfo.class).toArray(
@@ -1161,6 +1166,18 @@ public class ApplicationLifecycle {
         FileUtils.whack(generatedJspRoot);
     }
 
+    private List<URI> getAppLibs(DeploymentContext context)
+            throws URISyntaxException {
+        List<URI> libURIs = new ArrayList<URI>();
+        String libraries = context.getCommandParameters().getProperty(ParameterNames.LIBRARIES);
+        if (libraries != null) {
+            URL[] urls = convertToURL(libraries);
+            for (URL url : urls) {
+                libURIs.add(url.toURI());
+            }
+        }
+        return libURIs;
+    }
 
     /**
      * converts libraries specified via the --libraries deployment option to

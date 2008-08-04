@@ -61,6 +61,11 @@
                         com.sun.enterprise.resource.rm,
                         com.sun.enterprise.server
                         </Export-Package>
+                        <!-- This module uses classes from this pkg using reflection, so
+                             we need to add it to the import list explicitly, as bnd can't
+                             discover such dependencies.
+                        -->
+                        <Import-Package>javax.resource.spi.endpoint, *</Import-Package>
                     </instructions>
                 </configuration>
                 <executions>
