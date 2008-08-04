@@ -59,6 +59,11 @@ import java.io.File;
 
 import com.sun.enterprise.universal.io.SmartFile;
 
+import com.sun.enterprise.universal.Duration;
+
+import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+
+import org.glassfish.admin.amx.util.InjectedValues;
 
 /**
  */
@@ -304,6 +309,17 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     public String getInstallDir()
     {
         return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.installRoot")) ;
+    }
+    
+        public Object[]
+    getUptimeMillis()
+    {
+        final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
+        
+        final long elapsed = System.currentTimeMillis() - env.getStartupContext().getCreationTime();
+        final Duration duration = new Duration(elapsed);
+        
+        return new Object[] { elapsed, duration.toString() };
     }
 }
 

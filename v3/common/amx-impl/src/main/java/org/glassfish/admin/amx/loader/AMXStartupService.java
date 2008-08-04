@@ -41,6 +41,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.glassfish.admin.amx.config.AMXConfigLoader;
 import org.glassfish.admin.amx.util.ImplUtil;
+import org.glassfish.admin.amx.util.InjectedValues;
 
 import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 
@@ -64,6 +65,9 @@ public final class AMXStartupService
                 AMXStartupServiceMBean
 {
     private static void debug( final String s ) { System.out.println(s); }
+    
+    @Inject
+    InjectedValues  mInjectedValues;
     
     @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;

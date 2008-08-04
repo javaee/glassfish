@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Enumeration;
 import java.util.Collections;
 
 
@@ -126,6 +127,18 @@ public final class ListUtil
 		return( list );
 	}
 	
+        public static <T> List<T>
+    newList( final Enumeration<T> e )
+    {
+        final List<T> items = new ArrayList<T>();
+        while ( e.hasMoreElements() )
+        {
+            items.add( e.nextElement() );
+        }
+        return items;
+    }
+
+
 	/**
 		Create a new List from a Collection
 	 */
