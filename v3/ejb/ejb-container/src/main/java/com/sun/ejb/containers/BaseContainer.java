@@ -3583,7 +3583,7 @@ public abstract class BaseContainer
     
     // Called before invoking a bean with no Tx or with a new Tx.
     // Check if the bean is associated with an unfinished tx.
-    private void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
+    protected void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
         try {
             if ( !isMessageDriven && !isStatelessSession && prevTx != null &&
             	prevTx.getStatus() != Status.STATUS_NO_TRANSACTION ) {

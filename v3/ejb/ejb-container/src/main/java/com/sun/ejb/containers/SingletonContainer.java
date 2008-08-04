@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.EjbInvocation;
 
+import javax.transaction.Transaction;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -95,6 +96,10 @@ public class SingletonContainer
         }
     }
 
+    protected void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
+
+    }
+    
     public void undeploy() {
         try {
             factory.destroy(singletonCtx);
