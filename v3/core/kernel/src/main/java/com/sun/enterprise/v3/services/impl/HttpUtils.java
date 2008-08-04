@@ -87,7 +87,7 @@ public class HttpUtils {
         ByteBuffer byteBuffer = state.getBuffer();
         do {
             byte[] host = findHost(state);
-            if (host == null) {
+            if (!state.isCompleted() && host == null) {
                 // TODO: We must parse until /r/n/r/n
                 if (byteBuffer.position() > MAX_CONTEXT_ROOT_LENGTH ||
                         (readBytes = GrizzlyUtils.readToWorkerThreadBuffers(selectionKey,
@@ -212,11 +212,21 @@ public class HttpUtils {
 
         try {
             byte c;
+            int rnCounter = 0;
 
             // Rule b - try to determine the host header
             while (byteBuffer.hasRemaining()) {
                 c = (byte) Ascii.toLower(byteBuffer.get());
-                lastState.setPosition(byteBuffer.position());
+                if (c == '\r' || c == '\n') {
+                    if (++rnCounter == 4) {
+                        // End of HTTP header reached
+                        lastState.setCompleted(true);
+                        return null;
+                    }
+                } else {
+                    rnCounter = 0;
+                    lastState.setPosition(byteBuffer.position());
+                }
                 
                 switch (lastState.getState()) {
                     case 0: // Search for first 'h'

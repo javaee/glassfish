@@ -33,6 +33,8 @@ public class HttpParserState {
     public static final int PARAMETER_NOT_SET = Integer.MIN_VALUE;
     public static final int DEFAULT_STATE_PARAMETERS_NUM = 5;
     private ByteBuffer buffer;
+
+    private boolean isCompleted;
     private int state;
     private int position;
     private int stateParameters[];
@@ -88,9 +90,18 @@ public class HttpParserState {
         buffer = null;
         position = 0;
         state = 0;
+        isCompleted = false;
 
         for (int i = 0; i < stateParameters.length; i++) {
             stateParameters[i] = PARAMETER_NOT_SET;
         }
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

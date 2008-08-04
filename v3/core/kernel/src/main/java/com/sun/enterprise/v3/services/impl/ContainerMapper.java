@@ -204,11 +204,6 @@ public class ContainerMapper {
         // Parse the host. If not found, add it based on the current host.
         HttpUtils.parseHost(hostMB, ((SocketChannel)selectionKey.channel()).socket());
 
-        // Copy the decoded bytes so it can be later re-used by the CoyoteAdapter
-        MessageBytes fullDecodedUri = MessageBytes.newInstance();
-        fullDecodedUri.duplicate(decodedURI);
-        fullDecodedUri.toBytes();
-                              
         //TODO: Use ThreadAttachment instead.
         MappingData mappingData = new MappingData();
         
@@ -226,6 +221,11 @@ public class ContainerMapper {
         } else if (mappingData.context != null && mappingData.context.getClass()
                 .getName().equals("com.sun.enterprise.web.WebModule")) {
             
+            // Copy the decoded bytes so it can be later re-used by the CoyoteAdapter
+            MessageBytes fullDecodedUri = MessageBytes.newInstance();
+            fullDecodedUri.duplicate(decodedURI);
+            fullDecodedUri.toBytes();
+
             // We bind the current information to the WorkerThread so CoyoteAdapter
             // can read it and avoid trying to map. Note that we cannot re-use
             // the object as Grizzly ARP might used them from a different Thread.
