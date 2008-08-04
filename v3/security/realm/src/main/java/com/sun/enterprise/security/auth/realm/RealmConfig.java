@@ -52,8 +52,8 @@ public class RealmConfig {
     private static Logger logger =
             LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
-    public static void createRealms(String defaultRealm, List<AuthRealm> realms) {
-        assert (realms != null);
+     public static void createRealms(String defaultRealm, List<AuthRealm> realms) {
+        assert(realms != null);
 
         String goodRealm = null; // need at least one good realm
 
@@ -66,21 +66,23 @@ public class RealmConfig {
             try {
                 List<Property> realmProps = aRealm.getProperty();
                 /*V3 Commented ElementProperty[] realmProps =
-                aRealm.getElementProperty();*/
+                    aRealm.getElementProperty();*/
                 Properties props = new Properties();
                 for (Property realmProp : realmProps) {
                     props.setProperty(realmProp.getName(), realmProp.getValue());
                 }
                 Realm.instantiate(realmName, realmClass, props);
 
-                logger.fine("Configured realm: " + realmName);
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Configured realm: " + realmName);
+                }
 
                 if (goodRealm == null) {
                     goodRealm = realmName;
                 }
             } catch (Exception e) {
                 logger.log(Level.WARNING,
-                        "realmconfig.disable", realmName);
+                           "realmconfig.disable", realmName);
                 logger.log(Level.WARNING, "security.exception", e);
             }
         }
@@ -102,7 +104,9 @@ public class RealmConfig {
                 defaultRealm = goodRealm;
             }
             Realm.setDefaultRealm(defaultRealm);
-            logger.fine("Default realm is set to: " + defaultRealm);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Default realm is set to: " + defaultRealm);
+            }
         }
     }
 }

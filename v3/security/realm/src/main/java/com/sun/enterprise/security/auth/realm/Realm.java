@@ -675,6 +675,11 @@ public abstract class Realm implements Comparable {
      */
     public abstract boolean supportsUserManagement();
     
+   /**
+    * Persist the realm data to permanent storage
+    * @throws com.sun.enterprise.security.auth.realm.BadRealmException
+    */
+    public abstract void persist() throws BadRealmException;
 }
 
 

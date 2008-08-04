@@ -680,6 +680,20 @@ final public class FileRealm extends IASRealm
         //File Realm supports UserManagement
         return true;
     }
+    
+    /**
+     * Persist the realm data to permanent storage
+     * @throws com.sun.enterprise.security.auth.realm.BadRealmException
+     */
+    public void persist() throws BadRealmException {
+        String file = this.getProperty(PARAM_KEYFILE);
+        try {
+           writeKeyFile(file);
+        } catch (IOException ex) {
+            throw new BadRealmException(ex);
+        }
+    }
+    
     /**
      * Write keyfile data out to disk. The file generation is sychronized
      * within this class only, caller is responsible for any other
@@ -719,7 +733,9 @@ final public class FileRealm extends IASRealm
             }
         }
 
-        _logger.fine("Done writing "+filename);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("Done writing " + filename);
+        }
     }
 
     

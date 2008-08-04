@@ -48,19 +48,18 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
-import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.RealmConfig;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
+import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 import org.glassfish.api.Startup.Lifecycle;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -188,6 +187,17 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
  	}
     }
 
+    private boolean realmsAlreadyLoaded() {
+       RealmsManager mgr = sc.getDefaultHabitat().getComponent(RealmsManager.class);
+       if (mgr != null) {
+           Enumeration en = mgr.getRealmNames();
+           if (en.hasMoreElements()) {
+               return true;
+           }
+       }
+       return false;
+    }
+
     private void registerPolicyHandlers()
             throws javax.security.jacc.PolicyContextException {
         PolicyContextHandler pch = PolicyContextHandlerImpl.getInstance();
@@ -227,8 +237,11 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
      * <P>This method superceeds the RI RealmManager.createRealms() method.
      *
      * */
-    public  void createRealms()
-    {
+    public  void createRealms() {   
+        //check if realms are already loaded by admin GUI ?
+        if (realmsAlreadyLoaded()) {
+            return;
+        }
         
         try {
             if (_logger.isLoggable(Level.FINE)) {
@@ -245,70 +258,10 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             List<AuthRealm> realms = securityBean.getAuthRealm();
             assert(realms != null);
 
-            createRealms(defaultRealm, realms);
+            RealmConfig.createRealms(defaultRealm, realms);
             
         } catch (Exception e) {
             _logger.log(Level.SEVERE, "realmconfig.nogood", e);
         }
-    }
-    
-    public static void createRealms(String defaultRealm, List<AuthRealm> realms) 
-    {
-        assert(realms != null);
-
-        String goodRealm = null; // need at least one good realm
-
-        for (AuthRealm aRealm : realms) {
-            String realmName = aRealm.getName();
-            String realmClass = aRealm.getClassname();
-            assert (realmName != null);
-            assert (realmClass != null);
-
-            try {
-                List<Property> realmProps = aRealm.getProperty();
-                /*V3 Commented ElementProperty[] realmProps =
-                    aRealm.getElementProperty();*/
-                Properties props = new Properties();
-                for (Property realmProp : realmProps) {
-                    props.setProperty(realmProp.getName(), realmProp.getValue());
-                }
-                Realm.instantiate(realmName, realmClass, props);
-
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("Configured realm: " + realmName);
-                }
-
-                if (goodRealm == null) {
-                    goodRealm = realmName;
-                }
-            } catch (Exception e) {
-                _logger.log(Level.WARNING,
-                           "realmconfig.disable", realmName);
-                _logger.log(Level.WARNING, "security.exception", e);
-            }
-        }
-
-        // done loading all realms, check that there is at least one
-        // in place and that default is installed, or change default
-        // to the first one loaded (arbitrarily).
-
-        if (goodRealm == null) {
-            _logger.severe("realmconfig.nogood");
-
-        } else {
-            try {
-                Realm def = Realm.getInstance(defaultRealm);
-                if (def == null) {
-                    defaultRealm = goodRealm;
-                }
-            } catch (Exception e) {
-                defaultRealm = goodRealm;
-            }
-            Realm.setDefaultRealm(defaultRealm);
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("Default realm is set to: " + defaultRealm);
-            }
-        }
-    }
-    
+    } 
 }

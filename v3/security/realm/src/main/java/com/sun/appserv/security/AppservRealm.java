@@ -219,4 +219,12 @@ public abstract class AppservRealm extends Realm
         //false by default.
         return false;
     }
+    
+   /**
+    * Persist the realm data to permanent storage
+    * @throws com.sun.enterprise.security.auth.realm.BadRealmException
+    */
+    public  void persist() throws BadRealmException {
+        //NOOP for realms that do not support UserManagement
+    }
 }
