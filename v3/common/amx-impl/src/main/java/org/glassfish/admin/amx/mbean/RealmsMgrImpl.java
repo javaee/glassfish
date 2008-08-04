@@ -66,6 +66,7 @@ import com.sun.enterprise.security.auth.realm.file.FileRealm;
 
 /**
     AMX RealmsMgr implementation.
+    Note that realms don't load until {@link #loadRealms} is called.
  */
 public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsMgr
 {
@@ -79,9 +80,14 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         mRealmsManager = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
 	}
     
-        private void 
-    loadReams()
+    private boolean    realmsLoaded = false;
+    
+        private synchronized void 
+    loadRealms()
     {
+        if ( realmsLoaded ) return;
+        realmsLoaded = true;
+        
         // this is ugly, the underlying API doesn't understand that there is more than one <security-service>,
         // each with one or more <auth-realm>
         final ConfigConfig config = getDomainRoot().getDomainConfig().getConfigsConfig().getConfigConfigMap().values().iterator().next();
@@ -135,8 +141,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
     public String[]
     getRealmNames()
     {
-        loadReams();
-        
+        loadRealms();
         final List<String> items = ListUtil.newList( mRealmsManager.getRealmNames() );
         return toArray(items);
     }
@@ -163,6 +168,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         private Realm
     getRealm(final String realmName)
     {
+        loadRealms();
         final Realm realm = mRealmsManager.getFromLoadedRealms(realmName);
         if ( realm == null )
         {
@@ -358,10 +364,10 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         
         //System.out.println( "############### keyFile: " + keyFile);
 
-        /* doesn't work! 
         final String[] usernames = getUserNames(adminFileAuthRealm.getName());
         return usernames.length == 1 && usernames[0].equals(ANONYMOUS_USER);
-        */
+        
+        /*
         FileRealm fr = null;
         try {
             fr = new FileRealm(keyFile);
@@ -378,6 +384,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         } catch(final Exception e) {
             throw new RuntimeException(e);
         }
+        */
     }
 }
 
