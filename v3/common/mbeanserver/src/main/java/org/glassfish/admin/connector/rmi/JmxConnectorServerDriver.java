@@ -224,6 +224,7 @@ public class JmxConnectorServerDriver {
         formJmxServiceUrl();
         createEnvironment();
         
+        logger.info( "Starting JMXConnectorServer @ " + url );
         final JMXConnectorServer cs = 
             JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
 
