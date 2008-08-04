@@ -44,7 +44,7 @@
         <artifactId>glassfish-parent</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-	<groupId>org.glassfish.web</groupId>
+        <groupId>org.glassfish.web</groupId>
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Web container related modules</name>  
@@ -55,6 +55,7 @@
         <module>war-util</module>
         <module>jstl</module>
         <module>jsf-connector</module>
+        <module>gui-plugin-common</module>
         <module>web-glue</module>
         <module>webtier-all</module>
         <module>tomcat-connector</module>

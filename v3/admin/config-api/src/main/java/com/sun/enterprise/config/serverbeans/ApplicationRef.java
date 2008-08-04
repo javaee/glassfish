@@ -38,9 +38,11 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import java.util.ArrayList;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -166,4 +168,23 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
     @Element
     public List<ApplicationConfig> getApplicationConfig();
     
+    /**
+     * Retrieves the single ApplicationConfig object for the given type,
+     * if any exists.  
+     * @param type the type of the application config of interest
+     * @return ApplicationConfig for the specified type; null if none exists
+     */
+    @DuckTyped
+    public ApplicationConfig getApplicationConfig(String type);
+    
+    public class Duck {
+        public static ApplicationConfig getApplicationConfig(ApplicationRef me, String type) {
+            for (ApplicationConfig ac : me.getApplicationConfig()) {
+                if (ac.getType().equals(type)) {
+                    return ac;
+                }
+            }
+            return null;
+        }
+    }
 }

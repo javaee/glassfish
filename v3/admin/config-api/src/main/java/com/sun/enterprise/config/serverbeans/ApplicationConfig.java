@@ -38,10 +38,22 @@
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.DomDocument;
 
 /**
  * Represents the {@literal <application-config>} child element of {@literal <application-ref>}.
@@ -54,7 +66,8 @@ import org.jvnet.hk2.config.Configured;
  * <p>
  * As a temporary workaround, the customized configuration should be stored
  * as the <code>config</code> attribute, the value of which is encoded using
- * URLEncoder.  This workaround should be removed and the config stored as
+ * URLEncoder automatically by the ApplicationConfig implementation.  
+ * This workaround should be removed and the config stored as
  * the text value once an AMX bug is fixed regarding getting the text value
  * of an element and once we find out how to be able to define the
  * ApplicationRef interface so we can get both the text
@@ -67,6 +80,8 @@ import org.jvnet.hk2.config.Configured;
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfigConfig", nameHint="type" )
 public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
 
+ 
+    
     /**
      * Reports the type value which holds the container type to which this
      * particular configuration customization applies.
@@ -109,5 +124,98 @@ public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
      * @param value the configuration information to be stored
      * @throws java.beans.PropertyVetoException
      */
-    public void setConfig(String value) throws PropertyVetoException;
+     public void setConfig(String value) throws PropertyVetoException;
+    
+    /**
+     * Returns the application configuration information as an object graph
+     * of @Configured classes and/or interfaces.
+     * <p>
+     * If the class or interface XConfig implements or extends Configured then
+     * you the following line returns the desired type:
+     * <code>XConfig xc = appConfig.getConfigData();</code>
+     * <p>
+     * Make sure that you declare the variable of the type corresponding to the
+     * top-level element in the application configuration.
+     * 
+     * @param habitat a valid Habitat that knows about the type that is
+     * receiving the return value
+     * 
+     * @return object of type T as the root of an object graph corresponding to
+     * the XML encoded in the config attribute value.
+     * @throws ClassCastException if the result type to which you assign or cast
+     * the return value does not match the type derived from the top-level
+     * element of the application configuration information.
+     */
+    @DuckTyped
+    public <T> T getConfigData(Habitat habitat);
+    
+    /**
+     * Returns the configuration data in decoded form.
+     * 
+     * @return
+     */
+    @DuckTyped
+    public String getFormattedConfig();
+    
+    /**
+     * Encodes the value before storing it as the configuration data.
+     * 
+     * @param value
+     */
+    @DuckTyped
+    public void setFormattedConfig(String value) throws PropertyVetoException;
+    
+    public class Duck {
+       /** for encoding and decoding the config attribute contents */
+        private static final String ENCODING = "UTF-8";
+
+        private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
+        public static String getFormattedConfig(ApplicationConfig me) {
+            try {
+                return URLDecoder.decode(me.getConfig(), ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                return me.getConfig(); // should not happen
+            }
+        }
+        
+        public static void setFormattedConfig(ApplicationConfig me, String c) throws PropertyVetoException {
+            try {
+                me.setConfig(URLEncoder.encode(c, ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                me.setConfig(c); // should not happen
+            }
+        }
+        /**
+         * Returns the application configuration information as an object graph
+         * of @Configured classes and/or interfaces.
+         * <p>
+         * If the class or interface XConfig implements or extends Configured then
+         * you the following line returns the desired type:
+         * <code>XConfig xc = appConfig.getConfigData();</code>
+         * <p>
+         * Make sure that you declare the variable of the type corresponding to the
+         * top-level element in the application configuration.
+         * @param habitat valid Habitat that knows about the config-api types to be parsed
+         * @return object of type T as the root of an object graph corresponding to
+         * the XML encoded in the config attribute value.
+         * @throws ClassCastException if the result type to which you assign or cast
+         * the return value does not match the type derived from the top-level
+         * element of the application configuration information.
+         */
+        public static <T extends ConfigBeanProxy> T getConfigData(ApplicationConfig me, Habitat habitat) {
+            try {
+                String xmlData = URLDecoder.decode(me.getConfig(), ENCODING);
+                ConfigParser parser = new ConfigParser(habitat);
+                XMLStreamReader reader = xmlInputFactory.createXMLStreamReader(new StringReader(xmlData));
+                DomDocument dom = parser.parse(reader);
+                Object topLevelElement = dom.getRoot().get();
+                return (T) topLevelElement;
+            } catch (UnsupportedEncodingException uce) {
+                throw new RuntimeException(uce); // should never happen
+            } catch (XMLStreamException xse) {
+                throw new RuntimeException(xse); // should never happen
+            }
+        }
+   }
 }
