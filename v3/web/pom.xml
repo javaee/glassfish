@@ -55,7 +55,7 @@
         <module>war-util</module>
         <module>jstl</module>
         <module>jsf-connector</module>
-        <!-- <module>gui-plugin-common</module> -->
+        <module>gui-plugin-common</module>
         <module>web-glue</module>
         <module>webtier-all</module>
         <module>tomcat-connector</module>
