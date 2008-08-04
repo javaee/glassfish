@@ -306,7 +306,10 @@ public class WebModuleContextConfig extends ContextConfig {
         Realm rlm = context.getRealm();
         if (rlm == null) {
         // END IASRI 4856062
-            logger.log(Level.SEVERE, "webModuleContextConfig.missingRealm");
+            String realmName = (context.getLoginConfig() != null) ? context.getLoginConfig().getRealmName() : null;
+            if (realmName != null && !"".equals(realmName)) {
+                logger.log(Level.SEVERE, "webModuleContextConfig.missingRealm");
+            }
             ok = false;
             return;
         }
