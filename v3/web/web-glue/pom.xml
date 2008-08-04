@@ -35,9 +35,7 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish.web</groupId>
     	<artifactId>web</artifactId>
@@ -126,8 +124,7 @@
                         <!-- _include does not work. See Felix-620.
                         <_include>osgi.bundle</_include>
                         -->
-                        <Export-Package>
-                        com.sun.appserv.server,
+                        <Export-Package>com.sun.appserv.server,
                         com.sun.appserv.web.cache,
                         com.sun.appserv.web.cache.filter,
                         com.sun.appserv.web.cache.mapping,
@@ -157,8 +154,7 @@
                         com.sun.enterprise.web.util,
                         com.sun.web.server,
                         org.glassfish.web,
-                        org.glassfish.web.loader.util
-                        </Export-Package>
+                        org.glassfish.web.loader.util</Export-Package>
                         <Bundle-Activator>org.glassfish.web.DirContextURLStreamHandlerService</Bundle-Activator>
                     </instructions>
                 </configuration>
@@ -322,6 +318,11 @@
           <artifactId>osgi_R4_core</artifactId>
           <version>1.0</version>
           <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>gui-plugin-common</artifactId>
+            <version>[1.0,)</version>
         </dependency>
     </dependencies>
 </project>
