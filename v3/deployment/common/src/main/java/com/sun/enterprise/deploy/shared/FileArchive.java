@@ -362,6 +362,12 @@ public class FileArchive implements ReadableArchive, WritableArchive {
      * sub directories
      */
     private void getListOfFiles(File directory, Vector<String> files, List embeddedArchives) {
+        // important: listFiles() returns null sometimes.  E.g. if directory is 
+        // not a directory -- then null is returned and this method will throw an NPE
+
+        if(directory == null || !directory.isDirectory())
+            return;
+        
         for (File aList : directory.listFiles()) {
             String fileName = aList.getAbsolutePath().substring(archive.getAbsolutePath().length() + 1);
             if (!aList.isDirectory()) {
