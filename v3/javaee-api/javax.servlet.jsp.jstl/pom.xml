@@ -58,7 +58,14 @@
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
-            <version>${jstl-api.version}</version>
+            <!-- We don't use jstl-api.version variable to designate the version,
+                 as for what ever reason someone has packaged javax.servlet classes
+                 in that version of artifact. So, we end up not imprting javax.servlet.
+                 So, we temporarily override version here. 
+                 TODO(Sahoo): Once we start using newer version of jstl-api, we should
+                 remove this work around.
+            -->
+            <version>1.2-rev-2-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
