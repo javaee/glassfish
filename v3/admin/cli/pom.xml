@@ -171,7 +171,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-				<Class-Path>cli-framework-${project.version}.jar cli-optional-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-${amx-api.version}.jar</Class-Path>
+				<Class-Path>cli-framework-${project.version}.jar cli-optional-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-${amx-api.version}.jar javax.xml.stream-${project.version}.jar wstx-asl-3.2.3.jar</Class-Path>
                         </manifestEntries>
                         <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>

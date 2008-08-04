@@ -83,6 +83,17 @@
            <artifactId>osgi-adapter</artifactId>
            <version>${hk2.version}</version>
        </dependency>
+       <!-- Since HK2 needs StAX at runtime, we need the following two -->
+       <dependency>
+           <groupId>woodstox</groupId>
+           <artifactId>wstx-asl</artifactId>
+           <version>3.2.3</version>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.xml.stream</artifactId>
+           <version>${glassfish.version}</version>
+       </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>glassfish</artifactId>

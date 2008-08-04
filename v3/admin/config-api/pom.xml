@@ -137,6 +137,11 @@
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish-api.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.stream</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>org.glassfish.tests</groupId>
