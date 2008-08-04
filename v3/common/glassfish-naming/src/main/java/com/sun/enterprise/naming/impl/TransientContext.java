@@ -252,7 +252,7 @@ public class TransientContext implements Context, Serializable {
         TransientContext ctx;
         Object obj = bindings.get(s);
         if (obj == null) {
-            throw new NameNotFoundException();
+            throw new NameNotFoundException(s);
         }
         if (obj instanceof TransientContext) {
             ctx = (TransientContext) obj;
