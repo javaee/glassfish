@@ -34,6 +34,7 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.InputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Enumeration;
 
 
 /**
@@ -56,39 +57,52 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
         super("jpa", null /* appStigma */, null /* urlPattern */);
     }
 
+    private static char SEPERATOR_CHAR = '/';
+    private static final String WEB_INF                  = "WEB-INF";
+    private static final String WEB_INF_LIb              = WEB_INF + SEPERATOR_CHAR + "lib";
+    private static final String WEB_INF_CLASSSES         = WEB_INF + SEPERATOR_CHAR + "classes";
+    private static final String META_INF_PERSISTENCE_XML = "META-INF" + SEPERATOR_CHAR + "persistence.xml";
+    private static final String WEB_INF_CLASSSES_META_INF_PERSISTENCE_XML = WEB_INF_CLASSSES + SEPERATOR_CHAR + META_INF_PERSISTENCE_XML;
+    private static final String JAR_SUFFIX = ".jar";
     /**
      * Returns true if the archive contains persistence.xml as defined by packaging rules of JPA
-     * Curently only scans for persitsece.xml in WEB-INF/classes/META-INF
-     * TODO : Enhance this to handle all the cases
+     * Curently only scans for persitsece.xml inside a war. That is in WEB-INF/classes/META-INF and WEB-INF/lib/pu.jar
+     * TODO : Enhance this to handle ears
      */
-    private final static String[] validPersistenceXmlLocations =
-            {
-               "WEB-INF/classes/META-INF/persistence.xml",
-               "META-INF/persistence.xml"
-            };
-    @Override public boolean handles(ReadableArchive location, ClassLoader loader) {
+    @Override
+    public boolean handles(ReadableArchive location, ClassLoader loader) {
         boolean isJPAArchive = false;
-        // scan for persistence.xml in expected locations. If at least one is found, this is 
+
+        // scan for persistence.xml in expected locations. If at least one is found, this is
         // a jpa archive
-        for (String validPersistenceXmlLocation : validPersistenceXmlLocations) {
-            isJPAArchive = isEntryPresent(location, validPersistenceXmlLocation);
-            if(isJPAArchive) {
-                //Found one. No need to scan further
-                break;
-            }
-        }
+        // First check for  "WEB-INF/classes/META-INF/persistence.xml"
+        isJPAArchive = isEntryPresent(location, WEB_INF_CLASSSES_META_INF_PERSISTENCE_XML);
+        if (!isJPAArchive) {
+            // Check in WEB-INF/lib dir
+            if (isEntryPresent(location, WEB_INF_LIb)) {
+                Enumeration<String> entries = location.entries(WEB_INF_LIb);
+                while (entries.hasMoreElements() && !isJPAArchive) {
+                    String entryName = entries.nextElement();
+                    if (entryName.endsWith(JAR_SUFFIX) && // a jar in lib dir
+                            entryName.indexOf(SEPERATOR_CHAR, WEB_INF_LIb.length() + 1 ) == -1 ) { // && not WEB-INf/lib/foo/bar.jar 
+                        try {
+                            ReadableArchive jarInLib = location.getSubArchive(entryName);
+                            isJPAArchive = isEntryPresent(jarInLib, META_INF_PERSISTENCE_XML);
+                            jarInLib.close();
+                        } catch (IOException e) {
+                            // Something went wrong while reading the jar. Do not attempt to scan it
+                        } // catch
+                    } // if (entryName.endsWith(JAR_SUFFIX))
+                } // while
+            } // if (isEntryPresent(location, WEB_INF_LIb))
+        } // if (!isJPAArchive)
         return isJPAArchive;
     }
 
-    public boolean isEntryPresent(ReadableArchive location, String entry) {
+    private boolean isEntryPresent(ReadableArchive location, String entry) {
         boolean entryPresent = false;
         try {
-            InputStream is;
-            is = location.getEntry(entry);
-            if (is != null) {
-                is.close();
-                entryPresent = true;
-            }
+            entryPresent = location.exists(entry);
         } catch (IOException e) {
             // ignore
         }
