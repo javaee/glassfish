@@ -65,12 +65,20 @@ public class SingletonContainer
         System.out.println("****** [SINGLETON CONTAINER CREATED] for: " + desc.getEjbClassName());
     }
 
+    public ComponentContext instantiateSingletonInstance() {
+        if (singletonCtx == null) {
+            factory = new SessionContextFactory();
+            singletonCtx = (ComponentContext) factory.create(null);
+        }
+
+        return singletonCtx;
+    }
+
     protected ComponentContext _getContext(EjbInvocation inv) {
         if (singletonCtx == null) {
             synchronized (this) {
                 if (singletonCtx == null) {
-                    factory = new SessionContextFactory();
-                    singletonCtx = (ComponentContext) factory.create(null);
+                    instantiateSingletonInstance();
                 }
             }
         }
@@ -99,7 +107,11 @@ public class SingletonContainer
     protected void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
 
     }
-    
+
+    protected void forceDestroyBean(EJBContextImpl sc) {
+        //Should not destroy the instance
+    }
+
     public void undeploy() {
         try {
             factory.destroy(singletonCtx);
