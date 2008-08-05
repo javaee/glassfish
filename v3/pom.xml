@@ -138,6 +138,8 @@
         <stax-api.version>1.0-2</stax-api.version> 
         <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
+	<dataprovider.version>4.2</dataprovider.version>
+	<jsftemplating.version>1.2.1</jsftemplating.version>
     	<glassfish-api.version>10.0.402</glassfish-api.version>        
 
 	
@@ -161,6 +163,7 @@
       	<module>jdbc</module>
       	<module>persistence</module>
       	<module>extras</module>
+	<module>admingui</module>
       	<module>distributions</module>
         <module>security</module>
         <module>registration</module>
