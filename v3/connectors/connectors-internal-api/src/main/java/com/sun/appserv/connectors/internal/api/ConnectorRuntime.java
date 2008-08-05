@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 
@@ -195,4 +196,10 @@ public interface ConnectorRuntime {
      */
     public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException;
 
+    /**
+     * provides the transactionManager
+     *
+     * @return TransactionManager
+     */
+    public JavaEETransactionManager getTransactionManager();
 }

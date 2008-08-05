@@ -37,9 +37,12 @@
 package com.sun.enterprise.connectors.work;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.resource.spi.work.WorkManager;
 import java.lang.reflect.Method;
@@ -80,6 +83,12 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
 
     protected static final Map<String, WorkManager> workManagers;
 
+    @Inject
+    private Habitat connectorRuntimeHabitat;
+
+    private ConnectorRuntime runtime;
+
+
     static {
         workManagers = Collections.synchronizedMap(new HashMap<String, WorkManager>());
     }
@@ -108,7 +117,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
 
             // Default work manager implementation is not a singleton.
             if (className.equals(DEFAULT)) {
-                return new CommonWorkManager(poolName);
+                return new CommonWorkManager(poolName, getConnectorRuntime() );
             }
 
             cls = Class.forName(className);
@@ -177,4 +186,13 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
         }
         return new WorkManagerProxy(wm, moduleName);
     }
+
+    private ConnectorRuntime getConnectorRuntime() {
+        //TODO V3 not synchronized
+        if(runtime == null){
+            runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+        }
+        return runtime;
+    }
+
 }

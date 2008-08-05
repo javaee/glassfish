@@ -101,12 +101,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-runtime</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.transaction</groupId>
             <artifactId>transaction-internal-api</artifactId>
             <version>${project.version}</version>

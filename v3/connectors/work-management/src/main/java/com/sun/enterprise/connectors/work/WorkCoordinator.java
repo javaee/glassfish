@@ -38,9 +38,9 @@ package com.sun.enterprise.connectors.work;
 
 
 import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import javax.resource.spi.work.*;
 import java.util.logging.Level;
@@ -105,7 +105,7 @@ public final class WorkCoordinator {
                            long timeout,
                            ExecutionContext ec,
                            WorkQueue queue,
-                           WorkListener listener, WorkStats workStats) {
+                           WorkListener listener, WorkStats workStats, ConnectorRuntime runtime) {
 
         this.work = work;
         this.timeout = timeout;
@@ -115,6 +115,7 @@ public final class WorkCoordinator {
         synchronized (WorkCoordinator.class) {
             this.id = ++seed;
         }
+        this.runtime = runtime;
         this.lock = new Object();
         this.workStats = workStats;
     }
@@ -211,7 +212,6 @@ public final class WorkCoordinator {
         boolean txImported = (ec != null && ec.getXid() != null);
         try {
             JavaEETransactionManager tm = getTransactionManager();
-            // TODO V3
             if (txImported) {
                 tm.release(ec.getXid());
             }
@@ -236,10 +236,8 @@ public final class WorkCoordinator {
                 }
 
                 //Also release the TX from the record of TX Optimizer
-                // TODO V3
                 if (txImported) {
                     JavaEETransactionManager tm = getTransactionManager();
-                    //TODO V3 check whether J2EETxMgrOpt is available 
                     tm.clearThreadTx();
                 }
 
@@ -328,8 +326,6 @@ public final class WorkCoordinator {
     /**
      * Lock the thread upto the end of execution or start of work
      * execution.
-     *
-     * @param waitMode either WAIT_UNTIL_START or WAIT_UNTIL_FINISH
      */
     public void lock() {
 
@@ -436,10 +432,6 @@ public final class WorkCoordinator {
     }
 
     private JavaEETransactionManager getTransactionManager() {
-        //TODO V3 accessing connectorRuntime impll ?
-        if (runtime == null) {
-            runtime = ConnectorRuntime.getRuntime();
-        }
         return runtime.getTransactionManager();
     }
 }

@@ -84,12 +84,12 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     @Inject
     private ResourceManager resourceManager;
 
-    private long startTime;
+    //private long startTime;
 
     private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     public ConnectorDeployer() {
-        startTime = System.currentTimeMillis();
+        //startTime = System.currentTimeMillis();
     }
 
     /**
@@ -187,7 +187,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        logFine("Time taken to initialize connector deployer : " + (System.currentTimeMillis() - startTime));
+        //logFine("Time taken to initialize connector deployer : " + (System.currentTimeMillis() - startTime));
     }
 
     public void logFine(String message) {

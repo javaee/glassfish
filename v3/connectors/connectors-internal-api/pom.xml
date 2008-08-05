@@ -124,6 +124,11 @@
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.transaction</groupId>
+            <artifactId>transaction-internal-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

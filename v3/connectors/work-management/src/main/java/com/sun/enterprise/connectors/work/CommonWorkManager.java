@@ -37,10 +37,10 @@
 package com.sun.enterprise.connectors.work;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -72,19 +72,20 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     private StringManager localStrings = StringManager.getManager(
             CommonWorkManager.class);
 
+    private ConnectorRuntime runtime;
+
     /**
      * Private constructor.
      *
      * @param threadPoolId Id of the thread pool.
      * @throws ConnectorRuntimeException if thread pool is not accessible
      */
-    public CommonWorkManager(String threadPoolId)
+    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime)
             throws ConnectorRuntimeException {
 
         try {
-            //TODO V3 accessing ConnectorRuntime directly ?
-            tp = ConnectorRuntime.getRuntime().getThreadPool(threadPoolId);
-
+            this.runtime = runtime;
+            tp = runtime.getThreadPool(threadPoolId);
         } catch (NoSuchThreadPoolException e) {
             String msg = localStrings.getString("workmanager.threadpool_not_found");
             logger.log(Level.SEVERE, msg, threadPoolId);
@@ -103,9 +104,9 @@ public final class CommonWorkManager implements MonitorableWorkManager {
      *
      * @throws ConnectorRuntimeException if thread pool is not accessible
      */
-    public CommonWorkManager() throws ConnectorRuntimeException {
+    /**public CommonWorkManager() throws ConnectorRuntimeException {
         this(null);
-    }
+    } */
 
     /**
      * Executes the work instance.
@@ -139,7 +140,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats);
+                        this.workStats, runtime);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_FINISH);
         wc.lock();
 
@@ -194,7 +195,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats);
+                        this.workStats, runtime);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_START);
         wc.lock();
 
@@ -246,7 +247,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats);
+                        this.workStats, runtime);
         wc.submitWork(WorkCoordinator.NO_WAIT);
         wc.lock();
 
