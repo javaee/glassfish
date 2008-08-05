@@ -18,7 +18,6 @@
               <archive>
                   <manifestEntries>
                       <HK2-Import-Bundles>org.glassfish.ejb:ejb-container</HK2-Import-Bundles>
-                      <Require-Bundle>org.glassfish.ejb.ejb-container;bundle-version="[10.0.0.SNAPSHOT, 10.0.0.SNAPSHOT]";resolution:=mandatory;visibility:=private</Require-Bundle>
                   </manifestEntries>
               </archive>
             </configuration>
