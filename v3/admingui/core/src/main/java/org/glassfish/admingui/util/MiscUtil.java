@@ -113,10 +113,20 @@ public class MiscUtil {
 	}
     }
     
+    /**
+     * <p>This utility method can be used to create a ValueExpression and set its value.
+     * An example usage might look like this:</p>
+     * <code>
+     *      ValueExpression ve = MiscUtil.setValueExpression("#{myMap}", new HashMap());
+     * </code>
+     * @param expression The expression to create. Note that this requires the #{ and } wrappers.
+     * @param value  The value to which to set the ValueExpression
+     * @return The newly created ValueExpression
+     */
     public static ValueExpression setValueExpression(String expression, Object value) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ValueExpression ve = facesContext.getApplication().getExpressionFactory().
-            createValueExpression(facesContext.getELContext(), "#{" + expression + "}", Object.class);
+            createValueExpression(facesContext.getELContext(), expression, Object.class);
         ve.setValue(facesContext.getELContext(), value);
         
         return ve;
