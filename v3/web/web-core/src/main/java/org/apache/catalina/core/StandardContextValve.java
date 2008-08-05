@@ -274,18 +274,12 @@ final class StandardContextValve
      * application, but currently that code runs at the wrapper level rather
      * than the context level.
      *
-     * @param requestURI The request URI for the requested resource
      * @param response The response we are creating
      */
-    private void notFound(String requestURI, HttpServletResponse response) {
+    private void notFound(HttpServletResponse response) {
 
         try {
-            /* IASRI 4878272
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, requestURI);
-            */
-            // BEGIN IASRI 4878272
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            // END IASRI 4878272
         } catch (IllegalStateException e) {
             ;
         } catch (IOException e) {
@@ -359,7 +353,7 @@ final class StandardContextValve
             || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
             || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
             String requestURI = hreq.getDecodedRequestURI();
-            notFound(requestURI, (HttpServletResponse) response.getResponse());
+            notFound((HttpServletResponse) response.getResponse());
             return null;
         }
         // START CR 6415120
@@ -390,14 +384,14 @@ final class StandardContextValve
         Wrapper wrapper = request.getWrapper();
         if (wrapper == null) {
             String requestURI = hreq.getDecodedRequestURI();
-            notFound(requestURI, (HttpServletResponse) response.getResponse());
+            notFound((HttpServletResponse) response.getResponse());
             return null;
         } else if (wrapper.isUnavailable()) {
             // May be as a result of a reload, try and find the new wrapper
             wrapper = (Wrapper) container.findChild(wrapper.getName());
             if (wrapper == null) {
                 String requestURI = hreq.getDecodedRequestURI();
-                notFound(requestURI, (HttpServletResponse) response.getResponse());
+                notFound((HttpServletResponse) response.getResponse());
                 return null;
             }
         }
