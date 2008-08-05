@@ -77,9 +77,9 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
+import org.glassfish.admingui.util.HtmlAdaptor;
 
 
 public class CommonHandlers {
@@ -199,19 +199,20 @@ public class CommonHandlers {
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
         String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
 
-		if((timeOut != null) && (!timeOut.equals(""))) {
-			try {
-				int time = new Integer(timeOut).intValue();
-				if (time == 0) {
-					((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
-				} else {
-					((HttpServletRequest)request).getSession().setMaxInactiveInterval(time*60);
-				}
-			} catch (NumberFormatException nfe) {
-				//We may never get here, in case...
-					((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
-			}
-		} 
+        if((timeOut != null) && (!timeOut.equals(""))) {
+                try {
+                        int time = new Integer(timeOut).intValue();
+                        if (time == 0) {
+                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
+                        } else {
+                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(time*60);
+                        }
+                } catch (NumberFormatException nfe) {
+                        //We may never get here, in case...
+                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
+                }
+        } 
+        HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
     }
     
     /** This function is called in login.jsf to set the various product specific attributes such as the 
