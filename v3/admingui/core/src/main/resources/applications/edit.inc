@@ -100,28 +100,19 @@
             <sun:textField id="ctx" columns="$int{55}" text="#{contextRoot}" />      
         </sun:property>
        	<sun:property id="vsProp" rendered="#{hasVS}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" >
-		<sun:listbox id="vs" 
-			immediate="#{true}"
-			items="#{availableVS}"
-			multiple="#{true}"
-			rows="$int{4}"
-			selected="#{selectedVS}"
-		>
-        		<!beforeCreate
-			if("#{pe}") {
-				getAllVSList(
-					targetName="server"
-					PE="#{pe}"
-					serverList=>$attribute{vsList});
-				getVSOptions(vsList="$attribute{vsList}"
-					name="#{name}"
-					PE="#{pe}"
-					targetName="server"
-					availableVS=>$pageSession{availableVS}
-					selectedVS=>$pageSession{selectedVS});
-			}
-			/>
-		</sun:listbox>
+            <sun:listbox id="vs" immediate="#{true}"  labels="$pageSession{availableVS}" multiple="#{true}"  rows="$int{4}"  selected="#{selectedVS}" >
+                <!beforeCreate
+                if("#{pe}") {
+                    getAllVSList( targetName="server"  PE="#{pe}"  serverList=>$attribute{vsList});
+                    getVSOptions(vsList="$attribute{vsList}" 
+                            name="#{name}"
+                            PE="#{pe}"
+                            targetName="server"
+                            availableVS=>$pageSession{availableVS}
+                            selectedVS=>$pageSession{selectedVS});
+                }
+                />
+            </sun:listbox>
        	</sun:property>
         <sun:property id="threadProp" rendered="#{hasThreadPool}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.ThreadPoolID}" helpText="$resource{i18n.connectorModule.ThreadPoolIDHelp}" >
             <sun:textField id="thread" columns="$int{55}" text="#{requestScope.threadPool}" />      
@@ -132,7 +123,7 @@
             <sun:textField id="desc" columns="$int{55}" text="#{requestScope.description}" />      
         </sun:property>
 
-        
+    
         <sun:property id="statusProp" rendered="$session{notSupportCluster}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.enabled}" />  
        </sun:property>
