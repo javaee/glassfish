@@ -39,7 +39,7 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.admingui.common.util;
+package org.glassfish.admingui.util;
 
 /**
  *
@@ -47,6 +47,7 @@ package org.glassfish.admingui.common.util;
  */
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import javax.management.MBeanServerConnection;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -54,7 +55,7 @@ public class HtmlAdaptor {
 
     private static boolean _bHtmlAdaptorServerRegistered = false;
 
-    public static void registerHTMLAdaptor(MBeanServer mbs) {
+    public static void registerHTMLAdaptor(MBeanServerConnection mbsc) {
         if(_bHtmlAdaptorServerRegistered)
             return;
         try {
@@ -65,6 +66,7 @@ public class HtmlAdaptor {
             Method method = cl.getMethod("start");
             ObjectName htmlAdaptorObjectName = new ObjectName(
                     "Adaptor:name=html,port="+port);
+            MBeanServer mbs = (MBeanServer) mbsc;
             mbs.registerMBean(adaptor, htmlAdaptorObjectName);
             method.invoke(adaptor);
             _bHtmlAdaptorServerRegistered = true;
