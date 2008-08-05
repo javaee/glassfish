@@ -92,9 +92,7 @@ import javax.servlet.ServletContext;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 
-import org.glassfish.admingui.common.util.GuiUtil;
 import org.jvnet.hk2.component.Habitat;
-import java.lang.management.ManagementFactory;
 import com.sun.appserv.management.client.AMXBooter;
 
 
@@ -180,7 +178,7 @@ public class AMXRoot {
                 ex.printStackTrace();
             }
              */
-            HtmlAdaptor.registerHTMLAdaptor(mbs);
+
 	}
         return amxRoot;
     }
