@@ -473,7 +473,7 @@
         <ant dir="httpServletGetAllDeclaredMethods" target="build-publish-war"/>
         <!--
         This is more of CLI test and is difficult to automate as PWC Devtest
-        <ant dir="httpListenerDynamicCongig" target="build-publish-war"/>
+        <ant dir="httpListenerDynamicConfig" target="build-publish-war"/>
 
         <ant dir="invokerServletDisabled" target="build-publish-war"/>
         -->
@@ -716,7 +716,7 @@
         <ant dir="httpServletGetAllDeclaredMethods" target="run"/>
         <!--
         This is more of CLI test and is difficult to automate as PWC Devtest
-        <ant dir="httpListenerDynamicCongig" target="run"/>
+        <ant dir="httpListenerDynamicConfig" target="run"/>
 
         <ant dir="invokerServletDisabled" target="run"/>
         -->

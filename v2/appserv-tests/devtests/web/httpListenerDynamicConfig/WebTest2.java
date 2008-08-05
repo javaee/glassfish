@@ -38,14 +38,14 @@ public class WebTest2 {
                int responseCode=  urlConnection.getResponseCode();
                System.out.println("Response code: " + responseCode + " Expected code: 200"); 
                if (urlConnection.getResponseCode() == 200){
-                    stat.addStatus("httpListenerDynamicCongig-afterReconf", stat.PASS);
+                    stat.addStatus("httpListenerDynamicConfig-afterReconf", stat.PASS);
                } else {
-                    stat.addStatus("httpListenerDynamicCongig-afterReconf", stat.FAIL);
+                    stat.addStatus("httpListenerDynamicConfig-afterReconf", stat.FAIL);
                }
             }
         }catch(Exception ex){
-            stat.addStatus("httpListenerDynamicCongig-afterReconf", stat.FAIL);
+            stat.addStatus("httpListenerDynamicConfig-afterReconf", stat.FAIL);
         }
-        stat.printSummary("web/httpListenerDynamicCongig-afterReconf");
+        stat.printSummary("web/httpListenerDynamicConfig-afterReconf");
     }
 }
