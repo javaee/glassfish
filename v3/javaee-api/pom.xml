@@ -131,7 +131,6 @@
         <module>javax.annotation</module>
         <module>javax.ejb</module>
         <module>javax.enterprise.deploy</module>
-        <module>javax.faces</module>
         <module>javax.jms</module>
         <module>javax.jws</module>
         <module>javax.mail</module>
