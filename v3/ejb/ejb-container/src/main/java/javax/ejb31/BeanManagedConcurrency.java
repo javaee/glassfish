@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package javax.ejb;
+package javax.ejb31;
 
 import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
@@ -29,18 +29,10 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Used to express an initialization dependency between Singleton components.
+ * Sets a Singleton component's concurrency management type to Bean Managed.
  */
 
 @Target(TYPE) 
 @Retention(RUNTIME)
-public @interface DependsOn {
-
-    /**
-     * Holds one or more ejb-names of Singleton components whose initialization must occur
-     * before this Singleton.
-     */
-    String[] value();
-
-}
+public @interface BeanManagedConcurrency {}
 

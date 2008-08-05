@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package javax.ejb;
+package javax.ejb31;
 
 import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
@@ -29,10 +29,29 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Sets a Singleton component's concurrency management type to Bean Managed.
+ * Component-defining annotation for a singleton session bean.
  */
 
 @Target(TYPE) 
 @Retention(RUNTIME)
-public @interface BeanManagedConcurrency {}
+public @interface Singleton {
+
+    /**
+     * ejb-name for this bean.
+     */
+    String name() default "";
+
+    /**
+      * A product specific name(e.g. global JNDI name) 
+      * that this session bean should be mapped to.  
+      * 
+      * Application servers are not required to support any particular 
+      * form or type of mapped name, nor the ability to use mapped names. 
+      * The mapped name is product-dependent and often installation-dependent. 
+      * No use of a mapped name is portable. 
+      */ 
+    String mappedName() default "";
+
+    String description() default "";
+}
 

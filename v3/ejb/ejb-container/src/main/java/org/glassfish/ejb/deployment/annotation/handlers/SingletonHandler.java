@@ -48,7 +48,7 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import javax.ejb.Singleton;
+import javax.ejb31.Singleton;
 
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
