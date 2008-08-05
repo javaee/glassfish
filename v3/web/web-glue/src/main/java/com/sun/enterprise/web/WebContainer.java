@@ -4265,6 +4265,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         int port = Integer.parseInt(httpListener.getPort());
 
+        // Add the port number of the new http-listener to its
+        // default-virtual-server, so that when the new http-listener
+        // and its MapperListener are started, they will recognize the
+        // default-virtual-server as one of their own, and add it to the
+        // Mapper
         String virtualServerName = httpListener.getDefaultVirtualServer();
         VirtualServer vs = (VirtualServer)
             _embedded.getEngines()[0].findChild(virtualServerName);
