@@ -48,18 +48,22 @@ public interface ThreadPoolProbeProvider {
      * thread pool.
      */
     public void newThreadsAllocatedEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("increment") int increment,
         @ProbeParam("boolean") boolean startThread);
 
 
     public void maxNumberOfThreadsReachedEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads);
 
 
     public void threadDispatchedFromPoolEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId);
 
 
     public void threadReturnedToPoolEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId);
 }

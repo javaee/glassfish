@@ -64,7 +64,8 @@ public class GrizzlyProbePipeline extends LinkedListPipeline {
         super.increaseWorkerThread(increment, startThread);
         // FIXME: Remove this null check
         if (threadPoolProbeProvider != null) {
-            threadPoolProbeProvider.newThreadsAllocatedEvent(increment,
+            threadPoolProbeProvider.newThreadsAllocatedEvent(getName(),
+                                                             increment,
                                                              startThread);
         }
     }
