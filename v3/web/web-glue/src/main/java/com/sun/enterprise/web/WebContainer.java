@@ -155,6 +155,7 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -257,9 +258,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // ----------------------------------------------------- Instance Variables
 
-    @Inject
-    Mapper[] mappers;
-    
     @Inject
     Domain domain;
 
@@ -445,6 +443,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected SessionProbeProvider sessionProbeProvider = null;
     protected WebModuleProbeProvider webModuleProbeProvider = null;
 
+    protected Habitat habitat;
+
 
     /**
      * Static initialization
@@ -459,6 +459,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void postConstruct() {
 
         createProbeProviders();
+
+        habitat = _serverContext.getDefaultHabitat();
 
         setJspFactory();
 
@@ -484,7 +486,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             ParserUtils.setSchemaResourcePrefix(schemas.toURL().toString());
             ParserUtils.setDtdResourcePrefix(dtds.toURL().toString());
-            ParserUtils.setEntityResolver(_serverContext.getDefaultHabitat().getComponent(EntityResolver.class, "web"));
+            ParserUtils.setEntityResolver(habitat.getComponent(EntityResolver.class, "web"));
         } catch(MalformedURLException e) {
             _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
         }
@@ -494,8 +496,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         /* FIXME
         webContainerFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
         */
-        webContainerFeatureFactory =
-            _serverContext.getDefaultHabitat().getComponent(
+        webContainerFeatureFactory = habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class);
 
         /* TODO : revisit later
@@ -509,7 +510,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
          */
 
-        Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
+        Config cfg = habitat.getComponent(Config.class);
         serverConfigLookup = new ServerConfigLookup(cfg);
         configureDynamicReloadingSettings();
         LogService logService = cfg.getLogService();
@@ -615,7 +616,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //end HERCULES:mod
 
         // TODO : revisit later
-        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
+        //ejbWebServiceRegistryListener.register(habitat);
 
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
@@ -690,7 +691,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ConstructorWomb<HttpServiceConfigListener> womb = 
                 new ConstructorWomb<HttpServiceConfigListener>(
                 HttpServiceConfigListener.class, 
-                _serverContext.getDefaultHabitat(), 
+                habitat, 
                 null);
         HttpServiceConfigListener configListener = womb.get(null);
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(
@@ -775,7 +776,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param httpListener the configuration element.
      */       
     protected WebConnector createHttpListener(HttpListener httpListener,
-                                             HttpService httpService){
+                                              HttpService httpService) {
+        return createHttpListener(httpListener, httpService, null);
+    }
+
+
+    protected WebConnector createHttpListener(HttpListener httpListener,
+                                              HttpService httpService,
+                                              Mapper mapper) {
+
         if (!Boolean.valueOf(httpListener.getEnabled())) {
             _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
                     Boolean.valueOf(httpListener.getEnabled()));
@@ -820,15 +829,20 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         connector = (WebConnector)_embedded.createConnector(address, port,
                                                             isSecure);
-        
-        for (Mapper m: mappers){
-            if (m.getPort() == port){
-                connector.setMapper(m);
-                break;
+
+        if (mapper != null) {
+            connector.setMapper(mapper);
+        } else {
+            for (Mapper m : habitat.getAllByContract(Mapper.class)) {
+                if (m.getPort() == port) {
+                    connector.setMapper(m);
+                    break;
+                }
             }
         }
-        
+
         _logger.info("Created HTTP listener " + httpListener.getId());
+
         connector.setName(httpListener.getId());
 
         connector.configure(httpListener, isSecure, httpService);
@@ -851,6 +865,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if ( defaultRedirectPort != -1 ){
             connector.setRedirectPort(defaultRedirectPort);
         }
+
         return connector;
     }
 
@@ -875,7 +890,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 + defaultHost + " listening on port: "
                                 + port);
             
-        for (Mapper m: mappers){
+        for (Mapper m : habitat.getAllByContract(Mapper.class)) {
             if (m.getPort() == port){
                 jkConnector.setMapper(m);
                 break;
@@ -1076,7 +1091,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
             vs_id, vsBean, httpService, domain,
-            _serverContext.getDefaultHabitat(), webContainerFeatureFactory,
+            habitat, webContainerFeatureFactory,
             globalAccessLogBufferSize, globalAccessLogWriteInterval);
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
@@ -1457,14 +1472,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /*
     public void registerMonitoringLevelEvents() {
         MonitoringRegistry monitoringRegistry =
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
+                habitat.getComponent(MonitoringRegistry.class);
         monitoringRegistry.registerMonitoringLevelListener(
                 this, MonitoredObjectType.SERVLET);
     }
 
     public void unregisterMonitoringLevelEvents() {
         MonitoringRegistry monitoringRegistry =
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
+                habitat.getComponent(MonitoringRegistry.class);
         monitoringRegistry.unregisterMonitoringLevelListener(this);
     }
 
@@ -1507,7 +1522,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private void resetMonitorStatistics() {
         MonitorUtil.resetMonitorStats(_embedded,
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class));
+                habitat.getComponent(MonitoringRegistry.class));
     }
 
     */
@@ -1566,7 +1581,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         SchemaUpdater schemaUpdater = null;
         try {
 
-            schemaUpdater = _serverContext.getDefaultHabitat().getComponent(SchemaUpdater.class);
+            schemaUpdater = habitat.getComponent(SchemaUpdater.class);
         } catch (NoClassDefFoundError ex) {
             //one warning already logged so this one is level fine
             if (_logger.isLoggable(Level.FINE)) {
@@ -1598,7 +1613,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             throw new LifecycleException(msg);
         }
 
-        //ejbWebServiceRegistryListener.unregister(_serverContext.getDefaultHabitat());
+        //ejbWebServiceRegistryListener.unregister(habitat);
 
         //HERCULES:mod
         //unregisterMonitoringLevelEvents();
@@ -1672,7 +1687,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     VirtualServer vs = (VirtualServer) vsArray[i];
 
                     WebModuleConfig wmInfo = vs.getDefaultWebModule(domain, 
-                            _serverContext.getDefaultHabitat().getComponent(
+                            habitat.getComponent(
                             WebDeployer.class) );
                     if (wmInfo != null) {
                         defaultPath = wmInfo.getContextPath();
@@ -1694,7 +1709,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         // Create default web module off of virtual
                         // server's docroot if necessary
                         wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
-                                _serverContext.getDefaultHabitat().getComponent(
+                                habitat.getComponent(
                                 WebDeployer.class));
                         if (wmInfo != null) {
                             defaultPath = wmInfo.getContextPath();
@@ -1754,7 +1769,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private void loadAllJ2EEApplicationWebModules(boolean isStartUp) {
 
-        Domain domain = _serverContext.getDefaultHabitat().getComponent(Domain.class);
+        Domain domain = habitat.getComponent(Domain.class);
         Applications appsBean = domain.getApplications();
 
         if (appsBean != null) {
@@ -1838,7 +1853,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean isEnabled(String moduleName) {
         // TODO dochez : optimize
-        Domain domain = _serverContext.getDefaultHabitat().getComponent(Domain.class);
+        Domain domain = habitat.getComponent(Domain.class);
         /* applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
         com.sun.enterprise.config.serverbeans.WebModule webModule = null;
         for (Object module : applications) {
@@ -1848,7 +1863,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
         }    em
-        ServerContext env = _serverContext.getDefaultHabitat().getComponent(ServerContext.class);
+        ServerContext env = habitat.getComponent(ServerContext.class);
         List<Server> servers = domain.getServers().getServer();
         Server thisServer = null;
         for (Server server : servers) {
@@ -2122,7 +2137,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     // if we have alt dd, it must be an embedded web module
                     String appName =  wmName.substring(0,
                             wmName.indexOf(Constants.NAME_SEPARATOR));
-                    ServerEnvironment env = this._serverContext.getDefaultHabitat().getComponent(ServerEnvironment.class);
+                    ServerEnvironment env = habitat.getComponent(
+                        ServerEnvironment.class);
                     String appLoc = env.getApplicationGeneratedXMLPath() + File.separator +
                             appName;
                     if (! FileUtils.safeIsDirectory(appLoc)) {
@@ -2225,7 +2241,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 // security will generate policy for system default web module
                 if (!wmName.startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
                     // TODO : v3 : dochez Need to remove dependency on security
-                    Realm realm = this._serverContext.getDefaultHabitat().getByContract(Realm.class);
+                    Realm realm = habitat.getByContract(Realm.class);
                     if ("null".equals(j2eeApplication)) {
                         /*
                         * Standalone webapps inherit the realm referenced by
@@ -2253,7 +2269,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     wbd.visit(new WebValidatorWithoutCL());
                 }
 
-                NamingManager namingMgr = _serverContext.getDefaultHabitat().getComponent(NamingManager.class);
+                NamingManager namingMgr = habitat.getComponent(NamingManager.class);
                 if (namingMgr!=null) {
                     Method m = namingMgr.getClass().getMethod("bindObjects", Object.class);
                     m.invoke(namingMgr, wbd);
@@ -2627,7 +2643,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         if (!dummy) {
                             WebModuleConfig wmInfo =
                                     host.createSystemDefaultWebModuleIfNecessary(
-                                    _serverContext.getDefaultHabitat().getComponent(
+                                    habitat.getComponent(
                                     WebDeployer.class));
                             if (wmInfo != null) {
                                 loadStandaloneWebModule(host, wmInfo);
@@ -2911,7 +2927,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     /*private String getVirtualServers(String appName, ConfigContext configCtx) {
 
-        Server server = _serverContext.getDefaultHabitat().getComponent(Server.class);
+        Server server = habitat.getComponent(Server.class);
         for (ApplicationRef ref : server.getApplicationRef()) {
             if (ref.getRef().equals(appName)) {
                 return ref.getVirtualServers();          }
@@ -3189,8 +3205,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ServletStats servletStats = new ServletStatsImpl(pwcServletStats);
 
 
-        MonitoringRegistry monitoringRegistry =
-            _serverContext.getDefaultHabitat().getComponent(
+        MonitoringRegistry monitoringRegistry = habitat.getComponent(
                 MonitoringRegistry.class);
 
         /*
@@ -3234,8 +3249,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String vsId,
             String servletName) {
 
-        MonitoringRegistry monitoringRegistry =
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
+        MonitoringRegistry monitoringRegistry = habitat.getComponent(
+            MonitoringRegistry.class);
 
         try {
             monitoringRegistry.unregisterServletStats(j2eeApplication,
@@ -3286,7 +3301,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         webStats.setSessionManager(ctx.getManager());
 
         MonitoringRegistry monitoringRegistry =
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
+                habitat.getComponent(MonitoringRegistry.class);
 
 
         /*
@@ -3327,9 +3342,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String contextRoot,
             String vsId) {
 
-        MonitoringRegistry monitoringRegistry =
-                _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
-
+        MonitoringRegistry monitoringRegistry = habitat.getComponent(
+            MonitoringRegistry.class);
 
         try {
             monitoringRegistry.unregisterWebModuleStats(j2eeApplication,
@@ -3894,7 +3908,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             
         virtualServer.reconfigureAccessLog(globalAccessLogBufferSize,
                                     globalAccessLogWriteInterval,
-                                    _serverContext.getDefaultHabitat(),
+                                    habitat,
                                     domain,
                                     globalAccessLoggingEnabled);
             
@@ -3998,9 +4012,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         // Add the new default web module
-        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain, 
-                            _serverContext.getDefaultHabitat().getComponent(
-                            WebDeployer.class) );
+        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain,
+                            habitat.getComponent(WebDeployer.class) );
         String newDefaultContextPath = wmInfo.getContextPath();
         if (newDefaultContextPath != null) {
             // Remove dummy context that was created off of docroot, if such
@@ -4012,8 +4025,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             WebModuleConfig wmc = 
                 virtualServer.createSystemDefaultWebModuleIfNecessary(
-                    _serverContext.getDefaultHabitat().getComponent(
-                    WebDeployer.class));
+                    habitat.getComponent(WebDeployer.class));
             if ( wmc != null) {
                 loadStandaloneWebModule(virtualServer,wmc);
             }
@@ -4048,19 +4060,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else if (Constants.ACCESS_LOG_PROPERTY.equals(name)){
             vs.reconfigureAccessLog(globalAccessLogBufferSize,
                                     globalAccessLogWriteInterval,
-                                    _serverContext.getDefaultHabitat(),
+                                    habitat,
                                     domain,
                                     globalAccessLoggingEnabled);
         } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(name)){
             vs.reconfigureAccessLog(globalAccessLogBufferSize,
                                     globalAccessLogWriteInterval,
-                                    _serverContext.getDefaultHabitat(),
+                                    habitat,
                                     domain,
                                     globalAccessLoggingEnabled);
         } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(name)){
             vs.reconfigureAccessLog(globalAccessLogBufferSize,
                                     globalAccessLogWriteInterval,
-                                    _serverContext.getDefaultHabitat(),
+                                    habitat,
                                     domain,
                                     globalAccessLoggingEnabled);
         } else if ("allowRemoteHost".equals(name)
@@ -4245,25 +4257,38 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
   
     
     public WebConnector addConnector(HttpListener httpListener,
-                            HttpService httpService) throws LifecycleException {     
-        String defaultContextPath = "/";
-        WebConnector connector = createHttpListener(httpListener, httpService);  
-        if (connector.getRedirectPort() == -1) {
-            connector.setRedirectPort(defaultRedirectPort);
-        }       
-        
+                                     HttpService httpService)
+                throws LifecycleException {
+
+        grizzlyService.createNetworkProxy(httpListener, httpService);
+        grizzlyService.registerNetworkProxy();
+
+        int port = Integer.parseInt(httpListener.getPort());
+
         String virtualServerName = httpListener.getDefaultVirtualServer();
         VirtualServer vs = (VirtualServer)
-                     _embedded.getEngines()[0].findChild(virtualServerName);  
-                                    
+            _embedded.getEngines()[0].findChild(virtualServerName);
         int[] oldPorts = vs.getPorts();
         int[] newPorts = new int[oldPorts.length+1];
         System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
-        newPorts[oldPorts.length] = connector.getPort();
+        newPorts[oldPorts.length] = port;
         vs.setPorts(newPorts);
-        
-        grizzlyService.createNetworkProxy(httpListener, httpService);
-        grizzlyService.registerNetworkProxy();
+
+        Mapper mapper = null;
+        for (Mapper m : habitat.getAllByContract(Mapper.class)) {
+            if (m.getPort() == port) {
+                mapper = m;
+                break;
+            }
+        }
+
+        WebConnector connector = createHttpListener(httpListener, httpService,
+                                                    mapper);
+
+        if (connector.getRedirectPort() == -1) {
+            connector.setRedirectPort(defaultRedirectPort);
+        }       
+                
         connector.start();
        
         return connector;
@@ -4275,7 +4300,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param httpService the configuration bean.
      */
     public void deleteConnector(HttpListener httpListener, 
-                            HttpService httpService) throws LifecycleException{
+                                HttpService httpService)
+            throws LifecycleException{
         
         Connector[] connectors = (Connector[])_embedded.findConnectors();
         int port = Integer.parseInt(httpListener.getPort()); 
@@ -4323,8 +4349,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             removeDummyModule(vs);
             WebModuleConfig wmInfo = 
                 vs.createSystemDefaultWebModuleIfNecessary(
-                    _serverContext.getDefaultHabitat().getComponent(
-                    WebDeployer.class));
+                    habitat.getComponent(WebDeployer.class));
             if (wmInfo != null) {
                 loadStandaloneWebModule(vs, wmInfo);
             }
@@ -4339,8 +4364,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         removeDummyModule(vs);
         WebModuleConfig wmInfo = 
             vs.createSystemDefaultWebModuleIfNecessary(
-                    _serverContext.getDefaultHabitat().getComponent(
-                    WebDeployer.class));
+                    habitat.getComponent(WebDeployer.class));
         if (wmInfo != null) {
             loadStandaloneWebModule(vs, wmInfo);
         }

@@ -65,4 +65,7 @@ public interface NetworkProxy extends EndpointMapper<com.sun.grizzly.tcp.Adapter
 
 
     public int getPort();
+
+
+    public void destroy();
 }

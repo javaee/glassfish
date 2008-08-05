@@ -118,6 +118,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         }
         if (proxy != null) {
             proxy.stop();
+            proxy.destroy();
             proxies.remove(proxy);
         }
     }

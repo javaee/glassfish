@@ -79,6 +79,12 @@ public class GrizzlyProxy implements NetworkProxy {
     private int portNumber;
 
 
+    private Inhabitant<Mapper> onePortMapper;
+
+
+    private GrizzlyService grizzlyService;
+
+
     //TODO: This must be configurable.
     private final static boolean isWebProfile =
             Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
@@ -102,6 +108,7 @@ public class GrizzlyProxy implements NetworkProxy {
     public GrizzlyProxy(GrizzlyService grizzlyService,
                         HttpListener httpListener,
                         HttpService httpService) {
+        this.grizzlyService = grizzlyService;
         this.logger = grizzlyService.getLogger();
         this.httpListener = httpListener;
         this.httpService = httpService;
@@ -120,7 +127,7 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
 
-        configureGrizzly(portNumber, grizzlyService);
+        configureGrizzly(portNumber);
     }
 
 
@@ -129,7 +136,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly(int port, GrizzlyService grizzlyService) {
+    private void configureGrizzly(int port) {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);
 
         GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(
@@ -143,8 +150,7 @@ public class GrizzlyProxy implements NetworkProxy {
         geh.getContainerMapper().setMapper(mapper);
         geh.getContainerMapper().configureMapper();
 
-        Inhabitant<Mapper> onePortMapper =
-                new ExistingSingletonInhabitant<Mapper>(mapper);
+        onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
 
         grizzlyService.getHabitat().addIndex(
             onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
@@ -157,6 +163,11 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     public void stop() {
         grizzlyListener.stop();
+    }
+
+
+    public void destroy() {
+        grizzlyService.getHabitat().remove(onePortMapper);
     }
 
 
