@@ -8,6 +8,7 @@ package org.glassfish.api.admin;
 public class ParameterNames {
     
     public static final String NAME = "name";
+    public static final String COMPONENT = "component";
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextroot";
     public static final String PREVIOUS_CONTEXT_ROOT = "previous_contextroot";
