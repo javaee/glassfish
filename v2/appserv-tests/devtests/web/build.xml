@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="313"/>
+    <property name="TOTAL_EXPECTED" value="314"/>
 
     &commonSetup;
     &commonBuild;
@@ -352,6 +352,7 @@
         <ant dir="httpRequestWhitespaceTolerance" target="all"/>
         <ant dir="multiByteHttpRequestBuffer" target="all"/>
         <ant dir="readLineWithMaxLength" target="all"/>
+        <ant dir="httpResponseErrorMessage" target="all"/>
     </target>
 
     <target name="all">
