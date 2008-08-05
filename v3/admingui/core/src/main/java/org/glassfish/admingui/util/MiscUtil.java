@@ -39,6 +39,8 @@ package org.glassfish.admingui.util;
 import javax.faces.model.SelectItem;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import javax.el.ValueExpression;
+import javax.faces.context.FacesContext;
 import javax.swing.text.html.Option;
 
 
@@ -109,6 +111,15 @@ public class MiscUtil {
 	} catch (Exception ex) {
 	    return null;
 	}
+    }
+    
+    public static ValueExpression setValueExpression(String expression, Object value) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ValueExpression ve = facesContext.getApplication().getExpressionFactory().
+            createValueExpression(facesContext.getELContext(), "#{" + expression + "}", Object.class);
+        ve.setValue(facesContext.getELContext(), value);
+        
+        return ve;
     }
 
     private static Class	     SUN_OPTION_CLASS = null;
