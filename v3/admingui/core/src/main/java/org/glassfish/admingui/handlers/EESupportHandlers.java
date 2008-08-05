@@ -483,37 +483,34 @@ public class EESupportHandlers {
      *  <p> Output value: "optionsList" -- Type: <code>Option</code></p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id="getVSOptions",
-    	input={
-	    @HandlerInput(name="vsList", type=List.class, required=true),
-	    @HandlerInput(name="PE", type=Boolean.class),
-	    @HandlerInput(name="targetName", type=String.class, required=true),
-	    @HandlerInput(name="name", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="availableVS", type=Option[].class),
-            @HandlerOutput(name="selectedVS", type=String[].class)})
+    @Handler(id = "getVSOptions", 
+    input = {
+        @HandlerInput(name = "vsList", type = List.class, required = true),
+        @HandlerInput(name = "PE", type = Boolean.class),
+        @HandlerInput(name = "targetName", type = String.class, required = true),
+        @HandlerInput(name = "name", type = String.class, required = true)}, 
+    output = {
+        @HandlerOutput(name = "availableVS", type = List.class),
+        @HandlerOutput(name = "selectedVS", type = String[].class)
+    })
     public static void getVSOptions(HandlerContext handlerCtx) {
-		String targetName = (String)handlerCtx.getInputValue("targetName");
-		Boolean pe = (Boolean)handlerCtx.getInputValue("PE");
-		String name = (String)handlerCtx.getInputValue("name");
-		List<String> vsList = (List)handlerCtx.getInputValue("vsList");
-		String associatedVS = TargetUtil.getAssociatedVS(name, targetName);
-		Option[] availableOptions = null; 
-		String[] selectedOptions = null; 
-		if(vsList != null) {
-			availableOptions = new Option[vsList.size()];
-// FIXME: 7-31-08 -- FIX by importing woodstock api's:
-//			availableOptions = GuiUtil.getSunOptions(vsList);
-			selectedOptions = GuiUtil.stringToArray(associatedVS, ",");
-			if(pe != null && pe) {
-				if(selectedOptions != null && !(selectedOptions.length > 0)) {
-				//None is selected by default
-				selectedOptions = new String[]{vsList.get(0)};
-			}
-		}
-	}
-        handlerCtx.setOutputValue("availableVS", availableOptions);        
-        handlerCtx.setOutputValue("selectedVS", selectedOptions);        
+        String targetName = (String) handlerCtx.getInputValue("targetName");
+        Boolean pe = (Boolean) handlerCtx.getInputValue("PE");
+        String name = (String) handlerCtx.getInputValue("name");
+        List<String> vsList = (List) handlerCtx.getInputValue("vsList");
+        String associatedVS = TargetUtil.getAssociatedVS(name, targetName);
+        String[] selectedOptions = null;
+        if (vsList != null) {
+            selectedOptions = GuiUtil.stringToArray(associatedVS, ",");
+            if (pe != null && pe) {
+                if (selectedOptions != null && !(selectedOptions.length > 0)) {
+                    //None is selected by default
+                    selectedOptions = new String[]{vsList.get(0)};
+                }
+            }
+        }
+        handlerCtx.setOutputValue("availableVS", vsList);
+        handlerCtx.setOutputValue("selectedVS", selectedOptions);
     }
 
      /**
