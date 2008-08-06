@@ -46,8 +46,13 @@ import org.glassfish.flashlight.provider.ProbeProviderListener;
 import org.glassfish.flashlight.provider.ProbeProviderEventManager;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import com.sun.enterprise.config.serverbeans.*;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Provides for bootstarpping web telemetry during startup and
@@ -63,14 +68,28 @@ public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderL
     private ProbeProviderEventManager ppem;
     @Inject
     private ProbeClientMediator pcm;
+    
     private WebTelemetry webTM = null;
     private SessionStatsTelemetry sessionsTM = null;
-    private Collection<ProbeClientMethodHandle> handles;
+    private WebRequestTelemetry webRequestTM = null;
+    private ThreadPoolTelemetry threadPoolTM = null;
+    private WebModuleTelemetry moduleTM = null;
+    private JVMMemoryStatsTelemetry jvmMemoryTM;
     
+    private Collection<ProbeClientMethodHandle> handles;
+    @Inject
+    private Domain domain;
+    @Inject
+    private MonitoringRuntimeDataRegistry mrdr;
+    private TreeNode server;
+    private TreeNode httpService;
     
     public void postConstruct() {
         System.out.println("In the Web Monitor startup ************");
         ppem.registerProbeProviderListener(this);
+        buildWebMonitoringConfigTree();
+        //Construct the JVMMemoryStatsTelemetry
+        jvmMemoryTM = new JVMMemoryStatsTelemetry(server);
     }
 
     public Lifecycle getLifecycle() {
@@ -79,29 +98,126 @@ public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderL
     }
 
     public void providerRegistered(String moduleName, String providerName, String appName) {
-        System.out.println("Provider registered event received - providerName = " + 
-                            providerName + " : module name = " + moduleName + 
-                            " : appName = " + appName);
-        if (providerName.equals("session")){
-            System.out.println("and its Web session");
-            if (sessionsTM == null) {
-                sessionsTM = new SessionStatsTelemetry();
-                handles = pcm.registerListener(sessionsTM);
+        try {
+            
+            System.out.println("Provider registered event received - providerName = " + 
+                                providerName + " : module name = " + moduleName + 
+                                " : appName = " + appName);
+            if (providerName.equals("session")){
+                System.out.println("and it is Web session");
+                if (webTM == null) {
+                    webTM = new WebTelemetry(server);
+                    handles = pcm.registerListener(webTM);
+                }
+                if (sessionsTM == null) {
+                    sessionsTM = new SessionStatsTelemetry(webTM.getTreeNode());
+                    handles = pcm.registerListener(sessionsTM);
+                }
             }
-        }
-        if (providerName.equals("servlet")){
-            System.out.println("and its Web servlet");
-            if (webTM == null) {
-                webTM = new WebTelemetry();
-                handles = pcm.registerListener(webTM);
+            if (providerName.equals("servlet")){
+                System.out.println("and it is Web servlet");
+                if (webTM == null) {
+                    webTM = new WebTelemetry(server);
+                    handles = pcm.registerListener(webTM);
+                }
             }
-            // construct WTO tree
+
+            if (providerName.equals("webmodule")){
+                System.out.println("and it is Web Module");
+                if (moduleTM == null) {
+                    moduleTM = new WebModuleTelemetry(server);
+                    handles = pcm.registerListener(moduleTM);
+                }
+            }
+            
+            if (providerName.equals("request")){
+                System.out.println("and it is Web request");
+                if (webRequestTM == null) {
+                    webRequestTM = new WebRequestTelemetry(server);
+                    handles = pcm.registerListener(webTM);
+                }
+            }
+            if (providerName.equals("threadpool")){
+                System.out.println("and it is threadpool");
+                if (threadPoolTM == null) {
+                    // Where do I add this? Looks like the thread pools are already created.
+                    // Now I need to register the listeners, but which one to register?
+                    //threadPoolTM = new ThreadPoolTelemetry(httpService);
+                    //handles = pcm.registerListener(threadPoolTM);
+                }
+            }
+             //Decide now if I need to enable or disable the nodes (for first time use)
+        }catch (Exception e) {
+            //Never throw an exception as the Web container startup will have a problem
+            //Show warning
+            System.out.println("WARNING: Exception in WebMonitorStartup : " + 
+                                    e.getLocalizedMessage());
+            e.printStackTrace();
         }
-         //Decide now if I need to enable or disable the nodes (for first time use)
     }
 
     public void providerUnregistered(String moduleName, String providerName, String appName) {
         
     }
 
+    private void buildWebMonitoringConfigTree() {
+        // server
+        Server srvr = null;
+        List<Server> ls = domain.getServers().getServer();
+        for (Server sr : ls) {
+            if ("server".equals(sr.getName())) {
+                srvr = sr;
+                break;
+            }
+        }
+        server = TreeNodeFactory.createTreeNode("server", null, "server");
+        mrdr.add("server", server);
+        // applications
+        TreeNode applications = TreeNodeFactory.createTreeNode("applications",
+                domain.getApplications(), "web");
+        server.addChild(applications);
+        // web modules
+        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
+        for (WebModule wm : lm) {
+            System.out.println("next wm - " + wm.getName());
+            TreeNode app = TreeNodeFactory.createTreeNode(wm.getName(), wm, "web");
+            applications.addChild(app);
+        }
+        // get server-config
+        Config sConfig = null;
+        List<Config> lcfg = domain.getConfigs().getConfig();
+        for (Config cfg : lcfg) {
+            if ("server-config".equals(cfg.getName())) {
+                sConfig = cfg;
+                break;
+            }
+        }
+        // http-service
+        HttpService httpS = sConfig.getHttpService();
+        httpService = TreeNodeFactory.createTreeNode("http-service",
+                httpS, "web");
+        server.addChild(httpService);
+        // http-listener
+        for (HttpListener htl : httpS.getHttpListener()) {
+            TreeNode httpListener = TreeNodeFactory.createTreeNode(htl.getId(), htl, "web");
+            httpService.addChild(httpListener);
+        }
+        // connection-pool
+        ConnectionPool cp = httpS.getConnectionPool();
+        TreeNode connectionPool = TreeNodeFactory.createTreeNode("connection-pool",
+                cp, "web");
+        httpService.addChild(connectionPool);
+        // web-container
+        /*
+        WebContainer wc = sConfig.getWebContainer();
+        TreeNode webContainer = TreeNodeFactory.createTreeNode("web-container",
+                wc, "web");
+        server.addChild(webContainer);
+         */
+        // thread-pools
+        ThreadPools tps = sConfig.getThreadPools();
+        TreeNode threadPools = TreeNodeFactory.createTreeNode("thread-pools",
+                tps, "web");
+        server.addChild(threadPools);
+    }
 }

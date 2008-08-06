@@ -54,9 +54,28 @@ public class SessionStatsTelemetry{
     private TreeNode sessionTM;
     private TreeNode sessionChildren[];
 
-    public SessionStatsTelemetry() {
+    public SessionStatsTelemetry(TreeNode server) {
         sessionTM = TreeNodeFactory.createTreeNode("session", this, "web");
-    }
+    
+    
+        server.addChild(sessionTM);
+        activeSessionsCurrent.setName("activeSessionsCurrent");
+        sessionTM.addChild(activeSessionsCurrent);
+        sessionsTotal.setName("sessionsTotal");
+        sessionTM.addChild(sessionsTotal);
+        activeSessionsHigh.setName("activeSessionsHigh");
+        sessionTM.addChild(activeSessionsHigh);
+        rejectedSessionsTotal.setName("rejectedSessionsTotal");
+        sessionTM.addChild(rejectedSessionsTotal);
+        expiredSessionsTotal.setName("expiredSessionsTotal");
+        sessionTM.addChild(expiredSessionsTotal);
+        persistedSessionsTotal.setName("persistedSessionsTotal");
+        sessionTM.addChild(persistedSessionsTotal);
+        passivatedSessionsTotal.setName("passivatedSessionsTotal");
+        sessionTM.addChild(passivatedSessionsTotal);
+        activatedSessionsTotal.setName("activatedSessionsTotal");
+        sessionTM.addChild(activatedSessionsTotal);
+     }
 
     private Counter activeSessionsCurrent = CounterFactory.createCount();
     private Counter activeSessionsHigh = CounterFactory.createCount();
@@ -80,7 +99,8 @@ public class SessionStatsTelemetry{
     @ProbeListener("web:session::sessionCreatedEvent")
     public void sessionCreatedEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName){
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         sessionsTotal.increment();
         incrementActiveSessionsCurrent();
@@ -91,7 +111,8 @@ public class SessionStatsTelemetry{
     @ProbeListener("web:session::sessionDestroyedEvent")
     public void sessionDestroyedEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName) {
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         activeSessionsCurrent.decrement();        
         System.out.println("[TM]sessionDestroyedEvent received - session = " + 

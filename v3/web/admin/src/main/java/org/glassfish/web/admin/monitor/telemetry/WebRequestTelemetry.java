@@ -43,28 +43,36 @@ import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
         
 import org.glassfish.flashlight.provider.annotations.*;
-import javax.servlet.Servlet;
-import org.jvnet.hk2.annotations.Inject;
- 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Provides the monitoring data at the Web container level
  *
  * @author Prashanth Abbagani
  */
-public class WebTelemetry{
-    private TreeNode wto;
-    private TreeNode webChildren[];
-    //@Inject
-    //Logger logger;
+public class WebRequestTelemetry{
+    private TreeNode webRequestNode;
+    //Provides the longest response time for a request - not a cumulative value, 
+    //but the largest response time from among the response times.
+    private Counter maxTime = CounterFactory.createCount();
+    //Provides cumulative value of the times taken to process each request. 
+    //The processing time is the average of request processing times over the request count.
+    private Counter processingTime = CounterFactory.createCount();
+    //Provides cumulative number of the requests processed so far.
+    private Counter requestCount = CounterFactory.createCount();
+    //Provides the cumulative value of the error count. The error count represents 
+    //the number of cases where the response code was greater than or equal to 400.
+    private Counter errorCount = CounterFactory.createCount();
     
-    public WebTelemetry(TreeNode server) {
-        wto = TreeNodeFactory.createTreeNode("web", this, "web");
-        server.addChild(wto);
-        servletsLoadedCount.setName("servletsLoadedCount");
-        wto.addChild(servletsLoadedCount);
+    
+    public WebRequestTelemetry(TreeNode parent) {
+        webRequestNode = TreeNodeFactory.createTreeNode("request", this, "web");
+        parent.addChild(webRequestNode);
     }
 
-    private Counter servletsLoadedCount = CounterFactory.createCount();
+    private Counter requestsTotal = CounterFactory.createCount();
+    
 
     public void enableMonitoring(boolean isEnable) {
         //loop through the handles for this node and enable/disable the listeners
@@ -75,19 +83,30 @@ public class WebTelemetry{
         //loop through the children and enable/disable all
     }
     
-    @ProbeListener("web:servlet::servletLoadedEvent")
-    public void servletLoadedListener(
-                    @ProbeParam("servlet") Servlet servlet,
-                    @ProbeParam("appName") String appName,
-                    @ProbeParam("hostName") String hostName) {
-	// handle the servlet loaded probe events
-        System.out.println("Servlet Loaded event received - servletName = " + 
-                             servlet.getServletConfig().getServletName() + 
-                             ": appName = " + appName + ": hostName = " + hostName);
-        servletsLoadedCount.increment();
+    ThreadLocal<Long> entry = new ThreadLocal<Long>();
+
+    @ProbeListener("web:request::requestStartEvent")
+    public void requestStartEvent(
+        @ProbeParam("request") HttpServletRequest request,
+        @ProbeParam("response") HttpServletResponse response) {
+        System.out.println("[TM]requestStartEvent received - request = " + 
+                            request + ": response = " + response);
+	entry.set(System.currentTimeMillis());
     }
 
-    public TreeNode getTreeNode(){
-        return wto;
-    }    
+    @ProbeListener("web:request::requestEndEvent")
+    public void requestEndEvent(
+        @ProbeParam("request") HttpServletRequest request,
+        @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("statusCode") int statusCode) {
+        requestsTotal.increment();
+        System.out.println("[TM]requestEndEvent received - request = " + 
+                            request + ": response = " + response + 
+                            " :Response code = " + statusCode);
+
+	//Do something with timeTaken, like calling Harry's TimeStats
+	long timeTaken = System.currentTimeMillis() - entry.get();
+
+	entry.set(null); //Not sure if we need this
+    }        
 }
