@@ -90,10 +90,15 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
                 connectorConnectionPool =
                         (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             } catch (NamingException ne) {
-                /* TODO V3 handle lazy resource loading later
-                checkAndLoadPoolResource(poolName);*/
-                //TODO V3 temporary log, remove once lazy resource loading is handled
-                ne.printStackTrace();
+                //Probably the pool is not yet initialized (lazy-loading), try doing a lookup
+                    Context context = _runtime.getNamingManager().getInitialContext();
+                try{
+                    context.lookup(name);
+                    connectorConnectionPool =
+                            (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+                }catch(NamingException e){
+                    _logger.log(Level.SEVERE, "Unable to lookup pool [ "+ name +" ]", e);
+                }
             }
 
             connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
