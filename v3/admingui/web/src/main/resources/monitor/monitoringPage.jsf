@@ -38,29 +38,28 @@
     if (!#{pageSession.configName}) {
         getRequestValue(key="configName" value=>$page{configName});
     }
-    println("#{configName}");
     getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
-    println("#{config}");
-    setAttribute(key="mmlConfig" value="#{config.monitoringServiceConfig.moduleMonitoringLevelsConfig}");  
+    setAttribute(key="mmlConfig" value="#{config.monitoringServiceConfig.moduleMonitoringLevelsConfig}");
+    /*
+    Create handler to pull certain attributes, via EL expressed in an array, and put in a page-scoped map
+    Bind components, etc to this map
+    Create another handler to take the map, the config object, and the keys to persist and set the values
+        on the object, via EL, for persistence
+    */
+    println("#{mmlConfig}");
+    createAmxConfigMap(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap=>$pageSession{configMap});
+    println("$pageSession{configMap}");
+    println("#{configMap['HTTPService']}");
+    println("#{configMap['webContainer']}");
+    getTableList(Properties="#{mmlConfig.propertyConfigMap}", TableList=>$attribute{tableList});
+        createMap(result=>$pageSession{theMap});
+        println("#{theMap}");
 />
 <sun:page>
     <!beforeCreate 
-        setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings")
+        setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings")
+        setResourceBundle(key="i18n" bundle="core.Strings")
         setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
-        /*
-        getMonitoringServiceSettings(ConfigName="#{configName}", 
-            Jvm=>$attribute{jvm}, 
-            Http=>$attribute{http}, 
-            Transaction=>$attribute{transaction}, 
-            JmsConnector=>$attribute{connector}, 
-            Orb=>$attribute{orb}, 
-            Web=>$attribute{web}, 
-            Ejb=>$attribute{ejb}, 
-            Jdbc=>$attribute{jdbc}, 
-            ThreadPool=>$attribute{threadPool},
-            Properties=>$page{props});  
-        //getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-        */
         compare(obj1="$pageSession{configName}" obj2="server-config" objEqual=>$attribute{isServerConfig});
         setPageSessionAttribute(key="showIt" value="$boolean{false}");
         if ($session{supportCluster} & !${isServerConfig}){
@@ -69,22 +68,36 @@
     />
 #include "/shared/restart.inc"    
     <sun:html>
-        <sun:head id="configHead" title="$resource{i18n.monitoring}">
+        <sun:head id="configHead" title="$resource{web.monitoring}">
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <h:form>
+<h:inputText value="#{theMap.foo}" />
+<staticText value="The map.foo value is: #{theMap.foo}" />
+<h:commandButton/>
+        </h:form>
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
-                <sun:title id="configPageTitle"  title="$resource{i18n.monitoring.Title}" 
-                    helpText="$resource{i18n.monitoring.PageHelp}">
+                <sun:title id="configPageTitle"  title="$resource{web.monitoring.Title}" 
+                    helpText="$resource{web.monitoring.PageHelp}">
                     <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
                         <!command
-                            getMonitoringServiceDefaultSettings(
-                                ConfigName="#{configName}", 
-                                Jvm=>$attribute{jvm}, 
-                                Http=>$attribute{http}, 
-                                Web=>$attribute{web}, 
-                            );                            
+                            getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="HTTPService", defaultValue=>$attribute{httpService});
+                            getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="WebContainer", defaultValue=>$attribute{webContainer});
+                            
+                            //setValueExpression(expression="#{requestScope.bargle}", value="bargle");
+                            println("#{bargle}");
+                            println("*****");
+                            println("$attribute{httpService}");
+                            println("#{pageSession.configMap}");
+                            println("#{pageSession.configMap.class.name}");
+                            println("#{configMap.HTTPService}");
+                            println("#{pageSession.configMap.HTTPService}");
+                            println("#{pageSession.configMap.HTTPService.class.name}");
+                            println("*****");                           
+                            setValueExpression(expression="#{configMap.HTTPService}", value="hello");
+                            //setValueExpression(expression="#{configMap.webContainer}", value="$attribute{webContainer}");
                        />
                     </sun:button>
                     <!-- Buttons  -->                    
@@ -92,19 +105,14 @@
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
                             <!command
-                            //getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                            //getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                            //convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                            prepareSuccessfulMsg();         
-    			    setAttribute(key="configName" value="#{configName}");  
-                            /*
-                            saveMonitoringServiceSettings(
-                                ConfigName="#{configName}",
-                                Http="#{http}",
-                                Web="#{web}",
-                            );
-                            */
-                           />
+                                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                                convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
+                                prepareSuccessfulMsg();         
+                                setAttribute(key="configName" value="#{configName}");
+                                savePropertiesMap(destination="#{mmlConfig}", values="#{newProps}");
+                                updateAmxConfig(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap="#{configMap}");
+                            />
                         </sun:button>                      
                     </sun:panelGroup>
                     </facet>          
@@ -113,45 +121,18 @@
                 <sun:propertySheet id="propertySheet">			 
                     <!-- Text Field section -->               
                     <sun:propertySheetSection id="propertSectionTextField">                   
-                        <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.monitoring.Http}">                           
-                            <sun:dropDown id="Http" selected="#{mmlConfig.HTTPService}" labels={"$resource{i18n.monitoring.Low}" "$resource{i18n.monitoring.High}" "$resource{i18n.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                        <sun:property id="httpProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Http}">                           
+                            <sun:dropDown id="Http" selected="#{configMap['HTTPService']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
                          </sun:property>          
-                        <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.monitoring.Web}">                           
-                            <sun:dropDown id="Web" selected="#{mmlConfig.webContainer}" labels={"$resource{i18n.monitoring.Low}" "$resource{i18n.monitoring.High}" "$resource{i18n.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                        <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Web}">                           
+                            <sun:dropDown id="Web" selected="#{configMap['webContainer']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
                          </sun:property>                               
                         "<br /><br />
                     </sun:propertySheetSection>
 
                 </sun:propertySheet>    
-                
+#include "/propertyTable.inc"                         
                 <sun:hidden id="helpKey" value="$resource{help.monitoringService}" />
-
-
-                <!--
-                <sun:propertySheet>
-                    <sun:propertySheetSection>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.webContainer.tooltip}" 
-                                url="/web/monitor/webContainerPage.jsf" >
-                                <sun:image url="/resource/images/container.gif" />
-                                <sun:staticText text="$resource{i18n.tree.webContainer}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.httpService.tooltip}" 
-                                url="/web/monitor/httpServicePage.jsf" >
-                                <sun:image url="/resource/images/httpservice.gif" />
-                                <sun:staticText text="$resource{i18n.tree.httpService}" />
-                            </sun:hyperlink>
-                          
-                        </sun:property>
-
-                    </sun:propertySheetSection>
-                </sun:propertySheet>
-                <sun:hidden id="helpKey" value="$resource{help.monitoring}" />
-                -->
             </sun:form>           
         </sun:body> 
     </sun:html>  

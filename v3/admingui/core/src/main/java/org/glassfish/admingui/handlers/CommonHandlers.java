@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import javax.el.ELContext;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.AMXUtil;
@@ -62,14 +63,12 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-import javax.faces.context.FacesContext;
 
 import com.sun.webui.jsf.component.Calendar;
 
@@ -77,8 +76,12 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
+import java.util.HashMap;
+import javax.el.ValueExpression;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
+import org.glassfish.admingui.util.MiscUtil;
 import org.glassfish.admingui.util.HtmlAdaptor;
 
 
@@ -677,39 +680,16 @@ public class CommonHandlers {
     /**
      *	<p> This handler sets a property on an object which is stored in an existing key
      *  For example "advance.lazyConnectionEnlistment"
-     */     
-    
-@Handler(id="setValueExpression",
-        input={
-		@HandlerInput(name="keyObjectName", type=String.class, required=true),
-                @HandlerInput(name="hasBoolean", type=Boolean.class),
-                @HandlerInput(name="objectValue", type=String.class, required=true)}
-      )
-      public static void setValueExpression(HandlerContext handlerCtx) {
-        String name = (String) handlerCtx.getInputValue("keyObjectName");
-        String value = (String) handlerCtx.getInputValue("objectValue");
-        Boolean hasBoolean = (Boolean)handlerCtx.getInputValue("hasBoolean");
-        FacesContext facesContext = FacesContext
-                .getCurrentInstance();
-        ELContext elcontext = facesContext.getELContext();
-        ValueExpression ve =
-                facesContext.getApplication().getExpressionFactory().
-                createValueExpression(
-                facesContext.getELContext(), "#{"+name+"}", Object.class);
-        if(hasBoolean == null) {
-            ve.setValue(facesContext.getELContext(), value);
-        } else {
-            if(hasBoolean.booleanValue()) {
-                if(value.equals("true")) {
-                    ve.setValue(facesContext.getELContext(), Boolean.TRUE);
-                } else {
-                    ve.setValue(facesContext.getELContext(), Boolean.FALSE);
-                }
-            } else {
-                ve.setValue(facesContext.getELContext(), value);
-            }
-        }
-    }    
+     */
+    @Handler(id = "setValueExpression",
+        input = {
+            @HandlerInput(name = "expression", type = String.class, required = true),
+            @HandlerInput(name = "value", type = Object.class, required = true)
+    })
+    public static void setValueExpression(HandlerContext handlerCtx) {
+        MiscUtil.setValueExpression((String) handlerCtx.getInputValue("expression"), 
+                (String) handlerCtx.getInputValue("value"));
+    }
     
     /**
      *	<p> This handler checks if particular feature is supported  </p>
@@ -737,14 +717,117 @@ public class CommonHandlers {
             @HandlerInput(name = "configName", type = String.class, required = true)
         },
         output = {
-            @HandlerOutput(name = "configConfig", type = ConfigConfig.class)
+            @HandlerOutput(name="configConfig", type=ConfigConfig.class)
         })
     public static void getConfigConfig(HandlerContext handlerCtx) {
         String configName = ((String) handlerCtx.getInputValue("configName"));
         handlerCtx.setOutputValue("configConfig", AMXRoot.getInstance().getConfig(configName));
     }
        
+    /**
+     * This Handler will save the contents of a property sheet to the specified configuration
+     * bean.  A typical usage will look something like this:
+     * 
+     * <code>insert example here</code>
+     */
+    @Handler(id="savePropertiesMap",
+        input={
+            @HandlerInput(name="destination", type=PropertiesAccess.class, required=true),
+            @HandlerInput(name="values", type=Map.class, required=true)
+    })
+    public static void savePropertiesMap(HandlerContext handlerCtx) {
+        final PropertiesAccess propertiesAccess = (PropertiesAccess) handlerCtx.getInputValue("destination");
+        if (propertiesAccess == null) {
+            throw new IllegalArgumentException("savePropertiesMap:  destination can not be null");
+        }
+        AMXUtil.updateProperties( propertiesAccess,(Map)handlerCtx.getInputValue("values"));
+    }
     
+    /**
+     * This handler gets the default value for a configuration property for the given
+     * module config
+     */
+    @Handler(id="getDefaultConfigurationValue",
+        input={
+            @HandlerInput(name="moduleConfig", type=AMXConfig.class,required=true),
+            @HandlerInput(name="key", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="defaultValue", type=String.class)
+    })
+    public static void getDefaultConfgurationValue(HandlerContext handlerCtx) {
+        AMXConfig amxConfig = (AMXConfig)handlerCtx.getInputValue("moduleConfig");
+        if (amxConfig == null) {
+            throw new IllegalArgumentException("getDefaultConfigurationValue:  moduleConfig can not be null");
+        }
+        handlerCtx.setOutputValue("defaultValue", amxConfig.getDefaultValue((String)handlerCtx.getInputValue("key")));
+    }
+    
+    /**
+     * This handler will take an AMXConfig object, and create a Map of values based
+     * on the fields specified in the array
+     * @param handlerCtx
+     */
+    @Handler(id="createAmxConfigMap",
+        input={
+            @HandlerInput(name="moduleConfig", type=AMXConfig.class,required=true),
+            @HandlerInput(name="properties", type=List.class,required=true)
+        },
+        output={
+            @HandlerOutput(name="configMap", type=Map.class)
+        }
+    )
+    public static void createAmxConfigMap(HandlerContext handlerCtx) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<String> properties = (List<String>)handlerCtx.getInputValue("properties");
+        AMXConfig amxConfig = (AMXConfig)handlerCtx.getInputValue("moduleConfig");
+        if (amxConfig == null) {
+            throw new IllegalArgumentException("createAmxConfigMap:  moduleConfig can not be null");
+        }
+        if ((properties == null) || (properties.size() == 0)) {
+            throw new IllegalArgumentException("createAmxConfigMap: properties can not be null or empty");
+        }
+        ValueExpression ve = MiscUtil.setValueExpression("#{amxConfigMap}", amxConfig);
+        
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        final ELContext elContext = facesContext.getELContext();
+        for (String prop : properties) {
+           ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
+                createValueExpression(elContext, "#{amxConfigMap."+prop+"}", Object.class);
+            //ve.setValue(facesContext.getELContext(), value);
+           Object value = propVE.getValue(elContext);
+           map.put(prop, value);
+        }
+        
+        handlerCtx.setOutputValue("configMap", map);
+    }
+    
+    /**
+     * This handler will take an AMXConfig object, and create a Map of values based
+     * on the fields specified in the array
+     * @param handlerCtx
+     */
+    @Handler(id="updateAmxConfig",
+        input={
+            @HandlerInput(name="moduleConfig", type=AMXConfig.class,required=true),
+            @HandlerInput(name="properties", type=List.class,required=true),
+            @HandlerInput(name="configMap", type=Map.class)
+        }
+    )
+    public static void updateAmxConfig(HandlerContext handlerCtx) {
+        List<String> properties = (List<String>)handlerCtx.getInputValue("properties");
+        AMXConfig amxConfig = (AMXConfig)handlerCtx.getInputValue("moduleConfig");
+        Map<String, Object> map = (Map<String, Object>)handlerCtx.getInputValue("configMap");
+        
+        ValueExpression ve = MiscUtil.setValueExpression("#{amxConfig}", amxConfig);
+        
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        final ELContext elContext = facesContext.getELContext();
+        for (String prop : properties) {
+            ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
+                createValueExpression(elContext, "#{amxConfig."+prop+"}", Object.class);
+            propVE.setValue(elContext, map.get(prop));
+        }
+    }
     
     private static final String CHARTING_COOKIE_NAME = "as91-doCharting";
     private static final int INDEX=0;

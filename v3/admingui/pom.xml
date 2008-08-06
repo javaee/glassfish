@@ -82,7 +82,7 @@
     	<module>dataprovider</module>
     	<module>jsftemplating</module>
     	<module>plugin-service</module>
-	<module>common</module>
+	    <module>common</module>
         <module>core</module>
         <module>web</module>
         <module>jdbc-gui</module>

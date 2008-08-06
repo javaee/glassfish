@@ -23,7 +23,7 @@
                 content="monitor/webContainerNode.jsf"/>
        <integration-point 
                 id="monitor_http" 
-           s     type="tree" 
+                type="tree" 
                 priority="20"
                 parentId="monitor" 
                 content="monitor/httpServiceNode.jsf"/>

@@ -3,7 +3,7 @@
   <groupId>org.glassfish.admingui</groupId>
   <artifactId>console-plugin-archetype</artifactId>
   <packaging>maven-archetype</packaging>
-  <name>console-plugin-archetype</name>
+  <name>Admin Console Plugin Archetype</name>
   <version>10.0-SNAPSHOT</version>
   <build>
     <extensions>
