@@ -95,8 +95,8 @@
                         <Export-Package>
                         org.glassfish.admingui.common.util,
                         org.glassfish.admingui.common.plugin,
-			<!--
                         org.glassfish.admingui.handlers,
+                        <!--
                         org.glassfish.admingui.registration,
 			-->
                         </Export-Package>
@@ -121,6 +121,14 @@
                         <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                    <processors>
+                        <processor>
+                            <groupId>com.sun.jsftemplating</groupId>
+                            <artifactId>jsftemplating-dt</artifactId>
+                            <version>1.2.1</version>
+                        </processor>
+                    </processors>
+
                 </configuration>
             </plugin>
         </plugins>
@@ -157,6 +165,12 @@
             <artifactId>jsftemplating</artifactId>
             <version>1.2.1</version>
 	    <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jsftemplating</groupId>
+            <artifactId>jsftemplating-dt</artifactId>
+            <version>1.2.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
