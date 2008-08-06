@@ -47,7 +47,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Describes the configuration model for a particular class (called "target type" in this class.)

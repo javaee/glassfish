@@ -5,22 +5,24 @@
 
 package org.jvnet.hk2.config;
 
+import org.jvnet.hk2.annotations.Service;
+
 /** Represents a Java primitive (and its wrapper) data type. Not all Java primitives
  *  are relevant from a configuration standpoint.
  * @see DataType
- * @see WriteableView#PRIMS
+ * @see DomDocument#PRIMS
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since hk2 0.3.10
  */
-public final class PrimitiveDataType extends DataType {
+@Service
+public final class PrimitiveDataType implements DataType {
 
     private final String realType;
     PrimitiveDataType(String realType) {
-        assert WriteableView.PRIMS.contains(realType) : "This class can't validate: " + realType;
+        assert DomDocument.PRIMS.contains(realType) : "This class can't validate: " + realType;
         this.realType = realType;
     }
     
-    @Override
     public void validate(String value) throws ValidationException {
         if (value.startsWith("${") && value.endsWith("}")) //it's a token
           return;

@@ -25,7 +25,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>0.3.6</version>
+                <version>0.3.11-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <executions>
                     <!-- Run the code as a test -->

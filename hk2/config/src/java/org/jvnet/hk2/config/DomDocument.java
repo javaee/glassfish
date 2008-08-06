@@ -36,6 +36,9 @@
  */
 package org.jvnet.hk2.config;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.ComponentException;
@@ -45,6 +48,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Represents a whole DOM tree.
@@ -67,9 +71,16 @@ public class DomDocument {
 
     /*package*/ Dom root;
 
-
+    private final Map<String, DataType> validators = new HashMap<String, DataType>();
+    
+    /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(
+    "boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"));
+    
     public DomDocument(Habitat habitat) {
         this.habitat = habitat;
+        for (String prim : PRIMS) {
+            validators.put(prim, new PrimitiveDataType(prim) );
+        }
     }
 
     public Dom getRoot() {
@@ -149,4 +160,21 @@ public class DomDocument {
     public void writeTo(XMLStreamWriter w) throws XMLStreamException {
         root.writeTo(null,w);
     }
+    
+    /*package*/
+    DataType getValidator(String dataType) {
+        synchronized(validators) {
+            DataType validator = validators.get(dataType);
+            if (validator != null)
+                return (validator);
+        }
+        Collection<DataType> dtfh = habitat.getAllByContract(DataType.class);
+        synchronized(validators) {
+            for (DataType dt : dtfh) {
+                validators.put(dt.getClass().getCanonicalName(), dt);
+            }
+            return (validators.get(dataType));
+        }
+    }
+    
 }
