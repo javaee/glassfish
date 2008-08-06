@@ -57,7 +57,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Jeanfrancois Arcand
  * @author Alexey Stashok
  */
-public class GrizzlyEmbeddedHttpConfigurator {
+public class GrizzlyListenerConfigurator {
     
     
     /**
@@ -80,12 +80,15 @@ public class GrizzlyEmbeddedHttpConfigurator {
      * @param isSecure true if the grizzlyListener is security-enabled, false
      * otherwise
      * @param httpServiceProps The http-service properties
+     * @param isWebProfile if true - just HTTP protocol is supported on port,
+     *        false - port unification will be activated
      */
     // TODO: Must get the information from domain.xml Config objects.
     // TODO: Pending Grizzly issue 54
-    public static void configureEmbeddedHttp(
+    public static void configure(
             GrizzlyServiceListener grizzlyListener, HttpService httpService,
-            HttpListener httpListener, int port, Controller controller){
+            HttpListener httpListener, int port, Controller controller,
+            boolean isWebProfile){
         
         System.setProperty("product.name", "GlassFish/v3");      
 
@@ -146,7 +149,11 @@ public class GrizzlyEmbeddedHttpConfigurator {
         if((Boolean.valueOf(System.getProperty("v3.grizzly.cometSupport","false")))
                 && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
             configureComet(grizzlyEmbeddedHttp);       
-        } 
+        }
+
+        if (isWebProfile) {
+            grizzlyListener.configurePortUnification();
+        }
     }      
     
     

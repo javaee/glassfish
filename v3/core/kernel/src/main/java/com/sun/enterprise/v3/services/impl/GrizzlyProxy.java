@@ -70,9 +70,6 @@ public class GrizzlyProxy implements NetworkProxy {
     final HttpService httpService;
 
 
-    private EndpointMapper<Adapter> endPointMapper;
-
-
     private VirtualHostMapper vsMapper;
 
 
@@ -139,11 +136,10 @@ public class GrizzlyProxy implements NetworkProxy {
     private void configureGrizzly(int port) {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);
 
-        GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(
+        GrizzlyListenerConfigurator.configure(
                 grizzlyListener, httpService, httpListener, port,
-                grizzlyService.getController());
-
-        endPointMapper = grizzlyListener.configureEndpointMapper(isWebProfile);
+                grizzlyService.getController(), isWebProfile);
+        
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
         Mapper mapper = new V3Mapper(logger);
         mapper.setPort(port);
@@ -198,7 +194,8 @@ public class GrizzlyProxy implements NetworkProxy {
             endpointAdapter = vsMapper;
         }
 
-        endPointMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
+        grizzlyListener.getEmbeddedHttp().registerEndpoint(contextRoot,
+                vsServers, endpointAdapter, container);
     }
 
 
@@ -206,7 +203,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * Removes the contex-root from our list of endpoints.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
-        endPointMapper.unregisterEndpoint(contextRoot, app);
+        grizzlyListener.getEmbeddedHttp().unregisterEndpoint(contextRoot, app);
         vsMapper.unregisterEndpoint(contextRoot, app);
     }
 
