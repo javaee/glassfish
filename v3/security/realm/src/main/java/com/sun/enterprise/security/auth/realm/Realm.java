@@ -39,6 +39,7 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
@@ -230,27 +231,34 @@ public abstract class Realm implements Comparable {
         try {
             mgr = habitat.getComponent(RealmsManager.class);
             Class realmClass = null;
-            try {
-                realmClass = Class.forName(className);
-            } catch (ClassNotFoundException ex) {
-                ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                if (loader != null) {
-                    realmClass = loader.loadClass(className);
-                } else {
-                    throw ex;
+            //try a HK2 route first
+            Realm r = habitat.getComponent(Realm.class, name);
+            if (r == null) {
+                try {
+                    //TODO: workaround here. Once fixed in V3 we should be able to use
+                    //Context ClassLoader instead.
+                    ClassLoaderHierarchy hierarchy =
+                            habitat.getComponent(ClassLoaderHierarchy.class);
+                    realmClass = hierarchy.getCommonClassLoader().loadClass(className);
+                    Object obj = realmClass.newInstance();
+                    r = (Realm) obj;
+                } catch (ClassNotFoundException ex) {
+                    realmClass = Class.forName(className);
+                    Object obj = realmClass.newInstance();
+                    r = (Realm) obj;
                 }
             }
-
-            Object obj = realmClass.newInstance();
-            Realm r = (Realm) obj;
-            r.setName(name);
-            r.init(props);
-            
-            if (mgr == null) {
-                throw new BadRealmException("Unable to locate RealmsManager Service");
+            if (r != null) {
+                r.setName(name);
+                r.init(props);
+                if (mgr == null) {
+                    throw new BadRealmException("Unable to locate RealmsManager Service");
+                }
+                mgr.putIntoLoadedRealms(name, r);
+                return r;
+            } else {
+                throw new BadRealmException("Unable to locate Realm class " + className);
             }
-            mgr.putIntoLoadedRealms(name, r);
-            return r;
 
         } catch (NoSuchRealmException ex) {
             throw new BadRealmException(ex);
@@ -259,22 +267,6 @@ public abstract class Realm implements Comparable {
         } catch (IllegalAccessException ex) {
             throw new BadRealmException(ex);
         } catch (ClassNotFoundException ex) {
-            //try a HK2 route
-            // Realm realm = Util.getDefaultHabitat().
-            try {
-                Realm r = habitat.getComponent(Realm.class, name);
-                if (r != null) {
-                    r.setName(name);
-                    r.init(props);
-                    if (mgr == null) {
-                        throw new BadRealmException("Unable to locate RealmsManager Service");
-                    }
-                    mgr.putIntoLoadedRealms(name, r);
-                    return r;
-                }
-            } catch (NoSuchRealmException e) {
-                throw new BadRealmException(e);
-            }
             throw new BadRealmException(ex);
         }
     }

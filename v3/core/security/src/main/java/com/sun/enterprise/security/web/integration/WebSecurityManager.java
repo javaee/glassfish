@@ -293,8 +293,8 @@ public class WebSecurityManager {
     }
 
     public boolean permitAll(HttpServletRequest req) {
-        WebResourcePermission webResPerm = new WebResourcePermission(req);
         boolean ret = false;
+        WebResourcePermission webResPerm = createWebResourcePermission(req);
         if (uncheckedPermissionCache != null) {
            ret = uncheckedPermissionCache.checkPermission(webResPerm);
         }
@@ -404,6 +404,15 @@ public class WebSecurityManager {
         String uri = (String)httpsr.getAttribute(CONSTRAINT_URI);
         if (uri == null) {
             uri = httpsr.getRequestURI();
+             if (uri != null) {
+                // FIX TO BE CONFIRMED: subtract the context path
+                String contextPath = httpsr.getContextPath();
+                int contextLength = contextPath == null ? 0 : 
+                    contextPath.length();
+                if (contextLength > 0) {
+                    uri = uri.substring(contextLength);
+                }
+            }
         }
         if (uri == null) {
             if (logger.isLoggable(Level.FINE)){
@@ -413,7 +422,10 @@ public class WebSecurityManager {
         }
         if(uri.equals("/")) {
             uri = EMPTY_STRING;
-        }
+        }else {
+	    // FIX TO BE CONFIRMED: encode all colons
+ 	    uri = uri.replaceAll(":","%3A");
+  	}
         WebResourcePermission perm = new WebResourcePermission(
                 uri, httpsr.getMethod());
         return perm;

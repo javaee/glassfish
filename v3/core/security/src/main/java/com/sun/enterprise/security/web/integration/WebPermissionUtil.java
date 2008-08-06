@@ -170,6 +170,10 @@ public class WebPermissionUtil {
 	      while (eurl.hasMoreElements()) {
 
 		  String url = (String) eurl.nextElement();
+                  if (url != null) {
+ 		      // FIX TO BE CONFIRMED: encode all colons
+ 		      url = url.replaceAll(":","%3A");
+ 		  }
 
 		  if(logger.isLoggable(Level.FINE)){
 		      logger.log(Level.FINE,"JACC: constraint translation: process url: "+url);
