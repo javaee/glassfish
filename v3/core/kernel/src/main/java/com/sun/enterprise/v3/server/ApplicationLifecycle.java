@@ -31,6 +31,7 @@ import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.Module;
@@ -56,6 +57,7 @@ import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ContainerInfo;
@@ -1004,7 +1006,9 @@ public class ApplicationLifecycle {
                             !propName.equals(ServerTags.LIBRARIES) &&
                             !propName.equals(ServerTags.OBJECT_TYPE) &&
                             !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
-                            !propName.equals(ServerTags.DIRECTORY_DEPLOYED))
+                            !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
+                            !propName.startsWith(
+                                DeploymentProperties.APP_CONFIG))
                         {
                             Property prop = ConfigSupport.createChildOf(app,
                                 Property.class);
@@ -1025,6 +1029,23 @@ public class ApplicationLifecycle {
                     }
                     appRef.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
+
+                    // application-config element
+                    for (Iterator itr = moduleProps.keySet().iterator();
+                        itr.hasNext();) {
+                        String propName = (String) itr.next();
+                        if (propName.startsWith(
+                            DeploymentProperties.APP_CONFIG)) {
+                            ApplicationConfig appConfig = 
+                                ConfigSupport.createChildOf(appRef,
+                                    ApplicationConfig.class);
+                            appRef.getApplicationConfig().add(appConfig);
+                            appConfig.setType(propName.substring(
+                                propName.indexOf(".") + 1));
+                            appConfig.setConfig(moduleProps.getProperty(
+                                propName));
+                        }
+                    }
 
                     servr.getApplicationRef().add(appRef);
                     

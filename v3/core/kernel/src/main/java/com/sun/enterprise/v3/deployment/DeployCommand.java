@@ -33,6 +33,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -50,6 +51,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -136,6 +138,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Param(primary=true)
     File path;
+
+    private List<ApplicationConfig> appConfigList; 
 
     /**
      * Entry point from the framework into the command execution
@@ -267,6 +271,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     virtualservers);
             } 
 
+            if (appConfigList != null) {
+                addApplicationConfigToProps(moduleProps, appConfigList);
+            }
+
             ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 // register application information in domain.xml
@@ -379,6 +387,21 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     parameters.put(ParameterNames.VIRTUAL_SERVERS, virtualservers);
                 }
             }
+
+            // also save the application config data
+            appConfigList = 
+                ConfigBeansUtilities.getApplicationConfig(target, name);
+        }
+    }
+
+    private void addApplicationConfigToProps (Properties moduleProps,
+        List<ApplicationConfig> appConfigList) {
+
+        for (ApplicationConfig appConfig : appConfigList) {
+            String appConfigName = DeploymentProperties.APP_CONFIG + "." + 
+                appConfig.getType();
+            String appConfigValue = appConfig.getConfig();
+            moduleProps.setProperty(appConfigName, appConfigValue);
         }
     }
 }

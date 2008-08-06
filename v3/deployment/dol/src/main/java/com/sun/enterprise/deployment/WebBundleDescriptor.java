@@ -1024,7 +1024,7 @@ public class WebBundleDescriptor extends BundleDescriptor
         return jspDescriptors;
     }
 
-    private Set<EnvironmentEntry> getEnvironmentEntrySet() {
+    public Set<EnvironmentEntry> getEnvironmentEntrySet() {
         if (environmentEntries == null) {
             environmentEntries = new OrderedSet<EnvironmentEntry>();
         }

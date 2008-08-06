@@ -41,13 +41,21 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
 import org.apache.catalina.connector.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.web.EnvironmentEntry;
+import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.web.loader.WebappClassLoader;
+import org.glassfish.web.plugin.common.WebAppConfig;
+import org.glassfish.web.plugin.common.EnvEntry;
+import org.glassfish.web.plugin.common.ContextParam;
 
 import java.util.List;
 import java.util.Collection;
@@ -73,6 +81,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     public boolean start(ClassLoader cl) {
         wmInfo.setAppClassLoader(cl);
+        applyApplicationConfig();
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         return start(vsList);
@@ -276,4 +285,47 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         }
         return false;
     }    
+
+
+    private void applyApplicationConfig() {
+        ApplicationConfig appConfig = 
+            ConfigBeansUtilities.getApplicationConfigByType(
+                container.instanceName, wmInfo.getName(), "web");
+        if (appConfig != null) {
+            // parse the appConfigData and set in the descriptor
+            WebBundleDescriptor descriptor = wmInfo.getDescriptor();
+
+            WebAppConfig c = appConfig.getConfigData(
+                container._serverContext.getDefaultHabitat()); 
+
+            for (EnvEntry env : c.getEnvEntry()) {
+                EnvironmentEntry newEnvEntry = new EnvironmentProperty(
+                    env.getEnvEntryName(), env.getEnvEntryValue(), 
+                    env.getDescription(), env.getEnvEntryType());    
+                for (EnvironmentEntry envEntry : 
+                    descriptor.getEnvironmentEntrySet()) {
+                    if (envEntry.getName().equals(newEnvEntry.getName())) {
+                        descriptor.removeEnvironmentEntry(envEntry);
+                        break;
+                    }
+                 }
+                 descriptor.addEnvironmentEntry(newEnvEntry);
+            }
+
+            for (ContextParam cParam: c.getContextParam()) {
+                ContextParameter newContextParam = new EnvironmentProperty(
+                    cParam.getParamName(), cParam.getParamValue(), 
+                    cParam.getDescription());    
+                for (ContextParameter contextParam : 
+                    descriptor.getContextParametersSet()) {
+                    if (contextParam.getName().equals(
+                        newContextParam.getName())) {
+                        descriptor.removeContextParameter(contextParam);
+                        break;
+                    }
+                }
+                descriptor.addContextParameter(newContextParam);
+            }
+        }
+    }
 }

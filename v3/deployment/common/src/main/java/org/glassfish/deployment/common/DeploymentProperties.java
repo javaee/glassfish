@@ -517,6 +517,8 @@ public class DeploymentProperties extends Properties {
     public static final String RES_UNDEPLOYMENT = "resUndeployment";
     public static final String RES_REDEPLOYMENT = "resRedeployment";
     public static final String RES_NO_OP = "resNoOp";
+
+    public static final String APP_CONFIG = "appConfig";
     
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";

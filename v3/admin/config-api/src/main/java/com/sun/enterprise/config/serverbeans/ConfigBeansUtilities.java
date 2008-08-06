@@ -223,6 +223,30 @@ public final class ConfigBeansUtilities {
         }
     }
 
+    public static List<ApplicationConfig> getApplicationConfig(
+        String sn, String moduleID) {
+        ApplicationRef appRef = getApplicationRefInServer(sn, moduleID);
+        if (appRef != null) {
+            return appRef.getApplicationConfig();
+        } else {
+            return null;
+        }
+    }
+
+    public static ApplicationConfig getApplicationConfigByType(
+        String sn, String moduleID, String type) {
+        List <ApplicationConfig> appConfigList = 
+            getApplicationConfig(sn, moduleID);
+        if (appConfigList != null) {
+            for (ApplicationConfig appConfig : appConfigList) {
+                if (appConfig.getType().equals(type)) {
+                    return appConfig;
+                }
+            } 
+        }
+        return null;
+    }
+
     public static String getName(String moduleID) {
         Module module = getModule(moduleID);
         if (module != null) {
