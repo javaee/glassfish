@@ -1853,8 +1853,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean isEnabled(String moduleName) {
         // TODO dochez : optimize
+        /*
         Domain domain = habitat.getComponent(Domain.class);
-        /* applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
+        applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
         com.sun.enterprise.config.serverbeans.WebModule webModule = null;
         for (Object module : applications) {
             if (module instanceof WebModule) {
