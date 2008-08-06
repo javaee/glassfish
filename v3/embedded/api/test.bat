@@ -1,4 +1,4 @@
-set XYZ=-cp target/test-classes;target/gf-embedded-api-1.0-alpha-5-SNAPSHOT-with-full-v3.jar  org.glassfish.embed.Main
+set XYZ=-cp target/test-classes;target/glassfish-embedded-api-10.0-SNAPSHOT-with-full-v3.jar org.glassfish.embed.Main
 
 if "%1"=="debug" goto debug
 
