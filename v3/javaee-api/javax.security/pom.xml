@@ -48,7 +48,7 @@
     <groupId>org.glassfish</groupId>
     <properties>
         <extension.name>javax.security.jacc</extension.name>
-        <spec.version>1.1</spec.version>
+        <spec.version>1.2</spec.version>
     </properties>
     <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
