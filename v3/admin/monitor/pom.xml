@@ -103,7 +103,9 @@
 			org.glassfish.flashlight.datatree,
 			org.glassfish.flashlight.datatree.factory,
 			org.glassfish.flashlight.statistics,
-			org.glassfish.flashlight.statistics.factory
+			org.glassfish.flashlight.statistics.factory,
+                        org.glassfish.admin.monitor,
+                        org.glassfish.admin.monitor.cli
                         </Export-Package>
                     </instructions>
                 </configuration>

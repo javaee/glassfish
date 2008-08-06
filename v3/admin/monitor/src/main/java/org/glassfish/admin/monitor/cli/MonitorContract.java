@@ -36,56 +36,16 @@
 
 package org.glassfish.admin.monitor.cli;
 
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport.ExitCode;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Return the version and build number
+ * Commin interface for monitor task implementation
  *
- * @author Prashanth Abbagani
+ * @author Sreenivas Munnangi
  */
-@Service(name="monitor")
-@I18n("monitor.command")
-public class Monitor implements AdminCommand {
-
-    @Param(optional=true)
-    private String type;
-
-    @Param(optional=true)
-    private String filter;
-
-    @Inject
-    private Habitat habitat;
-
-    final private LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(Monitor.class);
-
-
-    public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
-        MonitorContract mContract = null;
-        for (MonitorContract m : habitat.getAllByContract(MonitorContract.class)) {
-            if ((m.getName()).equals(type)) {
-                mContract = m;
-                break;
-            }
-        }
-        if (mContract != null) {
-            mContract.process(report, filter);
-            return;
-        }
-        report.setMessage(localStrings.getLocalString("monitor.type.error", 
-                "No type exists in habitat for the given monitor type {0}", type));
-        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-    }
+@Contract
+public interface MonitorContract {
+    public ActionReport process(final ActionReport report, final String filter);
+    public String getName();
 }
