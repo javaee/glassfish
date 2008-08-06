@@ -65,6 +65,7 @@ import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.TypeVariable;
@@ -788,18 +789,23 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             /**
              * Generates the injector that reads an attribute and sets the value.
              */
+            @Override
             protected void generate() {
                 metadata.add(xmlTokenName(),isRequired()?"required":"optional");
                 if (this.hasDefault())
                     metadata.add(xmlTokenName(), "default:" + a.defaultValue());
-                String annotated   = a.dataType();
-                String defaultType = "as-declared";
-                if (defaultType.equals(annotated)) { //attribute annotated as "as-declared" (in method decl)
+                String ant = "";
+                try {
+                    Class c = a.dataType();
+                } catch(MirroredTypeException me) { //hack?
+                     ant = getCanonicalTypeFrom(me);
+                }
+                if (ant.length() == 0) { //take it from the return type of method
                     Property.Method m = (Property.Method)p; // Method needn't be Property's inner class
                     String typeReturnedByMethodDecl = m.decl.getReturnType().toString();
                     metadata.add(xmlTokenName(), "datatype:" + typeReturnedByMethodDecl);
                 } else {
-                    metadata.add(xmlTokenName(), "datatype:" + annotated);
+                    metadata.add(xmlTokenName(), "datatype:" + ant);
                 }
                 super.generate();
             }
@@ -812,7 +818,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 return invokeDom(isVariableExpansion()?"attribute":"rawAttribute").arg(xmlName);
             }
         }
-
+        
         private final class ElementMethodGenerator extends MethodGenerator {
             private final Element e;
             private ElementMethodGenerator(Property p, Element e) {
@@ -860,6 +866,15 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
         }
     }
 
+    private static String getCanonicalTypeFrom(MirroredTypeException me) {
+        TypeMirror tm = me.getTypeMirror();
+        if (tm instanceof DeclaredType) {
+            DeclaredType dec = (DeclaredType) tm;
+            String qn = dec.getDeclaration().getQualifiedName();
+            return ( qn );
+        }
+        return "";  //ok?
+    }
     private TypeMirror erasure(TypeMirror type) {
         return env.getTypeUtils().getErasure(type);
     }

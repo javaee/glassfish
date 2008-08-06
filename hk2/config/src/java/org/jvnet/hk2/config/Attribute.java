@@ -124,5 +124,5 @@ public @interface Attribute {
      * @return String specifying the name of the data type for the values of this
      * attribute
      */
-    String dataType() default "as-declared";
+    Class dataType() default String.class;
 }

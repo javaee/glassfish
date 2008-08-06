@@ -36,16 +36,11 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.tiger_types.Types;
-
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.beans.PropertyChangeEvent;
-import java.beans.VetoableChangeSupport;
 import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
 import java.util.*;
 
 /**
@@ -61,7 +56,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
-    Map<String, DataType> validators = new HashMap<String, DataType>();
 
     public WriteableView(ConfigBeanProxy readView) {
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
@@ -415,32 +409,9 @@ private class ProtectedList extends AbstractList {
         throws ValidationException { //TODO
         if (property instanceof ConfigModel.AttributeLeaf) { //validate only attributes for now
             ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
-            DataType validator = getValidatorFor(al.dataType);
+            DataType validator = bean.document.getValidator(al.dataType);
             if (validator != null)
                 validator.validate(value.toString());
         }
     }
-    
-    private DataType getValidatorFor(String dataType) {
-        synchronized(validators) {
-            DataType validator = validators.get(dataType);
-            if (validator != null)
-                return validator;
-
-            if (PRIMS.contains(dataType)) {
-                validators.put(dataType, new PrimitiveDataType(dataType));
-            } else {
-                try {
-                    Class<?> c = Class.forName(dataType);
-                    DataType d = (DataType) c.newInstance();
-                    validators.put(dataType, d);
-                } catch(Exception e) {
-                    //ignore?
-                }
-            }
-            return ( validators.get(dataType) );
-        }
-    }
-    /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(new String[] 
-    {"boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"}));
 }
