@@ -12,6 +12,10 @@ import org.glassfish.api.Param;
 import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.statistics.Counter;
 
 /**
  * User: Jerome Dochez
@@ -24,12 +28,25 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     @Inject
     Domain domain;
 
+    //How to define short option name?
+    @Param(optional=true, defaultValue="false")
+    Boolean monitor;
+
     @Param(primary = true)
-    String pattern="";
+    String pattern;
+
+    @Inject
+    private MonitoringRuntimeDataRegistry mrdr;
     
     public void execute(AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
+
+        if (monitor) {
+            getMonitorAttributes(report);
+            return;
+        }
+        
 
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
@@ -65,5 +82,32 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                 }
             }
         }
+    }
+    
+    private void getMonitorAttributes(ActionReport report) {
+        if ((pattern == null) || (pattern.equals(""))) {
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage("match pattern is invalid or null");
+        }
+
+        //Grab the monitoring tree root from habitat and get the attributes using pattern
+        org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get("server");
+        List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
+        for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
+            if ((! tn1.hasChildNodes())){// && (tn1 instanceof Counter) ) {
+                /*
+                if (tn1 instanceof Counter)
+                {
+                    Counter c = (Counter)tn1;
+                    System.out.println(tn1.getCompletePathName() + " = " + c.getValue());
+                }
+                 */
+                System.out.println(tn1.getCompletePathName() + " = " + tn1.getValue());
+                //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getValue());
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(tn1.getCompletePathName() + " = " + tn1.getValue());
+            }
+        }
+        report.setActionExitCode(ExitCode.SUCCESS);
     }
 }

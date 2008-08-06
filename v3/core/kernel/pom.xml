@@ -184,16 +184,21 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi_R4_core</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
+	<dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi_R4_core</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
         </dependency>
-         <dependency>
+	<dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>monitoring-core</artifactId>
+            <version>10.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
