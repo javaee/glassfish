@@ -371,7 +371,8 @@ public class CLIRemoteCommand {
      */
     public static boolean pingDAS(int port) {
         try {
-            new CLIRemoteCommand("version", "--port", Integer.toString(port));
+            CLIRemoteCommand rcmd = new CLIRemoteCommand("version", "--port", Integer.toString(port));
+            rcmd.runCommand();
             return true;
         }
         catch (Exception ex) {
