@@ -107,6 +107,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 "org.glassfish.common.glassfish-api",
                 "org.glassfish.web.web-glue",
                 "org.glassfish.web.jsf-connector",
+                "javax.faces.jsf-impl",
                 "org.glassfish.web.jstl-impl",
                 "org.glassfish.web.jspimpl",
                 "org.glassfish.external.grizzly-module",
