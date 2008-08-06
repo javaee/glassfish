@@ -678,8 +678,10 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("wiki", "http://wiki.updatecenter.java.net/Wiki.jsp?page=GettingStarted");        
     }
     /**
-     *	<p> This handler sets a property on an object which is stored in an existing key
-     *  For example "advance.lazyConnectionEnlistment"
+     * <p> This handler sets a property on an object which is stored in an existing key
+     * For example "advance.lazyConnectionEnlistment".  <strong>Note</string>:  This does
+     * <em>not</em> evaluate the EL expression.  Its value (e.g., "#{advance.lazyConnectionEnlistment}")
+     * is passed as is to the EL API.
      */
     @Handler(id = "setValueExpression",
         input = {
@@ -687,8 +689,8 @@ public class CommonHandlers {
             @HandlerInput(name = "value", type = Object.class, required = true)
     })
     public static void setValueExpression(HandlerContext handlerCtx) {
-        MiscUtil.setValueExpression((String) handlerCtx.getInputValue("expression"), 
-                (String) handlerCtx.getInputValue("value"));
+        MiscUtil.setValueExpression((String) handlerCtx.getHandler().getInputValue("expression"), 
+                (Object) handlerCtx.getInputValue("value"));
     }
     
     /**

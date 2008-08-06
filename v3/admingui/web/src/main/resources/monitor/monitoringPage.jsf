@@ -86,18 +86,8 @@
                             getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="HTTPService", defaultValue=>$attribute{httpService});
                             getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="WebContainer", defaultValue=>$attribute{webContainer});
                             
-                            //setValueExpression(expression="#{requestScope.bargle}", value="bargle");
-                            println("#{bargle}");
-                            println("*****");
-                            println("$attribute{httpService}");
-                            println("#{pageSession.configMap}");
-                            println("#{pageSession.configMap.class.name}");
-                            println("#{configMap.HTTPService}");
-                            println("#{pageSession.configMap.HTTPService}");
-                            println("#{pageSession.configMap.HTTPService.class.name}");
-                            println("*****");                           
                             setValueExpression(expression="#{configMap.HTTPService}", value="hello");
-                            //setValueExpression(expression="#{configMap.webContainer}", value="$attribute{webContainer}");
+                            setValueExpression(expression="#{configMap.webContainer}", value="$attribute{webContainer}");
                        />
                     </sun:button>
                     <!-- Buttons  -->                    
