@@ -329,9 +329,10 @@ public class ApplicationLifecycle {
                     Deployer deployer = getDeployer(containerInfo);
                     deployers.add(deployer);
                 }
-
-                ClassLoader parentCL = createApplicationParentCL(null, context, 
-                    deployers);
+                ClassLoader applibCL = clh.getAppLibClassLoader(appName, 
+                    getAppLibs(context));
+                ClassLoader parentCL = createApplicationParentCL(applibCL, 
+                    context, deployers);
                 ArchiveHandler handler = getArchiveHandler(context.getSource());
                 context.setClassLoader(handler.getClassLoader(parentCL, 
                     context.getSource()));
