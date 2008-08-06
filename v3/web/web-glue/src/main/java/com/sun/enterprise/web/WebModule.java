@@ -1369,8 +1369,12 @@ public class WebModule extends PwcWebModule {
      * Servlet related probe events
      */
 
-    public void servletLoadedEvent(Servlet servlet) {
-        servletProbeProvider.servletLoadedEvent(servlet, name, vsId);
+    public void servletInitializedEvent(Servlet servlet) {
+        servletProbeProvider.servletInitializedEvent(servlet, name, vsId);
+    }
+
+    public void servletDestroyedEvent(Servlet servlet) {
+        servletProbeProvider.servletDestroyedEvent(servlet, name, vsId);
     }
 
 

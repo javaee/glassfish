@@ -46,19 +46,42 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
 public interface ServletProbeProvider {
 
     /**
-     * Emits notification that a servlet has been loaded.
+     * Emits notification that a servlet has been initialized.
      *
      * To get additional information (such as the servlet name) about the
-     * servlet that was loaded, call servlet.getServletConfig(),
-     * and on the returned ServletConfig, getServletName() (or some of the
+     * servlet that was initialized, call servlet.getServletConfig(),
+     * and on the returned ServletConfig, getServletName() (or any of the
      * other getters).
      *
-     * @param servlet the servlet that was loaded
+     * @param servlet the servlet that was initialized
      * @param appName the name of the app to which the servlet belongs
+     * @param hostName the name of the virtual server on which the app has 
+     * been deployed
      */
-    public void servletLoadedEvent(
+    public void servletInitializedEvent(
+        @ProbeParam("servlet") Servlet servlet,
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName
+    );
+
+
+    /**
+     * Emits notification that a servlet has been destroyed.
+     *
+     * To get additional information (such as the servlet name) about the
+     * servlet that was destroyed, call servlet.getServletConfig(),
+     * and on the returned ServletConfig, getServletName() (or any of the
+     * other getters).
+     *
+     * @param servlet the servlet that was destroyed
+     * @param appName the name of the app to which the servlet belongs
+     * @param hostName the name of the virtual server on which the app has 
+     * been deployed
+     */
+    public void servletDestroyedEvent(
         @ProbeParam("servlet") Servlet servlet,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName
     );    
+
 }

@@ -74,8 +74,8 @@ public class WebTelemetry{
     public void enableMonitoringForSubElements(boolean isEnable) {
         //loop through the children and enable/disable all
     }
-    
-    @ProbeListener("web:servlet::servletLoadedEvent")
+
+    @ProbeListener("web:servlet::servletInitializedEvent")
     public void servletLoadedListener(
                     @ProbeParam("servlet") Servlet servlet,
                     @ProbeParam("appName") String appName,

@@ -338,9 +338,13 @@ public final class J2EEInstanceListener implements InstanceListener {
             instance = event.getServlet();
         }
 
-        if (eventType == InstanceEvent.EventType.AFTER_INIT_EVENT
-                && (instance instanceof Servlet)) {
-            wm.servletLoadedEvent((Servlet) instance);
+        // Emit monitoring probe event
+        if (instance instanceof Servlet) {
+            if (eventType == InstanceEvent.EventType.AFTER_INIT_EVENT) {
+                wm.servletInitializedEvent((Servlet) instance);
+            } else if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
+                wm.servletDestroyedEvent((Servlet) instance);
+            }
         }
 
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
@@ -351,8 +355,11 @@ public final class J2EEInstanceListener implements InstanceListener {
                 _logger.getResourceBundle().getString(
                     "web_server.excep_handle_after_event"),
                 ex);
+
         } finally {
-            if (eventType==InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
+
+            if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
+
                 tm.componentDestroyed(instance, inv);                
                 JndiNameEnvironment desc = wm.getWebBundleDescriptor();
                 if (desc != null
