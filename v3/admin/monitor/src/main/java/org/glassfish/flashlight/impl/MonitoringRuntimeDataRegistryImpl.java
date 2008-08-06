@@ -17,7 +17,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author Harpreet Singh
  */
 
-@Service (name="MonitoringRuntimeDataRegistry")
+@Service
 @Scoped(Singleton.class)
 public class MonitoringRuntimeDataRegistryImpl 
         implements MonitoringRuntimeDataRegistry {

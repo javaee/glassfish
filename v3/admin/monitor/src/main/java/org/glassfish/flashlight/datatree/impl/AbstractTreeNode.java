@@ -57,10 +57,12 @@ public abstract class AbstractTreeNode implements TreeNode {
     }
 
     public void setValue(Object value) {
+      /*
         if (value == null) {
             throw new RuntimeException("Flashlight-utils: Tree Node" +
                     " needs a non-null value");
         }
+     */
         this.instance = value;
     }
     /*    public Object getValue(){
