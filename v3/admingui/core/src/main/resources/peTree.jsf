@@ -111,7 +111,7 @@
 		</facet>
 
                  <dynamicTreeNode id="webApplications"
-		    treeAdaptorClass="org.glassfish.admingui.tree.MBeanTreeAdaptor"
+		    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
 		    objectName="amx:j2eeType=X-ApplicationsConfig,name=na"
 		    methodName="getApplicationConfigMap"
 		    text="$resource{i18n.tree.webApps}"
@@ -148,7 +148,7 @@
 		    imageURL="resource/images/JDBC.gif"
 		    >
 		    <dynamicTreeNode id="jdbcResources"
-                        treeAdaptorClass="org.glassfish.admingui.tree.MBeanTreeAdaptor"
+                        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
                         objectName="amx:j2eeType=X-ResourcesConfig,name=na"   
                         methodName="getJDBCResourceConfigMap"
                         childImageURL="resource/images/JDBC.gif"
@@ -164,7 +164,7 @@
 			</facet>
 		    </dynamicTreeNode>
 		    <dynamicTreeNode id="connectionPoolResources"
-                        treeAdaptorClass="org.glassfish.admingui.tree.MBeanTreeAdaptor"
+                        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
                         objectName="amx:j2eeType=X-ResourcesConfig,name=na"   
                         methodName="getJDBCConnectionPoolConfigMap"
                         attributeName="name"
@@ -201,7 +201,7 @@
 		    imageURL="resource/images/security.gif"
 		    >
 		    <dynamicTreeNode id="realms"
-                        treeAdaptorClass="org.glassfish.admingui.tree.MBeanTreeAdaptor"
+                        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
                         objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
                         methodName="getAuthRealmConfigMap"
                         childImageURL="resource/images/security.gif"
