@@ -72,11 +72,6 @@
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-        <h:form>
-<h:inputText value="#{theMap.foo}" />
-<staticText value="The map.foo value is: #{theMap.foo}" />
-<h:commandButton/>
-        </h:form>
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title id="configPageTitle"  title="$resource{web.monitoring.Title}" 
