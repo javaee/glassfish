@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;

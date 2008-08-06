@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.*;
 import org.glassfish.internal.data.ContainerInfo;
 import org.glassfish.internal.data.ContainerRegistry;

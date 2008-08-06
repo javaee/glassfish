@@ -69,7 +69,7 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 

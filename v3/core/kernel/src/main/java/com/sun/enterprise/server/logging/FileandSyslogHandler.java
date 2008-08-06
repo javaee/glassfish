@@ -40,7 +40,7 @@ import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;
 import org.glassfish.config.support.TranslatedConfigView;

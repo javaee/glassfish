@@ -53,5 +53,7 @@
         <module>client</module>
         <module>common</module>
         <module>javaee-core</module>
+        <module>admin</module>
+        <module>autodeploy</module>
     </modules>
 </project>

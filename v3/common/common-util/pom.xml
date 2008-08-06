@@ -113,7 +113,8 @@
                         com.sun.enterprise.util.zip,
                         com.sun.logging,
                         org.glassfish.resource.common,
-                        org.glassfish.security.common
+                        org.glassfish.security.common,
+                        org.glassfish.server
                         </Export-Package>
                     </instructions>
                 </configuration>

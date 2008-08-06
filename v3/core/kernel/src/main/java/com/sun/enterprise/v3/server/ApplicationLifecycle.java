@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -40,8 +41,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.Tokenizer;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
-import com.sun.enterprise.v3.deployment.EnableCommand;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -307,7 +307,7 @@ public class ApplicationLifecycle {
         final ApplicationLifecycle myself = this;
 
         String appName = context.getCommandParameters().getProperty(
-            EnableCommand.COMPONENT);
+            ParameterNames.COMPONENT);
 
         ApplicationInfo appInfo = appRegistry.get(appName);
 

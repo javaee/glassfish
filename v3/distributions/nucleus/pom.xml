@@ -122,6 +122,16 @@
 	   	   <version>0.2-SNAPSHOT</version>
 	   	   <type>distribution-fragment</type>
        </dependency>
+       <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-autodeploy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
    </dependencies>
 </project>
 

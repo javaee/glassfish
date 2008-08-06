@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;

@@ -24,7 +24,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import org.glassfish.internal.api.Init;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;

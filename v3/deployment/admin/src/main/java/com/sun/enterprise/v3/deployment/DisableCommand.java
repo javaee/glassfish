@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.v3.deployment;
 
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;

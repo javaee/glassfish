@@ -30,7 +30,7 @@ import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.util.zip.ZipFile;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.beans.PropertyVetoException;
 import java.io.BufferedInputStream;

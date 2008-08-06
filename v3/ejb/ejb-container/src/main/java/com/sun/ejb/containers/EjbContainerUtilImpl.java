@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;

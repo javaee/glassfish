@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.deployment;
+package org.glassfish.deployment.common;
 
 import java.lang.instrument.ClassFileTransformer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.io.File;
 
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.ModuleDefinition;
 
 /**

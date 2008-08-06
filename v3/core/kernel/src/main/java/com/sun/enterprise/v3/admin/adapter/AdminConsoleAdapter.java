@@ -31,7 +31,7 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import org.glassfish.internal.data.ApplicationRegistry;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;

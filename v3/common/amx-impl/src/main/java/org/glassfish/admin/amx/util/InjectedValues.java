@@ -45,7 +45,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.glassfish.api.Async;
 
 import javax.management.MBeanServer;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 
 /**

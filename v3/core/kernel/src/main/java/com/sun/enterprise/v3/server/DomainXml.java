@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;

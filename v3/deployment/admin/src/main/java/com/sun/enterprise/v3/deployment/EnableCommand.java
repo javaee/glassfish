@@ -23,7 +23,8 @@
 
 package com.sun.enterprise.v3.deployment;
 
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
@@ -40,6 +41,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.ParameterNames;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -66,13 +68,11 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     ServerEnvironmentImpl env;
 
-    @Param(primary=true, name="component")
+    @Param(primary=true, name="ParameterNames.COMPONENT")
     String component = null;
 
     @Param(optional=true)
     String target = "server";
-
-    public final static String COMPONENT = "component";
 
     /**
      * Entry point from the framework into the command execution

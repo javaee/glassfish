@@ -30,7 +30,7 @@ import com.sun.enterprise.v3.admin.CommandRunner;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
@@ -56,6 +56,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
 import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 
 
 /**

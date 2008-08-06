@@ -61,7 +61,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 
 import com.sun.enterprise.universal.Duration;
 
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.amx.util.InjectedValues;
 

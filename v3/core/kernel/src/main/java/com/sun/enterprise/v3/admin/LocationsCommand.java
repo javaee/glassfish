@@ -6,7 +6,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  * Locations command to indicate where this server is installed.

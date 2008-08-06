@@ -148,5 +148,15 @@
             <artifactId>apache-commons</artifactId>
             <version>${project.version}</version>
         </dependency>        
+       <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
