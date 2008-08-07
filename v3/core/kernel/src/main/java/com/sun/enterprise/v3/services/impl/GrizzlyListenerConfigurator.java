@@ -151,7 +151,7 @@ public class GrizzlyListenerConfigurator {
             configureComet(grizzlyEmbeddedHttp);       
         }
 
-        if (isWebProfile) {
+        if (!isWebProfile) {
             grizzlyListener.configurePortUnification();
         }
     }      
