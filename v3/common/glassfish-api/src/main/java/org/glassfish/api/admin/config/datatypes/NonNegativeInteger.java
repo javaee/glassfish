@@ -5,6 +5,7 @@
 
 package org.glassfish.api.admin.config.datatypes;
 
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.DataType;
 import org.jvnet.hk2.config.ValidationException;
 
@@ -12,13 +13,13 @@ import org.jvnet.hk2.config.ValidationException;
  *  It's modeled as a functional class.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
-public class NonNegativeInteger extends DataType {
+@Service
+public class NonNegativeInteger implements DataType {
 
     /** Validates the value as a non-negative integer.
      * @param value
      * @throws org.jvnet.hk2.config.ValidationException
      */
-    @Override
     public void validate(String value) throws ValidationException {
         try {
             int number = Integer.parseInt(value);
