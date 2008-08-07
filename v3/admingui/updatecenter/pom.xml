@@ -126,10 +126,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jvnet.updatecenter2</groupId>
-            <artifactId>pkg</artifactId>
-            <version>2.0.13-1005</version>
+            <groupId>com.sun.pkg</groupId>
+	    <artifactId>pkg-client</artifactId>
+            <version>1.0.7-13.1048</version>
+	    <!--
 	    <scope>provided</scope>
+	    -->
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
