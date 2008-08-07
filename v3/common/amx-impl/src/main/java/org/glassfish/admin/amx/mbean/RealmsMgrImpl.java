@@ -176,10 +176,6 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         }
         return realm;
     }
-    private void persist( final Realm realm )
-    {
-       // realm.persist();
-    }
     
     public void addUser(
         final String realmName,
@@ -193,7 +189,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         {
             final Realm realm = getRealm(realmName);
             realm.addUser(user, password, groupList);
-            persist(realm);
+            realm.persist();
         }
         catch( final Exception e )
         {
@@ -214,7 +210,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         {
             final Realm realm = getRealm(realmName);
             realm.updateUser(existingUser, newUser, password, groupList);
-            persist(realm);
+            realm.persist();
         }
         catch( final Exception e )
         {
@@ -230,7 +226,7 @@ public final class RealmsMgrImpl extends AMXNonConfigImplBase implements RealmsM
         {
             final Realm realm = getRealm(realmName);
             realm.removeUser(user);
-            persist(realm);
+            realm.persist();
         }
         catch( final Exception e )
         {
