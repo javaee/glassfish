@@ -217,6 +217,11 @@
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-security-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
