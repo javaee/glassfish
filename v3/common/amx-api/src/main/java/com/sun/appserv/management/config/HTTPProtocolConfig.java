@@ -49,14 +49,14 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
 
     /**
         <b>DO NOT USE, use {@link #getDefaultType}</b>
-        @Deprecated
+        @deprecated
      */
     @ResolveTo(Integer.class)
 	public String	getDefaultResponseType();
     
 	/**
         <b>DO NOT USE, use {@link #setDefaultType}</b>
-        @Deprecated
+        @deprecated
 	*/
 	public void	setDefaultResponseType( final String value );
 
@@ -84,12 +84,12 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
 	/**
         <b>DO NOT USE, use {@link #getResponseType}</b>
 		@see HTTPProtocolConfigKeys#FORCED_RESPONSE_TYPE_KEY
-        @Deprecated
+        @deprecated
 	*/
 	public String	getForcedResponseType();
 	/**
 		@see HTTPProtocolConfigKeys#FORCED_RESPONSE_TYPE_KEY
-        @Deprecated
+        @deprecated
 	*/
 	public void	setForcedResponseType( final String value );
 

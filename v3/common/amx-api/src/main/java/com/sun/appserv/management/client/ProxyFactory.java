@@ -483,7 +483,7 @@ public final class ProxyFactory implements NotificationListener
     
 	/**
 		@return an appropriate {@link AMX} interface for the ObjectName
-		@Deprecated use versions that take a class as a parameter
+		@deprecated use versions that take a class as a parameter
 	 */
 		public AMX
 	getProxy( final ObjectName	objectName )
@@ -497,7 +497,7 @@ public final class ProxyFactory implements NotificationListener
 		@param objectName	ObjectName for which a proxy should be created
 		@param create		true to create the proxy, false to return existing value
 		@return an appropriate {@link AMX} interface for the ObjectName
-		@Deprecated use versions that take a class as a parameter
+		@deprecated use versions that take a class as a parameter
 	 */
 		public AMX
 	getProxy( final ObjectName	objectName, boolean create )

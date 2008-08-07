@@ -49,9 +49,7 @@ import com.sun.appserv.management.config.ConfigRemover;
  */
 public interface ProtocolFinderConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
     /**
-     * Gets the class name of the {@link ProtocolFinder} implementation
-     *
-     * @return the class name of the {@link ProtocolFinder} implementation
+     * @return the class name of the implementation
      */
     public String getClassname();
     public void setClassname(String classname);

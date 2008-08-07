@@ -81,7 +81,7 @@ public interface WebServiceMgr extends AMX, Singleton
      *
      * @return {@link WebServiceEndpointInfo} as Map which is mapped by keys in interface {@link
      * WebServiceEndpointInfo}
-     @Deprecated  should not use proprietary types over the wire
+     @deprecated  should not use proprietary types over the wire
      */
     public WebServiceEndpointInfo getWebServiceEndpointInfo(Object key);
 

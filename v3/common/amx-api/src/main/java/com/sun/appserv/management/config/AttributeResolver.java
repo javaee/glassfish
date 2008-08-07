@@ -44,9 +44,6 @@ import javax.management.AttributeNotFoundException;
 	are returned as the values of certain Attributes.  This interface is intended for use
     only with {@link AMXConfig} MBeans.
     <p>
-    The class {@link com.sun.appserv.management.helper.AttributeResolverHelper} offers
-    convenience methods for resolving attributes.
-    @see com.sun.apperv.management.helper.AttributeResolverHelper
  */
 public interface AttributeResolver
 {

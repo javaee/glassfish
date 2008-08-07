@@ -226,8 +226,9 @@ public final class XTypes
 	
 	/**
 		ID for {@link com.sun.appserv.management.deploy.DeploymentMgr}
-	 */
+	 *
 	public final static String	DEPLOYMENT_MGR				=  P + "Deployment" + M;
+    */
 	
 	
 	/* within a config */
@@ -817,7 +818,7 @@ LOAD_BALANCER_MONITORING
 	public final static String	CONNECTOR_CONNECTION_POOL_MONITOR	=  P + "ConnectorConnectionPoolMonitor";
 	/**
 		Deprecated, use {@link #CONNECTOR_CONNECTION_POOL_MONITOR} instead.
-		@Deprecated
+		@deprecated
 	 */
 	public final static String	CONNNECTOR_CONNECTION_POOL_MONITOR	=  CONNECTOR_CONNECTION_POOL_MONITOR;
         

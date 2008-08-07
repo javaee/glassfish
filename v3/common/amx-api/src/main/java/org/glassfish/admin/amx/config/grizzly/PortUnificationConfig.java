@@ -48,19 +48,10 @@ import com.sun.appserv.management.config.ConfigRemover;
  */
 public interface PortUnificationConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
     /**
-     * Gets the class name of the {@link PortUnification} implementation
-     *
-     * @return the class name of the {@link PortUnification} implementation
+     * @return the class name of the implementation
      */
     public String getClassname();
     public void setClassname(String classname);
 
-    /**
-     * Gets the {@link List} of a {@link ProtocolFinder}s, which will be
-     * responsible for protocol recognition.
-     *
-     * @return the {@link List} of a {@link ProtocolFinder}s, which will be
-     *         responsible for protocol recognition
-     */
     public Map<String,ProtocolFinderConfig> getProtocolFinderConfigMap();
 }

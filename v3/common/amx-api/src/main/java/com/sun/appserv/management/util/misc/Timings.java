@@ -119,7 +119,7 @@ public final class Timings
     }
     
     /**
-        @param checkpoint the name of the checkpoint
+        @param checkpointName the name of the checkpoint
         @param nanoseconds the nanoseconds ascribed to this checkpoint
      */
         public void
@@ -134,7 +134,7 @@ public final class Timings
     
     /**
         Convenience--same as <code>add( checkpoint, delta.elapsed() )</code>;
-        @param checkpoint the name of the checkpoint
+        @param checkpointName the name of the checkpoint
         @param delta a TimingDelta
      */
         public void

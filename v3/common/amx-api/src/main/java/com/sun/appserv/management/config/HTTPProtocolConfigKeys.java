@@ -69,13 +69,13 @@ public final class HTTPProtocolConfigKeys
         content-type, encoding, language, charset
         <p>
         Example: "text/html; charset=iso-8859-1"      
-        @Deprecated do not use      
+        @deprecated do not use      
 	 */
 	public static final String FORCED_RESPONSE_TYPE_KEY		=	"ForcedResponseType";
     
 	/**
 		See {@link #FORCED_RESPONSE_TYPE_KEY}.
-        @Deprecated do not use
+        @deprecated do not use
 	 */
 	public static final String DEFAULT_RESPONSE_TYPE_KEY	=	"DefaultResponseType";
 	public static final String SSL_ENABLED_KEY				=	"SSLEnabled";

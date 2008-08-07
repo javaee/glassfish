@@ -44,7 +44,7 @@ import com.sun.appserv.management.config.ConfigCreator;
 import com.sun.appserv.management.config.ConfigRemover;
 
 /**
- * Defines the type of a {@link ProtocolChainConfig} and describes a list of a
+ * Dscribes a list of a
  * {@link ProtocolFilterConfig}s, which will participate in a request processing
  */
 public interface ProtocolChainConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover{
@@ -52,8 +52,7 @@ public interface ProtocolChainConfig extends PropertiesAccess, NamedConfigElemen
     public void setClassname(String classname);
 
     /**
-     * Gets the {@link ProtocolChain} type. The {@link ProtocolChain} type could
-     * be either STATEFUL or STATELESS. Default value is STATELESS.
+     * Gets the type. The type could be either STATEFUL or STATELESS. Default value is STATELESS.
      *
      * @return the {@link ProtocolChain} type
      */

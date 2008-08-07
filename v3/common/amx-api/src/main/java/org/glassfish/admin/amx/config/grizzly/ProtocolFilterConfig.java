@@ -40,13 +40,11 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.NamedConfigElement;
 
 /**
- * Defines single {@link ProtocolFilterConfig} in a processing chain.
+ * Defines single ProtocolFilterConfig in a processing chain.
  */
 public interface ProtocolFilterConfig extends PropertiesAccess, NamedConfigElement, DefaultValues {
     /**
-     * Gets the class name of the {@link ProtocolFilter} implementation
-     *
-     * @return the class name of the {@link ProtocolFilter} implementation
+     * @return the class name of the implementation
      */
     public String getClassname();
     public void setClassname(String classname);

@@ -47,39 +47,37 @@ import com.sun.appserv.management.config.ResolveTo;
  */
 public interface TransportConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
    /**
-     * Gets the class name of the {@link Transport} implementation
-     *
-     * @return the class name of the {@link Transport} implementation
+     * @return the class name of the implementation
      */
     public String getClassname();
     public void setClassname(String classname);
 
     /**
-     * Get the name of the {@link SelectionKeyHandler}, associated
-     * with the {@link Transport}
+     * Get the name of the {@link SelectionKeyHandlerConfig}, associated
+     * with the {@link TransportConfig}
      *
-     * @return the name of the {@link SelectionKeyHandler}, associated
-     *         with the {@link Transport}
+     * @return the name of the {@link SelectionKeyHandlerConfig}, associated
+     *         with the {@link TransportConfig}
      */
     public String getSelectionKeyHandlerRef();
     public void setSelectionKeyHandlerRef(String selectionKeyHandlerRef);
 
     /**
      * Gets the number of acceptor threads listening for
-     * the {@link Transport} events.
+     * the {@link TransportConfig} events.
      *
      * @return the number of acceptor threads listening for the
-     *         {@link Transport} events
+     *         {@link TransportConfig} events
      */
     @ResolveTo(Integer.class)
     public String getAcceptorThreads();
     public void setAcceptorThreads(String acceptorThreads);
 
     /**
-     * Gets the max. number of connections this {@link Transport} can handle
+     * Gets the max. number of connections this {@link TransportConfig} can handle
      * at the same time.
      *
-     * @return the max. number of connections this {@link Transport} can handle
+     * @return the max. number of connections this {@link TransportConfig} can handle
      *         at the same time.
      */
     @ResolveTo(Integer.class)

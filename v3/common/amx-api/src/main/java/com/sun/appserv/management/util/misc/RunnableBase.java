@@ -324,7 +324,7 @@ public abstract class  RunnableBase<T> implements Runnable
     
     /**
         May be called synchronously or via another thread {@link #submit}.
-        See {@link #waitDone} and {@link #waitDoneThrow} and {@link #getThrowable}.
+        See {@link #waitDone} and {@link #waitDoneThrow}.
      */
         public final void
     run()

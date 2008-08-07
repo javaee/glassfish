@@ -52,7 +52,7 @@ public interface JDBCConnectionPoolMonitor extends MonitoringStats
 
 	/**
 		Use {@link #getAltJDBCConnectionPoolStats} instead.
-		@Deprecated use #getAltJDBCConnectionPoolStats
+		@deprecated use #getAltJDBCConnectionPoolStats
 	 */
 	public AltJDBCConnectionPoolStats	getJDBCConnectionPoolStats();
 	

@@ -64,8 +64,8 @@ public interface ApplicationConfigConfig
      * Reports the configuration information already stored.
      * <p>
      * If, as suggested, the value was encoded before it was stored using
-     * @{link setConfig} then the returned value should be decoded using
-     * @{link java.net.URLDecoder} before use by the calling logic.
+     * {@link #setConfig} then the returned value should be decoded using
+     * {@link java.net.URLDecoder} before use by the calling logic.
      * 
      * @return the config
      */
@@ -76,7 +76,7 @@ public interface ApplicationConfigConfig
      * Stores the config information.
      * <p>
      * The value stored should have already been encoded using
-     * @{link java.net.URLEncoder} if it contains characters that might
+     * {@link java.net.URLEncoder} if it contains characters that might
      * interfere with the well-formedness of the containing domain.xml
      * XML document.
      * 

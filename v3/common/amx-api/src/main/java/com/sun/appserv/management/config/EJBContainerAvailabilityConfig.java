@@ -65,9 +65,9 @@ public interface EJBContainerAvailabilityConfig extends ConfigElement, Propertie
 	public String	getSFSBStorePoolName();
 	public void	setSFSBStorePoolName( final String value );
 	
-	/** @Deprecated do not use */
+	/** @deprecated do not use */
 	public String  getSFSBQuickCheckpointEnabled();
 	
-	/** @Deprecated do not use */
+	/** @deprecated do not use */
 	public String  getSFSBCheckpointEnabled();
 }

@@ -33,57 +33,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ConnectorConnectionPoolConfigKeys.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
 package com.sun.appserv.management.config;
 
 /**
-	Keys for use with {@link DomainConfig#createConnectorConnectionPoolConfig}.
+	Keys for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}.
  */
 public final class ConnectorConnectionPoolConfigKeys extends CommonConfigKeys
 {
 	private	ConnectorConnectionPoolConfigKeys()	{}
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 	*/
 	public static final String	STEADY_POOL_SIZE_KEY		= "SteadyPoolSize";
 
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 	*/
 	public static final String	MAX_POOL_SIZE_KEY		    = "MaxPoolSize";
 
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 	*/
 	public static final String	MAX_WAIT_TIME_IN_MILLIS_KEY	= "MaxWaitTimeInMillis";
 
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 	*/
 	public static final String	POOL_RESIZE_QUANTITY_KEY	= "PoolResizeQuantity";
 
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 	*/
 	public static final String	IDLE_TIMEOUT_IN_SECONDS_KEY	= "IdleTimeoutInSeconds";
 
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
 	*/
 	public static final String	FAIL_ALL_CONNECTIONS_KEY		= "FailAllConnections";
 	
         /**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.Boolean.
 	*/
 	public static final String	IS_CONNECTION_VALIDATION_REQUIRED_KEY	= "IsConnectionValidationRequired";
 	
 	/**
-		Key for use with {@link DomainConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
+		Key for use with {@link ResourcesConfig#createConnectorConnectionPoolConfig}, value must be java.lang.String.
 		
 		                                   
         Indicates the level of transaction support that this pool     

@@ -50,10 +50,10 @@ import com.sun.appserv.management.config.ResolveTo;
  */
 public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
     /**
-     * Gets the {@link Protocol} security status. True means the protocol is
-     * secured and the {@link Ssl} member will be used to initialize security
-     * settings. False means that the {@link Protocol} is not secured and
-     * the {@link Ssl} member, if present, will be ignored.
+     * Gets the {@link ProtocolConfig} security status. True means the protocol is
+     * secured and the {@link SSLConfig} member will be used to initialize security
+     * settings. False means that the {@link ProtocolConfig} is not secured and
+     * the {@link SSLConfig} member, if present, will be ignored.
      *
      * @return the {@link Protocol} security status
      */
@@ -62,11 +62,11 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
     public void setSecurityEnabled(String securityEnabled);
 
     /**
-     * Get the max temporary {@link Selector} number, which could be used by
-     * this {@link Protocol}
+     * Get the max temporary {@link SelectorConfig} number, which could be used by
+     * this {@link ProtocolConfig}
      *
-     * @return the max temporary {@link Selector} number, which could be used by
-     * this {@link Protocol}
+     * @return the max temporary {@link SelectorConfig} number, which could be used by
+     * this {@link ProtocolConfig}
      */
     @ResolveTo(Integer.class)
     public String getMaxSelectors();
@@ -83,10 +83,10 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
 
     /**
      * Get the read operation timeout in seconds, which will be used for this
-     * {@link Protocol}
+     * {@link ProtocolConfig}
      *
      * @return the read operation timeout in seconds, which will be used for 
-     * this {@link Protocol}
+     * this {@link ProtocolConfig}
      */
     @ResolveTo(Integer.class)
     public String getReadTimeoutSeconds();
@@ -94,10 +94,10 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
 
     /**
      * Get the write operation timeout in seconds, which will be used for this
-     * {@link Protocol}
+     * {@link ProtocolConfig}
      *
      * @return the write operation timeout in seconds, which will be used for
-     * this {@link Protocol}
+     * this {@link ProtocolConfig}
      */
     @ResolveTo(Integer.class)
     public String getWriteTimeoutSeconds();
@@ -124,18 +124,18 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
     public SSLConfig getSSLConfig();
 
     /**
-     * Gets the {@link PortUnification} logic, if it is required to handle
+     * Gets the {@link PortUnificationConfig} logic, if it is required to handle
      * more than one high level protocol on a single listener
      *
-     * @return the {@link PortUnification} logic, if it is required to handle
+     * @return the {@link PortUnificationConfig} logic, if it is required to handle
      * more than one high level protocol on a single listener
      */
     public PortUnificationConfig getPortUnificationConfig();
 
     /**
-     * Gets the {@link ProtocolChainInstanceHandler} configuration
+     * Gets the {@link ProtocolChainInstanceHandlerConfig} configuration
      *
-     * @return the {@link ProtocolChainInstanceHandler} configuration
+     * @return the {@link ProtocolChainInstanceHandlerConfig} configuration
      */
     public ProtocolChainInstanceHandlerConfig getProtocolChainInstanceHandlerConfig();
 }

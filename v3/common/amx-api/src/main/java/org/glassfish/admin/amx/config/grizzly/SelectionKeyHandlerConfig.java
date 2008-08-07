@@ -49,9 +49,9 @@ import com.sun.appserv.management.config.ResolveTo;
  */
 public interface SelectionKeyHandlerConfig extends PropertiesAccess, NamedConfigElement, DefaultValues, ConfigCreator, ConfigRemover {
     /**
-     * Get the {@link SelectionKeyHandler} implementation class name
+     * Get the implementation class name
      *
-     * @return the {@link SelectionKeyHandler} implementation class name
+     * @return the implementation class name
      */
     public String getClassname();
     public void setClassname( final String classname );

@@ -79,7 +79,7 @@ public interface ServerRootMonitor extends Container, Monitoring
 	
     /**
 		@return a Map of ConnectionManagerMonitor, keyed by name.
-		@Deprecated use {@link #getConnectionManagerMonitorMap}.
+		@deprecated use {@link #getConnectionManagerMonitorMap}.
      */
 	public Map<String,ConnectionManagerMonitor>		getORBConnectionManagerMonitorMap();
 	

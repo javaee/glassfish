@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
-    @Deprecated use GSetUtil
+    @deprecated use GSetUtil
  */
 public final class SetUtil
 {

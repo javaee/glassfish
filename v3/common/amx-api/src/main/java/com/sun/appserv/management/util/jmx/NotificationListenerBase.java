@@ -99,7 +99,7 @@ public abstract class NotificationListenerBase
 	    Listen to all MBean(s) which match the pattern 'listenTo'.
         <p><b>Instantiating code must call setupListening() in order to initiate
         listening</b>
-        @param listenerName arbitrary name of this listener
+        @param name arbitrary name of this listener
 	    @param conn the MBeanServerConnection or MBeanServer
 	    @param pattern an MBean ObjectName, or an ObjectName pattern
 	    @param filter optional NotificationFilter

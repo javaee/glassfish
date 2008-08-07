@@ -67,7 +67,7 @@ public interface ApplicationsConfig
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-        @Deprecated
+        @deprecated
 	 */
 	public Map<String,J2EEApplicationConfig>			getJ2EEApplicationConfigMap();
     

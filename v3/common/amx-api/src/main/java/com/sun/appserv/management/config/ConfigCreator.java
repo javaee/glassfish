@@ -48,7 +48,7 @@ import java.util.Map;
 public interface ConfigCreator
 {
     /**
-        Generic creation of an {@link @AMXConfig} based on the desired j2eeType, which must
+        Generic creation of an {@link AMXConfig} based on the desired j2eeType, which must
         be a Containee type of the {@link Container} (eg one of the types returned by {@link Container#getContaineeSet}.
         <p>
         Almost always, certain parameters are required (a name for non-singletons).  Use the

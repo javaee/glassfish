@@ -78,11 +78,11 @@ public interface SystemStatus extends AMX, Utility, Singleton
         <p>
         Over the wire transmission of 'UnprocessedConfigChange' requires the client to have its class.
         See the Javadoc for {@link UnprocessedConfigChange} for the order of values in the Object[].
-        Clients with access to the class can use {@link #Helper#toUnprocessedConfigChange}
+        Clients with access to the class can use {@link #Helper.toUnprocessedConfigChange}
         <p>
         With a switch to JDK 6 required, an MXBean can be used to automate this.
      */
-    public List<Object[]>  getUnprocessedConfigChanges(int howMany);
+    public List<Object[]>  getUnprocessedConfigChanges();
     
     /** helper class, in particular to convert results from {@link #getUnprocessedConfigChanges} */
     public final class Helper {
