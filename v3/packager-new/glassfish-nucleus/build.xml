@@ -29,6 +29,11 @@ own identifying information: Portions Copyright [yyyy]
            <patternset>
 		   <exclude name="**/domains/**"/>
            </patternset>
+   	</unzip>
+
+    	<resolveArtifact artifactId="basedocs" property="docs.zip"/>
+       
+	<unzip src="${docs.zip}" dest="target/stage/glassfishv3-prelude">
         </unzip>
 
 	 <!-- TODO - would be nice if we can find a way to iterate through all

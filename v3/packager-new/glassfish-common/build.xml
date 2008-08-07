@@ -22,6 +22,18 @@ own identifying information: Portions Copyright [yyyy]
 <project name="glassfish common package creation" default="create.package" basedir=".">
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+
+	<resolveArtifact groupID="org.glassfish.api" type="distribution-fragment"
+		   artifactId="schemas" property="schemas.zip"/>
+       
+	<unzip src="${schemas.zip}" dest="target/stage/glassfishv3-prelude">
+	</unzip>
+
+	<resolveArtifact groupID="org.glassfish.api" type="distribution-fragment"
+		   artifactId="dtds" property="dtds.zip"/>
+       
+	   <unzip src="${dtds.zip}" dest="target/stage/glassfishv3-prelude">
+        </unzip>
        
  <!-- TODO - would be nice if we can find a way to iterate through all
 	   "dependency" packages without having to define each intermediate 

@@ -67,11 +67,21 @@
         <!--
           modules to be included in this bundle
         -->       
-       <dependency>
+        <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
         </dependency>
-    </dependencies>
+	<dependency>
+           <groupId>woodstox</groupId>
+           <artifactId>wstx-asl</artifactId>
+           <version>3.2.3</version>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.xml.stream</artifactId>
+           <version>${glassfish.version}</version>
+       </dependency>
+   </dependencies>
 </project>
 

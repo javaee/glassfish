@@ -76,12 +76,24 @@
            <groupId>org.glassfish.common</groupId>
            <artifactId>container-common</artifactId>
            <version>${glassfish.version}</version>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
            <groupId>org.glassfish.common</groupId>
            <artifactId>glassfish-naming</artifactId>
            <version>${glassfish.version}</version>
-       </dependency>
+   	</dependency>
+    	<dependency>
+           <groupId>org.glassfish.api</groupId>
+           <artifactId>dtds</artifactId>
+           <version>9.0.1</version>
+           <type>distribution-fragment</type>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.api</groupId>
+           <artifactId>schemas</artifactId>
+           <version>9.0.1</version>
+           <type>distribution-fragment</type>
+        </dependency>
       	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
