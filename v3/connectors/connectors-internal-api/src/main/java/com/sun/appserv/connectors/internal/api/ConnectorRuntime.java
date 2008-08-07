@@ -37,11 +37,13 @@
 package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.api.invocation.InvocationManager;
 
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -202,4 +204,17 @@ public interface ConnectorRuntime {
      * @return TransactionManager
      */
     public JavaEETransactionManager getTransactionManager();
+
+    /**
+     * provides the invocationManager
+     *
+     * @return InvocationManager
+     */
+    public InvocationManager getInvocationManager();
+
+    /**
+     * get resource reference descriptors from current component's jndi environment
+     * @return set of resource-refs
+     */
+    public Set getResourceReferenceDescriptor();
 }

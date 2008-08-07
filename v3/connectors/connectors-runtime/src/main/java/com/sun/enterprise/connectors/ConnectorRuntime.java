@@ -577,6 +577,11 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return poolManager;
     }
 
+    /**
+     * provides the invocationManager
+     *
+     * @return InvocationManager
+     */
     public InvocationManager getInvocationManager() {
         return invocationManager;
     }
@@ -592,6 +597,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return timer;
     }
 
+    /**
+     * get resource reference descriptors from current component's jndi environment
+     * @return set of resource-refs
+     */
     public Set getResourceReferenceDescriptor() {
         JndiNameEnvironment jndiEnv = componentEnvManager.getCurrentJndiNameEnvironment();
         if(jndiEnv != null){

@@ -37,19 +37,22 @@ package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.rm.*;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.ComponentInvocationHandler;
 
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
@@ -67,7 +70,7 @@ import java.util.List;
  * @author Tony Ng, Aditya Gore
  */
 @Service
-public class PoolManagerImpl extends AbstractPoolManager {
+public class PoolManagerImpl extends AbstractPoolManager implements ComponentInvocationHandler {
 
     private ConcurrentHashMap<String, ResourcePool> poolTable;
 
@@ -77,6 +80,11 @@ public class PoolManagerImpl extends AbstractPoolManager {
     private LazyEnlistableResourceManagerImpl lazyEnlistableResourceManager;
 
     private static Logger _logger = null;
+
+    @Inject
+    private Habitat connectorRuntimeHabitat;
+
+    private ConnectorRuntime runtime;
 
     static {
         _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
@@ -310,63 +318,12 @@ public class PoolManagerImpl extends AbstractPoolManager {
     }
 
 
-    /*
-    * Called by the InvocationManager at methodEnd. This method
-    * will disassociate ManagedConnection instances from Connection
-    * handles if the ResourceAdapter supports that.
-    */
-    public void postInvoke() throws InvocationException {
-        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-        JavaEETransactionManager tm = runtime.getTransactionManager();
-        ComponentInvocation invToUse = runtime.getInvocationManager().getCurrentInvocation();
-
-        if (invToUse == null) {
-            return;
+    private ConnectorRuntime getConnectorRuntime() {
+        //TODO V3 not synchronized
+        if(runtime == null){
+            runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
         }
-
-        Object comp = invToUse.getInstance();
-
-        if (comp == null) {
-            return;
-        }
-
-
-        List list = tm.getExistingResourceList(comp, invToUse);
-        if (list == null) {
-            //For invocations of asadmin the ComponentInvocation does not
-            //have any resources and hence the existingResourcesList is null
-            return;
-        }
-
-        if (list.size() == 0) return;
-
-        ResourceHandle[] handles = (ResourceHandle[]) list.toArray(
-                new ResourceHandle[0]);
-        for (ResourceHandle h : handles) {
-            ResourceSpec spec = h.getResourceSpec();
-            if (spec.isLazyAssociatable()) {
-                //In this case we are assured that the managedConnection is
-                //of type DissociatableManagedConnection
-                javax.resource.spi.DissociatableManagedConnection mc =
-                        (javax.resource.spi.DissociatableManagedConnection) h.getResource();
-                if (h.isEnlisted()) {
-                    getResourceManager(spec).delistResource(
-                            h, XAResource.TMSUCCESS);
-                }
-                try {
-                    mc.dissociateConnections();
-                } catch (ResourceException re) {
-                    InvocationException ie = new InvocationException(
-                            re.getMessage());
-                    ie.initCause(re);
-                    throw ie;
-                } finally {
-                    if (h.getResourceState().isBusy()) {
-                        putbackDirectToPool(h, spec.getConnectionPoolName());
-                    }
-                }
-            }
-        }
+        return runtime;
     }
 
     public void registerResource(ResourceHandle handle) throws PoolingException {
@@ -490,7 +447,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
     }
 
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {
-        Set descriptors = ConnectorRuntime.getRuntime().getResourceReferenceDescriptor();
+        Set descriptors = getConnectorRuntime().getResourceReferenceDescriptor();
 
         if (descriptors != null) {
             for (Object descriptor : descriptors) {
@@ -503,6 +460,97 @@ public class PoolManagerImpl extends AbstractPoolManager {
             }
         }
         return null;
+    }
+
+    public void beforePreInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,
+                                ComponentInvocation newInv) throws InvocationException {
+        //no-op
+    }
+
+    public void afterPreInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,
+                               ComponentInvocation curInv) throws InvocationException {
+        //no-op
+    }
+
+    public void beforePostInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,
+                                 ComponentInvocation curInv) throws InvocationException {
+        //no-op
+    }
+
+    /*
+    * Called by the InvocationManager at methodEnd. This method
+    * will disassociate ManagedConnection instances from Connection
+    * handles if the ResourceAdapter supports that.
+    */
+    public void afterPostInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,
+                                ComponentInvocation curInv) throws InvocationException {
+        postInvoke(curInv);
+    }
+
+    private void postInvoke(ComponentInvocation curInv){
+
+        ComponentInvocation invToUse = curInv;
+/*
+        if(invToUse == null){
+            invToUse = getConnectorRuntime().getInvocationManager().getCurrentInvocation();
+        }
+*/
+        if (invToUse == null) {
+            return;
+        }
+
+        Object comp = invToUse.getInstance();
+
+        if (comp == null) {
+            return;
+        }
+
+        handleLazilyAssociatedConnectionPools(comp, invToUse);
+    }
+
+    /**
+     * If the connections associated with the component are lazily-associatable, dissociate them.
+     * @param comp Component that acquired connections
+     * @param invToUse component invocation
+     */
+    private void handleLazilyAssociatedConnectionPools(Object comp, ComponentInvocation invToUse) {
+        JavaEETransactionManager tm = getConnectorRuntime().getTransactionManager();
+        List list = tm.getExistingResourceList(comp, invToUse);
+        if (list == null) {
+            //For invocations of asadmin the ComponentInvocation does not
+            //have any resources and hence the existingResourcesList is null
+            return;
+        }
+
+        if (list.size() == 0) return;
+
+        ResourceHandle[] handles = (ResourceHandle[]) list.toArray(
+                new ResourceHandle[0]);
+        for (ResourceHandle h : handles) {
+            ResourceSpec spec = h.getResourceSpec();
+            if (spec.isLazyAssociatable()) {
+                //In this case we are assured that the managedConnection is
+                //of type DissociatableManagedConnection
+                javax.resource.spi.DissociatableManagedConnection mc =
+                        (javax.resource.spi.DissociatableManagedConnection) h.getResource();
+                if (h.isEnlisted()) {
+                    getResourceManager(spec).delistResource(
+                            h, XAResource.TMSUCCESS);
+                }
+                try {
+                    mc.dissociateConnections();
+                } catch (ResourceException re) {
+                    InvocationException ie = new InvocationException(
+                            re.getMessage());
+                    ie.initCause(re);
+                    throw ie;
+                } finally {
+                    if (h.getResourceState().isBusy()) {
+                        putbackDirectToPool(h, spec.getConnectionPoolName());
+                    }
+                }
+            }
+        }
     }
 
     class SynchronizationListener implements Synchronization {
