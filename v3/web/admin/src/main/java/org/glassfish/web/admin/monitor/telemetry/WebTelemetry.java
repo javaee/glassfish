@@ -60,11 +60,17 @@ public class WebTelemetry{
     public WebTelemetry(TreeNode server) {
         wto = TreeNodeFactory.createTreeNode("web", this, "web");
         server.addChild(wto);
-        servletsLoadedCount.setName("servletsLoadedCount");
-        wto.addChild(servletsLoadedCount);
+        activeServletsLoadedCount.setName("activeServletsLoadedCount");
+        wto.addChild(activeServletsLoadedCount);
+        maxServletsLoadedCount.setName("maxServletsLoadedCount");
+        wto.addChild(maxServletsLoadedCount);
+        totalServletsLoadedCount.setName("totalServletsLoadedCount");
+        wto.addChild(totalServletsLoadedCount);
     }
 
-    private Counter servletsLoadedCount = CounterFactory.createCount();
+    private Counter activeServletsLoadedCount = CounterFactory.createCount();
+    private Counter maxServletsLoadedCount = CounterFactory.createCount();
+    private Counter totalServletsLoadedCount = CounterFactory.createCount();
 
     public void enableMonitoring(boolean isEnable) {
         //loop through the handles for this node and enable/disable the listeners
@@ -76,7 +82,7 @@ public class WebTelemetry{
     }
 
     @ProbeListener("web:servlet::servletInitializedEvent")
-    public void servletLoadedListener(
+    public void servletInitializedEvent(
                     @ProbeParam("servlet") Servlet servlet,
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
@@ -84,7 +90,24 @@ public class WebTelemetry{
         System.out.println("Servlet Loaded event received - servletName = " + 
                              servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
-        servletsLoadedCount.increment();
+        activeServletsLoadedCount.increment();
+        totalServletsLoadedCount.increment();
+        if (activeServletsLoadedCount.getCount() > maxServletsLoadedCount.getCount()) {
+            maxServletsLoadedCount.setCount(activeServletsLoadedCount.getCount());
+        }
+            
+    }
+
+    @ProbeListener("web:servlet::servletDestroyedEvent")
+    public void servletDestroyedEvent(
+                    @ProbeParam("servlet") Servlet servlet,
+                    @ProbeParam("appName") String appName,
+                    @ProbeParam("hostName") String hostName) {
+	// handle the servlet loaded probe events
+        System.out.println("Servlet Destroyed event received - servletName = " + 
+                             servlet.getServletConfig().getServletName() + 
+                             ": appName = " + appName + ": hostName = " + hostName);
+        activeServletsLoadedCount.decrement();
     }
 
     public TreeNode getTreeNode(){

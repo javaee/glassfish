@@ -105,7 +105,8 @@ public class SessionStatsTelemetry{
         sessionsTotal.increment();
         incrementActiveSessionsCurrent();
         System.out.println("[TM]sessionCreatedEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionDestroyedEvent")
@@ -116,89 +117,106 @@ public class SessionStatsTelemetry{
         
         activeSessionsCurrent.decrement();        
         System.out.println("[TM]sessionDestroyedEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionRejectedEvent")
     public void sessionRejectedEvent(
         @ProbeParam("maxThresholdSize") int maxSessions,
-        @ProbeParam("appName") String appName){
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         activeSessionsCurrent.decrement();
         rejectedSessionsTotal.increment();
         System.out.println("[TM]sessionRejectedEvent received - max sessions = " + 
-                            maxSessions + ": appname = " + appName);
+                            maxSessions + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionExpiredEvent")
     public void sessionExpiredEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName ){
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         activeSessionsCurrent.decrement();
         expiredSessionsTotal.increment();
         System.out.println("[TM]sessionExpiredEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionPersistedStartEvent")
     public void sessionPersistedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName ) {
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         System.out.println("[TM]sessionPersistedStartEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionPersistedEndEvent")
     public void sessionPersistedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName) {
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         activeSessionsCurrent.decrement();
         persistedSessionsTotal.increment();
         System.out.println("[TM]sessionPersistedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionActivatedStartEvent")
     public void sessionActivatedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName){
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         System.out.println("[TM]sessionActivatedStartEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionActivatedEndEvent")
     public void sessionActivatedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName){
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         incrementActiveSessionsCurrent();
         activatedSessionsTotal.increment();
         System.out.println("[TM]sessionActivatedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionPassivatedStartEvent")
     public void sessionPassivatedStartEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName) {
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         System.out.println("[TM]sessionPassivatedStartEvent  received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
 
     @ProbeListener("web:session::sessionPassivatedEndEvent")
     public void sessionPassivatedEndEvent(
         @ProbeParam("session") HttpSession session,
-        @ProbeParam("appName") String appName) {
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName){
         
         activeSessionsCurrent.decrement();
         passivatedSessionsTotal.increment();
         System.out.println("[TM]sessionPassivatedEndEvent received - session = " + 
-                            session.toString() + ": appname = " + appName);
+                            session.toString() + ": appname = " + appName + 
+                            ": hostName = " + hostName);
     }
     
     private void incrementActiveSessionsCurrent() {

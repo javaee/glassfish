@@ -100,12 +100,13 @@ public class WebRequestTelemetry{
         @ProbeParam("response") HttpServletResponse response,
         @ProbeParam("statusCode") int statusCode) {
         requestsTotal.increment();
-        System.out.println("[TM]requestEndEvent received - request = " + 
-                            request + ": response = " + response + 
-                            " :Response code = " + statusCode);
-
 	//Do something with timeTaken, like calling Harry's TimeStats
 	long timeTaken = System.currentTimeMillis() - entry.get();
+
+        System.out.println("[TM]requestEndEvent received - request = " + 
+                            request + ": response = " + response + 
+                            " :Response code = " + statusCode +
+                            " :Response time = " + timeTaken);
 
 	entry.set(null); //Not sure if we need this
     }        

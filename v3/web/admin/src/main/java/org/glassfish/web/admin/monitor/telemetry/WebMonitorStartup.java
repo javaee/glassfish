@@ -73,7 +73,7 @@ public class WebMonitorStartup implements
     @Inject
     private ProbeClientMediator pcm;
 
-    @Inject
+    //@Inject
     private ModuleMonitoringLevels mml;
     
     private WebTelemetry webTM = null;
@@ -257,7 +257,6 @@ public class WebMonitorStartup implements
      * Add code for handling deployment changes like deploy/undeploy
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        System.out.println("WebMonitorStartup: UnprocessedChangeEvents: " + events[0].getPropertyName());
         for (PropertyChangeEvent event : events) {
             String propName = event.getPropertyName();
             String enabled = null;

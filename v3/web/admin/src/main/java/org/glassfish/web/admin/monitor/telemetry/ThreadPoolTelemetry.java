@@ -67,9 +67,10 @@ public class ThreadPoolTelemetry{
      * 
      */ 
     
-    public ThreadPoolTelemetry(TreeNode parent, String threadPoolName) {
-        threadpoolNode = TreeNodeFactory.createTreeNode(threadPoolName, this, "http-service");
-        parent.addChild(threadpoolNode);
+    public ThreadPoolTelemetry(TreeNode parent) {
+        //threadpoolNode = TreeNodeFactory.createTreeNode(threadPoolName, this, "http-service");
+        //parent.addChild(threadpoolNode);
+        //We can only add the child when there is a new thread pool
     }
 
     public void enableMonitoring(boolean isEnable) {
@@ -83,41 +84,46 @@ public class ThreadPoolTelemetry{
     
     @ProbeListener("core:threadpool::newThreadsAllocatedEvent")
     public void newThreadsAllocatedEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("increment") int increment,
         @ProbeParam("boolean") boolean startThread) {
 
         System.out.println("[TM]newThreadsAllocatedEvent received - : increment = " + 
-                            increment + " :startThread = " + startThread);
+                            increment + " :startThread = " + startThread + 
+                            ": Thread pool name = " + threadPoolName);
     }
 
 
     @ProbeListener("core:threadpool::maxNumberOfThreadsReachedEvent")
     public void maxNumberOfThreadsReachedEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {
         
 
         System.out.println("[TM]maxNumberOfThreadsReachedEvent received - : maxNumberOfThreads = " + 
-                            maxNumberOfThreads);
+                            maxNumberOfThreads + ": Thread pool name = " + threadPoolName);
     }
 
 
     @ProbeListener("core:threadpool::threadDispatchedFromPoolEvent")
     public void threadDispatchedFromPoolEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {
         
 
         System.out.println("[TM]threadDispatchedFromPoolEvent received - : threadId = " + 
-                            threadId);
+                            threadId + ": Thread pool name = " + threadPoolName);
     }
 
 
     @ProbeListener("core:threadpool::threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
+        @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {
         
 
         System.out.println("[TM]threadReturnedToPoolEvent received - : threadId = " + 
-                            threadId);
+                            threadId + ": Thread pool name = " + threadPoolName);
     }
 
 }

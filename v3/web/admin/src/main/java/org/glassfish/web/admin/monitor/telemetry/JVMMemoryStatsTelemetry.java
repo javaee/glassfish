@@ -47,6 +47,8 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.lang.reflect.Method;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import org.glassfish.flashlight.statistics.Counter;
+import org.glassfish.flashlight.statistics.factory.CounterFactory;
 
 public class JVMMemoryStatsTelemetry {
     
@@ -57,7 +59,8 @@ public class JVMMemoryStatsTelemetry {
     private static final StringManager localStrMgr = 
                 StringManager.getManager(JVMMemoryStatsTelemetry.class);
 
-
+    private Counter commitHeapSize = CounterFactory.createCount();
+    
     /** Creates a new instance of JVMMemoryStatsTelemetry */
     public JVMMemoryStatsTelemetry(TreeNode server) {
         try {
@@ -66,11 +69,11 @@ public class JVMMemoryStatsTelemetry {
             bean = ManagementFactory.getMemoryMXBean();
             heapUsage = bean.getHeapMemoryUsage();
             nonheapUsage = bean.getNonHeapMemoryUsage();
-            Method m = heapUsage.getClass().getMethod("getCommitted", (Class[]) null);
-            System.out.println("heapUsage.getCommitted() = " + heapUsage.getCommitted());
-            System.out.println("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
+            Method m = this.getClass().getMethod("getCommittedHeapSize", (Class[]) null);
+            System.out.println("heapUsage.getCommittedHeapSize() = " + getCommittedHeapSize());
+            System.out.println("Method m.invoke() = " + m.invoke(this, (Object[]) null));
             TreeNode committedHeapSize = 
-                    TreeNodeFactory.createMethodInvoker("committedHeapSize", heapUsage, "jvm", m);
+                    TreeNodeFactory.createMethodInvoker("committedHeapSize", this, "jvm", m);
             jvmNode.addChild(committedHeapSize);
         } catch (IllegalAccessException ex) {
             Logger.getLogger(JVMMemoryStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,12 +88,12 @@ public class JVMMemoryStatsTelemetry {
         }
     }            
     
-    /*
     public Counter getCommittedHeapSize() {
         commitHeapSize.setCount(heapUsage.getCommitted());
-        return (Counter)commitHeapSize.unmodifiableView();
+        return commitHeapSize;
     }
     
+    /*
     public Counter getCommittedNonHeapSize() {
         commitNonHeapSize.setCount(nonheapUsage.getCommitted());
         return (Counter)commitNonHeapSize.unmodifiableView();
