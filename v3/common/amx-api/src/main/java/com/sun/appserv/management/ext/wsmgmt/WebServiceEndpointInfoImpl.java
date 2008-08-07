@@ -432,9 +432,7 @@ public final class WebServiceEndpointInfoImpl
 
     /**
      * Returns true if this web service is secured or not.
-     * Corresponds to the {@link #IS_SECURE_KEY} key.
-     *
-     * @return true, if this web service is secured, false otherwise
+     * Corresponds to the {@link WebServiceEndpointInfo#IS_SECURE_KEY} key.
      */
     public void setIsSecure(boolean isSec) {
         putField(WebServiceEndpointInfo.IS_SECURE_KEY, new

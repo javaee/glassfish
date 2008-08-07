@@ -78,10 +78,6 @@ public interface Pathnames extends AMX, Singleton
        and values are of type {@link AMX}.  Wildcards may <em>not</em> be used.  Path names which
        do not resolve will have a null value in the Map.  Attribute specifies should not
        be included in the pathname.
-       
-       @see #getTarget
-       @see AMX#getPathname
-       @see AMX#getPathnamePart
      */
     public Map<String,AMX>  getPathnameTargetMap( final String[] pathnames );
     

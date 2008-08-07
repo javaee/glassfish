@@ -54,8 +54,6 @@ public interface J2EELogicalServer extends J2EEManagedObject, StateManageable
 	 *
 	 * @param appID The application ID
 	 * @param optional Optional parameters supplied as name-value pairs
-	 * The parameters are documented here:
-	 * {@link com.sun.appserv.management.deploy.DeploymentMgr#startDeploy}
 	 */
 	public void startApp(String appID, Map<String,String> optional);
 
@@ -64,8 +62,6 @@ public interface J2EELogicalServer extends J2EEManagedObject, StateManageable
 	 *
 	 * @param appID The application ID
 	 * @param optional Optional parameters supplied as name-value pairs
-	 * The parameters are documented here:
-	 * {@link com.sun.appserv.management.deploy.DeploymentMgr#startDeploy}
 	 */
 	public void stopApp(String appID, Map<String,String> optional);
 }

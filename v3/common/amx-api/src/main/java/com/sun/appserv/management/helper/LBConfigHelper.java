@@ -294,7 +294,7 @@ public final class LBConfigHelper {
     /**
      * This method supports the create-http-lb CLI command. It creates a lb-config, cluster-ref, health-checker by using
      * the given parameters.
-     * @param loadbalancername the name for the load-balancer element that will be created
+     * @param loadbalancerName the name for the load-balancer element that will be created
      * @param target cluster-ref or server-ref parameter of lb-config
      * @param options Map of option name and option value. The valid options are
      *          responsetimeout response-timeout-in-seconds attribute of lb-config
@@ -308,7 +308,7 @@ public final class LBConfigHelper {
      *          healthcheckerurl url attribute of health-checker
      *          healthcheckerinterval interval-in-seconds parameter of health-checker
      *          healthcheckertimeout timeout-in-seconds parameter of health-checker
-     * @param filePath the path to the file where loadbalancer.xml will be exported
+     * @param properties 
      * @return the path to the newly written file
      * @since AS 9.0
      * @throws javax.management.MBeanException exception indicating the original cause of problm

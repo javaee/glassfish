@@ -43,7 +43,6 @@ import java.util.Set;
 
 /**
 	Dummy implementation used when coverage is not being gathered.
-	@see AMXDebugStuff
  */
 public final class CoverageInfoDummy implements Serializable, CoverageInfo
 {

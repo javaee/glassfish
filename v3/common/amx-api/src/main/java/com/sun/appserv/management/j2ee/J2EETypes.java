@@ -47,7 +47,6 @@ import java.util.Set;
 	<ul>
 	<li>{@link #J2EE_CLUSTER}</li>
 	</ul>
-	@see J2EETypesMapper
 	@see com.sun.appserv.management.base.XTypes
  */
 public final class J2EETypes

@@ -157,7 +157,7 @@ public interface DomainRoot extends Container
     public UploadDownloadMgr		getUploadDownloadMgr();
 
     /**
-        @return the singleton {@link PathNames}.
+        @return the singleton {@link Pathnames}.
      */
     public Pathnames		getPathnames();
         
@@ -247,7 +247,6 @@ public interface DomainRoot extends Container
         Return the time the domain admin server has been running.
         uptime[0] contains the time in milliseconds.  uptime[1] contains a human-readable
         string describing the duration.
-        @return 
      */
     public Object[]     getUptimeMillis();
 }

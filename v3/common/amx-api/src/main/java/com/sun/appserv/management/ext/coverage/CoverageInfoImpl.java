@@ -51,7 +51,6 @@ import java.util.*;
 
 /**
 	Used to record access to AMX MBean.
-	@see AMXDebugStuff
  */
 public final class CoverageInfoImpl implements Serializable, CoverageInfo
 {
