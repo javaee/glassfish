@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,17 +33,43 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- jdbc/jdbcResourceEdit.jsf -->
 
+<sun:page id="page1">
+    <!beforeCreate
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="help" bundle="core.Helplinks");
+    setSessionAttribute(key="resEditTabs" value="general");
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.editPageTitle}");
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.editPageTitleHelp}");
+    setPageSessionAttribute(key="generalPage" value="jdbcResourceEdit.jsf");
+    setPageSessionAttribute(key="targetPage" value="jdbcResourceTargets.jsf");
+     if( $session{supportCluster} ){
+        setPageSessionAttribute(key="useString" value="$boolean{true}");
+        setPageSessionAttribute(key="useCheckBox" value="$boolean{false}");
+    }
+    if( !$session{supportCluster} ){
+        setPageSessionAttribute(key="useString" value="$boolean{false}");
+        setPageSessionAttribute(key="useCheckBox" value="$boolean{true}");
+    }
+    setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.Save}");
+    setPageSessionAttribute(key="edit" value="#{true}");
+    />
+#include "/shared/restart.inc"    
+    <sun:html id="html2">
+        <sun:head id="propertyhead" title="#{pageTitle}" >
+            <sun:script url="/resource/js/adminjsf.js" />
+        </sun:head>
 
-<console-config id="jdbc">
-        <integration-point 
-                id="jdbcNodes" 
-                type="tree" 
-                priority="200" 
-                parentId="Resources" 
-                content="jdbcTreeNode.jsf" 
-        />
-</console-config>
+             <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+                <sun:form id="propertyForm">
+#include "/shared/treeBreadcrumbs.inc"
+#include "resourcesTabs.inc"
+#include "/shared/alertMsg.inc"
+#include "jdbcResource.inc"    
+	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceEdit}" />
+                </sun:form>
+            </sun:body>
+    </sun:html>
+</sun:page>

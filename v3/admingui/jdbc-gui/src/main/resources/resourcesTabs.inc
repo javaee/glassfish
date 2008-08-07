@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,17 +32,20 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- jdbc/resourcesTabs.inc -->
 
-
-<console-config id="jdbc">
-        <integration-point 
-                id="jdbcNodes" 
-                type="tree" 
-                priority="200" 
-                parentId="Resources" 
-                content="jdbcTreeNode.jsf" 
-        />
-</console-config>
+<sun:tabSet id="resEditTabs" rendered="$session{supportCluster}" immediate="$boolean{true}" selected="#{sessionScope.resEditTabs}">
+        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+                <!command
+                    setSessionAttribute(key="resEditTabs" value="general");
+                    redirect(page="#{generalPage}?name=#{jndiName}");
+                />       
+        </sun:tab>
+        <!--<sun:tab id="targetTab" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
+            <!command
+                setSessionAttribute(key="resEditTabs" value="targetTab");
+                redirect(page="#{targetPage}?name=#{jndiName}");
+            />
+        </sun:tab>-->
+</sun:tabSet>

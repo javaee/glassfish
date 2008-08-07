@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,17 +32,26 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- jdbc/jdbcConnectionPoolTabs.inc -->
 
-
-<console-config id="jdbc">
-        <integration-point 
-                id="jdbcNodes" 
-                type="tree" 
-                priority="200" 
-                parentId="Resources" 
-                content="jdbcTreeNode.jsf" 
-        />
-</console-config>
+<sun:tabSet id="jdbcPoolSet" immediate="$boolean{true}" selected="#{sessionScope.jdbcPoolTabs}">
+        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+                <!command
+                    setSessionAttribute(key="jdbcPoolTabs" value="general");
+                    redirect(page="jdbcConnectionPoolEdit.jsf?name=#{jndiName}");
+                />       
+        </sun:tab>
+        <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}">
+            <!command
+                setSessionAttribute(key="jdbcPoolTabs" value="advanceTab");
+                redirect(page="jdbcConnectionPoolAdvance.jsf?name=#{jndiName}");
+            />
+        </sun:tab>
+        <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}">
+            <!command
+                setSessionAttribute(key="jdbcPoolTabs" value="propertyTab");
+                redirect(page="jdbcConnectionPoolProperty.jsf?name=#{jndiName}");
+            />
+        </sun:tab>
+</sun:tabSet>

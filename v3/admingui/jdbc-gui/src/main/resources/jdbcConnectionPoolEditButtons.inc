@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -33,17 +33,33 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- -->
- 
+-->
+<!-- jdbc/jdbcConnectionPoolEditButtons.inc -->
 
+<sun:button id="saveButton" text="$resource{i18n.button.Save}" 
+    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+   <!command
+    prepareSuccessfulMsg();
+    saveJdbcConnectionPool(
+        jndiName = "#{jndiName}"
+        datasourceClassname = "#{datasourceClassname}"
+        resType = "#{resType}"
+        description= "#{description}"
+        steadyPoolSize = "#{steadyPoolSize}"
+        maxPoolSize = "#{maxPoolSize}"
+        poolResizeQuantity = "#{poolResizeQuantity}"
+        idleTimeoutInSeconds = "#{idleTimeoutInSeconds}"
+        maxWaitTimeInMillis = "#{maxWaitTimeInMillis}"
+        isConnectionValidationRequired = "#{isConnectionValidationRequired}"
+        connectionValidationMethod = "#{connectionValidationMethod}"
+        validationTableName = "#{validationTableName}"
+        failAllConnections = "#{failAllConnections}"
+        allowNonComponentCallers = "#{allowNonComponentCallers}"
+        nonTransactionalConnections = "#{nonTransactionalConnections}"
+        transactionIsolationLevel = "#{transactionIsolationLevel}"
+        isIsolationLevelGuaranteed = "#{isIsolationLevelGuaranteed}"
+    );
+    setAttribute(key="name" value="$pageSession{jndiName}");
+    />
 
-<console-config id="jdbc">
-        <integration-point 
-                id="jdbcNodes" 
-                type="tree" 
-                priority="200" 
-                parentId="Resources" 
-                content="jdbcTreeNode.jsf" 
-        />
-</console-config>
+</sun:button>
