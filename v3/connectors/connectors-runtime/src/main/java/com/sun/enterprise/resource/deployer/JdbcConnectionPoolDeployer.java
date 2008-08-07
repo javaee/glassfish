@@ -498,4 +498,66 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
         ccp.setValidateAtmostOncePeriod(adminPool.getValidateAtmostOncePeriodInSeconds());
     }
+    
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail 
+     */
+    public synchronized void redeployResource(Object resource) throws Exception {
+         
+        com.sun.enterprise.config.serverbeans.JdbcConnectionPool adminPool
+	        = (com.sun.enterprise.config.serverbeans.JdbcConnectionPool)
+		resource;
+
+
+        //Only if pool has already been deployed in this server-instance
+        //reconfig this pool
+        if (!ConnectorRuntime.getRuntime().
+                        isConnectorConnectionPoolDeployed(adminPool.getName())) {
+            
+            _logger.fine("The JDBC connection pool " + adminPool.getName()
+                            + " is not referred or not yet created in this server "
+                            + "instance and hence pool redeployment is ignored");
+            return;
+        }
+        
+	ConnectorConnectionPool connConnPool = createConnectorConnectionPool( 
+	        adminPool);		
+
+        if (connConnPool == null) {
+	    throw new ConnectorRuntimeException("Unable to create ConnectorConnectionPool"+
+	            "from JDBC connection pool");
+	}
+
+	//now do internal book keeping 
+	ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+	HashSet excludes = new HashSet();
+	//add MCF config props to the set that need to be excluded
+	//in checking for the equality of the props with old pool
+	excludes.add( "TransactionIsolation");
+	excludes.add( "GuaranteeIsolationLevel");
+	excludes.add( "ValidationTableName");
+	excludes.add( "ConnectionValidationRequired");
+	excludes.add( "ValidationMethod");
+	excludes.add( "StatementWrapping");
+	excludes.add( "StatementTimeout");
+
+
+    try {
+	    _logger.finest("Calling reconfigure pool");
+	    boolean poolRecreateRequired = 
+	        runtime.reconfigureConnectorConnectionPool(connConnPool,
+		        excludes);
+	    if ( poolRecreateRequired ) {
+	       _logger.finest("Pool recreation required");    
+	       runtime.recreateConnectorConnectionPool( connConnPool ); 
+	       _logger.finest("Pool recreation done");    
+	    }
+	} catch( ConnectorRuntimeException cre ) {
+	    cre.printStackTrace();
+        throw cre;
+	}
+    }    
 }

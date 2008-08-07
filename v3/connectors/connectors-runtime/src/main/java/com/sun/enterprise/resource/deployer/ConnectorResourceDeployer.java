@@ -74,4 +74,9 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         ConnectorRuntime crt = ConnectorRuntime.getRuntime();
         crt.deleteConnectorResource(jndiName);
     }
+
+    public void redeployResource(Object resource) throws Exception {
+        undeployResource(resource);
+        deployResource(resource);
+    }
 }
