@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="glassfish common package creation" default="create.package" basedir=".">
+   <target name="create.package">
+	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+       
+ <!-- TODO - would be nice if we can find a way to iterate through all
+	   "dependency" packages without having to define each intermediate 
+	   graph -->
+	  	   
+	 <graphDef id="remove-felix-modules" tolerateBrokenPOMs="true">
+		 <scope level="compile,runtime">       
+			  <subtract>
+			         <fullGraph/>
+				 <subGraph groupID="org.glassfish.packager" artifactID="felix"/>			                         
+			 </subtract>
+                 </scope>		 
+	   </graphDef>
+	  	   
+	   <graphDef id="remove-hk2-modules" tolerateBrokenPOMs="true">
+		 <scope level="compile,runtime">       
+			  <subtract>
+			         <graphRef refid="remove-felix-modules"/>
+				 <subGraph artifactID="glassfish-hk2"/>			                         
+			 </subtract>
+                 </scope>		 
+	 </graphDef>
+ 
+
+         <graphDef id="remove-grizzly-modules" tolerateBrokenPOMs="true">
+		 <scope level="compile,runtime">       
+			  <subtract>
+				 <graphRef refid="remove-hk2-modules"/>
+				 <subGraph artifactID="glassfish-grizzly"/>			                         
+			 </subtract>
+                 </scope>		 
+	 </graphDef>
+
+	  <graphDef id="remove-api-modules" tolerateBrokenPOMs="true">
+		 <scope level="compile,runtime">       
+			  <subtract>
+				 <graphRef refid="remove-grizzly-modules"/>
+				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api"/>			                         
+			 </subtract>
+                 </scope>		 
+	 </graphDef>
+            
+        <graphDef id="glassfish-common-modules" tolerateBrokenPOMs="true">
+		 <scope level="compile,runtime">       
+			  <subtract>
+				 <graphRef refid="remove-api-modules"/>
+				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus"/>			                         
+			 </subtract>
+                 </scope>		 
+	 </graphDef>    
+
+	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true">
+                <graphRef refid="glassfish-common-modules"/>
+	   </resolveAll>
+
+	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
+		  <visualize file="all-modules.png">
+			 <scope level="compile,runtime">       
+				 <fullGraph/>
+                 </scope> 
+            </visualize>
+        </graphDef>
+
+        <graphDef id="generate-refined-picture" tolerateBrokenPOMs="true">
+		  <visualize file="modules.png">
+			 <scope level="compile,runtime">       
+				 <graphRef refid="glassfish-common-modules"/>
+                 </scope> 
+            </visualize>
+        </graphDef>
+
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	 
+       <zip file="target/glassfish-common.zip" basedir="target/stage"/>
+           
+       <attachArtifact file="target/glassfish-common.zip"/>
+   </target>
+</project>
+
