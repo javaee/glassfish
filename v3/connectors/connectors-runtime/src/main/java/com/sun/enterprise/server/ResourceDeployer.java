@@ -73,5 +73,13 @@ public interface ResourceDeployer {
      * @throws Exception thrown if fail
      */
     void undeployResource(Object resoure) throws Exception;
+    
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail
+     */
+    void redeployResource(Object resource) throws Exception;
 
 }
