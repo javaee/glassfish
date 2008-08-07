@@ -68,12 +68,16 @@
         <!--
           modules to be included in this bundle
         -->       
-       <dependency>        
-           <groupId>org.glassfish.web</groupId>
-           <artifactId>web</artifactId>
-           <version>${project.version}</version>
-           <type>pom</type>
-  	</dependency>
+	<dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>webtier-all</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+	<dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>gf-web-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

@@ -155,7 +155,7 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef> 
 	
 
-	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true">
+	 <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true">
                 <graphRef refid="glassfish-jsf-modules"/>
 	   </resolveAll>
 

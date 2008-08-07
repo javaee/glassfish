@@ -172,9 +172,29 @@ own identifying information: Portions Copyright [yyyy]
                  </scope>		 
 	 </graphDef> 
 	
+         <graphDef id="web-modules" tolerateBrokenPOMs="true">
+                <scope level="compile,runtime">
+                    <subtract>
+                        <subGraph artifactId="webtier-all" />
+                        <scope level="compile,runtime"><!-- = subgraph X -->
+                            <excludeArtifactsTransitively>
+                                <artifact artifactId="webtier-all" />
+                            </excludeArtifactsTransitively>
+                        </scope>
+                    </subtract>
+                </scope>
+            </graphDef>
+
+	<resolveAll todir="target/stage/glassfish/modules/web" tolerateBrokenPOMs="true">
+	        <graphRef refid="web-modules"/>
+    	</resolveAll>
 
 	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true">
-                <graphRef refid="glassfish-web-modules"/>
+		 <graphRef refid="glassfish-web-modules"/>
+		<removeSpecificArtifacts>
+                    <scope level="compile,runtime"/>
+                    <artifact artifactId="webtier-all"/>
+                </removeSpecificArtifacts>
 	   </resolveAll>
 
 	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">

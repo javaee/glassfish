@@ -68,12 +68,48 @@
         <!--
           modules to be included in this bundle
         -->       
-        <dependency>        
-           <groupId>org.glassfish.admingui</groupId>
-           <artifactId>admingui</artifactId>
-           <version>${project.version}</version>
-           <type>pom</type>
-  	</dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-plugin-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>dataprovider</artifactId>
+            <version>${dataprovider.version}</version>
+            <exclusions>
+                <exclusion>
+		    <groupId>com.sun.woodstock.dependlibs</groupId>
+		    <artifactId>dataprovider</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jsftemplating</groupId>
+            <artifactId>jsftemplating</artifactId>
+            <version>${jsftemplating.version}</version>
+            <exclusions>
+                <exclusion>
+		    <groupId>com.sun.jsftemplating</groupId>
+		    <artifactId>jsftemplating</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-security-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+	    <artifactId>console-jdbc-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
 
         <dependency>        
            <groupId>org.glassfish.admingui</groupId>
