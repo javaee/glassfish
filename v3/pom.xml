@@ -120,8 +120,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>0.3.10-SNAPSHOT</hk2.version>
-        <hk2.plugin.version>0.3.8</hk2.plugin.version>
+        <hk2.version>0.3.12-SNAPSHOT</hk2.version>
+        <hk2.plugin.version>0.3.12-SNAPSHOT</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <pe.version>10.0-SNAPSHOT</pe.version>
@@ -140,7 +140,7 @@
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 	<dataprovider.version>4.2</dataprovider.version>
 	<jsftemplating.version>1.2.1</jsftemplating.version>
-    	<glassfish-api.version>10.0.404</glassfish-api.version>        
+    	<glassfish-api.version>10.0.405</glassfish-api.version>        
 
 	
     </properties>
