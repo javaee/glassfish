@@ -53,6 +53,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import java.util.Collection;
 import java.util.List;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import com.sun.enterprise.config.serverbeans.Applications;
 import java.beans.PropertyChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.ConfigListener;
@@ -73,8 +74,11 @@ public class WebMonitorStartup implements
     @Inject
     private ProbeClientMediator pcm;
 
-    //@Inject
+    @Inject
     private ModuleMonitoringLevels mml;
+    
+    @Inject
+    private Applications applications;
     
     private WebTelemetry webTM = null;
     private SessionStatsTelemetry sessionsTM = null;
@@ -168,24 +172,42 @@ public class WebMonitorStartup implements
     }
 
     /**
-     * Tree Structure, names in () are dynamic nodes
+     * Tree Structure, names in () are dynamic nodes, comments are in []
      *
      * Server
      * | applications
-     * | | web-module
-     * | | application
-     * | | j2ee-application
-     * | | | (app-name)
-     * | | | | (virtual-server)
-     * | | | | | (servlet)
-     * | web-container
+     * | |  (stand-alone-module-name)
+     * | |  | (virtual-server)
+     * | |  | | (servlet stats)
+     * | |  | | (jsp stats)
+     * | |  | | (session stats)
+     * | |  (app-name) [ear is not supported in GlassFish v3 Prelude]
+     * | |  | (module-name)
+     * | |  | | (virtual-server)
+     * | |  | | | (servlet stats)
+     * | |  | | | (jsp stats)
+     * | |  | | | (session stats)
+     * | web
+     * | | session 
+     * | | | (session stats)
+     * | | servlet
+     * | | | (servlet stats)
+     * | | jsp
+     * | | | (jsp stats)
+     * | | request
+     * | | | (request stats)
      * | http-service
-     * | | http-listener
-     * | | connection-pool
-     * | | (server-name)
+     * | | (virtual server)
      * | | | (request)
-     * | thread-pools
-     * | | (thread-pool)
+     * | | | | (request stats)
+     * | | | (http-listener)
+     * | | | | (request stats)
+     * | | thread-pool [earlier named as pwc-thread-pool]
+     * | | | (thread-pool stats)
+     * | | connection-queue
+     * | | | (connection-queue stats)
+     * | jvm
+     * | | (jvm stats)
      */
     private void buildWebMonitoringConfigTree() {
         // server
@@ -231,25 +253,44 @@ public class WebMonitorStartup implements
         }
         // http-service
         HttpService httpS = sConfig.getHttpService();
-        httpService = TreeNodeFactory.createTreeNode("http-service", null, "web");
+        TreeNode httpService = TreeNodeFactory.createTreeNode("http-service", null, "web");
         server.addChild(httpService);
+        // http-service.thread-pool
+        TreeNode threadPool = TreeNodeFactory.createTreeNode("thread-pool", null, "web");
+        httpService.addChild(threadPool);
+        // http-service.connection-queue
+        TreeNode connQ = TreeNodeFactory.createTreeNode("connection-queue", null, "web");
+        httpService.addChild(connQ);
         // http-listener
+        /*
         for (HttpListener htl : httpS.getHttpListener()) {
             TreeNode httpListener = TreeNodeFactory.createTreeNode(htl.getId(), null, "web");
             httpService.addChild(httpListener);
         }
+        */
         // connection-pool
         ConnectionPool cp = httpS.getConnectionPool();
         TreeNode connectionPool = TreeNodeFactory.createTreeNode("connection-pool", null, "web");
         httpService.addChild(connectionPool);
         // web-container
         WebContainer wc = sConfig.getWebContainer();
-        TreeNode webContainer = TreeNodeFactory.createTreeNode("web-container", null, "web");
+        TreeNode webContainer = TreeNodeFactory.createTreeNode("web", null, "web");
         server.addChild(webContainer);
-        // thread-pools
-        ThreadPools tps = sConfig.getThreadPools();
-        TreeNode threadPools = TreeNodeFactory.createTreeNode("thread-pools", null, "web");
-        server.addChild(threadPools);
+        // web.session
+        TreeNode webSession = TreeNodeFactory.createTreeNode("session", null, "web");
+        webContainer.addChild(webSession);
+        // web.servlet
+        TreeNode webServlet = TreeNodeFactory.createTreeNode("servlet", null, "web");
+        webContainer.addChild(webServlet);
+        // web.jsp
+        TreeNode webJSP = TreeNodeFactory.createTreeNode("jsp", null, "web");
+        webContainer.addChild(webJSP);
+        // web.request
+        TreeNode webRequest = TreeNodeFactory.createTreeNode("request", null, "web");
+        webContainer.addChild(webRequest);
+        // jvm
+        TreeNode jvm = TreeNodeFactory.createTreeNode("jvm", null, "server");
+        server.addChild(jvm);
     }
 
     /**
@@ -257,6 +298,8 @@ public class WebMonitorStartup implements
      * Add code for handling deployment changes like deploy/undeploy
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        System.out.println("WebMonitorStartup: UnprocessedChangeEvents: " + 
+            events[0].getPropertyName());
         for (PropertyChangeEvent event : events) {
             String propName = event.getPropertyName();
             String enabled = null;
