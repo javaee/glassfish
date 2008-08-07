@@ -101,7 +101,9 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+<!--
                 <version>1.4.1</version>
+-->
                 <configuration>
                     <!-- Enable the plugin for hk2-jar packaging type -->
                     <supportedProjectTypes>

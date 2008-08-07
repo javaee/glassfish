@@ -211,6 +211,14 @@
                     </distribution>
                 </configuration>
             </plugin>
+
+            <!--  added for temporary testing purpose FelixIssue:661 -->
+            <plugin>
+               <groupId>org.apache.felix</groupId>
+               <artifactId>maven-bundle-plugin</artifactId>
+               <version>1.4.3-SNAPSHOT</version>
+            </plugin>
+ 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -269,4 +277,17 @@
             <optional>true</optional>
       </dependency>
     </dependencies>
+
+    <!--  added for temporary testing purpose FelixIssue:661 -->
+    <pluginRepositories>
+       <pluginRepository>
+           <id>apache-snapshot</id>
+           <name>SNAPSHOT Repository for Apache</name>
+           <url>http://people.apache.org/repo/m2-snapshot-repository/</url>
+           <snapshots>
+               <updatePolicy>never</updatePolicy>
+           </snapshots>
+       </pluginRepository>
+   </pluginRepositories>
+
 </project>
