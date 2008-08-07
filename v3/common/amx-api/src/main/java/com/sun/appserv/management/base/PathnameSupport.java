@@ -76,7 +76,6 @@ public interface PathnameSupport
     /**
         Return the entire path name for this AMX MBean, suitably escaped.
         
-        @see #getDottedNamePart
         @return the path name
      */
     public String getPathname();
@@ -93,7 +92,6 @@ public interface PathnameSupport
         in the Map; only values obtained successfully are returned.
         <p>
         A null Set indicates that all values should be returned.
-        @see getDottedValueNames
      */
     public Map<String,String> getPathnameValues( final Set<String> values );
     

@@ -82,7 +82,7 @@ public interface HTTPProtocolConfig extends ConfigElement, Singleton
     public void     setDefaultType(String defaultType);
     
 	/**
-        <b>DO NOT USE, use {@link #getResponseType}</b>
+        <b>DO NOT USE, use {@link #getDefaultResponseType}</b>
 		@see HTTPProtocolConfigKeys#FORCED_RESPONSE_TYPE_KEY
         @deprecated
 	*/

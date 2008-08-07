@@ -50,10 +50,9 @@ import java.lang.annotation.Target;
   without any method declaration.
   <p>
   See {@link PropertyConfig} for an example of class annotation; see 
-  {@link DomainConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
+  {@link ResourcesConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
   
   @see org.glassfish.api.amx.AMXConfigInfo
-  @see AMXForwardTo
 */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

@@ -45,13 +45,13 @@ public final class ConfigConfigKeys
 	private ConfigConfigKeys()	{}
 	
 	/**
-		Key for use with {@link DomainConfig#createConfigConfig},
+		Key for use with {@link ConfigsConfig#createConfigConfig},
 		value must be {@link java.lang.Boolean}.
 	 */
 	public static final String DYNAMIC_RECONFIGURATION_ENABLED_KEY = "DynamicReconfigurationEnabled";
 	
 	/**
-		Key for use with {@link DomainConfig#createConfigConfig}. Specifies
+		Key for use with {@link ConfigsConfig#createConfigConfig}. Specifies
 		the name of the config which should be *copied*.  Default is
 		{@link #DEFAULT_SRC_CONFIG_NAME}.
 	 */
@@ -59,7 +59,7 @@ public final class ConfigConfigKeys
 	
 	/**
 		Default config which will be copied by
-		{@link DomainConfig#createConfigConfig}.
+		{@link ConfigsConfig#createConfigConfig}.
 		@see #SRC_CONFIG_NAME_KEY
 	 */
 	public static final String DEFAULT_SRC_CONFIG_NAME = "default-config";

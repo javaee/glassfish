@@ -60,7 +60,7 @@ public interface ConfigCreator
         {@link SystemPropertiesAccess#SYSTEM_PROPERTY_PREFIX} prefix on the property name.
         
         @param j2eeType the AMX j2eeType
-        @param optional optional parameters (some of which may be reu
+        @param params optional parameters (some of which may be reu
         @return proxy interface to the newly-created AMXConfig
         
         @see com.sun.appserv.management.base.XTypes
@@ -69,7 +69,7 @@ public interface ConfigCreator
     
     /**
         Dynamically add an interface which can be instantiated.  The interface must extend
-        {@link org.jvnet.hk2.config.ConfigBeanProxy}.
+        org.jvnet.hk2.config.ConfigBeanProxy.
      */
     public void addCreatable( final String interfaceName );
 }

@@ -80,7 +80,7 @@ public interface ApplicationConfigConfig
      * interfere with the well-formedness of the containing domain.xml
      * XML document.
      * 
-     * @param value the configuration information to be stored
+     * @param configData the configuration information to be stored
      */
     public void   setConfig( String configData );
 

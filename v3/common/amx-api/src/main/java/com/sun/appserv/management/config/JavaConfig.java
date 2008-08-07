@@ -90,12 +90,7 @@ public interface JavaConfig
 	public String[]	getJVMOptions();
 	
 	/**
-        Add jvm options.  Using any of the {@link #CollectionOp} commands,
-        options may be added, removed or replaced.  If the optioncal command
-        is specified, it should be first element in the value array.  Otherwise,
-        the command defaults to {@link ComponentOp#COLLECTION_OP_ADD}.
-        <p>
-        Alt
+        Add jvm options.
         <p>
         If a JVM option contains a space or tab, you must enclose
         it in quotes eg </code>"C:Program Files\dir"</code>

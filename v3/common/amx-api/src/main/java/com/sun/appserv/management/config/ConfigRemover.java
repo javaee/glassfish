@@ -33,14 +33,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-
 package com.sun.appserv.management.config;
 
 /**
 	Any {@link AMXConfig} implementing this interface allows any contained AMXConfig to be deleted.
-    Implementors of this interface should generally also be an {@link Container}, but certain
-    special types might not be.
+    Implementors of this interface should generally also be an
+    {@link com.sun.appserv.management.base.Container}, but certain special types might not be.
 */
 public interface ConfigRemover
 {
@@ -48,8 +46,6 @@ public interface ConfigRemover
         Generically remove a config by j2eeType and name.
         @param j2eeType the AMX j2eeType as defined
         @param name the name of the item
-        
-        @see com.sun.appserv.management.base.XTypes
      */
     public void     removeConfig( String j2eeType, String name );
 }

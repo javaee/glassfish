@@ -45,7 +45,6 @@ package com.sun.appserv.management.base;
 	Each of these types is an adjunct to JSR 77, dealing specifically with our notion
 	of configuration and/or monitoring.
 	
-	@see XTypesMapper
 	@see com.sun.appserv.management.j2ee.J2EETypes
  */
 public final class XTypes

@@ -81,7 +81,7 @@ import com.sun.appserv.management.base.XTypes;
     </li>
     </ul>
 	
-	@see com.sun.appserv.management.config.DomainConfig#getCustomMBeanConfigMap
+	@see com.sun.appserv.management.config.ResourcesConfig#getCustomMBeanConfigMap
  */
 public interface CustomMBeanConfig
     extends NamedConfigElement, Enabled, PropertiesAccess, ObjectType,
