@@ -96,24 +96,24 @@ public interface CoverageInfo
     public Set<String>  getOperationsNotInvoked();
     
     /**
-        Get a Map<attribute name, count> of Attribute read failures
+        Get a Map&lt;attribute name, count&gt; of Attribute read failures
         for legal attributes.
      */
     public Map<String,Integer>  getAttributeGetFailures();
     
     /**
-        Get a Map<attribute name, count> of Attribute write failures
+        Get a Map&lt;attribute name, count&gt; of Attribute write failures
         for legal attributes.
      */
     public Map<String,Integer>  getAttributeSetFailures();
     
     /**
-        Get a Map<attribute name, count> of unknown Attribute accesses.
+        Get a Map&lt;attribute name, count&gt; of unknown Attribute accesses.
      */
     public Map<String,Integer>  getUnknownAttributes();
     
     /**
-        Get a Map<operation name, count> of unknown operation accesses.
+        Get a Map&lt;operation name, count&gt; of unknown operation accesses.
      */
     public Map<String,Integer>  getUnknownOperations();
 
