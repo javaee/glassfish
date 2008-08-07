@@ -40,20 +40,8 @@
     }
     getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
     setAttribute(key="mmlConfig" value="#{config.monitoringServiceConfig.moduleMonitoringLevelsConfig}");
-    /*
-    Create handler to pull certain attributes, via EL expressed in an array, and put in a page-scoped map
-    Bind components, etc to this map
-    Create another handler to take the map, the config object, and the keys to persist and set the values
-        on the object, via EL, for persistence
-    */
-    println("#{mmlConfig}");
     createAmxConfigMap(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap=>$pageSession{configMap});
-    println("$pageSession{configMap}");
-    println("#{configMap['HTTPService']}");
-    println("#{configMap['webContainer']}");
-    getTableList(Properties="#{mmlConfig.propertyConfigMap}", TableList=>$attribute{tableList});
-        createMap(result=>$pageSession{theMap});
-        println("#{theMap}");
+    //getTableList(Properties="#{mmlConfig.propertyConfigMap}", TableList=>$attribute{tableList});
 />
 <sun:page>
     <!beforeCreate 
@@ -90,12 +78,16 @@
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
                             <!command
+                                prepareSuccessfulMsg();         
+
+                                /*
                                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                                 convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                                prepareSuccessfulMsg();         
-                                setAttribute(key="configName" value="#{configName}");
                                 savePropertiesMap(destination="#{mmlConfig}", values="#{newProps}");
+                                */
+
+                                setAttribute(key="configName" value="#{configName}");
                                 updateAmxConfig(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap="#{configMap}");
                             />
                         </sun:button>                      
@@ -116,7 +108,7 @@
                     </sun:propertySheetSection>
 
                 </sun:propertySheet>    
-#include "/propertyTable.inc"                         
+<!--#include "/propertyTable.inc"-->
                 <sun:hidden id="helpKey" value="$resource{help.monitoringService}" />
             </sun:form>           
         </sun:body> 
