@@ -70,10 +70,6 @@ public abstract class AbstractPoolManager implements PoolManager {
         throw new UnsupportedOperationException();
     }
 
-    public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException {
-        throw new UnsupportedOperationException();
-    }//sets/resets the monitoring levels for the pool
-
     public void disableMonitoring(String poolName) {
         throw new UnsupportedOperationException();
     }

@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ComponentInvocationHandler;
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
 
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
@@ -573,5 +574,14 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         public void beforeCompletion() {
             // do nothing
         }
+    }
+
+    public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException {
+        String poolName = ccp.getName();
+        ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
+
+        if (pool != null ) {
+            pool.reconfigPoolProperties( ccp );
+        }        
     }
 }
