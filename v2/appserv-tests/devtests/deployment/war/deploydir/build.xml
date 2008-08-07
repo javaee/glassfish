@@ -8,7 +8,7 @@
 
     &commonBuild;
 
-    <property name="contextRoot" value="war"/>
+    <property name="contextRoot" value="deploydir"/>
     <property name="testName" value="deploydir"/>
 
     <target name="prepare" depends="init">
