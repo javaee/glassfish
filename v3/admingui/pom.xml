@@ -86,6 +86,7 @@
         <module>core</module>
         <module>web</module>
         <module>jdbc-gui</module>
+        <module>security</module>
         <module>war</module>
     </modules>
 
