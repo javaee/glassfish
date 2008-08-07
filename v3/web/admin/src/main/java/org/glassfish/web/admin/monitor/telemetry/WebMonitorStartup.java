@@ -50,9 +50,12 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import com.sun.enterprise.config.serverbeans.*;
-
 import java.util.Collection;
 import java.util.List;
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import java.beans.PropertyChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.ConfigListener;
 
 /**
  * Provides for bootstarpping web telemetry during startup and
@@ -62,12 +65,16 @@ import java.util.List;
  */
 @Service
 @Scoped(Singleton.class)
-public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderListener  {
+public class WebMonitorStartup implements 
+    Startup, PostConstruct, ProbeProviderListener, ConfigListener  {
 
     @Inject
     private ProbeProviderEventManager ppem;
     @Inject
     private ProbeClientMediator pcm;
+
+    @Inject
+    private ModuleMonitoringLevels mml;
     
     private WebTelemetry webTM = null;
     private SessionStatsTelemetry sessionsTM = null;
@@ -160,6 +167,26 @@ public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderL
         
     }
 
+    /**
+     * Tree Structure, names in () are dynamic nodes
+     *
+     * Server
+     * | applications
+     * | | web-module
+     * | | application
+     * | | j2ee-application
+     * | | | (app-name)
+     * | | | | (virtual-server)
+     * | | | | | (servlet)
+     * | web-container
+     * | http-service
+     * | | http-listener
+     * | | connection-pool
+     * | | (server-name)
+     * | | | (request)
+     * | thread-pools
+     * | | (thread-pool)
+     */
     private void buildWebMonitoringConfigTree() {
         // server
         Server srvr = null;
@@ -173,14 +200,24 @@ public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderL
         server = TreeNodeFactory.createTreeNode("server", null, "server");
         mrdr.add("server", server);
         // applications
-        TreeNode applications = TreeNodeFactory.createTreeNode("applications",
-                domain.getApplications(), "web");
+        TreeNode applications = TreeNodeFactory.createTreeNode("applications", null, "web");
         server.addChild(applications);
+        // application
+        List<Application> la = domain.getApplications().getModules(Application.class);
+        for (Application sapp : la) {
+            TreeNode app = TreeNodeFactory.createTreeNode(sapp.getName(), null, "web");
+            applications.addChild(app);
+        }
+        // j2ee application
+        List<J2eeApplication> lja = domain.getApplications().getModules(J2eeApplication.class);
+        for (J2eeApplication japp : lja) {
+            TreeNode app = TreeNodeFactory.createTreeNode(japp.getName(), null, "web");
+            applications.addChild(app);
+        }
         // web modules
         List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
         for (WebModule wm : lm) {
-            System.out.println("next wm - " + wm.getName());
-            TreeNode app = TreeNodeFactory.createTreeNode(wm.getName(), wm, "web");
+            TreeNode app = TreeNodeFactory.createTreeNode(wm.getName(), null, "web");
             applications.addChild(app);
         }
         // get server-config
@@ -194,30 +231,58 @@ public class WebMonitorStartup implements Startup, PostConstruct, ProbeProviderL
         }
         // http-service
         HttpService httpS = sConfig.getHttpService();
-        httpService = TreeNodeFactory.createTreeNode("http-service",
-                httpS, "web");
+        httpService = TreeNodeFactory.createTreeNode("http-service", null, "web");
         server.addChild(httpService);
         // http-listener
         for (HttpListener htl : httpS.getHttpListener()) {
-            TreeNode httpListener = TreeNodeFactory.createTreeNode(htl.getId(), htl, "web");
+            TreeNode httpListener = TreeNodeFactory.createTreeNode(htl.getId(), null, "web");
             httpService.addChild(httpListener);
         }
         // connection-pool
         ConnectionPool cp = httpS.getConnectionPool();
-        TreeNode connectionPool = TreeNodeFactory.createTreeNode("connection-pool",
-                cp, "web");
+        TreeNode connectionPool = TreeNodeFactory.createTreeNode("connection-pool", null, "web");
         httpService.addChild(connectionPool);
         // web-container
-        /*
         WebContainer wc = sConfig.getWebContainer();
-        TreeNode webContainer = TreeNodeFactory.createTreeNode("web-container",
-                wc, "web");
+        TreeNode webContainer = TreeNodeFactory.createTreeNode("web-container", null, "web");
         server.addChild(webContainer);
-         */
         // thread-pools
         ThreadPools tps = sConfig.getThreadPools();
-        TreeNode threadPools = TreeNodeFactory.createTreeNode("thread-pools",
-                tps, "web");
+        TreeNode threadPools = TreeNodeFactory.createTreeNode("thread-pools", null, "web");
         server.addChild(threadPools);
+    }
+
+    /**
+     * Handle config changes for monitoring levels
+     * Add code for handling deployment changes like deploy/undeploy
+     */
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        System.out.println("WebMonitorStartup: UnprocessedChangeEvents: " + events[0].getPropertyName());
+        for (PropertyChangeEvent event : events) {
+            String propName = event.getPropertyName();
+            String enabled = null;
+            if ("http-service".equals(propName)) {
+                mml = (ModuleMonitoringLevels) event.getSource();
+                enabled = event.getNewValue().toString();
+                // set corresponding tree node enabled flag 
+                // handle proble listener event by registering/unregistering
+            } else if ("jvm".equals(propName)) {
+                mml = (ModuleMonitoringLevels) event.getSource();
+                enabled = event.getNewValue().toString();
+                // set corresponding tree node enabled flag 
+                // handle proble listener event by registering/unregistering
+            } else if ("thread-pool".equals(propName)) {
+                mml = (ModuleMonitoringLevels) event.getSource();
+                enabled = event.getNewValue().toString();
+                // set corresponding tree node enabled flag 
+                // handle proble listener event by registering/unregistering
+            } else if ("web-container".equals(propName)) {
+                mml = (ModuleMonitoringLevels) event.getSource();
+                enabled = event.getNewValue().toString();
+                // set corresponding tree node enabled flag 
+                // handle proble listener event by registering/unregistering
+            }
+        }
+        return null;
     }
 }
