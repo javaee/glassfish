@@ -59,6 +59,7 @@ import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
+import com.sun.enterprise.server.ResourceDeployer;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.javaee.services.ResourceManager;
@@ -561,16 +562,16 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     /**
      * {@inheritDoc}
      */
-    public void shutdownAllActiveResourceAdapters(Collection<String> poolNames, Collection<String> resourceNames) {
-        destroyResourcesAndPools(resourceNames, poolNames);
+    public void shutdownAllActiveResourceAdapters(Collection<String> resources) {
+        destroyResourcesAndPools(resources);
         stopAllActiveResourceAdapters();
     }
 
     /**
      * {@inheritDoc}
      */
-    public void destroyResourcesAndPools(Collection resources, Collection pools) {
-        connectorService.destroyResourcesAndPools(resources, pools);
+    public void destroyResourcesAndPools(Collection resources) {
+        connectorService.destroyResourcesAndPools(resources);
     }
 
     public PoolManager getPoolManager() {
@@ -700,4 +701,14 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     public void removeWorkManagerProxy(String moduleName){
         wmf.removeWorkManager(moduleName);        
     }
+
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail
+     */    
+    public void redeployResource(Object instance) throws Exception {
+        connectorService.redeployResource(instance);
+    }    
 }
