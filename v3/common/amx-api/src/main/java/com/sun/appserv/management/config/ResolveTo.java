@@ -44,8 +44,8 @@ import java.lang.annotation.ElementType;
     Specifies to what data type (class) a String value taken from or inserted into
     configuration should have.  Annotates Attribute getters as well as parameters
     for creating elements. For example:<br>
-    @ResolveTo(Boolean.class) String getDoIt();<br>
-    SomeConfig createSomeConfig( @ResolveTo(Integer.class) String port );
+    <code>&#64;ResolveTo(Boolean.class) String getDoIt();<br>
+    SomeConfig createSomeConfig( &#64;ResolveTo(Integer.class) String port );</code>
     <p>
  */
 @Retention(RetentionPolicy.RUNTIME)

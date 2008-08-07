@@ -52,7 +52,7 @@ import java.lang.annotation.Target;
   See {@link PropertyConfig} for an example of class annotation; see 
   {@link ResourcesConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
   
-  @see org.glassfish.api.amx.AMXConfigInfo
+  See also org.glassfish.api.amx.AMXConfigInfo in glassfish-api.
 */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

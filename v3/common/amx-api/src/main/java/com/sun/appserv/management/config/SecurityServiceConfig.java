@@ -211,7 +211,7 @@ public interface SecurityServiceConfig extends
         providers may be created using {@link MessageSecurityConfig#createProviderConfig}.
         <p>
         Optional values include {@link MessageSecurityConfigKeys#DEFAULT_PROVIDER_KEY} and
-        {@link MessageSecurityConfigKeys#DefaultClientProvider}.
+        {@link MessageSecurityConfigKeys#DEFAULT_CLIENT_PROVIDER_KEY}.
         <p>
         See {@link MessageSecurityConfig#createProviderConfig} for more details on parameters
 

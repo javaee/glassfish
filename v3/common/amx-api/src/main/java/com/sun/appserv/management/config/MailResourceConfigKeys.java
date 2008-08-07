@@ -33,32 +33,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/MailResourceConfigKeys.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
-
-
 package com.sun.appserv.management.config;
 
 
 /**
-	Keys used by {@link DomainConfig#createMailResourceConfig}.
+	Keys used by {@link ResourcesConfig#createMailResourceConfig}.
  */
 public final class MailResourceConfigKeys 
 {
 	private	MailResourceConfigKeys()	{}
 	
-	/** Key for use with {@link DomainConfig#createMailResourceConfig} */
+	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
 	public static final String STORE_PROTOCOL_KEY           = "StoreProtocol";
-	/** Key for use with {@link DomainConfig#createMailResourceConfig} */
+	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
 	public static final String STORE_PROTOCOL_CLASS_KEY     = "StoreProtocolClass";
-	/** Key for use with {@link DomainConfig#createMailResourceConfig} */
+	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
 	public static final String TRANSPORT_PROTOCOL_KEY       = "TransportProtocol";
-	/** Key for use with {@link DomainConfig#createMailResourceConfig} */
+	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
 	public static final String TRANSPORT_PROTOCOL_CLASS_KEY = "TransportProtocolClass";
-	/** Key for use with {@link DomainConfig#createMailResourceConfig} */
+	/** Key for use with {@link ResourcesConfig#createMailResourceConfig} */
 	public static final String DEBUG_KEY                    = "Debug";
 }

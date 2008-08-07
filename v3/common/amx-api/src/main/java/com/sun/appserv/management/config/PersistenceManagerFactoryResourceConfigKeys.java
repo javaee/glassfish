@@ -38,15 +38,15 @@ package com.sun.appserv.management.config;
 
 
 /**
-	Keys for use with {@link DomainConfig#createPersistenceManagerFactoryResourceConfig}
+	Keys for use with {@link ResourcesConfig#createPersistenceManagerFactoryResourceConfig}
  */
 public final class PersistenceManagerFactoryResourceConfigKeys
 {
 	private	PersistenceManagerFactoryResourceConfigKeys()	{}
 	
-	/** Key for use with {@link DomainConfig#createPersistenceManagerFactoryResourceConfig}. */
+	/** Key for use with {@link ResourcesConfig#createPersistenceManagerFactoryResourceConfig}. */
     public static final String    FACTORY_CLASS_KEY               = "FactoryClass";
         
-	/** Key for use with {@link DomainConfig#createPersistenceManagerFactoryResourceConfig}. */
+	/** Key for use with {@link ResourcesConfig#createPersistenceManagerFactoryResourceConfig}. */
     public static final String    JDBC_RESOURCE_JNDI_NAME_KEY     = "JDBCResourceJNDIName";
 }

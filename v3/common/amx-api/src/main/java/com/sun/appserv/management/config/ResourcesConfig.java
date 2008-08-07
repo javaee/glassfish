@@ -218,7 +218,7 @@ public interface ResourcesConfig
 		@param	databaseName
 		@param	databaseUserName
 		@param	databasePassword
-		@param	reservedForFutureUse		reserved for future use
+		@param	reserved		reserved for future use
 		@return a JDBCConnectionPoolConfig
 	 */
     @AMXCreateInfo(paramNames={

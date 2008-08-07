@@ -36,8 +36,8 @@
 package com.sun.appserv.management.config;
 
 /**
-	Keys for use with {@link DomainConfig#createStandaloneServerConfig} and 
-	{@link DomainConfig#createClusteredServerConfig}
+	Keys for use with {@link ServersConfig#createStandaloneServerConfig} and 
+	{@link ServersConfig#createClusteredServerConfig}
  */
 public final class ServerConfigKeys
 {

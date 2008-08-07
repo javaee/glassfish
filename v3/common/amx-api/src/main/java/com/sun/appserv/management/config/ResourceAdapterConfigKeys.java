@@ -37,14 +37,14 @@ package com.sun.appserv.management.config;
 
 
 /**
-	Keys for use with {@link DomainConfig#createResourceAdapterConfig}.
+	Keys for use with {@link ResourcesConfig#createResourceAdapterConfig}.
  */
 public final class ResourceAdapterConfigKeys
 {
 	private	ResourceAdapterConfigKeys()	{}
 	
 	/**
-		Key for use with {@link DomainConfig#createResourceAdapterConfig}.
+		Key for use with {@link ResourcesConfig#createResourceAdapterConfig}.
 		Comma-separated list of ThreadPoolConfig names.
 		@see ResourceAdapterConfig
 	*/

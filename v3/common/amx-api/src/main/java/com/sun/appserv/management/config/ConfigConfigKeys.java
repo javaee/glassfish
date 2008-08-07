@@ -38,7 +38,7 @@ package com.sun.appserv.management.config;
 
 
 /**
-	Keys for use with {@link DomainConfig#createConfigConfig}.
+	Keys for use with {@link ConfigsConfig#createConfigConfig}.
  */
 public final class ConfigConfigKeys
 {

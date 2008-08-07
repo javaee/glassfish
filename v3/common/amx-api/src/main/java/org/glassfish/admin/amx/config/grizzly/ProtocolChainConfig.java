@@ -54,7 +54,7 @@ public interface ProtocolChainConfig extends PropertiesAccess, NamedConfigElemen
     /**
      * Gets the type. The type could be either STATEFUL or STATELESS. Default value is STATELESS.
      *
-     * @return the {@link ProtocolChain} type
+     * @return the type
      */
     public String getType();
     public void setType(String type);

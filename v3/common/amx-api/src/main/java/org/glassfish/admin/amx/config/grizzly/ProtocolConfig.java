@@ -55,17 +55,16 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * settings. False means that the {@link ProtocolConfig} is not secured and
      * the {@link SSLConfig} member, if present, will be ignored.
      *
-     * @return the {@link Protocol} security status
+     * @return the security status
      */
     @ResolveTo(Boolean.class)
     public String getSecurityEnabled();
     public void setSecurityEnabled(String securityEnabled);
 
     /**
-     * Get the max temporary {@link SelectorConfig} number, which could be used by
-     * this {@link ProtocolConfig}
+     * Get the max temporary number, which could be used.
      *
-     * @return the max temporary {@link SelectorConfig} number, which could be used by
+     * @return the max temporary number, which could be used by
      * this {@link ProtocolConfig}
      */
     @ResolveTo(Integer.class)
@@ -112,15 +111,10 @@ public interface ProtocolConfig extends PropertiesAccess, NamedConfigElement, De
      * Gets the protocol oob inline parameter
      *
      * @return the protocol oob inline parameter
-    @Attribute
+     */
     public String getOobInline();
     public void setOobInline(String oobInline);
 
-    /**
-     * Get the {@link Protocol> SSL configuration
-     *
-     * @return the {@link Protocol> SSL configuration
-     */
     public SSLConfig getSSLConfig();
 
     /**
