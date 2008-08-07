@@ -35,6 +35,10 @@
  */
 package com.sun.appserv.connectors.internal.api;
 
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.ConnectorResource;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcResource;
 import java.io.File;
 import java.util.Hashtable;
 
@@ -152,5 +156,10 @@ public class ConnectorsUtil {
         return name;
     }
 
-
+    public static boolean isValidEventType(Object instance) {
+        return (instance instanceof JdbcConnectionPool || 
+                instance instanceof JdbcResource ||
+                instance instanceof ConnectorConnectionPool ||
+                instance instanceof ConnectorResource);
+    }
 }

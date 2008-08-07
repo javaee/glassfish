@@ -113,20 +113,18 @@ public interface ConnectorRuntime {
                                         String raName) throws ConnectorRuntimeException;
 
     /**
-     * shut down all active resource adapters after destroying/unpublishing resources and pools.
+     * Shut down all active resource adapters after destroying/unpublishing resources and pools.
      *
-     * @param poolNames     list of pools to be destroyed
-     * @param resourceNames list of resources to be unpublished
+     * @param resources list of resources and pools to be unpublished
      */
-    public void shutdownAllActiveResourceAdapters(Collection<String> poolNames, Collection<String> resourceNames);
+    public void shutdownAllActiveResourceAdapters(Collection<String> resources);
 
     /**
-     * destroys/unpublishes the given list of pools and resources
+     * Destroys/unpublishes the given list of pools and resources
      *
-     * @param resources list of resources
-     * @param pools     list of pools
+     * @param resources list of resources and pools
      */
-    public void destroyResourcesAndPools(Collection resources, Collection pools);
+    public void destroyResourcesAndPools(Collection resources);
 
     /**
      * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
@@ -197,6 +195,14 @@ public interface ConnectorRuntime {
      * @throws NoSuchThreadPoolException when unable to get a ThreadPool
      */
     public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException;
+
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail
+     */   
+    public void redeployResource(Object instance) throws Exception;
 
     /**
      * provides the transactionManager
