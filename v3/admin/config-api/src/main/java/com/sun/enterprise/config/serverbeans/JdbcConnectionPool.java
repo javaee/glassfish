@@ -39,15 +39,13 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
-
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
-import java.util.List;
+import org.glassfish.api.admin.config.datatypes.NonNegativeInteger;
+import org.glassfish.api.admin.config.datatypes.PositiveInteger;
+
 
 
 /**
@@ -119,7 +117,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="8")
+    @Attribute (defaultValue="8", dataType=PositiveInteger.class)
     public String getSteadyPoolSize();
 
     /**
@@ -136,7 +134,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="32")
+    @Attribute (defaultValue="32", dataType=PositiveInteger.class)
     public String getMaxPoolSize();
 
     /**
@@ -153,7 +151,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="60000")
+    @Attribute (defaultValue="60000", dataType=NonNegativeInteger.class)
     public String getMaxWaitTimeInMillis();
 
     /**
@@ -170,7 +168,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2")
+    @Attribute (defaultValue="2", dataType=PositiveInteger.class)
     public String getPoolResizeQuantity();
 
     /**
@@ -187,7 +185,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30")
+    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
     public String getIdleTimeoutInSeconds();
 
     /**
@@ -221,7 +219,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getIsIsolationLevelGuaranteed();
 
     /**
@@ -238,7 +236,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getIsConnectionValidationRequired();
 
     /**
@@ -289,7 +287,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getFailAllConnections();
 
     /**
@@ -306,7 +304,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getNonTransactionalConnections();
 
     /**
@@ -323,7 +321,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getAllowNonComponentCallers();
 
     /**
@@ -340,7 +338,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
     public String getValidateAtmostOncePeriodInSeconds();
 
     /**
@@ -357,7 +355,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
     public String getConnectionLeakTimeoutInSeconds();
 
     /**
@@ -374,7 +372,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getConnectionLeakReclaim();
 
     /**
@@ -391,7 +389,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
     public String getConnectionCreationRetryAttempts();
 
     /**
@@ -408,7 +406,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="10")
+    @Attribute (defaultValue="10", dataType=NonNegativeInteger.class)
     public String getConnectionCreationRetryIntervalInSeconds();
 
     /**
@@ -442,7 +440,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getLazyConnectionEnlistment();
 
     /**
@@ -459,7 +457,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getLazyConnectionAssociation();
 
     /**
@@ -476,7 +474,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getAssociateWithThread();
 
     /**
@@ -493,7 +491,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getMatchConnections();
 
     /**
@@ -510,7 +508,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
     public String getMaxConnectionUsageCount();
 
     /**
@@ -527,7 +525,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getWrapJdbcObjects();
 
     /**
