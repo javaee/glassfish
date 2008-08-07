@@ -35,6 +35,7 @@
  */
 package org.glassfish.javaee.services;
 
+import java.util.logging.Level;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -50,6 +51,7 @@ import java.util.*;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.jvnet.hk2.config.ObservableBean;
 
 
 @Service
@@ -78,12 +80,15 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     private Resources allResources; // Needed so as to listen to config changes.
 
     private ConnectorRuntime runtime;
-
+    @Inject
+    private ResourcePropertiesHolder holder;
+    
     public void postConstruct() {
         //TODO V3 need to get jdbc pools/resources from Resources
         resourcesBinder.deployAllJdbcResourcesAndPools(jdbcResources, jdbcPools);
         //TODO V3 handle connector system resources, pools later
         //resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources, connectorPools);
+        addListenerToResources();
     }
 
     /**
@@ -92,12 +97,13 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     public void preDestroy() {
 
         //TODO V3 : Admin need to make sure that poolnames are unique. As of V2 they are not unique.
-        Collection pools = getAllSystemRAPools();
-        Collection resources = getAllSystemRAResources();
-
+        //Collection pools = getAllSystemRAPools();
+        Collection resources = getAllSystemRAResourcesAndPools();
+        
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
         //TODO V3 this seems to be called ??
-        getConnectorRuntime().shutdownAllActiveResourceAdapters(pools, resources);
+        getConnectorRuntime().shutdownAllActiveResourceAdapters(resources);
+        removeListenerFromResources();
     }
 
     private ConnectorRuntime getConnectorRuntime() {
@@ -109,42 +115,30 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     }
 
     /**
-     * get all System RAR pools
+     * Get all System RAR pools and resources
      * @return Collection of system RAR pools
      */
-    private Collection getAllSystemRAPools(){
-        List pools = new ArrayList();
+    private Collection getAllSystemRAResourcesAndPools() {
+        List resources = new ArrayList();
         for(Resource resource : allResources.getResources()){
             if(resource instanceof JdbcConnectionPool ){
-                pools.add(resource);
-            }else if( resource instanceof ConnectorConnectionPool){
+                resources.add(resource);
+            } else if( resource instanceof ConnectorConnectionPool){
                 String raName = ((ConnectorConnectionPool)resource).getResourceAdapterName();
                 if( ConnectorsUtil.belongsToSystemRA(raName) ){
-                    pools.add(resource);
+                    resources.add(resource);
                 }
-            }
-        }
-        return pools;
-    }
-
-    /**
-     * get all System RAR resources
-     * @return Collection of system RAR resources
-     */
-    private Collection getAllSystemRAResources(){
-        List systemRAResources = new ArrayList();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcResource){
-                systemRAResources.add(resource);
+            } else if(resource instanceof JdbcResource){
+                resources.add(resource);
             }else if( resource instanceof ConnectorResource){
                 String poolName = ((ConnectorResource)resource).getPoolName();
                 String raName = getResourceAdapterNameOfPool(poolName);
                 if( ConnectorsUtil.belongsToSystemRA(raName) ){
-                    systemRAResources.add(resource);
+                    resources.add(resource);
                 }
             }
         }
-        return systemRAResources;
+        return resources;
     }
 
     /**
@@ -223,17 +217,19 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
         Collection<ConnectorConnectionPool> connectionPools = getAllPoolsOfModule(moduleName);
         Collection<String> poolNames = getAllPoolNames(connectionPools);
         Collection<ConnectorResource> connectorResources = getAllResources(poolNames);
-
-        destroyResourcesAndPools(connectorResources, connectionPools);
+        List resources = new ArrayList();
+        resources.addAll(connectionPools);
+        resources.addAll(connectorResources);
+        destroyResourcesAndPools(resources);
     }
 
     /**
      * destroys a list of resource and pools (jdbc/connector)
-     * @param resources to be destroyed
-     * @param pools to be destroyed
+     * @param Collection of resources and pools to be destroyed
      */
-    private void destroyResourcesAndPools(Collection resources, Collection pools) {
-        getConnectorRuntime().destroyResourcesAndPools(resources, pools);
+    private void destroyResourcesAndPools(Collection resources) {
+        
+        getConnectorRuntime().destroyResourcesAndPools(resources);
     }
 
     private Collection<ConnectorResource> getAllResources(Collection<String> poolNames) {
@@ -303,7 +299,8 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                         handleAddEvent(changedInstance);
                         break;
 
-                    case CHANGE : logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                    case CHANGE: logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                        handleChangeEvent(changedInstance);
                         break;
 
                     case REMOVE : logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
@@ -312,8 +309,20 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 }
             }
 
-            private <T extends ConfigBeanProxy> void handleAddEvent( T instance) {
-                if(instance instanceof JdbcConnectionPool){
+            private <T extends ConfigBeanProxy> void handleChangeEvent(T instance) {
+                try {
+                    if(ConnectorsUtil.isValidEventType(instance)) {
+                        getConnectorRuntime().redeployResource(instance);
+                    }
+                } catch (Exception ex) {
+                    logger.severe(ResourceManager.class.getName() + " : Error while handling change Event");
+                }
+            }
+
+            private <T extends ConfigBeanProxy> void handleAddEvent(T instance) {
+                //Add listener to the changed instance object
+                ResourceManager.this.addListenerToResource(instance);
+                if (instance instanceof JdbcConnectionPool) {
                     resourcesBinder.deployAllJdbcResourcesAndPools(new JdbcResource[]{},
                             new JdbcConnectionPool[]{((JdbcConnectionPool)instance)});
                 }else if (instance instanceof JdbcResource){
@@ -334,17 +343,10 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
 
             private <T extends ConfigBeanProxy> void handleRemoveEvent(final T instance) {
                 ArrayList instancesToDestroy = new ArrayList();
-                ArrayList dummy = new ArrayList();
                 instancesToDestroy.add(instance);
-                if(instance instanceof JdbcConnectionPool){
-                    destroyResourcesAndPools(dummy, instancesToDestroy);
-                }else if (instance instanceof JdbcResource){
-                    destroyResourcesAndPools(instancesToDestroy, dummy);
-                }else if (instance instanceof ConnectorConnectionPool){
-                    destroyResourcesAndPools(dummy, instancesToDestroy);
-                }else if (instance instanceof ConnectorResource){
-                    destroyResourcesAndPools(instancesToDestroy, dummy);
-                }
+                //Remove listener from the removed instance
+                ResourceManager.this.removeListenerFromResource(instance);
+                destroyResourcesAndPools(instancesToDestroy);
             }
         }, logger);
         return null;
@@ -396,5 +398,146 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
             }
         }
         return null; //TODO V3 cannot happen ?
+    }
+
+    /**
+     * Add listener to all resources (JDBC Connection Pool/JDBC Resource/
+     * Connector Connection Pool/Connector Resource.
+     * Invoked from postConstruct()
+     */
+    private void addListenerToResources() {
+        for (Resource configuredResource : allResources.getResources()) {
+            addListenerToResource(configuredResource);
+        }
+    }
+
+    /**
+     * Add listener to a generic resource (JDBC Connection Pool/Connector 
+     * Connection Pool/JDBC resource/Connector resource)
+     * Used in the case of create asadmin command when listeners have to 
+     * be added to the specific pool/resource
+     * @param object of the changed instance
+     */
+    private void addListenerToResource(Object instance) {
+        ObservableBean bean = null;
+	if(instance instanceof JdbcConnectionPool){
+            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
+  	    bean = (ObservableBean) ConfigSupport.getImpl(pool);
+	    bean.addListener(this);
+        } else if(instance instanceof JdbcResource){
+            JdbcResource resource = (JdbcResource) instance;
+  	    bean = (ObservableBean) ConfigSupport.getImpl(resource);
+	    bean.addListener(this);
+        } else if(instance instanceof ConnectorConnectionPool){
+            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
+  	    bean = (ObservableBean) ConfigSupport.getImpl(pool);
+	    bean.addListener(this);
+        } else if(instance instanceof ConnectorResource){
+            ConnectorResource resource = (ConnectorResource) instance;
+  	    bean = (ObservableBean) ConfigSupport.getImpl(resource);
+	    bean.addListener(this);
+        } else if (instance instanceof Property) {
+            Property prop = (Property) instance;
+            bean = (ObservableBean) ConfigSupport.getImpl(prop);
+            holder.setPropertyBean(bean);
+            holder.addListener();
+        }
+        addListenerToProperties(instance);
+
+    }
+
+    /**
+     * Add listener to properties of the particular JDBC Connection Pool and its
+     * associated properties.
+     * @param pool JDBC Connection Pool
+     */
+    private void addListenerToProperties(Object instance) {
+        List<Property> properties = null;
+        if (instance instanceof JdbcConnectionPool) {
+            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
+            properties = pool.getProperty();
+            for (Property prop : properties) {
+                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
+                holder.setPropertyBean(propertyBean);
+                holder.setResource(pool);
+                holder.addListener();
+            }
+        } else if(instance instanceof ConnectorConnectionPool) {
+            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
+            properties = pool.getProperty();
+            for (Property prop : properties) {
+                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
+                holder.setPropertyBean(propertyBean);
+                holder.setResource(pool);
+                holder.addListener();
+            }
+        }
+    }
+
+     /**
+     * Remove listener from properties of the particular JDBC Connection Pool.
+     * @param pool JDBC Connection Pool
+     */
+    private void removeListenerFromProperties(Object instance) {
+        List<Property> properties = null;
+        if (instance instanceof JdbcConnectionPool) {
+            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
+            properties = pool.getProperty();
+            for (Property prop : properties) {
+                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
+                holder.setPropertyBean(propertyBean);
+                holder.setResource(pool);
+                holder.removeListener();
+            }
+        } else if (instance instanceof ConnectorConnectionPool) {
+            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
+            properties = pool.getProperty();
+            for (Property prop : properties) {
+                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
+                holder.setPropertyBean(propertyBean);
+                holder.setResource(pool);
+                holder.removeListener();
+            }            
+        }
+    }
+
+    /**
+     * Remove listener from a generic resource (JDBC Connection Pool/Connector 
+     * Connection Pool/JDBC resource/Connector resource)
+     * Used in the case of delete asadmin command
+     * @param object of the deleted instance
+     */
+    private void removeListenerFromResource(Object instance) {
+        ObservableBean observableBean = null;
+	if(instance instanceof JdbcConnectionPool){
+            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
+  	    observableBean = (ObservableBean) ConfigSupport.getImpl(pool);
+	    observableBean.removeListener(this);
+        } else if(instance instanceof JdbcResource){
+            JdbcResource resource = (JdbcResource) instance;
+  	    observableBean = (ObservableBean) ConfigSupport.getImpl(resource);
+	    observableBean.removeListener(this);
+        } else if(instance instanceof ConnectorConnectionPool){
+            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
+  	    observableBean = (ObservableBean) ConfigSupport.getImpl(pool);
+	    observableBean.removeListener(this);
+        } else if(instance instanceof ConnectorResource){
+            ConnectorResource resource = (ConnectorResource) instance;
+  	    observableBean = (ObservableBean) ConfigSupport.getImpl(resource);
+	    observableBean.removeListener(this);
+        }
+        removeListenerFromProperties(instance);
+
+    }
+
+    /**
+     * Remove listener from all resources - JDBC Connection Pools/JDBC Resources/
+     * Connector Connection Pools/ Connector Resources.
+     * Invoked from preDestroy()
+     */
+    private void removeListenerFromResources() {
+        for (Resource configuredResource : allResources.getResources()) {
+            removeListenerFromResource(configuredResource);
+        }
     }
 }
