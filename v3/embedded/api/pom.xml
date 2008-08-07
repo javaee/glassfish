@@ -52,6 +52,15 @@
     <defaultGoal>install</defaultGoal>
     <plugins>
 
+        
+    <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-surefire-plugin</artifactId>
+       <configuration>
+         <forkMode>never</forkMode>
+         <argLine>-enableassertions</argLine>
+       </configuration>
+     </plugin>         
 
 
       <plugin>
