@@ -25,6 +25,12 @@
 		  <url>http://www.mvnrepository.com/archive</url>
 		</repository>
 		
+		<repository>
+			<id>jline</id>
+			<name>JLine Project Repository</name>
+			<url>http://jline.sourceforge.net/m2repo</url>
+		</repository>
+		
 	</repositories>
       
   <build>
@@ -61,9 +67,17 @@
         <management-api.version>1.1-rev-1</management-api.version>  
         <amx-api.version>10.0-SNAPSHOT</amx-api.version>      
     </properties>
-
+	
 
   <dependencies>
+	
+	<dependency>
+	<!-- http://jline.sourceforge.net/ -->
+		<groupId>jline</groupId>
+		<artifactId>jline</artifactId>
+		<version>0.9.9</version>
+	</dependency>
+	
 <!-- is there any repository which has this? 
 mvn install:install-file -DgroupId=javax.management -DartifactId=jmxremote_optional -Dversion=1.0.1_04 -Dpackaging=jar -Dfile=jmxremote_optional.jar
 -->
@@ -73,7 +87,6 @@ mvn install:install-file -DgroupId=javax.management -DartifactId=jmxremote_optio
 	    <version>1.0.1_04</version>
 		<scope>provided</scope>
 	</dependency>
-
         
 	<dependency>
 		<groupId>org.glassfish.common</groupId>
@@ -89,11 +102,20 @@ mvn install:install-file -DgroupId=javax.management -DartifactId=jmxremote_optio
     </dependency>
 	
 	<dependency>
-                <groupId>org.glassfish</groupId>
+        <groupId>org.glassfish</groupId>
 		<artifactId>javax.management.j2ee</artifactId>
 		<version>${project.version}</version>
 		<scope>provided</scope>
 	</dependency>
+
+<!--
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.javaee</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+-->
 
   </dependencies>
   
