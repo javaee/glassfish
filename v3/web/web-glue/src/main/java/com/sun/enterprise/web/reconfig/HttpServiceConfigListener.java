@@ -70,19 +70,22 @@ public class HttpServiceConfigListener implements ConfigListener {
     @Inject(optional=true)
     public AccessLog accessLog;
     
-    @Inject
+    @Inject(optional=true)
     public ConnectionPool connectionPool;
     
-    @Inject
+    @Inject(optional=true)
     public HttpFileCache httpFileCache;
     
-    @Inject 
+    @Inject(optional=true)
     public HttpProtocol httpProtocol;
     
-    @Inject
+    @Inject(optional=true)
     public KeepAlive keepAlive;
     
-    @Inject
+    @Inject(optional=true)
+    public Property property;
+    
+    @Inject(optional=true)
     public RequestProcessing requestProcessing;
  
     private WebContainer container;
