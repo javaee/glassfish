@@ -48,7 +48,7 @@ import java.util.concurrent.CountDownLatch;
     threaded environment.
     <p>
     Providers of features can register the availability (initializated and ready-to-use)
-    of a particular feature, upon which other code depends.  See {@link #addFeature}.
+    of a particular feature, upon which other code depends.  See {@link #registerFeature}.
     <p>
     Code that requires an initialized and ready-to-use feature should call
     {@link #waitForFeature}--the calling thread will block until that feature is available.
@@ -183,7 +183,7 @@ public final class FeatureAvailability
     
     /**
         Register a named feature as being ready for use.  The data value can be a
-        dummy value, or can be something useful to the caller of {@link #waitForFeature}.
+        dummy value, or can be something useful to the caller of waitForFeature().
         <p>
         <b>Do not register a feature until its facilities are ready for use</b>.
         <p>
@@ -192,7 +192,7 @@ public final class FeatureAvailability
         the presence of one of those things should arrange for a name feature for that. Examples
         of this include the MBeanServer, the AdminContext, com.sun.appserv:category=config MBeans,
         etc.
-        @param featureName  arbitrary name for the feature, to be used by clients in {@link waitForFeature}
+        @param featureName  arbitrary name for the feature, to be used by clients in {@link #waitForFeature}
         @param data         arbitrary data of possible interest to clients
      */
          public synchronized void

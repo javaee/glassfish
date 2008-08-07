@@ -200,7 +200,7 @@ public abstract class  RunnableBase<T> implements Runnable
         The task is still executed in its own thread, so as to produce the same
         runtime environment that would be used for asynchronous execution (eg thread-local
         variables).
-        @param waitTillDone if true, the method executes synchronously
+        @param howToRun
      */
         public void
     submit( final HowToRun howToRun )
