@@ -151,7 +151,7 @@ public class TestResultServlet extends HttpServlet {
 
 
                 //Run SimpleXADS test
-            Map<String, Boolean> mapXADStest =
+          /*   Map<String, Boolean> mapXADStest =
                 testXA.runTest(dsXA, out);
                 for (Map.Entry entry : mapXADStest.entrySet()) {
                 buf.append("<tr> <td>");
@@ -160,7 +160,7 @@ public class TestResultServlet extends HttpServlet {
                 buf.append("<td>");
                 buf.append(entry.getValue());
                 buf.append("</td></tr>");
-                }  
+                }   */
 
                 //Run other tests
                 for (SimpleTest test : testsOther) {
@@ -185,7 +185,7 @@ public class TestResultServlet extends HttpServlet {
                     buf.append("<td>");
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");
-                }
+                } 
             }
 
             //Always Run Lazy Connection Association Test as last test
