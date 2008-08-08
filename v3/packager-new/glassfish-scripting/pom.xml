@@ -72,7 +72,10 @@
                             <outputDirectory>${project.build.directory}/stage/glassfishv3-prelude/glassfish/modules</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
-                            <excludeTransitive>true</excludeTransitive>
+                            <excludeTransitive>false</excludeTransitive>
+                            <excludeArtifactIds>grizzly-module,glassfish-api,stax-api,wstx-asl</excludeArtifactIds>
+                            <excludeTypes>pom</excludeTypes>
+                            <excludeGroupIds>com.sun.enterprise</excludeGroupIds>
                             <includeScope>compile</includeScope>
                             <includeScope>runtime</includeScope>
                         </configuration>
@@ -88,14 +91,10 @@
           modules to be included in this bundle
         -->       
         <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-jruby-module</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>gf-jruby-connector</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.scripting</groupId>
+            <artifactId>jruby-all</artifactId>
+            <version>${jruby-scripting.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>
