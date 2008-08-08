@@ -63,13 +63,15 @@ public class TestRunner implements ModuleStartup {
         this.context = context;
     }
 
-    public void run() {
+    public void start() {
         File reportDir = null;
         if(context.getArguments().containsKey("-r"))
             reportDir = new File(context.getArguments().get("-r"));
 
         runTests(reportDir);
     }
+
+    public void stop() {}
 
     /**
      * Runs all the tests and returns the result.

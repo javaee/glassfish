@@ -631,4 +631,9 @@ public final class ModuleImpl implements Module {
         }
     }
 
+    public void uninstall() {
+        // Not Applicable in HK2 as there is no persistent module cache
+        // implemented in HK2 yet.
+    }
+
 }

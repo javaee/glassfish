@@ -76,7 +76,7 @@ public class Main extends Assert implements ModuleStartup {
     public void setStartupContext(StartupContext context) {
     }
 
-    public void run() {
+    public void start() {
         assertNotNull(foo);
         // foo.e.printStackTrace(); // could be useful to find out where foo is created.
         assertEquals(80,foo.httpPort);
@@ -215,6 +215,7 @@ Caused by: java.lang.ClassCastException: com.sun.xml.stream.ZephyrWriterFactory
 
         testJmsCompanion();
     }
+    public void stop(){}
 
     private void testJmsCompanion() {
         JmsHost jms = find(foo.all, JmsHost.class);

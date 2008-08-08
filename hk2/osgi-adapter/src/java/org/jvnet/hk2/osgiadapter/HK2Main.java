@@ -95,6 +95,12 @@ public class HK2Main extends Main implements
      */
     private File contextRootDir;
 
+    /**
+     * The startup module service.
+     * e.g., GlassFish Kernel's AppServerStartup instance
+     */
+    private ModuleStartup moduleStartup;
+
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
         logger.logp(Level.FINE, "HK2Main", "run",
@@ -113,7 +119,7 @@ public class HK2Main extends Main implements
         mr = createModulesRegistry();
         Habitat habitat = createHabitat(mr, startupContext);
         createServiceTracker(habitat);
-        launch(mr,habitat,null,startupContext);
+        moduleStartup = launch(mr,habitat,null,startupContext);
     }
 
     protected ModulesRegistry createModulesRegistry() {
@@ -146,7 +152,10 @@ public class HK2Main extends Main implements
     private Collection<? extends Repository> createRepositories() {
         List<Repository> reps = new ArrayList<Repository>();
 
-        Repository rep = new OSGiDirectoryBasedRepository(repName, contextRootDir);
+        Repository rep = new OSGiDirectoryBasedRepository(
+                repName,
+                contextRootDir,
+                true); // spawn daemon threads as listeners
         try {
             rep.initialize();
             reps.add(rep);
@@ -179,18 +188,6 @@ public class HK2Main extends Main implements
             }
         }
         // add a listener for each repository
-        // There is an interesting (and necessary) side effect of adding a
-        // RespositoryChangeListener when this is done in GlassFish environment.
-        // It is described below:
-        // These repositories are configured such that when we add a listener,
-        // there is a corresponding non-daemon timer thread spawned. These non-daemon timer
-        // threads are the only non-daemon threads in GlassFish. They are stopped
-        // when the repositories are shutdown, which happens either
-        // when this bundle is stopped or when the ModulesRegistry.shutdown is called.
-        // If we don't attach these listeners, GlassFish process would just exit
-        // as soon as the OSGi framework is started because of absence of any
-        // non-daemon threads. There should really be a non-daemon thread in GlassFish
-        // which is stopped when stop-domain is issued.
         for (Repository repo : reps) {
             repo.addListener(new RepositoryChangeListener() {
 
@@ -216,6 +213,8 @@ public class HK2Main extends Main implements
     }
 
     public void stop(BundleContext context) throws Exception {
+        // Execute code in reverse order w.r.t. start()
+        moduleStartup.stop();
         if(mr!=null) {
             mr.shutdown();
         }

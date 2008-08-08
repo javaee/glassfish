@@ -48,6 +48,8 @@ import com.sun.hk2.component.InhabitantsParser;
 import java.io.IOException;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Manifest;
 import java.util.logging.*;
 import java.net.URL;
@@ -71,6 +73,13 @@ public class OSGiModulesRegistryImpl
             new HashMap<ModuleChangeListener, BundleListener>();
     private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
             new HashMap<ModuleLifecycleListener, BundleListener>();
+    /**
+     * Map of module name to modules that were installed prior to
+     * ModulesRegistry came into existence. This can happen because some
+     * modules are auto-installed by OSGi framework. One such framework
+     * is our osgi-adapter module itself.
+     */
+    private final ConcurrentMap<String,Module> preInstalledModules = new ConcurrentHashMap<String,Module>();
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -82,8 +91,8 @@ public class OSGiModulesRegistryImpl
             }
             ModuleDefinition md;
             try {
-                md = new DummyModuleDefinition(b);
-            } catch (URISyntaxException e) {
+                md = new OSGiModuleDefinition(b);
+            } catch (Exception e) {
                 logger.logp(Level.WARNING, "OSGiModulesRegistryImpl",
                         "OSGiModulesRegistryImpl",
                         "Not able convert bundle [{0}] having location [{1}] " +
@@ -93,6 +102,7 @@ public class OSGiModulesRegistryImpl
             }
             Module m = new OSGiModuleImpl(this, b, md);
             modules.put(md.getName(), m);
+            preInstalledModules.put(md.getName(), m);
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
         pa = PackageAdmin.class.cast(bctx.getService(ref));
@@ -138,9 +148,14 @@ public class OSGiModulesRegistryImpl
 
     public synchronized void shutdown() {
         for (Module m : modules.values()) {
-            OSGiModuleImpl.class.cast(m).uninstall();
+            // Only stop modules that were started after ModulesRegistry
+            // came into existence.
+            if (!preInstalledModules.containsKey(m.getName())) {
+                 m.stop();
+            }
         }
         modules.clear();
+        preInstalledModules.clear();
 
         for (Repository repo : repositories.values()) {
             try {

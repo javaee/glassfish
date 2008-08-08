@@ -210,4 +210,5 @@ public interface Module {
 
     void dumpState(PrintStream writer);
 
+    void uninstall();
 }

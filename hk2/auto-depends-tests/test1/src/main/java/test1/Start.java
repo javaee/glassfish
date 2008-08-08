@@ -60,7 +60,7 @@ public class Start extends Assert implements ModuleStartup {
         this.context = context;
     }
 
-    public void run() {
+    public void start() {
         assertNotNull(context);
         assertNotNull(habitat);
         assertTrue(tests.length!=0);
@@ -70,4 +70,5 @@ public class Start extends Assert implements ModuleStartup {
             test.run();
         }
     }
+    public void stop(){}
 }
