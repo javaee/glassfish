@@ -75,7 +75,7 @@
                             >
                             <!command
                                 if ("#{advance.lazyConnectionAssociation}") {
-                                    setValueExpression(keyObjectName="advance.lazyConnectionEnlistment", hasBoolean="#{true}", objectValue="true");
+                                    setValueExpression(expression="#{advance.lazyConnectionEnlistment}", value="#{true}");
                                 } 
                                 prepareSuccessfulMsg();
                                 savePoolAdvanceInfo(
@@ -120,7 +120,7 @@
                             >
                             <!command                           
                                 if ("#{advance.lazyConnectionAssociation}") {
-                                    setValueExpression(keyObjectName="advance.lazyConnectionEnlistment", hasBoolean="#{true}", objectValue="true");
+                                    setValueExpression(expression="#{advance.lazyConnectionEnlistment}", value="#{true}");
                                 } 
                                 prepareSuccessfulMsg(); 
                                 savePoolAdvanceInfo(
