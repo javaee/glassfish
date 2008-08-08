@@ -37,27 +37,16 @@
 package org.jvnet.hk2.config;
 
 /**
- * Objects that do not wish to process the entire change set of a transaction can
- * implement this interface and use it to invoke utility methods on ConfigSupport.
+ * An explanation of a change could not be processed.
+ * Generally, 'null' means a change was processed, so create this class only
+ * if a change could not be processed.
  *
- * @author Jerome Dochez
+ * @author Lloyd Chambers
  */
-public interface Changed {
-
-    /**
-     * type of change on a particular instance
-     */
-    public static enum TYPE { ADD, REMOVE, CHANGE };
-
-    /**
-     * Notification of a change on a configuration object
-     *
-     * @param type type of change : ADD mean the changedInstance was added to the parent
-     * REMOVE means the changedInstance was removed from the parent, CHANGE means the
-     * changedInstance has mutated.
-     * @param changedType type of the configuration object
-     * @param changedInstance changed instance.
-     */
-    public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance);
-        
+public final class NotProcessed {
+    private final String mReason;
+    public NotProcessed( final String reason ) {
+        mReason = reason == null ?  "unspecified" : reason;
+    }
+    public String getReason() { return mReason; }
 }

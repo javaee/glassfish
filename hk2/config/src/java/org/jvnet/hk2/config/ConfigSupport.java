@@ -262,9 +262,8 @@ public class ConfigSupport {
      * @param target the intended receiver of the changes notification
      * @param logger to log any issues.
      */
-    public static void sortAndDispatch(PropertyChangeEvent[] events, Changed target, Logger logger) {
-
-        List<PropertyChangeEvent> unprocessed = new ArrayList<PropertyChangeEvent>();
+    public static UnprocessedChangeEvents sortAndDispatch(PropertyChangeEvent[] events, Changed target, Logger logger) {
+        List<UnprocessedChangeEvent> unprocessed = new ArrayList<UnprocessedChangeEvent>();
         List<Dom> added = new ArrayList<Dom>();
         List<Dom> changed = new ArrayList<Dom>();
 
@@ -275,7 +274,10 @@ public class ConfigSupport {
                 try {
                     final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getNewValue());
                     added.add(Dom.unwrap(proxy));
-                    target.changed(Changed.TYPE.ADD, proxyType(proxy), proxy);
+                    final NotProcessed nc = target.changed(Changed.TYPE.ADD, proxyType(proxy), proxy);
+                    if ( nc != null ) {
+                        unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
+                    }
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "Exception while processing config bean changes : ", e);
                 }
@@ -292,18 +294,26 @@ public class ConfigSupport {
                 }
                 if (event.getNewValue()==null) {
                     final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getOldValue());
-                    target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
+                    final NotProcessed nc = target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
+                    if ( nc != null ) {
+                        unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
+                    }
                 } else {
                     if (!changed.contains(eventSource)) {
                         final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getSource());
                         changed.add(eventSource);
-                        target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
+                        final NotProcessed nc = target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
+                        if ( nc != null ) {
+                            unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
+                        }
                     }
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Exception while processing config bean changes : ", e);
             }
         }
+        
+        return new UnprocessedChangeEvents( unprocessed );
     }
 
     // kind of insane, just to get the proper return type for my properties.

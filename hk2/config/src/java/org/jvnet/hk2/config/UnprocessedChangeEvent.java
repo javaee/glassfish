@@ -36,28 +36,34 @@
  */
 package org.jvnet.hk2.config;
 
+import java.beans.PropertyChangeEvent;
+
 /**
- * Objects that do not wish to process the entire change set of a transaction can
- * implement this interface and use it to invoke utility methods on ConfigSupport.
- *
- * @author Jerome Dochez
+    Carries the PropertyChangeEvent and the reason it could not be processed.
  */
-public interface Changed {
+public final class UnprocessedChangeEvent {
+    final PropertyChangeEvent mEvent;
+    final String              mReason;
+    final long                mWhen;
 
-    /**
-     * type of change on a particular instance
-     */
-    public static enum TYPE { ADD, REMOVE, CHANGE };
-
-    /**
-     * Notification of a change on a configuration object
-     *
-     * @param type type of change : ADD mean the changedInstance was added to the parent
-     * REMOVE means the changedInstance was removed from the parent, CHANGE means the
-     * changedInstance has mutated.
-     * @param changedType type of the configuration object
-     * @param changedInstance changed instance.
-     */
-    public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance);
-        
+    public UnprocessedChangeEvent(final PropertyChangeEvent event, final String reason ) {
+        mEvent  = event;
+        mReason = reason;
+        mWhen = System.currentTimeMillis();
+    }
+    public String getReason()             { return mReason; }
+    public PropertyChangeEvent getEvent() { return mEvent; }
+    public long getWhen()                 { return mWhen; }
+    
+    
+    private static String toString( final PropertyChangeEvent e ) {
+        return "PropertyName=" + e.getPropertyName() + ", OldValue = " + e.getOldValue() +
+            ", NewValue = " + e.getNewValue() + ", Source = " + e.getSource();
+    }
+    
+    public String toString() {
+        return "UnprocessedChangeEvent{" + toString(mEvent) +
+                "}, reason = " + mReason +
+                ", when = " + getWhen(); 
+    }
 }
