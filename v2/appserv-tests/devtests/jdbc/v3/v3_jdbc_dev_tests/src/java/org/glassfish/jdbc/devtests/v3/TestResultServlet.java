@@ -34,9 +34,8 @@ public class TestResultServlet extends HttpServlet {
     DataSource dsAssocWithThread;
     @Resource(name = "jdbc/jdbc-lazy-assoc-resource", mappedName = "jdbc/jdbc-lazy-assoc-test-resource")
     DataSource dsLazyAssoc;
-
-    /*@Resource(name="jdbc/__default")
-    DataSource dsXA; */
+    @Resource(name="jdbc/jdbc-simple-xa-test-resource-1", mappedName="jdbc/jdbc-simple-xa-test-resource-1")
+    DataSource dsXA; 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -78,7 +77,7 @@ public class TestResultServlet extends HttpServlet {
             testMaxConnUsage = loadMaxConnUsageTest();
             testConnLeakTracing = loadConnLeakTracingTest();
             testAssocWithThread = loadAssocWithThreadTest();
-            //testXA = loadSimpleXATest();
+            testXA = loadSimpleXATest();
             testsOther = initializeTests();
             testLazyAssoc = loadLazyAssocTest();
         } catch (Exception e) {
@@ -152,7 +151,7 @@ public class TestResultServlet extends HttpServlet {
 
 
                 //Run SimpleXADS test
-          /*  Map<String, Boolean> mapXADStest =
+            Map<String, Boolean> mapXADStest =
                 testXA.runTest(dsXA, out);
                 for (Map.Entry entry : mapXADStest.entrySet()) {
                 buf.append("<tr> <td>");
@@ -161,9 +160,7 @@ public class TestResultServlet extends HttpServlet {
                 buf.append("<td>");
                 buf.append(entry.getValue());
                 buf.append("</td></tr>");
-                }  */
-
-
+                }  
 
                 //Run other tests
                 for (SimpleTest test : testsOther) {

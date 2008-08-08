@@ -13,7 +13,9 @@ bin/asadmin delete-jdbc-resource jdbc/jdbc-stmt-timeout-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-max-conn-usage-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-conn-leak-tracing-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-associate-with-thread-test-resource
-bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource
+#bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource
+bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource-1
+bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource-2
 bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-assoc-test-resource
 echo "\n"
 sleep 1
@@ -28,8 +30,10 @@ bin/asadmin delete-jdbc-connection-pool jdbc-statement-timeout-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-max-conn-usage-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-conn-leak-tracing-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-associate-with-thread-test-pool
-bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool
+#bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-lazy-assoc-test-pool
+bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-1
+bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-2
 echo "\n"
 
 echo Deleting files...

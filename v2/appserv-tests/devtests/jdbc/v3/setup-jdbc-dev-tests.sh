@@ -74,10 +74,16 @@ bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-lazy-assoc-test-pool jd
 echo "\n"
 
 
-#Create Pool/Resource for Simple XA Test
-echo Creating Pool/Resource Simple XA Test
-bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedXADataSource --restype=javax.sql.XADataSource  --associatewiththread=false --property="password=APP1:user=APP1:databaseName=xa-test:connectionAttributes=\;create\\=true" jdbc-simple-xa-test-pool
-bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-simple-xa-test-pool jdbc/jdbc-simple-xa-test-resource
+#Create Pool/Resource (1) for Simple XA Test
+echo "Creating Pool/Resource (1) Simple XA Test"
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedXADataSource --restype=javax.sql.XADataSource  --associatewiththread=false --property="password=APP1:user=APP1:databaseName=xa-test-1:connectionAttributes=\;create\\=true" jdbc-simple-xa-test-pool-1
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-simple-xa-test-pool-1 jdbc/jdbc-simple-xa-test-resource-1
+echo "\n"
+
+#Create Pool/Resource (2)  for Simple XA Test
+echo "Creating Pool/Resource (2) Simple XA Test"
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --property="password=APP1:user=APP1:databaseName=xa-test-2:connectionAttributes=\;create\\=true" jdbc-simple-xa-test-pool-2
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-simple-xa-test-pool-2 jdbc/jdbc-simple-xa-test-resource-2
 echo "\n"
 
 

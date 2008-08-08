@@ -28,12 +28,12 @@ public class SimpleXATest implements SimpleTest  {
     public Map<String, Boolean> runTest(DataSource ds, PrintWriter out) {
     try {
             if (testXA(ds, out)) {
-                resultsMap.put("app-auth-no-credentials", true);
+                resultsMap.put("simple-xa-test", true);
             }else{
-                resultsMap.put("app-auth-no-credentials", false);
+                resultsMap.put("simple-xa-test", false);
             }
         } catch (Exception e) {
-            resultsMap.put("app-auth-no-credentials", false);
+            resultsMap.put("simple-xa-test", false);
         }
     
     return resultsMap;
@@ -55,13 +55,13 @@ public class SimpleXATest implements SimpleTest  {
         
         try{
         InitialContext ic = new InitialContext();
-        callFlowDS = (DataSource)ic.lookup("jdbc/__default");
+        callFlowDS = (DataSource)ic.lookup("jdbc/jdbc-simple-xa-test-resource-2");
         
         
         String columnName = "xa_ds_col";
         
-        //TablesUtil.createTables(ds,out, tableName1, columnName);
-        //TablesUtil.createTables(callFlowDS,out, tableName2, columnName);
+        TablesUtil.createTables(ds,out, tableName1, columnName);
+        TablesUtil.createTables(callFlowDS,out, tableName2, columnName);
         
         con1 = ds.getConnection();
         con2 = callFlowDS.getConnection();
@@ -75,16 +75,18 @@ public class SimpleXATest implements SimpleTest  {
         uTx.begin();
         
         
-        //TablesUtil.insertEntry(ds, out, tableName1, "entry1");
-        //TablesUtil.insertEntry(callFlowDS, out, tableName2, "entry1");
-        
-        stmt1 = con1.createStatement();
+        TablesUtil.insertEntry(ds, out, tableName1, "entry1");
+        TablesUtil.insertEntry(callFlowDS, out, tableName2, "entry1");
+        out.println("inserted entries <br>") ;
+
+  /*      stmt1 = con1.createStatement();
         stmt2 = con2.createStatement();
         
         
         stmt1.executeQuery("select * from sys.systables");
         stmt2.executeQuery("select * from sys.systables");
-        out.println("got both the resultsets") ;
+        out.println("got both the resultsets<br>") ; */
+
         uTx.commit();
         out.println("able to commit") ;
         
@@ -124,10 +126,10 @@ public class SimpleXATest implements SimpleTest  {
             }
 
             
-/*            if(ds != null)
+            if(ds != null)
                 TablesUtil.deleteTables(ds, out, tableName1);
             if(callFlowDS != null)
-                TablesUtil.deleteTables(callFlowDS, out, tableName2); */
+                TablesUtil.deleteTables(callFlowDS, out, tableName2); 
         }
         return true;
     }
