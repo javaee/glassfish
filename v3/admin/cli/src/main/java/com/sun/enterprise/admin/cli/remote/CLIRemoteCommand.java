@@ -465,7 +465,9 @@ public class CLIRemoteCommand {
         // not a deployment command -- get outta here!
         if(!isDeployment())
             return;
+
         // it IS a deployment command.  That means we MUST have a valid path
+        // with the exception of redeploy command with a directory deployment
         String filename;
         
         // operand takes precedence over param
@@ -478,6 +480,11 @@ public class CLIRemoteCommand {
             params.remove("path");
         }
         
+        // the path could be optional for redeploy command
+        if (commandName.equals("redeploy") && filename == null) {
+            return;
+        }
+
         if(!ok(filename))
             throw new CommandException(strings.get("noDeployFile", commandName));
         
@@ -562,7 +569,8 @@ public class CLIRemoteCommand {
     }
 
     private boolean isDeployment() {
-        return commandName.equals("deploy") || commandName.equals("redeploy");
+        return commandName.equals("deploy") || commandName.equals("redeploy") 
+            || commandName.equals("deploydir");
     }
 
     private boolean isDirDeployment() {

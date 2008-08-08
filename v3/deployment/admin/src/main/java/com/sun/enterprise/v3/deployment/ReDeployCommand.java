@@ -80,7 +80,15 @@ public class ReDeployCommand extends ApplicationLifecycle implements AdminComman
         Properties deployParam = new Properties(context.getCommandParameters());
         deployParam.put("force", Boolean.TRUE.toString());
         deployParam.put("path", path);
-        commandRunner.doCommand("deploy", deployParam, report);
+
+        if (context.getUploadedFiles().size() >= 1) {
+            // in case of uploading files, pass the uploaded files 
+            // to the admin context for deploy command
+            commandRunner.doCommand("deploy", deployParam, report, 
+                context.getUploadedFiles());
+        } else {
+            commandRunner.doCommand("deploy", deployParam, report); 
+        }
     }
 
         /**
