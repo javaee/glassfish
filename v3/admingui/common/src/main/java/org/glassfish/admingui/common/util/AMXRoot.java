@@ -67,6 +67,7 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.config.WebModuleConfig;
+import com.sun.appserv.management.ext.realm.RealmsMgr;
 import com.sun.appserv.management.ext.wsmgmt.WebServiceEndpointInfo;
 import com.sun.appserv.management.ext.wsmgmt.WebServiceMgr;
 import com.sun.appserv.management.j2ee.J2EEDomain;
@@ -117,6 +118,7 @@ public class AMXRoot {
     private  final ResourcesConfig resourcesConfig;
     private  final ServersConfig serversConfig;
     private  final ClustersConfig clustersConfig;
+    private  final RealmsMgr realmsMgr;
     //private  final LBConfigHelper lbConfigHelper;
 
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
@@ -134,6 +136,7 @@ public class AMXRoot {
         applicationsConfig = domainConfig.getApplicationsConfig();
         serversConfig = domainConfig.getServersConfig();
         clustersConfig = domainConfig.getClustersConfig();
+        realmsMgr = domainRoot.getRealmsMgr();
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
 
@@ -240,6 +243,10 @@ public class AMXRoot {
 
     public  QueryMgr getQueryMgr() {
         return queryMgr;
+    }
+    
+    public  RealmsMgr getRealmsMgr() {
+        return realmsMgr;
     }
 
     public  UploadDownloadMgr getUploadDownloadMgr() {
