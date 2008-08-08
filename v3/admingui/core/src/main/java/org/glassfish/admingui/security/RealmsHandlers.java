@@ -111,18 +111,18 @@ public class RealmsHandlers {
         @HandlerOutput(name="properties", type=Map.class)})
     public static void getRealmAttrForCreate(HandlerContext handlerCtx) {
         
+        handlerCtx.setOutputValue("realmClasses", realmClassList);
+        handlerCtx.setOutputValue("classnameOption", "predefine");
         Map attrMap = new HashMap();
+        /*
         attrMap.put("fileJaax", "fileRealm");
         attrMap.put("ldapJaax", "ldapRealm" );
         attrMap.put("solarisJaax", "solarisRealm");
         attrMap.put("jdbcJaax", "jdbcRealm");
-        
         attrMap.put("classname", FILE_REALM_CLASS );
+         */
         attrMap.put("predefinedClassname", Boolean.TRUE);
-        
         handlerCtx.setOutputValue("attrMap", attrMap);
-        handlerCtx.setOutputValue("classnameOption", "predefine");
-        handlerCtx.setOutputValue("realmClasses", realmClassList);
         handlerCtx.setOutputValue("properties", new HashMap());
     }
     
@@ -379,36 +379,17 @@ public class RealmsHandlers {
           GuiUtil.handleException(handlerCtx, ex);
       }
     }
-   
-   
-   /**
-    * Returns names of predefined AuthRealms' classes supported by security service.
-    * @returns array of predefind AuthRealms' classes
-    *
-    */
-   private static  String[] getPredefinedAuthRealmClassNames()
-   {
-       //!!!!!!!!!!!! (hardcoded for now until ss will implement backemnd support)
-       return new String[]{
-           "com.sun.enterprise.security.auth.realm.file.FileRealm",
-           "com.sun.enterprise.security.auth.realm.certificate.CertificateRealm",
-           "com.sun.enterprise.security.auth.realm.ldap.LDAPRealm",
-           "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm",
-           "com.sun.enterprise.security.auth.realm.solaris.SolarisRealm"
-       };
-   } 
-   
     
     final private static String FILE_REALM_CLASS = "com.sun.enterprise.security.auth.realm.file.FileRealm";
     private static List skipRealmPropsList = new ArrayList();
     private static List realmClassList;
     static {
-        String[] classnames = getPredefinedAuthRealmClassNames();
+        String[] classnames = AMXRoot.getInstance().getRealmsMgr().getPredefinedAuthRealmClassNames();
         realmClassList = new ArrayList();
+        realmClassList.add("");
         for(int i=0; i< classnames.length; i++){
             realmClassList.add(classnames[i]);
         }
-        
         skipRealmPropsList.add("jaas-context");
         skipRealmPropsList.add("file");
         skipRealmPropsList.add("assign-groups");

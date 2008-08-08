@@ -55,11 +55,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Enumeration;
 
-import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.RealmsManager;
 
+import org.glassfish.admingui.common.util.AMXRoot;
+import com.sun.appserv.management.ext.realm.RealmsMgr;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -127,14 +126,14 @@ public class FileUserHandler {
 
         public static void saveUser(HandlerContext handlerCtx) {
         try{
-            String realmName = (String) handlerCtx.getInputValue("Realm");
             
-            Realm realm = getRealm(realmName);
+            RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+            String realmName = (String) handlerCtx.getInputValue("Realm");
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
             String[] groups = GuiUtil.stringToArray(grouplist, ",");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
-            realm.updateUser(userid, userid, password, groups);
+            realmsMgr.updateUser(realmName, userid, userid, password, groups);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -154,12 +153,13 @@ public class FileUserHandler {
 
         public static void addUser(HandlerContext handlerCtx) {
         try{
-            Realm realm = getRealm((String)handlerCtx.getInputValue("Realm"));
+            RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+            String realmName = (String)handlerCtx.getInputValue("Realm");
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
             String[] groups = GuiUtil.stringToArray(grouplist, ",");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
-            realm.addUser(userid, password, groups);
+            realmsMgr.addUser(realmName, userid, password, groups);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -201,13 +201,14 @@ public class FileUserHandler {
         String realmName = (String) handlerCtx.getInputValue("Realm");
         List result = new ArrayList();
         try{
-            List<String> users = getUserNames(realmName);
-            if(users != null) {
+            RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+            String[] userNames = realmsMgr.getUserNames(realmName);
+            if(userNames != null) {
                 Map<String, Object> map = null;
-                for (String userName : users) {
+                for (int i=0; i< userNames.length; i++) {
                     map = new HashMap<String, Object>();
-                    map.put("users", userName);
-                    map.put("groups", getGroupNames( realmName, userName));
+                    map.put("users", userNames[i]);
+                    map.put("groups", getGroupNames( realmName, userNames[i]));
                     map.put("selected", false);
                     result.add(map);
                 }
@@ -232,14 +233,14 @@ public class FileUserHandler {
      )
      public static void removeUser(HandlerContext handlerCtx){
         
+        RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
         String realmName = (String) handlerCtx.getInputValue("Realm");
-        Realm realm = getRealm(realmName);
         try{
             List obj = (List) handlerCtx.getInputValue("selectedRows");
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
-                realm.removeUser(user);
+                realmsMgr.removeUser(realmName,user);
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -260,41 +261,18 @@ public class FileUserHandler {
      public static void hasManageUserButton(HandlerContext handlerCtx){
         
         String realmName = (String) handlerCtx.getInputValue("realmName");
-        Realm realm = getRealm(realmName);
-        handlerCtx.setOutputValue("result", realm.supportsUserManagement());
-    }
-    
-    private static List<String> getUserNames(String realmName){
-        
-        List list = new ArrayList();
-        try {
-            Enumeration en = getRealm(realmName).getUserNames();
-            while(en.hasMoreElements()){
-                list.add(en.nextElement());
-            }
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-        return list;
+        RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+        handlerCtx.setOutputValue("result", realmsMgr.supportsUserManagement(realmName));
     }
     
     private static String getGroupNames(String realmName, String userName){
         try{
-            Enumeration en = getRealm(realmName).getGroupNames(userName);
-            String groups = "";
-            while(en.hasMoreElements()){
-                groups.concat(en.nextElement() + ",");
-            }
-            return (groups.length() > 0) ? groups.substring(0, groups.length()-1) : "";
+            RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+            return GuiUtil.arrayToString(realmsMgr.getGroupNames(realmName, userName), ",");
         }catch(Exception ex){
             ex.printStackTrace();
             return "";
         }
-    }
-    
-    private static Realm getRealm(String realmName){
-        RealmsManager mgr = GuiUtil.getHabitat().getComponent(RealmsManager.class);
-        return mgr.getFromLoadedRealms(realmName);
     }
            
 }
