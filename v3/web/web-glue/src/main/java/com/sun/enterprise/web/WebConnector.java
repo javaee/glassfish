@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.v3.services.impl.V3Mapper;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import org.apache.catalina.LifecycleException;
 import org.apache.commons.modeler.Registry;
@@ -91,6 +92,15 @@ public class WebConnector extends PECoyoteConnector {
         }
         grizzlyMonitor.destroy();
         // TODO: I think this class deserves an explanation of why it doesn't call super.start()/super.stop() - KK
+    }
+
+
+    @Override
+    public void initialize() throws LifecycleException {
+        super.initialize();
+        if (mapper != null) {
+            ((V3Mapper) mapper).setAdapter(getAdapter());
+        }
     }
     
 }

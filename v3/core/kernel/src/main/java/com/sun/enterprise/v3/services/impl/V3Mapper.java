@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,8 @@ import org.jvnet.hk2.annotations.Service;
 public class V3Mapper extends Mapper {
 
     private final Logger logger;
+
+    private Adapter adapter;
 
     
     public V3Mapper() {
@@ -104,4 +107,15 @@ public class V3Mapper extends Mapper {
             logger.fine("Faking removal of host: " + name);
         }
     }
+
+
+    public void setAdapter(Adapter adapter) {
+        this.adapter = adapter;
+    }
+
+
+    public Adapter getAdapter() {
+        return adapter;
+    }
+
 }

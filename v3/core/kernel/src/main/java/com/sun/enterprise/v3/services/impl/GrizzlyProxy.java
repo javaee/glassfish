@@ -124,7 +124,7 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
 
-        configureGrizzly(portNumber);
+        configureGrizzly();
     }
 
 
@@ -133,16 +133,16 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly(int port) {
+    private void configureGrizzly() {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);
 
         GrizzlyListenerConfigurator.configure(
-                grizzlyListener, httpService, httpListener, port,
+                grizzlyListener, httpService, httpListener, portNumber,
                 grizzlyService.getController(), isWebProfile);
         
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
         Mapper mapper = new V3Mapper(logger);
-        mapper.setPort(port);
+        mapper.setPort(portNumber);
         geh.getContainerMapper().setMapper(mapper);
         geh.getContainerMapper().configureMapper();
 
@@ -150,7 +150,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
         grizzlyService.getHabitat().addIndex(
             onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
-            String.valueOf(port));
+            String.valueOf(portNumber));
     }
 
 
@@ -163,7 +163,10 @@ public class GrizzlyProxy implements NetworkProxy {
 
 
     public void destroy() {
-        grizzlyService.getHabitat().remove(onePortMapper);
+        /*
+         * FIXME: Uncomment as soon as Habitat.removeIndex has been fixed
+         * grizzlyService.getHabitat().removeIndex("com.sun.grizzly.util.http.mapper.Mapper", String.valueOf(portNumber));
+         */
     }
 
 

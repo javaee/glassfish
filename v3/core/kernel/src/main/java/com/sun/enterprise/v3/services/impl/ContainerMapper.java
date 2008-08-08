@@ -58,7 +58,6 @@ public class ContainerMapper {
 
     private final static String ROOT = "/";
     private Mapper mapper;
-    private Adapter coyoteAdapter;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
     private Logger logger;
@@ -112,7 +111,6 @@ public class ContainerMapper {
          * MapperListener, in response to a JMX event
          */
         if (adapter.getClass().getName().equals("org.apache.catalina.connector.CoyoteAdapter")) {
-            coyoteAdapter = adapter;
             return;
         }
 
@@ -213,6 +211,7 @@ public class ContainerMapper {
 
         Adapter adapter = null;
         ContextRootInfo contextRootInfo = null;
+
         // First, let's see if the request is NOT for the CoyoteAdapter, but for
         // another adapter like grail/rail.
         if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
@@ -233,7 +232,7 @@ public class ContainerMapper {
             workerThread.getAttachment().setAttribute("mappingData", mappingData);
             workerThread.getAttachment().setAttribute("decodedURI", fullDecodedUri);
 
-            adapter = coyoteAdapter;
+            adapter = ((V3Mapper) mapper).getAdapter();
         }
         
         if (logger.isLoggable(Level.FINE)) {
