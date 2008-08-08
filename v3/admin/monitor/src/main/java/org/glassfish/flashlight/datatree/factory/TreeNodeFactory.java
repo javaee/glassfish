@@ -6,8 +6,10 @@
 package org.glassfish.flashlight.datatree.factory;
 import java.lang.reflect.Method;
 import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.datatree.impl.MethodInvoker;
+import org.glassfish.flashlight.datatree.MethodInvoker;
+import org.glassfish.flashlight.datatree.impl.MethodInvokerImpl;
 import org.glassfish.flashlight.datatree.impl.TreeNodeImpl;
+
 /**
  *
  * @author Harpreet Singh
@@ -24,7 +26,7 @@ public class TreeNodeFactory {
     public static TreeNode createMethodInvoker (String name, Object instance, 
             String category, Method m){
            
-        TreeNode tn = new MethodInvoker ();
+        TreeNode tn = new MethodInvokerImpl();
         tn.setName(name);
         ((MethodInvoker)tn).setInstance (instance);
         ((MethodInvoker)tn).setMethod (m);

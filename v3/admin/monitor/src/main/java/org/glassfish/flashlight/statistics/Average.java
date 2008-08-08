@@ -23,6 +23,8 @@ public interface Average extends TreeNode, RangeStatistic{
     
     public long getMax ();
 
+    public long getTotal ();
+
     @Override
     public String toString();    
     

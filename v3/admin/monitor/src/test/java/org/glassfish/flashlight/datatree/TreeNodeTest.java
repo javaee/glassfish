@@ -146,19 +146,15 @@ public class TreeNodeTest {
         System.out.println("test:getCompletePathName");
         TreeNode server = setupSimpleTree ();
         TreeNode grandson = server.getNode("wto.wtoson.wtograndson");
-//        System.out.println ("Retreived :"+grandson.getName()+ " should be "+
-//                "wtograndson");
-//        System.out.println ("Complete Path Name: " + 
-//                grandson.getCompletePathName());
          assertEquals ("server.wto.wtoson.wtograndson", 
                 grandson.getCompletePathName());
     }
   
     @Test
-    public void testTravsere() {
+    public void testTraverse() {
         System.out.println("test:traverse");
         TreeNode server = setupComplexTree ();
-        List<TreeNode> list = server.traverse();
+        List<TreeNode> list = server.traverse(false);
         String[] expected = new String [7];
         expected[0] = new String ("server");
         expected[1] = new String ("server.wto");
@@ -177,12 +173,46 @@ public class TreeNodeTest {
       //  }
         assertEquals (expected.length, list.size() );
     }
- 
+
+    @Test
+    public void testTraverseIgnoreDisabled() {
+        System.out.println("test:traverseIgnoreDisabled");
+        TreeNode server = setupComplexTree ();
+        TreeNode wtoson = server.getNode ("wto.wtoson");
+        wtoson.setEnabled(false);
+        List<TreeNode> list = server.traverse(true);
+        String[] expected = new String [4];
+        expected[0] = new String ("server");
+        expected[1] = new String ("server.wto");
+        expected[2] = new String ("server.wto.wtodaughter");
+        expected[3] = new String ("server.wto.wtodaughter.wtodaughtersdaughter");
+        // System.out.println ("---- Printing Traversed Tree ---");
+ /*       String[] actual = new String[4];
+          int i=0;
+          for (TreeNode node:list){
+              System.out.println ("Node: "+ node.getName()+
+                      " Complete Path: "+node.getCompletePathName());
+              actual[i++] = new String (node.getCompletePathName());
+          }
+    */
+        assertEquals (expected.length, list.size() );
+    }
+
+    @Test
+    public void testV2Compatible (){
+        System.out.println ("test:testV2Compatible");
+        TreeNode server = setupComplexTree ();
+        List<TreeNode> list = server.getNodes("*wtodaughter*", false, true);
+        int expectedLength = 2;
+        assertEquals (expectedLength, list.size());
+
+    }
+
     @Test
     public void testGetAll() {
         System.out.println("test:getAll");
         TreeNode server = setupComplexTree ();
-        List<TreeNode> list = server.getNodes("*");
+        List<TreeNode> list = server.getNodes("*", false, true);
         String[] expected = new String [7];
         expected[0] = new String ("server");
         expected[1] = new String ("server.wto");
@@ -192,8 +222,8 @@ public class TreeNodeTest {
         expected[5] = new String ("server.wto.wtodaughter");
         expected[6] = new String ("server.wto.wtodaughter.wtodaughtersdaughter");
         // System.out.println ("---- Printing Traversed Tree ---");
-        String[] actual = new String[7];
-/*       int i=0;
+/*        String[] actual = new String[7];
+        int i=0;
         for (TreeNode node:list){
             System.out.println (" Expected Node : " + node.getName() +
                     " Complete Path: "+ node.getCompletePathName ());
@@ -209,7 +239,7 @@ public class TreeNodeTest {
     public void testGetSonsAndGrandSons() {
         System.out.println("test:GetSonsAndGrandSons");
         TreeNode server = setupComplexTree ();
-        List<TreeNode> list = server.getNodes(".*son.*");
+        List<TreeNode> list = server.getNodes(".*son.*", false, false);
         int expectedCount = 3;
         int actualCount = 0;
         for (TreeNode node:list){
@@ -223,7 +253,7 @@ public class TreeNodeTest {
     public void testGetDaughter() {
         System.out.println("test:GetDaughter");
         TreeNode server = setupComplexTree ();
-        List<TreeNode> list = server.getNodes(".*wtodaughter");
+        List<TreeNode> list = server.getNodes(".*wtodaughter", false, false);
         int expectedCount = 1;
         int actualCount = 0;
         for (TreeNode node:list){
@@ -232,6 +262,28 @@ public class TreeNodeTest {
         }
         assertEquals (expectedCount, actualCount);
        }
+
+    @Test
+    public void testTimeStatsMillis (){
+        System.out.println ("test:timeStatsMillis");
+        TimeStats timeStat = TimeStatsFactory.createTimeStatsMilli();
+        long min = 1000;
+        long mid = 2000;
+        long max = 4000;
+        long count = 3;
+        double average = (min+mid+max)/3.0;
+        timeStat.setTime (min);
+        timeStat.setTime (mid);
+        timeStat.setTime (max);
+        assertEquals (min, timeStat.getMinimumTime());
+        assertEquals (average, timeStat.getTime());
+        assertEquals (max, timeStat.getMaximumTime());
+        assertEquals (count, timeStat.getCount());
+    }
+
+
+    // Setup Methods
+
     private TreeNode setupSimpleTree (){
         TreeNode server = TreeNodeFactory.createTreeNode ("server", this, "server");
         TreeNode wto = TreeNodeFactory.createTreeNode("wto", this, "web");

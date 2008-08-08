@@ -29,14 +29,12 @@ public class TimeStatsNanosImpl extends TimeStatsAbstractImpl
 
     @Override
     public void entry() {
-        entryTime = System.nanoTime();
-        super.postEntry();
+        super.postEntry(System.nanoTime ());
     }
 
     @Override
     public void exit() {
-        exitTime = System.nanoTime();
-        super.postExit();
+        super.postExit(System.nanoTime());
     }
 
     @Override

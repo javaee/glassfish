@@ -25,9 +25,12 @@ public abstract class AbstractTreeNode implements TreeNode {
 
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
+
     protected String name;    // The node object itself
     protected Object instance;
     protected String category;
+    protected String description;
+
     protected boolean enabled = false;
     private static String NAME_SEPARATOR = ".";
     private static String REGEX =
@@ -57,20 +60,9 @@ public abstract class AbstractTreeNode implements TreeNode {
     }
 
     public void setValue(Object value) {
-      /*
-        if (value == null) {
-            throw new RuntimeException("Flashlight-utils: Tree Node" +
-                    " needs a non-null value");
-        }
-     */
-        this.instance = value;
+       this.instance = value;
     }
-    /*    public Object getValue(){
-    
-    Class clazz = instance.getClass();
-    clazz.getAnnotation(Monitorable.class);
-    }
-     */
+
 
     public boolean isEnabled() {
         return this.enabled;
@@ -142,6 +134,14 @@ public abstract class AbstractTreeNode implements TreeNode {
         this.category = category;
     }
 
+    public String getDescription (){
+        return this.description;
+    }
+
+    public void setDescription (String description){
+        this.description = description;
+    }
+    
     public TreeNode getChild(String childName) {
         if (childName == null) {
             return null;
@@ -195,9 +195,15 @@ public abstract class AbstractTreeNode implements TreeNode {
      * Returns all the nodes under the current tree
      * @return List of all nodes in the current tree
      */
-    public List<TreeNode> traverse() {
-        // System.out.println ("Node: " + this.getName ());
+    public List<TreeNode> traverse(boolean ignoreDisabled) {
+//        System.out.println ("Node: " + this.getName ()+ " is enabled "+isEnabled());
         List<TreeNode> list = new ArrayList<TreeNode>();
+
+        if (ignoreDisabled){
+            if(!this.enabled){
+                return list;
+            }
+        }
         list.add(this);
 
         if (!hasChildNodes()) {
@@ -206,23 +212,24 @@ public abstract class AbstractTreeNode implements TreeNode {
 
         Collection<TreeNode> childList = children.values();
         for (TreeNode node : childList) {
-            list.addAll(node.traverse());
+            list.addAll(node.traverse(ignoreDisabled));
         }
         return list;
     }
 
-    public List<TreeNode> getNodes(String regex) {
+    public List<TreeNode> getNodes(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
         List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
 
+
         try {
-            if (regex.equals (STAR)){
-                regex = new String (".*");
-            }
-            Pattern pattern = Pattern.compile(regex);
-            List<TreeNode> completeTree = traverse();
+            if (gfv2Compatible)
+                pattern = convertGFv2PatternToRegex (pattern);
+
+            Pattern mPattern = Pattern.compile(pattern);
+            List<TreeNode> completeTree = traverse(ignoreDisabled);
 
             for (TreeNode node : completeTree) {
-                Matcher matcher = pattern.matcher(node.getCompletePathName());
+                Matcher matcher = mPattern.matcher(node.getCompletePathName());
 
                 if (matcher.matches()) {
                     regexMatchedTree.add(node);
@@ -234,5 +241,20 @@ public abstract class AbstractTreeNode implements TreeNode {
         }
         return regexMatchedTree;
     }
-}
 
+    public List<TreeNode> getNodes (String pattern){
+        return getNodes (pattern, true, true);
+    }
+
+    private String convertGFv2PatternToRegex (String pattern){
+        if (pattern.equals (STAR)){
+           return new String (".*");
+        }
+        // Doing this intermediate step as replacing "*" in a pattern with ".*"
+        // is too hassling
+
+        String modifiedPattern = pattern.replaceAll("\\*", ":");
+        String regex = modifiedPattern.replaceAll (":", ".*");
+        return regex;
+    }
+}

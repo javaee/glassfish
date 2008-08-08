@@ -29,14 +29,12 @@ public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
     }
     @Override
     public void entry (){
-        entryTime = System.currentTimeMillis();
-        super.postEntry ();
+        super.postEntry (System.currentTimeMillis());
     }
     
     @Override
     public void exit() {
-        exitTime = System.currentTimeMillis();
-        super.postExit ();
+        super.postExit (System.currentTimeMillis());
       }
     @Override 
     public Object getValue (){

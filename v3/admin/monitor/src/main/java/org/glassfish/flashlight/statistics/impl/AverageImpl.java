@@ -137,6 +137,10 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     public long getStartTime() {
         return this.startTime;
     }
+    public long getTotal (){
+        return sum.get();
+
+    }
     /*
      * TBD
      * This is an inefficient implementation. Should schedule a Timer task

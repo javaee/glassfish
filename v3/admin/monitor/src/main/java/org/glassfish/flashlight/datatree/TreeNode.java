@@ -10,16 +10,12 @@ import java.util.List;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * 
+ * TreeNode maintains all the Runtime Monitoring Data
  * @author Harpreet Singh
  */
 public interface TreeNode {
 
 
-    /**
-     * 
-     * @return String name of TreeNode. Set earlier by a call to setName
-     */
     public String getName ();
     public void setName (String name);
     // TBD getValue should take varargs
@@ -43,6 +39,9 @@ public interface TreeNode {
     
     public boolean isEnabled ();
     public void setEnabled (boolean enabled);
+
+    public void setDescription (String description);
+    public String getDescription ();
     
     // Children utility methods
     public TreeNode addChild (TreeNode newChild);
@@ -57,14 +56,7 @@ public interface TreeNode {
     public String getCompletePathName ();
 
     public boolean hasChildNodes ();
-    /*
-     * Removed it due to security issues. 
-     * @param oldChild
-     * @return oldChild
-     */
-    /*
-    public void removeChild (TreeNode oldChild);
-    */
+
     /**
      * 
      * @return Collection<TreeNode> collection of children
@@ -73,24 +65,40 @@ public interface TreeNode {
     
     /**
      * 
-     * @param complete dotted name to the node
+     * @param completeName dotted name to the node
      * @return TreeNode uniquely identified tree node. Null if no matching tree node.
      */
     
     public TreeNode getNode (String completeName);
       
     /**
-     * Performs a depth first traversal of the tree.
+     * Performs a depth first traversal of the tree. Returns all the nodes in the
+     * tree unless ignoreDisabled flag is turned on.
+     * @param ignoreDisabled will ignore a disabled node and its children 
      * @return List<TreeNode> lists all nodes under the current sub tree.
      */
 
-    public List<TreeNode> traverse ();
+    public List<TreeNode> traverse (boolean ignoreDisabled);
     /**
      * 
-     * Returns all nodes that match the given regex pattern. <p>
-     * <b>*</b> is interpreted as regex <b>.*</b>
-     * @param regex
+     * Returns all nodes that match the given Regex pattern as specified by the
+     * <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html"> Pattern</a>  class.
+     * Admin CLI in GlassFish v2 did not use Pattern's specified in java.util.Pattern. It had
+     * a simpler mechanism where * was equivalent to .* from {@linkplain java.util.regex.Pattern}
+     * If the V2Compatible flag is turned on, then the pattern is considered a v2 pattern.
+     * @param pattern Find a node that matches the pattern. By default pattern should follow the conventions
+     * outlined by the java.util.regex.Pattern class.
+     * @param ignoreDisabled will ignore a disabled node and its children
+     * @param gfv2Compatible in this mode, * has the same meaning as <i>.*</i> in the Pattern class.
+     * The implementation should consider pattern as a v2 pattern.
      * @return
      */
-    public List<TreeNode> getNodes (String regex);    
+    public List<TreeNode> getNodes (String pattern, boolean ignoreDisabled, boolean gfv2Compatible);
+
+    /**
+     * Behaves as {@link #getNodes (String, boolean, boolean) with ignoreDisabled set to true
+     * and gfV2Compatible set to true
+     * Pattern is considered to be a GFV2 Compatible Pattern
+     */
+    public List<TreeNode> getNodes (String pattern);
 }

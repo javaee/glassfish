@@ -15,19 +15,14 @@ import org.jvnet.hk2.annotations.Contract;
 
 public interface TimeStats extends TreeNode , TimeStatistic {
     
-    public long getTime ();
+    public double getTime ();
+    public void setTime (long time);
     public void entry ();
     public void exit ();
     public long getMinimumTime ();
     public long getMaximumTime ();
     
     public long getTimesCalled ();
-    /* TBD
-    public float getRunningAverage ();
-    public void setRunningAverageBucketSize (int bucketSize);
-    public int getRunningAverageBucketSize ();
-    */
-    // for testing purposes only
     public void setReset (boolean reset);
     
 }

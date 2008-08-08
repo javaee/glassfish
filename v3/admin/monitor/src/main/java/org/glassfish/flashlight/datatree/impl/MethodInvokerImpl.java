@@ -5,13 +5,15 @@
 
 package org.glassfish.flashlight.datatree.impl;
 
+import org.glassfish.flashlight.datatree.MethodInvoker;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 /**
  *
  * @author Harpreet Singh
  */
-public class MethodInvoker extends AbstractTreeNode {
+public class MethodInvokerImpl extends AbstractTreeNode implements MethodInvoker {
     Method method;
     Object methodInstance; 
     
@@ -48,11 +50,11 @@ public class MethodInvoker extends AbstractTreeNode {
                 retValue = method.invoke(methodInstance, null);
         } catch (IllegalAccessException ex) {
             
-            // Logger.getLogger(MethodInvoker.class.getName()).log(Level.SEVERE, null, ex);
+            // Logger.getLogger(MethodInvokerImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-            // Logger.getLogger(MethodInvoker.class.getName()).log(Level.SEVERE, null, ex);
+            // Logger.getLogger(MethodInvokerImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
-            // Logger.getLogger(MethodInvoker.class.getName()).log(Level.SEVERE, null, ex);
+            // Logger.getLogger(MethodInvokerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retValue;
     }

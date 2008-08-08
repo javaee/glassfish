@@ -6,6 +6,9 @@ package org.glassfish.flashlight.statistics.impl;
 
 import org.glassfish.flashlight.datatree.impl.AbstractTreeNode;
 import org.glassfish.flashlight.statistics.*;
+import org.glassfish.flashlight.statistics.factory.AverageFactory;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Harpreet Singh
@@ -13,78 +16,75 @@ import org.glassfish.flashlight.statistics.*;
 public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
         implements TimeStats {
 
-    protected long entryTime = 0;
-    protected long exitTime = 0;
-    private long totalTime = 0;
-    private long lastSampleTime = 0;
-    protected long startTime = 0;
-    long time = 0;
-    long low = -1;
-    long high = -1;
-    long sum = 0;
-    int count = 0;
-    protected static final String NEWLINE = System.getProperty("line.separator");
+    private static Average average = AverageFactory.createAverage();
 
-    public long getTime() {
-        return time;
+
+    private AtomicLong lastSampleTime = new AtomicLong(0);
+    protected long startTime = 0;
+
+    private ThreadLocal<TimeStatData> individualData = new ThreadLocal<TimeStatData> (){
+
+        TimeStatData tsd;
+
+        protected TimeStatData initialValue (){
+            tsd = new TimeStatData ();
+            return tsd;
+        }
+        public TimeStatData get (){
+            if (tsd == null)
+                tsd = new TimeStatData();
+            return tsd;
+        }
+        
+    } ;
+    
+    protected static final String NEWLINE = System.getProperty("line.separator");
+    
+
+   public double getTime() {
+        return average.getAverage();
     }
 
     abstract public void entry();
 
     abstract public void exit();
 
-    protected void postEntry() {
+    protected void postEntry(long entryTime) {
         if (startTime == 0) {
             startTime = entryTime;
         }
         this.setLastSampleTime(entryTime);
+        individualData.get().setEntryTime(entryTime);
     }
 
-    public void postExit() {
-        time = exitTime - entryTime;
-        totalTime += time;
-        setLowAndHigh(time);
-        count++;
-    }
-
-    private void setLowAndHigh(long time) {
-        if (low == -1 && high == -1) {
-            low = high = time;
-        }
-        if (time < low) {
-            low = time;
-        }
-        if (time > high) {
-            high = time;
-        }
+    public void postExit(long exitTime) {
+        TimeStatData tsd = individualData.get();
+        tsd.setExitTime(exitTime);
+        average.addDataPoint(tsd.getTotalTime());
     }
 
     public long getMinimumTime() {
-        return low;
+        return average.getMin();
     }
 
     public long getMaximumTime() {
-        return high;
+        return average.getMax();
     }
 
     // only for testing purposes.
     public void setTime(long time) {
         //  System.err.println ("setTime only for Testing purposes");
-        this.time = time;
-        setLowAndHigh(time);
+        individualData.get().setTotalTime(time);
+        average.addDataPoint(time);
     }
 
     public void setReset(boolean reset) {
-        entryTime = 0;
-        time = 0;
-        low = 0;
-        high = 0;
-        count = 0;
-
+        average.setReset();
+        individualData.get().setReset();
     }
 
     public long getTimesCalled() {
-        return count;
+        return average.getSize();
     }
     // Implementations for TimeStatistic
     public long getCount() {
@@ -100,11 +100,11 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
     }
 
     public long getTotalTime() {
-        return totalTime;
+        return average.getTotal();
     }
 
     public long getLastSampleTime() {
-        return this.lastSampleTime;
+        return this.lastSampleTime.get();
     }
 
     public long getStartTime() {
@@ -112,6 +112,43 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
     }
 
     private void setLastSampleTime(long time) {
-        this.lastSampleTime = time;
+        this.lastSampleTime.set(time);
+    }
+
+    private class TimeStatData {
+        private long entryTime = 0;
+        private long exitTime = 0;
+        private long totalTime = 0;
+
+
+        public long getEntryTime() {
+            return entryTime;
+        }
+
+        public void setEntryTime(long entryTime) {
+            this.entryTime = entryTime;
+        }
+
+        public long getExitTime() {
+            return exitTime;
+        }
+
+        public void setExitTime(long exitTime) {
+            this.exitTime = exitTime;
+        }
+
+        public long getTotalTime() {
+            totalTime = exitTime - entryTime;
+            return totalTime;
+        }
+
+        public void setTotalTime(long totalTime) {
+            this.totalTime = totalTime;
+        }
+        public void setReset (){
+            entryTime = 0;
+            exitTime = 0;
+            totalTime = 0;
+        }
     }
 }
