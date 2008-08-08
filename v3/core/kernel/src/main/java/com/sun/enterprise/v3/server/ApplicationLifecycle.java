@@ -695,7 +695,7 @@ public class ApplicationLifecycle {
                 // add the endpoint
                 try {
                     Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-                    adapter.registerEndpoint(appAdapter.getContextRoot(), null, appAdapter, module.getApplicationContainer());
+                    adapter.registerEndpoint(appAdapter.getContextRoot(), appAdapter, module.getApplicationContainer());
                 } catch (ClassCastException e) {
                     // ignore the application may not publish endpoints.
                 }
