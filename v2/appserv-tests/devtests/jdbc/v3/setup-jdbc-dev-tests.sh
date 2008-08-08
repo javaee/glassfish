@@ -9,7 +9,8 @@ war2deploy=/space/connectors/v3/Devtests/v3_jdbc_dev_tests/dist/v3_jdbc_dev_test
 derbyhome=$v3home/javadb
 
 #set Test Results Page
-testResult=/space/connectors/tmp/jdbc-tests-result.html
+testResult1=/space/connectors/tmp/jdbc-tests-result-1.html
+testResult2=/space/connectors/tmp/jdbc-tests-result-2.html
 
 echo Setting up Derby for Authentication...
 javac -classpath $derbyhome/lib/derby.jar SetDerbyAuthentication.java
@@ -42,22 +43,15 @@ echo "\n"
 
 #Create Pool/Resource for Max Connection Usage Test
 echo Creating Pool/Resource for Max Connection Usage Test...
-bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.DataSource --steadypoolsize=1 --maxpoolsize=1 --maxconnectionusagecount=10 --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-max-conn-usage-test-pool
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --steadypoolsize=1 --maxpoolsize=1 --maxconnectionusagecount=10 --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-max-conn-usage-test-pool
 bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-max-conn-usage-test-pool jdbc/jdbc-max-conn-usage-test-resource
 echo "\n"
 
 #Create Pool/Resource for Connection Leak Tracing Test
 echo Creating Pool/Resource for Connection Leak Tracing Test...
-bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.DataSource --steadypoolsize=1 --maxpoolsize=1 --leaktimeout=10 --leakreclaim=true --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-conn-leak-tracing-test-pool
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --steadypoolsize=1 --maxpoolsize=1 --leaktimeout=10 --leakreclaim=true --lazyconnectionassociation=false --lazyconnectionenlistment=false --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-conn-leak-tracing-test-pool
 bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-conn-leak-tracing-test-pool jdbc/jdbc-conn-leak-tracing-test-resource
 echo "\n"
-
-#Create Pool/Resource for associate-with-thread test
-echo Creating Pool/Resource Associate With Thread test
-bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --associatewiththread=false --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-associate-with-thread-test-pool
-bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-associate-with-thread-test-pool jdbc/jdbc-associate-with-thread-test-resource
-echo "\n"
-
 
 #Create Pool/Resource for Other tests
 echo Creating Pool/Resource for All other tests...
@@ -65,24 +59,48 @@ bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.j
 bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-common-pool jdbc/jdbc-common-resource
 echo "\n"
 
-#bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.ClientDataSource --restype=javax.sql.DataSource --isolationlevel=TRANSACTION_READ_COMMITTED --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-dev-test-pool
 
-#bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-dev-test-pool jdbc/jdbc-dev-test-resource
+#Create Pool/Resource for associate-with-thread test
+echo Creating Pool/Resource Associate With Thread test
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --associatewiththread=true --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-associate-with-thread-test-pool
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-associate-with-thread-test-pool jdbc/jdbc-associate-with-thread-test-resource
+echo "\n"
+
+
+#Create Pool/Resource for lazy-connection-associationtest
+echo Creating Pool/Resource Lazy connection association test
+bin/asadmin create-jdbc-connection-pool --maxwait=10 --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --lazyconnectionenlistment=true --lazyconnectionassociation=true --property="password=APP:user=APP:databaseName=sun-appserv-samples:connectionAttributes=\;create\\=true" jdbc-lazy-assoc-test-pool 
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-lazy-assoc-test-pool jdbc/jdbc-lazy-assoc-test-resource
+echo "\n"
+
+
+#Create Pool/Resource for Simple XA Test
+echo Creating Pool/Resource Simple XA Test
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedXADataSource --restype=javax.sql.XADataSource  --associatewiththread=false --property="password=APP1:user=APP1:databaseName=xa-test:connectionAttributes=\;create\\=true" jdbc-simple-xa-test-pool
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-simple-xa-test-pool jdbc/jdbc-simple-xa-test-resource
+echo "\n"
+
+
 
 echo Deploying war...
 bin/asadmin deploy --force=true $war2deploy
 echo "\n"
-
+sleep 5
 echo Configuring GlassFish to run the tests...
 bin/asadmin stop-domain
-echo Deleting $v3home/domains/domain1/applications/v3_jdbc_dev_tests/WEB-INF/lib/glassfish-api-10.0-SNAPSHOT.jar
-rm -rf $v3home/domains/domain1/applications/v3_jdbc_dev_tests/WEB-INF/lib/glassfish-api-10.0-SNAPSHOT.jar
+
+echo Deleting $v3home/domains/domain1/applications/v3_jdbc_dev_tests/WEB-INF/lib/glassfish-api-*.jar
+rm -rf $v3home/domains/domain1/applications/v3_jdbc_dev_tests/WEB-INF/lib/glassfish-api-*.jar
+
 bin/asadmin start-domain
 echo "\n"
 
-sleep 5
-wget http://localhost:8080/v3_jdbc_dev_tests/TestResultServlet -O $testResult
-sleep 5
-echo view the test results at ${testResult}
+sleep 5 
+wget http://localhost:8080/v3_jdbc_dev_tests/TestResultServlet -O $testResult1
+wget http://localhost:8080/v3_jdbc_dev_tests/TestResultServlet?testName=lazy-assoc -O $testResult2
+
+echo view the test results at ${testResult1}
+echo view the test results at ${testResult2}
 echo "\n"
-firefox $testResult &
+firefox $testResult1 &
+firefox $testResult2 &

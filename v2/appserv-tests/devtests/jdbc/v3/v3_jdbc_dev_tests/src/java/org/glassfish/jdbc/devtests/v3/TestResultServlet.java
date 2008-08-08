@@ -20,26 +20,25 @@ public class TestResultServlet extends HttpServlet {
 
     @Resource(name = "jdbc/jdbc-common-resource", mappedName = "jdbc/jdbc-common-resource")
     DataSource dsCommon;
-
     @Resource(name = "jdbc/jdbc-multiple-user-test-resource", mappedName = "jdbc/jdbc-multiple-user-test-resource")
     DataSource dsMultipleUserCred;
-    
-    @Resource(name="jdbc/jdbc-app-auth-test-resource", mappedName = "jdbc/jdbc-app-auth-test-resource")
+    @Resource(name = "jdbc/jdbc-app-auth-test-resource", mappedName = "jdbc/jdbc-app-auth-test-resource")
     DataSource dsAppAuth;
-    
-    @Resource(name="jdbc/jdbc-stmt-timeout-test-resource", mappedName = "jdbc/jdbc-stmt-timeout-test-resource")
+    @Resource(name = "jdbc/jdbc-stmt-timeout-test-resource", mappedName = "jdbc/jdbc-stmt-timeout-test-resource")
     DataSource dsStmtTimeout;
-    
-    @Resource(name="jdbc/jdbc-max-conn-usage-test-resource", mappedName = "jdbc/jdbc-max-conn-usage-test-resource")
+    @Resource(name = "jdbc/jdbc-max-conn-usage-test-resource", mappedName = "jdbc/jdbc-max-conn-usage-test-resource")
     DataSource dsMaxConnUsage;
-    
-    @Resource(name="jdbc/jdbc-conn-leak-tracing-test-resource", mappedName="jdbc/jdbc-conn-leak-tracing-test-resource")
+    @Resource(name = "jdbc/jdbc-conn-leak-tracing-test-resource", mappedName = "jdbc/jdbc-conn-leak-tracing-test-resource")
     DataSource dsConnLeakTracing;
-
-    @Resource(name="jdbc/jdbc-associate-with-thread-test-resource", mappedName="jdbc/jdbc-associate-with-thread-test-resource")
+    @Resource(name = "jdbc/jdbc-associate-with-thread-test-resource", mappedName = "jdbc/jdbc-associate-with-thread-test-resource")
     DataSource dsAssocWithThread;
+    @Resource(name = "jdbc/jdbc-lazy-assoc-resource", mappedName = "jdbc/jdbc-lazy-assoc-test-resource")
+    DataSource dsLazyAssoc;
 
-    /** 
+    /*@Resource(name="jdbc/__default")
+    DataSource dsXA; */
+
+    /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
@@ -54,6 +53,8 @@ public class TestResultServlet extends HttpServlet {
         SimpleTest testMaxConnUsage = null;
         SimpleTest testConnLeakTracing = null;
         SimpleTest testAssocWithThread = null;
+        SimpleTest testLazyAssoc = null;
+        SimpleTest testXA = null;
         SimpleTest[] testsOther = null;
         out.println("<html>");
         out.println("<head>");
@@ -63,6 +64,13 @@ public class TestResultServlet extends HttpServlet {
         out.println("<h1>Servlet TestResultServlet at " + request.getContextPath() + "</h1>");
         StringBuffer buf = new StringBuffer();
 
+        //TODO should be configurable to run any individual test
+        boolean lazyAssocAlone = false;
+        String testName = (String) request.getParameter("testName");
+        if (testName != null && testName.equalsIgnoreCase("lazy-assoc")) {
+            lazyAssocAlone = true;
+        }
+
         try {
             testMultipleUserCred = loadMultipleUserCredTest();
             testAppAuth = loadAppAuthTest();
@@ -70,7 +78,9 @@ public class TestResultServlet extends HttpServlet {
             testMaxConnUsage = loadMaxConnUsageTest();
             testConnLeakTracing = loadConnLeakTracingTest();
             testAssocWithThread = loadAssocWithThreadTest();
+            //testXA = loadSimpleXATest();
             testsOther = initializeTests();
+            testLazyAssoc = loadLazyAssocTest();
         } catch (Exception e) {
             HtmlUtil.printException(e, out);
         }
@@ -78,10 +88,100 @@ public class TestResultServlet extends HttpServlet {
         try {
             buf.append("<table border=1><tr><th>Test Name</th><th> Pass </th></tr>");
 
-            //Run other tests
-            for (SimpleTest test : testsOther) {
-                Map<String, Boolean> map = test.runTest(dsCommon, out);
-                for (Map.Entry entry : map.entrySet()) {
+            if (!lazyAssocAlone) {
+
+                //Run Multiple User Credentials Test
+                Map<String, Boolean> mapMultipleUserCred =
+                        testMultipleUserCred.runTest(dsMultipleUserCred, out);
+                for (Map.Entry entry : mapMultipleUserCred.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+                //Run Application Authentication Test
+                Map<String, Boolean> mapAppAuth =
+                        testAppAuth.runTest(dsAppAuth, out);
+                for (Map.Entry entry : mapAppAuth.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+                //Run Statement Timeout Test
+                Map<String, Boolean> mapStmtTimeout =
+                        testStmtTimeout.runTest(dsStmtTimeout, out);
+                for (Map.Entry entry : mapStmtTimeout.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+                //Run Max Connection Usage Test
+                Map<String, Boolean> mapMaxConnUsage =
+                        testMaxConnUsage.runTest(dsMaxConnUsage, out);
+                for (Map.Entry entry : mapMaxConnUsage.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+                //Run Associate With Thread Test
+                Map<String, Boolean> mapAssocWithThread =
+                        testAssocWithThread.runTest(dsAssocWithThread, out);
+                for (Map.Entry entry : mapAssocWithThread.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+
+                //Run SimpleXADS test
+          /*  Map<String, Boolean> mapXADStest =
+                testXA.runTest(dsXA, out);
+                for (Map.Entry entry : mapXADStest.entrySet()) {
+                buf.append("<tr> <td>");
+                buf.append(entry.getKey());
+                buf.append("</td>");
+                buf.append("<td>");
+                buf.append(entry.getValue());
+                buf.append("</td></tr>");
+                }  */
+
+
+
+                //Run other tests
+                for (SimpleTest test : testsOther) {
+                    Map<String, Boolean> map = test.runTest(dsCommon, out);
+                    for (Map.Entry entry : map.entrySet()) {
+                        buf.append("<tr> <td>");
+                        buf.append(entry.getKey());
+                        buf.append("</td>");
+                        buf.append("<td>");
+                        buf.append(entry.getValue());
+                        buf.append("</td></tr>");
+                    }
+                }
+
+                //Run Connection Leak Tracing Test
+                Map<String, Boolean> mapConnLeakTracing =
+                        testConnLeakTracing.runTest(dsConnLeakTracing, out);
+                for (Map.Entry entry : mapConnLeakTracing.entrySet()) {
                     buf.append("<tr> <td>");
                     buf.append(entry.getKey());
                     buf.append("</td>");
@@ -91,85 +191,27 @@ public class TestResultServlet extends HttpServlet {
                 }
             }
 
-            //Run Multiple User Credentials Test 
-            Map<String, Boolean> mapMultipleUserCred = 
-                    testMultipleUserCred.runTest(dsMultipleUserCred, out);
-            for (Map.Entry entry : mapMultipleUserCred.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
-            }
-            
-            //Run Application Authentication Test
-            Map<String, Boolean> mapAppAuth = 
-                    testAppAuth.runTest(dsAppAuth, out);
-            for (Map.Entry entry : mapAppAuth.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
-            }
-
-            //Run Statement Timeout Test
-            Map<String, Boolean> mapStmtTimeout = 
-                    testStmtTimeout.runTest(dsStmtTimeout, out);
-            for (Map.Entry entry : mapStmtTimeout.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
-            }
-
-            //Run Max Connection Usage Test
-            Map<String, Boolean> mapMaxConnUsage = 
-                    testMaxConnUsage.runTest(dsMaxConnUsage, out);
-            for (Map.Entry entry : mapMaxConnUsage.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
-            }
-            
-            //Run Associate With Thread Test
-            Map<String, Boolean> mapAssocWithThread = 
-                    testAssocWithThread.runTest(dsAssocWithThread, out);
-            for (Map.Entry entry : mapAssocWithThread.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
+            //Always Run Lazy Connection Association Test as last test
+            Map<String, Boolean> mapLazyAssoc =
+                    testLazyAssoc.runTest(dsLazyAssoc, out);
+            for (Map.Entry entry : mapLazyAssoc.entrySet()) {
+                buf.append("<tr> <td>");
+                buf.append(entry.getKey());
+                buf.append("</td>");
+                buf.append("<td>");
+                buf.append(entry.getValue());
+                buf.append("</td></tr>");
             }
 
 
-            //Run Connection Leak Tracing Test
-            Map<String, Boolean> mapConnLeakTracing = 
-                    testConnLeakTracing.runTest(dsConnLeakTracing, out);
-            for (Map.Entry entry : mapConnLeakTracing.entrySet()) {
-                    buf.append("<tr> <td>");
-                    buf.append(entry.getKey());
-                    buf.append("</td>");
-                    buf.append("<td>");
-                    buf.append(entry.getValue());
-                    buf.append("</td></tr>");                
-            }
 
             buf.append("</table>");
             out.println(buf.toString());
         } catch (Throwable e) {
             out.println("got outer excpetion");
-            out.println(e);
-            e.printStackTrace();
+            out.println(e.getMessage());
+            HtmlUtil.printException(e, out);
+
         } finally {
             out.println("</body>");
             out.println("</html>");
@@ -189,6 +231,14 @@ public class TestResultServlet extends HttpServlet {
 
     private SimpleTest loadAssocWithThreadTest() throws Exception {
         String test = "org.glassfish.jdbc.devtests.v3.test.AssocWithThreadTest";
+        Class testClass = Class.forName(test);
+        Constructor c = testClass.getConstructor();
+        SimpleTest testInstance = (SimpleTest) c.newInstance();
+        return testInstance;
+    }
+
+    private SimpleTest loadLazyAssocTest() throws Exception {
+        String test = "org.glassfish.jdbc.devtests.v3.test.LazyConnectionAssociationTest";
         Class testClass = Class.forName(test);
         Constructor c = testClass.getConstructor();
         SimpleTest testInstance = (SimpleTest) c.newInstance();
@@ -218,11 +268,11 @@ public class TestResultServlet extends HttpServlet {
         SimpleTest testInstance = (SimpleTest) c.newInstance();
         return testInstance;
     }
-    
+
     private SimpleTest[] initializeTests() throws Exception {
         String[] tests = {"org.glassfish.jdbc.devtests.v3.test.ConnectionSharingTest",
             "org.glassfish.jdbc.devtests.v3.test.LeakTest",
-            "org.glassfish.jdbc.devtests.v3.test.UserTxTest", 
+            "org.glassfish.jdbc.devtests.v3.test.UserTxTest",
             "org.glassfish.jdbc.devtests.v3.test.NoTxConnTest",
             "org.glassfish.jdbc.devtests.v3.test.MultipleConnectionCloseTest",
             "org.glassfish.jdbc.devtests.v3.test.MarkConnectionAsBadTest",
@@ -238,7 +288,8 @@ public class TestResultServlet extends HttpServlet {
         }
         return testInstances;
     }    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+
+    /**
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -263,6 +314,14 @@ public class TestResultServlet extends HttpServlet {
      */
     public String getServletInfo() {
         return "Short description";
+    }
+
+    private SimpleTest loadSimpleXATest() throws Exception {
+        String test = "org.glassfish.jdbc.devtests.v3.test.SimpleXATest";
+        Class testClass = Class.forName(test);
+        Constructor c = testClass.getConstructor();
+        SimpleTest testInstance = (SimpleTest) c.newInstance();
+        return testInstance;
     }
 
     private SimpleTest loadStmtTimeoutTest() throws Exception {
