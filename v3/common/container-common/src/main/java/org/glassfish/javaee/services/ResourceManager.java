@@ -283,7 +283,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         // I am not so interested with the list of events, just sort who got added or removed for me.
-        ConfigSupport.sortAndDispatch(events, new Changed() {
+        final UnprocessedChangeEvents unprocessed = ConfigSupport.sortAndDispatch(events, new Changed() {
             /**
              * Notification of a change on a configuration object
              *
@@ -293,33 +293,45 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
              * @param changedType     type of the configuration object
              * @param changedInstance changed instance.
              */
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> changedType, T changedInstance) {
+            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+                NotProcessed np = null;
                 switch(type) {
-                    case ADD : logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
-                        handleAddEvent(changedInstance);
+                    case ADD :
+                        logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
+                        np = handleAddEvent(changedInstance);
                         break;
 
                     case CHANGE: logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
-                        handleChangeEvent(changedInstance);
+                        np = handleChangeEvent(changedInstance);
                         break;
 
                     case REMOVE : logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
-                        handleRemoveEvent(changedInstance);
+                        np = handleRemoveEvent(changedInstance);
+                        break;
+                    
+                    default:
+                        np = new NotProcessed("Unrecognized type of change: " + type );
                         break;
                 }
+                return np;
             }
 
-            private <T extends ConfigBeanProxy> void handleChangeEvent(T instance) {
+            private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
+                NotProcessed np = null;
                 try {
                     if(ConnectorsUtil.isValidEventType(instance)) {
                         getConnectorRuntime().redeployResource(instance);
                     }
                 } catch (Exception ex) {
-                    logger.severe(ResourceManager.class.getName() + " : Error while handling change Event");
+                    final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
+                    logger.severe(msg);
+                    np = new NotProcessed(msg);
                 }
+                return np;
             }
 
-            private <T extends ConfigBeanProxy> void handleAddEvent(T instance) {
+            private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(T instance) {
+                NotProcessed np = null;
                 //Add listener to the changed instance object
                 ResourceManager.this.addListenerToResource(instance);
                 if (instance instanceof JdbcConnectionPool) {
@@ -339,17 +351,23 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                     resourcesBinder.deployAllConnectorResourcesAndPools(new ConnectorResource[]{resource},
                             new ConnectorConnectionPool[]{pool});
                 }
+                else
+                {
+                    np = new NotProcessed( "handleAddEvent: unknown instance: " + instance.getClass().getName() );
+                }
+                return np;
             }
 
-            private <T extends ConfigBeanProxy> void handleRemoveEvent(final T instance) {
+            private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(final T instance) {
                 ArrayList instancesToDestroy = new ArrayList();
                 instancesToDestroy.add(instance);
                 //Remove listener from the removed instance
                 ResourceManager.this.removeListenerFromResource(instance);
                 destroyResourcesAndPools(instancesToDestroy);
+                return null;
             }
         }, logger);
-        return null;
+        return unprocessed;
     }
 
     /**

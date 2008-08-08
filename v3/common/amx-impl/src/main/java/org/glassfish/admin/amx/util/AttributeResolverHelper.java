@@ -64,7 +64,8 @@ import java.util.Map;
     HTTPListenerConfig l = ...; // or any AMXConfig sub-interface
     int port = AttributeResolverHelper.resolveInt( l, value );
     </pre>
-    The value can also be pre-resolved by calling {@link AttributeResolver#resolveAttribute}
+    The value can also be pre-resolved by calling
+    {@link com.sun.appserv.management.config.AttributeResolver#resolveAttribute}
     @see com.sun.appserv.management.config.AttributeResolver
  */
 public class AttributeResolverHelper extends VariableResolver

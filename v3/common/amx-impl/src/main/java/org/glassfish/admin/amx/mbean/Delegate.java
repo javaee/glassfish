@@ -61,7 +61,7 @@ public interface Delegate
         Note: singular form of setAttribute() is not supported.
         
         @param attrs the Attributes to change
-        @param oldValue oldValues corresponding to each changed Attribute
+        @param oldValues oldValues corresponding to each changed Attribute
      */
 	public AttributeList setAttributes( final AttributeList attrs, final Map<String,Object> oldValues);
 	

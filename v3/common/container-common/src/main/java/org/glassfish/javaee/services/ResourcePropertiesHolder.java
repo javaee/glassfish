@@ -14,6 +14,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -90,7 +91,8 @@ public class ResourcePropertiesHolder implements NamingObjectsProvider,
              * @param changedType     type of the configuration object
              * @param changedInstance changed instance.
              */
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> changedType, T changedInstance) {
+            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+                NotProcessed np = null;
                 switch (type) {
                     case ADD: //Does not happen here. When a new property is added, 
                         //RM.ADD is got for Property ADD and RM.CHANGE is got
@@ -100,14 +102,15 @@ public class ResourcePropertiesHolder implements NamingObjectsProvider,
 
                     case CHANGE:
                         logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
-                        handleChangeEvent(changedInstance);
+                        np = handleChangeEvent(changedInstance);
                         break;
 
                     case REMOVE:
                         logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
-                        handleRemoveEvent(changedInstance);
+                        np = handleRemoveEvent(changedInstance);
                         break;
                 }
+                return np;
             }
 
             /**
@@ -115,7 +118,8 @@ public class ResourcePropertiesHolder implements NamingObjectsProvider,
              * Redeploys the pool using the resource object stored in 
              * ResourcePropertiesHolder.
              */
-            private <T extends ConfigBeanProxy> void handleChangeEvent(T instance) {
+            private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
+                NotProcessed np = null;
                 try {
                     Resource resource = ResourcePropertiesHolder.this.resource;
                     //Redeploy resource
@@ -126,13 +130,20 @@ public class ResourcePropertiesHolder implements NamingObjectsProvider,
                         ConnectorConnectionPool pool = (ConnectorConnectionPool) resource;
                         getConnectorRuntime().redeployResource(pool);
                     }
+                    else
+                    {
+                        np = new NotProcessed("Unknown resource type: " + resource );
+                    }
                 } catch (Exception ex) {
+                    np = new NotProcessed(ex.toString());
                     Logger.getLogger(ResourcePropertiesHolder.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                return np;
             }
 
             //when is this called? from GUI???
-            private <T extends ConfigBeanProxy> void handleRemoveEvent(final T instance) {
+            private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(final T instance) {
+                NotProcessed np = null;
                 try {
                     //Remove listener from this property
                     if(instance instanceof Property) {
@@ -141,9 +152,15 @@ public class ResourcePropertiesHolder implements NamingObjectsProvider,
                         ResourcePropertiesHolder.this.setPropertyBean(propertyBean);
                         ResourcePropertiesHolder.this.removeListener();
                     }
+                    else
+                    {
+                        np = new NotProcessed("Unknown instance type (not a Property): " + instance );
+                    }
                 } catch (Exception ex) {
+                    np = new NotProcessed(ex.toString());
                     Logger.getLogger(ResourcePropertiesHolder.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                return np;
             }
         }, logger);
         return null;

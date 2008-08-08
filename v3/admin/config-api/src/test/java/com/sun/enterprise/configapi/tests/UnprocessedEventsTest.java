@@ -22,7 +22,7 @@ public class UnprocessedEventsTest  extends ConfigApiTest
         implements ConfigListener, TransactionListener {
 
     Habitat habitat = Utils.getNewHabitat(this);
-    UnprocessedChangeEvents event = null;
+    UnprocessedChangeEvents unprocessed = null;
 
     /**
      * Returns the DomainTest file name without the .xml extension to load the test configuration
@@ -66,7 +66,7 @@ public class UnprocessedEventsTest  extends ConfigApiTest
 
         // ensure events are delivered.
        Transactions.get().waitForDrain();
-        assertNotNull(event);
+        assertNotNull(unprocessed);
         
         // finally
         bean.removeListener(this);
@@ -78,9 +78,11 @@ public class UnprocessedEventsTest  extends ConfigApiTest
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
         assertEquals("Array size", propertyChangeEvents.length, 1 );
-        event =  new UnprocessedChangeEvents("Java NIO port listener cannot reconfigure its port dynamically",
-                propertyChangeEvents);
-        return event;
+        
+        final UnprocessedChangeEvent unp = new UnprocessedChangeEvent(
+            propertyChangeEvents[0], "Java NIO port listener cannot reconfigure its port dynamically" );
+        unprocessed = new UnprocessedChangeEvents( unp );
+        return unprocessed;
     }
 
     public void transactionCommited(List<PropertyChangeEvent> changes) {

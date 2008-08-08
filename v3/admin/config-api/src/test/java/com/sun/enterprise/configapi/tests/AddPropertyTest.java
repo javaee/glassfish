@@ -114,7 +114,8 @@ public class AddPropertyTest extends ConfigApiTest {
                 logger.fine(event.toString());
             }
 
-            ConfigSupport.sortAndDispatch(events.toArray(new PropertyChangeEvent[0]), new Changed() {
+            final UnprocessedChangeEvents unprocessed =
+                ConfigSupport.sortAndDispatch(events.toArray(new PropertyChangeEvent[0]), new Changed() {
                 /**
                  * Notification of a change on a configuration object
                  *
@@ -124,7 +125,8 @@ public class AddPropertyTest extends ConfigApiTest {
                  * @param changedType     type of the configuration object
                  * @param changedInstance changed instance.
                  */
-                public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> changedType, T changedInstance) {
+                public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+                    return new NotProcessed("unimplemented by AddPropertyTest");
                 }
             }, logger);
         } finally {

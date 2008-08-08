@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,71 +33,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.mbeanserver;
 
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import java.beans.PropertyChangeEvent;
 
+import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
-import javax.management.MBeanServer;
-import org.glassfish.server.ServerEnvironmentImpl;
-
-import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
-    Utility class that gets various useful values injected into it for use
-    by other AMX facilities which don't have injection available to themselves.  This is needed
-    because many AMX MBeans and support code don't have any access to injection.
+    Listens for unprocessed config changes
  */
 @Service
 @Async
-//@Scoped(Singleton.class)
-public final class InjectedValues
-    implements  PostConstruct, PreDestroy
-{
-    private static void debug( final String s ) { System.out.println(s); }
+public final class UnprocessedConfigListener implements Startup, PostConstruct, TransactionListener {
+    private static void debug( final String s ) { System.out.println( "### " + s); }
     
-    @Inject
-    private MBeanServer mMBeanServer;
-    public MBeanServer getMBeanServer() { return mMBeanServer; }
+    private final Transactions  mTransactions = Transactions.get();
+    private final List<UnprocessedChangeEvents> mUnprocessedChangeEvents = new ArrayList();
     
-    @Inject
-    private ServerEnvironmentImpl mServerEnvironment;
-    public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
-    
-    @Inject
-    UnprocessedConfigListener   mUnprocessedConfigListener;
-    
-    private static volatile InjectedValues INSTANCE = null;
-    
-    public InjectedValues()
+    public UnprocessedConfigListener()
     {
-        debug( "InjectedValues.InjectedValues()" );
+        debug( "UnprocessedConfigListener.UnprocessedConfigListener" );
     }
-    
-    public static InjectedValues getInstance() { return INSTANCE; }
     
     public void postConstruct()
     {
-        debug( "InjectedValues.postConstruct");
-        if ( INSTANCE != null && this != INSTANCE )
+        mTransactions.addTransactionsListener(this);
+    }
+
+    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
+    
+        public void
+    transactionCommited( final List<PropertyChangeEvent> changes)
+    {
+        //debug( "UnprocessedConfigListener: transactionCommited: " + changes.size() );
+        // ignore, we only are interested in those that were not processed
+    }
+
+        public synchronized void 
+    unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
+        debug( "UnprocessedConfigListener.unprocessedTransactedEvents: " + changes.size() );
+        for( int i = 0; i < changes.size(); ++i )
         {
-            debug( "InjectedValues.postConstruct(): WARNING: more than one instance has been created" ); 
+            debug( changes.get(i).toString() );
         }
-        INSTANCE = this;
+        mUnprocessedChangeEvents.addAll(changes);
+        debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
     }
-
-    public void preDestroy() {
-        debug( "InjectedValues.preDestroy");
+    
+    public synchronized List<UnprocessedChangeEvents>
+    getUnprocessedChangeEvents()
+    {
+        return Collections.unmodifiableList( mUnprocessedChangeEvents );
     }
-
-   // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
+
+
+
 
 
 

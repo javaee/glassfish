@@ -53,6 +53,10 @@ import java.beans.PropertyChangeEvent;
 
 import org.glassfish.admin.amx.util.Issues;
 
+import org.jvnet.hk2.config.*;
+
+import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
+
 /**
     
  */
@@ -64,12 +68,18 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
         super( SystemStatus.J2EE_TYPE, SystemStatus.J2EE_TYPE, parentObjectName, SystemStatus.class, null );
 	}
     
+        private Habitat
+    getHabitat()
+    {
+        return  org.glassfish.internal.api.Globals.getDefaultHabitat();
+    }
+    
         public Map<String,Object>
     pingJDBCConnectionPool( final String poolName )
     {
         final Map<String,Object> result = new HashMap<String,Object>();
         boolean pingable = false;
-        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
+        final Habitat habitat = getHabitat();
         ConnectorRuntime connRuntime;
 
         // check pool name
@@ -111,16 +121,67 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
         return result;
     }
     
+//-------------------------------------
+    
+    private static void xdebug( final String s ) { System.out.println( "### " + s); }
+    
+    private static String str(final Object o ) {
+        return o == null ? null : (""+o);
+    }
+    
+        private ObjectName
+    sourceToObjectName( final Object source )
+    {
+        ObjectName objectName = null;
+
+        if (source instanceof ConfigBean)
+        {
+            objectName = ((ConfigBean)source).getObjectName();
+        }
+        else if ( source instanceof ConfigBeanProxy )
+        {
+            objectName = ((ConfigBean)Dom.unwrap((ConfigBeanProxy)source)).getObjectName();
+        }
+        else
+        {
+            xdebug( "UnprocessedConfigChange.sourceToObjectName: source is something else" );
+        }
+        
+        return objectName;
+    }
+    
         public List<Object[]>
-    getUnprocessedConfigChanges(final int howMany) {
-        Issues.getAMXIssues().notDone( "SystemStatusImpl.getUnprocessedConfigChanges() needs to get all the config changes and morph them appropriately" );
+    getUnprocessedConfigChanges() {
+        final UnprocessedConfigListener unp = getHabitat().getComponent( UnprocessedConfigListener.class );
         
-        final List<Object[]> changes = new ArrayList<Object[]>();
+        final List<UnprocessedChangeEvents> items = unp.getUnprocessedChangeEvents();
         
-        final UnprocessedConfigChange test = new UnprocessedConfigChange( "TEST", "old", "new", getObjectName(), "for testing" );
-        changes.add(test.toArray());
+        final List<Object[]> changesObjects = new ArrayList<Object[]>();
         
-        return changes;
+        xdebug( "UnprocessedConfigChange: processing events: " + items.size() );
+        for( final UnprocessedChangeEvents events : items )
+        {
+            for( final UnprocessedChangeEvent event : events.getUnprocessed() )
+            {
+        xdebug( "UnprocessedConfigChange: event: " + event );
+                final String reason = event.getReason();
+                final PropertyChangeEvent pce = event.getEvent();
+                final long when = event.getWhen();
+                
+                final ObjectName objectName = sourceToObjectName(pce.getSource());
+                
+                final UnprocessedConfigChange ucc = new UnprocessedConfigChange(
+                        pce.getPropertyName(),
+                        str(pce.getOldValue()),
+                        str(pce.getNewValue()),
+                        objectName,
+                        reason);
+                xdebug( "UnprocessedConfigChange: " + ucc );
+                changesObjects.add( ucc.toArray() );
+            } 
+        }
+        
+        return changesObjects;
     }
 }
 

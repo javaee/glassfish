@@ -113,8 +113,8 @@ public class HttpServiceConfigListener implements ConfigListener {
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         
-        ConfigSupport.sortAndDispatch(events, new Changed() {
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> tClass, T t) {
+        final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
+            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
                 try {
                     if (t instanceof com.sun.enterprise.config.serverbeans.VirtualServer) {
                         if (type==TYPE.ADD) {                           
@@ -128,7 +128,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                                     (com.sun.enterprise.config.serverbeans.VirtualServer)t, 
                                     httpService);
                         }
-                        return;
+                        return null;
                     } else if (t instanceof HttpListener) {
                         if (type==TYPE.ADD) {
                             container.addConnector((HttpListener)t, httpService);
@@ -137,7 +137,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateConnector((HttpListener)t, httpService);
                         }
-                        return;
+                        return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof RequestProcessing) {
@@ -150,15 +150,16 @@ public class HttpServiceConfigListener implements ConfigListener {
                         container.configureHttpProtocol(httpService);
                     } else if (t instanceof HttpFileCache) {
                         container.configureFileCache(httpService);
-                    } 
+                    }
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
-                }    
+                }
+                return null;
             }
         }
         , logger);
-         return null;
+         return unp;
     }
     
 }

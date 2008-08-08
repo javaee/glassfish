@@ -81,12 +81,10 @@ public interface SystemStatus extends AMX, Utility, Singleton
         Clients with access to the class can use Helper.toUnprocessedConfigChange.
         <p>
         With a switch to JDK 6 required, an MXBean can be used to automate this.
-     *
+     */
     public List<Object[]>  getUnprocessedConfigChanges();
-    */
     
-    /** helper class, in particular to convert results from {@link #getUnprocessedConfigChanges}
-    *
+    /** helper class, in particular to convert results from {@link #getUnprocessedConfigChanges} */
     public final class Helper {
         private Helper() {}
         public List<UnprocessedConfigChange>  toUnprocessedConfigChange( final List<Object[]> items) {
@@ -97,7 +95,6 @@ public interface SystemStatus extends AMX, Utility, Singleton
             return l;
         }
     }
-    */
 }
 
 

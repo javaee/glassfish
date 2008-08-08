@@ -24,17 +24,20 @@ public class HttpServiceContainer implements ConfigListener {
 
     public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         if (received) {
-            // I am alredy happy
+            // I am already happy
         }
-        ConfigSupport.sortAndDispatch(events, new Changed() {
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> tClass, T t) {
+        final UnprocessedChangeEvents unprocessed = ConfigSupport.sortAndDispatch(events, new Changed() {
+            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
                 if (type==TYPE.ADD) {
                     received=true;
                 }
+                
+                // we did not deal with it, so it is unprocsseed
+                return new NotProcessed("unimplemented by HttpServiceContainer");
                 //System.out.println("Event type : " + type + " class " + tClass +" -> " + t);
             }
         }
         , Logger.getAnonymousLogger());
-        return null;
+        return unprocessed;
     }
 }

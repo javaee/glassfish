@@ -163,7 +163,9 @@ public class AMXImplBase extends MBeanImplBase
 	/**
 		Construct a new implementation that implements the supplied mbeanInterface.
 		
-		@param j2eeTypeIn		(may be null) the j2eeType of this instance
+		@param j2eeType		the j2eeType of this instance
+		@param fullType		the fulltype of this instance
+		@param parentObjectName
 		@param theInterface		(may be null) the public interface as seen on the client
 		@param delegate			an MBean to which unknown requests are delegated
 	*/
