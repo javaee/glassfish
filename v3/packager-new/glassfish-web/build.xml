@@ -185,7 +185,7 @@ own identifying information: Portions Copyright [yyyy]
                 </scope>
             </graphDef>
 
-	<resolveAll todir="target/stage/glassfish/modules/web" tolerateBrokenPOMs="true">
+	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true">
 	        <graphRef refid="web-modules"/>
     	</resolveAll>
 
@@ -214,7 +214,7 @@ own identifying information: Portions Copyright [yyyy]
         </graphDef>
 
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
-	 
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" />  
        <zip file="target/glassfish-web.zip" basedir="target/stage"/>
            
        <attachArtifact file="target/glassfish-web.zip"/>

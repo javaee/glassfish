@@ -77,23 +77,11 @@
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>dataprovider</artifactId>
             <version>${dataprovider.version}</version>
-            <exclusions>
-                <exclusion>
-		    <groupId>com.sun.woodstock.dependlibs</groupId>
-		    <artifactId>dataprovider</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
             <version>${jsftemplating.version}</version>
-            <exclusions>
-                <exclusion>
-		    <groupId>com.sun.jsftemplating</groupId>
-		    <artifactId>jsftemplating</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>

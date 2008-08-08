@@ -71,7 +71,14 @@
 	<dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-all</artifactId>
-            <version>${project.version}</version>
+	    <version>${project.version}</version>
+	    <type>pom</type>
+	    <exclusions>
+                <exclusion>
+		    <groupId>org.glassfish.admingui</groupId>
+		    <artifactId>console-web-plugin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 	<dependency>
             <groupId>org.glassfish.web</groupId>
