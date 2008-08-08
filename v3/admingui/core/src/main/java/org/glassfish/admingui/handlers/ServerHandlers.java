@@ -72,7 +72,7 @@ import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleLogLevelsConfig;
 import com.sun.appserv.management.config.DASConfig;
 import com.sun.appserv.management.config.ProfilerConfigKeys;
-import org.glassfish.admingui.util.AMXUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
 
 /**
  *

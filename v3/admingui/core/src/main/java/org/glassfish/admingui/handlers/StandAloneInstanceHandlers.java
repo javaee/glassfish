@@ -77,7 +77,7 @@ import com.sun.appserv.management.config.SystemPropertiesAccess;
 import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.j2ee.J2EEServer;
 import java.util.Collection;
-import org.glassfish.admingui.util.AMXUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
 
 
 /**

@@ -67,7 +67,7 @@ import com.sun.appserv.management.config.VirtualServerConfig;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.MiscUtil;
-import org.glassfish.admingui.util.AMXUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
 
 import com.sun.web.security.SSLSocketFactory;
 import javax.net.ssl.HttpsURLConnection;

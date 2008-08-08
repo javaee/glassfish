@@ -55,7 +55,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import org.glassfish.admingui.common.util.AMXRoot; 
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.AMXUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
 
 import com.sun.appserv.management.config.ConfigConfig; 
 import com.sun.appserv.management.config.VirtualServerConfig;

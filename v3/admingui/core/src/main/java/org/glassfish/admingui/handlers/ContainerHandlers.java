@@ -52,7 +52,7 @@ import com.sun.appserv.management.config.StorePropertiesConfig;
 import com.sun.appserv.management.config.WebContainerConfig;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.AMXUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
 import com.sun.jsftemplating.annotation.Handler;  
 import com.sun.jsftemplating.annotation.HandlerInput; 
 import com.sun.jsftemplating.annotation.HandlerOutput;
