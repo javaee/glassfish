@@ -53,8 +53,8 @@
     <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
     <properties>
-        <grizzly.version>1.8.4</grizzly.version>    
-        <grizzly.original-version>1.8.4</grizzly.original-version>    
+        <grizzly.version>1.8.5</grizzly.version>    
+        <grizzly.original-version>1.8.5</grizzly.original-version>    
     </properties>      
     <build>
         <plugins>

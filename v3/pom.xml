@@ -108,8 +108,8 @@
         <jsf-impl.version>1.2_09</jsf-impl.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.8.4</grizzly.version>
-        <grizzly.original-version>1.8.4</grizzly.original-version>        
+        <grizzly.version>1.8.5</grizzly.version>
+        <grizzly.original-version>1.8.5</grizzly.original-version>        
         <jspimpl.version>1.0-SNAPSHOT</jspimpl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
