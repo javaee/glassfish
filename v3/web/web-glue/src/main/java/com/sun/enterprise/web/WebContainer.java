@@ -1468,64 +1468,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // --------------------------------------------------------- end Replication
 
-    // -------------------------------------- Monitoring Level Event Processing
-    /*
-    public void registerMonitoringLevelEvents() {
-        MonitoringRegistry monitoringRegistry =
-                habitat.getComponent(MonitoringRegistry.class);
-        monitoringRegistry.registerMonitoringLevelListener(
-                this, MonitoredObjectType.SERVLET);
-    }
-
-    public void unregisterMonitoringLevelEvents() {
-        MonitoringRegistry monitoringRegistry =
-                habitat.getComponent(MonitoringRegistry.class);
-        monitoringRegistry.unregisterMonitoringLevelListener(this);
-    }
-
-    public void setLevel(MonitoringLevel level) {
-        // deprecated, ignore
-    }
-
-    public void changeLevel(MonitoringLevel from, MonitoringLevel to,
-            Stats handback) {
-        // deprecated, ignore
-    }
-
-    public void changeLevel(MonitoringLevel from, MonitoringLevel to,
-            MonitoredObjectType type) {
-        if (MonitoredObjectType.SERVLET.equals(type)) {
-            monitoringLevel = to;
-            if(MonitoringLevel.OFF.equals(to)) {
-                this.resetMonitorStatistics();
-            }
-        }
-    }
-
-    /**
-     * Returns the current monitoring level.
-     *
-     * @return The current monitoring level
-     *
-    public static MonitoringLevel getMonitoringLevel() {
-        return monitoringLevel;
-    }
-
-    /**
-     * Returns true if monitoring is enabled, false otherwise.
-     *
-     * @return true if monitoring is enabled, false otherwise
-     *
-    public static boolean isMonitoringEnabled() {
-        return (!MonitoringLevel.OFF.equals(monitoringLevel));
-    }
-
-    private void resetMonitorStatistics() {
-        MonitorUtil.resetMonitorStats(_embedded,
-                habitat.getComponent(MonitoringRegistry.class));
-    }
-
-    */
     // -------------------------------------------------------- Public Methods
 
     /**
