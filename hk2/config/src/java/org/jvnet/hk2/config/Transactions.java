@@ -207,13 +207,13 @@ public final class Transactions {
             List<UnprocessedChangeEvents> unprocessedEvents  = new ArrayList<UnprocessedChangeEvents>();
             for (final PropertyChangeEvent evt : mEvents) {
                 final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
-                if (dom.getListeners() != null) {
+                if (dom.getListeners() != null && dom.getListeners().size() != 0 ) {
                     for (final ConfigListener listener : dom.getListeners()) {
                         if (!notifiedListeners.contains(listener)) {
                             try {
                                 // create a new array each time to avoid any potential array changes?
                                 UnprocessedChangeEvents unprocessed = listener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
-                                if (unprocessed!=null) {
+                                if (unprocessed != null && unprocessed.size() != 0 ) {
                                     unprocessedEvents.add(unprocessed);
                                 }
                             } catch (Exception e) {
@@ -222,6 +222,10 @@ public final class Transactions {
                         }
                         notifiedListeners.add(listener);
                     }
+                } else {
+                    // if nothing is listening, then by definition it's unprocessed
+                    final UnprocessedChangeEvent unp = new UnprocessedChangeEvent(evt, "no ConfigListener listening to dom element " + dom.getProxyType().getName() );
+                    unprocessedEvents.add( new UnprocessedChangeEvents(unp) );
                 }
             }
             // all the config listeners have been notified, let's see if we have
@@ -321,7 +325,7 @@ public final class Transactions {
         // at this point all prior transactions are guaranteed to have cleared
     }
     
-    private Transactions() {        
+    private Transactions() { 
     }
     
     public static final Transactions get() {
