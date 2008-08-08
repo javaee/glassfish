@@ -73,6 +73,7 @@
                         <Export-Package>com.sun.data.*;</Export-Package>
                         <Import-Package>com.sun.sql.*;resolution:=optional,*</Import-Package>
                     </instructions>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <executions>
                     <execution>
