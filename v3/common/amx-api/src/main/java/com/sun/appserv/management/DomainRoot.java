@@ -46,6 +46,7 @@ import com.sun.appserv.management.monitor.JMXMonitorMgr;
 import com.sun.appserv.management.monitor.MonitoringRoot;
 
 import com.sun.appserv.management.ext.realm.RealmsMgr;
+import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 
 import java.util.Map;
 
@@ -242,6 +243,8 @@ public interface DomainRoot extends Container
     public String getInstallDir();
     
     public RealmsMgr getRealmsMgr();
+    
+    public RuntimeMgr getRuntimeMgr();
     
     /**
         Return the time the domain admin server has been running.
