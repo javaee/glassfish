@@ -43,10 +43,12 @@ import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.common_impl.Jar;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Bundle;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -63,8 +65,10 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     private ModuleMetadata metadata = new ModuleMetadata();
 
     public OSGiModuleDefinition(File jar) throws IOException {
-        Jar jarFile = Jar.create(jar);
+        this(Jar.create(jar), jar);
+    }
 
+    public OSGiModuleDefinition(Jar jarFile, File jar) throws IOException {
         /*
         * When we support reading metadata from external manifest.mf file,
         * we can create a custom URI and the uRL handler can merge the
@@ -78,6 +82,14 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         if (version == null) version = "0.0.0"; // default in OSGi
         lifecyclePolicyClassName = mainAttr.getValue(ManifestConstants.LIFECYLE_POLICY);
         jarFile.loadMetadata(metadata);
+    }
+
+    public OSGiModuleDefinition(Bundle b) throws IOException, URISyntaxException {
+        /*
+         * TODO: We should create an adapter to Jar using Bundle.getEntryPaths
+         * and use that instead of relying on getLocation.
+         */
+        this(new File(new URI(b.getLocation()).getPath()));
     }
 
     public String getName() {

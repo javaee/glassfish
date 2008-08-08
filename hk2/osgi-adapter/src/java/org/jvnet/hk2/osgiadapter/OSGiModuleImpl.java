@@ -77,8 +77,6 @@ public final class OSGiModuleImpl implements Module {
      */
     private LifecyclePolicy lifecyclePolicy;
 
-    private boolean sticky;
-
     public OSGiModuleImpl(OSGiModulesRegistryImpl registry, Bundle bundle, ModuleDefinition md) {
         this.registry = registry;
         this.bundle = bundle;
@@ -146,12 +144,9 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public synchronized boolean stop() {
-        if(isSticky()) {
-            // sticky modules can't be stopped.
-            return false;
-        }
         detach();
-        registry.getPackageAdmin().refreshPackages(new Bundle[]{bundle});
+        // Don't refresh packages, as we are not uninstalling the bundle.
+//        registry.getPackageAdmin().refreshPackages(new Bundle[]{bundle});
         state = ModuleState.NEW;
         return true;
     }
@@ -168,7 +163,7 @@ public final class OSGiModuleImpl implements Module {
 
         try {
             bundle.stop();
-            bundle.uninstall();
+//            bundle.uninstall();
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
@@ -176,7 +171,7 @@ public final class OSGiModuleImpl implements Module {
 
     }
 
-    /* package */ void uninstall() {
+    public void uninstall() {
         // This method is called when the hk2-osgi-adapter module is stopped.
         // During that time, we need to stop all the modules, hence no sticky check is
         // performed in this method.
@@ -387,11 +382,11 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public boolean isSticky() {
-        return sticky;
+        return true; // all modules are always sticky
     }
 
     public void setSticky(boolean sticky) {
-        this.sticky = sticky;
+        // NOOP: It's not required in OSGi.
     }
 
     public List<Module> getImports() {

@@ -51,7 +51,7 @@ public class Start extends Assert implements ModuleStartup {
     public void setStartupContext(StartupContext context) {
     }
 
-    public void run() {
+    public void start() {
         // make sure that the test can't find us from the context classloader
         Thread.currentThread().setContextClassLoader(ClassLoader.getSystemClassLoader());
 
@@ -62,4 +62,5 @@ public class Start extends Assert implements ModuleStartup {
         assert Animal.class.getClassLoader()!=Dog.class.getClassLoader();
         assert Dog.class.getClassLoader()==getClass().getClassLoader();
     }
+    public void stop() {}
 }

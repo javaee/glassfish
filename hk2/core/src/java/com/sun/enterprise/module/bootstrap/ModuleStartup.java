@@ -53,8 +53,8 @@ import org.jvnet.hk2.annotations.Contract;
  * @author dochez
  */
 @Contract
-public interface ModuleStartup extends Runnable {
-    
+public interface ModuleStartup {
     public void setStartupContext(StartupContext context);
-    
+    public void start();
+    public void stop();
 }

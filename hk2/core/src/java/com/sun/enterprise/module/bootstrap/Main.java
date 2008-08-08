@@ -320,8 +320,9 @@ public class Main {
      *      one will be auto-discovered.
      * @param context
      *      startup context instance
+     * @return The ModuleStartup service
      */
-    public void launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
+    public ModuleStartup launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
         // now go figure out the start up module
         final ModuleStartup startupCode;
         final Module mainModule;
@@ -374,6 +375,7 @@ public class Main {
 
         mainModule.setSticky(true);
         launch(startupCode, context, mainModule);
+        return startupCode;
     }
 
     protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
@@ -428,7 +430,7 @@ public class Main {
         try {
             startupCode.setStartupContext(context);
             Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
-            startupCode.run();
+            startupCode.start();
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }

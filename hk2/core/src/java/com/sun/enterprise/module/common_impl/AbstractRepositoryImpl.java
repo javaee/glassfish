@@ -63,12 +63,6 @@ public abstract class AbstractRepositoryImpl implements Repository {
     private List<URI> libraries;
     protected List<RepositoryChangeListener> listeners;
 
-    /**
-     * {@link #moduleDefs}'s values in a read-only list.
-     */
-    private List<ModuleDefinition> allModules;
-
-
     public AbstractRepositoryImpl(String name, URI location) {
         this.name = name;
         this.location = location;
@@ -87,7 +81,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     public List<ModuleDefinition> findAll() {
-        return allModules;
+        return new ArrayList<ModuleDefinition>(moduleDefs.values());
     }
 
     public List<ModuleDefinition> findAll(String name) {
@@ -99,8 +93,6 @@ public abstract class AbstractRepositoryImpl implements Repository {
         moduleDefs = new HashMap<String, ModuleDefinition>();
         libraries = new ArrayList<URI>();
         loadModuleDefs(moduleDefs, libraries);
-
-        allModules = Collections.unmodifiableList(new ArrayList<ModuleDefinition>(moduleDefs.values()));
     }
 
     /**
