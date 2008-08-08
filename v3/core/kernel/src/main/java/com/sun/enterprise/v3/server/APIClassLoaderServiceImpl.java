@@ -38,23 +38,13 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModuleDependency;
-import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.osgi.framework.Constants;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,58 +80,8 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     }
 
     private void createAPIClassLoader() throws IOException {
-        final Manifest manifest = new Manifest();
-        Attributes attrs = manifest.getMainAttributes();
-        attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, APIExporterModuleName);
-        attrs.putValue(Constants.DYNAMICIMPORT_PACKAGE, "*");
-        attrs.putValue(Constants.BUNDLE_MANIFESTVERSION, "2"); // R4 spec
-        // This is needed, else the manifest will be written out as an empty file
-        attrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        final File f = File.createTempFile(APIExporterModuleName, ".jar");
-        f.deleteOnExit();
-        JarOutputStream jos = new JarOutputStream(new FileOutputStream(f),
-                manifest);
-        jos.close();
-        ModuleDefinition md = new ModuleDefinition() {
-            private ModuleMetadata metadata = new ModuleMetadata();
-
-            public String getName() {
-                return APIExporterModuleName;
-            }
-
-            public String[] getPublicInterfaces() {
-                return new String[0];
-            }
-
-            public ModuleDependency[] getDependencies() {
-                return new ModuleDependency[0];
-            }
-
-            public URI[] getLocations() {
-                return new URI[]{f.toURI()};
-            }
-
-            public String getVersion() {
-                return null;
-            }
-
-            public String getImportPolicyClassName() {
-                return null;
-            }
-
-            public String getLifecyclePolicyClassName() {
-                return null;
-            }
-
-            public Manifest getManifest() {
-                return manifest;
-            }
-
-            public ModuleMetadata getMetadata() {
-                return metadata;
-            }
-        };
-        APIModule = mr.add(md);
+        APIModule = mr.makeModuleFor(APIExporterModuleName, null);
+        assert(APIModule != null);
         APIClassLoader = APIModule.getClassLoader();
         logger.logp(Level.INFO, "APIClassLoaderService", "createAPIClassLoader",
                 "APIClassLoader = {0}", new Object[]{APIClassLoader});

@@ -22,19 +22,16 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.internal.api.Init;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Startup;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.ComponentException;
 /**
  * AdminCommand to stop the domain execution which mean shuting down the application
  * server.
@@ -49,7 +46,7 @@ public class StopDomainCommand implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
     
     @Inject
-    Habitat habitat;
+    ModulesRegistry registry;
 
     @Param(optional=true, defaultValue="true")
     Boolean force;
@@ -64,26 +61,9 @@ public class StopDomainCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
          
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
-        try {
-            for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
-                try {
-                    svc.release();
-                } catch(Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-
-            for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
-                try {
-                    svc.release();
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        } catch(ComponentException e) {
-            // do nothing.
-        }
+        final Module mgmtAgentModule = registry.makeModuleFor(
+                "com.sun.enterprise.osgi-adapter", null);
+        mgmtAgentModule.stop();
         if (force) {
             System.exit(0);
         }

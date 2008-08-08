@@ -375,8 +375,7 @@ public class ASMainHelper {
 
         // if the recordedLastModified is different than our most recent entry,
         // we flush the felix cache, otherwise we reuse it.
-//        if (recordedLastModified!=lastModified) {
-        if (true) { // TODO(Sahoo): Fix me
+        if (recordedLastModified!=lastModified) {
             if (cacheDir.exists() && cacheDir.isDirectory()) {
                 // remove this old cache so felix creates a new one.
                 logger.info("Removing Felix cache profile dir " + cacheDir+ " left from a previous run");

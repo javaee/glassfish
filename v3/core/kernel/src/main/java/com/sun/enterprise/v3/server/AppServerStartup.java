@@ -23,7 +23,6 @@
 
 package com.sun.enterprise.v3.server;
 
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -41,6 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.ComponentException;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -50,11 +50,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  * Main class for Glassfish v3 startup
+ * This class spawns a non-daemon Thread when the start() is called.
+ * Having a non-daemon thread allows us to control lifecycle of server JVM.
+ * The thead is stopped when stop() is called.
  *
- * @author dochez
+ * @author dochez, sahoo@sun.com
  */
 @Service
 public class AppServerStartup implements ModuleStartup {
@@ -82,9 +86,36 @@ public class AppServerStartup implements ModuleStartup {
 
     @Inject
     Events events;
-    
-    public void run() {
 
+    /**
+     * A keep alive thread that keeps the server JVM from going down
+     * as long as GlassFish kernel is up.
+     */
+    private Thread serverThread;
+
+    public void start() {
+        // wait indefinitely for shutdown to be called
+        serverThread = new Thread("GlassFish Kernel Main Thread"){
+            @Override
+            public void run() {
+                logger.logp(Level.INFO, "AppServerStartup", "run",
+                        "[{0}] started", new Object[]{this});
+                AppServerStartup.this.run();
+                try {
+                    synchronized (this) {
+                        wait(); // Wait indefinitely until shutdown is requested
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                logger.logp(Level.INFO, "AppServerStartup", "run",
+                        "[{0}] exiting", new Object[]{this});
+            }
+        };
+        serverThread.start();
+    }
+
+    public void run() {
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
             return;
@@ -177,7 +208,7 @@ public class AppServerStartup implements ModuleStartup {
 
     }
 
-
+    // TODO(Sahoo): Revisit this method after discussing with Jerome.
     private final void shutdown(Collection<Inhabitant<? extends Startup>> startups, Collection<Inhabitant<? extends Startup>> executedServices) {
 
         CommandRunner runner = habitat.getByType(CommandRunner.class);
@@ -188,6 +219,39 @@ public class AppServerStartup implements ModuleStartup {
             }
             runner.doCommand("stop-domain", params, new PlainTextActionReporter());
             return;
+        }
+    }
+
+    public void stop() {
+        try {
+            for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
+                try {
+                    svc.release();
+                } catch(Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
+                try {
+                    svc.release();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch(ComponentException e) {
+            // do nothing.
+        }
+
+        // notify the server thread that we are done, so that it can come out.
+        synchronized (serverThread) {
+            serverThread.notify();
+        }
+        try {
+            serverThread.join(0);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
