@@ -181,6 +181,7 @@
 			          <updatePolicy>never</updatePolicy>
 				    </snapshots>
         </repository>
+       <!--
         <repository>
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
@@ -189,6 +190,7 @@
 			          <updatePolicy>never</updatePolicy>
 				    </snapshots>
         </repository>
+        -->
         <!-- all the other repositories are inherited -->
     </repositories>
 
