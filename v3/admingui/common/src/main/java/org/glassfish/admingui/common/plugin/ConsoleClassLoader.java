@@ -134,7 +134,7 @@ public class ConsoleClassLoader extends ClassLoader {
      *	<p> This method find the <code>ClassLoader</code> associated with the
      *	    named module.</p>
      */
-    public ClassLoader findModuleClassLoader(String moduleName) {
+    public static ClassLoader findModuleClassLoader(String moduleName) {
 //System.out.println("Find module ClassLoader: " + moduleName);
 	// Get the ServletContext
 	ServletContext servletCtx = (ServletContext)
