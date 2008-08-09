@@ -16,6 +16,8 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.statistics.Counter;
+import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /**
  * User: Jerome Dochez
@@ -94,14 +96,14 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get("server");
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
-            if ((! tn1.hasChildNodes())){// && (tn1 instanceof Counter) ) {
-                /*
-                if (tn1 instanceof Counter)
-                {
-                    Counter c = (Counter)tn1;
-                    System.out.println(tn1.getCompletePathName() + " = " + c.getValue());
+            System.out.println("[TN] node is instanceof  = " + tn1.getClass().getName());
+            if ((! tn1.hasChildNodes()) && 
+                    ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
+                //Counter c = (Counter)tn1;
+                //System.out.println(tn1.getCompletePathName() + " = " + tn1.getValue());
+                if (tn1 instanceof MethodInvoker) {
+                    System.out.println("[TN] Inside: node is instanceof  = " + tn1.getClass().getName());
                 }
-                 */
                 System.out.println(tn1.getCompletePathName() + " = " + tn1.getValue());
                 //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getValue());
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();

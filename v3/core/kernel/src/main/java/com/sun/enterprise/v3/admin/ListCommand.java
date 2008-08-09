@@ -20,6 +20,8 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /**
  * User: Jerome Dochez
@@ -83,8 +85,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get("server");
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
-            if (tn1.hasChildNodes() ) 
-            {
+            if (!( (tn1 instanceof Statistic ) || (tn1 instanceof MethodInvoker))) {//tn1.hasChildNodes() ) 
                 System.out.println(tn1.getCompletePathName());
                 //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getCompletePathName());
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();
