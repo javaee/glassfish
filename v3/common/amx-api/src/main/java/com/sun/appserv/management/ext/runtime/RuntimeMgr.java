@@ -47,7 +47,7 @@ import java.util.Map;
 public interface RuntimeMgr extends AMX, Utility, Singleton
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE			= "X-RuntimMgr";
+	public static final String	J2EE_TYPE			= "X-RuntimeMgr";
     
     /** Map key is the name of the descriptor, value is the content of the descriptor */
     public Map<String,String> getDeploymentDescriptors(String appName);
