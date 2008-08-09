@@ -35,8 +35,6 @@
  */
 package org.glassfish.web.admin.monitor.telemetry;
 
-import java.util.Collection;
-import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -45,55 +43,82 @@ import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
         
 import org.glassfish.flashlight.provider.annotations.*;
+import javax.servlet.Servlet;
+import java.util.Collection;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 
 /**
  * Provides the monitoring data at the Web container level
  *
  * @author Prashanth Abbagani
  */
-public class WebModuleTelemetry{
-    private TreeNode webModuleNode;
-    //Provides the longest response time for a request - not a cumulative value, 
-    //but the largest response time from among the response times.
-    private Counter maxTime = CounterFactory.createCount();
+public class JspStatsTelemetry{
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
-   
+    private String moduleName;
+    private String vsName;
     
-    public WebModuleTelemetry(TreeNode parent, boolean webMonitoringEnabled) {
+    //@Inject
+    //Logger logger;
+    
+    public JspStatsTelemetry(TreeNode parent, String moduleName, String vsName,
+                                boolean webMonitoringEnabled) {
+        this.moduleName = moduleName;
+        this.vsName = vsName;
+        activeJspsLoadedCount.setName("activeJspsLoadedCount");
+        parent.addChild(activeJspsLoadedCount);
+        maxJspsLoadedCount.setName("maxJspsLoadedCount");
+        parent.addChild(maxJspsLoadedCount);
+        totalJspsLoadedCount.setName("totalJspsLoadedCount");
+        parent.addChild(totalJspsLoadedCount);
         this.webMonitoringEnabled = webMonitoringEnabled;
-        webModuleNode = TreeNodeFactory.createTreeNode("request", this, "web");
-        parent.addChild(webModuleNode);
     }
 
-    private Counter servletsTotal = CounterFactory.createCount();
-    private Counter jspsTotal = CounterFactory.createCount();
+    private Counter activeJspsLoadedCount = CounterFactory.createCount();
+    private Counter maxJspsLoadedCount = CounterFactory.createCount();
+    private Counter totalJspsLoadedCount = CounterFactory.createCount();
+
+    public void enableMonitoring(boolean isEnable) {
+        //loop through the handles for this node and enable/disable the listeners
+        //delegate the request to the child nodes
+    }
     
-
-    @ProbeListener("web:webmodule::webModuleStartedEvent")
-    public void webModuleStartedEvent(
-        @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName ) {
-        System.out.println("[TM]webModuletStartedEvent received - appName = " + 
-                            appName + ": hostName = " + hostName);
-        
+    public void enableMonitoringForSubElements(boolean isEnable) {
+        //loop through the children and enable/disable all
     }
 
-    /**
-     * Emits probe event that the web module with the given
-     * <code>appName</code> has been unloaded from the virtual server with
-     * the given <code>hostName</code>.
-     */
-    @ProbeListener("web:webmodule::webModuleStoppedEvent")
-    public void webModuleStoppedEvent(
+    @ProbeListener("web:jsp::jspLoadedEvent")
+    public void jspLoadedEvent(
+        @ProbeParam("jsp") Servlet jsp,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName ) {
-        
-        System.out.println("[TM]webModuleStoppedEvent received - appName = " + 
-                            appName + ": hostName = " + hostName);
+        @ProbeParam("hostName") String hostName) {
+	// handle the servlet loaded probe events
+        System.out.println("Servlet Loaded event received - jspName = " + 
+                             jsp.getServletConfig().getServletName() + 
+                             ": appName = " + appName + ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeJspsLoadedCount.increment();
+        totalJspsLoadedCount.increment();
+        if (activeJspsLoadedCount.getCount() > maxJspsLoadedCount.getCount()) {
+            maxJspsLoadedCount.setCount(activeJspsLoadedCount.getCount());
+        }
+            
     }
-
-    
+/*
+    @ProbeListener("web:servlet::servletDestroyedEvent")
+    public void servletDestroyedEvent(
+                    @ProbeParam("servlet") Servlet servlet,
+                    @ProbeParam("appName") String appName,
+                    @ProbeParam("hostName") String hostName) {
+	// handle the servlet loaded probe events
+        System.out.println("Servlet Destroyed event received - servletName = " + 
+                             servlet.getServletConfig().getServletName() + 
+                             ": appName = " + appName + ": hostName = " + hostName);
+        activeJspsLoadedCount.decrement();
+    }
+*/
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
         if (!webMonitoringEnabled){
@@ -101,13 +126,13 @@ public class WebModuleTelemetry{
             tuneProbeListenerHandles(webMonitoringEnabled);
         }
     }
-    
+
     public void enableProbeListenerHandles(boolean isEnabled) {
         if (isEnabled != webMonitoringEnabled) {
             webMonitoringEnabled = isEnabled;
             tuneProbeListenerHandles(webMonitoringEnabled);
         }
-    }
+    }    
     
     private void tuneProbeListenerHandles(boolean shouldEnable) {
         //disable handles
@@ -120,13 +145,16 @@ public class WebModuleTelemetry{
         
     }
 
-    public void enableMonitoring(boolean isEnable) {
-        //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
+    private boolean isValidEvent(String mName, String hostName) {
+        //Temp fix, get the appname from the context root
+        if ((moduleName == null) || (vsName == null)) {
+            return true;
+        }
+        String appName = WebMonitorStartup.getAppName(mName);
+        if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
+            return true;
+        }
+        
+        return false;
     }
-    
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-    
 }

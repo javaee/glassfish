@@ -35,6 +35,8 @@
  */
 package org.glassfish.web.admin.monitor.telemetry;
 
+import java.util.Collection;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -51,6 +53,8 @@ import org.glassfish.flashlight.provider.annotations.*;
  */
 public class ThreadPoolTelemetry{
     private TreeNode threadpoolNode;
+    private Collection<ProbeClientMethodHandle> handles;
+    private boolean threadpoolMonitoringEnabled;
 
     /* We would like to measure the following */
     /*
@@ -67,21 +71,13 @@ public class ThreadPoolTelemetry{
      * 
      */ 
     
-    public ThreadPoolTelemetry(TreeNode parent) {
+    public ThreadPoolTelemetry(TreeNode parent, boolean threadpoolMonitoringEnabled) {
+        this.threadpoolMonitoringEnabled = threadpoolMonitoringEnabled;
         //threadpoolNode = TreeNodeFactory.createTreeNode(threadPoolName, this, "http-service");
         //parent.addChild(threadpoolNode);
         //We can only add the child when there is a new thread pool
     }
 
-    public void enableMonitoring(boolean isEnable) {
-        //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
-    }
-    
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-    
     @ProbeListener("core:threadpool::newThreadsAllocatedEvent")
     public void newThreadsAllocatedEvent(
         @ProbeParam("threadPoolName") String threadPoolName,
@@ -126,4 +122,40 @@ public class ThreadPoolTelemetry{
                             threadId + ": Thread pool name = " + threadPoolName);
     }
 
+    
+    public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
+        this.handles = handles;
+        if (!threadpoolMonitoringEnabled){
+            //disable handles
+            tuneProbeListenerHandles(threadpoolMonitoringEnabled);
+        }
+    }
+    
+    public void enableProbeListenerHandles(boolean isEnabled) {
+        if (isEnabled != threadpoolMonitoringEnabled) {
+            threadpoolMonitoringEnabled = isEnabled;
+            tuneProbeListenerHandles(threadpoolMonitoringEnabled);
+        }
+    }
+    
+    private void tuneProbeListenerHandles(boolean shouldEnable) {
+        //disable handles
+        for (ProbeClientMethodHandle handle : handles) {
+            if (shouldEnable)
+                handle.enable();
+            else
+                handle.disable();
+        }
+        
+    }
+
+    public void enableMonitoring(boolean isEnable) {
+        //loop through the handles for this node and enable/disable the listeners
+        //delegate the request to the child nodes
+    }
+    
+    public void enableMonitoringForSubElements(boolean isEnable) {
+        //loop through the children and enable/disable all
+    }
+    
 }

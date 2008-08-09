@@ -44,28 +44,34 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
         
 import org.glassfish.flashlight.provider.annotations.*;
 import javax.servlet.Servlet;
-import org.jvnet.hk2.annotations.Inject;
- 
+import java.util.Collection;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+
 /**
  * Provides the monitoring data at the Web container level
  *
  * @author Prashanth Abbagani
  */
-public class WebTelemetry{
-    private TreeNode wto;
-    private TreeNode webChildren[];
+public class ServletStatsTelemetry{
+    private Collection<ProbeClientMethodHandle> handles;
+    private boolean webMonitoringEnabled;
+    private String moduleName;
+    private String vsName;
+    
     //@Inject
     //Logger logger;
     
-    public WebTelemetry(TreeNode server) {
-        wto = TreeNodeFactory.createTreeNode("web", this, "web");
-        server.addChild(wto);
+    public ServletStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
+                                    boolean webMonitoringEnabled) {
+        this.moduleName = moduleName;
+        this.vsName = vsName;
         activeServletsLoadedCount.setName("activeServletsLoadedCount");
-        wto.addChild(activeServletsLoadedCount);
+        parent.addChild(activeServletsLoadedCount);
         maxServletsLoadedCount.setName("maxServletsLoadedCount");
-        wto.addChild(maxServletsLoadedCount);
+        parent.addChild(maxServletsLoadedCount);
         totalServletsLoadedCount.setName("totalServletsLoadedCount");
-        wto.addChild(totalServletsLoadedCount);
+        parent.addChild(totalServletsLoadedCount);
+        this.webMonitoringEnabled = webMonitoringEnabled;
     }
 
     private Counter activeServletsLoadedCount = CounterFactory.createCount();
@@ -90,6 +96,9 @@ public class WebTelemetry{
         System.out.println("Servlet Loaded event received - servletName = " + 
                              servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
         activeServletsLoadedCount.increment();
         totalServletsLoadedCount.increment();
         if (activeServletsLoadedCount.getCount() > maxServletsLoadedCount.getCount()) {
@@ -107,10 +116,48 @@ public class WebTelemetry{
         System.out.println("Servlet Destroyed event received - servletName = " + 
                              servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
         activeServletsLoadedCount.decrement();
     }
 
-    public TreeNode getTreeNode(){
-        return wto;
+    public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
+        this.handles = handles;
+        if (!webMonitoringEnabled){
+            //disable handles
+            tuneProbeListenerHandles(webMonitoringEnabled);
+        }
+    }
+
+    public void enableProbeListenerHandles(boolean isEnabled) {
+        if (isEnabled != webMonitoringEnabled) {
+            webMonitoringEnabled = isEnabled;
+            tuneProbeListenerHandles(webMonitoringEnabled);
+        }
     }    
+    
+    private void tuneProbeListenerHandles(boolean shouldEnable) {
+        //disable handles
+        for (ProbeClientMethodHandle handle : handles) {
+            if (shouldEnable)
+                handle.enable();
+            else
+                handle.disable();
+        }
+        
+    }
+
+    private boolean isValidEvent(String mName, String hostName) {
+        //Temp fix, get the appname from the context root
+        if ((moduleName == null) || (vsName == null)) {
+            return true;
+        }
+        String appName = WebMonitorStartup.getAppName(mName);
+        if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
+            return true;
+        }
+        
+        return false;
+    }
 }

@@ -52,6 +52,7 @@ import org.glassfish.flashlight.statistics.factory.CounterFactory;
 
 public class JVMMemoryStatsTelemetry {
     
+    private TreeNode jvmNode;
     private MemoryUsage heapUsage;
     private MemoryUsage nonheapUsage;
     private MemoryMXBean bean;
@@ -60,21 +61,24 @@ public class JVMMemoryStatsTelemetry {
                 StringManager.getManager(JVMMemoryStatsTelemetry.class);
 
     private Counter commitHeapSize = CounterFactory.createCount();
+    private boolean jvmMonitoringEnabled;
     
     /** Creates a new instance of JVMMemoryStatsTelemetry */
-    public JVMMemoryStatsTelemetry(TreeNode server) {
+    public JVMMemoryStatsTelemetry(TreeNode server, boolean jvmMonitoringEnabled) {
         try {
-            TreeNode jvmNode = TreeNodeFactory.createTreeNode("jvm", this, "jvm");
+            jvmNode = TreeNodeFactory.createTreeNode("jvm", null, "jvm");
             server.addChild(jvmNode);
             bean = ManagementFactory.getMemoryMXBean();
             heapUsage = bean.getHeapMemoryUsage();
             nonheapUsage = bean.getNonHeapMemoryUsage();
-            Method m = this.getClass().getMethod("getCommittedHeapSize", (Class[]) null);
-            System.out.println("heapUsage.getCommittedHeapSize() = " + getCommittedHeapSize());
-            System.out.println("Method m.invoke() = " + m.invoke(this, (Object[]) null));
+            Method m = heapUsage.getClass().getMethod("getCommitted", (Class[]) null);
+            System.out.println("heapUsage.getCommitted() = " + heapUsage.getCommitted());
+            System.out.println("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
             TreeNode committedHeapSize = 
-                    TreeNodeFactory.createMethodInvoker("committedHeapSize", this, "jvm", m);
+                    TreeNodeFactory.createMethodInvoker("committedHeapSize", heapUsage, "jvm", m);
             jvmNode.addChild(committedHeapSize);
+            //enable/disable node
+            jvmNode.setEnabled(jvmMonitoringEnabled);
         } catch (IllegalAccessException ex) {
             Logger.getLogger(JVMMemoryStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
@@ -87,6 +91,13 @@ public class JVMMemoryStatsTelemetry {
             Logger.getLogger(JVMMemoryStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
         }
     }            
+    
+    public void enableMonitoring(boolean isEnabled) {
+        if (isEnabled != jvmMonitoringEnabled) {
+            jvmMonitoringEnabled = isEnabled;
+            jvmNode.setEnabled(jvmMonitoringEnabled);
+        }
+    }
     
     public Counter getCommittedHeapSize() {
         commitHeapSize.setCount(heapUsage.getCommitted());

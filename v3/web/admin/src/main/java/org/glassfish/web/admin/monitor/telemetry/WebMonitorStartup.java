@@ -50,11 +50,11 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import com.sun.enterprise.config.serverbeans.*;
-import java.util.Collection;
 import java.util.List;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-import com.sun.enterprise.config.serverbeans.Applications;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.ConfigListener;
 
@@ -68,6 +68,10 @@ import org.jvnet.hk2.config.ConfigListener;
 @Scoped(Singleton.class)
 public class WebMonitorStartup implements 
     Startup, PostConstruct, ProbeProviderListener, ConfigListener  {
+    private boolean threadpoolMonitoringEnabled;
+    private boolean httpServiceMonitoringEnabled;
+    private boolean jvmMonitoringEnabled;
+    private boolean webMonitoringEnabled;
 
     @Inject
     private ProbeProviderEventManager ppem;
@@ -77,30 +81,36 @@ public class WebMonitorStartup implements
     @Inject
     private ModuleMonitoringLevels mml;
     
-    @Inject
-    private Applications applications;
-    
-    private WebTelemetry webTM = null;
-    private SessionStatsTelemetry sessionsTM = null;
     private WebRequestTelemetry webRequestTM = null;
-    private ThreadPoolTelemetry threadPoolTM = null;
     private WebModuleTelemetry moduleTM = null;
-    private JVMMemoryStatsTelemetry jvmMemoryTM;
+    private SessionStatsTelemetry webSessionsTM = null;
+    private List<SessionStatsTelemetry> vsSessionTMs = null;
+    private ServletStatsTelemetry webServletsTM = null;
+    private List<ServletStatsTelemetry> vsServletTMs = null;
+    private JspStatsTelemetry webJspTM = null;
+    private List<JspStatsTelemetry> vsJspTMs = null;
+    private ThreadPoolTelemetry threadPoolTM = null;
+    private JVMMemoryStatsTelemetry jvmMemoryTM = null;
     
-    private Collection<ProbeClientMethodHandle> handles;
     @Inject
-    private Domain domain;
+    private static Domain domain;
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
-    private TreeNode server;
-    private TreeNode httpService;
+    private TreeNode serverNode;
+    private TreeNode httpServiceNode;
+    private TreeNode webNode;
+    private TreeNode webSessionNode;
+    private TreeNode webServletNode;
+    private TreeNode webJspNode;
+    private TreeNode webRequestNode;
+    
     
     public void postConstruct() {
         System.out.println("In the Web Monitor startup ************");
         ppem.registerProbeProviderListener(this);
         buildWebMonitoringConfigTree();
         //Construct the JVMMemoryStatsTelemetry
-        jvmMemoryTM = new JVMMemoryStatsTelemetry(server);
+        jvmMemoryTM = new JVMMemoryStatsTelemetry(serverNode, jvmMonitoringEnabled);
     }
 
     public Lifecycle getLifecycle() {
@@ -116,36 +126,101 @@ public class WebMonitorStartup implements
                                 " : appName = " + appName);
             if (providerName.equals("session")){
                 System.out.println("and it is Web session");
-                if (webTM == null) {
-                    webTM = new WebTelemetry(server);
-                    handles = pcm.registerListener(webTM);
+                if (webSessionsTM == null) {
+                    webSessionsTM = new SessionStatsTelemetry(webSessionNode, 
+                                    null, null, webMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webSessionsTM);
+                    webSessionsTM.setProbeListenerHandles(handles);
                 }
-                if (sessionsTM == null) {
-                    sessionsTM = new SessionStatsTelemetry(webTM.getTreeNode());
-                    handles = pcm.registerListener(sessionsTM);
+                if (vsSessionTMs == null) {
+                    vsSessionTMs = new ArrayList<SessionStatsTelemetry>();
+                    TreeNode appsNode = serverNode.getNode("applications");
+                    Collection<TreeNode> appNodes = appsNode.getChildNodes();
+                    for (TreeNode appNode : appNodes){
+                        //Get all virtual servers
+                        Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                        for (TreeNode vsNode : vsNodes) {
+                            //Create sessionTM for each vsNode
+                            SessionStatsTelemetry vsSessionTM = 
+                                    new SessionStatsTelemetry(vsNode, 
+                                        appNode.getName(), vsNode.getName(), 
+                                        webMonitoringEnabled);
+                            vsSessionTMs.add(vsSessionTM);
+                            
+                        }
+                    }
                 }
             }
             if (providerName.equals("servlet")){
                 System.out.println("and it is Web servlet");
-                if (webTM == null) {
-                    webTM = new WebTelemetry(server);
-                    handles = pcm.registerListener(webTM);
+                if (webServletsTM == null) {
+                    webServletsTM = new ServletStatsTelemetry(webServletNode, null, 
+                                            null, webMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webServletsTM);
+                    webServletsTM.setProbeListenerHandles(handles);
+                }
+                if (vsServletTMs == null) {
+                    vsServletTMs = new ArrayList<ServletStatsTelemetry>();
+                    TreeNode appsNode = serverNode.getNode("applications");
+                    Collection<TreeNode> appNodes = appsNode.getChildNodes();
+                    for (TreeNode appNode : appNodes){
+                        //Get all virtual servers
+                        Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                        for (TreeNode vsNode : vsNodes) {
+                            //Create sessionTM for each vsNode
+                            ServletStatsTelemetry vsServletTM = 
+                                    new ServletStatsTelemetry(vsNode, 
+                                        appNode.getName(), vsNode.getName(), 
+                                        webMonitoringEnabled);
+                            vsServletTMs.add(vsServletTM);
+                            
+                        }
+                    }
                 }
             }
 
+            if (providerName.equals("jsp")){
+                System.out.println("and it is Web jsp");
+                if (webJspTM == null) {
+                    webJspTM = new JspStatsTelemetry(webJspNode, null, null, webMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webJspTM);
+                    webJspTM.setProbeListenerHandles(handles);
+                }
+                if (vsJspTMs == null) {
+                    vsJspTMs = new ArrayList<JspStatsTelemetry>();
+                    TreeNode appsNode = serverNode.getNode("applications");
+                    Collection<TreeNode> appNodes = appsNode.getChildNodes();
+                    for (TreeNode appNode : appNodes){
+                        //Get all virtual servers
+                        Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                        for (TreeNode vsNode : vsNodes) {
+                            //Create sessionTM for each vsNode
+                            JspStatsTelemetry vsJspTM = 
+                                    new JspStatsTelemetry(vsNode, 
+                                        appNode.getName(), vsNode.getName(), 
+                                        webMonitoringEnabled);
+                            vsJspTMs.add(vsJspTM);
+                            
+                        }
+                    }
+                }
+            }
+            /* Need to fix module, decide where it should go
             if (providerName.equals("webmodule")){
                 System.out.println("and it is Web Module");
                 if (moduleTM == null) {
-                    moduleTM = new WebModuleTelemetry(server);
-                    handles = pcm.registerListener(moduleTM);
+                    moduleTM = new WebModuleTelemetry(serverNode, webMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(moduleTM);
+                    moduleTM.setProbeListenerHandles(handles);
                 }
             }
-            
+            */
             if (providerName.equals("request")){
                 System.out.println("and it is Web request");
                 if (webRequestTM == null) {
-                    webRequestTM = new WebRequestTelemetry(server);
-                    handles = pcm.registerListener(webTM);
+                    webRequestTM = new WebRequestTelemetry(webRequestNode, webMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webRequestTM);
+                    webRequestTM.setProbeListenerHandles(handles);
                 }
             }
             if (providerName.equals("threadpool")){
@@ -153,8 +228,9 @@ public class WebMonitorStartup implements
                 if (threadPoolTM == null) {
                     // Where do I add this? Looks like the thread pools are already created.
                     // Now I need to register the listeners, but which one to register?
-                    //threadPoolTM = new ThreadPoolTelemetry(httpService);
-                    //handles = pcm.registerListener(threadPoolTM);
+                    threadPoolTM = new ThreadPoolTelemetry(httpServiceNode, threadpoolMonitoringEnabled);
+                    Collection<ProbeClientMethodHandle> handles = pcm.registerListener(threadPoolTM);
+                    threadPoolTM.setProbeListenerHandles(handles);
                 }
             }
              //Decide now if I need to enable or disable the nodes (for first time use)
@@ -172,44 +248,55 @@ public class WebMonitorStartup implements
     }
 
     /**
-     * Tree Structure, names in () are dynamic nodes, comments are in []
+     * Tree Structure, names in () are dynamic nodes
      *
      * Server
      * | applications
-     * | |  (stand-alone-module-name)
-     * | |  | (virtual-server)
-     * | |  | | (servlet stats)
-     * | |  | | (jsp stats)
-     * | |  | | (session stats)
-     * | |  (app-name) [ear is not supported in GlassFish v3 Prelude]
-     * | |  | (module-name)
-     * | |  | | (virtual-server)
-     * | |  | | | (servlet stats)
-     * | |  | | | (jsp stats)
-     * | |  | | | (session stats)
-     * | web
-     * | | session 
-     * | | | (session stats)
-     * | | servlet
-     * | | | (servlet stats)
-     * | | jsp
-     * | | | (jsp stats)
-     * | | request
-     * | | | (request stats)
+     * | | web-module
+     * | | application
+     * | | j2ee-application
+     * | | | (app-name)
+     * | | | | (virtual-server)
+     * | | | | | (servlet)
+     * | web-container
      * | http-service
-     * | | (virtual server)
+     * | | http-listener
+     * | | connection-pool
+     * | | (server-name)
      * | | | (request)
-     * | | | | (request stats)
-     * | | | (http-listener)
-     * | | | | (request stats)
-     * | | thread-pool [earlier named as pwc-thread-pool]
-     * | | | (thread-pool stats)
-     * | | connection-queue
-     * | | | (connection-queue stats)
-     * | jvm
-     * | | (jvm stats)
+     * | thread-pools
+     * | | (thread-pool)
      */
     private void buildWebMonitoringConfigTree() {
+        /*
+        if (mml != null) {
+            if ("OFF".equals(mml.getWebContainer())){
+                webMonitoringEnabled = false;
+                System.out.println("Disabling webContainer");
+            } else {
+                webMonitoringEnabled = true;
+            }
+            if ("OFF".equals(mml.getJvm())){
+                jvmMonitoringEnabled = false;
+                System.out.println("Disabling jvmMonitoring");
+            } else {
+                jvmMonitoringEnabled = true;
+            }
+            if ("OFF".equals(mml.getHttpService())){
+                httpServiceMonitoringEnabled = false;
+                System.out.println("Disabling httpServiceMonitoring");
+            } else {
+                httpServiceMonitoringEnabled = true;
+            }
+            if ("OFF".equals(mml.getThreadPool())){
+                threadpoolMonitoringEnabled = false;
+                System.out.println("Disabling threadpoolMonitoring");
+            } else {
+                threadpoolMonitoringEnabled = true;
+            }
+            System.out.println("mml.getWebContainer() = " + mml.getWebContainer());
+        }
+         */
         // server
         Server srvr = null;
         List<Server> ls = domain.getServers().getServer();
@@ -219,16 +306,35 @@ public class WebMonitorStartup implements
                 break;
             }
         }
-        server = TreeNodeFactory.createTreeNode("server", null, "server");
-        mrdr.add("server", server);
+        serverNode = TreeNodeFactory.createTreeNode("server", null, "server");
+        mrdr.add("server", serverNode);
+        
+        // web
+        webNode = TreeNodeFactory.createTreeNode("web", null, "web");
+        serverNode.addChild(webNode);
+        //web->session
+        webSessionNode = TreeNodeFactory.createTreeNode("session", null, "web");
+        webNode.addChild(webSessionNode);
+        
+        //web->servlet
+        webServletNode = TreeNodeFactory.createTreeNode("servlet", null, "web");
+        webNode.addChild(webServletNode);
+        //web->jsp
+        webJspNode = TreeNodeFactory.createTreeNode("jsp", null, "web");
+        webNode.addChild(webJspNode);
+        //web->request
+        webRequestNode = TreeNodeFactory.createTreeNode("request", this, "web");
+        webNode.addChild(webRequestNode);
+        
         // applications
         TreeNode applications = TreeNodeFactory.createTreeNode("applications", null, "web");
-        server.addChild(applications);
+        serverNode.addChild(applications);
         // application
         List<Application> la = domain.getApplications().getModules(Application.class);
         for (Application sapp : la) {
             TreeNode app = TreeNodeFactory.createTreeNode(sapp.getName(), null, "web");
             applications.addChild(app);
+            addVirtualServers(srvr, app, sapp.getName());
         }
         // j2ee application
         List<J2eeApplication> lja = domain.getApplications().getModules(J2eeApplication.class);
@@ -241,6 +347,7 @@ public class WebMonitorStartup implements
         for (WebModule wm : lm) {
             TreeNode app = TreeNodeFactory.createTreeNode(wm.getName(), null, "web");
             applications.addChild(app);
+            addVirtualServers(srvr, app, wm.getName());
         }
         // get server-config
         Config sConfig = null;
@@ -253,44 +360,77 @@ public class WebMonitorStartup implements
         }
         // http-service
         HttpService httpS = sConfig.getHttpService();
-        TreeNode httpService = TreeNodeFactory.createTreeNode("http-service", null, "web");
-        server.addChild(httpService);
-        // http-service.thread-pool
-        TreeNode threadPool = TreeNodeFactory.createTreeNode("thread-pool", null, "web");
-        httpService.addChild(threadPool);
-        // http-service.connection-queue
-        TreeNode connQ = TreeNodeFactory.createTreeNode("connection-queue", null, "web");
-        httpService.addChild(connQ);
+        httpServiceNode = TreeNodeFactory.createTreeNode("http-service", null, "web");
+        serverNode.addChild(httpServiceNode);
+        // virtual server(s)
+        for (VirtualServer vServer : httpS.getVirtualServer()) {
+            TreeNode vs = TreeNodeFactory.createTreeNode(vServer.getId(), null, "web");
+            httpServiceNode.addChild(vs);
+            // http-listener(s)
+            String httpL = vServer.getHttpListeners();
+            if (httpL != null) {
+                for (String str : httpL.split(",")) {
+                    TreeNode httpListener = TreeNodeFactory.createTreeNode(str, null, "web");
+                    vs.addChild(httpListener);
+                }
+            }
+        }
         // http-listener
-        /*
         for (HttpListener htl : httpS.getHttpListener()) {
             TreeNode httpListener = TreeNodeFactory.createTreeNode(htl.getId(), null, "web");
-            httpService.addChild(httpListener);
+            httpServiceNode.addChild(httpListener);
         }
-        */
         // connection-pool
         ConnectionPool cp = httpS.getConnectionPool();
         TreeNode connectionPool = TreeNodeFactory.createTreeNode("connection-pool", null, "web");
-        httpService.addChild(connectionPool);
+        httpServiceNode.addChild(connectionPool);
         // web-container
         WebContainer wc = sConfig.getWebContainer();
-        TreeNode webContainer = TreeNodeFactory.createTreeNode("web", null, "web");
-        server.addChild(webContainer);
-        // web.session
-        TreeNode webSession = TreeNodeFactory.createTreeNode("session", null, "web");
-        webContainer.addChild(webSession);
-        // web.servlet
-        TreeNode webServlet = TreeNodeFactory.createTreeNode("servlet", null, "web");
-        webContainer.addChild(webServlet);
-        // web.jsp
-        TreeNode webJSP = TreeNodeFactory.createTreeNode("jsp", null, "web");
-        webContainer.addChild(webJSP);
-        // web.request
-        TreeNode webRequest = TreeNodeFactory.createTreeNode("request", null, "web");
-        webContainer.addChild(webRequest);
-        // jvm
-        TreeNode jvm = TreeNodeFactory.createTreeNode("jvm", null, "server");
-        server.addChild(jvm);
+        TreeNode webContainer = TreeNodeFactory.createTreeNode("web-container", null, "web");
+        serverNode.addChild(webContainer);
+        // thread-pools
+        ThreadPools tps = sConfig.getThreadPools();
+        TreeNode threadPools = TreeNodeFactory.createTreeNode("thread-pools", null, "web");
+        serverNode.addChild(threadPools);
+    }
+
+    private void addVirtualServers(Server server, TreeNode tn, String appName) {
+        // get the applications refs for the server
+        for (ApplicationRef ar : server.getApplicationRef()) {
+            if (appName.equals(ar.getRef())) {
+                String vsL = ar.getVirtualServers();
+                if (vsL != null) {
+                    for (String str : vsL.split(",")) {
+                        TreeNode vs = TreeNodeFactory.createTreeNode(str, null, "web");
+                        tn.addChild(vs);
+                    }
+                } else {
+                    //Fix it!
+                    TreeNode vs = TreeNodeFactory.createTreeNode("server", null, "web");
+                    tn.addChild(vs);
+                }
+                return;
+            }
+        }
+    }
+
+
+    public static String getAppName(String contextRoot) {
+        // first check in web modules
+        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
+        for (WebModule wm : lm) {
+            if (contextRoot.equals(wm.getContextRoot())) {
+                return (wm.getName());
+            }
+        }
+        // then check under applications (introduced in V3 not j2ee app)
+        List<Application> la = domain.getApplications().getModules(Application.class);
+        for (Application sapp : la) {
+            if (contextRoot.equals(sapp.getContextRoot())) {
+                return (sapp.getName());
+            }
+        }
+        return null;
     }
 
     /**
@@ -298,33 +438,53 @@ public class WebMonitorStartup implements
      * Add code for handling deployment changes like deploy/undeploy
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        System.out.println("WebMonitorStartup: UnprocessedChangeEvents: " + 
-            events[0].getPropertyName());
         for (PropertyChangeEvent event : events) {
             String propName = event.getPropertyName();
-            String enabled = null;
+            String mLevel = null;
             if ("http-service".equals(propName)) {
                 mml = (ModuleMonitoringLevels) event.getSource();
-                enabled = event.getNewValue().toString();
+                mLevel = event.getNewValue().toString();
+                boolean enabled = getEnabledValue(mLevel);
+                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
             } else if ("jvm".equals(propName)) {
                 mml = (ModuleMonitoringLevels) event.getSource();
-                enabled = event.getNewValue().toString();
+                mLevel = event.getNewValue().toString();
+                boolean enabled = getEnabledValue(mLevel);
+                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
+                //jvmMemoryTM.enableMonitoring(enabled);
             } else if ("thread-pool".equals(propName)) {
                 mml = (ModuleMonitoringLevels) event.getSource();
-                enabled = event.getNewValue().toString();
+                mLevel = event.getNewValue().toString();
+                boolean enabled = getEnabledValue(mLevel);
+                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
+                //threadpoolTM.enableMonitoring(enabled);
             } else if ("web-container".equals(propName)) {
                 mml = (ModuleMonitoringLevels) event.getSource();
-                enabled = event.getNewValue().toString();
+                mLevel = event.getNewValue().toString();
+                boolean enabled = getEnabledValue(mLevel);
+                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
+                
+                //webTM.enableMonitoring(enabled);
+                //webRequestTM.enableMonitoring(enabled);
+                //moduleTM.enableMonitoring(enabled);
+                //sessionsTM.enableMonitoring(enabled);
             }
         }
         return null;
+    }
+    
+    private boolean getEnabledValue(String enabledStr) {
+        if ("OFF".equals(enabledStr)) {
+            return false;
+        }
+        return true;
     }
 }

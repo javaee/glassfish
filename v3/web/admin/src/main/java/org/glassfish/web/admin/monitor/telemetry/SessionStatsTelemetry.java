@@ -35,6 +35,8 @@
  */
 package org.glassfish.web.admin.monitor.telemetry;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -44,6 +46,9 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
         
 import org.glassfish.flashlight.provider.annotations.*;
 import javax.servlet.http.HttpSession;
+import com.sun.logging.LogDomains;
+import java.util.Collection;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -51,30 +56,36 @@ import javax.servlet.http.HttpSession;
  * @author Prashanth Abbagani
  */
 public class SessionStatsTelemetry{
+    private String moduleName;
+    private String vsName;
     private TreeNode sessionTM;
     private TreeNode sessionChildren[];
 
-    public SessionStatsTelemetry(TreeNode server) {
-        sessionTM = TreeNodeFactory.createTreeNode("session", this, "web");
+    Logger logger = LogDomains.getLogger(this.getClass().getName());
+    private Collection<ProbeClientMethodHandle> handles;
+    private boolean webMonitoringEnabled;
     
-    
-        server.addChild(sessionTM);
+    public SessionStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
+                                    boolean webMonitoringEnabled) {
+        this.moduleName = moduleName;
+        this.vsName = vsName;
+        this.webMonitoringEnabled = webMonitoringEnabled;
         activeSessionsCurrent.setName("activeSessionsCurrent");
-        sessionTM.addChild(activeSessionsCurrent);
+        parent.addChild(activeSessionsCurrent);
         sessionsTotal.setName("sessionsTotal");
-        sessionTM.addChild(sessionsTotal);
+        parent.addChild(sessionsTotal);
         activeSessionsHigh.setName("activeSessionsHigh");
-        sessionTM.addChild(activeSessionsHigh);
+        parent.addChild(activeSessionsHigh);
         rejectedSessionsTotal.setName("rejectedSessionsTotal");
-        sessionTM.addChild(rejectedSessionsTotal);
+        parent.addChild(rejectedSessionsTotal);
         expiredSessionsTotal.setName("expiredSessionsTotal");
-        sessionTM.addChild(expiredSessionsTotal);
+        parent.addChild(expiredSessionsTotal);
         persistedSessionsTotal.setName("persistedSessionsTotal");
-        sessionTM.addChild(persistedSessionsTotal);
+        parent.addChild(persistedSessionsTotal);
         passivatedSessionsTotal.setName("passivatedSessionsTotal");
-        sessionTM.addChild(passivatedSessionsTotal);
+        parent.addChild(passivatedSessionsTotal);
         activatedSessionsTotal.setName("activatedSessionsTotal");
-        sessionTM.addChild(activatedSessionsTotal);
+        parent.addChild(activatedSessionsTotal);
      }
 
     private Counter activeSessionsCurrent = CounterFactory.createCount();
@@ -101,12 +112,16 @@ public class SessionStatsTelemetry{
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
-        
-        sessionsTotal.increment();
-        incrementActiveSessionsCurrent();
+
         System.out.println("[TM]sessionCreatedEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        sessionsTotal.increment();
+        incrementActiveSessionsCurrent();
+        //logger.log(Level.FINE, "[Logger] session created event");
     }
 
     @ProbeListener("web:session::sessionDestroyedEvent")
@@ -115,10 +130,13 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        activeSessionsCurrent.decrement();        
         System.out.println("[TM]sessionDestroyedEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeSessionsCurrent.decrement();        
     }
 
     @ProbeListener("web:session::sessionRejectedEvent")
@@ -127,11 +145,14 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        activeSessionsCurrent.decrement();
-        rejectedSessionsTotal.increment();
         System.out.println("[TM]sessionRejectedEvent received - max sessions = " + 
                             maxSessions + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeSessionsCurrent.decrement();
+        rejectedSessionsTotal.increment();
     }
 
     @ProbeListener("web:session::sessionExpiredEvent")
@@ -140,11 +161,14 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        activeSessionsCurrent.decrement();
-        expiredSessionsTotal.increment();
         System.out.println("[TM]sessionExpiredEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeSessionsCurrent.decrement();
+        expiredSessionsTotal.increment();
     }
 
     @ProbeListener("web:session::sessionPersistedStartEvent")
@@ -156,6 +180,9 @@ public class SessionStatsTelemetry{
         System.out.println("[TM]sessionPersistedStartEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
     }
 
     @ProbeListener("web:session::sessionPersistedEndEvent")
@@ -164,11 +191,14 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        activeSessionsCurrent.decrement();
-        persistedSessionsTotal.increment();
         System.out.println("[TM]sessionPersistedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeSessionsCurrent.decrement();
+        persistedSessionsTotal.increment();
     }
 
     @ProbeListener("web:session::sessionActivatedStartEvent")
@@ -180,6 +210,9 @@ public class SessionStatsTelemetry{
         System.out.println("[TM]sessionActivatedStartEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
     }
 
     @ProbeListener("web:session::sessionActivatedEndEvent")
@@ -188,11 +221,14 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        incrementActiveSessionsCurrent();
-        activatedSessionsTotal.increment();
         System.out.println("[TM]sessionActivatedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        incrementActiveSessionsCurrent();
+        activatedSessionsTotal.increment();
     }
 
     @ProbeListener("web:session::sessionPassivatedStartEvent")
@@ -204,6 +240,9 @@ public class SessionStatsTelemetry{
         System.out.println("[TM]sessionPassivatedStartEvent  received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
     }
 
     @ProbeListener("web:session::sessionPassivatedEndEvent")
@@ -212,11 +251,14 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        activeSessionsCurrent.decrement();
-        passivatedSessionsTotal.increment();
         System.out.println("[TM]sessionPassivatedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
+        if (!isValidEvent(appName, hostName)) {
+            return;
+        }
+        activeSessionsCurrent.decrement();
+        passivatedSessionsTotal.increment();
     }
     
     private void incrementActiveSessionsCurrent() {
@@ -224,5 +266,45 @@ public class SessionStatsTelemetry{
         if (activeSessionsCurrent.getCount() > activeSessionsHigh.getCount()){
             activeSessionsHigh.setCount(activeSessionsCurrent.getCount());
         }
+    }
+
+    
+    public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
+        this.handles = handles;
+        if (!webMonitoringEnabled){
+            //disable handles
+            tuneProbeListenerHandles(webMonitoringEnabled);
+        }
+    }
+    
+    public void enableProbeListenerHandles(boolean isEnabled) {
+        if (isEnabled != webMonitoringEnabled) {
+            webMonitoringEnabled = isEnabled;
+            tuneProbeListenerHandles(webMonitoringEnabled);
+        }
+    }
+    
+    private void tuneProbeListenerHandles(boolean shouldEnable) {
+        //disable handles
+        for (ProbeClientMethodHandle handle : handles) {
+            if (shouldEnable)
+                handle.enable();
+            else
+                handle.disable();
+        }
+        
+    }
+
+    private boolean isValidEvent(String mName, String hostName) {
+        //Temp fix, get the appname from the context root
+        if ((moduleName == null) || (vsName == null)) {
+            return true;
+        }
+        String appName = WebMonitorStartup.getAppName(mName);
+        if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
+            return true;
+        }
+        
+        return false;
     }
 }
