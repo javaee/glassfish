@@ -83,6 +83,7 @@
                         com.sun.appserv.management.ext.logging,
                         com.sun.appserv.management.ext.update,
                         com.sun.appserv.management.ext.wsmgmt,
+                        com.sun.appserv.management.ext.runtime,
                         com.sun.appserv.management.helper,
                         com.sun.appserv.management.j2ee,
                         com.sun.appserv.management.j2ee.statistics,
