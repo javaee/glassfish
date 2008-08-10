@@ -46,6 +46,7 @@ import java.beans.PropertyVetoException;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.config.support.datatypes.PositiveInteger;
 
 
 
@@ -94,7 +95,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1440")
+    @Attribute (defaultValue="1440", dataType=PositiveInteger.class)
     public String getRotationIntervalInMinutes();
 
     /**
@@ -128,7 +129,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getRotationEnabled();
 
     /**

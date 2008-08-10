@@ -79,7 +79,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getSsl2Enabled();
 
     /**
@@ -113,7 +113,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getSsl3Enabled();
 
     /**
@@ -147,7 +147,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getTlsEnabled();
 
     /**
@@ -164,7 +164,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getTlsRollbackEnabled();
 
     /**
@@ -181,7 +181,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getClientAuthEnabled();
 
     /**
@@ -191,7 +191,4 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      *              {@link String }
      */
     public void setClientAuthEnabled(String value) throws PropertyVetoException;
-
-
-
 }

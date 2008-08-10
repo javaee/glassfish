@@ -27,10 +27,13 @@ public final class Port implements DataType {
             return; //a token is always valid        
         try {
             int port = Integer.parseInt(value);
-            if (port < 0 || port > 0xFFFF) //taken from ServerSocket.java
-                throw new ValidationException("value: " + port + " not applicable for Port [0, " + 0xFFFF + "] data type");
+            if (port < 0 || port > 0xFFFF) { //taken from ServerSocket.java
+                String msg = "value: " + port + " not applicable for Port [0, " + 0xFFFF + "] data type";
+                throw new ValidationException(msg);
+            }
         } catch(NumberFormatException e) {
-            throw new ValidationException(e);
+            String msg = value + " does not represent an Integer";
+            throw new ValidationException(msg);
         }
     }
 }

@@ -44,7 +44,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
+import org.glassfish.config.support.datatypes.PositiveInteger;
 
 
 /**
@@ -62,7 +62,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1")
+    @Attribute (defaultValue="1", dataType=PositiveInteger.class)
     public String getThreadCount();
 
     /**
@@ -79,7 +79,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="256")
+    @Attribute (defaultValue="256", dataType=PositiveInteger.class)
     public String getMaxConnections();
 
     /**
@@ -96,7 +96,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30")
+    @Attribute (defaultValue="30", dataType=PositiveInteger.class)
     public String getTimeoutInSeconds();
 
     /**

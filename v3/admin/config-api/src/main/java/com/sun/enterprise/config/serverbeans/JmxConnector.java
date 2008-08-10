@@ -45,8 +45,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.List;
+import org.glassfish.config.support.datatypes.Port;
 
 
 /**
@@ -84,7 +83,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getEnabled();
 
     /**
@@ -135,7 +134,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (dataType=Port.class)
     public String getPort();
 
     /**
@@ -152,7 +151,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getAcceptAll();
 
     /**
@@ -186,7 +185,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getSecurityEnabled();
 
     /**

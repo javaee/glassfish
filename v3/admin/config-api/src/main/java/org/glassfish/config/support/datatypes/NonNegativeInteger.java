@@ -26,9 +26,11 @@ public class NonNegativeInteger implements DataType {
         if (isTokenized(value))
             return; //a token is always valid
         try {
-            int number = Integer.parseInt(value);
-            if (number < 0 || number > Integer.MAX_VALUE) //taken from ServerSocket.java
-                throw new ValidationException("value: " + number + " not applicable for NonNegativeInteger [0, " + Integer.MAX_VALUE + "] data type");
+            long number = Long.parseLong(value);
+            if (number < 0 || number > Integer.MAX_VALUE) {
+                String msg = "value: " + number + " not applicable for NonNegativeInteger [0, " + Integer.MAX_VALUE + "] data type";
+                throw new ValidationException(msg);
+            }
         } catch(NumberFormatException e) {
             throw new ValidationException(e);
         }

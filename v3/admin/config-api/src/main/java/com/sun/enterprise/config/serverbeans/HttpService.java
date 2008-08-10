@@ -45,7 +45,6 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 

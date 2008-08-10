@@ -44,7 +44,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+import org.glassfish.config.support.datatypes.PositiveInteger;
 
 
 /**
@@ -62,7 +63,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getGloballyEnabled();
 
     /**
@@ -79,7 +80,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getFileCachingEnabled();
 
     /**
@@ -96,7 +97,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30")
+    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
     public String getMaxAgeInSeconds();
 
     /**
@@ -113,7 +114,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="537600")
+    @Attribute (defaultValue="537600", dataType=PositiveInteger.class)
     public String getMediumFileSizeLimitInBytes();
 
     /**
@@ -130,7 +131,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute  (defaultValue="10485760")
+    @Attribute  (defaultValue="10485760", dataType=PositiveInteger.class) //is positive integer enough?
     public String getMediumFileSpaceInBytes();
 
     /**
@@ -147,7 +148,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2048")
+    @Attribute (defaultValue="2048", dataType=PositiveInteger.class)
     public String getSmallFileSizeLimitInBytes();
 
     /**
@@ -164,7 +165,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1048576")
+    @Attribute (defaultValue="1048576", dataType=PositiveInteger.class)
     public String getSmallFileSpaceInBytes();
 
     /**
@@ -181,7 +182,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getFileTransmissionEnabled();
 
     /**
@@ -198,7 +199,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1024")
+    @Attribute (defaultValue="1024", dataType=PositiveInteger.class)
     public String getMaxFilesCount();
 
     /**
@@ -215,7 +216,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0")
+    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
     public String getHashInitSize();
 
     /**
@@ -225,7 +226,4 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *              {@link String }
      */
     public void setHashInitSize(String value) throws PropertyVetoException;
-
-
-
 }

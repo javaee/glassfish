@@ -45,8 +45,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.List;
+
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -55,6 +54,8 @@ import org.glassfish.api.amx.AMXConfigInfo;
     "ssl",
     "property"
 }) */
+import org.glassfish.config.support.datatypes.Port;
+import org.glassfish.config.support.datatypes.PositiveInteger;
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig", nameHint="id")
 @Configured
 public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -99,7 +100,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, dataType=Port.class)
     public String getPort();
 
     /**
@@ -116,7 +117,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Port.class)
     public String getExternalPort();
 
     /**
@@ -150,7 +151,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getBlockingEnabled();
 
     /**
@@ -167,7 +168,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1")
+    @Attribute (defaultValue="1", dataType=PositiveInteger.class)
     public String getAcceptorThreads();
 
     /**
@@ -184,7 +185,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false")
+    @Attribute (defaultValue="false", dataType=Boolean.class)
     public String getSecurityEnabled();
 
     /**
@@ -235,7 +236,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(dataType=Port.class)
     public String getRedirectPort();
 
     /**
@@ -252,7 +253,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getXpoweredBy();
 
     /**
@@ -269,7 +270,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     public String getEnabled();
 
     /**

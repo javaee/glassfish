@@ -423,7 +423,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="-1")
+    @Attribute (defaultValue="-1", dataType=Integer.class)
     public String getStatementTimeoutInSeconds();
 
     /**

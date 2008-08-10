@@ -44,7 +44,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
+import org.glassfish.config.support.datatypes.PositiveInteger;
 
 
 /**
@@ -62,7 +62,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096")
+    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
     public String getQueueSizeInBytes();
 
     /**
@@ -79,7 +79,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096")
+    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
     public String getMaxPendingCount();
 
     /**
@@ -96,7 +96,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096")
+    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
     public String getReceiveBufferSizeInBytes();
 
     /**
@@ -113,7 +113,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="8192")
+    @Attribute (defaultValue="8192", dataType=PositiveInteger.class)
     public String getSendBufferSizeInBytes();
 
     /**

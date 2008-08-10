@@ -25,11 +25,14 @@ public class PositiveInteger implements DataType { //could extend NonNegativeInt
         if (NonNegativeInteger.isTokenized(value))
             return; //a token is always valid             
         try {
-            int number = Integer.parseInt(value);
-            if (number < 1 || number > Integer.MAX_VALUE) //taken from ServerSocket.java
-                throw new ValidationException("value: " + number + " not applicable for PositiveInteger [1, " + Integer.MAX_VALUE + "] data type");
+            long number = Long.parseLong(value);
+            if (number < 1 || number > Integer.MAX_VALUE) { //taken from ServerSocket.java
+                String msg = "value: " + number + " not applicable for PositiveInteger [1, " + Integer.MAX_VALUE + "] data type";
+                throw new ValidationException(msg);
+            }
         } catch(NumberFormatException e) {
-            throw new ValidationException(e);
+            String msg = "value: " + value + " does not represent an Integer";
+            throw new ValidationException(msg);
         }
     }
 }
