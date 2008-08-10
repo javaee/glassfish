@@ -33,33 +33,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.monitor.statistics;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-
 import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
+import javax.management.j2ee.statistics.CountStatistic; 
 import javax.management.j2ee.statistics.TimeStatistic;
-
+import javax.management.j2ee.statistics.Stats;
+import javax.management.j2ee.statistics.JVMStats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
-
-import com.sun.appserv.management.monitor.statistics.AltServletStats;
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import org.glassfish.flashlight.datatree.TreeNode;
+import java.lang.management.MemoryUsage;
+import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /** 
-	Defines additional Application Server specific statistics 
-	ServletStats interface.
-	Extension of javax.management.j2ee.statistics.ServletStats.
-	@see com.sun.appserv.management.j2ee.Servlet
+ *
+ * For v3 Prelude, following stats will be available
+ * server.jvm.committedHeapSize java.lang.management.MemoryUsage
+ * init, used, committed, max
+ *
  */
-
+//public class JVMStatsImpl implements JVMStats, MonitorContract {
 @Service
-public class AltServletStatsImpl implements AltServletStats, MonitorContract {
+public class JVMStatsImpl implements MonitorContract {
 
-    private final String name = "servlet";
+    @Inject
+    private MonitoringRuntimeDataRegistry mrdr;
+
+    private final String name = "jvm";
+    private final String displayFormat = 
+        "%1$-10s %2$-10s %3$-10s %4$-10s";
 
     public String getName() {
         return name;
@@ -67,70 +74,42 @@ public class AltServletStatsImpl implements AltServletStats, MonitorContract {
 
     public ActionReport process(final ActionReport report, final String filter) {
 
+        if (mrdr == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("MonitoringRuntimeDataRegistry is null");
+            return report;
+        }
+
+        TreeNode serverNode = mrdr.get("server");
+        if (serverNode == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("MonitoringRuntimeDataRegistry server node is null");
+            return report;
+        }
+
+        long init = 0;
+        long used = 0;
+        long committed = 0;
+        long max = 0;
+
+        MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("committedHeapSize");
+        //TreeNode tn = (serverNode.getNode("jvm")).getNode("committedHeapSize");
+
         /*
-        StringBuffer sb = new StringBuffer();
-        sb.append("MSR: test message from AltServletStatsImpl ..." + System.getProperty("line.separator"));
-        String str = String.format("%1$-10s %2$-10s %3$-10s", "ActSess", "SessTtl", "SrvltLdC");
-        sb.append(str + System.getProperty("line.separator"));
-        str = String.format("%1$-10s %2$-10s %3$-10s", 10, 20, 30);
-        sb.append(str + System.getProperty("line.separator"));
-        report.setMessage("MSR: test message from AltServletStatsImpl ...");
-        report.setMessage(sb.toString());
+        System.out.println("MSR: tn name = " + tn.getName());
+        System.out.println("MSR: tn class name = " + (tn.getClass()).getName());
+        System.out.println("MSR: tn value = " + tn.getValue());
+        System.out.println("MSR: tn value class name = " + ((tn.getValue()).getClass()).getName());
+        System.out.println("MSR: tn instance = " + tn.getInstance());
+        System.out.println("MSR: tn instance class name = " + ((tn.getInstance()).getClass()).getName());
         */
 
-        String str = null;
-        ActionReport.MessagePart part = null;
+        MemoryUsage mu = (MemoryUsage) tn.getInstance();
 
-/*
-        str = String.format("%1$-10s %2$-10s %3$-10s", "ActSess", "SessTtl", "SrvltLdC");
-        part = report.getTopMessagePart().addChild();
-        part.setChildrenType("monitor_header");
-        part.setMessage(str);
-*/
-        
-        str = String.format("%1$-10s %2$-10s %3$-10s", 10, 20, 30);
-        part = report.getTopMessagePart().addChild();
-        part.setChildrenType("monitor_values");
-        part.setMessage(str);
-
-
+        report.setMessage(String.format(displayFormat, 
+            mu.getInit(), mu.getUsed(), mu.getCommitted(), mu.getMax()));
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getErrorCount() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getRequestCount() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getProcessingTime() {
-    	return null;
-    }
-    
-    /**
-     * @return CountStatistic
-     */
-    public CountStatistic getMaxTime() {
-    	return null;
-    }
-    
-    /**
-     * @return TimeStatistic
-     */
-    public TimeStatistic getServiceTime() {
-    	return null;
     }
 
     public Statistic[] getStatistics() {

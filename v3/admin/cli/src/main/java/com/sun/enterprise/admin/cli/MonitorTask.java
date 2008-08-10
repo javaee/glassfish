@@ -47,7 +47,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 public class MonitorTask extends TimerTask
 {
     private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorCommand.class);
-    String filter = null;
+    String type = null;
     Timer timer = null;
     File fileName = null;
     boolean verbose = false;
@@ -56,15 +56,33 @@ public class MonitorTask extends TimerTask
     public MonitorTask() {}
 
 
-    public MonitorTask(final Timer timer, final String filter, final String[] remoteArgs,
+    public MonitorTask(final Timer timer, final String type, final String[] remoteArgs,
                        final boolean verbose, final File fileName)
     {
         this.timer = timer;
-        if (filter != null)
-            this.filter = filter;
+        if (type != null)
+            this.type = type;
         this.verbose = verbose;
         this.fileName = fileName;
         this.remoteArgs = remoteArgs;
+
+        //print title
+        String title = "";
+        if ("servlet".equals(type)) {
+            title = String.format("%1$-10s %2$-10s %3$-10s", 
+            "ActSess", "SessTtl", "SrvltLdC");
+        } else if ("httplistener".equals(type)) {
+            title = String.format("%1$-4s %2$-4s %3$-4s %4$-4s", 
+            "ec", "mt", "pt", "rc");
+        } else if ("jvm".equals(type)) {
+            title = String.format("%1$-10s %2$-10s %3$-10s %4$-10s",
+            "init", "used", "committed", "max");
+        } else if ("webmodule".equals(type)) {
+            title = String.format(
+            "%1$-5s %2$-5s %3$-5s %4$-5s %5$-5s %6$-5s %7$-5s %8$-8s %9$-10s %10$-5s",
+            "asc", "ast", "rst", "st", "ajlc", "mjlc", "tjlc", "aslc", "mslc", "tslc");
+        }
+        CLILogger.getInstance().printMessage(title);
     }
 
     void cancelMonitorTask()

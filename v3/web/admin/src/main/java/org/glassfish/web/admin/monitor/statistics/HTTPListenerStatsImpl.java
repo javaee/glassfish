@@ -45,36 +45,83 @@ import javax.management.j2ee.statistics.TimeStatistic;
 import javax.management.j2ee.statistics.Stats;
 import com.sun.appserv.management.monitor.statistics.HTTPListenerStats;
 import org.glassfish.admin.monitor.cli.MonitorContract;
+import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import java.util.List;
 
 /** 
  * A Stats interface to represent the statistical data exposed by an
- * HTTP Listener. This include data about the GlobalRequestProcessor
- * and the ThreadPool.
- * The GlobalRequestProcessor collects data about request processing 
- * from each of the RequestProcessor threads.
- * @since S1AS8.0
- * @version 1.0
+ * HTTP Listener. 
+ *
+ * For v3 Prelude, following stats will be available
+ * errorCount, maxTime, processingTime, and requestCount
+ *
  */
 @Service
 public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract {
 
+    @Inject
+    private MonitoringRuntimeDataRegistry mrdr;
+
     private final String name = "httplistener";
+    private final String displayFormat = "%1$-4s %2$-4s %3$-4s %4$-4s";
 
     public String getName() {
         return name;
     }
 
     public ActionReport process(final ActionReport report, final String filter) {
+
         report.setMessage("MSR: test message from HTTPListenerStatsImpl ...");
+
+        if (mrdr == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("MonitoringRuntimeDataRegistry is null");
+            return report;
+        }
+
+        TreeNode serverNode = mrdr.get("server");
+        if (serverNode == null) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("MonitoringRuntimeDataRegistry server node is null");
+            return report;
+        }
+
+        long errorCount = 0;
+        long maxTime = 0;
+        long processingTime = 0;
+        long requestCount = 0;
+
+        List<TreeNode> tnL = serverNode.getNodes("server.web.request.*");
+        for (TreeNode tn : tnL) {
+            if (tn.hasChildNodes()) {
+                continue;
+            }
+            //System.out.println("MSR: tn name = " + tn.getName());
+            //System.out.println("MSR: tn value = " + tn.getValue());
+            //System.out.println("MSR: tn class name = " + ((tn.getValue()).getClass()).getName());
+            if ("errorCount".equals(tn.getName())) {
+                if (tn.getValue() != null)
+                errorCount = (Long) tn.getValue(); 
+            } else if ("maxTime".equals(tn.getName())) {
+                if (tn.getValue() != null)
+                maxTime = (Long) tn.getValue(); 
+            } else if ("processingTime".equals(tn.getName())) {
+                if (tn.getValue() != null)
+                processingTime = (Long) tn.getValue(); 
+            } else if ("requestCount".equals(tn.getName())) {
+                if (tn.getValue() != null)
+                requestCount = (Long) tn.getValue(); 
+            }
+        }
+
+        //report.setMessage(String.format(displayFormat, "ec", "mt", "pt", "rc"));
+        report.setMessage(String.format(displayFormat, 
+            errorCount, maxTime, processingTime, requestCount));
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
     }
 
-    // GlobalRequestProcessor statistics for the listener
-    // TODO: Consolidate the statistics into Boundary or BoundedRange
-    // statistics, as necessitated. For now, will leave everything
-    // as a CountStatistic
-    
     /**
      * Cumulative value of the bytesReceived by each of the
      * RequestProcessors

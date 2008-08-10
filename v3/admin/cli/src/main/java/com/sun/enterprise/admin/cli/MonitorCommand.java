@@ -59,7 +59,7 @@ public class MonitorCommand extends AbstractCommand {
         Timer timer = new Timer();
         try
         {
-            MonitorTask monitorTask = new MonitorTask(timer, filter, 
+            MonitorTask monitorTask = new MonitorTask(timer, type, 
                                             getRemoteArgs(), verbose, fileName);
             timer.scheduleAtFixedRate(monitorTask, 0, interval);
 
