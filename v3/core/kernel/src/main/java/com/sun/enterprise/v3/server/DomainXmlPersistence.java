@@ -88,7 +88,11 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
             doc.writeTo(indentingXMLStreamWriter);
             indentingXMLStreamWriter.close();
         } catch (XMLStreamException e) {
+            logger.severe("Temporary file could not be created, disk full?");
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+            // return after calling finally clause, because since temp file couldn't be saved,
+            // renaming should not be attempted
         } finally {
             if (writer!=null) {
                 try {
@@ -105,7 +109,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         }
         
         // backup the current file
-        File backup = new File(env.getConfigDirPath(), "domain.bak");
+        File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
         if (backup.exists() && !backup.delete()) {
             logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
             return;
