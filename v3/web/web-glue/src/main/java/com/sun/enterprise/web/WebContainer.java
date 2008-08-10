@@ -66,7 +66,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.connector.CoyoteAdapter;
@@ -114,7 +113,6 @@ import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.appserv.security.provider.ProxyHandler;
 //import com.sun.appserv.server.ServerLifecycleException;
-import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
@@ -2120,7 +2118,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
 
             // Configure the class loader delegation model, classpath etc
-            Loader loader = configureLoader(ctx, iasBean, wmInfo);
+            Loader loader = ctx.configureLoader(iasBean, wmInfo);
 
             // Set the class loader on the DOL object
             if (wbd != null && wbd.hasWebServices())
@@ -2299,6 +2297,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return _appsWorkRoot;
     }
 
+
     /**
      * @return The work root directory of all standalone webapps
      */
@@ -2306,59 +2305,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return _modulesWorkRoot;
     }
 
-    /**
-     * Configure the class loader for the web module based on the
-     * settings in sun-web.xml's class-loader element (if any).
-     */
-    private Loader configureLoader(WebModule ctx, SunWebApp bean,
-            WebModuleConfig wmInfo) {
 
-        com.sun.enterprise.deployment.runtime.web.ClassLoader clBean = null;
-
-        WebappLoader loader = new V3WebappLoader(wmInfo.getAppClassLoader());
-
-        loader.setUseMyFaces(ctx.isUseMyFaces());
-
-        if (bean != null) {
-            clBean = bean.getClassLoader();
-        }
-        if (clBean != null) {
-            configureLoaderAttributes(loader, clBean, ctx);
-            configureLoaderProperties(loader, clBean);
-        } else {
-            loader.setDelegate(true);
-        }
-
-        // START S1AS 6178005
-        String stubPath = wmInfo.getStubPath();
-        if (stubPath != null) {
-            loader.addRepository("file:" + stubPath + File.separator);
-        }
-        // END S1AS 6178005
-
-        addLibs(loader, ctx);
-
-        // START PE 4985680
-        /**
-         * Adds the given package name to the list of packages that may
-         * always be overriden, regardless of whether they belong to a
-         * protected namespace
-         */
-        String packagesName =
-                System.getProperty("com.sun.enterprise.overrideablejavaxpackages");
-
-        if (packagesName != null) {
-            List overridablePackages =
-                    StringUtils.parseStringList(packagesName, " ,");
-            for( int i=0; i < overridablePackages.size(); i++){
-                loader.addOverridablePackage((String)overridablePackages.get(i));
-            }
-        }
-        // END PE 4985680
-
-        ctx.setLoader(loader);
-
-        return loader;
+    File getLibPath() {
+        return instance.getLibPath();
     }
 
 
@@ -3511,175 +3460,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
 
     /**
-     * Adds all libraries specified via the --libraries deployment option to
-     * the given loader associated with the given web context.
-     *
-     * @param loader The loader to configure
-     * @param ctx The loader's associated web context
-     */
-    private void addLibs(Loader loader, WebModule ctx) {
-
-        String list = ASClassLoaderUtil.getLibrariesForModule(WebModule.class, ctx.getID());
-        if (list == null) {
-            return;
-        }
-        String[] libs = list.split(",");
-        if (libs == null) {
-            return;
-        }
-
-        File libDir = instance.getLibPath();
-        String libDirPath = libDir.getAbsolutePath();
-        String appLibsPrefix = libDirPath + File.separator + "applibs"
-                + File.separator;
-
-        for (int i=0; i<libs.length; i++) {
-            try {
-                URL url = new URL(libs[i]);
-                loader.addRepository(libs[i]);
-            } catch (MalformedURLException e) {
-                // Not a URL, interpret as file
-                File file = new File(libs[i]);
-                if (file.isAbsolute()) {
-                    loader.addRepository("file:" + file.getAbsolutePath());
-                } else {
-                    loader.addRepository("file:" + appLibsPrefix + libs[i]);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Configures the given classloader with its attributes specified in
-     * sun-web.xml.
-     *
-     * @param loader The classloader to configure
-     * @param clBean The class-loader info from sun-web.xml
-     * @param ctx The classloader's associated web module
-     */
-    private void configureLoaderAttributes(
-            Loader loader,
-            com.sun.enterprise.deployment.runtime.web.ClassLoader clBean,
-            WebModule ctx) {
-
-        String value = clBean.getAttributeValue(
-                com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
-
-        /*
-         * The DOL will *always* return a value: If 'delegate' has not been
-         * configured in sun-web.xml, its default value will be returned,
-         * which is FALSE in the case of sun-web-app_2_2-0.dtd and
-         * sun-web-app_2_3-0.dtd, and TRUE in the case of
-         * sun-web-app_2_4-0.dtd.
-         */
-        boolean delegate = ConfigBeansUtilities.toBoolean(value);
-        loader.setDelegate(delegate);
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("WebModule[" + ctx.getPath()
-            + "]: Setting delegate to " + delegate);
-        }
-
-        // Get any extra paths to be added to the class path of this
-        // class loader
-        value = clBean.getAttributeValue(
-                com.sun.enterprise.deployment.runtime.web.ClassLoader.EXTRA_CLASS_PATH);
-        if (value != null) {
-            // Parse the extra classpath into its ':' and ';' separated
-            // components. Ignore ':' as a separator if it is preceded by
-            // '\'
-            String[] pathElements = value.split(";|((?<!\\\\):)");
-            if (pathElements != null) {
-                for (String path : pathElements) {
-                    path = path.replace("\\:", ":");
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("WebModule[" + ctx.getPath()
-                        + "]: Adding " + path
-                                + " to the classpath");
-                    }
-
-                    try {
-                        URL url = new URL(path);
-                        loader.addRepository(path);
-                    } catch (MalformedURLException mue1) {
-                        // Not a URL, interpret as file
-                        File file = new File(path);
-                        // START GlassFish 904
-                        if (!file.isAbsolute()) {
-                            // Resolve relative extra class path to the
-                            // context's docroot
-                            file = new File(ctx.getDocBase(), path);
-                        }
-                        // END GlassFish 904
-
-                        try {
-                            URL url = file.toURI().toURL();
-                            loader.addRepository(url.toString());
-                        } catch (MalformedURLException mue2) {
-                            String msg = _rb.getString(
-                                    "webcontainer.classpathError");
-                            Object[] params = { path };
-                            msg = MessageFormat.format(msg, params);
-                            _logger.log(Level.SEVERE, msg, mue2);
-                        }
-                    }
-                }
-            }
-        }
-
-        value = clBean.getAttributeValue(
-                com.sun.enterprise.deployment.runtime.web.ClassLoader.DYNAMIC_RELOAD_INTERVAL);
-        if (value != null) {
-            // Log warning if dynamic-reload-interval is specified
-            // in sun-web.xml since it is not supported
-            _logger.log(Level.WARNING,
-                    "webcontainer.dynamicReloadInterval");
-        }
-    }
-
-
-    /**
-     * Configures the given classloader with its properties specified in
-     * sun-web.xml.
-     *
-     * @param loader The classloader to configure
-     * @param clBean The class-loader info from sun-web.xml
-     */
-    private void configureLoaderProperties(
-            Loader loader,
-            com.sun.enterprise.deployment.runtime.web.ClassLoader clBean) {
-
-        String name = null;
-        String value = null;
-
-        WebProperty[] props = clBean.getWebProperty();
-        if (props == null || props.length == 0) {
-            return;
-        }
-
-        for (int i = 0; i < props.length; i++) {
-
-            name = props[i].getAttributeValue(WebProperty.NAME);
-            value = props[i].getAttributeValue(WebProperty.VALUE);
-
-            if (name == null || value == null) {
-                throw new IllegalArgumentException(
-                        _rb.getString("webcontainer.nullWebProperty"));
-            }
-
-            if (name.equalsIgnoreCase("ignoreHiddenJarFiles")) {
-                loader.setIgnoreHiddenJarFiles(ConfigBeansUtilities.toBoolean(value));
-            } else {
-                Object[] params = { name, value };
-                _logger.log(Level.WARNING,
-                        "webcontainer.invalidProperty",
-                        params);
-            }
-        }
-    }
-
-
-    /**
      * Removes the dummy module (the module created off of a virtual server's
      * docroot) from the given virtual server if such a module exists.
      *
@@ -4472,30 +4252,4 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return null;
         };
     }
-}
-
-
-class V3WebappLoader extends WebappLoader {
-
-    final ClassLoader cl;
-
-    V3WebappLoader(ClassLoader cl) {
-        super();
-        this.cl = cl;
-    }
-
-    @Override
-    protected ClassLoader createClassLoader() throws Exception {
-        return cl;
-    }
-
-    /**
-     * Stops the nested classloader
-     */
-    @Override
-    public void stopNestedClassLoader() {
-        // Do nothing. The nested (Webapp)ClassLoader is stopped in
-        // WebApplication.stop()
-    }
-
 }
