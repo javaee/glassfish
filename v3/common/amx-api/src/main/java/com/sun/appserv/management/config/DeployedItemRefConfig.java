@@ -92,4 +92,7 @@ public interface DeployedItemRefConfig extends Container, RefConfig, ConfigCreat
     public void     setDisableTimeoutInMinutes( final String timeout );
     
     public Map<String,ApplicationConfigConfig>  getApplicationConfigConfigMap();
+    
+    public ApplicationConfigConfig createApplicationConfigConfig( String type, String value );
+    public void                    removeApplicationConfigConfig( String type );
 }
