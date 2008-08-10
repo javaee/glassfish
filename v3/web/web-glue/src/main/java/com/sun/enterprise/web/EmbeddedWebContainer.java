@@ -217,14 +217,17 @@ public final class EmbeddedWebContainer extends Embedded {
      * @param location Absolute pathname to the web module directory
      * @param defaultWebXmlLocation Location of default-web.xml
      */
-    public Context createContext(String ctxPath, File location,
+    public Context createContext(String id,
+                                 String ctxPath,
+                                 File location,
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
-                                 WebBundleDescriptor wbd, String compEnvId) {
+                                 WebBundleDescriptor wbd,
+                                 String compEnvId) {
 
         File configFile = new File(location, Constants.WEB_CONTEXT_XML);
-        WebModule context = new WebModule(webContainer);
+        WebModule context = new WebModule(id, webContainer);
         context.setDebug(debug);
         context.setPath(ctxPath);
         context.setDocBase(location.getAbsolutePath());

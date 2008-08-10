@@ -1968,12 +1968,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             exception = ex;
         }
 
-        ctx = (WebModule) _embedded.createContext(wmContextPath,
+        ctx = (WebModule) _embedded.createContext(
+                wmName,
+                wmContextPath,
                 docBase,
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor(), compEnvId);
+                wmInfo.getDescriptor(),
+                compEnvId);
 
         // for now disable JNDI
         ctx.setUseNaming(false);
@@ -2107,7 +2110,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             // set the sun-web config bean
             ctx.setIasWebAppConfigBean(iasBean);
-            ctx.setID(wmName);
 
             // Configure SingleThreadedServletPools, work/tmp directory etc
             ctx.configureMiscSettings(iasBean, vs, displayContextPath);
@@ -2491,6 +2493,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         if (context.hasAdHocPaths()
                         || context.hasAdHocSubtrees()) {
                             WebModule wm = createAdHocWebModule(
+                                    context.getID(),
                                     host,
                                     contextRoot,
                                     context.getJ2EEApplication());
@@ -3290,12 +3293,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param servletInfo Info about the ad-hoc servlet that will service
      * requests on the given path
      */
-    public void registerAdHocPath(String path,
+    public void registerAdHocPath(
+            String id,
+            String path,
             String ctxtRoot,
             String appName,
             AdHocServletInfo servletInfo) {
 
-        registerAdHocPathAndSubtree(path, null, ctxtRoot, appName, servletInfo);
+        registerAdHocPathAndSubtree(id, path, null, ctxtRoot, appName,
+                                    servletInfo);
     }
 
 
@@ -3310,11 +3316,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param servletInfo Info about the ad-hoc servlet that will service
      * requests on the given ad-hoc path and subtree
      */
-    public void registerAdHocPathAndSubtree(String path,
+    public void registerAdHocPathAndSubtree(
+            String id,
+            String path,
             String subtree,
             String ctxtRoot,
             String appName,
             AdHocServletInfo servletInfo) {
+
         WebModule wm = null;
 
         Engine[] engines =  _embedded.getEngines();
@@ -3331,7 +3340,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                 wm = (WebModule) vs.findChild(ctxtRoot);
                 if (wm == null) {
-                    wm = createAdHocWebModule(vs, ctxtRoot, appName);
+                    wm = createAdHocWebModule(id, vs, ctxtRoot, appName);
                 }
                 wm.addAdHocPathAndSubtree(path, subtree, servletInfo);
             }
@@ -3419,11 +3428,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      *
      * @return The newly created ad-hoc web module
      */
-    private WebModule createAdHocWebModule(VirtualServer vs,
+    private WebModule createAdHocWebModule(
+            String id,
+            VirtualServer vs,
             String ctxtRoot,
             String appName) {
 
-        AdHocWebModule wm = new AdHocWebModule(this);
+        AdHocWebModule wm = new AdHocWebModule(id, this);
 
         wm.restrictedSetPipeline(new WebPipeline(wm));
 

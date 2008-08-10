@@ -168,8 +168,8 @@ public class WebModule extends PwcWebModule {
      *
      * @param webContainer Web container on which this web module is deployed
      */
-    public WebModule(WebContainer webContainer) {
-
+    public WebModule(String id, WebContainer webContainer) {
+        super(id);
         this.webContainer = webContainer;
         this.servletProbeProvider = webContainer.getServletProbeProvider();
         this.sessionProbeProvider = webContainer.getSessionProbeProvider();
@@ -1594,11 +1594,11 @@ public class WebModule extends PwcWebModule {
      */
 
     public void servletInitializedEvent(Servlet servlet) {
-        servletProbeProvider.servletInitializedEvent(servlet, name, vsId);
+        servletProbeProvider.servletInitializedEvent(servlet, _id, vsId);
     }
 
     public void servletDestroyedEvent(Servlet servlet) {
-        servletProbeProvider.servletDestroyedEvent(servlet, name, vsId);
+        servletProbeProvider.servletDestroyedEvent(servlet, _id, vsId);
     }
 
 
@@ -1607,43 +1607,43 @@ public class WebModule extends PwcWebModule {
      */
 
     public void sessionCreatedEvent(HttpSession session) {
-        sessionProbeProvider.sessionCreatedEvent(session, name, vsId);
+        sessionProbeProvider.sessionCreatedEvent(session, _id, vsId);
     }
 
     public void sessionDestroyedEvent(HttpSession session) {
-        sessionProbeProvider.sessionDestroyedEvent(session, name, vsId);
+        sessionProbeProvider.sessionDestroyedEvent(session, _id, vsId);
     }
 
     public void sessionRejectedEvent(int maxSessions) {
-        sessionProbeProvider.sessionRejectedEvent(maxSessions, name, vsId);
+        sessionProbeProvider.sessionRejectedEvent(maxSessions, _id, vsId);
     }
 
     public void sessionExpiredEvent(HttpSession session) {
-        sessionProbeProvider.sessionExpiredEvent(session, name, vsId);
+        sessionProbeProvider.sessionExpiredEvent(session, _id, vsId);
     }
 
     public void sessionPersistedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedStartEvent(session, name, vsId);
+        sessionProbeProvider.sessionPersistedStartEvent(session, _id, vsId);
     }
 
     public void sessionPersistedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPersistedEndEvent(session, name, vsId);
+        sessionProbeProvider.sessionPersistedEndEvent(session, _id, vsId);
     }
 
     public void sessionActivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedStartEvent(session, name, vsId);
+        sessionProbeProvider.sessionActivatedStartEvent(session, _id, vsId);
     }
 
     public void sessionActivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionActivatedEndEvent(session, name, vsId);
+        sessionProbeProvider.sessionActivatedEndEvent(session, _id, vsId);
     }
 
     public void sessionPassivatedStartEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedStartEvent(session, name, vsId);
+        sessionProbeProvider.sessionPassivatedStartEvent(session, _id, vsId);
     }
 
     public void sessionPassivatedEndEvent(HttpSession session) {
-        sessionProbeProvider.sessionPassivatedEndEvent(session, name, vsId);
+        sessionProbeProvider.sessionPassivatedEndEvent(session, _id, vsId);
     }
 
 
@@ -1652,11 +1652,11 @@ public class WebModule extends PwcWebModule {
      */
 
     public void webModuleStartedEvent() {
-        webModuleProbeProvider.webModuleStartedEvent(name, vsId);
+        webModuleProbeProvider.webModuleStartedEvent(_id, vsId);
     }
 
     public void webModuleStoppedEvent() {
-        webModuleProbeProvider.webModuleStoppedEvent(name, vsId);
+        webModuleProbeProvider.webModuleStoppedEvent(_id, vsId);
     }
 
 }

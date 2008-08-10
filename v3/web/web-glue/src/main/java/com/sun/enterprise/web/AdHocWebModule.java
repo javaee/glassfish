@@ -47,8 +47,8 @@ public class AdHocWebModule extends WebModule {
     /*
      * Constructor
      */
-    public AdHocWebModule(WebContainer webcontainer) {
-        super(webcontainer);
+    public AdHocWebModule(String id, WebContainer webcontainer) {
+        super(id, webcontainer);
     }
 
     public boolean getConfigured() {

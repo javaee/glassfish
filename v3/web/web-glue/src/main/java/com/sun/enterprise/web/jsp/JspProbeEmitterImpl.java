@@ -50,8 +50,8 @@ import org.glassfish.web.admin.monitor.JspProbeProvider;
  */
 public class JspProbeEmitterImpl implements JspProbeEmitter {
 
-    // The web module's name
-    private String appName;
+    // The web module's id
+    private String moduleId;
 
     // The id of the virtual server on which the web module has been
     // deployed
@@ -66,7 +66,7 @@ public class JspProbeEmitterImpl implements JspProbeEmitter {
      * JspProbeEmitterImpl emits jsp related probe events
      */
     public JspProbeEmitterImpl(WebModule webModule) {
-        this.appName = webModule.getName();
+        this.moduleId = webModule.getID();
         if (webModule.getParent() != null) {
             this.vsId = ((VirtualServer) webModule.getParent()).getID();
         }
@@ -74,6 +74,6 @@ public class JspProbeEmitterImpl implements JspProbeEmitter {
     }
 
     public void jspLoadedEvent(Servlet jspServlet) {
-        jspProbeProvider.jspLoadedEvent(jspServlet, appName, vsId);
+        jspProbeProvider.jspLoadedEvent(jspServlet, moduleId, vsId);
     }
 }

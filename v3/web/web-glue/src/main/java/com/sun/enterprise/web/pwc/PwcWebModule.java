@@ -53,7 +53,7 @@ public abstract class PwcWebModule extends StandardContext {
     // ----------------------------------------------------- Instance Variables
 
     // The id of this web module as specified in the configuration.
-    private String _id = null;
+    protected String _id = null;
 
     // The session cookie configuration for this web module.
     private SessionCookieConfig _cookieConfig = null;
@@ -106,6 +106,15 @@ public abstract class PwcWebModule extends StandardContext {
     protected String formHintField = null;
 
     protected String defaultCharset;
+
+
+    /**
+     * Constructor
+     */
+    public PwcWebModule(String id) {
+        super();
+        _id = id;
+    }
 
         
     /**
