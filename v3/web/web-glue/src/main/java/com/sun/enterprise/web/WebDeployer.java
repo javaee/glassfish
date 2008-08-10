@@ -225,7 +225,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
 
-        return new WebApplication(container, wmInfo, dispatcher);
+        return new WebApplication(container, wmInfo);
     }
 
     

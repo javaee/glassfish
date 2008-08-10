@@ -168,7 +168,6 @@ import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.EntityResolver;
 
@@ -271,13 +270,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     DasConfig dasConfig;
     
     @Inject
-    RequestDispatcher dispatcher;
-
-    @Inject
     GrizzlyService grizzlyService;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
-    HashMap<Integer, CoyoteAdapter> adapterMap = new HashMap<Integer, CoyoteAdapter>();
     HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
     EmbeddedWebContainer _embedded;
@@ -857,7 +852,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         portMap.put(httpListener.getId(),
                     Integer.valueOf(httpListener.getPort()));
         CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
-        adapterMap.put(Integer.valueOf(httpListener.getPort()), coyoteAdapter);
         connectorMap.put(httpListener.getId(), connector);
 
         // If we already know the redirect port, then set it now
@@ -1657,29 +1651,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             defaultPath = wmInfo.getContextPath();
                             loadStandaloneWebModule(vs, wmInfo);
                         }
-                        for (int port : vs.getPorts()) {
-                            if ((jkConnector!=null) && (port==jkConnector.getPort())) {
-                                // Do not registerEndpoint for jk connector port
-                                continue;
-                            }
-                            CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
-                            WebApplication application = new WebApplication(this, 
-                                    wmInfo, dispatcher);
-                            //@TODO change EndportRegistrationException processing if required
-                            try {
-                                dispatcher.registerEndpoint(wmInfo.getContextPath(),
-                                        adapter, application);
-                            } catch(EndpointRegistrationException e) {
-                                String msg = _rb.getString(
-                                        "webcontainer.defaultWebModuleError");
-                                msg = MessageFormat.format(
-                                        msg,
-                                        new Object[]{defaultPath,
-                                    vs.getName()
-                                });
-                                _logger.log(Level.SEVERE, msg, e);
-                            }
-                        }
                     }
                 }
             }
@@ -2302,10 +2273,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     try {
                         mapper.setDefaultContextPath(virtualServer.getName(),
                                 defaultContextPath);
-                        CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
-                        WebApplication application = new WebApplication(this, 
-                                wmInfo, dispatcher);
-                        dispatcher.registerEndpoint("/", adapter, application);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
                     }
@@ -4226,7 +4193,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
             if (m.getPort() == port) {
                 mapper = m;
-                break;
+                /*
+                 * FIXME: Uncomment as soon as Habitat.removeIndex has
+                 * been fixed
+                 *
+                 * break;
+                 */
             }
         }
 
@@ -4260,7 +4232,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _embedded.removeConnector(conn);
                 grizzlyService.removeNetworkProxy(port);
                 portMap.remove(httpListener.getId());
-                adapterMap.remove(Integer.valueOf(port));
                 connectorMap.remove(httpListener.getId());
             }
         }

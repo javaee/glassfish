@@ -70,12 +70,10 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     final WebContainer container;
     final WebModuleConfig wmInfo;
-    final RequestDispatcher dispatcher;
 
-    public WebApplication(WebContainer container, WebModuleConfig config, RequestDispatcher dispatcher) {
+    public WebApplication(WebContainer container, WebModuleConfig config) {
         this.container = container;
         this.wmInfo = config;
-        this.dispatcher = dispatcher;
     }
 
 
@@ -101,40 +99,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         logger.info("Loading application " + wmInfo.getDescriptor().getName()
                 + " at " + wmInfo.getDescriptor().getContextRoot());
-        for (Result<com.sun.enterprise.web.WebModule> result : results) {
-            // result will be null if the web module was merely resumed
-            if (result != null) { 
-                if (result.isSuccess()) {
-                    VirtualServer vs = (VirtualServer) result.result().getParent();
-                    final Collection<String> c = new HashSet<String>();
-                    c.add(vs.getID());
-                    if (loadToAll || vsList.contains(vs.getName())
-                            || isAliasMatched(vsList,vs)) {
-                        for (int port : vs.getPorts()) {
-                            if ((container.getJkConnector()!=null) && 
-                                    (port==container.getJkConnector().getPort())) {
-                                // Do not registerEndpoint for jk connector port
-                                continue;
-                            }
-                            CoyoteAdapter adapter =
-                                container.adapterMap.get(Integer.valueOf(port));
-                            //@TODO change EndportRegistrationException processing if required
-                            try {
-                                dispatcher.registerEndpoint(contextRoot,
-                                    adapter.getPort(), c, adapter, this);
-                            } catch(EndpointRegistrationException e) {
-                                logger.log(Level.WARNING,
-                                           "Error while deploying", e);
-                            }
-                        }
-                    }
-                } else {
-                    logger.log(Level.SEVERE, "Error while deploying",
-                               result.exception());
-                    return false;
-                }
-            }
-        }
 
         return true;
     }
@@ -174,13 +138,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                     logger.info("Undeployed web module " + ctxt
                             + " from virtual server "
                             + vs.getName());
-                    // ToDo : dochez : not good, we unregister from everywhere...
-                    //@TODO change EndportRegistrationException processing if required
-                    try {
-                        dispatcher.unregisterEndpoint(ctxtRoot, this);
-                    } catch (EndpointRegistrationException e) {
-                        logger.log(Level.WARNING, "Error while undeploying", e);
-                    }
                 } else {
                     isLeftOver = true;
                 }
