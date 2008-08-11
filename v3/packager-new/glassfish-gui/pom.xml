@@ -49,7 +49,27 @@
     <description>This pom describes how to assemble the GlassFish Admin GUI  package</description>
 
     <build>
-        <plugins>
+	<plugins>
+	    <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+            <execution>
+                <id>copy-dependencies</id>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+               <configuration>
+	       <outputDirectory>${project.build.directory}/stage/glassfishv3-prelude/glassfish/modules</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+	      <excludeTransitive>true</excludeTransitive>
+	      <includeScope>compile</includeScope>
+	      <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -92,13 +112,17 @@
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-security-plugin</artifactId>
             <version>${project.version}</version>
+    	</dependency>
+     	<dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-web-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
 	    <artifactId>console-jdbc-plugin</artifactId>
             <version>${project.version}</version>
-        </dependency> 
-
+    	</dependency> 
         <dependency>        
            <groupId>org.glassfish.admingui</groupId>
            <artifactId>war</artifactId>
