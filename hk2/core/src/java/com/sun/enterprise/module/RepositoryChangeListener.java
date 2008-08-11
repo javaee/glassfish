@@ -51,14 +51,14 @@ public interface RepositoryChangeListener {
      *
      * @param location the new jar file location
      */
-    public void jarAdded(URI location);
+    public void added(URI location);
 
     /**
      * A library jar file was removed from the repository
      *
      * @param location of the removed file
      */
-    public void jarRemoved(URI location);
+    public void removed(URI location);
 
     /**
      * A new module jar file was added to the repository.

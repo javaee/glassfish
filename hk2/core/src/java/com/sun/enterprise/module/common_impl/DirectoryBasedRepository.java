@@ -51,6 +51,7 @@ import com.sun.enterprise.module.RepositoryChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.FileFilter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,11 +75,19 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
     private Timer timer;
     private boolean isTimerThreadDaemon = false;
+    private List<File> subDirectories = new ArrayList<File>();
 
     /** Creates a new instance of DirectoryBasedRepository */
     public DirectoryBasedRepository(String name, File repository) {
         super(name,repository.toURI());
         this.repository = repository;
+        for (File file : repository.listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        })) {
+            subDirectories.add(file);
+        }
     }
 
 
@@ -189,7 +198,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
             if (!originalLibraries.contains(location)) {
                 addLibrary(location);
                 for (RepositoryChangeListener listener : listeners) {
-                    listener.jarAdded(location);
+                    listener.added(location);
                 }
             }
         }
@@ -200,9 +209,39 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
                 if (!libraries.contains(originalLocation)) {
                     removeLibrary(originalLocation);
                     for (RepositoryChangeListener listener : listeners) {
-                        listener.jarRemoved(originalLocation);
+                        listener.removed(originalLocation);
                     }
                 }
+            }
+        }
+
+        // added or removed subdirectories ?
+        List<File> previous = new ArrayList<File>();
+        previous.addAll(subDirectories);
+        for (File file : repository.listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        })) {
+            // added ?
+            if (!subDirectories.contains(file)) {
+                for (RepositoryChangeListener listener : listeners) {
+                    listener.added(file.toURI());
+                }
+                subDirectories.add(file);
+            }  else {
+                // known, removing it from the copied list to check
+                // for removal
+                previous.remove(file);
+            }
+        }
+        // any left in our copy is a removed sub directory.
+        if (!previous.isEmpty()) {
+            for (File file : previous) {
+                 for (RepositoryChangeListener listener : listeners) {
+                    listener.removed(file.toURI());
+                }
+                subDirectories.remove(file);
             }
         }
     }
