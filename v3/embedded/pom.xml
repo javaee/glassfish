@@ -90,5 +90,6 @@
 
   <modules>
     <module>api</module>
+    <module>packager</module>
   </modules>
 </project>
