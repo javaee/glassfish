@@ -517,7 +517,7 @@ public class MonitoringHandlers {
         return serverRoot;
     }
     
-    private TreeNode serverRoot = setupTree();
-    //private TreeNode serverRoot = GuiUtil.getHabitat().getComponent(MonitoringRuntimeDataRegistry.class).get("server");
+    //private TreeNode serverRoot = setupTree();
+    private TreeNode serverRoot = GuiUtil.getHabitat().getComponent(MonitoringRuntimeDataRegistry.class).get("server");
     
 }
