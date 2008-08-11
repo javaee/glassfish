@@ -69,6 +69,14 @@ final class ExtensibleClassLoader extends URLClassLoader implements RepositoryCh
         }
     }
 
+    public void jarAdded(java.net.URI uri) {
+        added(uri);
+     }
+
+    public void jarRemoved(java.net.URI uri) {
+        removed(uri);
+     }
+
     public void added(URI uri) {
         File file =new File(uri);
         if (file.isDirectory()) {
