@@ -51,6 +51,7 @@ import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.Container;
 
 
 /**
@@ -455,4 +456,12 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named 
      */
     @Element
     public List<SystemProperty> getSystemProperty();
+
+    /**
+     * Get the configuration for other types of containers.
+     * 
+     * @return  list of containers configuration
+     */
+    @Element("*")
+    List<Container> getContainters();
 }

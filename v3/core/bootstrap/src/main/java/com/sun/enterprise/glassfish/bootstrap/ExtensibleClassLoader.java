@@ -48,6 +48,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
 
 /**
  * {@link URLClassLoader} that listens to {@link Repository} changes and add those jar files automatically.
@@ -68,13 +69,17 @@ final class ExtensibleClassLoader extends URLClassLoader implements RepositoryCh
         }
     }
 
-    public void jarAdded(URI uri) {
+    public void added(URI uri) {
+        File file =new File(uri);
+        if (file.isDirectory()) {
+            LOGGER.info("directory not support, please contribute");
+        }
         if (addURI(uri)) {
             LOGGER.info("Added " + uri + " to shared classpath, no need to restart appserver");
         }
     }
 
-    public void jarRemoved(URI uri) {
+    public void removed(URI uri) {
     }
 
     public void moduleAdded(ModuleDefinition moduleDefinition) {

@@ -191,7 +191,7 @@
 
     </thread-pools>
   <management-rules enabled="true">
-  </management-rules>
+  </management-rules> 
   </config> <!-- config model with name "server-config" ends -->
  </configs>
  <servers>
