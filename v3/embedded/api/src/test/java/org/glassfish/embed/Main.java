@@ -38,12 +38,16 @@
 package org.glassfish.embed;
 
 
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.logging.Level;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Level.INFO;
+import java.util.logging.Logger;
 
 /**
  * Launches a mock-up HK2 environment that doesn't provide
@@ -53,47 +57,63 @@ import static java.util.logging.Level.INFO;
  * @author Kohsuke Kawaguchi
  */
 public class Main {
-    public static void main(String[] args) throws Exception {
-        AppServer.setLogLevel(INFO);
+    public static void main(String[] args) {
+        try {
 
-         AppServer glassfish = new AppServer(9999);
-        //if you want to use your own domain.xml
-        //Server glassfish = new Server(new File("domain.xml").toURI().toURL());
-        //if you want to use your own default-web.xml file
-        //glassfish.setDefaultWebXml(new File("default-web.xml".toURI().toURL()));
+            pr("");
+            pr("A Very Simple Sample of Using Embedded GlassFish");
+            pr("");
+            File war = getWar();
+            AppServer.setLogLevel(INFO);
+            AppServer glassfish = new AppServer(9999);
+            App app = glassfish.deploy(war);
+            pr(war.toString() + " deployed. GlassFish is listening at port 9999 for HTTP traffic.");
 
-        // deploy(new File("./simple.war"),habitat);
-        // deploy(new File("./JSPWiki.war"),habitat);
-
-//        GFApplication app = glassfish.deploy(new File("./hudson.war"));
-
-            System.out.println("A Very Simple Sample of Embedded GlassFish");
-            System.out.println("GlassFish is listening at port 9999 for HTTP traffic.");
-            String warFileName = Console.readLine("Enter a war filename for deployment");
-            
-            
-            
-            //File killerApp = new File("C:/gf/v3/embedded/api/killer-app");
-            File killerApp = new File("killer-app");
-            ScatteredWar scat = new ScatteredWar(
-                "killer-app",
-                new File(killerApp,"web"),
-                new File(killerApp,"web.xml"),
-                Collections.singleton(
-                    new File(killerApp,"target/classes").toURI().toURL())
-            );
-            App app = glassfish.deploy(new File("simple.war"));
-            //App app = glassfish.deploy(scat);
-            // if you want to use another context root for example "/"
-            // GFApplication app = glassfish.deployWar(war, "/");
-            // if you want to use the default context root but another virtual server
-            // GFApplication app = glassfish.deployWar(war, null, "myServerId");     
-
-            System.out.println("Ready!");
-
-            // wait for enter
-            new BufferedReader(new InputStreamReader(System.in)).readLine();
-
+            Console.getKey("Hit Enter to stop the server and exit.");
             app.undeploy();
+            pr("Application undeployed");
+            glassfish.stop();
+            success("Server stopped");
+        }
+        catch (IOException ex) {
+            error(ex.toString() + ex);
+        }
     }
+
+
+    private static File getWar() {
+        String warFileName = null;
+
+        do {
+            warFileName = Console.readLine("Enter a war filename for deployment [X to exit]");
+        } while(warFileName == null || warFileName.length() == 0);
+        
+        if(warFileName.equals("X")) {
+            success("exiting per your request");
+        }
+        
+        File war = SmartFile.sanitize(new File(warFileName));
+        
+        if(!war.exists())
+            error("File does not exist: " + war);
+        if(war.isDirectory())
+            error("File is a directory: " + war);
+        
+        return war;
+    }
+
+    public static void error(String err) {
+        pr("ERROR: " + err);
+        System.exit(-1);
+    }
+    
+    private static void success(String msg) {
+        pr(msg);
+        System.exit(0);
+    }
+
+    private static void pr(String msg) {
+        System.out.println("***** " + msg);
+    }
+    
 }
