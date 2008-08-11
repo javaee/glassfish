@@ -256,32 +256,23 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 container._serverContext.getDefaultHabitat()); 
 
             for (EnvEntry env : c.getEnvEntry()) {
-                EnvironmentEntry newEnvEntry = new EnvironmentProperty(
-                    env.getEnvEntryName(), env.getEnvEntryValue(), 
-                    env.getDescription(), env.getEnvEntryType());    
                 for (EnvironmentEntry envEntry : 
                     descriptor.getEnvironmentEntrySet()) {
-                    if (envEntry.getName().equals(newEnvEntry.getName())) {
-                        descriptor.removeEnvironmentEntry(envEntry);
+                    if (envEntry.getName().equals(env.getEnvEntryName())) {
+                        envEntry.setValue(env.getEnvEntryValue());
                         break;
                     }
                  }
-                 descriptor.addEnvironmentEntry(newEnvEntry);
             }
 
             for (ContextParam cParam: c.getContextParam()) {
-                ContextParameter newContextParam = new EnvironmentProperty(
-                    cParam.getParamName(), cParam.getParamValue(), 
-                    cParam.getDescription());    
                 for (ContextParameter contextParam : 
                     descriptor.getContextParametersSet()) {
-                    if (contextParam.getName().equals(
-                        newContextParam.getName())) {
-                        descriptor.removeContextParameter(contextParam);
+                    if (contextParam.getName().equals(cParam.getParamName())) {
+                        contextParam.setValue(cParam.getParamValue());
                         break;
                     }
                 }
-                descriptor.addContextParameter(newContextParam);
             }
         }
     }
