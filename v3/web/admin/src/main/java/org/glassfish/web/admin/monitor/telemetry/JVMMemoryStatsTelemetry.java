@@ -62,18 +62,20 @@ public class JVMMemoryStatsTelemetry {
 
     private Counter commitHeapSize = CounterFactory.createCount();
     private boolean jvmMonitoringEnabled;
+    private Logger logger;
     
     /** Creates a new instance of JVMMemoryStatsTelemetry */
-    public JVMMemoryStatsTelemetry(TreeNode server, boolean jvmMonitoringEnabled) {
+    public JVMMemoryStatsTelemetry(TreeNode server, boolean jvmMonitoringEnabled, Logger logger) {
         try {
+            this.logger = logger;
             jvmNode = TreeNodeFactory.createTreeNode("jvm", null, "jvm");
             server.addChild(jvmNode);
             bean = ManagementFactory.getMemoryMXBean();
             heapUsage = bean.getHeapMemoryUsage();
             nonheapUsage = bean.getNonHeapMemoryUsage();
             Method m = heapUsage.getClass().getMethod("getCommitted", (Class[]) null);
-            System.out.println("heapUsage.getCommitted() = " + heapUsage.getCommitted());
-            System.out.println("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
+            logger.finest("heapUsage.getCommitted() = " + heapUsage.getCommitted());
+            logger.finest("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
             TreeNode committedHeapSize = 
                     TreeNodeFactory.createMethodInvoker("committedHeapSize", heapUsage, "jvm", m);
             jvmNode.addChild(committedHeapSize);

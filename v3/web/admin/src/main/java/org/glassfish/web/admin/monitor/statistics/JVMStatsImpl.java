@@ -49,6 +49,8 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import java.lang.management.MemoryUsage;
 import org.glassfish.flashlight.datatree.MethodInvoker;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /** 
  *
@@ -63,6 +65,9 @@ public class JVMStatsImpl implements MonitorContract {
 
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
+
+    @Inject
+    Logger logger;
 
     private final String name = "jvm";
     private final String displayFormat = 
@@ -95,14 +100,12 @@ public class JVMStatsImpl implements MonitorContract {
         MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("committedHeapSize");
         //TreeNode tn = (serverNode.getNode("jvm")).getNode("committedHeapSize");
 
-        /*
-        System.out.println("MSR: tn name = " + tn.getName());
-        System.out.println("MSR: tn class name = " + (tn.getClass()).getName());
-        System.out.println("MSR: tn value = " + tn.getValue());
-        System.out.println("MSR: tn value class name = " + ((tn.getValue()).getClass()).getName());
-        System.out.println("MSR: tn instance = " + tn.getInstance());
-        System.out.println("MSR: tn instance class name = " + ((tn.getInstance()).getClass()).getName());
-        */
+        logger.finest("JVMStatsImpl: tn name = " + tn.getName());
+        logger.finest("JVMStatsImpl: tn class name = " + (tn.getClass()).getName());
+        logger.finest("JVMStatsImpl: tn value = " + tn.getValue());
+        logger.finest("JVMStatsImpl: tn value class name = " + ((tn.getValue()).getClass()).getName());
+        logger.finest("JVMStatsImpl: tn instance = " + tn.getInstance());
+        logger.finest("JVMStatsImpl: tn instance class name = " + ((tn.getInstance()).getClass()).getName());
 
         MemoryUsage mu = (MemoryUsage) tn.getInstance();
 

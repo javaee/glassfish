@@ -48,6 +48,8 @@ import org.glassfish.admin.monitor.cli.MonitorContract;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /** 
  * A Stats interface to represent the statistical data exposed by an
@@ -63,6 +65,9 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
 
+    @Inject
+    Logger logger;
+
     private final String name = "httplistener";
     private final String displayFormat = "%1$-4s %2$-4s %3$-4s %4$-4s";
 
@@ -72,7 +77,7 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
 
     public ActionReport process(final ActionReport report, final String filter) {
 
-        report.setMessage("MSR: test message from HTTPListenerStatsImpl ...");
+        logger.finest("HTTPListenerStatsImpl: process ...");
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -97,9 +102,10 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
             if (tn.hasChildNodes()) {
                 continue;
             }
-            //System.out.println("MSR: tn name = " + tn.getName());
-            //System.out.println("MSR: tn value = " + tn.getValue());
-            //System.out.println("MSR: tn class name = " + ((tn.getValue()).getClass()).getName());
+
+            logger.finest("HTTPListenerStatsImpl: tn name = " + tn.getName());
+            logger.finest("HTTPListenerStatsImpl: tn value = " + tn.getValue());
+            logger.finest("HTTPListenerStatsImpl: tn class name = " + ((tn.getValue()).getClass()).getName());
             if ("errorCount".equals(tn.getName())) {
                 if (tn.getValue() != null)
                 errorCount = (Long) tn.getValue(); 

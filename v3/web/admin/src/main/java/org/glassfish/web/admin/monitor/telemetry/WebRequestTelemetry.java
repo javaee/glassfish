@@ -73,9 +73,11 @@ public class WebRequestTelemetry{
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
+    private Logger logger;    
     
-    public WebRequestTelemetry(TreeNode parent, boolean webMonitoringEnabled) {
+    public WebRequestTelemetry(TreeNode parent, boolean webMonitoringEnabled, Logger logger) {
         try {
+            this.logger = logger;
             this.webMonitoringEnabled = webMonitoringEnabled;
             //add maxTime attribute    
             Method m1 = requestProcessTime.getClass().getMethod("getMaximumTime", (Class[]) null);
@@ -106,7 +108,7 @@ public class WebRequestTelemetry{
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response) {
-        System.out.println("[TM]requestStartEvent received - request = " + 
+        logger.finest("[TM]requestStartEvent received - request = " + 
                             request + ": response = " + response);
 	//entry.set(System.currentTimeMillis());
         requestProcessTime.entry();
@@ -124,7 +126,7 @@ public class WebRequestTelemetry{
         
         //long timeTaken = System.currentTimeMillis() - entry.get();
 
-        System.out.println("[TM]requestEndEvent received - request = " + 
+        logger.finest("[TM]requestEndEvent received - request = " + 
                             request + ": response = " + response + 
                             " :Response code = " + statusCode + 
                             " :Response time = " + requestProcessTime.getTime());

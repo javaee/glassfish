@@ -43,8 +43,9 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.*;
 import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-        
 import org.glassfish.flashlight.provider.annotations.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -58,9 +59,11 @@ public class WebModuleTelemetry{
     private Counter maxTime = CounterFactory.createCount();
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
+    private Logger logger;    
    
     
-    public WebModuleTelemetry(TreeNode parent, boolean webMonitoringEnabled) {
+    public WebModuleTelemetry(TreeNode parent, boolean webMonitoringEnabled, Logger logger) {
+        this.logger = logger;
         this.webMonitoringEnabled = webMonitoringEnabled;
         webModuleNode = TreeNodeFactory.createTreeNode("request", this, "web");
         parent.addChild(webModuleNode);
@@ -74,7 +77,7 @@ public class WebModuleTelemetry{
     public void webModuleStartedEvent(
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName ) {
-        System.out.println("[TM]webModuletStartedEvent received - appName = " + 
+        logger.finest("[TM]webModuletStartedEvent received - appName = " + 
                             appName + ": hostName = " + hostName);
         
     }
@@ -89,7 +92,7 @@ public class WebModuleTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName ) {
         
-        System.out.println("[TM]webModuleStoppedEvent received - appName = " + 
+        logger.finest("[TM]webModuleStoppedEvent received - appName = " + 
                             appName + ": hostName = " + hostName);
     }
 

@@ -41,11 +41,12 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.*;
 import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-        
 import org.glassfish.flashlight.provider.annotations.*;
 import javax.servlet.Servlet;
 import java.util.Collection;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -57,12 +58,11 @@ public class ServletStatsTelemetry{
     private boolean webMonitoringEnabled;
     private String moduleName;
     private String vsName;
-    
-    //@Inject
-    //Logger logger;
+    private Logger logger;    
     
     public ServletStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
-                                    boolean webMonitoringEnabled) {
+                                    boolean webMonitoringEnabled, Logger logger) {
+        this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
         activeServletsLoadedCount.setName("activeServletsLoadedCount");
@@ -93,7 +93,7 @@ public class ServletStatsTelemetry{
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
-        System.out.println("Servlet Loaded event received - servletName = " + 
+        logger.finest("Servlet Loaded event received - servletName = " + 
                              servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -113,7 +113,7 @@ public class ServletStatsTelemetry{
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
-        System.out.println("Servlet Destroyed event received - servletName = " + 
+        logger.finest("Servlet Destroyed event received - servletName = " + 
                              servlet.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {

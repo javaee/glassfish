@@ -57,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.ConfigListener;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Provides for bootstarpping web telemetry during startup and
@@ -80,7 +82,10 @@ public class WebMonitorStartup implements
 
     @Inject
     private ModuleMonitoringLevels mml;
-    
+
+    @Inject
+    Logger logger;
+
     private WebRequestTelemetry webRequestTM = null;
     private WebModuleTelemetry moduleTM = null;
     private SessionStatsTelemetry webSessionsTM = null;
@@ -104,13 +109,28 @@ public class WebMonitorStartup implements
     private TreeNode webJspNode;
     private TreeNode webRequestNode;
     
+    private Level dbgLevel = Level.FINEST;
+    private Level defaultLevel;
     
     public void postConstruct() {
-        System.out.println("In the Web Monitor startup ************");
+        logger.finest("In the Web Monitor startup ************");
+
+        // to set log level, uncomment the following 
+        // remember to comment it before checkin
+        // remove this once we find a proper solution
+        /*
+        defaultLevel = logger.getLevel();
+        if (dbgLevel.intValue() < defaultLevel.intValue()) {
+            logger.setLevel(dbgLevel);
+        }
+        */
+        logger.finest("In the Web Monitor startup ************");
+
         ppem.registerProbeProviderListener(this);
         buildWebMonitoringConfigTree();
         //Construct the JVMMemoryStatsTelemetry
-        jvmMemoryTM = new JVMMemoryStatsTelemetry(serverNode, jvmMonitoringEnabled);
+        jvmMemoryTM = 
+        new JVMMemoryStatsTelemetry(serverNode, jvmMonitoringEnabled, logger);
     }
 
     public Lifecycle getLifecycle() {
@@ -121,14 +141,14 @@ public class WebMonitorStartup implements
     public void providerRegistered(String moduleName, String providerName, String appName) {
         try {
             
-            System.out.println("Provider registered event received - providerName = " + 
+            logger.finest("Provider registered event received - providerName = " + 
                                 providerName + " : module name = " + moduleName + 
                                 " : appName = " + appName);
             if (providerName.equals("session")){
-                System.out.println("and it is Web session");
+                logger.finest("and it is Web session");
                 if (webSessionsTM == null) {
                     webSessionsTM = new SessionStatsTelemetry(webSessionNode, 
-                                    null, null, webMonitoringEnabled);
+                                    null, null, webMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webSessionsTM);
                     webSessionsTM.setProbeListenerHandles(handles);
                 }
@@ -144,7 +164,7 @@ public class WebMonitorStartup implements
                             SessionStatsTelemetry vsSessionTM = 
                                     new SessionStatsTelemetry(vsNode, 
                                         appNode.getName(), vsNode.getName(), 
-                                        webMonitoringEnabled);
+                                        webMonitoringEnabled, logger);
                             vsSessionTMs.add(vsSessionTM);
                             
                         }
@@ -152,10 +172,10 @@ public class WebMonitorStartup implements
                 }
             }
             if (providerName.equals("servlet")){
-                System.out.println("and it is Web servlet");
+                logger.finest("and it is Web servlet");
                 if (webServletsTM == null) {
                     webServletsTM = new ServletStatsTelemetry(webServletNode, null, 
-                                            null, webMonitoringEnabled);
+                                            null, webMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webServletsTM);
                     webServletsTM.setProbeListenerHandles(handles);
                 }
@@ -171,7 +191,7 @@ public class WebMonitorStartup implements
                             ServletStatsTelemetry vsServletTM = 
                                     new ServletStatsTelemetry(vsNode, 
                                         appNode.getName(), vsNode.getName(), 
-                                        webMonitoringEnabled);
+                                        webMonitoringEnabled, logger);
                             vsServletTMs.add(vsServletTM);
                             
                         }
@@ -180,9 +200,9 @@ public class WebMonitorStartup implements
             }
 
             if (providerName.equals("jsp")){
-                System.out.println("and it is Web jsp");
+                logger.finest("and it is Web jsp");
                 if (webJspTM == null) {
-                    webJspTM = new JspStatsTelemetry(webJspNode, null, null, webMonitoringEnabled);
+                    webJspTM = new JspStatsTelemetry(webJspNode, null, null, webMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webJspTM);
                     webJspTM.setProbeListenerHandles(handles);
                 }
@@ -198,7 +218,7 @@ public class WebMonitorStartup implements
                             JspStatsTelemetry vsJspTM = 
                                     new JspStatsTelemetry(vsNode, 
                                         appNode.getName(), vsNode.getName(), 
-                                        webMonitoringEnabled);
+                                        webMonitoringEnabled, logger);
                             vsJspTMs.add(vsJspTM);
                             
                         }
@@ -207,28 +227,28 @@ public class WebMonitorStartup implements
             }
             /* Need to fix module, decide where it should go
             if (providerName.equals("webmodule")){
-                System.out.println("and it is Web Module");
+                logger.finest("and it is Web Module");
                 if (moduleTM == null) {
-                    moduleTM = new WebModuleTelemetry(serverNode, webMonitoringEnabled);
+                    moduleTM = new WebModuleTelemetry(serverNode, webMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(moduleTM);
                     moduleTM.setProbeListenerHandles(handles);
                 }
             }
             */
             if (providerName.equals("request")){
-                System.out.println("and it is Web request");
+                logger.finest("and it is Web request");
                 if (webRequestTM == null) {
-                    webRequestTM = new WebRequestTelemetry(webRequestNode, webMonitoringEnabled);
+                    webRequestTM = new WebRequestTelemetry(webRequestNode, webMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webRequestTM);
                     webRequestTM.setProbeListenerHandles(handles);
                 }
             }
             if (providerName.equals("threadpool")){
-                System.out.println("and it is threadpool");
+                logger.finest("and it is threadpool");
                 if (threadPoolTM == null) {
                     // Where do I add this? Looks like the thread pools are already created.
                     // Now I need to register the listeners, but which one to register?
-                    threadPoolTM = new ThreadPoolTelemetry(httpServiceNode, threadpoolMonitoringEnabled);
+                    threadPoolTM = new ThreadPoolTelemetry(httpServiceNode, threadpoolMonitoringEnabled, logger);
                     Collection<ProbeClientMethodHandle> handles = pcm.registerListener(threadPoolTM);
                     threadPoolTM.setProbeListenerHandles(handles);
                 }
@@ -237,7 +257,7 @@ public class WebMonitorStartup implements
         }catch (Exception e) {
             //Never throw an exception as the Web container startup will have a problem
             //Show warning
-            System.out.println("WARNING: Exception in WebMonitorStartup : " + 
+            logger.finest("WARNING: Exception in WebMonitorStartup : " + 
                                     e.getLocalizedMessage());
             e.printStackTrace();
         }
@@ -272,29 +292,29 @@ public class WebMonitorStartup implements
         if (mml != null) {
             if ("OFF".equals(mml.getWebContainer())){
                 webMonitoringEnabled = false;
-                System.out.println("Disabling webContainer");
+                logger.finest("Disabling webContainer");
             } else {
                 webMonitoringEnabled = true;
             }
             if ("OFF".equals(mml.getJvm())){
                 jvmMonitoringEnabled = false;
-                System.out.println("Disabling jvmMonitoring");
+                logger.finest("Disabling jvmMonitoring");
             } else {
                 jvmMonitoringEnabled = true;
             }
             if ("OFF".equals(mml.getHttpService())){
                 httpServiceMonitoringEnabled = false;
-                System.out.println("Disabling httpServiceMonitoring");
+                logger.finest("Disabling httpServiceMonitoring");
             } else {
                 httpServiceMonitoringEnabled = true;
             }
             if ("OFF".equals(mml.getThreadPool())){
                 threadpoolMonitoringEnabled = false;
-                System.out.println("Disabling threadpoolMonitoring");
+                logger.finest("Disabling threadpoolMonitoring");
             } else {
                 threadpoolMonitoringEnabled = true;
             }
-            System.out.println("mml.getWebContainer() = " + mml.getWebContainer());
+            logger.finest("mml.getWebContainer() = " + mml.getWebContainer());
         }
          */
         // server
@@ -445,14 +465,14 @@ public class WebMonitorStartup implements
                 mml = (ModuleMonitoringLevels) event.getSource();
                 mLevel = event.getNewValue().toString();
                 boolean enabled = getEnabledValue(mLevel);
-                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
+                logger.finest("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
             } else if ("jvm".equals(propName)) {
                 mml = (ModuleMonitoringLevels) event.getSource();
                 mLevel = event.getNewValue().toString();
                 boolean enabled = getEnabledValue(mLevel);
-                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
+                logger.finest("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
                 //jvmMemoryTM.enableMonitoring(enabled);
@@ -460,7 +480,7 @@ public class WebMonitorStartup implements
                 mml = (ModuleMonitoringLevels) event.getSource();
                 mLevel = event.getNewValue().toString();
                 boolean enabled = getEnabledValue(mLevel);
-                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
+                logger.finest("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
                 //threadpoolTM.enableMonitoring(enabled);
@@ -468,7 +488,7 @@ public class WebMonitorStartup implements
                 mml = (ModuleMonitoringLevels) event.getSource();
                 mLevel = event.getNewValue().toString();
                 boolean enabled = getEnabledValue(mLevel);
-                System.out.println("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
+                logger.finest("[TM] Config change event - propName = " + propName + " : enabled=" + enabled);
                 // set corresponding tree node enabled flag 
                 // handle proble listener event by registering/unregistering
                 

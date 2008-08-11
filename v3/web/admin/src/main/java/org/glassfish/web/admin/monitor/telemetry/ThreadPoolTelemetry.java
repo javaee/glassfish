@@ -43,8 +43,9 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.*;
 import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-        
 import org.glassfish.flashlight.provider.annotations.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -55,6 +56,8 @@ public class ThreadPoolTelemetry{
     private TreeNode threadpoolNode;
     private Collection<ProbeClientMethodHandle> handles;
     private boolean threadpoolMonitoringEnabled;
+    private Logger logger;    
+
 
     /* We would like to measure the following */
     /*
@@ -71,7 +74,8 @@ public class ThreadPoolTelemetry{
      * 
      */ 
     
-    public ThreadPoolTelemetry(TreeNode parent, boolean threadpoolMonitoringEnabled) {
+    public ThreadPoolTelemetry(TreeNode parent, boolean threadpoolMonitoringEnabled, Logger logger) {
+        this.logger = logger;
         this.threadpoolMonitoringEnabled = threadpoolMonitoringEnabled;
         //threadpoolNode = TreeNodeFactory.createTreeNode(threadPoolName, this, "http-service");
         //parent.addChild(threadpoolNode);
@@ -84,7 +88,7 @@ public class ThreadPoolTelemetry{
         @ProbeParam("increment") int increment,
         @ProbeParam("boolean") boolean startThread) {
 
-        System.out.println("[TM]newThreadsAllocatedEvent received - : increment = " + 
+        logger.finest("[TM]newThreadsAllocatedEvent received - : increment = " + 
                             increment + " :startThread = " + startThread + 
                             ": Thread pool name = " + threadPoolName);
     }
@@ -96,7 +100,7 @@ public class ThreadPoolTelemetry{
         @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {
         
 
-        System.out.println("[TM]maxNumberOfThreadsReachedEvent received - : maxNumberOfThreads = " + 
+        logger.finest("[TM]maxNumberOfThreadsReachedEvent received - : maxNumberOfThreads = " + 
                             maxNumberOfThreads + ": Thread pool name = " + threadPoolName);
     }
 
@@ -107,7 +111,7 @@ public class ThreadPoolTelemetry{
         @ProbeParam("threadId") String threadId) {
         
 
-        System.out.println("[TM]threadDispatchedFromPoolEvent received - : threadId = " + 
+        logger.finest("[TM]threadDispatchedFromPoolEvent received - : threadId = " + 
                             threadId + ": Thread pool name = " + threadPoolName);
     }
 
@@ -118,7 +122,7 @@ public class ThreadPoolTelemetry{
         @ProbeParam("threadId") String threadId) {
         
 
-        System.out.println("[TM]threadReturnedToPoolEvent received - : threadId = " + 
+        logger.finest("[TM]threadReturnedToPoolEvent received - : threadId = " + 
                             threadId + ": Thread pool name = " + threadPoolName);
     }
 

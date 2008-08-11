@@ -36,20 +36,27 @@
 
 package org.glassfish.flashlight.impl.provider;
 
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.flashlight.provider.*;
+import org.glassfish.flashlight.provider.Probe;
+import org.glassfish.flashlight.client.EjbContainerListener;
+import org.glassfish.flashlight.client.EjbContainerProvider;
+import org.glassfish.flashlight.client.ProbeClientMediator;
+import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
+import org.glassfish.flashlight.impl.core.*;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.flashlight.provider.annotations.ProbeName;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-import org.glassfish.flashlight.provider.Probe;
-import org.glassfish.flashlight.impl.core.ProbeFactory;
-import org.glassfish.flashlight.impl.core.ProbeProvider;
-import org.glassfish.flashlight.impl.core.ProbeProviderRegistry;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.annotation.Annotation;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Mahesh Kannan
@@ -58,48 +65,132 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FlashlightProbeProviderFactory
         implements ProbeProviderFactory {
 
+    @Inject
+    ProbeProviderEventManager ppem;
+    
     private ConcurrentHashMap<String, Object> providerInfo = new ConcurrentHashMap<String, Object>();
 
     public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
-/*
-        String generatedClassName = moduleName + "_" + providerName + "_"
-                + "App_" + ((appName == null) ? "" : appName);
 
-        Class generatedClazz = null;
-        ProbeProvider provider = ProbeProviderRegistry.getInstance().registerProbeProvider(
-                moduleName, providerName, appName, generatedClazz);
-
-        for (Method m : providerClazz.getDeclaredMethods()) {
-            int sz = m.getParameterTypes().length;
-            ProbeName pnameAnn = m.getAnnotation(ProbeName.class);
-            String probeName = pnameAnn.value();
-            String[] probeParamNames = new String[sz];
-            int index = 0;
-            Annotation[][] anns2 = m.getParameterAnnotations();
-            for (Annotation[] ann1 : anns2) {
-                for (Annotation ann : ann1) {
-                    if (ann instanceof ProbeParam) {
-                        ProbeParam pParam = (ProbeParam) ann;
-                        probeParamNames[index++] = pParam.value();
-                        break;
+        try {
+            ProbeProvider provider = new ProbeProvider(moduleName, providerName, appName);
+            System.out.println("Module= " + moduleName + " \tProvider= " + providerName + "\tAppName= " + appName +
+                                                        "\tProviderClazz= " + providerClazz.toString());
+            for (Method m : providerClazz.getDeclaredMethods()) {
+                int sz = m.getParameterTypes().length;
+                ProbeName pnameAnn = m.getAnnotation(ProbeName.class);
+                String probeName = (pnameAnn != null) 
+                        ? pnameAnn.value() : m.getName();
+                String[] probeParamNames = new String[sz];
+                int index = 0;
+                Annotation[][] anns2 = m.getParameterAnnotations();
+                for (Annotation[] ann1 : anns2) {
+                    for (Annotation ann : ann1) {
+                        if (ann instanceof ProbeParam) {
+                            ProbeParam pParam = (ProbeParam) ann;
+                            probeParamNames[index++] = pParam.value();
+                            break;
+                        }
                     }
                 }
+
+                Probe probe = ProbeFactory.createProbe(
+                        moduleName, providerName, appName, probeName,
+                        probeParamNames, m.getParameterTypes());
+                probe.setProviderJavaMethodName(m.getName());
+                System.out.println("\tProbe: " + probe);
+                provider.addProbe(probe);
             }
 
-            Probe probe = ProbeFactory.createProbe(moduleName, providerName, appName, probeName, probeParamNames);
-            provider.addProbe(probe);
-        }
-*/
-        
-        return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
+            String generatedClassName = provider.getModuleName() + "_Flashlight_" + provider.getProviderName() + "_"
+                    + "App_" + ((provider.getAppName() == null) ? "" : provider.getAppName());
+            generatedClassName = providerClazz.getName() + "_" + generatedClassName;
+
+            Class<T> tClazz = null;
+            try {
+                tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
+                System.out.println ("Reusing the Generated class");
+                return (T) tClazz.newInstance();
+            } catch (ClassNotFoundException cnfEx) {
+                //Ignore
+            }
+
+            ProviderImplGenerator gen = new ProviderImplGenerator();
+            generatedClassName = gen.defineClass(provider, providerClazz);
+
+            try {
+                tClazz = (Class<T>) providerClazz.getClassLoader().loadClass(generatedClassName);
+            } catch (ClassNotFoundException cnfEx) {
+                throw new RuntimeException(cnfEx);
+            }
+
+
+            ProbeProviderRegistry.getInstance().registerProbeProvider(
+                    provider, tClazz);
+            T inst = (T) tClazz.newInstance();
+            System.out.println("Created provider successfully....: " + inst.getClass().getName());
+            // Notify listeners that a new provider is registered
+            System.out.println("Notify listeners that a new provider is registered");
+            ppem.notifyListenersOnRegister(moduleName, providerName, appName);
+        return inst;
+        } catch (Exception e) {
+            return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
                 new Class[]{providerClazz},
                 new InvocationHandler() {
                     public Object invoke(Object proxy, Method m, Object[] args) {
                         return null;
                     }
                 });
+        }        
     }
+
+    public static void main(String[] args)
+            throws Exception {
+        FlashlightProbeProviderFactory factory = new FlashlightProbeProviderFactory();
+        EjbContainerProvider<String, Date> provider =
+                (EjbContainerProvider<String, Date>) factory.getProbeProvider("ejb", "container", "", EjbContainerProvider.class);
+
+        ComputedParamsHandlerManager cphm =
+                ComputedParamsHandlerManager.getInstance();
+        cphm.addComputedParamHandler(
+                new ComputedParamHandler() {
+                    public boolean canHandle(String name) {
+                        return "$appName".equals(name);
+                    }
+
+                    public Object compute(String name) {
+                        return "TestFlashlight";
+                    }
+                }
+        );
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+        EjbContainerListener listener = new EjbContainerListener();
+        ProbeClientMediator pcm = FlashlightProbeClientMediator.getInstance();
+        Collection<ProbeClientMethodHandle> handles = pcm.registerListener(listener);
+
+        System.out.println("Handles.size(): " + handles.size());
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+
+        ProbeClientMethodHandle[] hs = handles.toArray(new ProbeClientMethodHandle[0]);
+        hs[0].disable();
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+
+        hs[0].enable();
+
+        for (Method m : provider.getClass().getDeclaredMethods()) {
+            provider.namedEntry(m, "fooBean");
+        }
+    }
+
 }
-
-

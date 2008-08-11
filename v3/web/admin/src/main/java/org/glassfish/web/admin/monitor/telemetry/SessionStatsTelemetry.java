@@ -61,12 +61,14 @@ public class SessionStatsTelemetry{
     private TreeNode sessionTM;
     private TreeNode sessionChildren[];
 
-    Logger logger = LogDomains.getLogger(this.getClass().getName());
+    private Logger logger;    
+    //Logger logger = LogDomains.getLogger(this.getClass().getName());
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
     
     public SessionStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
-                                    boolean webMonitoringEnabled) {
+                                    boolean webMonitoringEnabled, Logger logger) {
+        this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
         this.webMonitoringEnabled = webMonitoringEnabled;
@@ -113,7 +115,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
 
-        System.out.println("[TM]sessionCreatedEvent received - session = " + 
+        logger.finest("[TM]sessionCreatedEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -130,7 +132,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionDestroyedEvent received - session = " + 
+        logger.finest("[TM]sessionDestroyedEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -145,7 +147,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionRejectedEvent received - max sessions = " + 
+        logger.finest("[TM]sessionRejectedEvent received - max sessions = " + 
                             maxSessions + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -161,7 +163,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionExpiredEvent received - session = " + 
+        logger.finest("[TM]sessionExpiredEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -177,7 +179,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionPersistedStartEvent received - session = " + 
+        logger.finest("[TM]sessionPersistedStartEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -191,7 +193,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionPersistedEndEvent received - session = " + 
+        logger.finest("[TM]sessionPersistedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -207,7 +209,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionActivatedStartEvent received - session = " + 
+        logger.finest("[TM]sessionActivatedStartEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -221,7 +223,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionActivatedEndEvent received - session = " + 
+        logger.finest("[TM]sessionActivatedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -237,7 +239,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionPassivatedStartEvent  received - session = " + 
+        logger.finest("[TM]sessionPassivatedStartEvent  received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -251,7 +253,7 @@ public class SessionStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName){
         
-        System.out.println("[TM]sessionPassivatedEndEvent received - session = " + 
+        logger.finest("[TM]sessionPassivatedEndEvent received - session = " + 
                             session.toString() + ": appname = " + appName + 
                             ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
