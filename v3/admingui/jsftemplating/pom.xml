@@ -47,7 +47,7 @@
     <groupId>org.glassfish.jsftemplating</groupId>
     <artifactId>jsftemplating</artifactId>
     <name>JSFTemplating v1.2</name>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <modelVersion>4.0.0</modelVersion>
     <description>JSFTemplating Repackaged as OSGi bundle for GlassFish</description>
 
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
 	    <scope>compile</scope>
         </dependency>
         <dependency>

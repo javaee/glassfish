@@ -125,7 +125,7 @@
                         <processor>
                             <groupId>com.sun.jsftemplating</groupId>
                             <artifactId>jsftemplating-dt</artifactId>
-                            <version>1.2.1</version>
+                            <version>1.2.2</version>
                         </processor>
                     </processors>
 
@@ -163,13 +163,13 @@
         <dependency>
             <groupId>org.glassfish.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

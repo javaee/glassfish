@@ -1,3 +1,18 @@
+<!initPage
+    if (!#{pageSession.configName}) {
+        getRequestValue(key="configName" value=>$page{configName});
+    }
+    if (#{pageSession.configName}) {
+        getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
+        setAttribute(key="amxConfigName", value="#{amxConfigName}");
+        //setAttribute(key="amxConfigAttributes", value="#{amxConfigAttributes}");
+        setAttribute(key="amxConfig" value="#{config.$attribute{amxConfigName}}");
+        //println("$attribute{amxConfigAttributes}");
+        if (#{amxConfigAttributes}) {
+	        createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
+        }
+    }
+/>
 <sun:page>
     <!beforeCreate 
         //setResourceBundle(key="i18n" bundle="core.Strings")
@@ -98,17 +113,21 @@
             </if>
 
             <!-- Buttons  -->
-            <!if #{pageButtonsTopHandlers}>
             <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
                     <!command
                         #{pageButtonsTopHandlers}
+                        if (#{tableInUse}) {
+                            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
+                            savePropertiesMap(destination="#{amxConfig}", values="#{newProps}");
+                        }
                     />
                 </sun:button>                      
             </sun:panelGroup>
             </facet>
-            </if>
         </sun:title>
 
 	<!insert name="content">
