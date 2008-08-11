@@ -825,7 +825,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     
         portMap.put(httpListener.getId(),
                     Integer.valueOf(httpListener.getPort()));
-        CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
         connectorMap.put(httpListener.getId(), connector);
 
         // If we already know the redirect port, then set it now
