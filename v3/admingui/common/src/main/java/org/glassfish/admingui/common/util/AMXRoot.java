@@ -95,6 +95,7 @@ import javax.management.MBeanServerConnection;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.appserv.management.client.AMXBooter;
+import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 
 
 /**
@@ -119,6 +120,7 @@ public class AMXRoot {
     private  final ServersConfig serversConfig;
     private  final ClustersConfig clustersConfig;
     private  final RealmsMgr realmsMgr;
+    private  final RuntimeMgr runtimeMgr;
     //private  final LBConfigHelper lbConfigHelper;
 
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
@@ -137,6 +139,7 @@ public class AMXRoot {
         serversConfig = domainConfig.getServersConfig();
         clustersConfig = domainConfig.getClustersConfig();
         realmsMgr = domainRoot.getRealmsMgr();
+        runtimeMgr = domainRoot.getRuntimeMgr();
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
 
@@ -247,6 +250,10 @@ public class AMXRoot {
     
     public  RealmsMgr getRealmsMgr() {
         return realmsMgr;
+    }
+    
+    public  RuntimeMgr getRuntimeMgr() {
+        return runtimeMgr;
     }
 
     public  UploadDownloadMgr getUploadDownloadMgr() {
