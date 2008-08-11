@@ -70,9 +70,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-<!--
-                <version>1.4.1</version>
--->
                 <configuration>
                     <!-- Enable the plugin for hk2-jar packaging type -->
                     <supportedProjectTypes>
@@ -158,15 +155,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <!-- raig -->
-    <repositories>
-         <repository>
-            <id>rator.sfbay</id>
-             <name>Java.net Repository for Glassfish</name>
-             <url>http://rator.sfbay/maven/repositories/glassfish</url>
- 	          <snapshots>
- 		  <updatePolicy>never</updatePolicy>
-	     </snapshots>
-         </repository>
-    </repositories>
 </project>
