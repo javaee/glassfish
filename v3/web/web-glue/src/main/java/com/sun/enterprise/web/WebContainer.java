@@ -240,14 +240,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected static WebContainer webContainer;
 
-    //HERCULES:add
-    //added for monitoring
-    private static boolean debugMonitoring=false;
-    private static long debugMonitoringPeriodMS = 30000L;
-    private static WebContainerTimer _timer = new WebContainerTimer(true);
-    //added for monitoring
-    //END HERCULES:add
-
     /**
      * Are we using Tomcat deployment backend or DOL?
      */
@@ -566,21 +558,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             System.setProperty("product.name", Version.getVersion());
         }
 
-        //HERCULES:add
-        //added for internal monitoring
-        WebDebugMonitor debugMonitor = new WebDebugMonitor();
-        HashMap monitorMap = debugMonitor.getDebugMonitoringDetails();
-        debugMonitoring = ((Boolean) monitorMap.get("debugMonitoring")).booleanValue();
-        debugMonitoringPeriodMS = ((Long) monitorMap.get(
-                "debugMonitoringPeriodMS")).longValue();
-
-        if (debugMonitoring) {
-            _timer.schedule(new DebugMonitor(_embedded), 0L,
-                    debugMonitoringPeriodMS);
-        }
-        //added for internal monitoring
-        //END HERCULES:add
-
         if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
             System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
                     DOC_BUILDER_FACTORY_IMPL);
@@ -702,7 +679,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE, "Unable to stop web container", le);
             return;
         }
-        _timer.cancel();
     }
 
 
