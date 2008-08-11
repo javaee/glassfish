@@ -46,7 +46,7 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>war</artifactId>
     <packaging>war</packaging>
-    <name>Admin GUI WAR</name>
+    <name>Admin Console WAR</name>
 
     <build>
         <finalName>admingui</finalName>
