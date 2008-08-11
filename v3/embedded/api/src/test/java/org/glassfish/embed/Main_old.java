@@ -52,7 +52,7 @@ import static java.util.logging.Level.INFO;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Main {
+public class Main_old {
     public static void main(String[] args) throws Exception {
         AppServer.setLogLevel(INFO);
 
