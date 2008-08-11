@@ -2,7 +2,7 @@
     pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}">
         <!-- Buttons  -->
         <!define name="title">
-        <sun:title id="propertyContentPage"
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.monitoring.webContainer.pageTitle}"
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
 <!--<sun:checkbox id="Test" label="Test" selected="#{test}">
     <!beforeCreate

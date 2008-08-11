@@ -2,7 +2,7 @@
     pageTitle="$resource{i18n_web.monitoring.httpService.pageTitle}">
         <!-- Buttons  -->
         <!define name="title">
-        <sun:title id="propertyContentPage"
+        <sun:title id="propertyContentPage" title="$resource{i18n_web.monitoring.httpService.pageTitle}"
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
