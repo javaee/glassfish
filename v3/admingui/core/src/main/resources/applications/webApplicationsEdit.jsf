@@ -52,6 +52,7 @@
     setPageSessionAttribute(key="hasActionColumn" value="#{false}");
     setPageSessionAttribute(key="appType" value="webApp");
     setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+    setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
     setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
     setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
     if ($session{supportCluster} ){
@@ -68,7 +69,7 @@
         
         #include "/shared/treeBreadcrumbs.inc"
         # TODO-V3 no descriptor or target tab for TP2
-        # include "/applications/appGeneralTabs.inc"
+#include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "edit.inc"
         #include "subComponentTable.inc"

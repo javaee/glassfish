@@ -35,25 +35,35 @@
 -->
 <!-- applications/appGeneralTabs.inc -->
 <sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
-        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
-                <!command
-                    setSessionAttribute(key="appGeneralTabs" value="general");
-        			urlencode(value="#{name}", value=>$pageSession{name});
-                    redirect(page="#{generalPage}?appName=#{name}");
-                />       
-        </sun:tab>
-        <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
-            <!command
-                setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-        		urlencode(value="#{name}", value=>$pageSession{name});
-                redirect(page="#{descriptorPage}?appName=#{name}");
-            />
-        </sun:tab>
-        <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
-            <!command
-                setSessionAttribute(key="appGeneralTabs" value="targetTab");
-        		urlencode(value="#{name}", value=>$pageSession{name});
-                redirect(page="#{targetPage}?appName=#{name}");
-            />
-        </sun:tab>
+    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="general");
+            urlencode(value="#{name}", value=>$pageSession{name});
+            redirect(page="#{generalPage}?appName=#{name}");
+        />       
+    </sun:tab>
+    <sun:tab id="editDDTab" immediate="$boolean{true}" text="$resource{i18n.webApp.EditDDTab}">
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="editDDTab");
+            urlencode(value="#{name}", value=>$pageSession{name});
+            redirect(page="#{editDDPage}?appName=#{name}");
+        />
+    </sun:tab>
+<!--
+    <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
+            urlencode(value="#{name}", value=>$pageSession{name});
+            redirect(page="#{descriptorPage}?appName=#{name}");
+        />
+    </sun:tab>
+    <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
+        <!command
+            setSessionAttribute(key="appGeneralTabs" value="targetTab");
+                    urlencode(value="#{name}", value=>$pageSession{name});
+            redirect(page="#{targetPage}?appName=#{name}");
+        />
+    </sun:tab>
+-->
+
 </sun:tabSet>
