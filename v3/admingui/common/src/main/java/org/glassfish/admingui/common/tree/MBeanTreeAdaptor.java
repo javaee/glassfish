@@ -220,13 +220,11 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
                     return null;
                 }else{
                     AMX amxBean = (AMX) amxBeans.toArray()[0];
-                    System.out.println("!!!!!4-1 " + amxBean.toString());
                     //TODO: as we are using AMX to get the list of subnodes, AMX API NEVER require a parameter for this kind of operations.
                     //If there is such case, we may want to add code to support that instead of hard coding null here.
                     //for v3 prelude, i just leave it as null.
                     Method m = amxBean.getClass().getDeclaredMethod( _methodName,  (java.lang.Class[]) null);
                     Map mapOfBeans = (Map)  m.invoke(amxBean, (java.lang.Object[]) null);
-                    System.out.println("!!!!!! 6 " + mapOfBeans.keySet().toString() + "\n all: " + mapOfBeans.toString());
                     if (mapOfBeans != null){
                         _children = new ArrayList(mapOfBeans.values());
                     }
