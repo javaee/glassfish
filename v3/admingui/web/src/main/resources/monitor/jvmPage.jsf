@@ -1,0 +1,53 @@
+<!composition template="webContainerTemplate.jsf" 
+    pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}">
+        <!-- Buttons  -->
+        <!define name="title">
+        <sun:title id="propertyContentPage"
+                    helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+                    "<br />
+                    <sun:button id="refreshButton" 
+                                text="$resource{i18n.button.Refresh}">
+                    <!command
+                        setAttribute(key="instanceName" value="#{instanceName}")
+                        navigate(page="monitor/jvmPage.jsf");
+                    />              
+                    </sun:button>
+                </sun:panelGroup>
+            </facet>
+            </sun:title>
+        </define>
+        
+        <!define name="table">
+            "<table>
+            "<tr>
+                "<td width="1%"></td>
+            "<td width="25%">
+            <sun:table id="jvm" title="$resource{i18n_web.monitoring.jvmStatistics}">
+                    <!beforeCreate
+                        getStats(
+                            serverName='#{request.serverName}',
+                            node='jvm'
+                            stats=>$attribute{jvmStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{jvmStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+            "<td width="1%"></td>
+            "<td width="25%">
+
+
+            "</td>
+        "</tr>
+    "</table>
+                
+	</define>
+</composition>

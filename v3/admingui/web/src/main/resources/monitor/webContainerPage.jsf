@@ -1,22 +1,179 @@
-<!initPage
-setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings");
-setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
-setAttribute(key="helpKey" value="$resource{help.monitoringService}" );
-/>
-
-<sun:page id="page1">
-#include "/shared/restart.inc"
-    <sun:html id="html93">
-        <sun:head id="propertyhead" title="$resource{i18n.monitoring.webContainer.pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-
-#include "/shared/alertMsg.inc"      
-                <sun:title id="propertyContentPage" title="$resource{i18n.monitoring.webContainer.pageTitle}"
-                    helpText="Some help for text for monitor tab">
-		</sun:title>
-"Test monitor tab!
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+<!composition template="webContainerTemplate.jsf" 
+    pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}">
+        <!-- Buttons  -->
+        <!define name="title">
+        <sun:title id="propertyContentPage"
+                    helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
+<!--<sun:checkbox id="Test" label="Test" selected="#{test}">
+    <!beforeCreate
+        setPageSessionAttribute(key="test" value="#{test}");
+    />
+</sun:checkbox>-->
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+                    "<br />
+                    <sun:button id="refreshButton" 
+                                text="$resource{i18n.button.Refresh}">
+                    <!command
+                        setAttribute(key="instanceName" value="#{instanceName}")
+                        setAttribute(key="compVal" value="#{compVal}")
+                        setAttribute(key="compList" value="#{compList}");
+                        setAttribute(key="appVal" value="#{appVal}");
+                        navigate(page="monitor/webContainerPage.jsf");
+                    />              
+                    </sun:button>
+                </sun:panelGroup>
+            </facet>
+            </sun:title>
+        </define>
+        <!define name="properties">
+            <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
+                <!beforeCreate
+                    setPageSessionAttribute(key="appVal" value="#{appVal}");
+                    setPageSessionAttribute(key="compVal" value="#{compVal}");
+                    setPageSessionAttribute(key="compList" value="#{compList}");
+                />
+                <sun:dropDown id="Application" label="$resource{i18n.common.Application}:" values="$attribute{appList}" labels="$attribute{appList}" selected="#{appVal}" submitForm="#{true}" immediate="#{true}" >
+                    <!beforeCreate
+                        getChildNodes(
+                            node='applications',
+                            firstInList='All',
+                            childNodes=>$attribute{appList},
+                            firstItem=>$attribute{firstApp});
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="appVal" value="#{click.selected}");
+                        setAttribute(key="instanceName" value="#{instanceName}");
+                        setAttribute(key="appList" value="#{appList}");
+                        setAttribute(key="test" value="#{test}");
+                        getVirtualServers(
+                            serverName='#{request.serverName}',
+                            application='#{appVal}',
+                            virtualServers=>$attribute{compList},
+                            firstVirtualServer=>$attribute{compVal});
+                        navigate(page="monitor/webContainerPage.jsf");
+                    />
+                </sun:dropDown>
+                "&nbsp;&nbsp;&nbsp;
+                <sun:dropDown id="Component" label="Virtual Server:" values="$attribute{compList}" labels="$attribute{compList}" selected="#{compVal}" submitForm="#{true}" immediate="#{true}" >
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="compVal" value="#{click.selected}");
+                        setAttribute(key="instanceName" value="#{instanceName}");
+                        setAttribute(key="compList" value="#{compList}");
+                        setAttribute(key="appVal" value="#{appVal}");
+                        setAttribute(key="appList" value="#{appList}");
+                        setAttribute(key="test" value="#{test}");
+                        navigate(page="monitor/webContainerPage.jsf");
+                    />
+                </sun:dropDown>
+                <!--"&nbsp;&nbsp;&nbsp;
+                <sun:hyperlink 
+                    id="configMonitoringLink"
+                    text="$resource{i18n.monitor.configureLink}"
+                    url="../monitor/monitoringPage.jsf"/>-->
+            </sun:property>
+        </define>
+        <!define name="table">
+            "<br />
+            "<table>
+            "<tr>
+                "<td width="1%"></td>
+            "<td width="25%">
+            <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}">
+                    <!beforeCreate
+                        getWebStats(
+                            serverName='#{request.serverName}',
+                            application="#{appVal}",
+                            virtualServer="#{compVal}",
+                            type="request",
+                            stats=>$attribute{requestStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+            "<td width="1%"></td>
+            "<td width="25%">
+                <sun:table id="sessions" title="$resource{i18n_web.monitoring.sessionStatistics}">
+                    <!beforeCreate
+                        getWebStats(
+                            serverName='#{request.serverName}',
+                            application="#{appVal}",
+                            virtualServer="#{compVal}",
+                            type="session",
+                            test="#{test}",
+                            stats=>$attribute{sessionStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{sessionStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1" tooltip="#{td.value.ToolTip}">
+                            <!--"<div onMouseOver="javascript:alert('#{td.value.ToolTip}');">-->
+                                <staticText id="name" value="#{td.value.Name}" />
+                            <!--"</div>-->
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+        "</tr>
+        "<tr>
+            "<td width="1%"></td>
+            "<td width="25%">
+            <sun:table id="servlet" title="$resource{i18n_web.monitoring.servletStatistics}">
+                    <!beforeCreate
+                        getWebStats(
+                            serverName='#{request.serverName}',
+                            application="#{appVal}",
+                            virtualServer="#{compVal}",
+                            type="servlet",
+                            test="#{test}",
+                            stats=>$attribute{servletStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{servletStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+            "<td width="1%"></td>
+            "<td width="25%">
+                <sun:table id="jsp" title="$resource{i18n_web.monitoring.jspStatistics}">
+                    <!beforeCreate
+                        getWebStats(
+                            serverName='#{request.serverName}',
+                            application="#{appVal}",
+                            virtualServer="#{compVal}",
+                            type="jsp",
+                            test="#{test}",
+                            stats=>$attribute{jspStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{jspStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1" tooltip="#{td.value.ToolTip}">
+                            <!--"<div onMouseOver="javascript:alert('#{td.value.ToolTip}');">-->
+                                <staticText id="name" value="#{td.value.Name}" />
+                            <!--"</div>-->
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+        "</tr>
+    "</table>
+                "<br /><br />
+	</define>
+</composition>

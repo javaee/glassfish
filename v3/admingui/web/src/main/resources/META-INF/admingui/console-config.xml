@@ -8,24 +8,34 @@
                 parentId="configuration" 
                 content="webContainerNode.jsf" 
         />
-       <integration-point 
+        <integration-point 
                 id="monitor" 
                 type="tree" 
                 priority="350"
                 parentId="configuration" 
                 content="monitor/monitoringNode.jsf"/>
-       <!--
-       <integration-point 
+        <integration-point
+                id="monitoring" 
+                type="serverInstTab" 
+                priority="20" 
+                parentId="serverInstTabs" 
+                content="monitor/monitoringTab.jsf" />
+        <integration-point
                 id="monitor_web" 
-                type="tree" 
-                priority="10"
-                parentId="monitor" 
-                content="monitor/webContainerNode.jsf"/>
-       <integration-point 
+                type="serverInstTab" 
+                priority="20" 
+                parentId="monitoring" 
+                content="monitor/webContainerTab.jsf" />
+       <integration-point
                 id="monitor_http" 
-                type="tree" 
-                priority="20"
-                parentId="monitor" 
-                content="monitor/httpServiceNode.jsf"/>
-        -->
+                type="serverInstTab" 
+                priority="30" 
+                parentId="monitoring" 
+                content="monitor/httpServiceTab.jsf" />
+       <integration-point
+                id="monitor_jvm" 
+                type="serverInstTab" 
+                priority="40" 
+                parentId="monitoring" 
+                content="monitor/jvmTab.jsf" />
 </console-config>

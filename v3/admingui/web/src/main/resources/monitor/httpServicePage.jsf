@@ -1,22 +1,164 @@
-<!initPage
-setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings");
-setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks")
-setAttribute(key="helpKey" value="$resource{help.monitoringService}" );
-/>
-
-<sun:page id="page1">
-#include "/shared/restart.inc"
-    <sun:html id="html93">
-        <sun:head id="propertyhead" title="$resource{i18n.monitoring.httpService.pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-
-#include "/shared/alertMsg.inc"      
-                <sun:title id="propertyContentPage" title="$resource{i18n.monitoring.httpService.pageTitle}"
-                    helpText="Some help for text for monitor tab">
-		</sun:title>
-"Test monitor tab!
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
+<!composition template="webContainerTemplate.jsf" 
+    pageTitle="$resource{i18n_web.monitoring.httpService.pageTitle}">
+        <!-- Buttons  -->
+        <!define name="title">
+        <sun:title id="propertyContentPage"
+                    helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+                    "<br />
+                    <sun:button id="refreshButton" 
+                                text="$resource{i18n.button.Refresh}">
+                    <!command
+                        setAttribute(key="instanceName" value="#{instanceName}")
+                        setAttribute(key="hlVal" value="#{hlVal}")
+                        setAttribute(key="hlList" value="#{hlList}");
+                        setAttribute(key="vsVal" value="#{vsVal}");
+                        setAttribute(key="requestStatsNode" value="#{requestStatsNode}");
+                        navigate(page="monitor/httpServicePage.jsf");
+                    />              
+                    </sun:button>
+                </sun:panelGroup>
+            </facet>
+            </sun:title>
+        </define>
+        <!--define name="properties">
+            <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
+                "Click 
+                <sun:hyperlink 
+                    id="configMonitoringLink"
+                    text="$resource{i18n.monitor.configureLink}"
+                    url="../monitor/monitoringPage.jsf"/>
+                " to turn on monitoring.
+            </sun:property>
+        </define>-->
+        <!define name="table">
+            "<table>
+            "<tr>
+            "<td width="1%"></td>
+            "<td width="25%">
+                <sun:table id="connqueue" title="$resource{i18n_web.monitoring.ConnectionQueueStatistics}">
+                    <!beforeCreate
+                        getStats(
+                            serverName='#{request.serverName}',
+                            node='http-service.connection-queue'
+                            stats=>$attribute{cqStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{cqStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+            "<td width="1%"></td>
+            "<td width="25%">
+                <sun:table id="threadpool" title="$resource{i18n_web.monitoring.ThreadPoolStatistics}">
+                    <!beforeCreate
+                        getStats(
+                            serverName='#{request.serverName}',
+                            node='http-service.thread-pool'
+                            stats=>$attribute{tpStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{tpStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+        "</tr>
+    "</table>
+ 
+    <sun:propertySheet id="dropDowns">
+        <sun:propertySheetSection id="dropDownsSection">
+            <sun:property id="filtersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
+                <!beforeCreate
+                    setPageSessionAttribute(key="vsVal" value="#{vsVal}");
+                    setPageSessionAttribute(key="hlVal" value="#{hlVal}");
+                    setPageSessionAttribute(key="hlList" value="#{hlList}");
+                    setPageSessionAttribute(key="requestStatsNode" value="#{requestStatsNode}");
+                />
+                <sun:dropDown id="virtualServer" label="$resource{i18n_web.monitoring.VirtualServer}:" selected="#{vsVal}" values="$attribute{vsList}" labels="$attribute{vsList}" submitForm="#{true}" immediate="#{true}" >
+                    <!beforeCreate
+                        getChildNodes(
+                            node='http-service',
+                            category='virtual-server'
+                            childNodes=>$attribute{vsList},
+                            firstItem=>$attribute{firstItem});
+                        setAttribute(key="initialData" value="http-service.#{firstItem}.request");
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="vsVal" value="#{click.selected}");
+                        setAttribute(key="instanceName" value="#{instanceName}");
+                        setAttribute(key="vsList" value="#{appList}");
+                        setAttribute(key="requestStatsNode" value="http-service.#{vsVal}.request");
+                        setAttribute(key="test" value="#{test}");
+                        navigate(page="monitor/httpServicePage.jsf");
+                    />
+                </sun:dropDown>
+                "&nbsp;&nbsp;&nbsp;
+                <sun:dropDown id="httpListener" label="$resource{i18n_web.monitoring.HTTPListener}:" selected="#{hlVal}" values="$attribute{hlList}" labels="$attribute{hlList}" submitForm="#{true}" immediate="#{true}" >
+                    <!beforeCreate
+                        getChildNodes(
+                            node='http-service.#{vsVal}',
+                            category='http-listener',
+                            firstInList='All'
+                            childNodes=>$attribute{hlList},
+                            firstItem=>$attribute{firstHLItem});
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="hlVal" value="#{click.selected}");
+                        setAttribute(key="instanceName" value="#{instanceName}");
+                        setAttribute(key="hlList" value="#{hlList}");
+                        setAttribute(key="vsVal" value="#{vsVal}");
+                        setAttribute(key="vsList" value="#{vsList}");
+                        setAttribute(key="requestStatsNode" value="http-service.#{vsVal}.#{hlVal}");
+                        setAttribute(key="test" value="#{test}");
+                        navigate(page="monitor/httpServicePage.jsf");
+                    />
+                </sun:dropDown>
+            </sun:property>
+         </sun:propertySheetSection>
+                </sun:propertySheet>
+    "<table>
+        "<tr>
+            "<td width="1%"></td>
+            "<td width="25%">
+     <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}">
+                    <!beforeCreate
+                        if (#{requestStatsNode}) {
+                            setAttribute(key="node" value="#{requestStatsNode}");
+                        }
+                        if (!#{requestStatsNode}) {
+                            setAttribute(key="node" value="#{initialData}");
+                        }
+                        getStats(
+                            serverName='#{request.serverName}',
+                            node='#{node}'
+                            stats=>$attribute{requestStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                   </sun:tableRowGroup>
+                </sun:table>
+            "</td>
+            "<td width="1%"></td>
+            "<td width="25%"></td>
+        "</tr>
+    "</table>
+	</define>
+</composition>
