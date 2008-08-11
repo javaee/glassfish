@@ -94,7 +94,8 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-cli</artifactId>
             <version>${project.version}</version>
-        </dependency>
+    </dependency>
+    	<!--
          <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-web-plugin</artifactId>
@@ -113,7 +114,8 @@
 		    <artifactId>jsftemplating-dynafaces</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+    </dependency>
+    -->
          <!--dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>gf-web-connector</artifactId>
