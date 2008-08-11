@@ -87,6 +87,20 @@ bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-simple-xa-test-pool-2 j
 echo "\n"
 
 
+#Create Pool/Resource (1)  for Lazy Connection Enlistment test
+echo "Creating Pool/Resource (1) Lazy Connection Enlistment test"
+bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --property="password=APP1:user=APP1:databaseName=lazyenlist-test-1:connectionAttributes=\;create\\=true" jdbc-lazy-enlist-pool-1
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-lazy-enlist-pool-1 jdbc/jdbc-lazy-enlist-resource-1
+echo "\n"
+
+
+#Create Pool/Resource (2)  for Lazy Connection Enlistment test
+echo "Creating Pool/Resource (2) Lazy Connection Enlistment test"
+bin/asadmin create-jdbc-connection-pool --lazyconnectionenlistment=true --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource  --property="password=APP1:user=APP1:databaseName=lazyenlist-test-2:connectionAttributes=\;create\\=true" jdbc-lazy-enlist-pool-2
+bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-lazy-enlist-pool-2 jdbc/jdbc-lazy-enlist-resource-2
+echo "\n"
+
+
 
 echo Deploying war...
 bin/asadmin deploy --force=true $war2deploy

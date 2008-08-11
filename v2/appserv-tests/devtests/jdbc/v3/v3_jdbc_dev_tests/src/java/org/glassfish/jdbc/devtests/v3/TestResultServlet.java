@@ -34,8 +34,10 @@ public class TestResultServlet extends HttpServlet {
     DataSource dsAssocWithThread;
     @Resource(name = "jdbc/jdbc-lazy-assoc-resource", mappedName = "jdbc/jdbc-lazy-assoc-test-resource")
     DataSource dsLazyAssoc;
-    @Resource(name="jdbc/jdbc-simple-xa-test-resource-1", mappedName="jdbc/jdbc-simple-xa-test-resource-1")
-    DataSource dsXA; 
+    @Resource(name = "jdbc/jdbc-simple-xa-test-resource-1", mappedName = "jdbc/jdbc-simple-xa-test-resource-1")
+    DataSource dsXA;
+    @Resource(name = "jdbc/jdbc-lazy-enlist-resource-1", mappedName = "jdbc/jdbc-lazy-enlist-resource-1")
+    DataSource dsLazyEnlist;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -54,6 +56,7 @@ public class TestResultServlet extends HttpServlet {
         SimpleTest testAssocWithThread = null;
         SimpleTest testLazyAssoc = null;
         SimpleTest testXA = null;
+        SimpleTest testLazyEnlist = null;
         SimpleTest[] testsOther = null;
         out.println("<html>");
         out.println("<head>");
@@ -80,6 +83,7 @@ public class TestResultServlet extends HttpServlet {
             testXA = loadSimpleXATest();
             testsOther = initializeTests();
             testLazyAssoc = loadLazyAssocTest();
+            testLazyEnlist = loadLazyEnlistTest();
         } catch (Exception e) {
             HtmlUtil.printException(e, out);
         }
@@ -88,6 +92,7 @@ public class TestResultServlet extends HttpServlet {
             buf.append("<table border=1><tr><th>Test Name</th><th> Pass </th></tr>");
 
             if (!lazyAssocAlone) {
+
 
                 //Run Multiple User Credentials Test
                 Map<String, Boolean> mapMultipleUserCred =
@@ -175,6 +180,19 @@ public class TestResultServlet extends HttpServlet {
                     }
                 }
 
+                //Order of test is important : lazy enlist has to be before connection leak tracing
+                Map<String, Boolean> mapLazyEnlist =
+                        testLazyEnlist.runTest(dsLazyEnlist, out);
+                for (Map.Entry entry : mapLazyEnlist.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
+                }
+
+                //Order of test is important : lazy enlist has to be before connection leak tracing
                 //Run Connection Leak Tracing Test
                 Map<String, Boolean> mapConnLeakTracing =
                         testConnLeakTracing.runTest(dsConnLeakTracing, out);
@@ -185,7 +203,9 @@ public class TestResultServlet extends HttpServlet {
                     buf.append("<td>");
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");
-                } 
+                }
+
+
             }
 
             //Always Run Lazy Connection Association Test as last test
@@ -199,7 +219,6 @@ public class TestResultServlet extends HttpServlet {
                 buf.append(entry.getValue());
                 buf.append("</td></tr>");
             }
-
 
 
             buf.append("</table>");
@@ -236,6 +255,14 @@ public class TestResultServlet extends HttpServlet {
 
     private SimpleTest loadLazyAssocTest() throws Exception {
         String test = "org.glassfish.jdbc.devtests.v3.test.LazyConnectionAssociationTest";
+        Class testClass = Class.forName(test);
+        Constructor c = testClass.getConstructor();
+        SimpleTest testInstance = (SimpleTest) c.newInstance();
+        return testInstance;
+    }
+
+    private SimpleTest loadLazyEnlistTest() throws Exception {
+        String test = "org.glassfish.jdbc.devtests.v3.test.LazyConnectionEnlistmentTest";
         Class testClass = Class.forName(test);
         Constructor c = testClass.getConstructor();
         SimpleTest testInstance = (SimpleTest) c.newInstance();

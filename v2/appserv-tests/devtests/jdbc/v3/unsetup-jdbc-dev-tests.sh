@@ -17,6 +17,9 @@ bin/asadmin delete-jdbc-resource jdbc/jdbc-associate-with-thread-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource-1
 bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource-2
 bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-assoc-test-resource
+bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-enlist-resource-1
+bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-enlist-resource-2
+
 echo "\n"
 sleep 1
 
@@ -34,6 +37,9 @@ bin/asadmin delete-jdbc-connection-pool jdbc-associate-with-thread-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-lazy-assoc-test-pool
 bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-1
 bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-2
+bin/asadmin delete-jdbc-connection-pool jdbc-lazy-enlist-pool-1
+bin/asadmin delete-jdbc-connection-pool jdbc-lazy-enlist-pool-2
+
 echo "\n"
 
 echo Deleting files...
