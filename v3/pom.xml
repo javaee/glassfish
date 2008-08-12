@@ -140,7 +140,7 @@
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 		<dataprovider.version>4.2</dataprovider.version>
 		<jsftemplating.version>1.2.1</jsftemplating.version>
-    	<glassfish-api.version>10.0.406</glassfish-api.version>        
+    	<glassfish-api.version>10.0.407</glassfish-api.version>        
     </properties>
     <modules>
       	<module>build</module>
