@@ -39,18 +39,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>org.glassfish</groupId>
-    <artifactId>pom</artifactId>
-    <version>2</version>
-  </parent>
+    <artifactId>glassfish-parent</artifactId>
+    <version>10.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+</parent>
 
   <groupId>org.glassfish.embedded</groupId>
   <artifactId>embedded</artifactId>
   <packaging>pom</packaging>
-  <version>2</version>
+  <version>10.0-SNAPSHOT</version>
   
-  <name>Embedding GlassFish</name>
+  <name>Embedded GlassFish</name>
   <scm>
     <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/trunk/v3/embedded</connection>
   </scm>
