@@ -98,7 +98,8 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" /> 
+      	<delete dir="target/stage/glassfishv3-prelude/META-INF" />  	
 	 
        <zip file="target/glassfish-nucleus.zip" basedir="target/stage"/>
            

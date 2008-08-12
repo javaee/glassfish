@@ -76,7 +76,7 @@ own identifying information: Portions Copyright [yyyy]
         </graphDef>
 
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
-	 
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" />  
        <zip file="target/glassfish-api.zip" basedir="target/stage"/>
            
        <attachArtifact file="target/glassfish-api.zip"/>
