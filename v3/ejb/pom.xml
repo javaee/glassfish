@@ -51,6 +51,7 @@
     <modules>
         <module>ejb-all</module>
         <module>ejb-connector</module>
+        <module>ejb-api</module>
         <module>ejb-container</module>
         <module>ejb-timer-databases</module>
         <module>ejb-timer-service-app</module>

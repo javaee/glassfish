@@ -93,9 +93,9 @@
     </developers>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.ejb</groupId>
+            <artifactId>ejb</artifactId>
+            <version>3.1-alpha-1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -185,10 +185,5 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>3.1</version>
-        </dependency -->
     </dependencies>
 </project>
