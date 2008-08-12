@@ -608,11 +608,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             setDefaultRedirectPort(defaultRedirectPort);
             
             // Configure virtual servers
-            List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
-            for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
-                createVirtualServer(vs, httpService, aConfig.getSecurityService());
-                _logger.info("Created virtual server " + vs.getId());
-            }
+            createHosts(httpService, aConfig.getSecurityService());
         }
 
         loadDefaultWebModules();
@@ -1012,9 +1008,36 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }            
     }
     
-    public void createVirtualServer(
+
+    /**
+     * Enumerates the virtual-server subelements of the given http-service
+     * element, and creates a corresponding Host for each.
+     *
+     * @param httpService The http-service element
+     * @param securityService The security-service element
+     */
+    protected void createHosts(HttpService httpService,
+                               SecurityService securityService) {
+
+        List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
+        for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
+            createHost(vs, httpService, securityService);
+            _logger.info("Created virtual server " + vs.getId());
+        }
+    }
+
+
+    /**
+     * Creates a Host from a virtual-server config bean.
+     *
+     * @param vsBean The virtual-server configuration bean
+     * @param httpService The http-service element.
+     * @param securityService The security-service element
+     */            
+    public VirtualServer createHost(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
-                HttpService httpService, SecurityService securityService) {
+                HttpService httpService,
+                SecurityService securityService) {
         
         MimeMap mm = null;
         String vs_id = vsBean.getId();
@@ -1028,8 +1051,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         vs_id,
                         vsBean.getDefaultWebModule());
 
-        VirtualServer vs = createVS(vs_id, vsBean, docroot, mm,
-                                    httpService.getHttpProtocol());
+        VirtualServer vs = createHost(vs_id, vsBean, docroot, mm,
+                                      httpService.getHttpProtocol());
 
         // cache control
         Property cacheProp = vsBean.getProperty("setCacheControl");
@@ -1037,24 +1060,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             vs.configureCacheControl(cacheProp.getValue());   
         }        
 
-        // Set Host alias names
-        List<String> aliasNames =
-            StringUtils.parseStringList(vsBean.getHosts(), ",");
-        for (String alias: aliasNames){
-            // XXX remove once ${com.sun.aas.hostName} has been properly
-            // resolved thru parametric replacement
-            if ("${com.sun.aas.hostName}".equals(alias)) {
-                try {
-                    alias = InetAddress.getLocalHost().getHostName();
-                } catch (UnknownHostException e) {
-                    _logger.log(Level.SEVERE,
-                                       "Unable to get local host name",
-                                       e);
-                }
-            }
-            vs.addAlias(alias);
-        }
-        
         PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
             vs_id, vsBean, httpService, domain,
@@ -1081,7 +1086,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Add Host to Engine
         engine.addChild(vs);
-        
+
+        return vs;        
     }
 
     /**
@@ -1440,7 +1446,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * Create a virtual server/host.
      */
-    public VirtualServer createVS(String vsID,
+    public VirtualServer createHost(String vsID,
             com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
             String docroot,
             MimeMap mimeMap,

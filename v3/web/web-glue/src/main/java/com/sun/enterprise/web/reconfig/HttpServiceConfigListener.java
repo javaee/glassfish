@@ -118,7 +118,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                 try {
                     if (t instanceof com.sun.enterprise.config.serverbeans.VirtualServer) {
                         if (type==TYPE.ADD) {                           
-                            container.createVirtualServer(
+                            container.createHost(
                             (com.sun.enterprise.config.serverbeans.VirtualServer)t,
                              httpService, null);
                         } else if (type==TYPE.REMOVE) {
