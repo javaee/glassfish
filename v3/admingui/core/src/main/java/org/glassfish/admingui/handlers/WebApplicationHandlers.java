@@ -39,13 +39,11 @@ package org.glassfish.admingui.handlers;
 import com.sun.appserv.management.config.ApplicationConfigConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
-import com.sun.appserv.management.util.misc.FileUtils;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-import java.io.File;
 import java.io.StringReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -65,7 +63,11 @@ import org.glassfish.web.plugin.common.EnvEntry;
 
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 
+import javax.enterprise.deploy.spi.Target;
 import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.deployment.client.DFDeploymentStatus;
+import org.glassfish.deployment.client.DFProgressObject;
+import org.glassfish.deployment.client.DeploymentFacility;
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -177,6 +179,7 @@ public class WebApplicationHandlers {
             @HandlerInput(name="appName", type=String.class, required=true),
             @HandlerInput(name="serverName", type=String.class, defaultValue="server"),
             @HandlerInput(name="appType", type=String.class, required=true),
+            @HandlerInput(name="reload", type=Boolean.class, required=true),
             @HandlerInput(name="envList", type=List.class, required=true),
             @HandlerInput(name="ctxParamList", type=List.class, required=true)})
     public static void saveWebDDInfo(HandlerContext handlerCtx) {
@@ -184,6 +187,7 @@ public class WebApplicationHandlers {
         String appName = (String) handlerCtx.getInputValue("appName");
         String appType = (String) handlerCtx.getInputValue("appType");
         String serverName = (String) handlerCtx.getInputValue("serverName");
+        boolean reload = (Boolean) handlerCtx.getInputValue("reload");
         List<Map> envList = (List<Map>)handlerCtx.getInputValue("envList");
         List<Map> ctxParamList = (List<Map>)handlerCtx.getInputValue("ctxParamList");
         
@@ -229,6 +233,9 @@ public class WebApplicationHandlers {
                     refConfig.createApplicationConfigConfig(WEB_APP_TYPE, URLEncoder.encode (configValue, ENCODING));
                 }
                 //no config, no customization,  just return.
+                if (reload){
+                    reloadWebApp(handlerCtx, appName, serverName);
+                }
                 return;
             }
 
@@ -236,11 +243,17 @@ public class WebApplicationHandlers {
             if ( GuiUtil.isEmpty(configValue)){
                 //no customization, remove the entry.
                 refConfig.removeApplicationConfigConfig(WEB_APP_TYPE);
+                if (reload){
+                    reloadWebApp(handlerCtx, appName, serverName);
+                }
                 return;
             }
             
             //update the config in domain.xml
             acc.setConfig(URLEncoder.encode (configValue, ENCODING));
+            if (reload){
+                reloadWebApp(handlerCtx, appName, serverName);
+            }
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -258,6 +271,16 @@ public class WebApplicationHandlers {
             }
         }
         return "";
+    }
+    
+    private static void reloadWebApp(HandlerContext handlerCtx, String appName, String serverName){
+        DeploymentFacility df = GuiUtil.getDeploymentFacility();
+        Target[] targets = df.createTargets(new String[] {serverName});
+        DFProgressObject progressObject = null;
+        progressObject = df.disable(targets, appName);
+        progressObject = df.enable(targets, appName);
+        DFDeploymentStatus status = progressObject.getCompletedStatus();
+        DeploymentHandler.checkDeployStatus(status, handlerCtx, true);
     }
         
     private static WebAppConfig getConfigData(String data,  boolean doDecoding){
@@ -331,11 +354,11 @@ public class WebApplicationHandlers {
     private static final String PARAM_VALUE ="param-value" ;
 
     private static final String CONTEXT_PARAM_B = "<" + CONTEXT_PARAM + ">"; ;
-    private static final String CONTEXT_PARAM_E = "<" + CONTEXT_PARAM + ">"; ;
+    private static final String CONTEXT_PARAM_E = "</" + CONTEXT_PARAM + ">"; ;
     private static final String PARAM_NAME_B = "<" + PARAM_NAME + ">";
     private static final String PARAM_NAME_E = "</" + PARAM_NAME + ">";
 
     private static final String PARAM_VALUE_B ="<" + PARAM_VALUE + ">";
-    private static final String PARAM_VALUE_E ="<" + PARAM_VALUE + ">";
+    private static final String PARAM_VALUE_E ="</" + PARAM_VALUE + ">";
    
 }

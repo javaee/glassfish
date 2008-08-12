@@ -66,7 +66,20 @@
                             getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
                             getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
                             
-                            saveWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", 
+                            saveWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", reload="#[false}"
+                                    envList="${envNewList}" ctxParamList="${paramNewList}" )
+                            prepareSuccessfulMsg();
+                            />
+                        </sun:button>
+                        <sun:button id="saveButton2" text="$resource{i18n.button.SaveWithReload}" primary="#{true}">  
+                            <!command
+                            getUIComponent(clientId="$pageSession{editEnvTableRowGroupId}", component=>$attribute{envTableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{envTableRowGroup}",  Rows=>$attribute{envNewList});
+                            
+                            getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
+                            
+                            saveWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", reload="#[true}"
                                     envList="${envNewList}" ctxParamList="${paramNewList}" )
                             prepareSuccessfulMsg();
                             />
@@ -85,7 +98,7 @@
             "<br />
             "<br />
 #include "/applications/editWebDDTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.customMBeanEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
             </sun:form>
         </sun:body>
     </sun:html>

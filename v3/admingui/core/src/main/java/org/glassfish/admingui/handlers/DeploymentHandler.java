@@ -165,7 +165,7 @@ public class DeploymentHandler {
      	return ret;
      }
 
-     private static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing) 
+     public static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing) 
      {
          //TODO-V3 get more msg to user.
         //parse the deployment status and retrieve failure/warning msg
