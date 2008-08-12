@@ -40,7 +40,7 @@
     }
     getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
     setAttribute(key="mmlConfig" value="#{config.monitoringServiceConfig.moduleMonitoringLevelsConfig}");
-    createAmxConfigMap(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap=>$pageSession{configMap});
+    createAmxConfigMap(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer", "JVM", "threadPool"}, configMap=>$pageSession{configMap});
     //getTableList(Properties="#{mmlConfig.propertyConfigMap}", TableList=>$attribute{tableList});
 />
 <sun:page>
@@ -68,9 +68,13 @@
                         <!command
                             getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="HTTPService", defaultValue=>$attribute{httpService});
                             getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="WebContainer", defaultValue=>$attribute{webContainer});
+                            getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="JVM", defaultValue=>$attribute{jvm});
+                            getDefaultConfigurationValue(moduleConfig="#{mmlConfig}", key="threadPool", defaultValue=>$attribute{threadPool});
                             
-                            setValueExpression(expression="#{configMap.HTTPService}", value="hello");
+                            setValueExpression(expression="#{configMap.HTTPService}", value="$attribute{httpService}");
                             setValueExpression(expression="#{configMap.webContainer}", value="$attribute{webContainer}");
+                            setValueExpression(expression="#{configMap.JVM}", value="$attribute{jvm}");
+                            setValueExpression(expression="#{configMap.threadPool}", value="$attribute{threadPool}");
                        />
                     </sun:button>
                     <!-- Buttons  -->                    
@@ -88,7 +92,7 @@
                                 */
 
                                 setAttribute(key="configName" value="#{configName}");
-                                updateAmxConfig(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer"}, configMap="#{configMap}");
+                                updateAmxConfig(moduleConfig="#{mmlConfig}", properties={"HTTPService","webContainer", "JVM", "threadPool"}, configMap="#{configMap}");
                             />
                         </sun:button>                      
                     </sun:panelGroup>
@@ -103,6 +107,12 @@
                          </sun:property>          
                         <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Web}">                           
                             <sun:dropDown id="Web" selected="#{configMap['webContainer']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                         </sun:property>                               
+                        <sun:property id="jvm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">                           
+                            <sun:dropDown id="Http" selected="#{configMap['JVM']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
+                         </sun:property>          
+                        <sun:property id="threadPool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.ThreadPool}">                           
+                            <sun:dropDown id="Web" selected="#{configMap['threadPool']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW" "HIGH" "OFF"} />
                          </sun:property>                               
                         "<br /><br />
                     </sun:propertySheetSection>
