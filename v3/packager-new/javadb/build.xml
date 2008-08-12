@@ -23,15 +23,23 @@ own identifying information: Portions Copyright [yyyy]
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
 
-       <resolveArtifact artifactId="javadb" groupId="org.glassfish.external" property="javadb.zip"/>
+	<resolveArtifact artifactId="javadb" groupId="org.glassfish.external" property="javadb.zip"/>
+   
 
-       <unzip src="${javadb.zip}"
+        <unzip src="${javadb.zip}"
            dest="target/stage/glassfishv3-prelude">
           <patternset>
 		  <exclude name="META-INF/**"/>
-          </patternset>
+	  </patternset>
        </unzip>
-       
+
+   
+       <copy todir="target/stage/glassfishv3-prelude/javadb">
+            <fileset dir="target/stage/glassfishv3-prelude/glassfish/javadb"/>
+  	</copy>
+	       
+
+       <delete dir="target/stage/glassfishv3-prelude/glassfish/javadb"/>
 
        <zip file="target/javadb.zip" basedir="target/stage"/>
            
