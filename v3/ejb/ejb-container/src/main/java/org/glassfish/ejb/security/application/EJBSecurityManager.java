@@ -35,9 +35,6 @@
  */
 package org.glassfish.ejb.security.application;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -50,7 +47,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import javax.security.auth.Subject;
 import javax.security.auth.SubjectDomainCombiner;
-import java.net.URL;
 import javax.security.jacc.EJBMethodPermission;
 import javax.security.jacc.EJBRoleRefPermission;
 import javax.security.jacc.PolicyConfigurationFactory;
@@ -65,12 +61,8 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
-import com.sun.enterprise.security.factory.FactoryForSecurityManagerFactory;
-import com.sun.enterprise.security.factory.FactoryForSecurityManagerFactoryImpl;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.authorize.*;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.CachedPermission;
@@ -78,9 +70,6 @@ import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.TypeUtil;
-
-// logging
 import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
@@ -93,8 +82,7 @@ import java.security.*;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.ejb.security.factory.*;
 
 /**
  * This class is used by the EJB server to manage security. All
@@ -953,7 +941,8 @@ public final class EJBSecurityManager
         FactoryForSecurityManagerFactory ffsmf
                 = FactoryForSecurityManagerFactoryImpl.getInstance();
         SecurityManagerFactory smf = ffsmf.getSecurityManagerFactory("ejb");
-        smf.removeSecurityManager(contextId);
+        //TODO: Fix after Prelude
+        //smf.removeSecurityManager(contextId);
     }
 
     /**

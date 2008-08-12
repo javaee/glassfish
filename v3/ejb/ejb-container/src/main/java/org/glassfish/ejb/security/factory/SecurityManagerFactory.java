@@ -35,39 +35,41 @@
  */
 
 /*
- * PrincipalGroupFactory.java
+ * SecurityManagerFactory.java
  *
- * Created on October 28, 2004, 12:34 PM
+ * Created on June 9, 2003, 11:59 AM
  */
 
-package com.sun.enterprise.security.web.integration;
+package org.glassfish.ejb.security.factory;
 
-import org.glassfish.internal.api.Globals;
-import org.glassfish.security.common.PrincipalImpl;
-import org.glassfish.security.common.Group;
+import com.sun.enterprise.security.SecurityManager;
+import com.sun.enterprise.deployment.Descriptor;
 /**
- *
- * @author  Harpreet Singh
+ * Factory For SecurityManager objects, can return a Web/EJB SecurityManager 
+ * Factory
+ * @author  Harpreet Singh 
  */
-public class PrincipalGroupFactory {
-    
-    /** Creates a new instance of PrincipalGroupFactory */
+public interface SecurityManagerFactory {    
+    /* 
+     * Returns the SecurityManager instance corresponding to the factory that
+     * is being operated.
+     * @param String contextId the context id of the application
+     * @return SecurityManager - return the SecurityManager instance
+     */
+    public SecurityManager getSecurityManager(String contextId);
 
-    public static PrincipalImpl getPrincipalInstance(String name, String realm){
-        WebSecurityManagerFactory fact = Globals.get(WebSecurityManagerFactory.class);
-        PrincipalImpl p = (PrincipalImpl)fact.getAdminPrincipal(name, realm) ;
-        if(p == null){
-            p = new PrincipalImpl(name);
-        }
-        return p;
-    }
+    /*
+     * create a SM instance corresponding to the web/ejb factory being operated
+     * on
+     * @param Descriptor, if descriptor is of type EjbDescriptor for ejbs
+     * and WebBundleDescriptor for web.
+     */
+    public SecurityManager createSecurityManager(Descriptor descriptor);
     
-    public static Group getGroupInstance(String name, String realm){
-        WebSecurityManagerFactory fact = Globals.get(WebSecurityManagerFactory.class);
-        Group g = (Group)fact.getAdminGroup(name, realm);
-        if(g == null){
-            g = new Group(name);
-        }
-        return g;
-    }
+    /**
+     * Remove the SM instance corresponding to this context
+     * @param String the contextId of the module
+     */
+    public void removeSecurityManager(String contextId);
+    
 }

@@ -40,7 +40,9 @@
  * Created on June 9, 2003, 11:54 AM
  */
 
-package com.sun.enterprise.security.factory;
+package org.glassfish.ejb.security.factory;
+
+import com.sun.enterprise.security.factory.*;
 
 /**
  * This returns the SecurityManagerFactory

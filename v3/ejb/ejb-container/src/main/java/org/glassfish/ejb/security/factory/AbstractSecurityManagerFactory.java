@@ -35,62 +35,58 @@
  */
 
 /*
- * FactoryForSecurityManagerFactoryImpl.java
+ * AbstractSecurityManagerFactory.java
  *
- * Created on June 9, 2003, 1:51 PM
+ * Created on June 9, 2003, 1:44 PM
  */
 
-package com.sun.enterprise.security.factory;
+package org.glassfish.ejb.security.factory;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Map;
+import java.util.HashMap;
 
+import com.sun.enterprise.security.SecurityManager;
+import com.sun.enterprise.deployment.Descriptor;
+import java.util.logging.*; 
+import com.sun.logging.LogDomains;
 /**
- * Creates a Singleton for FactoryForSecurityManagerImpl
+ * This class is the parent for Web/Ejb SecurityManager. It keeps a pool of SM
+ * objects.
  * @author  Harpreet Singh
  */
-public class FactoryForSecurityManagerFactoryImpl 
-    implements FactoryForSecurityManagerFactory {
+public abstract class AbstractSecurityManagerFactory 
+    implements SecurityManagerFactory {
+    
+    protected static final Logger _logger = 
+	Logger.getLogger(LogDomains.SECURITY_LOGGER);
+  
+    protected Map _securityManagerPool = new HashMap();
+    
+    public abstract SecurityManager getSecurityManager(String contextId);
+    
+    public abstract SecurityManager createSecurityManager(Descriptor descriptor);
 
-    private static final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    
-    private static FactoryForSecurityManagerFactory _theFactory; 
-    private static String WEB = "web";
-    private static String EJB = "ejb";
-    
-    /** Creates a new instance of FactoryForSecurityManagerFactoryImpl */
-    private FactoryForSecurityManagerFactoryImpl() {
-    }
-    
-    public static FactoryForSecurityManagerFactory getInstance() {
-        try {
-            rwLock.readLock().lock();
-            if (_theFactory != null) {
-                return _theFactory;
-            }
-        } finally {
-            rwLock.readLock().unlock();
-        }
-
-        try {
-            rwLock.writeLock().lock();
-            if (_theFactory == null) {
-                _theFactory = new FactoryForSecurityManagerFactoryImpl();
-            }
-            return _theFactory;
-        } finally {
-            rwLock.writeLock().unlock();
-        }
-    }
-    /* @todo uncommnent the web route
-     *
+    /**
+     * Does the SM pool has this SM already
+     * @param String the context Id of the SecurityManager
+     * @return true, if SM present, false otherwise
      */
-    public SecurityManagerFactory getSecurityManagerFactory(String type) {
-        if(type.equalsIgnoreCase(WEB)){
-//            return WebSecurityManagerFactory.getInstance();            
-        } else if (type.equalsIgnoreCase(EJB)){
-           //TODO:V3 Commented, uncomment later return EJBSecurityManagerFactory.getInstance();
-        }
-        return null;
+    protected boolean _poolHas(String contextId){
+       return _securityManagerPool.containsKey(contextId);
     }
+    
+    protected void _poolPut(String contextId, SecurityManager smf){
+        synchronized(_securityManagerPool){
+            _securityManagerPool.put(contextId, smf);   
+        }
+    }
+    protected SecurityManager _poolGet(String contextId){
+        return (SecurityManager)_securityManagerPool.get(contextId);
+    }
+    
+   public void removeSecurityManager(String contextId){
+        synchronized (_securityManagerPool){
+            _securityManagerPool.remove(contextId);
+        }
+    }   
 }

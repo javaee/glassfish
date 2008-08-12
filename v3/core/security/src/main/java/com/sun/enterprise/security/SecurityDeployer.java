@@ -39,11 +39,13 @@ import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Security Deployer which generate and clean the security policies
@@ -55,7 +57,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     @Inject
     private ServerContext serverContext;
-
+    
+    @Inject 
+    private Habitat habitat;
+    
     @Inject 
     private PolicyLoader policyLoader;
 
@@ -77,6 +82,14 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     public DummyApplication load(SecurityContainer container, DeploymentContext context) {
         return new DummyApplication();
     }
+    
+    @Override
+    public void unload(DummyApplication container, DeploymentContext context) {
+        Properties params = context.getCommandParameters();
+        String appName = params.getProperty(ParameterNames.NAME);
+        cleanSecurityContext(appName);
+    }
+
 
     // TODO: need to add ear and standalone ejb module case
     protected void generatePolicy(DeploymentContext dc)
@@ -91,14 +104,14 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
 
             Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
             Iterator<WebBundleDescriptor> iter = webDesc.iterator();
+            //TODO V3: shouldn't i iterate over all WBD's ?.
             if (iter.hasNext()) {
                 wbd =  iter.next();
             }
 
-            WebSecurityManagerFactory wsmf =
-                    WebSecurityManagerFactory.getInstance();
+            WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
             // this should create all permissions
-            wsmf.newWebSecurityManager(wbd,serverContext);
+            wsmf.createManager(wbd,false,serverContext);
             // for an application the securityRoleMapper should already be
             // created. I am just creating the web permissions and handing
             // it to the security component.
@@ -118,15 +131,45 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         String appName = params.getProperty(ParameterNames.NAME);
 
         try {
-            WebSecurityManagerFactory wsmf =
-                    WebSecurityManagerFactory.getInstance();
-            String[] name = wsmf.getAndRemoveContextIdForWebAppName(appName);
-            if (name != null) {
-                if (name[0] != null) {
-                    SecurityUtil.removePolicy(name[0]);
-                    wsmf.removeWebSecurityManager(name[0]);
+            WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
+            // this should create all permissions
+            String[] webcontexts = wsmf.getContextsForApp(appName, true);
+            if (webcontexts != null) {
+                  for (int i = 0; i < webcontexts.length; i++) {
+                      if (webcontexts[i] != null) {
+                          SecurityUtil.removePolicy(webcontexts[i]);
+                      }
+                  }
+             }
+
+            /* From V2 but keep commented until need is discovered
+            //remove any remaining policy
+            //This is to address the bug where the CONTEXT_ID in 
+            //WebSecurityManagerFactory is not properly populated.
+            //We force the sub-modules to be removed in this case.
+            //This should not impact undeploy performance on DAS.
+            //This needs to be fixed better later.
+            String policyRootDir = System.getProperty(
+                    "com.sun.enterprise.jaccprovider.property.repository");
+            if (policyRootDir != null) {
+                List<String> contextIds = new ArrayList<String>();
+                File policyDir = new File(policyRootDir + File.separator + appName);
+                if (policyDir.exists()) {
+                    File[] policies = policyDir.listFiles();
+                    for (int i = 0; i < policies.length; i++) {
+                        if (policies[i].isDirectory()) {
+                            contextIds.add(appName + '/' + policies[i].getName());
+                        }
+                    }
+                } else {
+                //we tried.  give up now.
                 }
-            }
+                if (contextIds.size() > 0) {
+                    for (String cId : contextIds) {
+                        SecurityUtil.removePolicy(cId);
+                    }
+                }
+            }*/
         } catch (IASSecurityException ex) {
             String msg = "Error in removing security policy for " + appName;
             _logger.log(Level.WARNING, msg, ex);
@@ -156,6 +199,33 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             apis.add(module.getModuleDefinition());
         }
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, new Class[] {Application.class});
+    }
+    
+     
+    /**
+     * Clean security policy generated at deployment time.
+     * NOTE: This routine calls destroy on the WebSecurityManagers, 
+     * but that does not cause deletion of the underlying policy (files).
+     * The underlying policy is deleted when removePolicy 
+     * (in AppDeployerBase and WebModuleDeployer) is called.
+     * @param appName  the app name
+     */
+    private void cleanSecurityContext(String appName) {
+        WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
+	ArrayList<WebSecurityManager> managers =
+	    wsmf.getManagersForApp(appName,true);
+
+	for (int i = 0; managers != null && i < managers.size(); i++) {
+  
+	    try {
+	         managers.get(i).destroy();
+	    } catch (javax.security.jacc.PolicyContextException pce){
+	         // log it and continue
+	         _logger.log(Level.WARNING,
+			     "Unable to destroy WebSecurityManager",
+			     pce);
+	    }
+	}
     }
 
 //    private static void initRoleMapperFactory() //throws Exception

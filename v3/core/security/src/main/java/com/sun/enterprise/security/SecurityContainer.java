@@ -88,10 +88,9 @@ public class SecurityContainer implements Container, PostConstruct{
         try {
             policyLoader.loadPolicy();
             
-            WebSecurityManagerFactory wsmf =
-                    WebSecurityManagerFactory.getInstance();
+            WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
             // this should create all permissions
-            wsmf.newWebSecurityManager(wbd,serverContext);
+            wsmf.createManager(wbd,true,serverContext);
             // for an application the securityRoleMapper should already be
             // created. I am just creating the web permissions and handing
             // it to the security component.

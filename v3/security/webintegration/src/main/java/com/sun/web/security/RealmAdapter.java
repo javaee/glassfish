@@ -112,8 +112,10 @@ import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * This is the realm adapter used to authenticate users and authorize
@@ -125,7 +127,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Scoped(PerLookup.class)
-public class RealmAdapter extends RealmBase implements RealmInitializer {
+public class RealmAdapter extends RealmBase implements RealmInitializer, PostConstruct {
 
     private static final String UNCONSTRAINED = "unconstrained";
     private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -161,7 +163,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     /**
      * The string manager for this package.
      */
-    protected static final StringManager sm =
+    protected static final StringManager smgr =
             StringManager.getManager(Constants.Package);
 //    protected static final StringManager smRA =
 //            StringManager.getManager("com.sun.web.security");
@@ -172,8 +174,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     /**
      * The factory used for creating <code>WebSecurityManager</code> object.
      */
-    protected WebSecurityManagerFactory webSecurityManagerFactory =
-            WebSecurityManagerFactory.getInstance();
+    protected WebSecurityManagerFactory webSecurityManagerFactory = null;
+            
     protected boolean isCurrentURIincluded = false;
     private ArrayList roles = null;
     /* the following fields are used to implement a bypass of
@@ -199,27 +201,30 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     @Inject
     private ServerContext serverContext;
+    @Inject 
+    private Habitat habitat;
     
     public RealmAdapter() {
+        //used during Injection in WebContainer (glue code)
     }
 
     /**
      * Create for WS Ejb endpoint authentication.
      * Roles related data is not available here.
-     */
+     
     public RealmAdapter(String realmName) {
         _realmName = realmName;
-    }
+    }*/
 
     /**
      * Create the realm adapter. Extracts the role to user/group mapping
      * from the runtime deployment descriptor.
      * @param the web bundle deployment descriptor.
      * @param isSystemApp if the app is a system app.
-     */
+     
     public RealmAdapter(WebBundleDescriptor descriptor, boolean isSystemApp) {
         this(descriptor, isSystemApp, null);
-    }
+    }*/
 
     /**
      * Create the realm adapter. Extracts the role to user/group mapping
@@ -228,7 +233,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
      * @param isSystemApp if the app is a system app.
      * @param realmName The realm name to use if the app does not specify its
      * own
-     */
+    
     public RealmAdapter(WebBundleDescriptor descriptor,
             boolean isSystemApp,
             String realmName) {
@@ -273,7 +278,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
         this.appID = app.getRegistrationName();
     // helper are set until setVirtualServer is invoked
-    }
+    } */
 
     public void destroy() {
         super.destroy();
@@ -305,7 +310,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     public WebSecurityManager getWebSecurityManager(boolean logNull) {
         if (webSecurityManager == null) {
             synchronized (this) {
-                webSecurityManager = webSecurityManagerFactory.getWebSecurityManager(CONTEXT_ID);
+                webSecurityManager = webSecurityManagerFactory.getManager(CONTEXT_ID,null, false);
             }
             if (webSecurityManager == null && logNull) {
                 //TODO: V3 String msg = smRA.getString("realmAdapter.noWebSecMgr", CONTEXT_ID);
@@ -707,7 +712,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
         } catch (Throwable ex) {
              _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            response.setDetailMessage(sm.getString("realmBase.forbidden"));
+            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
             return isGranted;
         }
 
@@ -715,7 +720,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
             return isGranted;
         } else {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN);
-            response.setDetailMessage(sm.getString("realmBase.forbidden"));
+            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
             // invoking secureResponse
             invokePostAuthenticateDelegate(request, response, context);
             return isGranted;
@@ -881,7 +886,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
         if (isGranted == 0) {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN,
-                    sm.getString("realmBase.forbidden"));
+                    smgr.getString("realmBase.forbidden"));
             return false;
         }
 
@@ -1074,7 +1079,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
         } catch (Throwable ex) {
             _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            response.setDetailMessage(sm.getString("realmBase.forbidden"));
+            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
         }
 
@@ -1114,7 +1119,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
             return Realm.AUTHENTICATE_NOT_NEEDED;
         } else if (((HttpServletRequest) request).getUserPrincipal() != null) {
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_FORBIDDEN);
-            response.setDetailMessage(sm.getString("realmBase.forbidden"));
+            response.setDetailMessage(smgr.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
         } else {
             disableProxyCaching(request, response, disableProxyCaching, securePagesWithPragma);
@@ -1504,7 +1509,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     protected void configureSecurity(WebBundleDescriptor wbd,
             boolean isSystem) {
         try {
-            webSecurityManagerFactory.newWebSecurityManager(wbd, serverContext);
+            webSecurityManagerFactory.createManager(wbd,true, serverContext);
             String context = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(context);
         } catch (Exception ce) {
@@ -1547,5 +1552,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
             return;
         }
         this.helper = getConfigHelper();
+    }
+
+    public void postConstruct() {
+        webSecurityManagerFactory = habitat.getComponent(WebSecurityManagerFactory.class);
     }
 }

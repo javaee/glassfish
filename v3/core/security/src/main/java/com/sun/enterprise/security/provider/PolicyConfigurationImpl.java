@@ -83,7 +83,8 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(PolicyConfigurationImpl.class);
 
-    private String CONTEXT_ID = null;
+    //package access
+    String CONTEXT_ID = null;
 
     // Excluded permissions
     private Permissions excludedPermissions = null;
@@ -92,14 +93,11 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     // permissions mapped to roles.
     private HashMap rolePermissionsTable = null;
 
-    // used to represent configuration linkages
-    private static HashMap linkTable = new HashMap();
-    
-    private static SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
+    private /*TODO: static */ SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
 
-    // set in PolicyLoader from domain.xml
-    private static final String REPOSITORY_HOME_PROP =
-        "com.sun.enterprise.jaccprovider.property.repository";
+//    // set in PolicyLoader from domain.xml
+//    private static final String REPOSITORY_HOME_PROP =
+//        "com.sun.enterprise.jaccprovider.property.repository";
 
     private static String policySuffix = ".policy";
  
@@ -130,16 +128,17 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
     // policy file mod times 
     private long[] lastModTimes = new long[2];
-
-    private static Object refreshLock = new Object();
-
-    private static String repository = initializeRepository();
-
-    private static Permission setPolicyPermission = null;
-
-    protected PolicyConfigurationImpl(String contextId){
+    private  Object refreshLock = new Object();
+    private  String repository = null;
+    private  Permission setPolicyPermission = null;
+    private  PolicyConfigurationFactoryImpl fact=null;
+    
+    protected PolicyConfigurationImpl(String contextId, PolicyConfigurationFactoryImpl fact){
 	CONTEXT_ID = contextId;
+        this.fact = fact;
+        repository = fact.getRepository();
 	// initialize(open,remove,!fromFile)
+//        initializeRepository();
 	initialize(true,true,false);
     }
 
@@ -149,11 +148,14 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
      * @param remove, then remove any existing policy statements
      */
     protected PolicyConfigurationImpl
-	(File applicationPolicyDirectory, boolean open, boolean remove) {
+	(File applicationPolicyDirectory, boolean open, boolean remove, PolicyConfigurationFactoryImpl fact) {
 
+        this.fact = fact;
 	CONTEXT_ID = applicationPolicyDirectory.getParentFile().getName() +
                 '/' + applicationPolicyDirectory.getName();
 
+        repository = fact.getRepository();
+        //initializeRepository();
 	String name = getPolicyFileName(true);
 	File f = new File(name);
 	if (!f.exists()) {
@@ -705,12 +707,20 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     */
     public boolean inService() throws PolicyContextException{
 	checkSetPolicyPermission();	
-	return stateIs(INSERVICE_STATE);
+	boolean rvalue = stateIs(INSERVICE_STATE);
+        
+        if (logger.isLoggable(Level.FINE)) {
+             logger.fine("JACC Policy Provider: inService: " +
+                        (rvalue ? "true " : "false ") +
+                        CONTEXT_ID);
+        }
+        
+        return rvalue;
     }
 
     // The following methods are implementation specific
 
-    protected static void checkSetPolicyPermission() {
+    protected  void checkSetPolicyPermission() {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null) {
 	    if (setPolicyPermission == null) {
@@ -799,14 +809,46 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	lastModTimes[(int) (granted ? 1 : 0)] = f.lastModified();
     }
 
+    private boolean _fileChanged(boolean granted, File f) {
+	return !(lastModTimes[(int) (granted ? 1 : 0)] == f.lastModified());
+    }
+    
     private boolean fileChanged(boolean granted) {
 	String name = getPolicyFileName(granted);
 	File f = new File(name);
-	return !(lastModTimes[(int) (granted ? 1 : 0)] == f.lastModified());
+        return _fileChanged(granted,f);
     }
 
     private boolean filesChanged() {
 	return (fileChanged(true) || fileChanged(false));
+    }
+    
+    /** 
+     * tests if policy file has arrived (via synchronization system).
+     * if File exists, also checks last modified time, in case file was
+     * not deleted on transition out of inservice state. Called when context 
+     * is not inService to determine if it was needs to be transitioned
+     * because of file distribution.
+     * @param granted selects granted or excluded policy file
+     * @return true if new file has arrived.
+     */
+    private boolean fileArrived(boolean granted) {
+	String name = getPolicyFileName(granted);
+	File f = new File(name);
+	boolean rvalue = ( f.exists() && _fileChanged(granted,f) );
+
+        if (logger.isLoggable(Level.FINE)){
+            logger.fine("JACC Policy Provider: file arrival check" +
+                    " type: " + (granted? "granted " : "excluded ") +
+                    " arrived: " + rvalue +
+		    " exists: " + f.exists() +
+		    " lastModified: " + f.lastModified() + 
+		    " storedTime: " + lastModTimes[(int) (granted ? 1 : 0)] +
+                    " state: " + (this.state == OPEN_STATE ? "open " : "deleted ") +
+                    CONTEXT_ID);
+        }
+
+	return rvalue;
     }
 
     // initilaize the internal data structures.
@@ -831,7 +873,11 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 		policyUrlValue = 
 		    sun.net.www.ParseUtil.fileToEncodedURL(new File(name)).toString();
 		if (fromFile && !remove) {
+                    uncheckedPermissions = null;
+                    rolePermissionsTable = null;
 		    excludedPermissions = loadExcludedPolicy();
+                    initLinkTable();
+                    captureFileTime(true);
 		    writeOnCommit = false;
 		}
 		wasRefreshed = false;
@@ -854,15 +900,10 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	if (repository == null) {
 	    throw new RuntimeException("JACC Policy provider: repository not initialized");
 	}
-	return getContextDirectoryName(CONTEXT_ID);
+	return fact.getContextDirectoryName(CONTEXT_ID);
     }
 
-    protected static String getContextDirectoryName(String contextId) {
-	if (repository == null) {
-	    throw new RuntimeException("JACC Policy provider: repository not initialized");
-	}
-	return repository+File.separator+contextId;
-    }
+    
 
     // remove the directory used ot hold the context's policy files
     private void removePolicyContextDirectory(){
@@ -954,18 +995,18 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
 	synchronized(refreshLock) {
 	    // get the linkSet corresponding to this context.
-	    Set linkSet = (Set) linkTable.get(CONTEXT_ID);
+	    Set linkSet = (Set) fact.getLinkTable().get(CONTEXT_ID);
 	    // remobe this context id from the linkSet (which may be shared
 	    // with other contexts), and unmap the linkSet form this context.
 	    if (linkSet != null) {
 		linkSet.remove(CONTEXT_ID);
-		linkTable.remove(CONTEXT_ID);
+		fact.getLinkTable().remove(CONTEXT_ID);
 	    }
 
 	    // create a new linkSet with onlythis context id, and put it in the table.
 	    linkSet = new HashSet();
 	    linkSet.add(CONTEXT_ID);
-	    linkTable.put(CONTEXT_ID,linkSet);
+	    fact.getLinkTable().put(CONTEXT_ID,linkSet);
 	}
     }
 
@@ -974,9 +1015,9 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	synchronized(refreshLock) {
 
 	    // get the linkSet corresponding to this context
-	    Set linkSet = (Set) linkTable.get(CONTEXT_ID);
+	    Set linkSet = (Set) fact.getLinkTable().get(CONTEXT_ID);
 	    // get the linkSet corresponding to the context being linked to this
-	    Set otherLinkSet = (Set) linkTable.get(otherId);
+	    Set otherLinkSet = (Set) fact.getLinkTable().get(otherId);
 
 	    if (otherLinkSet == null) {
                 String defMsg="Linked policy configuration ("+otherId+") does not exist";
@@ -992,7 +1033,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 		    linkSet.add(id);
 		    //replace the linkset mapped to all the contexts being linked
 		    //to this context, with this linkset.
-		    linkTable.put(id,linkSet);
+		    fact.getLinkTable().put(id,linkSet);
 		}
 	    }
 	}
@@ -1007,14 +1048,44 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	}
     }
 
-    private boolean stateIs(int stateValue) {
+    
+    private boolean _stateIs(int stateValue) {
 	rLock.lock();
 	try {
-	    return this.state == stateValue;
+	    return (this.state == stateValue);
 	} finally {
 	    rLock.unlock();
 	}
     }
+    
+     /**
+     * checks if PolicyContex is in agrument state.
+     * Detects implicpit state changes resulting from
+     * distribution of policy files by synchronization
+     * system.
+     * @param stateValue state the context is tested for
+     * @return true if in state.
+     */
+    private boolean stateIs(int stateValue) {
+	boolean inState = _stateIs(stateValue);
+	if (stateValue == INSERVICE_STATE && !inState) {
+	    if (fileArrived(true) || fileArrived(false)) {
+                
+                if (logger.isLoggable(Level.FINE)){
+                    logger.fine("JACC Policy Provider: file arrived transition to inService: " +
+                        " state: " + (this.state == OPEN_STATE ? "open " : "deleted ") +
+                        CONTEXT_ID);
+                }
+                
+		// initialize(!open,!remove,fromFile)               
+                initialize(false,false,true);
+	    }
+	    inState = _stateIs(INSERVICE_STATE);
+	} 
+              
+	return inState;
+    }
+
 
     private void assertStateIsOpen() {
       
@@ -1026,73 +1097,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 	}
     }
 
-    /**
-     * Read the repository directory name, create the directory, and 
-     * save the name in 'repository'
-     */
-    private static String initializeRepository() {
-
-	try {
-	    repository = System.getProperty(REPOSITORY_HOME_PROP);
-	    if (repository == null) {
-                String msg=localStrings.getLocalString("pc.no_repository","no repository");
-		logger.log(Level.SEVERE,msg);
-	    } else {
-
-		if (logger.isLoggable(Level.FINE)) {
-		    logger.fine("JACC policy provider: repository set to: "+repository);
-		}
-
-		File rf = new File(repository);
-		if (rf.exists()) {
-		    if(!rf.isDirectory()) {
-                        String  msg=localStrings.getLocalString("pc.unable_to_create_repository",
-                              "unable to create repository"+repository,new Object []{repository});
-			logger.log(Level.SEVERE,msg);
-		    } else {
-			// read deployed policy contextes
-			File[] appsInService = rf.listFiles();
-			if (appsInService != null) { 
-			    for (int i = 0; i <appsInService.length; i++) {
-                                File[] contextsInService = 
-                                    appsInService[i].listFiles(new FileFilter() {
-                                        public boolean accept(File pathname) {
-                                            return pathname.isDirectory();
-                                        }
-                                    });
-                                if (contextsInService != null) {
-                                    for (int j = 0; j < contextsInService.length; j++) {
-                                        try {
-                                            PolicyConfigurationImpl pc = 
-				               new PolicyConfigurationImpl(contextsInService[j],false,false);
-				            PolicyConfigurationFactoryImpl.
-				               putPolicyConfigurationImpl(pc.CONTEXT_ID,pc);
-                                        } catch(Exception ex) {
-                                            String msg=localStrings.getLocalString("pc.unable_to_read_repostory",
-                                            "unable to read repository"  ,new Object []{contextsInService[i].toString()});
-                                            logger.log(Level.WARNING,msg);
-                                        }
-                                    }
-                                }
-			    }
-			}
-		    }
-		} else {
-		    if(logger.isLoggable(Level.FINE)){
-			logger.fine("JACC Policy Provider: creating new policy repository");
-		    }
-		    rf.mkdirs();
-		}
-	    }
-	} catch (Exception e) {
-            String msg=localStrings.getLocalString("pc.unable_to_init_repository",
-                     "unable to init repository",new Object []{e});
-	    logger.log(Level.SEVERE,msg);
-	    repository = null;
-	}
-
-	return repository;
-    }
+ 
 
     private Permissions getUncheckedPermissions() {
 	if (uncheckedPermissions == null) {
@@ -1146,7 +1151,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 		}
 		if (roleToSubjectMap != null) {
 		    // make sure all liked PC's have the same roleToSubjectMap
-		    Set linkSet = (Set) linkTable.get(CONTEXT_ID);
+		    Set linkSet = (Set) fact.getLinkTable().get(CONTEXT_ID);
 		    if (linkSet != null) {
 			Iterator it = linkSet.iterator();
 			while (it.hasNext()) {

@@ -132,6 +132,9 @@ public class BasePolicyWrapper extends java.security.Policy {
         }
     }
 
+    // if not available in the habitat, delegate to JDK's system-wide factory
+    private PolicyConfigurationFactoryImpl pcf= null;
+    
     /** Creates a new instance of BasePolicyWrapper */
     public BasePolicyWrapper() {
         // the jdk policy file implementation
@@ -139,6 +142,8 @@ public class BasePolicyWrapper extends java.security.Policy {
 	refreshTime = 0L;
 	// call the following routine to compute the actual refreshTime
 	defaultContextChanged();
+        pcf = getPolicyFactory();
+        
     }
     
     /** gets the underlying PolicyFile implementation
@@ -269,7 +274,7 @@ public class BasePolicyWrapper extends java.security.Policy {
 	boolean force = defaultContextChanged();
 
 	PolicyConfigurationImpl pciArray[] 
-	    = PolicyConfigurationFactoryImpl.getPolicyConfigurationImpls();
+	    = pcf.getPolicyConfigurationImpls();
 
 	if (pciArray != null) {
 
@@ -291,10 +296,10 @@ public class BasePolicyWrapper extends java.security.Policy {
         }
     }
 
-    private static PolicyConfigurationImpl getPolicyConfigForContext(String contextId) {
+    private  PolicyConfigurationImpl getPolicyConfigForContext(String contextId) {
 	PolicyConfigurationImpl pci = null;
 	if (contextId != null) {
-	    pci = PolicyConfigurationFactoryImpl.getPolicyConfigurationImpl(contextId);
+	    pci = pcf.getPolicyConfigurationImpl(contextId);
 	}
 	return pci;
     }
@@ -623,5 +628,29 @@ public class BasePolicyWrapper extends java.security.Policy {
 	    }
 	});
 	return l.longValue();
+    }
+    
+    // obtains PolicyConfigurationFactory once for class
+    // if not available in the habitat, delegate to JDK's system-wide factory
+    private PolicyConfigurationFactoryImpl getPolicyFactory() {
+        //using this might violate the JACC contract
+        //pcf = Globals.get(PolicyConfigurationFactory.class);
+        PolicyConfigurationFactory pcfimpl=null;
+        try {
+            pcfimpl = PolicyConfigurationFactory.getPolicyConfigurationFactory();
+            if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
+                throw new PolicyContextException(
+                        "Wrong PolicyConfigurationFactory class, " + 
+                        pcfimpl.getClass().getName() + ", Expected " +
+                        PolicyConfigurationFactoryImpl.class.getName());
+            }
+            return (PolicyConfigurationFactoryImpl)pcfimpl;
+        } catch (ClassNotFoundException cnfe) {
+            logger.severe("jaccfactory.notfound");
+            throw new RuntimeException(cnfe);
+        } catch (PolicyContextException pce) {
+            logger.severe("jaccfactory.notfound");
+            throw new RuntimeException(pce);
+        }
     }
 }

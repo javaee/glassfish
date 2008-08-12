@@ -46,8 +46,8 @@ import com.sun.enterprise.security.SecurityManager;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
-import com.sun.enterprise.security.factory.AbstractSecurityManagerFactory;
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
+//TODOL : this class needs to go, after prelude
+import org.glassfish.ejb.security.factory.AbstractSecurityManagerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

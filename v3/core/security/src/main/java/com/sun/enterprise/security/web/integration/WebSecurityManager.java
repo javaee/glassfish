@@ -72,6 +72,7 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -87,7 +88,7 @@ import org.glassfish.internal.api.Globals;
  * from this class and EJBSecurityManager class and extend this class from 
  * AbstractSecurityManager
  */
-public class WebSecurityManager {
+public class WebSecurityManager  {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
 
@@ -105,12 +106,6 @@ public class WebSecurityManager {
     private static final String DEFAULT_PATTERN = "/";
     private static final String EMPTY_STRING = "";
  
-    private static final PolicyContextHandlerImpl pcHandlerImpl =
-            (PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance();
-    
-    private static final Map ADMIN_PRINCIPAL = new HashMap();
-    private static final Map ADMIN_GROUP = new HashMap();
-
     // The context ID associated with this instance. This is the name
     // of the application
     private  String CONTEXT_ID = null;
@@ -118,11 +113,8 @@ public class WebSecurityManager {
     
     // The JACC policy provider.
     protected Policy policy = Policy.getPolicy();
-
-    protected PolicyConfiguration policyConfiguration  = null;
-
-    // if not available in the habitat, delegate to JDK's system-wide factory
-    protected PolicyConfigurationFactory policyConfigurationFactory = null;
+    protected PolicyConfiguration pc = null;
+    protected PolicyConfigurationFactory pcf= null;
     protected CodeSource codesource = null;
 
     // protection domain cache
@@ -153,24 +145,28 @@ public class WebSecurityManager {
     private static Set defaultPrincipalSet = 
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
-    SecurityRoleMapperFactory factory;
-
+    private SecurityRoleMapperFactory factory = null;
+    private WebSecurityManagerFactory wsmf = null;
     private ServerContext serverContext = null;
     // WebBundledescriptor
     private WebBundleDescriptor wbd = null;
     //TODO:V3 Copied from VirtualServer.java to avoid dependency on web-container module
     public static final String ADMIN_VS = "__asadmin";
+    
     // Create a WebSecurityObject
-    public WebSecurityManager(WebBundleDescriptor wbd) throws PolicyContextException {
-        this(wbd,null);
+    private WebSecurityManager(WebBundleDescriptor wbd, WebSecurityManagerFactory fact) throws PolicyContextException {
+        this(wbd,null, fact);
     }
     
-    public WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc) throws PolicyContextException {
+    WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc, WebSecurityManagerFactory fact) throws PolicyContextException {
         this.wbd = wbd;
         this.CONTEXT_ID = getContextID(wbd);
         this.serverContext = svc;
-        initialise();
+        this.wsmf = fact;
+        String appname = getAppId();
+        factory = Globals.get(SecurityRoleMapperFactory.class);
         postConstruct();
+        initialise(appname);
     }
 
     private void postConstruct() {
@@ -192,12 +188,9 @@ public class WebSecurityManager {
         return cid;
    }
       
-    private void initialise() throws PolicyContextException {
-        factory = Globals.get(SecurityRoleMapperFactory.class);
-        policyConfigurationFactory = Globals.get(PolicyConfigurationFactory.class);
+    private void initialise(String appName) throws PolicyContextException {
+        pcf = getPolicyFactory();
         AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
-
-        String appName = wbd.getApplication().getRegistrationName();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
         //V3:Commented if(VirtualServer.ADMIN_VS.equals(getVirtualServers(appName))){
            if(ADMIN_VS.equals(getVirtualServers(appName))){
@@ -212,11 +205,11 @@ public class WebSecurityManager {
                             String[] principals = srm.getPrincipalName();
                             if (principals != null) {
                                 for (String principal : principals) {
-                                    ADMIN_PRINCIPAL.put(realmName + principal, new PrincipalImpl(principal));
+                                    wsmf.ADMIN_PRINCIPAL.put(realmName + principal, new PrincipalImpl(principal));
                                 }
                             }
                             for (String group : srm.getGroupNames()) {
-                                ADMIN_GROUP.put(realmName + group, new Group(group));
+                                wsmf.ADMIN_GROUP.put(realmName + group, new Group(group));
                             }
                         }
                     }
@@ -252,7 +245,28 @@ public class WebSecurityManager {
             logger.fine("[Web-Security] Codebase (module id for web component) "+ CODEBASE);
         }
 
- 	boolean inService = getFactory().inService(CONTEXT_ID);
+        loadPolicyConfiguration();
+ 
+ 	if (uncheckedPermissionCache == null) {
+ 	    uncheckedPermissionCache =
+		PermissionCacheFactory.createPermissionCache
+		(this.CONTEXT_ID, codesource, protoPerms, null);
+ 
+		allResourcesCP = 
+		    new CachedPermissionImpl(uncheckedPermissionCache,
+					     allResources);
+		allConnectionsCP = 
+		    new CachedPermissionImpl(uncheckedPermissionCache,
+					     allConnections);
+ 	} else {
+ 	    uncheckedPermissionCache.reset();
+ 	}
+ 
+    }
+    
+     public void loadPolicyConfiguration() throws PolicyContextException {
+
+	boolean inService = getPolicyFactory().inService(CONTEXT_ID);
 
  	// only regenerate policy file if it isn't already in service
  	// Consequently all things that deploy modules (as apposed to
@@ -263,30 +277,19 @@ public class WebSecurityManager {
  	// removed to allow multiple web modules to be represented by same pc.
  
  	if (!inService) {
- 	    policyConfiguration = getFactory().getPolicyConfiguration(CONTEXT_ID,false);
-  	    generatePermissions();
-  	}
- 
- 	if (uncheckedPermissionCache == null) {
- 	    uncheckedPermissionCache =
-		PermissionCacheFactory.createPermissionCache
-		(this.CONTEXT_ID, codesource, protoPerms, null);
 
-	    //if (uncheckedPermissionCache != null) {
- 
-		allResourcesCP = 
-		    new CachedPermissionImpl(uncheckedPermissionCache,
-					     allResources);
-		allConnectionsCP = 
-		    new CachedPermissionImpl(uncheckedPermissionCache,
-					     allConnections);
-	    //}
-
- 	} else {
- 	    uncheckedPermissionCache.reset();
- 	}
- 
+ 	    pc = getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,false);
+	    try{
+		WebPermissionUtil.processConstraints(wbd, pc);
+		WebPermissionUtil.createWebRoleRefPermission(wbd, pc);
+	    } catch (PolicyContextException pce){
+		logger.log(Level.FINE,"[Web-Security] FATAL Permission Generation: " + pce.getMessage());
+		throw pce;
+	    }
+	}
+  
     }
+
     // this will change too - get the application id name
     private String getAppId() {
         return wbd.getApplication().getRegistrationName();
@@ -386,16 +389,25 @@ public class WebSecurityManager {
         return policy.implies(prdm, perm);
     }    
 
-    protected PolicyConfigurationFactory getFactory() throws PolicyContextException{
-        if (policyConfigurationFactory == null){
-            try{
-                policyConfigurationFactory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-            } catch(java.lang.ClassNotFoundException ex){
-                // FIX ME: Need to create an approriate exception
-                throw new PolicyContextException(ex);
-            } 
-        }
-        return policyConfigurationFactory;
+    
+    // obtains PolicyConfigurationFactory once for class
+    // if not available in the habitat, delegate to JDK's system-wide factory
+    private synchronized PolicyConfigurationFactory getPolicyFactory() 
+	throws PolicyContextException {
+        //using this might violate the JACC contract
+        //pcf = Globals.get(PolicyConfigurationFactory.class);
+	if (pcf == null) {
+            try {
+		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
+	    } catch(ClassNotFoundException cnfe){
+		logger.severe("jaccfactory.notfound");
+		throw new PolicyContextException(cnfe);
+	    } catch(PolicyContextException pce){
+		logger.severe("jaccfactory.notfound");
+		throw pce;
+	    }
+	}
+	return pcf;
     }
     
     private WebResourcePermission createWebResourcePermission(
@@ -525,23 +537,14 @@ public class WebSecurityManager {
         
         return result;
     }
-
-    private void generatePermissions(){
-        try{
-            WebPermissionUtil.processConstraints(wbd, policyConfiguration);    
-            WebPermissionUtil.createWebRoleRefPermission(wbd, policyConfiguration); 
-        } catch (PolicyContextException pce){
-            logger.log(Level.FINE,"[Web-Security] FATAL Permission Generation: " + pce.getMessage());
-            throw new RuntimeException("Fatal error creating web permissions", pce);
-        }
-    }
     
     public void destroy() throws PolicyContextException {
-        boolean wasInService = getFactory().inService(CONTEXT_ID);
-	if (policyConfiguration == null) {
-	    policyConfiguration = getFactory().
-		getPolicyConfiguration(CONTEXT_ID,false);
-	}
+        boolean wasInService = getPolicyFactory().inService(CONTEXT_ID);
+//	if (pc == null) {
+//	    pc = getPolicyFactory().
+//		getPolicyConfiguration(CONTEXT_ID,false);
+//	}
+        getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,true);
         if (wasInService) {
             policy.refresh();
             PermissionCacheFactory.removePermissionCache
@@ -551,7 +554,8 @@ public class WebSecurityManager {
         factory.removeAppNameForContext(CONTEXT_ID);
         // pc.delete() will be invoked during undeployment
 	//policyConfiguration.delete();
-        WebSecurityManagerFactory.getInstance().removeWebSecurityManager(CONTEXT_ID);
+        //WebSecurityManagerFactory.getInstance().removeWebSecurityManager(CONTEXT_ID);
+         wsmf.getManager(CONTEXT_ID,null,true);
     }
    
     private static String setPolicyContext(final String ctxID) throws Throwable {
@@ -613,7 +617,7 @@ public class WebSecurityManager {
      */
     private void setSecurityInfo(HttpServletRequest httpRequest) {
         if (httpRequest != null) {
-            pcHandlerImpl.getHandlerData().setHttpServletRequest(httpRequest);
+            wsmf.pcHandlerImpl.getHandlerData().setHttpServletRequest(httpRequest);
         }
     }
 
@@ -669,12 +673,7 @@ public class WebSecurityManager {
     }
     
     
-    public static Principal getAdminPrincipal(String username, String realmName){
-        return (Principal)ADMIN_PRINCIPAL.get(realmName+username);
-    }
-    public static Principal getAdminGroup(String group, String realmName){
-        return (Principal)ADMIN_GROUP.get(realmName+group);
-    }
+    
     
     /**
       * returns true to indicate that a policy check was made

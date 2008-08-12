@@ -39,22 +39,33 @@ import java.util.HashMap;
 import java.util.Map;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import org.glassfish.internal.api.ServerContext;
 import java.util.logging.*;
 import com.sun.logging.LogDomains;
-import java.util.List;
+import java.security.Principal;
 import java.util.ArrayList;
 import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 import javax.security.jacc.PolicyContextHandler;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /** @author JeanFrancois Arcand
  *  @author Harpreet Singh
  */
-public class WebSecurityManagerFactory {
+@Service
+@Scoped(Singleton.class)
+public class WebSecurityManagerFactory extends SecurityManagerFactory {
 
     private static Logger logger =
             Logger.getLogger(LogDomains.SECURITY_LOGGER);
+    public WebSecurityManagerFactory() {
+        registerPolicyHandlers();
+    }
+    
+    /*
     private Map securityManagerPool = new HashMap();
     // stores the context ids to appnames for standalone web apps
     private Map CONTEXT_ID = new HashMap();
@@ -173,11 +184,11 @@ public class WebSecurityManagerFactory {
         synchronized (securityManagerPool) {
             securityManagerPool.remove(contextId);
         }
-    }
+    }*/
 
     /**
      * valid for standalone web apps
-     */
+     
     public String[] getContextIdsOfApp(String appName) {
         synchronized (CONTEXT_ID) {
             List contextId = (List) CONTEXT_ID.get(appName);
@@ -188,17 +199,30 @@ public class WebSecurityManagerFactory {
             arrayContext = (String[]) contextId.toArray(arrayContext);
             return arrayContext;
         }
-    }
+    }*/
 
     /**
      * valid for standalone web apps
-     */
+    
     public String[] getAndRemoveContextIdForWebAppName(String appName) {
         synchronized (CONTEXT_ID) {
             String[] rvalue = getContextIdsOfApp(appName);
             CONTEXT_ID.remove(appName);
             return rvalue;
         }
+    }*/
+    
+    final PolicyContextHandlerImpl pcHandlerImpl =
+            (PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance();
+    
+    final Map ADMIN_PRINCIPAL = new HashMap();
+    final Map ADMIN_GROUP = new HashMap();
+    
+    public Principal getAdminPrincipal(String username, String realmName){
+        return (Principal)ADMIN_PRINCIPAL.get(realmName+username);
+    }
+    public Principal getAdminGroup(String group, String realmName){
+        return (Principal)ADMIN_GROUP.get(realmName+group);
     }
 
     private static  void registerPolicyHandlers()
@@ -215,4 +239,59 @@ public class WebSecurityManagerFactory {
             Logger.getLogger(WebSecurityManagerFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+     // stores the context ids to appnames for standalone web apps
+     private Map<String, ArrayList<String>> CONTEXT_IDS =
+             new HashMap<String, ArrayList<String>>();
+     private Map<String, Map<String, WebSecurityManager>> SECURITY_MANAGERS =
+             new HashMap<String, Map<String, WebSecurityManager>>();
+ 
+     public WebSecurityManager getManager(String ctxId, String name,
+						     boolean remove) {
+         return getManager(SECURITY_MANAGERS, ctxId, name, remove);
+     }
+ 
+     public<T> ArrayList<WebSecurityManager> 
+             getManagers(String ctxId, boolean remove) {
+         return getManagers(SECURITY_MANAGERS, ctxId, remove);
+     }
+ 
+     public<T> ArrayList<WebSecurityManager> 
+             getManagersForApp(String appName, boolean remove) {
+         return getManagersForApp(SECURITY_MANAGERS, CONTEXT_IDS, appName, 
+				  remove);
+     }
+ 
+     public<T> String[] getContextsForApp(String appName, boolean 
+						  remove) {
+         return getContextsForApp(CONTEXT_IDS, appName, remove);
+     }
+ 
+     public<T> void addManagerToApp(String ctxId, String name,
+             String appName, WebSecurityManager manager) {
+         addManagerToApp(SECURITY_MANAGERS, CONTEXT_IDS, ctxId, name, 
+			 appName, manager);
+     }
+ 
+     public  WebSecurityManager createManager(WebBundleDescriptor wbd,
+             boolean register, ServerContext context) {
+         String ctxId = WebSecurityManager.getContextID(wbd);
+         WebSecurityManager manager = null;
+         if (register) {
+            manager = getManager(ctxId, null,false);
+         } 
+         if (manager == null || !register) {
+             try {
+                 manager = new WebSecurityManager(wbd, context, this);
+                 if (register) {
+                    String appName = wbd.getApplication().getRegistrationName();
+                    addManagerToApp(ctxId, null, appName, manager);
+                 }
+             } catch (javax.security.jacc.PolicyContextException e) {
+                 logger.log(Level.FINE, "[Web-Security] FATAL Exception. Unable to create WebSecurityManager: " + e.getMessage());
+                 throw new RuntimeException(e);
+             }
+         }
+         return manager;
+     }
 }

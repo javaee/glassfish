@@ -66,9 +66,14 @@ public class SecurityUtil{
     public static final String VENDOR_PRESENT = 
 	"com.sun.enterprise.security.provider.jaccvendorpresent";
     private static final boolean vendorPresent = Boolean.getBoolean(VENDOR_PRESENT);
+    
+     // set in PolicyLoader from domain.xml
+    private static final String REPOSITORY_HOME_PROP =
+        "com.sun.enterprise.jaccprovider.property.repository";
+    //TODO remove use of system property
     // The repository is defined in PolicyFileMgr.
     // It is repeated here since JACC provider is not reference directly.
-    public static final String repository = System.getProperty("com.sun.enterprise.jaccprovider.property.repository");
+    public static final String repository = System.getProperty(REPOSITORY_HOME_PROP);
 
     /** This method is called from the generated code to execute the
      * method.  This is a translation of method.invoke that the
@@ -225,8 +230,6 @@ public class SecurityUtil{
 		// If this is not true, the call to commit will not
 		// result in the correct policy statements being made
 		// available to the policy module.
-
-
                 PolicyConfigurationFactory pcf = 
                     PolicyConfigurationFactory.getPolicyConfigurationFactory();
                 PolicyConfiguration pc =
@@ -240,7 +243,6 @@ public class SecurityUtil{
 	    }
      
 	    Policy.getPolicy().refresh();
-
 	} catch(java.lang.ClassNotFoundException cnfe){
 	    String msg = localStrings.getLocalString("enterprise.security.securityutil.classnotfound","Could not find PolicyConfigurationFactory class. Check javax.security.jacc.PolicyConfigurationFactory.provider property");
 	    throw new IASSecurityException(msg);
