@@ -67,10 +67,15 @@
         <!--
           modules to be included in this bundle
         -->       
-      <dependency>
+        <dependency>
            <groupId>com.sun.enterprise</groupId>
            <artifactId>osgi-adapter</artifactId>
            <version>${hk2.version}</version>
+   	</dependency>
+        <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>api-exporter</artifactId>
+           <version>${glassfish.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
@@ -87,6 +92,16 @@
            <artifactId>admin-cli</artifactId>
            <version>${glassfish.version}</version>
        </dependency>
+       <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-autodeploy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
        <dependency>
            <!-- base distribution image, move assembly here later -->
            <groupId>org.glassfish.distributions</groupId>
