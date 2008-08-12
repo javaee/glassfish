@@ -57,9 +57,18 @@ public class ProbeProviderEventManager {
         listeners.add(listener);
         for (String str : registeredTuples) {
             String[] names = str.split(":");
-            String m1 = names[0].length() == 0 ? null : names[0];
-            String p1 = names[0].length() == 0 ? null : names[0];
-            String a1 = names[0].length() == 0 ? null : names[0];
+            String m1 = null;
+            String p1 = null;
+            String a1 = null;
+            if (names.length >= 1) {
+                m1 = names[0].length() == 0 ? null : names[0];
+            }
+            if (names.length >= 2) {
+                p1 = names[1].length() == 0 ? null : names[1];
+            }
+            if (names.length >= 3) {
+                a1 = names[2].length() == 0 ? null : names[2];
+            }
             listener.providerRegistered(m1, p1, a1);
             System.out.println("Notifying listener");
         }

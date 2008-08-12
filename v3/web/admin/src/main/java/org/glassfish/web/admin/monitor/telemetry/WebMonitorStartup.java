@@ -70,10 +70,13 @@ import java.util.logging.Level;
 @Scoped(Singleton.class)
 public class WebMonitorStartup implements 
     Startup, PostConstruct, ProbeProviderListener, ConfigListener  {
-    private boolean threadpoolMonitoringEnabled;
-    private boolean httpServiceMonitoringEnabled;
-    private boolean jvmMonitoringEnabled;
-    private boolean webMonitoringEnabled;
+    
+    // default values are set to true which can be changed thru 
+    // GUI or set command
+    private boolean threadpoolMonitoringEnabled = true;
+    private boolean httpServiceMonitoringEnabled = true;
+    private boolean jvmMonitoringEnabled = true;
+    private boolean webMonitoringEnabled = true;
 
     @Inject
     private ProbeProviderEventManager ppem;
@@ -126,8 +129,14 @@ public class WebMonitorStartup implements
         */
         logger.finest("In the Web Monitor startup ************");
 
-        ppem.registerProbeProviderListener(this);
+        // buildWebMonitoringConfigTree should happen before
+        // ppem.registerProbeProviderListener 
         buildWebMonitoringConfigTree();
+
+        // ppem.registerProbeProviderListener should be called only after
+        // buildWebMonitoringConfigTree is invoked because of dependency
+        ppem.registerProbeProviderListener(this);
+
         //Construct the JVMMemoryStatsTelemetry
         jvmMemoryTM = 
         new JVMMemoryStatsTelemetry(serverNode, jvmMonitoringEnabled, logger);

@@ -64,7 +64,7 @@ public class Probe
 
     private String providerJavaMethodName;
 
-    private transient boolean enabled;
+    private AtomicBoolean enabled = new AtomicBoolean(false);
 
     private String probeStr;
 
@@ -84,25 +84,24 @@ public class Probe
 
     public synchronized void addInvoker(ProbeClientInvoker invoker) {
         invokerList.add(invoker);
-        enabled = true;
+        enabled.set(true);
     }
 
     public synchronized void removeInvoker(ProbeClientInvoker invoker) {
         invokerList.remove(invoker);
-        enabled = invokerList.size() > 0;
+        enabled.set(invokerList.size() > 0);
     }
 
     public void fireProbe(Object[] params) {
 
-        System.out.println("fireProbe?? ==> " + enabled);
+        System.out.println("[FL] fireProbe?? ==> " + enabled.get() + " " + invokerList.size());
         for (ProbeClientInvoker invoker : invokerList) {
             invoker.invoke(params);
         }
     }
 
-    public boolean isEnabled() {
-        System.out.println("Enabled ==> " + enabled);
-        return enabled;
+    public boolean isEnabled() {        
+        return enabled.get();
     }
 
     public int getId() {
