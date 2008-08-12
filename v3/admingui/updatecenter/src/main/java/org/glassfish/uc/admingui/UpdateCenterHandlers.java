@@ -219,12 +219,15 @@ public class UpdateCenterHandlers {
                 image = new Image (new File (ucDir));
                 GuiUtil.setSessionValue("_uc_Image", image);
             }catch(Exception ex){
+                System.out.println("!!! Cannot create update center Image for " + ucDir );
+                ex.printStackTrace();
                 try{
                     image = new Image (new File (installDir));
                     GuiUtil.setSessionValue("_uc_Image", image);
                 }catch(Exception ex1){
                     GuiUtil.setSessionValue("_uc_image_Error", "Cannot create update center Image");
-                    System.out.println("!!! Cannot create update center Image for " + ucDir + " or " + installDir);
+                    System.out.println("!!! Cannot create update center Image for " +  installDir);
+                    ex1.printStackTrace();
                     return null;
                 }
             }
