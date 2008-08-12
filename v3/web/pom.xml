@@ -54,6 +54,7 @@
         <module>web-core</module>
         <module>war-util</module>
         <module>jstl</module>
+        <module>jstl-connector</module>
         <module>jsf-connector</module>
         <module>gui-plugin-common</module>
         <module>web-glue</module>

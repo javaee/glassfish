@@ -82,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>jstl-impl</artifactId>
+            <artifactId>jstl-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>
