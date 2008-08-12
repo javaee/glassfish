@@ -62,7 +62,7 @@
         </developer>
     </developers>
     <properties>
-    	<glassfish-api.version>10.0.406</glassfish-api.version>
+    	<glassfish-api.version>10.0.407</glassfish-api.version>
         <grizzly.version>1.8.5</grizzly.version>  
         <hk2.plugin.version>0.3.12-SNAPSHOT</hk2.plugin.version>    
         <hk2.version>0.3.11</hk2.version>    

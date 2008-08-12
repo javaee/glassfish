@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
 
 import com.sun.enterprise.module.Module;
+import java.util.Map;
 
 /**
  * A sniffer implementation is responsible for identifying a particular
@@ -119,4 +120,20 @@ public interface Sniffer {
      * 
      */
     public boolean isUserVisible();
+    
+    /**
+     * Returns a map of deployment configurations for this Sniffer from the
+     * specific archive source.  
+     * <p>
+     * Many sniffers (esp. Java EE sniffers) will choose to set the key of each 
+     * map entry to the relative path within the ReadableArchive of the 
+     * deployment descriptor and the value of that map entry to the
+     * descriptor's contents.
+     * 
+     * @param source the contents of the application's archive
+     * @return map of configuration names to configurations for the application
+     * @throws java.io.IOException in case of errors searching or reading the
+     * archive for the deployment configuration(s)
+     */
+    public Map<String,String> getDeploymentConfigurations(final ReadableArchive source) throws IOException;
 }

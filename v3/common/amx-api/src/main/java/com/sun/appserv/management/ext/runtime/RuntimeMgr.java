@@ -50,7 +50,7 @@ public interface RuntimeMgr extends AMX, Utility, Singleton
 	public static final String	J2EE_TYPE			= "X-RuntimeMgr";
     
     /** Map key is the name of the descriptor, value is the content of the descriptor */
-    public Map<String,String> getDeploymentDescriptors(String appName);
+    public Map<String,String> getDeploymentConfigurations(String appName);
 }
 
 

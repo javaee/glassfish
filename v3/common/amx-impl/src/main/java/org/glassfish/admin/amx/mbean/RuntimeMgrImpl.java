@@ -35,13 +35,16 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 import javax.management.ObjectName;
 
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
+import java.io.IOException;
+import java.util.HashMap;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 
 /**
     AMX RealmsMgr implementation.
@@ -49,20 +52,46 @@ import com.sun.appserv.management.ext.runtime.RuntimeMgr;
  */
 public final class RuntimeMgrImpl extends AMXNonConfigImplBase implements RuntimeMgr
 {
+        
+        private final ApplicationRegistry appRegistry;
+        
 		public
 	RuntimeMgrImpl( final ObjectName containerObjectName )
 	{
-        super( RuntimeMgr.J2EE_TYPE, RuntimeMgr.J2EE_TYPE, containerObjectName, RuntimeMgr.class, null);
-	}
+            super( RuntimeMgr.J2EE_TYPE, RuntimeMgr.J2EE_TYPE, containerObjectName, RuntimeMgr.class, null);
+            appRegistry = Globals.getDefaultHabitat().getComponent(ApplicationRegistry.class);
+        }
     
+        /**
+         * 
+         * Returns the deployment configuration(s), if any, for the specified
+         * application.
+         * <p>
+         * For Java EE applications these will typically be the deployment
+         * descriptors, with the map key the relative path to the DD and the
+         * value that deployment descriptor's contents.  
+         * 
+         * @param appName name of the application of interest
+         * @return map of app config names to config values
+         */        
         public Map<String,String>
-    getDeploymentDescriptors( final String appName)
+    getDeploymentConfigurations( final String appName)
     {
-        final HashMap<String,String> m = new HashMap<String,String>();
+        final ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo == null) {
+            throw new IllegalArgumentException(appName);
+        }
         
-        m.put("TEST", "<!DOCTYPE web-app PUBLIC \"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN\" \"http://java.sun.com/dtd/web-app_2_3.dtd\"><web-app></web-app>" );
-        
-        return m;
+        final Map<String,String> result = new HashMap<String,String>();
+        try {
+            for (Sniffer sniffer : appInfo.getSniffers()) {
+                result.putAll(sniffer.getDeploymentConfigurations(appInfo.getSource()));
+            }
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     

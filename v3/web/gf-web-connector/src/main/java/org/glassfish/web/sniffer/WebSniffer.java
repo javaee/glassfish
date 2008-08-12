@@ -25,6 +25,8 @@ package org.glassfish.web.sniffer;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.ModulesRegistry;
+import java.util.ArrayList;
+import java.util.List;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -33,8 +35,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.InputStream;
-import java.io.IOException;
 
 
 /**
@@ -104,4 +104,26 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
     public boolean isUserVisible() {
         return true;
     }
+    
+    private static final List<String> deploymentConfigurationPaths = 
+            initDeploymentConfigurationPaths();
+    
+    private static List<String> initDeploymentConfigurationPaths() {
+        final List<String> result = new ArrayList<String>();
+        result.add("WEB-INF/web.xml");
+        result.add("WEB-INF/sun-web.xml");
+        return result;
+    }
+    
+    /**
+     * Returns the web-oriented descriptor paths that might exist in a web
+     * app.
+     * 
+     * @return list of the deployment descriptor paths
+     */
+    @Override
+    protected List<String> getDeploymentConfigurationPaths() {
+        return deploymentConfigurationPaths;
+    }
+    
 }

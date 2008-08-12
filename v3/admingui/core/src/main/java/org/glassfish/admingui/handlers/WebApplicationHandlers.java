@@ -99,20 +99,13 @@ public class WebApplicationHandlers {
         
         // Get the <env-entry> list from the DD
         RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
-        String webXML = runtimeMgr.getDeploymentDescriptors(appName).get(WEB_APP_TYPE);  //get the content of web.xml;
+        String webXML = runtimeMgr.getDeploymentConfigurations(appName).get(WEB_DESCRIPTOR_PATH);  //get the content of web.xml;
         
         if (GuiUtil.isEmpty(webXML)){
             handlerCtx.setOutputValue("envList", envList);
             handlerCtx.setOutputValue("ctxParamList", ctxParamList);
 
-            //TODO  the following is just for development until we really able to read in web.xml
-            System.out.println("!!! ERROR:  Cannot read in web.xml,  just try reading from /tmp/web.xml ");
-            try{
-                webXML = FileUtils.fileToString(new File("/tmp/web.xml"));
-            //System.out.println(webXML);
-            }catch(Exception ex1){
-                System.out.println("!!!!!! cannot open /tmp/web.xml");
-            }
+            System.out.printf("Could not locate %s%n", WEB_DESCRIPTOR_PATH);
         }
         
         NodeList envNodeList = null;
@@ -313,6 +306,8 @@ public class WebApplicationHandlers {
     
     /** for encoding and decoding the config attribute contents */
     private static final String WEB_APP_TYPE = "web";
+    private static final String WEB_DESCRIPTOR_PATH = "WEB-INF/web.xml";
+    
     private static final String ENCODING = "UTF-8";
     private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 

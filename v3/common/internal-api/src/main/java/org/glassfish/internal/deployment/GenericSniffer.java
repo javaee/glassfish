@@ -26,14 +26,20 @@ package org.glassfish.internal.deployment;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
+import java.io.ByteArrayOutputStream;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Generic implementation of the Sniffer service that can be programmatically instantiated
@@ -154,5 +160,73 @@ public abstract class GenericSniffer implements Sniffer {
             return getModuleType().equals(otherSniffer.getModuleType());
         } 
         return false;
+    }
+    
+    /**
+     * Returns a map of deployment configurations composed by reading from a
+     * list of paths in the readable archive.  (For Java EE applications the
+     * deployment configurations correspond to the deployment descriptors.)  The 
+     * {@link #getDeploymentConfigurationPaths} method returns this list of paths
+     * which might exist in archives that this sniffer handles.
+     * <p>
+     * In each returned map entry the key is a path and the value is the
+     * contents of the archive entry at that path.  This method creates a map
+     * entry only if the path exists in the readable archive.
+     * <p>
+     * Sniffers for applications that do not store their configurations as
+     * deployment descriptors at predictable paths within an archive are free
+     * to override this implementation to return whatever information is 
+     * appropriate to that application type.  A key usage of the returned
+     * Map is in the application type's GUI plug-in (if desired) to allow 
+     * users to customize the deployment configuration after the application
+     * has been deployed.  The concrete Sniffer implementation and the
+     * GUI plug-in must agree on the conventions for storing deployment
+     * configuration inforation in the Map.
+     * 
+     * @param location the readable archive for the application of interest
+     * @return a map from path names to the contents of the archive entries
+     * at those paths
+     * @throws java.io.IOException in case of errors retrieving an entry or 
+     * reading the archive contents at an entry
+     */
+    public Map<String,String> getDeploymentConfigurations(final ReadableArchive location) throws IOException {
+        final Map<String,String> deploymentConfigs = new HashMap<String,String>();
+        for (String path : getDeploymentConfigurationPaths()) {
+            InputStream is = null;
+            try {
+                is = location.getEntry(path);
+                if (is != null) {
+                    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    int bytesRead;
+                    final byte [] buffer = new byte[1024];
+                    while (( bytesRead = is.read(buffer)) != -1 ) {
+                        os.write(buffer, 0, bytesRead);
+                    }
+                    deploymentConfigs.put(path, os.toString());
+                }
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
+        }
+        return deploymentConfigs;
+    }
+    
+    /**
+     * Returns a list of paths within an archive that represents deployment
+     * configuration files.  
+     * <p>
+     * Sniffers that recognize Java EE applications typically override this
+     * default implementation to return a list of the deployment descriptors
+     * that might appear in the type of Java EE application which the sniffer
+     * recognizes.  For example, the WebSniffer implementation of this method
+     * returns WEB-INF/web.xml and WEB-INF/sun-web.xml.
+     * 
+     * @return list of paths in the archive where deployment configuration
+     * archive entries might exist
+     */
+    protected List<String> getDeploymentConfigurationPaths() {
+        return Collections.EMPTY_LIST;
     }
 }
