@@ -6,7 +6,6 @@
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
-                    "<br />
                     <sun:button id="refreshButton" 
                                 text="$resource{i18n.button.Refresh}">
                     <!command

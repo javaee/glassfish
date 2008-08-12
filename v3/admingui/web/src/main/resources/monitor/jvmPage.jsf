@@ -6,7 +6,6 @@
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
-                    "<br />
                     <sun:button id="refreshButton" 
                                 text="$resource{i18n.button.Refresh}">
                     <!command
@@ -26,10 +25,9 @@
             "<td width="25%">
             <sun:table id="jvm" title="$resource{i18n_web.monitoring.jvmStatistics}">
                     <!beforeCreate
-                        getStats(
+                        getJvmStats(
                             serverName='#{request.serverName}',
-                            node='jvm'
-                            stats=>$attribute{jvmStats});
+                            jvmStats=>$attribute{jvmStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{jvmStats}"} sourceVar="td">
                         <sun:tableColumn id="col1">

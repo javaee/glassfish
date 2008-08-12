@@ -37,9 +37,11 @@
 package org.glassfish.web.admingui.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.flashlight.datatree.MethodInvoker;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.statistics.Counter;
+import org.glassfish.flashlight.statistics.TimeStats;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -48,6 +50,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
+import java.lang.management.MemoryUsage;
 import java.util.Collection;
 import java.util.List;
 import java.util.HashMap;
@@ -137,7 +140,8 @@ public class MonitoringHandlers {
             if (application == null || application.equals("All")) {
                 coll = statsNode.getChildNodes();
             } else {
-                coll = statsNode.getNodes(".*"+type+".*");
+                String ype = type.substring(1);
+                coll = statsNode.getNodes(".*"+ype+".*");
             }
             for (TreeNode tn : coll) {
                 Map statMap = new HashMap();
@@ -145,6 +149,11 @@ public class MonitoringHandlers {
                 statMap.put("Value", tn.getValue());
                 if (tn instanceof Counter) {
                     statMap.put("ToolTip", ((Counter)tn).getDescription());
+                }
+                if (tn instanceof TimeStats) {
+                    statMap.put("ToolTip", ((TimeStats)tn).getDescription());
+                    statMap.put("Name", tn.getName() +" ("+ ((TimeStats)tn).getUnit()+")");
+                    statMap.put("ToolTip", ((TimeStats)tn).getDescription());
                 }
                 dataList.add(statMap);
             }
@@ -192,6 +201,45 @@ public class MonitoringHandlers {
             }
         }
         handlerCtx.setOutputValue("stats", dataList);
+    }
+    
+    /**
+     *	<p> Returns the statistics data for the given monitorable object</p>
+     * 
+     *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
+     *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
+     *          
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="getJvmStats",
+        input={
+            @HandlerInput(name="serverName", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="jvmStats", type=java.util.List.class)}
+    )
+    public void getJvmStats(HandlerContext handlerCtx) {
+        String serverName = (String)handlerCtx.getInputValue("serverName");
+        MethodInvoker tn = (MethodInvoker) (serverRoot.getNode("jvm")).getNode("committedHeapSize");
+        MemoryUsage mu = (MemoryUsage) tn.getInstance();
+        List dataList = new ArrayList();        
+        Map statMap = new HashMap();
+        statMap.put("Name", "init");
+        statMap.put("Value", mu.getInit());
+        dataList.add(statMap);
+        statMap = new HashMap();
+        statMap.put("Name", "used");
+        statMap.put("Value", mu.getUsed());
+        dataList.add(statMap);
+        statMap = new HashMap();
+        statMap.put("Name", "committed");
+        statMap.put("Value", mu.getCommitted());
+        dataList.add(statMap);
+        statMap = new HashMap();
+        statMap.put("Name", "max");
+        statMap.put("Value", mu.getMax());
+        dataList.add(statMap);
+        System.out.println("jvm: " + mu.toString());
+        handlerCtx.setOutputValue("jvmStats", dataList);
     }
     
     /**

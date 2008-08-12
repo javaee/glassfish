@@ -11,7 +11,6 @@
 </sun:checkbox>-->
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
-                    "<br />
                     <sun:button id="refreshButton" 
                                 text="$resource{i18n.button.Refresh}">
                     <!command
@@ -163,7 +162,7 @@
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{jspStats}"} sourceVar="td">
                         <sun:tableColumn id="col1" tooltip="#{td.value.ToolTip}">
                             <!--"<div onMouseOver="javascript:alert('#{td.value.ToolTip}');">-->
-                                <staticText id="name" value="#{td.value.Name}" />
+                                <staticText id="name" toolTip="tooltip text" value="#{td.value.Name}" />
                             <!--"</div>-->
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
@@ -174,6 +173,5 @@
             "</td>
         "</tr>
     "</table>
-                "<br /><br />
 	</define>
 </composition>
