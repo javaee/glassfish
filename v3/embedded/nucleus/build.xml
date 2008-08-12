@@ -29,7 +29,14 @@ own identifying information: Portions Copyright [yyyy]
 
     <target name="create.distribution">
 
-        <echo message="Unzipping and flattening all zip files..."/>
+        <!-- The GFE Embedded API will be a jar file -->
+        <copy todir="${jardir}">
+            <fileset dir="${zipdir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        
+        <!-- The packager files are zips with jars inside -->
         <unzip dest="${jardir}">
             <fileset dir="${zipdir}">
                 <include name="*.zip"/>
