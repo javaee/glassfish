@@ -222,7 +222,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             JspProbeProvider.class.getClassLoader(),
             new Class[] { JspProbeProvider.class },
             new NoopInvocationHandler());
-
+                         
     private static final RequestProbeProvider NO_OP_REQUEST_PROBE_PROVIDER =
         (RequestProbeProvider) Proxy.newProxyInstance(
             RequestProbeProvider.class.getClassLoader(),
@@ -2157,12 +2157,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         wbd.getApplication().isVirtual()) {
                     wbd.visit(new WebValidatorWithoutCL());
                 }
-
-                NamingManager namingMgr = habitat.getComponent(NamingManager.class);
-                if (namingMgr!=null) {
-                    Method m = namingMgr.getClass().getMethod("bindObjects", Object.class);
-                    m.invoke(namingMgr, wbd);
-                }
+                
             }
 
             // Add virtual server mime mappings, if present

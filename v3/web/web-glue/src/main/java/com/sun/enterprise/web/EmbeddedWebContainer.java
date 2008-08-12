@@ -247,6 +247,7 @@ public final class EmbeddedWebContainer extends Embedded {
         if (useDOLforDeployment) {            
             config = new WebModuleContextConfig();  
             ((WebModuleContextConfig)config).setDescriptor(wbd);
+            ((WebModuleContextConfig)config).setHabitat(habitat);
         } else {
             config = new ContextConfig();
         }

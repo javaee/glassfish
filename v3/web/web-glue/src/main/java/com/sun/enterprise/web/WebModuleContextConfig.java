@@ -64,6 +64,8 @@ import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardEngine;
 
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import org.glassfish.web.valve.GlassFishValve;
 
 import org.xml.sax.InputSource;
@@ -106,7 +108,8 @@ public class WebModuleContextConfig extends ContextConfig {
     public final static int MESSAGE_DESTINATIONS = 11;
     public final static int MESSAGE_DESTINATION_REFS = 12;
     public final static int MIME_MAPPINGS = 13;
-   
+    
+    protected Habitat habitat;
     
     /**
      * The <code>File</code> reffering to the default-web.xml 
@@ -133,6 +136,13 @@ public class WebModuleContextConfig extends ContextConfig {
     public void setDescriptor(WebBundleDescriptor wbd){
         webBundleDescriptor = wbd;
     }
+   
+    /**
+     * Set the DOL object associated with this class.
+     */
+    public void setHabitat(Habitat habitat){
+        this.habitat = habitat;
+    }
     
     
     /**
@@ -141,7 +151,7 @@ public class WebModuleContextConfig extends ContextConfig {
      * @param event The lifecycle event that has occurred
      */
     public void lifecycleEvent(LifecycleEvent event) {
-
+        
         // Identify the context we are associated with
         try {
             context = (Context) event.getLifecycle();
@@ -151,11 +161,11 @@ public class WebModuleContextConfig extends ContextConfig {
 
         // Called from ContainerBase.addChild() -> StandardContext.start()
         // Process the event that has occurred
-        if (event.getType().equals(Lifecycle.START_EVENT)) 
+        if (event.getType().equals(Lifecycle.START_EVENT)) {
             start();
-        else if (event.getType().equals(Lifecycle.STOP_EVENT))
+        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
             stop();
-        else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
+        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
             super.init();
             configureResource();
         }
@@ -212,14 +222,16 @@ public class WebModuleContextConfig extends ContextConfig {
                     }
                 }
                 resourceReference.setAuthorization(resources[i].getAuth());
-                webBundleDescriptor.addResourceReferenceDescriptor(resourceReference);
+                webBundleDescriptor
+                        .addResourceReferenceDescriptor(resourceReference);
+                
             }
-        
-            /* XXX
-            Switch sw = Switch.getSwitch();
-            sw.getNamingManager().bindObjects(webBundleDescriptor);
-            sw.setDescriptorFor(context, webBundleDescriptor);
-            */
+                            
+            ComponentEnvManager namingMgr = habitat.getComponent(
+                    com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
+            if (namingMgr!=null) {
+                namingMgr.bindToComponentNamespace(webBundleDescriptor);
+            }
             
         } catch (Exception exception) { 
             context.setAvailable(false);
