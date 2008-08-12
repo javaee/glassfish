@@ -34,7 +34,16 @@ own identifying information: Portions Copyright [yyyy]
     	<resolveArtifact artifactId="basedocs" property="docs.zip"/>
        
 	<unzip src="${docs.zip}" dest="target/stage/glassfishv3-prelude">
-        </unzip>
+	</unzip>
+
+
+	<copy todir="target/stage/glassfishv3-prelude/bin">
+		<fileset dir="src/main/resources/bin"/>
+	</copy>
+
+	<chmod dir="target/stage/glassfishv3-prelude/bin" perm="ugo+rx"/>
+	
+	<chmod dir="target/stage/glassfishv3-prelude/glassfish/bin" perm="ugo+rx"/>
 
 	 <!-- TODO - would be nice if we can find a way to iterate through all
 	   "dependency" packages without having to define each intermediate 
