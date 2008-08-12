@@ -59,6 +59,27 @@
                     </tasks>
                 </configuration>               
              </plugin>
+             <plugin>
+                 <groupId>org.jvnet.updatecenter2</groupId>
+                 <artifactId>maven-makepkgs-plugin</artifactId>
+                 <version>0.2</version>
+                 <executions>
+                     <execution>
+                         <goals>
+                             <goal>package</goal>
+                         </goals>
+                      </execution>
+                 </executions>
+                 <configuration>
+<!--
+                     <remoteRepository>http://keona.sfbay.sun.com:10000/</remoteRepository>
+-->
+                     <proto>src/main/resources/pkg_proto.py</proto>
+                     <python>/home/janey/ips/pkg/python2.4-minimal/bin/python</python>
+                     <baseDirectory>target/stage/glassfishv3-prelude/</baseDirectory>
+		     <localRepository>/export/home/GlassFish/glassfish_v3_08Aug08/repository</localRepository>
+                 </configuration>
+            </plugin>
            
         </plugins>
     </build>
