@@ -96,7 +96,7 @@ public class TranslatedConfigView implements ConfigView {
     }
 
     public <T extends ConfigBeanProxy> T getProxy(Class<T> proxyType) {
-        return proxyType.cast(Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{proxyType},
+        return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[]{proxyType},
                  this));
     }
 }

@@ -29,7 +29,7 @@ public class ContainerExtensionTest extends ConfigApiTest {
     public void existenceTest() {
 
         Config config = habitat.getComponent(Domain.class).getConfigs().getConfig().get(0);
-        List<Container> containers = config.getContainters();
+        List<Container> containers = config.getContainers();
         assertTrue(containers.size()==1);
         RandomContainer container = (RandomContainer) containers.get(0);
         assertEquals("random", container.getName());

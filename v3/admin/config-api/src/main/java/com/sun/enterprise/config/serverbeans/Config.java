@@ -463,5 +463,5 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named 
      * @return  list of containers configuration
      */
     @Element("*")
-    List<Container> getContainters();
+    List<Container> getContainers();
 }
