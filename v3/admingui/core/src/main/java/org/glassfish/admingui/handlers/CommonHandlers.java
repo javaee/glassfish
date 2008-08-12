@@ -831,6 +831,17 @@ public class CommonHandlers {
         }
     }
     
+    /**
+     * 
+     */
+    @Handler(id="getAmxRoot",
+        output={
+            @HandlerOutput(name="amxRoot", type=AMXRoot.class)
+    })
+    public static void getAmxRootInstance(HandlerContext handlerCtx) {
+        handlerCtx.setOutputValue("amxRoot", AMXRoot.getInstance());
+    }
+    
     private static final String CHARTING_COOKIE_NAME = "as91-doCharting";
     private static final int INDEX=0;
     private static final String UPDATE_CENTER_NUM_UPDATES="updateCenterNumUpdates";

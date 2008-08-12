@@ -26,9 +26,6 @@
         <filter-name>UploadFilter</filter-name>        
         <servlet-name>FacesServlet</servlet-name>
    </filter-mapping>
-  <listener>
-      <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-  </listener>
   <servlet>
     <servlet-name>FacesServlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
