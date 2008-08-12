@@ -25,7 +25,9 @@ own identifying information: Portions Copyright [yyyy]
 
 	  <resolveArtifact artifactId="jdbc-ra" groupId="org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution" property="jdbc.zip"/>
 
-       <unzip src="${jdbc.zip}" dest="target/stage/glassfishv3-prelude"/>
+	  <unzip src="${jdbc.zip}" dest="target/stage/glassfishv3-prelude"/>
+
+	  <delete dir="target/stage/glassfishv3-prelude/META-INF" /> 
  
        <zip file="target/glassfish-jdbc.zip" basedir="target/stage"/>
            
