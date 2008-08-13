@@ -54,8 +54,8 @@ public class SybaseXAResource extends XAResourceWrapper
 {
 
 
-    // Sting Manager for Localization
-    private static StringManager sm = StringManager.getManager(SybaseXAResource.class);
+    // Use superclass Sting Manager for Localization
+    private static StringManager sm = StringManager.getManager(XAResourceWrapper.class);
 
     public XAResourceWrapper getInstance() {
         return new SybaseXAResource();

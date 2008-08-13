@@ -101,7 +101,7 @@ public class JavaEETransactionManagerJTSDelegate
 
     private Logger _logger;
 
-    // Sting Manager for Localization
+    // Use JavaEETransactionManagerSimplified Sting Manager for Localization
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
