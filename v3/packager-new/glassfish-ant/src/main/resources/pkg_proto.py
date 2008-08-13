@@ -37,7 +37,7 @@
 #
 pkg = {
     "name"          : "glassfish-ant",
-    "version"       : "1.0,0-",
+    "version"       : "10.0,0-",
     "attributes"    : {
                         "pkg.summary" : "GlassFish V3",
                         "pkg.description" : "GlassFish V3",
