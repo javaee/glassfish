@@ -48,6 +48,7 @@ public class MonitorTask extends TimerTask
 {
     private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorCommand.class);
     String type = null;
+    String filter = null;
     Timer timer = null;
     File fileName = null;
     boolean verbose = false;
@@ -56,12 +57,14 @@ public class MonitorTask extends TimerTask
     public MonitorTask() {}
 
 
-    public MonitorTask(final Timer timer, final String type, final String[] remoteArgs,
-                       final boolean verbose, final File fileName)
+    public MonitorTask(final Timer timer, final String type, final String filter,
+                       final String[] remoteArgs, final boolean verbose, final File fileName)
     {
         this.timer = timer;
-        if (type != null)
+        if ((type != null) && (type.length() > 0))
             this.type = type;
+        if ((filter != null) && (filter.length() > 0))
+            this.filter = filter;
         this.verbose = verbose;
         this.fileName = fileName;
         this.remoteArgs = remoteArgs;
@@ -75,8 +78,23 @@ public class MonitorTask extends TimerTask
             title = String.format("%1$-4s %2$-4s %3$-4s %4$-4s", 
             "ec", "mt", "pt", "rc");
         } else if ("jvm".equals(type)) {
-            title = String.format("%1$-10s %2$-10s %3$-10s %4$-10s",
-            "init", "used", "committed", "max");
+            title = String.format("%1$45s", "JVM Monitoring");
+            CLILogger.getInstance().printMessage(title);
+            // row title
+            title = null;
+            if (filter != null) {
+                if (("heapmemory".equals(filter)) || ("nonheapmemory".equals(filter))) {
+                    title = String.format("%1$-10s %2$-10s %3$-10s %4$-10s", 
+                        "init", "used", "committed", "max");
+                }
+            }
+            if (title == null) {
+                // default jvm stats
+                title = String.format("%1$-45s %2$-20s", "UpTime(ms)", "Heap Memory(bytes)");
+                CLILogger.getInstance().printMessage(title);
+                title = String.format("%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s",
+                    "current", "min", "max", "low", "high", "count");
+            }
         } else if ("webmodule".equals(type)) {
             title = String.format(
             "%1$-5s %2$-5s %3$-5s %4$-5s %5$-5s %6$-5s %7$-5s %8$-8s %9$-10s %10$-5s",

@@ -59,7 +59,7 @@ public class MonitorCommand extends AbstractCommand {
         Timer timer = new Timer();
         try
         {
-            MonitorTask monitorTask = new MonitorTask(timer, type, 
+            MonitorTask monitorTask = new MonitorTask(timer, type, filter,
                                             getRemoteArgs(), verbose, fileName);
             timer.scheduleAtFixedRate(monitorTask, 0, interval);
 
@@ -100,6 +100,7 @@ public class MonitorCommand extends AbstractCommand {
         passwordFile = getOption(PASSWORDFILE);
         interval = Integer.parseInt(getOption(INTERVAL));
         type = getOption(TYPE);
+        filter = getOption(FILTER);
         return true;
     }
 
@@ -127,6 +128,10 @@ public class MonitorCommand extends AbstractCommand {
             list.add("--type");
             list.add(type);
         }
+        if(ok(filter)) {
+            list.add("--filter");
+            list.add(filter);
+        }
         return list.toArray(new String[list.size()]);
     }
     
@@ -145,6 +150,7 @@ public class MonitorCommand extends AbstractCommand {
     File fileName;
     public final static String INTERVAL = "interval";
     public final static String TYPE = "type";
+    public final static String FILTER = "filter";
     private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorCommand.class);
     private final static CLILogger logger = CLILogger.getInstance();
 }
