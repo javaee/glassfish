@@ -44,9 +44,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>glassfish-embedded-jpa</artifactId>
+  <artifactId>glassfish-embedded-jdbc</artifactId>
   <version>10.0-SNAPSHOT</version>
-  <name>Embedded GlassFish Java Persistence API</name>
+  <name>Embedded GlassFish JDBC</name>
       <packaging>jar</packaging>
 
   <build>
@@ -94,7 +94,7 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jpa</artifactId>
+            <artifactId>glassfish-jdbc</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>  

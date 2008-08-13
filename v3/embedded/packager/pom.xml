@@ -61,6 +61,8 @@
   <modules>
     <module>nucleus</module>
     <module>web</module>
+    <module>jdbc</module>
+    <module>scripting</module>
     <module>jpa</module>
     <module>all</module>
   </modules>
