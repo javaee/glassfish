@@ -109,9 +109,6 @@
                                                 </div>
 				</td>
 				<tr><td> </td><td>
-<div class="inlineFieldHelp_sun4" style="margin: 0px 10px 10px 10px; font-family: Arial,Helvetica,sans-serif;">
-If no administrative user is defined for this domain, log in as user <b>anonymous</b> with no password
-</div>
 					</td></tr>
 				<tr><td nowrap="nowrap"><div class="logLblLst">
 					&nbsp;<span class="LblLev2Txt">
