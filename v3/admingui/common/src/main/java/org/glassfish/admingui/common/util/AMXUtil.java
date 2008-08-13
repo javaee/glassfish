@@ -193,6 +193,12 @@ public class AMXUtil {
         return newMap;
     }
 
+    public static void putOptionalValue(String value, Map convertedMap, String propName)
+    {
+       if (GuiUtil.isEmpty(value))
+           return;
+       convertedMap.put(PropertiesAccess.PROPERTY_PREFIX + propName, value);
+    }
 
 }
 
