@@ -64,8 +64,6 @@ public class EjbApplication
 
     SingletonLifeCycleManager singletonLCM;
 
-    EjbSingletonDescriptor[] partialOrder;
-
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
     private static Object lock = new Object();
@@ -99,8 +97,6 @@ public class EjbApplication
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
 
-        List<EjbSingletonDescriptor> topCandidates = new ArrayList<EjbSingletonDescriptor>();
-
         for (EjbDescriptor desc : ejbs) {
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
 
@@ -111,31 +107,13 @@ public class EjbApplication
                 containers.add(container);
                 System.out.println("Created EJBContainer for: " + desc);
 
-                if (desc instanceof EjbSingletonDescriptor) {
-                    EjbSingletonDescriptor singletonEjbDesc = (EjbSingletonDescriptor) desc;
-                    topCandidates.add(singletonEjbDesc);
-                }
-
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 
-        if (topCandidates.size() > 0) {
-            singletonLCM = new SingletonLifeCycleManager(topCandidates);
-            
-
-            partialOrder = singletonLCM.getPartiallyOrderedSingletonDescriptors();
-            int orderSz = partialOrder.length;
-            StringBuilder sb = new StringBuilder();
-            for (int i=0; i<orderSz; i++) {
-                String s = partialOrder[i].getName();
-                sb.append(" " + s);
-            }
-            System.out.println("Singleton startup order: " + sb.toString());
-
-
-        }
+        singletonLCM = new SingletonLifeCycleManager(containers);
+        singletonLCM.doStartup();
 
         for (Container container : containers) {
             container.doAfterApplicationDeploy();

@@ -69,9 +69,9 @@ public class SingletonContainer
     }
 
     public ComponentContext instantiateSingletonInstance() {
-        if (singletonInitialized.get()) {
+        if (! singletonInitialized.get()) {
             synchronized (this) {
-                if (singletonInitialized.get()) {
+                if (! singletonInitialized.get()) {
                     factory = new SessionContextFactory();
                     singletonCtx = (ComponentContext) factory.create(null);
                     singletonInitialized.set(true);
@@ -88,6 +88,7 @@ public class SingletonContainer
     }
 
     protected ComponentContext _getContext(EjbInvocation inv) {
+        //Concurrent access
         if (! singletonInitialized.get()) {
             instantiateSingletonInstance();
         }
