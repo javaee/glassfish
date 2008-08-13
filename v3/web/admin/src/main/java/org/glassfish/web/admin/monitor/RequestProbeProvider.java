@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 
 /**
- * Provider interface for request/response related probes.
+ * Provider interface for HTTP request/response related probes.
  */
 public interface RequestProbeProvider {
 
