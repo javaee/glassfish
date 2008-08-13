@@ -54,48 +54,6 @@ public class WebConnector extends PECoyoteConnector {
     }
 
     @Override
-    public void start() throws LifecycleException {    
-        if( !initialized )
-            initialize();
-
-        mapperListener.setDomain(this.getDomain());
-        mapperListener.setPort(getPort());
-        mapperListener.setDefaultHost(getDefaultHost());
-        mapperListener.init();
-            
-        try {
-            Registry.getRegistry().registerComponent(mapper, domain, 
-                    "Mapper", "type=Mapper");
-        } catch (Exception ex) {
-            log.log(Level.SEVERE,
-                    sm.getString("coyoteConnector.protocolRegistrationFailed"),
-                    ex);
-        }
-         
-        /* TODO Grizzly MBeans          
-        if ( grizzlyMonitor != null ) {
-            grizzlyMonitor.initConfig();
-            grizzlyMonitor.registerMonitoringLevelEvents();
-        }
-         */
-    }
-    
-    @Override
-    public void stop() throws LifecycleException {
-        if ( domain != null){
-            try {
-                Registry.getRegistry().unregisterComponent(
-                        new ObjectName(domain,"type", "Mapper"));
-            } catch (MalformedObjectNameException e) {
-                log.log(Level.INFO, "Error unregistering mapper ", e);
-            }
-        }
-        grizzlyMonitor.destroy();
-        // TODO: I think this class deserves an explanation of why it doesn't call super.start()/super.stop() - KK
-    }
-
-
-    @Override
     public void initialize() throws LifecycleException {
         super.initialize();
         if (mapper != null) {
