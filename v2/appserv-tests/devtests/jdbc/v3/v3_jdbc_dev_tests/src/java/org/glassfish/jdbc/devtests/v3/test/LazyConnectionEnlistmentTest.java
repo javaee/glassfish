@@ -49,6 +49,9 @@ public class LazyConnectionEnlistmentTest implements SimpleTest {
             uTx.begin();
             con1 = ds1.getConnection();
 
+            //this is a lazy-enlist resource, only when the connection is used, it should be enlisted in transaction.
+            //if it had been non-lazy-enlist, exception will be thrown stating not more than one non-xa resource can be
+            //enlisted in a transaction.
             DataSource ds2 = (DataSource)ic.lookup("jdbc/jdbc-lazy-enlist-resource-2");
             con2 = ds2.getConnection();
 

@@ -40,6 +40,7 @@ public class AssocWithThreadTest implements SimpleTest{
     
     private boolean testAssocWithThread(DataSource ds1, PrintWriter out) throws SystemException {
 
+        
         HtmlUtil.printHR(out);
         out.println("<h4> Assoc-with-thread test </h4>");
 
@@ -51,7 +52,7 @@ public class AssocWithThreadTest implements SimpleTest{
 
         HtmlUtil.printHR(out);
 
-        
+        // check whether the connection acquired during two different method invocation, by a thread is same.
         if(result1.equalsIgnoreCase(result2)){
             return true;
         }else{
@@ -65,15 +66,12 @@ public class AssocWithThreadTest implements SimpleTest{
         String result = null;
         Connection con = null;
 
-        javax.transaction.UserTransaction ut = null;
         try {
             out.println("<br>");
             out.println("<h4> Starting test </h4>");
             InitialContext ic = new InitialContext();
-            ut = (javax.transaction.UserTransaction) ic.lookup("java:comp/UserTransaction");
-            out.println("<br>Able to lookup UserTransaction");
-            ut.begin();
             out.println("<br>");
+            //pool is non-transactional so that sharing won't happen
             con = ds1.getConnection();
             com.sun.appserv.jdbc.DataSource myDS = ((com.sun.appserv.jdbc.DataSource) ds1);
             Connection con_ = myDS.getConnection(con);
@@ -82,14 +80,10 @@ public class AssocWithThreadTest implements SimpleTest{
             out.println("<br>");
 
             out.println("<br>");
-            ut.commit();
         } catch (Throwable e) {
             HtmlUtil.printException(e, out);
-            out.println("Rolling back transaction<br>");
-            ut.rollback();
             result = null;
         } finally {
-
             try {
                 if (con != null) {
                     con.close();
@@ -97,11 +91,7 @@ public class AssocWithThreadTest implements SimpleTest{
             } catch (Exception e) {
                 HtmlUtil.printException(e, out);
             }
-
             return result;
         }
-
-        
     }
-
 }

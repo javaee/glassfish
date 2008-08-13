@@ -34,7 +34,8 @@ public class LazyConnectionAssociationTest implements SimpleTest {
     }
 
     /**
-     * acquire specified number of connections and not close it.
+     * acquire specified number of connections and <b>do not</b> close it, so that further requests on this test
+     * should still pass as lazy-assoc is <b>ON</b>
      * @param i
      * @param ds
      */
