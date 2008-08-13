@@ -88,11 +88,11 @@
         <!--
           modules to be included in this bundle
         -->       
-        <dependency>
-             <groupId>org.jvnet.updatecenter2</groupId>
-            <artifactId>pkg</artifactId>
-            <version>2.0.13-1005</version>
-        </dependency>
+      <dependency>
+            <groupId>com.sun.pkg</groupId>
+	    <artifactId>pkg-client</artifactId>
+            <version>1.0.7-14.1084</version>
+     </dependency> 
     </dependencies>
 
 </project>
