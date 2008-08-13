@@ -78,10 +78,9 @@
                     <instructions>
                         <!-- _include does not work. See Felix-620.
                         <_include>osgi.bundle</_include>
-                        -->
-                        <Export-Package>
                         com.sun.web.security
-                        </Export-Package>
+                        -->
+                        <Export-Package>!*</Export-Package>
                     </instructions>
                 </configuration>
                 <executions>

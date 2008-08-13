@@ -95,10 +95,6 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
     private /*TODO: static */ SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
 
-//    // set in PolicyLoader from domain.xml
-//    private static final String REPOSITORY_HOME_PROP =
-//        "com.sun.enterprise.jaccprovider.property.repository";
-
     private static String policySuffix = ".policy";
  
     private static String PROVIDER_URL = "policy.url.";
