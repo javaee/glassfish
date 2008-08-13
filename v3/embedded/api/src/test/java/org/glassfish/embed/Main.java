@@ -39,15 +39,10 @@ package org.glassfish.embed;
 
 
 import com.sun.enterprise.universal.io.SmartFile;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.logging.Level;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Level.INFO;
-import java.util.logging.Logger;
 
 /**
  * Launches a mock-up HK2 environment that doesn't provide
@@ -69,11 +64,15 @@ public class Main {
             App app = glassfish.deploy(war);
             pr(war.toString() + " deployed. GlassFish is listening at port 9999 for HTTP traffic.");
 
-            Console.getKey("Hit Enter to stop the server and exit.");
+            char key = Console.getKey("Hit Enter to stop the server and exit.  Enter 'X' to *not* call System.exit()");
             app.undeploy();
             pr("Application undeployed");
             glassfish.stop();
-            success("Server stopped");
+            pr("Server stopped");
+            
+            if(key != 'X')
+                System.exit(0);
+            
         }
         catch (IOException ex) {
             error(ex.toString() + ex);
@@ -89,7 +88,8 @@ public class Main {
         } while(warFileName == null || warFileName.length() == 0);
         
         if(warFileName.equals("X")) {
-            success("exiting per your request");
+            pr("exiting per your request");
+            System.exit(0);
         }
         
         File war = SmartFile.sanitize(new File(warFileName));
@@ -107,11 +107,6 @@ public class Main {
         System.exit(-1);
     }
     
-    private static void success(String msg) {
-        pr(msg);
-        System.exit(0);
-    }
-
     private static void pr(String msg) {
         System.out.println("***** " + msg);
     }

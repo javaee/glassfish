@@ -37,7 +37,7 @@
 
 package org.glassfish.embed.impl;
 
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.io.File;
 

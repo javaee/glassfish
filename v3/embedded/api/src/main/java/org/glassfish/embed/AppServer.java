@@ -46,13 +46,14 @@ import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
+import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
 import org.glassfish.internal.data.ApplicationInfo;
-import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
 import com.sun.enterprise.web.WebDeployer;
@@ -242,11 +243,18 @@ public class AppServer {
         parser.drop(AdminConsoleAdapter.class);
 
         // don't care about auto-deploy either
-        parser.drop(AutoDeployService.class);
+        try {
+            Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
+            parser.drop(AutoDeployService.class);
+        }
+        catch(Exception e) {
+            // ignore.  It may not be available
+        }
 
         //TODO: workaround for a bug
         parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
 
+        parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
         // we don't really parse domain.xml from disk
         parser.replace(DomainXml.class, EmbeddedDomainXml.class);
 
@@ -402,7 +410,9 @@ public class AppServer {
 
         try {
             final Module[] proxyMod = new Module[1];
-            ModulesRegistryImpl mrs = new ModulesRegistryImpl(null) {
+            
+            // ANONYMOUS CLASS HERE!!
+            ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
                 public Module find(Class clazz) {
                     Module m = super.find(clazz);
                     if(m==null)
@@ -410,18 +420,21 @@ public class AppServer {
                     return m;
                 }
             };
-            proxyMod[0] = mrs.add(new ProxyModuleDefinition(getClass().getClassLoader()));
-
+            
+            proxyMod[0] = modulesRegistry.add(new ProxyModuleDefinition(getClass().getClassLoader()));
             StartupContext startupContext = new StartupContext(createTempDir(), new String[0]);
 
-            habitat = new Main() {
+            // ANONYMOUS CLASS HERE!!
+            Main main =  new Main() {
                 @Override
                 protected InhabitantsParser createInhabitantsParser(Habitat habitat1) {
                     return decorateInhabitantsParser(super.createInhabitantsParser(habitat1));
                 }
 
-            }.launch(mrs,startupContext);
+            };
 
+            
+            habitat = main.launch(modulesRegistry,startupContext);
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -584,4 +597,5 @@ public class AppServer {
             svc.release();
         }
     }
+
 }

@@ -46,7 +46,7 @@ import org.glassfish.embed.AppServer;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.server.DomainXml;
-import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 
 /**
