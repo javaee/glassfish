@@ -76,7 +76,7 @@
             "<tr>
                 "<td width="1%"></td>
             "<td width="25%">
-            <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}">
+            <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}" lite="#{true}">
                     <!beforeCreate
                         getWebStats(
                             serverName='#{request.serverName}',
@@ -92,12 +92,13 @@
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />
                         </sun:tableColumn>
+                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>
             "<td width="1%"></td>
             "<td width="25%">
-                <sun:table id="sessions" title="$resource{i18n_web.monitoring.sessionStatistics}">
+                <sun:table id="sessions" title="$resource{i18n_web.monitoring.sessionStatistics}" lite="#{true}">
                     <!beforeCreate
                         getWebStats(
                             serverName='#{request.serverName}',
@@ -116,6 +117,7 @@
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />
                         </sun:tableColumn>
+                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>
@@ -123,7 +125,7 @@
         "<tr>
             "<td width="1%"></td>
             "<td width="25%">
-            <sun:table id="servlet" title="$resource{i18n_web.monitoring.servletStatistics}">
+            <sun:table id="servlet" title="$resource{i18n_web.monitoring.servletStatistics}" lite="#{true}">
                     <!beforeCreate
                         getWebStats(
                             serverName='#{request.serverName}',
@@ -140,12 +142,13 @@
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />
                         </sun:tableColumn>
+                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>
             "<td width="1%"></td>
             "<td width="25%">
-                <sun:table id="jsp" title="$resource{i18n_web.monitoring.jspStatistics}">
+                <sun:table id="jsp" title="$resource{i18n_web.monitoring.jspStatistics}" lite="#{true}">
                     <!beforeCreate
                         getWebStats(
                             serverName='#{request.serverName}',
@@ -164,6 +167,7 @@
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />
                         </sun:tableColumn>
+                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>
