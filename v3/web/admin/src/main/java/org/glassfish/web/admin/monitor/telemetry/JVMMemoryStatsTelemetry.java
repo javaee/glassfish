@@ -49,6 +49,7 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.statistics.Counter;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
+import org.glassfish.web.admin.monitor.statistics.V2JVMStats;
 
 public class JVMMemoryStatsTelemetry {
     
@@ -68,17 +69,36 @@ public class JVMMemoryStatsTelemetry {
     public JVMMemoryStatsTelemetry(TreeNode server, boolean jvmMonitoringEnabled, Logger logger) {
         try {
             this.logger = logger;
+
+            // jvm node
             jvmNode = TreeNodeFactory.createTreeNode("jvm", null, "jvm");
             server.addChild(jvmNode);
+
             bean = ManagementFactory.getMemoryMXBean();
+
+            // heap memory usage
             heapUsage = bean.getHeapMemoryUsage();
-            nonheapUsage = bean.getNonHeapMemoryUsage();
             Method m = heapUsage.getClass().getMethod("getCommitted", (Class[]) null);
             logger.finest("heapUsage.getCommitted() = " + heapUsage.getCommitted());
             logger.finest("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
             TreeNode committedHeapSize = 
                     TreeNodeFactory.createMethodInvoker("committedHeapSize", heapUsage, "jvm", m);
             jvmNode.addChild(committedHeapSize);
+
+            // non-heap memory usage
+            nonheapUsage = bean.getNonHeapMemoryUsage();
+            m = nonheapUsage.getClass().getMethod("getCommitted", (Class[]) null);
+            TreeNode nonHeapNode =
+                TreeNodeFactory.createMethodInvoker("non-heap-memory", nonheapUsage, "jvm", m);
+            jvmNode.addChild(nonHeapNode);
+
+            // v2 compatible jvm stats node
+            V2JVMStats v2jvmStats = new V2JVMStats();
+            m = v2jvmStats.getClass().getMethod("getUptime", (Class[]) null);
+            TreeNode v2JVMNode = 
+                TreeNodeFactory.createMethodInvoker("jvm", v2jvmStats, "jvm", m);
+            jvmNode.addChild(v2JVMNode);
+
             //enable/disable node
             jvmNode.setEnabled(jvmMonitoringEnabled);
         } catch (IllegalAccessException ex) {

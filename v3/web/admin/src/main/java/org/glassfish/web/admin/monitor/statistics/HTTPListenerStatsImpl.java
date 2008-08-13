@@ -36,6 +36,8 @@
 package org.glassfish.web.admin.monitor.statistics;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -60,6 +62,7 @@ import java.util.logging.Level;
  *
  */
 @Service
+@Scoped(PerLookup.class)
 public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract {
 
     @Inject

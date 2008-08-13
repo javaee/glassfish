@@ -36,6 +36,8 @@
 package org.glassfish.web.admin.monitor.statistics;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -61,6 +63,7 @@ import java.util.logging.Level;
  */
 //public class JVMStatsImpl implements JVMStats, MonitorContract {
 @Service
+@Scoped(PerLookup.class)
 public class JVMStatsImpl implements MonitorContract {
 
     @Inject
@@ -70,8 +73,6 @@ public class JVMStatsImpl implements MonitorContract {
     Logger logger;
 
     private final String name = "jvm";
-    private final String displayFormat = 
-        "%1$-10s %2$-10s %3$-10s %4$-10s";
 
     public String getName() {
         return name;
@@ -92,6 +93,18 @@ public class JVMStatsImpl implements MonitorContract {
             return report;
         }
 
+        if ((filter != null) && (filter.length() > 0)) {
+            if ("heapmemory".equals(filter)) {
+                return (heapMemory(report, serverNode));
+            } else if ("nonheapmemory".equals(filter)) {
+                return (nonHeapMemory(report, serverNode));
+            }
+        }
+
+        return (v2JVM(report, serverNode));
+    }
+
+    private ActionReport heapMemory(final ActionReport report, TreeNode serverNode) {
         long init = 0;
         long used = 0;
         long committed = 0;
@@ -109,8 +122,46 @@ public class JVMStatsImpl implements MonitorContract {
 
         MemoryUsage mu = (MemoryUsage) tn.getInstance();
 
+        String displayFormat = "%1$-10s %2$-10s %3$-10s %4$-10s";
         report.setMessage(String.format(displayFormat, 
             mu.getInit(), mu.getUsed(), mu.getCommitted(), mu.getMax()));
+        report.setActionExitCode(ExitCode.SUCCESS);
+        return report;
+    }
+
+    private ActionReport nonHeapMemory(final ActionReport report, TreeNode serverNode) {
+        long init = 0;
+        long used = 0;
+        long committed = 0;
+        long max = 0;
+
+        MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("non-heap-memory");
+        MemoryUsage mu = (MemoryUsage) tn.getInstance();
+
+        String displayFormat = "%1$-10s %2$-10s %3$-10s %4$-10s";
+        report.setMessage(String.format(displayFormat, 
+            mu.getInit(), mu.getUsed(), mu.getCommitted(), mu.getMax()));
+        report.setActionExitCode(ExitCode.SUCCESS);
+        return report;
+    }
+
+
+    private ActionReport v2JVM(final ActionReport report, TreeNode serverNode) {
+        long uptime = 0;
+        long min = 0;
+        long max = 0;
+        long low = 0;
+        long high = 0;
+        long count = 0;
+
+        MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("jvm");
+        V2JVMStats js = (V2JVMStats) tn.getInstance();
+
+        String displayFormat = "%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s";
+        report.setMessage(String.format(displayFormat, 
+            js.getUptime(), js.getMin(), js.getMax(), 
+            js.getLow(), js.getHigh(), js.getCount()));
+
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;
     }
