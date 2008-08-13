@@ -77,23 +77,29 @@ public class RealmsHandlers {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id = "deleteRealms", input = {
+    @Handler(id = "deleteSecurityConfig", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "type", type = String.class, required = true),
         @HandlerInput(name = "selectedRows", type = List.class, required = true)
     })
-    public static void deleteRealms(HandlerContext handlerCtx) {
+    public static void deleteSecurityConfig(HandlerContext handlerCtx) {
 
         String configName = (String) handlerCtx.getInputValue("ConfigName");
+        String type = (String) handlerCtx.getInputValue("type");
         ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         SecurityServiceConfig sConfig = config.getSecurityServiceConfig();
         List<Map> selectedRows = (List<Map>) handlerCtx.getInputValue("selectedRows");
         for (Map oneRow : selectedRows) {
-            String realmName = (String) oneRow.get("name");
+            String name = (String) oneRow.get("name");
             try{
-                sConfig.removeAuthRealmConfig(realmName);
+                if (type.equals("realms")){
+                    sConfig.removeAuthRealmConfig(name);
+                }else{
+                    sConfig.removeAuditModuleConfig(name);
+                }
             }catch(Exception ex){
                 ex.printStackTrace();
-                System.out.println("Cannot delete SecurityAuthReal: " + realmName);
+                System.out.println("Cannot delete " + name);
             }
         }
     }
@@ -380,7 +386,7 @@ public class RealmsHandlers {
       }
     }
     
-    final private static String FILE_REALM_CLASS = "com.sun.enterprise.security.auth.realm.file.FileRealm";
+    //final private static String FILE_REALM_CLASS = "com.sun.enterprise.security.auth.realm.file.FileRealm";
     private static List skipRealmPropsList = new ArrayList();
     private static List realmClassList;
     static {
