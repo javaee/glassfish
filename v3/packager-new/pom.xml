@@ -75,7 +75,9 @@
 	<module>glassfish-web</module>
 	<module>glassfish-jdbc-management</module>
 	<module>glassfish-jdbc</module>
+<!--
 	<module>glassfish-gui</module>
+-->
 	<module>glassfish-scripting</module>
 	<module>javadb</module>	
 </modules>
