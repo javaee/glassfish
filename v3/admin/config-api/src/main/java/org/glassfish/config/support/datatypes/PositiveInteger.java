@@ -21,7 +21,7 @@ public class PositiveInteger implements DataType { //could extend NonNegativeInt
      */
     public void validate(String value) throws ValidationException {
         if (value == null)
-            throw new ValidationException("null value is not of type Port");
+            throw new ValidationException("null value is not of type PositiveInteger");
         if (NonNegativeInteger.isTokenized(value))
             return; //a token is always valid             
         try {
