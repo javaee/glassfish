@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- security/realms/realmsTable.inc -->
+<!-- security/configTable.inc -->
 
 <sun:table id="realmsTable" title="#{tableTitle}" 
             deselectMultipleButton="$boolean{true}"
@@ -60,9 +60,9 @@
                     else {return false;} "
             >  
             <!command 
-                getUIComponent(clientId="$pageSession{realmsTableRowGroupId}", component=>$attribute{tableRowGroup});      
+                getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});      
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                deleteRealms(ConfigName="#{configName}", selectedRows="${selectedRows}");
+                deleteSecurityConfig(ConfigName="#{configName}", selectedRows="${selectedRows}", type="#{type}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 redirect(page="#{listPageLink}?configName=#{configName}");
             />            
@@ -73,7 +73,7 @@
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{realmsTableRowGroupId});
+         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
 
     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
@@ -89,8 +89,12 @@
             url="#{editLink}?name=#{td.value.name}&configName=#{configName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.realm.colClassname}"   rendered="#{hasClassname}" rowHeader="$boolean{true}" id="col5">
+    <sun:tableColumn headerText="$resource{i18n.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
         <staticText id="classnameCol" value="#{td.value.classname}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n.security.AuditModule.auditOn}" rendered="#{hasAuditColumn}" rowHeader="$boolean{true}" id="col3">
+        <staticText id="auditCol" value="#{td.value.auditOn}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

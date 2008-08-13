@@ -57,6 +57,22 @@
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/realms/realms.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
+    <dynamicTreeNode id="auditModules"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
+        methodName="getAuditModuleConfigMap"
+        childImageURL="resource/security/images/security.gif"
+        childTarget="main"
+        childExpanded="$boolean{false}"
+        childURL="/security/auditModules/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        text="$resource{i18n.tree.auditModules}"
+        url="/security/auditModules/auditModules.jsf?configName=#{configName}"
+        target="main"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/auditModules/auditModules.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+    </dynamicTreeNode>
     
     <!--
             <dynamicTreeNode id="jaccProviders"

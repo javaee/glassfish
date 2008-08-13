@@ -40,20 +40,19 @@
     setResourceBundle(key="i18n" bundle="core.Strings");
     setResourceBundle(key="help" bundle="core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
-    getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.realm.TableTitle}");
-    setPageSessionAttribute(key="type" value="realms");
-    setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
-    setPageSessionAttribute(key="listPageLink" value="realms.jsf");
-    setPageSessionAttribute(key="createLink" value="realmNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/security/realms/realmEdit.jsf");
-    setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteRealms}");
+    getAuditModuleList(ConfigName="$pageSession{configName}" result=>$attribute{listOfRows} );
+    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.auditModule.TableTitle}");
+    setPageSessionAttribute(key="type" value="auditModules");
+    setPageSessionAttribute(key="hasAuditColumn" value="$boolean{true}");
+    setPageSessionAttribute(key="listPageLink" value="auditModules.jsf");
+    setPageSessionAttribute(key="createLink" value="auditModuleNew.jsf");
+    setPageSessionAttribute(key="editLink" value="/security/auditModules/auditModuleEdit.jsf");
+    setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteAuditModules}");
     />
-#include "/shared/restart.inc"    
+  #include "shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.realm.PageTitle}" >
+        <sun:head id="propertyhead"  title="$resource{i18n.auditModule.PageTitle}">
             <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    <!beforeCreate
@@ -66,14 +65,13 @@
 	    />
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n.realm.PageTitle}" 
-                 helpText="$resource{i18n.realm.PageHelp}"/>
+#include "/shared/alertMsg.inc" 
+                 <sun:title id="propertyContentPage" title="$resource{i18n.auditModule.PageTitle}"
+                 helpText="$resource{i18n.auditModule.PageHelp}"/>
 		 "<br /> <br />
 #include "/security/configTable.inc"    
-             <sun:hidden id="helpKey" value="$resource{help.realms}" />
+                <sun:hidden id="helpKey" value="$resource{help.auditModules}" />
             </sun:form>
         </sun:body>
-#include "/shared/changeButtonsJS.inc"        
     </sun:html>
 </sun:page>

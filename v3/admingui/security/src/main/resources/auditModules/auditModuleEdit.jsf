@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -34,46 +33,23 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- security/auditModules/auditModuleEdit.jsf -->
 
-<sun:page id="page1">
+<!initPage 
+    setAttribute(key="edit" value="#{true}" )
+/>
+<sun:page id="page2">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="i18n" bundle="core.Strings")
     setResourceBundle(key="help" bundle="core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
-    getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.realm.TableTitle}");
-    setPageSessionAttribute(key="type" value="realms");
-    setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
-    setPageSessionAttribute(key="listPageLink" value="realms.jsf");
-    setPageSessionAttribute(key="createLink" value="realmNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/security/realms/realmEdit.jsf");
-    setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteRealms}");
+    setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
+    setPageSessionAttribute(key="name", value="$requestParameter{name}");        
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.auditModule.EditPageTitle}");
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.auditModule.EditPageTitleHelp}");
+    setPageSessionAttribute(key="helpkey" value="$resource{help.auditModuleEdit}");
     />
-#include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.realm.PageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-	    <!beforeCreate
-		if ("#{supportCluster}") {
-		    setAttribute(key="refreshId" value="'form:tree:configurations'");
-		}
-		if ("!#{supportCluster}") {
-		    setAttribute(key="refreshId" value="null");
-		}
-	    />
-            <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n.realm.PageTitle}" 
-                 helpText="$resource{i18n.realm.PageHelp}"/>
-		 "<br /> <br />
-#include "/security/configTable.inc"    
-             <sun:hidden id="helpKey" value="$resource{help.realms}" />
-            </sun:form>
-        </sun:body>
-#include "/shared/changeButtonsJS.inc"        
-    </sun:html>
+
+#include "/security/auditModules/auditModule.inc"               
+
 </sun:page>
+
