@@ -44,7 +44,7 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gui-plugin-common</artifactId>
+    <artifactId>web-gui-plugin-common</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Web container and GUI plug-in common classes</name>
 
@@ -123,6 +123,11 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

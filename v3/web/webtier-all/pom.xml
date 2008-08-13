@@ -62,6 +62,12 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.web</groupId>
+            <artifactId>web-gui-plugin-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
         </dependency>
