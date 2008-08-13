@@ -3,7 +3,7 @@ setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 setResourceBundle(key="i18n" bundle="core.Strings");
 setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 setResourceBundle(key="help" bundle="core.Helplinks");
-setAttribute(key="helpKey" value="$resource{help.monitoringService}" );
+setAttribute(key="helpKey" value="#{helpKey}");
 getRequestValue(key="configName" value=>$page{configName});
 />
 <sun:page id="page1">

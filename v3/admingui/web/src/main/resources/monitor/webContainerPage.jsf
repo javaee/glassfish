@@ -1,14 +1,10 @@
 <!composition template="webContainerTemplate.jsf" 
-    pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}">
+    pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}"
+    helpKey="$resource{help_web.monitorWebContainer}">
         <!-- Buttons  -->
         <!define name="title">
         <sun:title id="propertyContentPage" title="$resource{i18n_web.monitoring.webContainer.pageTitle}"
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
-<!--<sun:checkbox id="Test" label="Test" selected="#{test}">
-    <!beforeCreate
-        setPageSessionAttribute(key="test" value="#{test}");
-    />
-</sun:checkbox>-->
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
                     <sun:button id="refreshButton" 

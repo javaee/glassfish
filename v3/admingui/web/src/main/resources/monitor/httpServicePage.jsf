@@ -1,5 +1,6 @@
 <!composition template="webContainerTemplate.jsf" 
-    pageTitle="$resource{i18n_web.monitoring.httpService.pageTitle}">
+    pageTitle="$resource{i18n_web.monitoring.httpService.pageTitle}"
+    helpKey="$resource{help_web.monitorHttpService}">
         <!-- Buttons  -->
         <!define name="title">
         <sun:title id="propertyContentPage" title="$resource{i18n_web.monitoring.httpService.pageTitle}"

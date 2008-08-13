@@ -26,12 +26,12 @@
                 priority="20" 
                 parentId="monitoring" 
                 content="monitor/webContainerTab.jsf" />
-       <!--<integration-point
+       <integration-point
                 id="monitor_http" 
                 type="serverInstTab" 
                 priority="30" 
                 parentId="monitoring" 
-                content="monitor/httpServiceTab.jsf" />-->
+                content="monitor/httpServiceTab.jsf" />
        <integration-point
                 id="monitor_jvm" 
                 type="serverInstTab" 
