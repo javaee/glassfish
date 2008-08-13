@@ -128,7 +128,7 @@
         <dependency>
             <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-            <version>1.0.7-13.1048</version>
+            <version>1.0.7-14.1084</version>
 	    <!--
 	    <scope>provided</scope>
 	    -->
