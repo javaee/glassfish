@@ -60,10 +60,7 @@ import org.glassfish.admingui.common.util.AMXUtil;
 import com.sun.appserv.management.config.ConfigConfig; 
 import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.ConfigElement;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.VirtualServerConfigKeys;
-
 
 /**
  *
@@ -267,21 +264,21 @@ public class VirtualServerHandlers {
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
                 Map convertedMap = AMXUtil.convertToPropertiesOptionMap(newProps, null);
-                putOptionalValue((String) handlerCtx.getInputValue("accesslog"), convertedMap, "accesslog");
-                putOptionalValue((String) handlerCtx.getInputValue("docroot"), convertedMap, "docroot");
-                putOptionalValue((String) handlerCtx.getInputValue("accessLogBufferSize"), convertedMap, "accessLogBufferSize");
-                putOptionalValue((String) handlerCtx.getInputValue("accessLogWriteInterval"), convertedMap, "accessLogWriteInterval");
-                putOptionalValue(""+ handlerCtx.getInputValue("sso"), convertedMap, "sso-enabled");
+                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accesslog"), convertedMap, "accesslog");
+                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("docroot"), convertedMap, "docroot");
+                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accessLogBufferSize"), convertedMap, "accessLogBufferSize");
+                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accessLogWriteInterval"), convertedMap, "accessLogWriteInterval");
+                AMXUtil.putOptionalValue(""+ handlerCtx.getInputValue("sso"), convertedMap, "sso-enabled");
                 String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
                 if ( (accessLoggingFlag!= null) && (!accessLoggingFlag.equals("off"))){
-                    putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
+                    AMXUtil.putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
                 }
                 
                 convertedMap.put(VirtualServerConfigKeys.HTTP_LISTENERS_KEY,handlerCtx.getInputValue("Http"));
                 convertedMap.put(VirtualServerConfigKeys.DEFAULT_WEB_MODULE_KEY,handlerCtx.getInputValue("Web"));
                 convertedMap.put(VirtualServerConfigKeys.LOG_FILE_KEY,handlerCtx.getInputValue("LogFile"));
                 convertedMap.put(VirtualServerConfigKeys.STATE_KEY,handlerCtx.getInputValue("StateOption"));
-                System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
+                //System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
                         (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")),  convertedMap);
                                 
@@ -441,12 +438,7 @@ public class VirtualServerHandlers {
       
       
     
-    static private void putOptionalValue(String value, Map convertedMap, String propName)
-    {
-       if (GuiUtil.isEmpty(value))
-           return;
-       convertedMap.put(PropertiesAccess.PROPERTY_PREFIX + propName, value);
-    }
+    
     
      private static List vsSkipPropsList = new ArrayList();
 

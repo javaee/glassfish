@@ -675,10 +675,10 @@ public class JdbcHandlers {
             
             allOptions = AMXUtil.convertToPropertiesOptionMap(properties, allOptions);
             
-            System.out.println("!!!! calling getResourcesConfig().createJDBCConnectionPoolConfig  ");
-            System.out.println("name="+name);
-            System.out.println("datasoruceClassname="+datasourceClassname);
-            System.out.println("allOption="+ allOptions);
+            //System.out.println("!!!! calling getResourcesConfig().createJDBCConnectionPoolConfig  ");
+            //System.out.println("name="+name);
+            //System.out.println("datasoruceClassname="+datasourceClassname);
+            //System.out.println("allOption="+ allOptions);
             JDBCConnectionPoolConfig newPool = AMXRoot.getInstance().getResourcesConfig().createJDBCConnectionPoolConfig(name, datasourceClassname, allOptions);
             newPool.setDescription((String) extra.get("Description"));
         }catch (Exception ex){
