@@ -35,9 +35,7 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
   <parent>
@@ -51,7 +49,6 @@
   <artifactId>embedded</artifactId>
   <packaging>pom</packaging>
   <version>10.0-SNAPSHOT</version>
-  
   <name>Embedded GlassFish</name>
   <scm>
     <connection>scm:svn:https://glassfish-svn.dev.java.net/svn/glassfish-svn/trunk/v3/embedded</connection>
@@ -92,6 +89,29 @@
 
   <modules>
     <module>api</module>
-    <module>packager</module>
+    <!-- it's too slow for developers -->
+    <!--module>packager</module-->
   </modules>
+  
+  <developers>
+        <developer>
+            <id>bnevins</id>
+            <name>Byron Nevins</name>
+            <url>http://blogs.sun.com/foo</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kohsuke</id>
+            <name>Kohsuke Kawaguchi</name>
+            <url>http://weblogs.java.net/blog/kohsuke</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 </project>
