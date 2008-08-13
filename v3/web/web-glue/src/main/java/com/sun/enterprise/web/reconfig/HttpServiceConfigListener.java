@@ -37,6 +37,7 @@
 package com.sun.enterprise.web.reconfig;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,7 +84,7 @@ public class HttpServiceConfigListener implements ConfigListener {
     public KeepAlive keepAlive;
     
     @Inject(optional=true)
-    public Property property;
+    public List<Property> property;
     
     @Inject(optional=true)
     public RequestProcessing requestProcessing;
@@ -115,6 +116,9 @@ public class HttpServiceConfigListener implements ConfigListener {
         
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("HttpService config changed "+type+" "+tClass+" "+t);
+                }
                 try {
                     if (t instanceof com.sun.enterprise.config.serverbeans.VirtualServer) {
                         if (type==TYPE.ADD) {                           
