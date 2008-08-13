@@ -64,7 +64,7 @@ public class EjbApplication
 
     SingletonLifeCycleManager singletonLCM;
 
-    List<String> partialOrder;
+    EjbSingletonDescriptor[] partialOrder;
 
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
@@ -122,17 +122,19 @@ public class EjbApplication
         }
 
         if (topCandidates.size() > 0) {
-            singletonLCM = new SingletonLifeCycleManager();
-            for (EjbSingletonDescriptor sdesc : topCandidates) {
-                String src = sdesc.getName();
-                String[] depends = sdesc.getDepends();
-                singletonLCM.addDependency(src, depends);
-            }
+            singletonLCM = new SingletonLifeCycleManager(topCandidates);
+            
 
-            partialOrder = singletonLCM.getPartialOrdering();
-            for (String s : partialOrder) {
-                System.out.println("Singleton startup order: " + s);
+            partialOrder = singletonLCM.getPartiallyOrderedSingletonDescriptors();
+            int orderSz = partialOrder.length;
+            StringBuilder sb = new StringBuilder();
+            for (int i=0; i<orderSz; i++) {
+                String s = partialOrder[i].getName();
+                sb.append(" " + s);
             }
+            System.out.println("Singleton startup order: " + sb.toString());
+
+
         }
 
         for (Container container : containers) {

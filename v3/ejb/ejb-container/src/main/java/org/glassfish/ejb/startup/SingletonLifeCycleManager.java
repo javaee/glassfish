@@ -1,5 +1,7 @@
 package org.glassfish.ejb.startup;
 
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+
 import java.util.*;
 
 /**
@@ -10,7 +12,7 @@ public class SingletonLifeCycleManager {
 
     Set<String> names = new HashSet<String>();
 
-    Map<String, Set<String>> dependencies =
+    Map<String, Set<String>> initialDependency =
             new HashMap<String, Set<String>>();
 
     Map<String, Integer> name2Index = new HashMap<String, Integer>();
@@ -23,8 +25,31 @@ public class SingletonLifeCycleManager {
 
     boolean adj[][];
 
+    private List<EjbSingletonDescriptor> candidates;
+
+    private Map<String, EjbSingletonDescriptor> name2Desc =
+            new HashMap<String, EjbSingletonDescriptor>();
+
+    public SingletonLifeCycleManager(List<EjbSingletonDescriptor> candidates) {
+        this.candidates = candidates;
+        for (EjbSingletonDescriptor sdesc : candidates) {
+            String modName = sdesc.getEjbBundleDescriptor().getName();
+            System.out.println("BundleName: " + modName);
+            String src = sdesc.getName();
+            String[] depends = sdesc.getDepends();
+            this.addDependency(src, depends);
+
+            //TODO: names can be of the form jarName#beanName
+            name2Desc.put(src, sdesc);
+        }
+    }
+
+    public SingletonLifeCycleManager() {
+
+    }
+
     public void addDependency(String src, String[] depends) {
-        if (depends != null) {
+        if (depends != null && depends.length > 0) {
             for (String s : depends) {
                 addDependency(src, s);
             }
@@ -58,7 +83,7 @@ public class SingletonLifeCycleManager {
         }
     }
 
-    public List<String> getPartialOrdering() {
+    public String[] getPartialOrdering() {
         if (adj == null) {
             fillAdjacencyMatrix();
         }
@@ -100,7 +125,19 @@ public class SingletonLifeCycleManager {
 
         } while (dependencies.size() < name2Index.size());
 
-        return dependencies;
+        return dependencies.toArray(new String[0]);
+
+    }
+
+     public EjbSingletonDescriptor[] getPartiallyOrderedSingletonDescriptors() {
+        String[] computedDeps = getPartialOrdering();
+        int sz = computedDeps.length;
+        EjbSingletonDescriptor[] deps = new EjbSingletonDescriptor[sz];
+        for (int i=0; i<sz; i++) {
+            deps[i] = name2Desc.get(computedDeps[i]);
+        }
+
+        return deps;
     }
 
     public List<String> computeDependencies(String root) {
@@ -148,10 +185,10 @@ public class SingletonLifeCycleManager {
     }
 
     private Set<String> getExistingDependecyList(String src) {
-        Set<String> existingDeps = dependencies.get(src);
+        Set<String> existingDeps = initialDependency.get(src);
         if (existingDeps == null) {
             existingDeps = new HashSet<String>();
-            dependencies.put(src, existingDeps);
+            initialDependency.put(src, existingDeps);
             name2Index.put(src, maxIndex);
             index2Name.put(maxIndex, src);
             maxIndex++;
@@ -169,7 +206,7 @@ public class SingletonLifeCycleManager {
             }
 
             boolean isLeaf = true;
-            Set<String> deps = dependencies.get(src);
+            Set<String> deps = initialDependency.get(src);
             for (String d : deps) {
                 int k = name2Index.get(d);
                 adj[i][k] = true;
@@ -225,8 +262,9 @@ public class SingletonLifeCycleManager {
         //test1();
         //test2();
         //test3();
-        test4();
+        //test4();
     }
+
 
     private static void test1() {
         SingletonLifeCycleManager ts = new SingletonLifeCycleManager();
@@ -280,7 +318,7 @@ public class SingletonLifeCycleManager {
         ts.addDependency("Z", "O");
         //ts.addDependency("R", "J");
 
-        List<String> dep = ts.getPartialOrdering();
+        String[] dep = ts.getPartialOrdering();
         for (String s : ts.getPartialOrdering()) {
             System.out.print(s + " ");
         }
@@ -290,7 +328,7 @@ public class SingletonLifeCycleManager {
         ts2.addDependency("E", ts.computeDependencies("E"));
         ts2.addDependency("U", ts.computeDependencies("U"));
         ts2.addDependency("H", ts.computeDependencies("H"));
-        List<String> dep2 = ts2.getPartialOrdering();
+        String[] dep2 = ts2.getPartialOrdering();
         for (String s : ts2.getPartialOrdering()) {
             System.out.print(s + " ");
         }
@@ -302,7 +340,7 @@ public class SingletonLifeCycleManager {
         ts.addDependency("B", (String) null);
         ts.addDependency("C", (String) null);
 
-        List<String> dep = ts.getPartialOrdering();
+        String[] dep = ts.getPartialOrdering();
         for (String s : ts.getPartialOrdering()) {
             System.out.print(s + " ");
         }
@@ -326,7 +364,7 @@ public class SingletonLifeCycleManager {
         ts.addDependency("I", "J");
         ts.addDependency("K", (List) null);
 
-        List<String> dep = ts.getPartialOrdering();
+        String[] dep = ts.getPartialOrdering();
         for (String s : ts.getPartialOrdering()) {
             System.out.print(s + " ");
         }
@@ -336,4 +374,5 @@ public class SingletonLifeCycleManager {
         }
         System.out.println();
     }
+
 }

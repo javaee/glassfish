@@ -45,11 +45,13 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 public class EjbSingletonDescriptor
         extends EjbSessionDescriptor {
 
-    private boolean singleton;
+    private static final String[] _emptyDepends = new String[] {};
 
     private boolean startupFlag;
 
-    private String[] depends;
+    private String[] depends = _emptyDepends;
+
+    private Class singletonClass;
 
     public EjbSingletonDescriptor() {
         super();
@@ -59,12 +61,8 @@ public class EjbSingletonDescriptor
         super(ejbDesc);
     }
 
-    public void setSingleton() {
-        singleton = true;
-    }
-
     public boolean isSingleton() {
-        return singleton;
+        return true;
     }
 
     public boolean isStartup() {
@@ -79,7 +77,15 @@ public class EjbSingletonDescriptor
         return depends;
     }
 
-    public void setDepends(String[] depends) {
-        this.depends = depends;
+    public void setDepends(String[] dep) {
+        this.depends = dep;
+    }
+
+    public Class getSingletonClass() {
+        return singletonClass;
+    }
+
+    public void setSingletonClass(Class singletonClass) {
+        this.singletonClass = singletonClass;
     }
 }

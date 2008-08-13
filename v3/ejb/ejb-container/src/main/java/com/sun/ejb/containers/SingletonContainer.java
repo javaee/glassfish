@@ -123,10 +123,13 @@ public class SingletonContainer
 
     public void undeploy() {
         try {
-            factory.destroy(singletonCtx);
+            String beanName = ejbDescriptor.getEjbClassName();
+            if (factory != null) {
+                factory.destroy(singletonCtx);
+            }
             super.undeploy();
 
-            System.out.println("****** [SINGLETON CONTAINER UNDEPLOYED] for: " + ejbDescriptor.getEjbClassName());
+            System.out.println("****** [SINGLETON CONTAINER UNDEPLOYED] for: " + beanName);
         } catch (Throwable th) {
             _logger.log(Level.INFO, "Error during SingletonContainer undeploy", th);
         }

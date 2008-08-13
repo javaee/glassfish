@@ -732,7 +732,9 @@ public class StatelessSessionContainer
 
             isPoolClosed = true;
 
-            pool.close();
+            if (pool != null) {
+                pool.close();
+            }
 
         } finally {
             super.undeploy();

@@ -49,6 +49,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.DependsOn;
 
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
@@ -107,7 +109,10 @@ public class SingletonHandler extends AbstractEjbHandler {
         EjbSingletonDescriptor newDescriptor = new EjbSingletonDescriptor();
         newDescriptor.setName(elementName);
         newDescriptor.setEjbClassName(ejbClass.getName());
-        newDescriptor.setSingleton();
+        newDescriptor.setSingletonClass(ejbClass);
+
+        doSingletonSpecificProcessing(newDescriptor);
+
         return newDescriptor;
     }
 
@@ -123,14 +128,28 @@ public class SingletonHandler extends AbstractEjbHandler {
             EjbDescriptor ejbDesc, AnnotationInfo ainfo)
             throws AnnotationProcessorException {
 
-        EjbSingletonDescriptor ejbSessionDesc = (EjbSingletonDescriptor)ejbDesc;
-        ejbSessionDesc.setSingleton();
+        EjbSingletonDescriptor ejbSingletonDescriptor = (EjbSingletonDescriptor) ejbDesc;
 
-        Singleton sless = (Singleton) ainfo.getAnnotation();
+        Singleton singleton = (Singleton) ainfo.getAnnotation();
 
-        doDescriptionProcessing(sless.description(), ejbDesc);
-        doMappedNameProcessing(sless.mappedName(), ejbDesc);
+        doDescriptionProcessing(singleton.description(), ejbDesc);
+        doMappedNameProcessing(singleton.mappedName(), ejbDesc);
+
+        doSingletonSpecificProcessing(ejbSingletonDescriptor);
 
         return setBusinessAndHomeInterfaces(ejbDesc, ainfo);
+    }
+
+    private void doSingletonSpecificProcessing(EjbSingletonDescriptor desc) {
+        Class clz = desc.getSingletonClass();
+        Startup st = (Startup) clz.getAnnotation(Startup.class);
+        if (st != null) {
+            desc.setStartup();
+        }
+
+        DependsOn dep = (DependsOn) clz.getAnnotation(DependsOn.class);
+        if (dep != null) {
+            desc.setDepends(dep.value());
+        }
     }
 }
