@@ -19,9 +19,8 @@ bin/asadmin delete-jdbc-resource jdbc/jdbc-simple-xa-test-resource-2
 bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-assoc-test-resource
 bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-enlist-resource-1
 bin/asadmin delete-jdbc-resource jdbc/jdbc-lazy-enlist-resource-2
-
-echo "\n"
-sleep 1
+bin/asadmin delete-jdbc-resource jdbc/double-resource-reference-resource-1
+bin/asadmin delete-jdbc-resource jdbc/double-resource-reference-resource-2
 
 echo "\n"
 
@@ -39,6 +38,7 @@ bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-1
 bin/asadmin delete-jdbc-connection-pool jdbc-simple-xa-test-pool-2
 bin/asadmin delete-jdbc-connection-pool jdbc-lazy-enlist-pool-1
 bin/asadmin delete-jdbc-connection-pool jdbc-lazy-enlist-pool-2
+bin/asadmin delete-jdbc-connection-pool double-resource-reference-pool-1
 
 echo "\n"
 

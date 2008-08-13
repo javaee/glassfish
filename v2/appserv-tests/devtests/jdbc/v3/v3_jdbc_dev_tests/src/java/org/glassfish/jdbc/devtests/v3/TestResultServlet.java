@@ -38,6 +38,8 @@ public class TestResultServlet extends HttpServlet {
     DataSource dsXA;
     @Resource(name = "jdbc/jdbc-lazy-enlist-resource-1", mappedName = "jdbc/jdbc-lazy-enlist-resource-1")
     DataSource dsLazyEnlist;
+    @Resource(name = "jdbc/double-resource-reference-resource-1", mappedName = "jdbc/double-resource-reference-resource-1")
+    DataSource dsDoubleReference;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -57,6 +59,7 @@ public class TestResultServlet extends HttpServlet {
         SimpleTest testLazyAssoc = null;
         SimpleTest testXA = null;
         SimpleTest testLazyEnlist = null;
+        SimpleTest testDoubleResourceReference = null;
         SimpleTest[] testsOther = null;
         out.println("<html>");
         out.println("<head>");
@@ -84,6 +87,7 @@ public class TestResultServlet extends HttpServlet {
             testsOther = initializeTests();
             testLazyAssoc = loadLazyAssocTest();
             testLazyEnlist = loadLazyEnlistTest();
+            testDoubleResourceReference = loadDoubleResourceReferenceTest();
         } catch (Exception e) {
             HtmlUtil.printException(e, out);
         }
@@ -104,7 +108,7 @@ public class TestResultServlet extends HttpServlet {
                     buf.append("<td>");
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");
-                }
+                } 
 
                 //Run Application Authentication Test
                 Map<String, Boolean> mapAppAuth =
@@ -152,7 +156,7 @@ public class TestResultServlet extends HttpServlet {
                     buf.append("<td>");
                     buf.append(entry.getValue());
                     buf.append("</td></tr>");
-                }
+                } 
 
 
                 //Run SimpleXADS test
@@ -178,6 +182,18 @@ public class TestResultServlet extends HttpServlet {
                         buf.append(entry.getValue());
                         buf.append("</td></tr>");
                     }
+                } 
+
+                 //Order of test is important : lazy enlist has to be before connection leak tracing
+                Map<String, Boolean> mapDoubleResourceReference =
+                        testDoubleResourceReference.runTest(dsDoubleReference, out);
+                for (Map.Entry entry : mapDoubleResourceReference.entrySet()) {
+                    buf.append("<tr> <td>");
+                    buf.append(entry.getKey());
+                    buf.append("</td>");
+                    buf.append("<td>");
+                    buf.append(entry.getValue());
+                    buf.append("</td></tr>");
                 }
 
                 //Order of test is important : lazy enlist has to be before connection leak tracing
@@ -235,6 +251,14 @@ public class TestResultServlet extends HttpServlet {
             out.close();
             out.flush();
         }
+    }
+
+   private SimpleTest loadDoubleResourceReferenceTest() throws Exception {
+        String test = "org.glassfish.jdbc.devtests.v3.test.DoubleResourceReferenceTest";
+        Class testClass = Class.forName(test);
+        Constructor c = testClass.getConstructor();
+        SimpleTest testInstance = (SimpleTest) c.newInstance();
+        return testInstance;
     }
 
     private SimpleTest loadAppAuthTest() throws Exception {
