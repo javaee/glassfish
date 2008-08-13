@@ -80,7 +80,8 @@
                         <_include>osgi.bundle</_include>
                         com.sun.web.security
                         -->
-                        <Export-Package>!*</Export-Package>
+                        <Export-Package>
+                        </Export-Package>
                     </instructions>
                 </configuration>
                 <executions>
