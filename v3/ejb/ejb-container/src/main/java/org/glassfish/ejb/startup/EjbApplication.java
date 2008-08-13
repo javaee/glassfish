@@ -27,6 +27,7 @@ import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.ContainerFactoryImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
@@ -34,6 +35,8 @@ import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +48,7 @@ import java.util.List;
  * @author Mahesh Kannan
  */
 @Service(name = "ejb")
+@Scoped(PerLookup.class)
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
 
@@ -57,6 +61,10 @@ public class EjbApplication
 
     @Inject
     EJBSecurityManagerFactory ejbSMF;
+
+    SingletonLifeCycleManager singletonLCM;
+
+    List<String> partialOrder;
 
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
@@ -92,38 +100,38 @@ public class EjbApplication
         int counter = 0;
 
         List<EjbSingletonDescriptor> topCandidates = new ArrayList<EjbSingletonDescriptor>();
-        List<EjbDescriptor> others = new ArrayList<EjbDescriptor>();
 
         for (EjbDescriptor desc : ejbs) {
-            if (desc instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor singletonEjbDesc = (EjbSingletonDescriptor) desc;
-                topCandidates.add(singletonEjbDesc);
-            } else {
-                others.add(desc);
-            }
-        }
-
-        for (EjbSingletonDescriptor sing : topCandidates) {
-            try {
-                EJBSecurityManager ejbSM = null;//ejbSMF.createSecurityManager(sing);
-                Container container = ejbContainerFactory.createContainer(sing, ejbAppClassLoader,
-                        ejbSM, dc);
-                containers.add(container);
-            } catch (Throwable th) {
-                throw new RuntimeException("Error during EjbApplication.start() ", th);
-            }
-        }
-
-        for (EjbDescriptor desc : others) {
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
+
             try {
                 EJBSecurityManager ejbSM = null;//ejbSMF.createSecurityManager(desc);
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
                 System.out.println("Created EJBContainer for: " + desc);
+
+                if (desc instanceof EjbSingletonDescriptor) {
+                    EjbSingletonDescriptor singletonEjbDesc = (EjbSingletonDescriptor) desc;
+                    topCandidates.add(singletonEjbDesc);
+                }
+
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
+            }
+        }
+
+        if (topCandidates.size() > 0) {
+            singletonLCM = new SingletonLifeCycleManager();
+            for (EjbSingletonDescriptor sdesc : topCandidates) {
+                String src = sdesc.getName();
+                String[] depends = sdesc.getDepends();
+                singletonLCM.addDependency(src, depends);
+            }
+
+            partialOrder = singletonLCM.getPartialOrdering();
+            for (String s : partialOrder) {
+                System.out.println("Singleton startup order: " + s);
             }
         }
 

@@ -43,6 +43,7 @@ import com.sun.ejb.EjbInvocation;
 import javax.transaction.Transaction;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Mahesh Kannan
@@ -52,7 +53,9 @@ public class SingletonContainer
 
     private SessionContextFactory factory;
 
-    private transient ComponentContext singletonCtx;
+    private AtomicBoolean singletonInitialized = new AtomicBoolean(false);
+
+    private volatile ComponentContext singletonCtx;
 
     private AtomicInteger invCount = new AtomicInteger(0);
 
@@ -66,21 +69,27 @@ public class SingletonContainer
     }
 
     public ComponentContext instantiateSingletonInstance() {
-        if (singletonCtx == null) {
-            factory = new SessionContextFactory();
-            singletonCtx = (ComponentContext) factory.create(null);
+        if (singletonInitialized.get()) {
+            synchronized (this) {
+                if (singletonInitialized.get()) {
+                    factory = new SessionContextFactory();
+                    singletonCtx = (ComponentContext) factory.create(null);
+                    singletonInitialized.set(true);
+                }
+            }
         }
 
         return singletonCtx;
     }
 
+    @Override
+    protected void createBeanPool() {
+        //No-op
+    }
+
     protected ComponentContext _getContext(EjbInvocation inv) {
-        if (singletonCtx == null) {
-            synchronized (this) {
-                if (singletonCtx == null) {
-                    instantiateSingletonInstance();
-                }
-            }
+        if (! singletonInitialized.get()) {
+            instantiateSingletonInstance();
         }
 
         if (bmcMode) {
@@ -122,4 +131,5 @@ public class SingletonContainer
             _logger.log(Level.INFO, "Error during SingletonContainer undeploy", th);
         }
     }
+    
 }
