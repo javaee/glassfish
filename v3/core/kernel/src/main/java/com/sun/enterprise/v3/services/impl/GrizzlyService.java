@@ -249,21 +249,21 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             List<String> vsListeners = 
                     StringUtils.parseStringList(vs.getHttpListeners(), " ,");
             if (vsListeners == null || vsListeners.size() == 0 || 
-                vsListeners.contains(listener.getId())) {
+                    vsListeners.contains(listener.getId())) {
                 proxy.getVsMapper().addVirtualServer(vs);
                 if (!hosts.contains(vs.getId())){
                     hosts.add(vs.getId());
                 }
-            }
-            
-            List<String> aliases = 
+                List<String> aliases = 
                     StringUtils.parseStringList(vs.getHosts(), " ,");  
-            for (String alias: aliases){
-                if (!hosts.contains(alias)){
-                    hosts.add(alias);
-                }    
-            }
+                for (String alias: aliases){
+                    if (!hosts.contains(alias)){
+                        hosts.add(alias);
+                    }    
+                }
+            }            
         }
+
         Future<Result<Thread>> future =  proxy.start();
         // add the new proxy to our list of proxies.
         proxies.add(proxy);
