@@ -104,7 +104,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             throw new IllegalStateException("Not part of a transation");
         }
         try {
-            handleValidation(property, newValue);
+            if (newValue != null)
+                handleValidation(property, newValue);
         } catch(Exception v) {
             bean.getLock().unlock();
             throw new RuntimeException(v);
