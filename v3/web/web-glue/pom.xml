@@ -129,10 +129,6 @@
                         com.sun.appserv.web.cache.filter,
                         com.sun.appserv.web.cache.mapping,
                         com.sun.appserv.web.taglibs.cache,
-                        com.sun.el,
-                        com.sun.el.lang,
-                        com.sun.el.parser,
-                        com.sun.el.util,
                         com.sun.enterprise.security.web,
                         com.sun.enterprise.util.logging,
                         com.sun.enterprise.web,
@@ -271,6 +267,11 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>jspimpl</artifactId>
             <version>${jspimpl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
