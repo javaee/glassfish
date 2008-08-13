@@ -46,12 +46,21 @@ own identifying information: Portions Copyright [yyyy]
             <mapper type="flatten"/-->
         </unzip>
 
+        <!--
+         Note: I have chosen to add EVERY jar file in the distribution rather than just
+         the ones in the modules and root dirs.  E.g. JavaDB jars get included from /lib
+         To do it the other way use these 2 lines:
+            <zipgroupfileset dir="${jardir}" includes="**/modules/*.jar"/>
+            <zipgroupfileset dir="${jardir}" includes="*.jar" />
+         -->
+        
         <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
-        <rejar destfile="${finaljar}">
-            <zipgroupfileset dir="${jardir}" includes="**/*.jar" />
+         <rejar destfile="${finaljar}">
+            <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
         </rejar>
-        <attachArtifact file="${finaljar}" classifier="all"/>
+        
+        <attachArtifact file="${finaljar}"/>
    </target>
 </project>
 

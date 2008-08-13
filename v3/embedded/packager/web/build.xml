@@ -43,16 +43,11 @@ own identifying information: Portions Copyright [yyyy]
             </fileset>
         </unzip>
 
-        <echo message="Exploding the jar files..."/>
-        <unjar dest="${filedir}">
-            <fileset dir="${jardir}">
-                <include name="**/*.jar"/>
-            </fileset>
-        </unjar>
-        
-        <echo message="Re-packaging the files..."/>
-        <delete file="${finaljar}"/>
-        <jar destfile="${finaljar}" duplicate="fail" basedir="${filedir}"/>
+        <echo message="rejarring and processing metadata..."/>
+        <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
+         <rejar destfile="${finaljar}">
+            <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+        </rejar>
         
         <attachArtifact file="${finaljar}"/>
    </target>

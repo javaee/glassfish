@@ -53,7 +53,18 @@
     <name>Embedded GlassFish Packager</name>
     <description>This pom describes how to assemble the Embedded GlassFish Distribution Jars</description>
 
-    <developers>
+ 
+  <build>    
+    <defaultGoal>install</defaultGoal>
+  </build>
+
+  <modules>
+    <module>nucleus</module>
+    <module>web</module>
+    <module>all</module>
+  </modules>
+  
+  <developers>
         <developer>
             <id>bnevins</id>
             <name>Byron Nevins</name>
@@ -67,20 +78,12 @@
         <developer>
             <id>kohsuke</id>
             <name>Kohsuke Kawaguchi</name>
-            <url>http://blogs.sun.com/</url>
+            <url>http://weblogs.java.net/blog/kohsuke</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
         </developer>
     </developers>
-
-  <build>    
-    <defaultGoal>install</defaultGoal>
-  </build>
-
-  <modules>
-    <module>nucleus</module>
-    <module>web</module>
-  </modules>
 </project>
+
