@@ -179,8 +179,9 @@ public class Habitat {
         if (byContract.containsKey(index)) {
             List<NamedInhabitant> contracted = byContract.get(index);
             for (NamedInhabitant i : contracted) {
-                if ((i.name==null && name==null) || i.name.equals(name)) {
-                   return contracted.remove(i);
+                if ((i.name == null && name == null) ||
+                        (i.name != null && i.name.equals(name))) {
+                    return contracted.remove(i);
                 }
             }
         }
