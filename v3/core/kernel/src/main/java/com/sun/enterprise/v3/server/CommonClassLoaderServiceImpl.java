@@ -38,6 +38,7 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -90,9 +91,14 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
     private void createCommonClassLoader() {
         List<File> cpElements = new ArrayList<File>();
         File domainDir = env.getDomainRoot();
-        if (env.getLibPath().isDirectory()) {
+        // I am forced to use System.getProperty, as there is no API that makes
+        // the installRoot available. Sad, but true. Check dev forum on this.
+        File installDir = new File(System.getProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        File installLibPath = new File(installDir, "lib");
+        if (installLibPath.isDirectory()) {
             Collections.addAll(cpElements,
-                    env.getLibPath().listFiles(new JarFileFilter()));
+                    installLibPath.listFiles(new JarFileFilter()));
         }
         File domainClassesDir = new File(domainDir, "classes/"); // NOI18N
         if (domainClassesDir.exists()) {

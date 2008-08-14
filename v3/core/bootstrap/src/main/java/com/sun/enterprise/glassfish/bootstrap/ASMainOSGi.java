@@ -177,7 +177,9 @@ public abstract class ASMainOSGi {
             logger.info("Cannot find javadb client jar file, jdbc driver not available");
             return;
         }
-        cpb.addGlob(derbyLib, "derbyclient*.jar");
+        // Add all derby jars, as embedded driver is one jar and network driver
+        // is in another.
+        cpb.addGlob(derbyLib, "derby*.jar");
     }
 
     private void findBootstrapFile() {
