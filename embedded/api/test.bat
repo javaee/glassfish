@@ -1,11 +1,12 @@
-if "%1"=="debug" goto debug
+copy "C:\Documents and Settings\bnevins\.m2\repository\org\glassfish\embedded\glassfish-embedded-nucleus\10.0-SNAPSHOT\glassfish-embedded-nucleus-10.0-SNAPSHOT.jar"
+copy "C:\Documents and Settings\bnevins\.m2\repository\org\glassfish\embedded\glassfish-embedded-web\10.0-SNAPSHOT\glassfish-embedded-web-10.0-SNAPSHOT.jar"
+copy "C:\Documents and Settings\bnevins\.m2\repository\org\glassfish\embedded\glassfish-embedded-all\10.0-SNAPSHOT\glassfish-embedded-all-10.0-SNAPSHOT.jar"
+set CP=target/test-classes
+rem set CP=%CP%;target/glassfish-embedded-api-10.0-SNAPSHOT.jar
+set CP=%CP%;glassfish-embedded-nucleus-10.0-SNAPSHOT.jar
+set CP=%CP%;glassfish-embedded-web-10.0-SNAPSHOT.jar
 
-java -cp target/test-classes;target/gf-embedded-api-1.0-alpha-5-SNAPSHOT-with-full-v3.jar  org.glassfish.embed.Main
-goto end
+set CLASS=org.glassfish.embed.Main
 
-
-:debug
-java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1323 -cp target/test-classes;target/gf-embedded-api-1.0-alpha-5-SNAPSHOT-with-full-v3.jar  org.glassfish.embed.Main
-
-:end
+java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1323 -cp %CP% %CLASS%
 
