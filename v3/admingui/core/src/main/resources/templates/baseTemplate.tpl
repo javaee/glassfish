@@ -9,9 +9,10 @@
     if (#{pageSession.configName}) {
         getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
         setAttribute(key="amxConfigName", value="#{amxConfigName}");
-        setAttribute(key="amxConfig" value="#{config.$attribute{amxConfigName}}");
+        setPageSessionAttribute(key="amxConfig" value="#{config.$attribute{amxConfigName}}");
         // This probably needs to move to table.inc
         if (#{amxConfigAttributes}) {
+        	setPageSessionAttribute(key="amxConfigAttributes" value="#{amxConfigAttributes}");
 	        createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
         }
     }
@@ -105,13 +106,11 @@
         "</div>
         <sun:title title="#{pageTitle}" helpText="#{helpText}">
             <!insert name="titleExtra" />
-            <!if #{!empty amxConfigAttributes}>
-            <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
+            <sun:button id="loadDefaults" rendered="${amxConfigAttributes}" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
                 <!command
                     loadDefaultAmxConfigAttributes(amxConfig="#{amxConfig}", properties="#{amxConfigAttributes}");
                 />
             </sun:button>
-            </if>
 
             <!-- Buttons  -->
             <!facet pageButtonsTop>
