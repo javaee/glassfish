@@ -185,7 +185,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="300", dataType=NonNegativeInteger.class)
     public String getIdleTimeoutInSeconds();
 
     /**
