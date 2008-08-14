@@ -1,13 +1,16 @@
 <!initPage
+    setResourceBundle(key="i18n" bundle="core.Strings")
+    if (#{helpBundle}) {
+        setResourceBundle(key="help" bundle="#{helpBundle}")
+    }
     if (!#{pageSession.configName}) {
         getRequestValue(key="configName" value=>$page{configName});
     }
     if (#{pageSession.configName}) {
         getConfigConfig(configName="#{configName}" configConfig=>$attribute{config}); 
         setAttribute(key="amxConfigName", value="#{amxConfigName}");
-        //setAttribute(key="amxConfigAttributes", value="#{amxConfigAttributes}");
         setAttribute(key="amxConfig" value="#{config.$attribute{amxConfigName}}");
-        //println("$attribute{amxConfigAttributes}");
+        // This probably needs to move to table.inc
         if (#{amxConfigAttributes}) {
 	        createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
         }
@@ -15,8 +18,6 @@
 />
 <sun:page>
     <!beforeCreate 
-        //setResourceBundle(key="i18n" bundle="core.Strings")
-        //setResourceBundle(key="help" bundle="#{helpBundle}")
         compare(obj1="$pageSession{configName}" obj2="server-config" objEqual=>$attribute{isServerConfig});
         setPageSessionAttribute(key="showIt" value="$boolean{false}");
         if ($session{supportCluster} & !${isServerConfig}){
@@ -104,10 +105,10 @@
         "</div>
         <sun:title title="#{pageTitle}" helpText="#{helpText}">
             <!insert name="titleExtra" />
-            <!if #{loadDefaultsHandlers}>
+            <!if #{!empty amxConfigAttributes}>
             <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
                 <!command
-                    #{loadDefaultsHandlers}
+                    loadDefaultAmxConfigAttributes(amxConfig="#{amxConfig}", properties="#{amxConfigAttributes}");
                 />
             </sun:button>
             </if>

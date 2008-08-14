@@ -41,6 +41,10 @@
         setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
         setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
         getRequestValue(key="appName" value=>$page{name});
+        getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
+        println("********");
+        println("$attribute{descriptors}");
+        println("********");
         getWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", 
                     envList=>$attribute{listOfCtxRows}, ctxParamList=>$attribute{listOfParamRows});
     />
@@ -92,6 +96,12 @@
             <sun:propertySheetSection id="generalPropertySheet" >
                 <sun:property id="NameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.appName}" >                           
                     <sun:staticText id="Name" value="#{name}" />
+                </sun:property>     
+                <sun:property id="DdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.descriptors}" >
+                    <foreach key="dd" list="$attribute{descriptors}">
+                        "<a href="#" style="text-decoration: none" onClick="var win=window.open('viewDD.jsf?appName=$pageSession{name}&descriptorName=#{dd.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">#{dd.descriptor}</a>
+                        "<br />
+                    </foreach>
                 </sun:property>     
             </sun:propertySheetSection>    
             </sun:propertySheet> 

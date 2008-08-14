@@ -1,5 +1,5 @@
 <!initPage
-	setAttribute(key="tableInUse" value="#{true}");
+    setAttribute(key="tableInUse" value="#{true}");
     getTableList(Properties="#{amxConfig.propertyConfigMap}", TableList=>$attribute{tableList});
 />
 <!-- Table .... -->

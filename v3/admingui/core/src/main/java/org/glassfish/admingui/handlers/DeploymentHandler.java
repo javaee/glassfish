@@ -65,6 +65,7 @@ import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ResourceAdapterConfig;
 
+import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -415,49 +416,24 @@ public class DeploymentHandler {
         @HandlerOutput(name="descriptors", type=List.class)})
         public static void getDescriptors(HandlerContext handlerCtx) {
             String appName = (String)handlerCtx.getInputValue("appName");
-            Boolean includeSubComponent = (Boolean)handlerCtx.getInputValue("includeSubComponent");
-            if (includeSubComponent == null){
-                includeSubComponent = false;
-            }
             List list = new ArrayList();
-            String[] descriptors = null;
+            RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
+            Map<String,String> descriptors = runtimeMgr.getDeploymentConfigurations(appName);
             try{
-                descriptors = getDescriptors(appName, null);
-                for(int i = 0;descriptors != null && i < descriptors.length;i++){ 
+                for(String dd : descriptors.keySet()){ 
                     HashMap map = new HashMap();
                     map.put("name", appName);
                     map.put("moduleName", "");
-                    int index = descriptors[i].lastIndexOf(File.separator)+1;
-                    map.put("descriptor", descriptors[i].substring(index));
-                    map.put("descriptorPath", descriptors[i]);
+                    int index = dd.lastIndexOf(File.separator)+1;
+                    map.put("descriptor", dd.substring(index));
+                    map.put("descriptorPath", dd);
                     list.add(map);
                 }
-                if (includeSubComponent){
-                    //TODO-V3 
-                    //String[] modules = (String[])JMXUtil.invoke("com.sun.appserv:type=applications,category=config", "getModuleComponents",
-			//new Object[]{appName}, new String[]{"java.lang.String"});
-                    String[] modules = null;
-                    if(modules != null) {
-                        for (int i=0; i < modules.length; i++) {
-                            String subComponentName = new ObjectName(modules[i]).getKeyProperty("name");
-                            String[] subDesc = getDescriptors(appName, subComponentName);
-                            for(int j=0; subDesc != null && j < subDesc.length; j++) {
-                                HashMap map = new HashMap();
-                                map.put("name", appName);
-                                map.put("moduleName", subComponentName);
-                                int index = subDesc[j].lastIndexOf(File.separator)+1;
-                                map.put("descriptor", subDesc[j].substring(index));
-                                map.put("descriptorPath", subDesc[j]);
-                                list.add(map);
-                            }
-                        }
-                    }
-              }
             }catch(Exception ex){
                 GuiUtil.handleException(handlerCtx, ex);
             }
             handlerCtx.setOutputValue("descriptors", list);
-}   
+    }   
     
     
     /**
@@ -520,22 +496,6 @@ public class DeploymentHandler {
         }
     }
     
-
-	private static String[] getDescriptors(String appName, String subComponent) {
-            /*  TODO-V3
-             * 
-		String methodName = "getDeploymentDescriptorLocations";
-		String objectName = "com.sun.appserv:type=applications,category=config";
-		Object[] params = {appName, subComponent};
-		String[] types = {"java.lang.String", "java.lang.String"};
-		String[] descriptors = (String[])JMXUtil.invoke(objectName, methodName,	params, types);
-
-		return descriptors;
-             */
-            return null;
-             
-	}
-
     /**
      *	<p> This method displays the deployment descriptors for a given app. </p>
      *

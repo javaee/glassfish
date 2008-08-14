@@ -39,9 +39,6 @@
     initProductInfoAttributes();
     getAmxRoot(amxRoot=>$attribute{amxRoot});
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
-    if (#{anonLogin}) {
-        setAttribute(key="disabled", value="disabled");
-    }
 />
 
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -119,8 +116,7 @@
 				    <td>
                                         <div class="logInpLst">
                                         <input type="password" name="j_password" id="Login.password" 
-                                            onKeyPress="return submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}')" 
-                                            #{disabled} tabindex="2">
+                                            onKeyPress="return submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}')" tabindex="2">
                                         </div>
                                     </td>
                                 </tr>

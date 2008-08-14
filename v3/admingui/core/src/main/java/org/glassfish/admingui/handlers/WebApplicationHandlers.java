@@ -39,7 +39,6 @@ package org.glassfish.admingui.handlers;
 import com.sun.appserv.management.config.ApplicationConfigConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
-import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -86,7 +85,8 @@ public class WebApplicationHandlers {
         input={
             @HandlerInput(name="appName", type=String.class, required=true),
             @HandlerInput(name="serverName", type=String.class, defaultValue="server"),
-            @HandlerInput(name="appType", type=String.class, required=true)},
+            @HandlerInput(name="appType", type=String.class, required=true),
+            @HandlerInput(name="webXML", type=String.class, required=true)},
         output={
             @HandlerOutput(name="envList", type=List.class),
             @HandlerOutput(name="ctxParamList", type=List.class)})

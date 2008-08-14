@@ -76,6 +76,7 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
+import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import java.util.HashMap;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
@@ -831,6 +832,25 @@ public class CommonHandlers {
         }
     }
     
+    @Handler(id="loadDefaultAmxConfigAttributes",
+        input={
+            @HandlerInput(name="amxConfig", type=AMXConfig.class,required=true),
+            @HandlerInput(name="properties", type=List.class,required=true)
+        }
+    )
+    public static void loadDefaultAmxConfigAttributes(HandlerContext handlerCtx) {
+        AMXConfig amxConfig = (AMXConfig)handlerCtx.getInputValue("amxConfig");
+        List<String> properties = (List<String>)handlerCtx.getInputValue("properties");
+        if (amxConfig == null) {
+            throw new IllegalArgumentException("getDefaultConfigurationValue:  amxConfig can not be null");
+        }
+        
+        for (String prop : properties) {
+            MiscUtil.setValueExpression("#{configMap." + prop + "}",
+                amxConfig.getDefaultValue((String)handlerCtx.getInputValue("key")));
+        }
+    }
+    
     /**
      * 
      */
@@ -840,6 +860,32 @@ public class CommonHandlers {
     })
     public static void getAmxRootInstance(HandlerContext handlerCtx) {
         handlerCtx.setOutputValue("amxRoot", AMXRoot.getInstance());
+    }
+    
+    /**
+     * This handler will return the contents of the specified deployment 
+     * descriptor as a String.
+     * @param handlerCtx
+     */
+    @Handler(id="getDeploymentDescriptor",
+        input={
+            @HandlerInput(name="appName", type=String.class, required=true),
+            @HandlerInput(name="descriptorName", type=String.class, required=true)
+        },
+        output={
+            @HandlerOutput(name="descriptorText", type=String.class)
+    })
+    public static void getDeploymentDescriptor(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
+        RuntimeMgr runtimeMgr = AMXRoot.getInstance().getRuntimeMgr();
+        String descriptorText = runtimeMgr.getDeploymentConfigurations(appName).get(descriptorName);  //get the content of the descriptor
+        
+        if (GuiUtil.isEmpty(descriptorText)){
+            System.out.printf("Could not locate %s%n", descriptorName);
+        }
+        handlerCtx.setOutputValue("descriptorText", descriptorText);
+        
     }
     
     private static final String CHARTING_COOKIE_NAME = "as91-doCharting";
