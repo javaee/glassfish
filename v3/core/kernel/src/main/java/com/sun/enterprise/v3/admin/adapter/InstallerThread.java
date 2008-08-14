@@ -210,9 +210,6 @@ System.out.println("!!!!!!!  cannot create Image");
      */
     private File getWarFile() {
 	String warFileName = AdminConsoleAdapter.ADMIN_APP_WAR;
-	while (warFileName.startsWith("_")) {
-	    warFileName = warFileName.substring(1);
-	}
 	return new File(toFile, "glassfish/lib/install/applications/" + warFileName);
     }
     
