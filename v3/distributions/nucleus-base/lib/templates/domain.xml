@@ -4,27 +4,11 @@
    Use is subject to license terms.
 -->
 <domain application-root="${com.sun.aas.instanceRoot}/applications" log-root="${com.sun.aas.instanceRoot}/logs" version="10.0"> 
-<system-applications/>
- <applications>
-  <web-module name="adminapp" context-root="/web1" location="${com.sun.aas.installRoot}/lib/install/applications/adminapp/adminapp_war" object-type="system-admin" enabled="true" directory-deployed="true" availability-enabled="false">
-  <!-- System Web Module - DO NOT DELETE! -->
-  </web-module>
-  <web-module name="WSTXServices" context-root="/__wstx-services" location="${com.sun.aas.installRoot}/lib/install/applications/wstx-services" object-type="system-all" enabled="true" directory-deployed="true" availability-enabled="false"/>
-  <lifecycle-module class-name="com.sun.jbi.framework.sun.SunASJBIBootstrap" classpath="${com.sun.aas.installRoot}/jbi/lib/jbi_framework.jar" enabled="true" is-failure-fatal="false" name="JBIFramework" object-type="system-all">       
-      <description>"JBI Framework LifecycleModule"</description>
-      <property name="com.sun.jbi.home" value="${com.sun.aas.installRoot}/jbi"/>
-  </lifecycle-module> 
-  <lifecycle-module class-name="com.sun.xml.ws.transport.tcp.server.glassfish.WSTCPLifeCycleModule" classpath="${com.sun.aas.installRoot}/lib/webservices-rt.jar" enabled="true" is-failure-fatal="false" object-type="system-all" name="WSTCPConnectorLCModule"/>
- </applications>
+  <system-applications/>
+  <applications/>
  <resources>
     <jdbc-resource jndi-name="jdbc/__TimerPool" pool-name="__TimerPool" object-type="system-admin" enabled="true"/>
-    <jdbc-resource jndi-name="jdbc/__CallFlowPool" pool-name="__CallFlowPool" object-type="system-all" enabled="true"/>
     <jdbc-resource jndi-name="jdbc/__default" pool-name="DerbyPool" object-type="user" enabled="true"/>
- 
-  <jdbc-connection-pool connection-validation-method="auto-commit" datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" is-isolation-level-guaranteed="true" max-pool-size="32" max-wait-time-in-millis="60000" res-type="javax.sql.XADataSource" name="__CallFlowPool" pool-resize-quantity="2" steady-pool-size="8" non-transactional-connections="false" allow-non-component-callers="false" validate-atmost-once-period-in-seconds="0" connection-leak-timeout-in-seconds="0" connection-leak-reclaim="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" statement-timeout-in-seconds="-1" lazy-connection-enlistment="false" lazy-connection-association="false" associate-with-thread="false" match-connections="false" max-connection-usage-count="0" wrap-jdbc-objects="false">
-      <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/sun-callflow"/>
-      <property name="connectionAttributes" value=";create=true"/>
-    </jdbc-connection-pool>
  
     <jdbc-connection-pool connection-validation-method="auto-commit" datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" is-isolation-level-guaranteed="true" max-pool-size="32" max-wait-time-in-millis="60000" res-type="javax.sql.XADataSource" name="__TimerPool" pool-resize-quantity="2" steady-pool-size="8" non-transactional-connections="false" allow-non-component-callers="false" validate-atmost-once-period-in-seconds="0" connection-leak-timeout-in-seconds="0" connection-leak-reclaim="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" statement-timeout-in-seconds="-1" lazy-connection-enlistment="false" lazy-connection-association="false" associate-with-thread="false" match-connections="false" max-connection-usage-count="0" wrap-jdbc-objects="false">
       <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer"/>
@@ -40,11 +24,6 @@
  </resources>
  <servers>
   <server name="%%%SERVER_ID%%%" config-ref="%%%CONFIG_MODEL_NAME%%%" lb-weight="100"> 
-    <application-ref enabled="true" ref="adminapp" virtual-servers="__asadmin" lb-enabled="false" disable-timeout-in-minutes="30"/>
-    <application-ref enabled="true" ref="admingui" virtual-servers="__asadmin" lb-enabled="false" disable-timeout-in-minutes="30"/>
-    <application-ref enabled="true" ref="JBIFramework" lb-enabled="false" disable-timeout-in-minutes="30"/>
-    <application-ref enabled="true" ref="WSTXServices" lb-enabled="false" disable-timeout-in-minutes="30"/>
-    <application-ref enabled="true" ref="WSTCPConnectorLCModule" lb-enabled="false" disable-timeout-in-minutes="30"/> 
     <resource-ref enabled="true" ref="jdbc/__TimerPool"/>
     <resource-ref enabled="true" ref="jdbc/__CallFlowPool"/>
     <resource-ref enabled="true" ref="jdbc/__default"/>
@@ -175,7 +154,6 @@
     <monitoring-service>
 	<module-monitoring-levels thread-pool="OFF" orb="OFF" ejb-container="OFF" web-container="OFF" transaction-service="OFF" http-service="OFF" jdbc-connection-pool="OFF" connector-connection-pool="OFF" connector-service="OFF" jms-service="OFF" jvm="OFF"/>
     </monitoring-service>
-    <diagnostic-service compute-checksum="true" verify-config="true" capture-install-log="true" capture-system-info="true" capture-hadb-info="true" capture-app-dd="true" min-log-level="INFO" max-log-entries="500"/>
     <java-config java-home="${com.sun.aas.javaRoot}" debug-enabled="false" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" rmic-options="-iiop -poa -alwaysgenerate -keepgenerated -g" javac-options="-g" system-classpath="" classpath-suffix="" env-classpath-ignored="true">
     <!-- various required jvm-options -->
     <jvm-options>-client</jvm-options>
@@ -194,16 +172,11 @@
    <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
     <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
     <jvm-options>-XX:NewRatio=2</jvm-options>
-   <!--
-        Use the following jvm-options element to disable the quick startup:
-	com.sun.enterprise.server.ss.ASQuickStartup=false
-      --></java-config>
+    </java-config>
    <thread-pools>
         <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>
 
     </thread-pools>
-  <management-rules enabled="true">
-  </management-rules>
   </config> <!-- config model with name "%%%CONFIG_MODEL_NAME%%%" ends -->
  </configs>
  <property name="administrative.domain.name" value="%%%DOMAIN_NAME%%%"/>
