@@ -66,10 +66,19 @@
                              does not generate version in Export-Package.
                              Sahoo to investigate further.
                         -->
-                        <Export-Package>org.objectweb.asm.*;version=${asm.version}</Export-Package>
+                        <!-- We set a mandatory attribute for these packages, because we don't
+                             want them to be visible to just anyone. An importer must specify
+                             the mandatory attribute for it to be able to import. See 
+                             section #3.6.5 of OSGi R4 spec.
+                             Why is this required?
+                             See https://glassfish.dev.java.net/issues/show_bug.cgi?id=5385
+                             By doing this, we allow user have any version of apache-commons lib
+                             in their application class loader hierarchy. They don't even have to
+                             set delegation=false in sun-web.xml! This is the true advantage of
+                             using OSGi. Sahoo.
+                        -->
+                        <Export-Package>org.objectweb.asm.*;version=${asm.version}; password="GlassFish"; mandatory:=password</Export-Package>
                         <Private-Package>!*</Private-Package>
-                        <!-- Make it a HK2 bundle -->
-                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against

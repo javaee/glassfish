@@ -81,17 +81,22 @@
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
                         <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*</Embed-Dependency>
-                        <Export-Package>org.apache.commons.*</Export-Package>
-                        <Import-Package>org.apache.log4j;resolution:=optional,*</Import-Package>
-                        <!-- Package everything from the embedded jar in the final bundle -->
-                        <_exportcontents>*</_exportcontents>
+                        <!-- We set a mandatory attribute for these packages, because we don't
+                             want them to be visible to just anyone. An importer must specify
+                             the mandatory attribute for it to be able to import. See 
+                             section #3.6.5 of OSGi R4 spec.
+                             Why is this required?
+                             See https://glassfish.dev.java.net/issues/show_bug.cgi?id=5385
+                             By doing this, we allow user have any version of apache-commons lib
+                             in their application class loader hierarchy. They don't even have to
+                             set delegation=false in sun-web.xml! This is the true advantage of
+                             using OSGi. Sahoo.
+                        -->
+                        <Export-Package>org.apache.commons.*; password="GlassFish"; mandatory:=password</Export-Package>
+                        <Import-Package>org.apache.log4j;resolution:=optional,org.apache.commons.*; password=GlassFish, *</Import-Package>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,
                          other than what is specified above -->
                         <Private-Package>!*</Private-Package>
-                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
-                         This is needed because we don't want to change the packaging type to
-                         hk2-jar. -->
-                        <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
