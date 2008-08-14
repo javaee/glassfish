@@ -22,16 +22,6 @@
             </facet>
             </sun:title>
         </define>
-        <!--define name="properties">
-            <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
-                "Click 
-                <sun:hyperlink 
-                    id="configMonitoringLink"
-                    text="$resource{i18n.monitor.configureLink}"
-                    url="../monitor/monitoringPage.jsf"/>
-                " to turn on monitoring.
-            </sun:property>
-        </define>-->
         <!define name="table">
             "<table>
             "<tr>
@@ -45,7 +35,7 @@
                             stats=>$attribute{cqStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{cqStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
@@ -65,7 +55,7 @@
                             stats=>$attribute{tpStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{tpStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
@@ -149,7 +139,7 @@
                             stats=>$attribute{requestStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">

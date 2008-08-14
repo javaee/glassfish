@@ -63,11 +63,6 @@
                         navigate(page="monitor/webContainerPage.jsf");
                     />
                 </sun:dropDown>
-                <!--"&nbsp;&nbsp;&nbsp;
-                <sun:hyperlink 
-                    id="configMonitoringLink"
-                    text="$resource{i18n.monitor.configureLink}"
-                    url="../monitor/monitoringPage.jsf"/>-->
             </sun:property>
         </define>
         <!define name="table">
@@ -86,7 +81,7 @@
                             stats=>$attribute{requestStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
@@ -109,10 +104,8 @@
                             stats=>$attribute{sessionStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{sessionStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1" tooltip="#{td.value.ToolTip}">
-                            <!--"<div onMouseOver="javascript:alert('#{td.value.ToolTip}');">-->
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                                 <staticText id="name" value="#{td.value.Name}" />
-                            <!--"</div>-->
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />
@@ -136,7 +129,7 @@
                             stats=>$attribute{servletStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{servletStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
@@ -159,10 +152,8 @@
                             stats=>$attribute{jspStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{jspStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1" tooltip="#{td.value.ToolTip}">
-                            <!--"<div onMouseOver="javascript:alert('#{td.value.ToolTip}');">-->
-                                <staticText id="name" toolTip="tooltip text" value="#{td.value.Name}" />
-                            <!--"</div>-->
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
+                                <staticText id="name" value="#{td.value.Name}" />                           
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
                             <staticText id="value" value="#{td.value.Value}" />

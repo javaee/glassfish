@@ -31,7 +31,7 @@
                             jvmStats=>$attribute{jvmStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{jvmStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
                             <staticText id="name" value="#{td.value.Name}" />
                         </sun:tableColumn>
                         <sun:tableColumn id="col2">
