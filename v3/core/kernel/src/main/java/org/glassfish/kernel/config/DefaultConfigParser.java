@@ -40,7 +40,8 @@ public class DefaultConfigParser implements ConfigParser {
 
 
         org.jvnet.hk2.config.ConfigParser configParser = new org.jvnet.hk2.config.ConfigParser(habitat);
-        final DomDocument doc = new GlassFishDocument(habitat);
+        // I don't use the GlassFish document here as I don't need persistence or translated views etc...
+        final DomDocument doc = new DomDocument(habitat);
 
         (new Populator() {
 
