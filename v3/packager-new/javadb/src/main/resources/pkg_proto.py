@@ -43,9 +43,18 @@ pkg = {
     "name"          : "javadb",
     "version"       : conf.javadb_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish V3",
-                        "pkg.description" : "GlassFish V3",
-                        "info.classification" : "Application Server",
+                        "description" : "Java DB",
+                        "description_long" : "Java DB is Sun's supported \
+distribution of the open source Apache Derby 100% Java technology database. \
+It is fully transactional, secure, easy-to-use, standards-based (SQL, JDBC \
+API, and Java EE) yet small, only 2MB. The Apache Derby project has a strong \
+and growing community that includes developers from large companies such as \
+Sun Microsystems and IBM as well as individual contributors.",
+                        "info.classification" : "Databases and Tools"
                       },
-     "dirtrees"      : [ "glassfish" ], 
+     "dirtrees"     : [ "javadb" ], 
+     "licenses"     : {
+                        "javadb/LICENSE"  : {"license" : "ApacheV2" },
+                        "javadb/NOTICE"   : {"license" : "ApacheDerby" },
+                      }
 }
