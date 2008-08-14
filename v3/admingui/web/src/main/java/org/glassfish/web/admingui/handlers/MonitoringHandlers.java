@@ -42,6 +42,9 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.statistics.Counter;
 import org.glassfish.flashlight.statistics.TimeStats;
+import org.glassfish.flashlight.statistics.TimeStatsMillis;
+import org.glassfish.flashlight.statistics.Average;
+import org.glassfish.flashlight.statistics.TimeStatsNanos;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -147,13 +150,9 @@ public class MonitoringHandlers {
                 Map statMap = new HashMap();
                 statMap.put("Name", tn.getName());
                 statMap.put("Value", tn.getValue());
+                statMap.put("ToolTip", "");
                 if (tn instanceof Counter) {
                     statMap.put("ToolTip", ((Counter)tn).getDescription());
-                }
-                if (tn instanceof TimeStats) {
-                    statMap.put("ToolTip", ((TimeStats)tn).getDescription());
-                    statMap.put("Name", tn.getName() +" ("+ ((TimeStats)tn).getUnit()+")");
-                    statMap.put("ToolTip", ((TimeStats)tn).getDescription());
                 }
                 dataList.add(statMap);
             }
@@ -194,6 +193,7 @@ public class MonitoringHandlers {
                     Map statMap = new HashMap();
                     statMap.put("Name", tn.getName());
                     statMap.put("Value", tn.getValue());
+                    statMap.put("ToolTip", "");
                     if (tn instanceof Counter) {
                         statMap.put("ToolTip", ((Counter)tn).getDescription());
                     }
@@ -225,20 +225,23 @@ public class MonitoringHandlers {
         Map statMap = new HashMap();
         statMap.put("Name", "init");
         statMap.put("Value", mu.getInit());
+        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.init.tooltip"));
         dataList.add(statMap);
         statMap = new HashMap();
         statMap.put("Name", "used");
         statMap.put("Value", mu.getUsed());
+        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.used.tooltip"));
         dataList.add(statMap);
         statMap = new HashMap();
         statMap.put("Name", "committed");
         statMap.put("Value", mu.getCommitted());
+        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.committed.tooltip"));
         dataList.add(statMap);
         statMap = new HashMap();
         statMap.put("Name", "max");
         statMap.put("Value", mu.getMax());
+        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.max.tooltip"));
         dataList.add(statMap);
-        System.out.println("jvm: " + mu.toString());
         handlerCtx.setOutputValue("jvmStats", dataList);
     }
     
@@ -567,5 +570,5 @@ public class MonitoringHandlers {
     
     //private TreeNode serverRoot = setupTree();
     private TreeNode serverRoot = GuiUtil.getHabitat().getComponent(MonitoringRuntimeDataRegistry.class).get("server");
-    
+    private static final String RESOURCE_NAME = "org.glassfish.web.admingui.Strings";
 }
