@@ -77,7 +77,7 @@ public class Probe
         this.probeName = probeName;
         this.probeParamNames = probeParamNames;
         this.paramTypes = paramTypes;
-        System.out.println("[FL]AppName = " + appName + " " + this.appName);
+        //System.out.println("[FL]AppName = " + appName + " " + this.appName);
         this.probeStr = moduleName + ":" + providerName + ":" +
                 this.appName + ":" + probeName;
     }
@@ -94,7 +94,7 @@ public class Probe
 
     public void fireProbe(Object[] params) {
 
-        System.out.println("[FL] fireProbe?? ==> " + enabled.get() + " " + invokerList.size());
+        //System.out.println("[FL] fireProbe?? ==> " + enabled.get() + " " + invokerList.size());
         for (ProbeClientInvoker invoker : invokerList) {
             invoker.invoke(params);
         }
