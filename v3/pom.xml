@@ -139,7 +139,7 @@
         <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 	<dataprovider.version>4.2</dataprovider.version>
-	<jsftemplating.version>1.2.2</jsftemplating.version>
+	<jsftemplating.version>1.2.3</jsftemplating.version>
     	<glassfish-api.version>10.0.407</glassfish-api.version>        
     </properties>
     <modules>
@@ -151,7 +151,7 @@
       	<module>core</module>
       	<module>transaction</module>
       	<module>web</module>
-      	<module>ejb</module>
+	<module>ejb</module>
       	<module>connectors</module>
       	<module>jdbc</module>
       	<module>persistence</module>
