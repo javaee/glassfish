@@ -254,13 +254,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 if (!hosts.contains(vs.getId())){
                     hosts.add(vs.getId());
                 }
-                List<String> aliases = 
-                    StringUtils.parseStringList(vs.getHosts(), " ,");  
-                for (String alias: aliases){
-                    if (!hosts.contains(alias)){
-                        hosts.add(alias);
-                    }    
-                }
             }            
         }
 

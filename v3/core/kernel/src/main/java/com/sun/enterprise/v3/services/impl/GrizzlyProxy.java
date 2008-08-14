@@ -124,7 +124,7 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
 
-        configureGrizzly();
+        configureGrizzly(httpListener.getDefaultVirtualServer());
     }
 
 
@@ -133,7 +133,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly() {
+    private void configureGrizzly(String defaultVirtualServer) {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);
 
         GrizzlyListenerConfigurator.configure(
@@ -144,6 +144,7 @@ public class GrizzlyProxy implements NetworkProxy {
         Mapper mapper = new V3Mapper(logger);
         mapper.setPort(portNumber);
         geh.getContainerMapper().setMapper(mapper);
+        geh.getContainerMapper().setDefaultHost(defaultVirtualServer);
         geh.getContainerMapper().configureMapper();
 
         onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
