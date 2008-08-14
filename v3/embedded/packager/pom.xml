@@ -56,6 +56,28 @@
  
   <build>    
     <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${project.build.directory}/packager_zips</outputDirectory>
+          <overWriteReleases>false</overWriteReleases>
+          <overWriteSnapshots>true</overWriteSnapshots>
+          <excludeTransitive>true</excludeTransitive>
+          <includeScope>compile</includeScope>
+          <includeScope>runtime</includeScope>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <configuration>
+          <tasks>
+            <ant dir="." antfile="../build.xml" target="create.distribution"/>
+          </tasks>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <modules>
@@ -67,27 +89,5 @@
     <module>jpa</module>
     <module>all</module>
   </modules>
-  
-  <developers>
-        <developer>
-            <id>bnevins</id>
-            <name>Byron Nevins</name>
-            <url>http://blogs.sun.com/foo</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>kohsuke</id>
-            <name>Kohsuke Kawaguchi</name>
-            <url>http://weblogs.java.net/blog/kohsuke</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>
 

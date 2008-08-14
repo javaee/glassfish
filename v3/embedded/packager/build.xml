@@ -20,7 +20,7 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 
-<project name="glassfish-embedded-all" default="create.distribution" basedir=".">
+<project name="glassfish-embedded-jar" default="create.distribution">
     <property name="rootdir" value="target"/>
     <property name="zipdir" value="${rootdir}/packager_zips"/>
     <property name="jardir" value="${rootdir}/packager_jars"/>
@@ -35,13 +35,13 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="*.jar"/>
             </fileset>
         </copy>
-        
+
         <!-- The packager files are zips with jars inside -->
         <unzip dest="${jardir}">
             <fileset dir="${zipdir}">
                 <include name="*.zip"/>
             </fileset>
-                
+
             <!-- This does not work when called from maven.  Very annoying!
             <mapper type="flatten"/-->
         </unzip>
@@ -53,13 +53,13 @@ own identifying information: Portions Copyright [yyyy]
             <zipgroupfileset dir="${jardir}" includes="**/modules/*.jar"/>
             <zipgroupfileset dir="${jardir}" includes="*.jar" />
          -->
-        
+
         <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
          <rejar destfile="${finaljar}">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
         </rejar>
-        
+
         <attachArtifact file="${finaljar}"/>
    </target>
 </project>
