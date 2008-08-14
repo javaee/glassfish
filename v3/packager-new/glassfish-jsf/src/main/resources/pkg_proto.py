@@ -35,9 +35,13 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
+import imp
+
+conf = imp.load_source("pkg_conf", "../pkg_conf.py")
+
 pkg = {
     "name"          : "glassfish-jsf",
-    "version"       : "10.0.0,0-",
+    "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish V3",
                         "pkg.description" : "GlassFish V3",
