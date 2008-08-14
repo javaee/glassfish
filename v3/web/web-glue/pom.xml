@@ -322,7 +322,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>gui-plugin-common</artifactId>
+            <artifactId>web-gui-plugin-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
