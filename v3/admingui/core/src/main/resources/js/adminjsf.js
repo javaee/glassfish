@@ -57,7 +57,7 @@ function getField(theForm, fieldName) {
     return null;
 }
 
-
+// FIXME: suntheme should not be used -- prevents theme from changing
 function getTextElement(componentName) {
     return webui.suntheme.field.getInputElement(componentName);
 }
@@ -842,17 +842,17 @@ admingui.nav = {
      *	This function returns the parent TreeNode for the given TreeNode.
      */
     getParentTreeNode: function(treeNode) {
-        return window.parent.frames.index.webui.suntheme.tree.getParentTreeNode(treeNode);
+        return window.parent.frames.index.document.getElementById('form:tree').getParentTreeNode(treeNode);
     },
 
     getContainingTreeNode: function(href) {
-        return window.parent.frames.index.webui.suntheme.tree.findContainingTreeNode(href);
+        return window.parent.frames.index.document.getElementById('form:tree').findContainingTreeNode(href);
     },
 
     getTree: function(treeNode) {
         if (treeNode) {
 			var indexFrame = findFrame("index");
-            return indexFrame.webui.suntheme.tree.getTree(treeNode);
+            return indexFrame.document.getElementById('form:tree').getTree(treeNode);
         }
         return null;
     },
