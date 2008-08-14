@@ -179,13 +179,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    handleLoadedState();
 	} else {
 	    synchronized(this) {
-		if (state == AdapterState.APPLICATION_NOT_INSTALLED)
+		if (state == AdapterState.APPLICATION_NOT_INSTALLED) {
 		    handleNotInstalledState(req, res);
-		else if (state == AdapterState.INSTALLING)
+		} else if (state == AdapterState.INSTALLING) {
 		    handleInstallingState(req, res);
-		else if (state == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED)
+		} else if (state == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED) {
+// FIXME: Need to check for updated admingui.war
 		    handleInstalledButNotLoadedState(req, res);
-
+		}
 		if (state==AdapterState.APPLICATION_LOADED) {
 		    handleLoadedState();
 		}
@@ -205,6 +206,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    if (log.isLoggable(Level.FINE))
 		log.fine("AdminConsoleAdapter is ready.");
     }
+
     private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
 	try {
 	    File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
@@ -219,6 +221,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    throw new RuntimeException(e);
 	}
     }
+
     private void init() {
 	if (as == null || as.getProperty() == null || as.getProperty().isEmpty()) {
 	    String msg = "Define following properties in <admin-service> element in domain.xml" +
@@ -232,7 +235,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	List<Property> props = as.getProperty();
 	for (Property prop : props) {
 	    setContextRoot(prop);
-	    setDownloadLocations(prop);
+	    //setDownloadLocations(prop);
 	    setLocationOnDisk(prop);
 	}
 	initState();
@@ -275,8 +278,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    contextRoot = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
 	    return;
 	}
-	if(ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
-	    if (prop.getValue() != null && prop.getValue().startsWith("/")) {
+	if (ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
+	    if ((prop.getValue() != null) && prop.getValue().startsWith("/")) {
 		contextRoot = prop.getValue();
 		log.info("Admin Console Adapter: context root: " + contextRoot);
 	    } else {
@@ -285,6 +288,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    }
 	}
     }
+
+    /*
     private void setDownloadLocations(Property prop) {
 	if (ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION.equals(prop.getName())) {
 	    String value = prop.getValue();
@@ -304,10 +309,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    }
 	}
     }
+    */
+
     private void setLocationOnDisk(Property prop) {
 	if (ServerTags.ADMIN_CONSOLE_LOCATION_ON_DISK.equals(prop.getName())) {
 	    if (prop.getValue() != null) {
 		diskLocation = new File(prop.getValue());
+//System.out.println("Admin Console will be downloaded to: " + diskLocation.getAbsolutePath());
 		logFine("Admin Console will be downloaded to: " + diskLocation.getAbsolutePath());
 		if (!diskLocation.canWrite()) {
 		    log.warning(diskLocation.getAbsolutePath() + " can't be written to, download will fail");
@@ -327,11 +335,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    throw new RuntimeException(ue); //can't really do anything at this point.
 	}
     }
+
     enum InteractionResult {
 	OK,
 	CANCEL,
 	FIRST_TIMER;
     }
+
     private synchronized void handleNotInstalledState(GrizzlyRequest req, GrizzlyResponse res) {
 	//do this quickly as this is going to block the grizzly worker thread!
 	//check for returning user?
@@ -349,15 +359,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private void startThread() {
-	File toFile = new File (diskLocation, "admingui.war");
-	new InstallerThread(urls, toFile, proxyHost, proxyPort,
-		progress, domain, env, contextRoot).start();
+	//File toFile = new File (diskLocation, "admingui.war");
+	new InstallerThread(urls, diskLocation, proxyHost, proxyPort, progress, domain, env, contextRoot).start();
     }
 
     private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
 	String v = visitorId + "";
-	if (req.getParameter(VISITOR_PARAM) != null &&
-	    (v.equals(req.getParameter(VISITOR_PARAM)))) {
+	if ((req.getParameter(VISITOR_PARAM) != null) && (v.equals(req.getParameter(VISITOR_PARAM)))) {
 	    if (req.getParameter(OK_PARAM) != null) {
 		proxyHost = req.getParameter(PROXY_HOST_PARAM);
 		if (proxyHost != null) {
@@ -374,9 +382,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		return (InteractionResult.CANCEL);
 	    }
 	}
+
 	// this is the first-timer
 	return InteractionResult.FIRST_TIMER;
     }
+
     private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
 	GrizzlyOutputBuffer ob = res.getOutputBuffer();
 	res.setStatus(200);
@@ -425,6 +435,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    throw new RuntimeException(e);
 	}
     }
+
     private void handleInstallingState(GrizzlyRequest req, GrizzlyResponse res) { // NOT synchronized
 	//communicate with the background thread here ...
 	sendStatusPage(res);
@@ -443,13 +454,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	try {
 	    sendStatusPage(res);
 	    res.finishResponse();
-	}catch (java.io.IOException ex){
+	} catch (java.io.IOException ex) {
 	    //TODO : Fix me
 	    ex.printStackTrace();
 	}
     }
 
     private void handleLoadedState() {
+//System.out.println(" Handle Loaded State!!");
 	// do nothing
 	statusHtml = null;
 	initHtml   = null;
