@@ -99,6 +99,7 @@
                         <Export-Package>${extension.name}.*; version=${spec.version}</Export-Package>
                         <_include>-osgi.bundle</_include>
                     </instructions>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <!-- We don't use extensions as this interfers with
                      hk2-maven-plugin and that results in hk2 artifacts

@@ -143,13 +143,8 @@
     	<glassfish-api.version>10.0.407</glassfish-api.version>        
     </properties>
     <modules>
-      	<module>build</module>
-        <!-- Don't include javaee-api until we have resolved build issues
-             associated with it. Currently, I have no idea as to why
-             bnd fails when javaee-api/javax.javaee is built from
-             top level. By Sahoo.
         <module>javaee-api</module>
-        -->
+      	<module>build</module>
       	<module>common</module>
       	<module>deployment</module>
       	<module>admin</module>
@@ -179,7 +174,6 @@
 			          <updatePolicy>never</updatePolicy>
 				    </snapshots>
         </repository>
-       <!--
         <repository>
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
@@ -188,7 +182,6 @@
 			          <updatePolicy>never</updatePolicy>
 				    </snapshots>
         </repository>
-        -->
         <!-- all the other repositories are inherited -->
     </repositories>
 
@@ -216,7 +209,7 @@
             <plugin>
                <groupId>org.apache.felix</groupId>
                <artifactId>maven-bundle-plugin</artifactId>
-               <version>1.4.3-SNAPSHOT</version>
+               <version>1.4.3</version>
             </plugin>
  
       <plugin>
@@ -277,17 +270,4 @@
             <optional>true</optional>
       </dependency>
     </dependencies>
-
-    <!--  added for temporary testing purpose FelixIssue:661 -->
-    <pluginRepositories>
-       <pluginRepository>
-           <id>apache-snapshot</id>
-           <name>SNAPSHOT Repository for Apache</name>
-           <url>http://people.apache.org/repo/m2-snapshot-repository/</url>
-           <snapshots>
-               <updatePolicy>never</updatePolicy>
-           </snapshots>
-       </pluginRepository>
-   </pluginRepositories>
-
 </project>

@@ -97,6 +97,7 @@
                         com.sun.appserv.management.util.stringifier
                         </Export-Package>
                     </instructions>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <executions>
                     <execution>
