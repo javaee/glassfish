@@ -27,13 +27,16 @@ public class SingletonLifeCycleManager {
 
     boolean adj[][];
 
+    Set<Container> initializedSingletons = new HashSet<Container>();
+
     private Map<String, Container> name2Container =
             new HashMap<String, Container>();
 
     public SingletonLifeCycleManager(Collection<Container> containers) {
 
         for (Container c : containers) {
-            if (c.getEjbDescriptor() instanceof EjbSingletonDescriptor) {
+            if (c instanceof SingletonContainer) {
+                ((SingletonContainer) c).setSingletonLifeCycleManager(this);
                 EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) c.getEjbDescriptor();
                 String modName = sdesc.getEjbBundleDescriptor().getName();
                 //System.out.println("BundleName: " + modName);
@@ -66,9 +69,13 @@ public class SingletonLifeCycleManager {
             SingletonContainer c = partialOrder[i];
             EjbSingletonDescriptor sd = (EjbSingletonDescriptor) c.getEjbDescriptor();
             if (sd.isStartup()) {
-                c.instantiateSingletonInstance();
+                initializeSingleton(c);
             }
         }
+    }
+
+    public void initializeSingleton(SingletonContainer c) {
+        c.instantiateSingletonInstance();
     }
 
     public void addDependency(String src, String[] depends) {
@@ -76,8 +83,6 @@ public class SingletonLifeCycleManager {
             for (String s : depends) {
                 addDependency(src, s);
             }
-        } else {
-            addDependency(src, "");
         }
     }
 
@@ -86,15 +91,13 @@ public class SingletonLifeCycleManager {
             for (String s : depends) {
                 addDependency(src, s);
             }
-        } else {
-            addDependency(src, "");
         }
     }
 
     public void addDependency(String src, String depends) {
         src = src.trim();
-        if (depends == null) {
-            depends = "";
+        if (depends == null || depends.length() ==0) {
+            return;
         }
 
         Set<String> deps = getExistingDependecyList(src);

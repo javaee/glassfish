@@ -45,6 +45,8 @@ import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.glassfish.ejb.startup.SingletonLifeCycleManager;
+
 /**
  * @author Mahesh Kannan
  */
@@ -61,11 +63,17 @@ public class SingletonContainer
 
     private boolean bmcMode = true;
 
+    private SingletonLifeCycleManager lcm;
+
     public SingletonContainer(EjbDescriptor desc, ClassLoader cl)
             throws Exception {
         super(ContainerType.SINGLETON, desc, cl);
 
         System.out.println("****** [SINGLETON CONTAINER CREATED] for: " + desc.getEjbClassName());
+    }
+
+    public void setSingletonLifeCycleManager(SingletonLifeCycleManager lcm) {
+        this.lcm = lcm;
     }
 
     public ComponentContext instantiateSingletonInstance() {
@@ -90,7 +98,7 @@ public class SingletonContainer
     protected ComponentContext _getContext(EjbInvocation inv) {
         //Concurrent access
         if (! singletonInitialized.get()) {
-            instantiateSingletonInstance();
+            //Note: NEVER call instantiateSingletonInstance() directly from here
         }
 
         if (bmcMode) {

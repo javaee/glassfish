@@ -71,6 +71,19 @@
                         </Export-Package>
                     </instructions>
                 </configuration>
+                <!-- We don't use extensions as this interfers with
+                     hk2-maven-plugin and that results in hk2 artifacts
+                     being copied as .hk2-jar. Instead, we configure the
+                     plugin to run as part of package phase -->
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
