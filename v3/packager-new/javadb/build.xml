@@ -39,7 +39,7 @@ own identifying information: Portions Copyright [yyyy]
   	</copy>
 	       
 
-       <delete dir="target/stage/glassfishv3-prelude/glassfish/javadb"/>
+       <delete dir="target/stage/glassfishv3-prelude/glassfish"/>
 
        <zip file="target/javadb.zip" basedir="target/stage"/>
            
