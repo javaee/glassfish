@@ -55,15 +55,6 @@
     </repository>
   </repositories>
 
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>java.net-maven2-repository</id>
-      <url>java-net:/maven2-repository/trunk/www/repository/</url>
-    </repository>
-  </distributionManagement>
-  
-
   <developers>
     <developer>
       <id>sm157516</id>
