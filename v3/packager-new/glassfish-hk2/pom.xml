@@ -82,6 +82,11 @@
            <artifactId>javax.xml.stream</artifactId>
            <version>${glassfish.version}</version>
        </dependency>
+       <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>ant</artifactId>
+            <version>${project.version}</version>
+       </dependency>  
    </dependencies>
 
     <profiles>

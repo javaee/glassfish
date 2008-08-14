@@ -55,7 +55,6 @@
 
     <modules>
 	<module>felix</module>
-	<module>glassfish-ant</module>
 	<module>pkg-java</module> 
 	<module>glassfish-hk2</module>
 	<module>glassfish-grizzly</module>
