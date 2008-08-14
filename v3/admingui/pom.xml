@@ -101,7 +101,7 @@
                         <processor>
                             <groupId>com.sun.jsftemplating</groupId>
                             <artifactId>jsftemplating-dt</artifactId>
-                            <version>1.2.2</version>
+                            <version>${jsftemplating.version}</version>
                         </processor>
                     </processors>
                 </configuration>
@@ -135,7 +135,7 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-            <version>1.2.2</version>
+            <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
@@ -226,7 +226,7 @@
 	    We are defining these values here so we can support a range
 	    of versions.  Anything after these version numbers is supported.
 	-->
-	<jsftemplating.version>1.2.2</jsftemplating.version>
+	<jsftemplating.version>1.2.3</jsftemplating.version>
 	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
 	<glassfish.version>10.0-SNAPSHOT</glassfish.version>
 	<amx-api.version>10.0-SNAPSHOT</amx-api.version>
