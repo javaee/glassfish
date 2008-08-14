@@ -243,8 +243,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private void initState() {
 	//it is a given that the application is NOT loaded to begin with
-	if(appExistsInConfig())
+	if(appExistsInConfig()){
 	    state = AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED;
+            progress.setMessage("" + state);
+        }
 	else
 	    state = AdapterState.APPLICATION_NOT_INSTALLED;
     }
@@ -262,7 +264,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	return ( app );
     }
     private void logRequest(GrizzlyRequest req) {
-	log.info("AdminConsoleAdapter's STATE IS: " +  this.state);
+	log.info("AdminConsoleAdapter's STATE IS: " +  this.state); 
 	if (log.isLoggable(Level.FINE)) { //Change all INFO to FINE
 	    log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
 	    Enumeration names = req.getParameterNames();
@@ -359,7 +361,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private void startThread() {
-	//File toFile = new File (diskLocation, "admingui.war");
 	new InstallerThread(urls, diskLocation, proxyHost, proxyPort, progress, domain, env, contextRoot).start();
     }
 
@@ -422,8 +423,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		    if (progress.getAdapterState() == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED) {
 			//thread is done, and application was installed
 			this.state = AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED;
+                        status = "" + this.state;
 		    } else {
 			this.state = AdapterState.APPLICATION_NOT_INSTALLED;
+                        status = "" + this.state;
 		    }
 		}
 	    }

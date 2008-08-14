@@ -34,7 +34,7 @@ final class ProgressObject {
     private boolean done              = false;
     private AdapterState state        = AdapterState.INSTALLING;
     
-    private boolean APPEND = true; //for debugging
+    private boolean APPEND = false; //for debugging
     
     String getMessage() {
         return ( message );

@@ -127,9 +127,8 @@ final class InstallerThread extends Thread {
 
 	// Download and install files from Update Center
 	try {
-System.out.println("toFile: " + toFile);
 	    Image img = new Image(toFile);
-System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
+            System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
 	    /*
 	    img.refreshCatalogs();
 	    Catalog catalog = img.getCatalog();
