@@ -23,3 +23,8 @@
 glassfish_version="10.0.0,0-"
 felix_version="10.0.0,0-"
 javadb_version="10.0.0,0-"
+
+#description
+glassfish_description="GlassFish v3 Application Server"
+glassfish_description_log="GlassFish is a free, open source application server."
+glassfish_info_classification="Application Servers"
