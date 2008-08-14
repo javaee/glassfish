@@ -21,7 +21,7 @@
     <property name="uc.stage.dir" value="${basedir}/target/uc" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
-    <property name="gf.zip.dir" value="${basedir}/../packager/build" />
+    <property name="gf.zip.dir" value="${basedir}/../distributions-prelude/gfv3-prelude/target" />
     <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
       
     <!-- all -->
@@ -29,11 +29,16 @@
     </target>
 
     <target name="extract.oi"  description="Extracting openInstaller files">
-        <mkdir dir="${stage.dir}"/>
-	<unzip src="${maven.repo.local}/org/openinstaller/engine/0.9.4.1/engine-0.9.4.1.zip"
-            dest="${stage.dir}"/>
-        <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4.1/resources-0.9.4.1.zip"
-            dest="${stage.dir}"/>
+	<mkdir dir="${stage.dir}"/>
+
+	<resolveArtifact groupID="org.openinstaller" artifactId="engine" property="engine.zip"/>
+       
+	<unzip src="${engine.zip}" dest="${stage.dir}"/>
+
+		<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip"/>
+       
+	<unzip src="${resources.zip}" dest="${stage.dir}"/>
+	
 
 	<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
   	<copy tofile="${stage.dir}/install/lib/resources/org/openinstaller/resources/ResourceMsgs.properties"
@@ -43,9 +48,12 @@
     </target>
 
     <target name="extract.uc"  description="Extracting UC bootstrap files">
-        <mkdir dir="${uc.stage.dir}"/>
-	<unzip src="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.5/ucbootstrap-0.0.0.5.zip" 
-            dest="${uc.stage.dir}"/>
+	<mkdir dir="${uc.stage.dir}"/>
+	<resolveArtifact groupID="com.sun.pkg.client" artifactId="ucbootstrap" property="ucbootstrap.zip"/>
+       
+	<unzip src="${ucbootstrap.zip}" dest="${uc.stage.dir}"/>
+
+
     </target>
 
     <target name="compile"  description="Compiling configurator">
@@ -110,19 +118,29 @@
                <fileset dir="${resources.dir}/wrappers" excludes=".svn,wrapper.sh,engine-wrapper"/>               
          </copy>
 
-         <echo message="Staging registration jar files"/>
+	 <echo message="Staging registration jar files"/>
 
+	 <resolveArtifact groupID="org.glassfish.registration" artifactId="registration-api" property="registration-api.jar"/>
+       
 	 <copy tofile="${stage.dir}/registration-api.jar"
-             file="${maven.repo.local}/org/glassfish/registration/registration-api/10.0-SNAPSHOT/registration-api-10.0-SNAPSHOT.jar"/>
+		 file="${registration-api.jar}"/>
 
+	 <resolveArtifact groupID="org.glassfish.registration" artifactId="registration-impl" property="registration-impl.jar"/>
+       
 	 <copy tofile="${stage.dir}/registration-impl.jar"
-		 file="${maven.repo.local}/org/glassfish/registration/registration-impl/10.0-SNAPSHOT/registration-impl-10.0-SNAPSHOT.jar"/>
+		 file="${registration-impl.jar}"/>
 
+
+	 <resolveArtifact groupID="org.glassfish.external" artifactId="sysnet-registration-repackaged" property="sysnet-registration.jar"/>
+       
 	 <copy tofile="${stage.dir}/sysnet-registration.jar"
-		 file="${maven.repo.local}/org/glassfish/external/sysnet-registration-repackaged/10.0-SNAPSHOT/sysnet-registration-repackaged-10.0-SNAPSHOT.jar"/>
+		 file="${sysnet-registration.jar}"/>
 
+	<resolveArtifact groupID="org.glassfish.external" artifactId="commons-codec-repackaged" property="commons-codec.jar"/>
+       
 	 <copy tofile="${stage.dir}/commons-codec-1.3.jar"
-		 file="${maven.repo.local}/org/glassfish/external/commons-codec-repackaged/10.0-SNAPSHOT/commons-codec-repackaged-10.0-SNAPSHOT.jar"/>
+		 file="${commons-codec.jar}"/>
+	 
 
          <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
 
@@ -131,15 +149,15 @@
          <echo message="Copying Glassfish zip file"/>
  
          <copy tofile="${stage.dir}/Product/Packages/glassfish.zip"
-               file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
+               file="${gf.zip.dir}/gfv3-prelude-installer.zip" />
 
          <echo message="Copying openInstaller zip files"/>
  
          <copy tofile="${stage.dir}/Product/Packages/Engine.zip"
-               file="${maven.repo.local}/org/openinstaller/engine/0.9.4.1/engine-0.9.4.1.zip"/>
+		 file="${engine.zip}"/>
 
          <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
-               file="${maven.repo.local}/org/openinstaller/resources/0.9.4.1/resources-0.9.4.1.zip"/>
+               file="${resources.zip}"/>
                
          <echo message="Creating icons zip file"/>
 
@@ -154,14 +172,13 @@
 
          <echo message="Creating updatetool bootstrap zip file"/>
 
-         <copy tofile="${tmp.dir}/updatetool/lib/ucbootstrap.jar"
-             file="${uc.stage.dir}/ucbootstrap.jar"/>          
+                
          <copy tofile="${tmp.dir}/bin/updatetool"
-		 file="${uc.stage.dir}/ucbootstub.sh"/>  
+		 file="${uc.stage.dir}/ucbootstub"/>  
          <copy tofile="${tmp.dir}/bin/updatetool.bat"
 		 file="${uc.stage.dir}/ucbootstub.bat"/> 
          <copy tofile="${tmp.dir}/bin/pkg"
-		 file="${uc.stage.dir}/ucbootstub.sh"/>  
+		 file="${uc.stage.dir}/ucbootstub"/>  
          <copy tofile="${tmp.dir}/bin/pkg.bat"
                  file="${uc.stage.dir}/ucbootstub.bat"/>	 
          <zip destfile="${stage.dir}/Product/Packages/updatetool.zip"
