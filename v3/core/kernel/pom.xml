@@ -185,6 +185,13 @@
             <version>${project.version}</version>
         </dependency>
 	<dependency>
+	    <groupId>com.sun.pkg</groupId>
+	    <artifactId>pkg-client</artifactId>
+<!-- FIXME: use variable for version -->
+	    <version>1.0.7-14.1084</version>
+	    <scope>provided</scope>
+	</dependency>
+	<dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>osgi_R4_core</artifactId>
                 <version>1.0</version>
