@@ -27,7 +27,7 @@ own identifying information: Portions Copyright [yyyy]
 
 	 <resolveArtifact artifactId="war" groupId="org.glassfish.admingui" type="war" property="admingui.war"/>
 
-       <copy file="${admingui.war}" todir="target/stage/glassfishv3-prelude/glassfish/lib/install/application/__admingui"/>
+	 <copy file="${admingui.war}" tofile="target/stage/glassfishv3-prelude/glassfish/lib/install/application/__admingui/__admingui.war"/>
   
 
 
