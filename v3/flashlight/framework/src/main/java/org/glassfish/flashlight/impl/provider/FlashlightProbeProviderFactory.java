@@ -75,8 +75,8 @@ public class FlashlightProbeProviderFactory
 
         try {
             ProbeProvider provider = new ProbeProvider(moduleName, providerName, appName);
-            System.out.println("Module= " + moduleName + " \tProvider= " + providerName + "\tAppName= " + appName +
-                                                        "\tProviderClazz= " + providerClazz.toString());
+//            System.out.println("Module= " + moduleName + " \tProvider= " + providerName + "\tAppName= " + appName +
+//                                                        "\tProviderClazz= " + providerClazz.toString());
             for (Method m : providerClazz.getDeclaredMethods()) {
                 int sz = m.getParameterTypes().length;
                 ProbeName pnameAnn = m.getAnnotation(ProbeName.class);
@@ -99,7 +99,7 @@ public class FlashlightProbeProviderFactory
                         moduleName, providerName, appName, probeName,
                         probeParamNames, m.getParameterTypes());
                 probe.setProviderJavaMethodName(m.getName());
-                System.out.println("\tProbe: " + probe);
+                //System.out.println("\tProbe: " + probe);
                 provider.addProbe(probe);
             }
 
@@ -110,7 +110,7 @@ public class FlashlightProbeProviderFactory
             Class<T> tClazz = null;
             try {
                 tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
-                System.out.println ("Reusing the Generated class");
+                //System.out.println ("Reusing the Generated class");
                 return (T) tClazz.newInstance();
             } catch (ClassNotFoundException cnfEx) {
                 //Ignore
@@ -129,9 +129,9 @@ public class FlashlightProbeProviderFactory
             ProbeProviderRegistry.getInstance().registerProbeProvider(
                     provider, tClazz);
             T inst = (T) tClazz.newInstance();
-            System.out.println("Created provider successfully....: " + inst.getClass().getName());
+            //System.out.println("Created provider successfully....: " + inst.getClass().getName());
             // Notify listeners that a new provider is registered
-            System.out.println("Notify listeners that a new provider is registered");
+            //System.out.println("Notify listeners that a new provider is registered");
             ppem.notifyListenersOnRegister(moduleName, providerName, appName);
         return inst;
         } catch (Exception e) {
@@ -172,7 +172,7 @@ public class FlashlightProbeProviderFactory
         ProbeClientMediator pcm = FlashlightProbeClientMediator.getInstance();
         Collection<ProbeClientMethodHandle> handles = pcm.registerListener(listener);
 
-        System.out.println("Handles.size(): " + handles.size());
+        //System.out.println("Handles.size(): " + handles.size());
 
         for (Method m : provider.getClass().getDeclaredMethods()) {
             provider.namedEntry(m, "fooBean");

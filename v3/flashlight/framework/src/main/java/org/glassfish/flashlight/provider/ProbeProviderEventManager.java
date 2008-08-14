@@ -70,7 +70,7 @@ public class ProbeProviderEventManager {
                 a1 = names[2].length() == 0 ? null : names[2];
             }
             listener.providerRegistered(m1, p1, a1);
-            System.out.println("Notifying listener");
+            //System.out.println("Notifying listener");
         }
     }
 

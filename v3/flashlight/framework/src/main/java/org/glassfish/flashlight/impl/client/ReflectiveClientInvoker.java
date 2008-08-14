@@ -99,9 +99,9 @@ public class ReflectiveClientInvoker
     }
 
     public void invoke(Object[] args) {
-        for (Object obj : args) {
-            System.out.println("[FL] method: " + method.getName() + "  **Arg: " + obj);
-        }
+//        for (Object obj : args) {
+//            System.out.println("[FL] method: " + method.getName() + "  **Arg: " + obj);
+//        }
         try {
             if (useProbeArgs) {
                 //We can use the args as it is

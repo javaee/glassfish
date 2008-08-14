@@ -30,7 +30,7 @@ public class ProbeRegistry {
     public void registerProbe(Probe probe) {
         probeMap.put(probe.getId(), probe);
         probeDesc2ProbeMap.put(probe.getProbeStr(), probe);
-        System.out.println("[FL]Registered probe : " + probe.getProbeStr());
+        //System.out.println("[FL]Registered probe : " + probe.getProbeStr());
     }
 
     public void unregisterProbe(Probe probe) {
@@ -46,7 +46,7 @@ public class ProbeRegistry {
     }
 
     public Probe getProbe(String probeStr) {
-        System.out.println("[FL]Get probe : " + probeStr);
+        //System.out.println("[FL]Get probe : " + probeStr);
         return probeDesc2ProbeMap.get(probeStr);
     }
 

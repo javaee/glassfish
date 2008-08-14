@@ -72,10 +72,10 @@ public class ProviderImplGenerator {
     public byte[] generateClassData(ProbeProvider provider, Class providerClazz, String generatedClassName) {
 
         Type classType = Type.getType(providerClazz);
-        System.out.println("** classType: " + classType);
-        System.out.println("** classDesc: " + Type.getDescriptor(providerClazz));
+        //System.out.println("** classType: " + classType);
+        //System.out.println("** classDesc: " + Type.getDescriptor(providerClazz));
 
-        System.out.println("Generating for: " + generatedClassName);
+        //System.out.println("Generating for: " + generatedClassName);
 
         generatedClassName = generatedClassName.replace('.', '/');
 
