@@ -125,12 +125,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-ant</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>pkg-java</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
