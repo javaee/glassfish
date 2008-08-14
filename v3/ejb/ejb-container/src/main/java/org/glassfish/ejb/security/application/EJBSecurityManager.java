@@ -63,7 +63,6 @@ import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-import com.sun.enterprise.security.authorize.*;
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
@@ -1040,7 +1039,7 @@ public final class EJBSecurityManager
      * @param obj             the EJB bean instance
      * @param oa              parameters passed to beanClassMethod
      * @return return value from beanClassMethod
-     * @throws InvocationTargetException if the underlying method throws an exception
+     * @throws java.lang.reflect.InvocationTargetException if the underlying method throws an exception
      * @throws Throwable                 other throwables in other cases
      */
     public Object runMethod(Method beanClassMethod, Object obj, Object[] oa)

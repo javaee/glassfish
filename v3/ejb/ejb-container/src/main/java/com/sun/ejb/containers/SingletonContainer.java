@@ -61,6 +61,8 @@ public class SingletonContainer
 
     private AtomicInteger invCount = new AtomicInteger(0);
 
+    private AtomicBoolean onHold = new AtomicBoolean(true);
+
     private boolean bmcMode = true;
 
     private SingletonLifeCycleManager lcm;
@@ -76,11 +78,14 @@ public class SingletonContainer
         this.lcm = lcm;
     }
 
+    //Called from SingletonLifeCycleManager
     public ComponentContext instantiateSingletonInstance() {
         if (! singletonInitialized.get()) {
             synchronized (this) {
                 if (! singletonInitialized.get()) {
                     factory = new SessionContextFactory();
+
+                    //The following may throw exception
                     singletonCtx = (ComponentContext) factory.create(null);
                     singletonInitialized.set(true);
                 }
@@ -95,10 +100,42 @@ public class SingletonContainer
         //No-op
     }
 
+    @Override
+    public void doAfterApplicationDeploy() {
+        super.doAfterApplicationDeploy();
+        synchronized (onHold) {
+            onHold.set(false);
+            onHold.notifyAll();
+        }
+
+        //Now _getContext can proceed
+    }
+
     protected ComponentContext _getContext(EjbInvocation inv) {
-        //Concurrent access
+        //Concurrent access possible here and that too
+        //  even before the Singleton (and its dependencies)
+        //  are initialized
+
+        /*
+        if (onHold.get()) {
+            synchronized (onHold) {
+                if (onHold.get()) {
+                    try {
+                        onHold.wait();
+                    } catch (InterruptedException inEx) {
+                        //Ignore
+                    }
+                }
+            }
+        }
+        */
+
         if (! singletonInitialized.get()) {
             //Note: NEVER call instantiateSingletonInstance() directly from here
+            // The following starts all dependent beans as well
+            //
+            //Also, it is OK to call the following by concurrent threads
+            lcm.initializeSingleton(this);
         }
 
         if (bmcMode) {
@@ -107,6 +144,7 @@ public class SingletonContainer
                 ((SessionContextImpl) singletonCtx).setState(EJBContextImpl.BeanState.INVOKING);
             }
         }
+        
         //For now return this as we support only BMC
         return singletonCtx;
     }
@@ -143,5 +181,5 @@ public class SingletonContainer
             _logger.log(Level.INFO, "Error during SingletonContainer undeploy", th);
         }
     }
-    
+
 }

@@ -416,8 +416,6 @@ public abstract class BaseContainer
             injectionManager = ejbContainerUtilImpl.getInjectionManager();
             namingManager = ejbContainerUtilImpl.getGlassfishNamingManager();
             transactionManager = ejbContainerUtilImpl.getTransactionManager();
-
-            System.out.println("Loader: " + loader);
             
             // get Class objects for creating new EJBs
             ejbClass = loader.loadClass(ejbDescriptor.getEjbImplClassName());

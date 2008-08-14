@@ -26,6 +26,7 @@ package org.glassfish.ejb.startup;
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.ContainerFactoryImpl;
+import com.sun.ejb.containers.SingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -96,6 +97,7 @@ public class EjbApplication
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
+        singletonLCM = new SingletonLifeCycleManager();
 
         for (EjbDescriptor desc : ejbs) {
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
@@ -105,20 +107,20 @@ public class EjbApplication
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
-                System.out.println("Created EJBContainer for: " + desc);
-
+                if (container instanceof SingletonContainer) {
+                    singletonLCM.addSingletonContainer((SingletonContainer) container);
+                }
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 
-        singletonLCM = new SingletonLifeCycleManager(containers);
-        singletonLCM.doStartup();
-
         for (Container container : containers) {
             container.doAfterApplicationDeploy();
         }
 
+        singletonLCM.doStartup();
+        
         // TODO: move restoreEJBTimers to correct location
         synchronized (lock) {
             System.out.println("==> Restore Timers? == " + restored);

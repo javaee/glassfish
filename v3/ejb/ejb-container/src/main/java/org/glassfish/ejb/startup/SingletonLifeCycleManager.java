@@ -29,43 +29,42 @@ public class SingletonLifeCycleManager {
 
     Set<Container> initializedSingletons = new HashSet<Container>();
 
-    private Map<String, Container> name2Container =
-            new HashMap<String, Container>();
-
-    public SingletonLifeCycleManager(Collection<Container> containers) {
-
-        for (Container c : containers) {
-            if (c instanceof SingletonContainer) {
-                ((SingletonContainer) c).setSingletonLifeCycleManager(this);
-                EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) c.getEjbDescriptor();
-                String modName = sdesc.getEjbBundleDescriptor().getName();
-                //System.out.println("BundleName: " + modName);
-                String src = sdesc.getName();
-                String[] depends = sdesc.getDepends();
-                this.addDependency(src, depends);
-
-                //TODO: names can be of the form jarName#beanName
-                name2Container.put(src, c);
-            }
-        }
-    }
+    private Map<String, SingletonContainer> name2Container =
+            new HashMap<String, SingletonContainer>();
 
     public SingletonLifeCycleManager() {
-        //Mainly for unit testing
+
+    }
+
+    public void addSingletonContainer(SingletonContainer c) {
+        c.setSingletonLifeCycleManager(this);
+        EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) c.getEjbDescriptor();
+        String modName = sdesc.getEjbBundleDescriptor().getName();
+        //System.out.println("BundleName: " + modName);
+        String src = sdesc.getName();
+        String[] depends = sdesc.getDepends();
+        this.addDependency(src, depends);
+
+        //TODO: names can be of the form jarName#beanName
+        name2Container.put(src, (SingletonContainer) c);
     }
 
     public void doStartup() {
         SingletonContainer[] partialOrder = this.getPartiallyOrderedSingletonDescriptors();
         int orderSz = partialOrder.length;
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i<orderSz; i++) {
-            String s = partialOrder[i].getEjbDescriptor().getName();
-            sb.append(" " + s);
+        for (int i = 0; i < orderSz; i++) {
+            EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) partialOrder[i].getEjbDescriptor();
+            String s = sdesc.getName();
+            if (sdesc.isStartup()) {
+                initializeSingleton(name2Container.get(s));
+            }
+            sb.append(" " + s + (sdesc.isStartup() ? "*" : ""));
         }
-        System.out.println("Singleton startup order: " + sb.toString());
+        System.out.println("Singleton dependency order: " + sb.toString());
 
 
-        for (int i=0; i<orderSz; i++) {
+        for (int i = 0; i < orderSz; i++) {
             SingletonContainer c = partialOrder[i];
             EjbSingletonDescriptor sd = (EjbSingletonDescriptor) c.getEjbDescriptor();
             if (sd.isStartup()) {
@@ -75,7 +74,20 @@ public class SingletonLifeCycleManager {
     }
 
     public void initializeSingleton(SingletonContainer c) {
-        c.instantiateSingletonInstance();
+        if (!initializedSingletons.contains(c)) {
+            List<String> computedDeps = computeDependencies(c.getEjbDescriptor().getName());
+            int sz = computedDeps.size();
+            SingletonContainer[] deps = new SingletonContainer[sz];
+            for (int i = 0; i < sz; i++) {
+                deps[i] = (SingletonContainer)
+                        name2Container.get(computedDeps.get(i));
+
+                initializeSingleton(deps[i]);
+            }
+
+            c.instantiateSingletonInstance();
+            initializedSingletons.add(c);
+        }
     }
 
     public void addDependency(String src, String[] depends) {
@@ -96,7 +108,7 @@ public class SingletonLifeCycleManager {
 
     public void addDependency(String src, String depends) {
         src = src.trim();
-        if (depends == null || depends.length() ==0) {
+        if (depends == null || depends.length() == 0) {
             return;
         }
 
@@ -176,6 +188,9 @@ public class SingletonLifeCycleManager {
         List<String> dependencies = new ArrayList<String>();
         do {
             String top = stk.peek();
+            if (! name2Index.containsKey(top)) {
+                break;
+            }
             int topIndex = name2Index.get(top);
             boolean hasDep = false;
 
@@ -207,7 +222,10 @@ public class SingletonLifeCycleManager {
             }
         } while (!stk.empty());
 
-        dependencies.remove(dependencies.size() - 1);
+        if (dependencies.size() > 0) {
+            dependencies.remove(dependencies.size() - 1);
+        }
+        
         return dependencies;
     }
 
