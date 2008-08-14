@@ -413,15 +413,12 @@ public class CLIRemoteCommand {
         }
     }
     private void initializeStandardParams() throws CommandException {
-        ASenvPropertyReader pr = new ASenvPropertyReader();
         setBooleans();
         hostName = params.get("host");
-
-        if(!ok(hostName))
-            hostName = pr.getProps().get(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        if(!ok(hostName))
-            hostName = "localhost"; // should never happen
-
+        
+        if (hostName == null || hostName.length() == 0)
+            hostName = "localhost";
+        logger.printDebugMessage("host = " + hostName);
         initializePort();
 
         String s = params.get("secure");
