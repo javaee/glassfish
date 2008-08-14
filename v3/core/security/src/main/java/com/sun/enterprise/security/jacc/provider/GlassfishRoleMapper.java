@@ -37,7 +37,6 @@ package com.sun.enterprise.security.jacc.provider;
 
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import java.security.Principal;
 import java.util.BitSet;
 import java.util.HashSet;
@@ -47,6 +46,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.Subject;
+import org.glassfish.internal.api.Globals;
 
 /**
  * Glassfish role mapper 
@@ -71,8 +71,8 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
 
     private SecurityRoleMapper getInternalMapper(String pcid) {
 
-        SecurityRoleMapperFactory factory =
-                SecurityRoleMapperFactoryMgr.getFactory();
+        SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
+                //SecurityRoleMapperFactoryMgr.getFactory();
 
         if (factory == null) {
             String msg = "RoleMapper.factory.lookup.failed";

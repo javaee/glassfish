@@ -78,7 +78,6 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
     public static final int DELETED_STATE = 3;
     private static final Permission setPolicyPermission =
             new java.security.SecurityPermission("setPolicy");
-    
     private String id;
     private int state = OPEN_STATE;
 
@@ -94,46 +93,51 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
     private Lock pcwLock = pcLock.writeLock();
 
     static {
-        // register a role mapper if not already registered
+        // register a role mapper 
         try {
-            Class clazz = null;
             String className = System.getProperty(JACCRoleMapper.CLASS_NAME);
-            if (className == null) {
-                clazz = GlassfishRoleMapper.class;
-            } else {
+            if (className != null ||
+                    !PolicyContext.getHandlerKeys().contains(JACCRoleMapper.HANDLER_KEY)) {
+                if (className == null) {
+                    String packageName = SimplePolicyConfiguration.class.getPackage().getName();
+                    className = packageName +"."+ "GlassfishRoleMapper";
+                }
+
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                clazz = loader.loadClass(className);
-            }
-            final Constructor ctx = clazz.getConstructor(new Class[]{Logger.class});
-            PolicyContext.registerHandler(
-                    JACCRoleMapper.HANDLER_KEY,
-                    new PolicyContextHandler() {
+                Class clazz = loader.loadClass(className);
+                final Constructor ctx = clazz.getConstructor(new Class[]{Logger.class});
 
-                        public Object getContext(String key, Object data)
-                                throws PolicyContextException {
-                            if (key.equals(JACCRoleMapper.HANDLER_KEY)) {
-                                try {
-                                    return ctx.newInstance(new Object[]{SharedState.getLogger()});
-                                } catch (Throwable t) {
-                                    throw new PolicyContextException(t);
+                PolicyContext.registerHandler(
+                        JACCRoleMapper.HANDLER_KEY,
+                        new PolicyContextHandler() {
+
+                            public Object getContext(String key, Object data)
+                                    throws PolicyContextException {
+                                if (key.equals(JACCRoleMapper.HANDLER_KEY)) {
+                                    try {
+                                        return ctx.newInstance(new Object[]{SharedState.getLogger()});
+                                    } catch (Throwable t) {
+                                        throw new PolicyContextException(t);
+                                    }
                                 }
+                                return null;
                             }
-                            return null;
-                        }
 
-                        public String[] getKeys()
-                                throws PolicyContextException {
-                            return new String[]{JACCRoleMapper.HANDLER_KEY};
-                        }
+                            public String[] getKeys()
+                                    throws PolicyContextException {
+                                return new String[]{JACCRoleMapper.HANDLER_KEY};
+                            }
 
-                        public boolean supports(String key)
-                                throws PolicyContextException {
-                            return key.equals(JACCRoleMapper.HANDLER_KEY);
-                        }
-                    },
-                    false);
+                            public boolean supports(String key)
+                                    throws PolicyContextException {
+                                return key.equals(JACCRoleMapper.HANDLER_KEY);
+                            }
+                        },
+                        false);
+            }
         } catch (Throwable t) {
             SharedState.getLogger().log(Level.SEVERE, "RoleMapper.registration.failed", t);
+            throw new RuntimeException(t);
         }
     }
 
@@ -604,7 +608,7 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
      * in the thrown PolicyContextException.
      */
     public void delete() throws javax.security.jacc.PolicyContextException {
- 
+
         checkSetPolicyPermission();
         SharedState.removeLinks(id);
 
@@ -708,7 +712,7 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
     // Internal Policy Configuration interfaces start here
     protected static SimplePolicyConfiguration getPolicyConfig(
             String pcid, boolean remove) throws PolicyContextException {
-        
+
         SimplePolicyConfiguration pc = SharedState.getConfig(pcid, remove);
         pc.pcwLock.lock();
         try {
