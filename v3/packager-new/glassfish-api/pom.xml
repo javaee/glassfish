@@ -115,7 +115,7 @@
              -->
             <id>ips</id>
 	    <activation>
-	        <activeByDefault>false</activeByDefault>
+	       <activeByDefault>true</activeByDefault> 
 	    </activation>
 	    <build>
             <plugins>
