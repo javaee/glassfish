@@ -43,9 +43,12 @@ pkg = {
     "name"          : "glassfish-scripting",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish V3",
-                        "pkg.description" : "GlassFish V3",
-                        "info.classification" : "Application Server",
+                        "description" : conf.glassfish_description,
+                        "description_long" : conf.glassfish_description_log,
+                        "info.classification" : conf.glassfish_info_classification,
                       },
-     "dirtrees"      : [ "glassfish" ], 
+    "dirtrees"      : [ "glassfish" ],
+    "licenses"      : {
+                        "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
+                      },
 }
