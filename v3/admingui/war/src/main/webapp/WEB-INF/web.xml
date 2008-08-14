@@ -104,6 +104,7 @@
         <web-resource-collection>
             <web-resource-name>public</web-resource-name>
             <url-pattern>/theme/com/sun/webui/*</url-pattern>
+            <url-pattern>/theme/woodstock4_3/*</url-pattern>
             <url-pattern>/theme/META-INF/*</url-pattern>
             <url-pattern>/resource/js/*</url-pattern>
             <url-pattern>/resource/css/*</url-pattern>
