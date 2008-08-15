@@ -33,11 +33,11 @@ import com.sun.cli.jcmd.util.misc.StringUtil;
 
 public class SaslSetup
 {
-	protected final Map		mEnv;
+	protected final Map<String,Object>		mEnv;
 	protected final boolean	mUseTLS;
 	
 		public
-	SaslSetup( final Map env, boolean useTLS )
+	SaslSetup( final Map<String,Object> env, boolean useTLS )
 	{
 		mEnv	= env;
 		mUseTLS	= useTLS;

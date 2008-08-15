@@ -370,7 +370,7 @@ public final class MBeanProxyMBean implements DynamicMBean, MBeanRegistration
 		{
 			results	= new AttributeList();
 			
-			final Set	missingNames	= new HashSet();
+			final Set<String>	missingNames	= new HashSet<String>();
 			for( int i = 0; i < names.length; ++i )
 			{
 				final Attribute attr	= getCachedAttribute( names[ i ] );

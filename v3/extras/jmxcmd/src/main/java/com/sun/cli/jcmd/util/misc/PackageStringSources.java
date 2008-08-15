@@ -96,7 +96,7 @@ public class PackageStringSources
 	private PackageStringSources()	{}
 	
 		private static StringSource
-	init( final Class theClass,  final StringSource delegate )
+	init( final Class<?> theClass,  final StringSource delegate )
 	{
 		StringSource	source	= null;
 		final String	packageName	= theClass.getPackage().getName();
@@ -105,11 +105,11 @@ public class PackageStringSources
 		{
 			final String	classname	= packageName + ".PackageStrings";
 			
-			final Class	packageStringSourceClass	= ClassUtil.getClassFromName( classname );
+			final Class<?>	packageStringSourceClass	= ClassUtil.getClassFromName( classname );
 			
-			final Constructor	c	= packageStringSourceClass.getConstructor( new Class[] { StringSource.class } );
+			final Constructor<?>	c	= packageStringSourceClass.getConstructor( StringSource.class );
 			
-			source	= (StringSource)c.newInstance( new Object[] { delegate } );
+			source	= StringSource.class.cast( c.newInstance( new Object[] { delegate } ) );
 		}
 		catch( Exception e )
 		{

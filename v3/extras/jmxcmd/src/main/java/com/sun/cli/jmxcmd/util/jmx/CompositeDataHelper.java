@@ -153,7 +153,7 @@ public class CompositeDataHelper
 	listToCompositeData(
 		final String	typeName,
 		final String	description,
-		final List		list )
+		final List<?>		list )
 	{
 		return( null );
 	}
@@ -162,7 +162,7 @@ public class CompositeDataHelper
 	setToCompositeData(
 		final String	typeName,
 		final String	description,
-		final Set<Object>		set )
+		final Set<?>		set )
 	{
 		return( null );
 	}
@@ -183,7 +183,9 @@ public class CompositeDataHelper
 		}
 		else if ( o instanceof Map )
 		{
-			result	= mapToCompositeData( Map.class.getName(), "", (Map)o );
+            @SuppressWarnings("unchecked")
+            final Map<String,Object> m = (Map)o;
+			result	= mapToCompositeData( Map.class.getName(), "", m);
 		}
 		else if ( o instanceof List )
 		{
@@ -191,7 +193,7 @@ public class CompositeDataHelper
 		}
 		else if ( o instanceof Set )
 		{
-			result	= setToCompositeData( Set.class.getName(), "", (Set)o );
+			result	= setToCompositeData( Set.class.getName(), "", Set.class.cast(o) );
 		}
 		else
 		{
@@ -262,8 +264,7 @@ public class CompositeDataHelper
 	stackTraceElementCompositeData( StackTraceElement elem )
 		throws OpenDataException
 	{
-		
-		final Map	m	= new HashMap();
+		final Map<String,Object>	m	= new HashMap<String,Object>();
 		m.put( "ClassName", elem.getClassName() );
 		m.put( "FileName", elem.getFileName() );
 		m.put( "LineNumber", new Integer( elem.getLineNumber() ) );
@@ -297,13 +298,16 @@ public class CompositeDataHelper
 			"The stack trace from the Throwable",
 		};
 		
-		final OpenType[]	openTypes	= new OpenType[ itemNames.length ];
+		final OpenType<?>[]	openTypes	= new OpenType[ itemNames.length ];
 		
 		openTypes[ 0 ]	= SimpleType.STRING;
 		openTypes[ 1 ]	= cause == null ?
 			getEmptyCompositeType() : throwableToCompositeData( cause ).getCompositeType();
-		openTypes[ 2 ]	= new ArrayType( t.getStackTrace().length,
-							getStackTraceElementCompositeType() );
+        final CompositeType ct = getStackTraceElementCompositeType();
+        
+        @SuppressWarnings("unchecked")
+        final ArrayType at = new ArrayType( t.getStackTrace().length, ct );
+		openTypes[ 2 ]	= at;
 		
 		
 		final CompositeType	type	= new CompositeType(

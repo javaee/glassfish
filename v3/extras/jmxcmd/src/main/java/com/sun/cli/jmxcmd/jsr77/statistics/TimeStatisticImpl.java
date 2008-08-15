@@ -42,7 +42,7 @@ public final class TimeStatisticImpl
 	}
 	
 		public
-	TimeStatisticImpl( final Map m )
+	TimeStatisticImpl( final Map<String,Object> m )
 	{
 		this( new MapStatisticImpl( m ) );
 	}

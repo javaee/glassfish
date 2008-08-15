@@ -154,7 +154,10 @@ public class ProvidersCmd extends JMXCmd
 			// if this succeeds, then we'll update the env
 			try
 			{
-				getConnectionMgr().addProvider( ClassUtil.getClassFromName( providerClassname ) );
+                final Class<?> clazz = ClassUtil.getClassFromName( providerClassname );
+                @SuppressWarnings("unchecked")
+                final Class<JMXConnectorProvider> c = (Class<JMXConnectorProvider>)clazz;
+				getConnectionMgr().addProvider( c );
 			}
 			catch( Exception e )
 			{
@@ -187,8 +190,10 @@ public class ProvidersCmd extends JMXCmd
 			// if this succeeds, then we'll update the env
 			try
 			{
-				final Class theClass	= ClassUtil.getClassFromName( providerClassname );
-				getConnectionMgr().removeProvider( theClass );
+                final Class<?> clazz = ClassUtil.getClassFromName( providerClassname );
+                @SuppressWarnings("unchecked")
+                final Class<JMXConnectorProvider> c = (Class<JMXConnectorProvider>)clazz;
+				getConnectionMgr().removeProvider( c );
 			}
 			catch( Exception e )
 			{

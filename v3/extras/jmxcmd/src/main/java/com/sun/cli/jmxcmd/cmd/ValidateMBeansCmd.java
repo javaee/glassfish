@@ -148,12 +148,12 @@ public class ValidateMBeansCmd extends JMXCmd
 	}
 	
 	
-		private Map
+		private Map<String,Exception>
 	validateAttributesSingly(
 		final ObjectName		objectName,
 		final String[]			attrNames,
-		Map						failures,
-		Map						warnings )
+		Map<String,Exception>	failures,
+		Map<String,Exception>	warnings )
 		throws Exception
 	{
 		for( int i = 0; i < attrNames.length; ++i )
@@ -372,7 +372,7 @@ public class ValidateMBeansCmd extends JMXCmd
 		
 		if ( ArrayConversion.arrayToSet( names ).size() != attrInfos.length )
 		{
-			final HashSet	set		= new HashSet();
+			final HashSet<String>	set		= new HashSet<String>();
 			
 			for( int i = 0; i < names.length; ++i )
 			{
@@ -514,8 +514,8 @@ public class ValidateMBeansCmd extends JMXCmd
 					valid	= false;
 				}
 				// do them one-at-a time to see where failure occurs
-				final Map	failures	= new HashMap();
-				final Map	warnings	= new HashMap();
+				final Map<String,Exception>	failures	= new HashMap<String,Exception>();
+				final Map<String,Exception>	warnings	= new HashMap<String,Exception>();
 				
 				validateAttributesSingly( objectName, attrNames, failures, warnings );
 				

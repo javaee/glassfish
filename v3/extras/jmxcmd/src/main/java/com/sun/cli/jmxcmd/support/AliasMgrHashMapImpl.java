@@ -13,6 +13,7 @@
 package com.sun.cli.jmxcmd.support;
 
 import java.util.Set;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.io.File;
@@ -26,7 +27,7 @@ import com.sun.cli.jcmd.util.misc.StringUtil;
 
 public final class AliasMgrHashMapImpl implements AliasMgrSPI
 {
-	final HashMap	mMap;
+	final Map<String,String>	mMap;
 	String			mFilename;
 	Flusher			mFlusher;
 	final StringEscaper	mEscaper;
@@ -39,7 +40,7 @@ public final class AliasMgrHashMapImpl implements AliasMgrSPI
 	{
 		mEscaper	= new StringEscaper( CHARS_NEEDING_ESCAPING );
 		
-		mMap	= new HashMap();
+		mMap	= new HashMap<String,String>();
 	}
 	
 	public boolean	needsFlush()	{ return( mNeedsFlush ); }
@@ -75,7 +76,7 @@ public final class AliasMgrHashMapImpl implements AliasMgrSPI
 		public synchronized String
 	get( String aliasName )
 	{
-		return( (String)mMap.get( aliasName ) );
+		return( mMap.get( aliasName ) );
 	}
 	
 		public synchronized void
@@ -86,7 +87,7 @@ public final class AliasMgrHashMapImpl implements AliasMgrSPI
 		createFlusher();
 	}
 	
-		public synchronized Set
+		public synchronized Set<String>
 	getNames()
 	{
 		return( mMap.keySet() );

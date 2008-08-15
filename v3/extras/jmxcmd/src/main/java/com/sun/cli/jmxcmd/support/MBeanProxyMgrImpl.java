@@ -472,7 +472,7 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		return( newObjectName );
 	}
 	
-		public Set
+		public Set<ObjectName>
 	getProxyObjectNames()
 	{
 		return( Collections.unmodifiableSet( mProxyObjectNameToProxyInfo.keySet() ) );
@@ -482,14 +482,14 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 	 */
 	private static final class ProxySetInfo
 	{
-		private final Set		mNamesAndPatterns;
+		private final Set<ObjectName>		mNamesAndPatterns;
 		private final boolean	mUseNewNames;
 		private final int		mCachedMBeanInfoRefreshMillis;
 		private final int		mCachedAttributeRefreshMillis;
 		
 			public
 		ProxySetInfo(
-			final Set		namesAndPatterns,
+			final Set<ObjectName>		namesAndPatterns,
 			final boolean	useNewNames,
 			final int		cachedMBeanInfoRefreshMillis,
 			final int		cachedAttributeRefreshMillis )
@@ -500,26 +500,26 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 			mCachedAttributeRefreshMillis	= cachedAttributeRefreshMillis;
 		}
 		
-		public Set		getNamesAndPatterns()	{ return( mNamesAndPatterns ); }
+		public Set<ObjectName>		getNamesAndPatterns()	{ return( mNamesAndPatterns ); }
 		public boolean	getUseNewNames()		{ return( mUseNewNames ); }
 		public int	getMBeanInfoRefreshMillis()	{ return( mCachedMBeanInfoRefreshMillis ); }
 		public int	getAttributeRefreshMillis()	{ return( mCachedAttributeRefreshMillis ); }
 	}
 	
-		protected Set
-	resolve( final Set namesAndPatterns )
+		protected Set<ObjectName>
+	resolve( final Set<ObjectName> namesAndPatterns )
 		throws IOException
 	{
 		final MBeanServerConnection	conn	= getMBeanServerConnection();
 		
-		final Iterator	iter	= namesAndPatterns.iterator();
-		final Set		resolvedObjectNames	= new HashSet();
+		final Iterator<ObjectName>	iter	= namesAndPatterns.iterator();
+		final Set<ObjectName>		resolvedObjectNames	= new HashSet<ObjectName>();
 		
 		while ( iter.hasNext() )
 		{
-			final ObjectName	nameOrPattern	= (ObjectName)iter.next();
+			final ObjectName	nameOrPattern	= iter.next();
 			
-			final Set	results	= conn.queryNames( nameOrPattern, null );
+			final Set<ObjectName>	results	= conn.queryNames( nameOrPattern, null );
 			
 			resolvedObjectNames.addAll( results );
 		}
@@ -536,13 +536,13 @@ public final class MBeanProxyMgrImpl extends StandardMBean
 		final ProxySetInfo	info )
 		throws IOException
 	{
-		final Set	targets	= resolve( info.getNamesAndPatterns() );
-		final Set	proxies	= new HashSet();
+		final Set<ObjectName>	targets	= resolve( info.getNamesAndPatterns() );
+		final Set<ObjectName>	proxies	= new HashSet<ObjectName>();
 		
-		final Iterator iter	= targets.iterator();
+		final Iterator<ObjectName> iter	= targets.iterator();
 		while( iter.hasNext() )
 		{
-			final ObjectName	targetObjectName	= (ObjectName)iter.next();
+			final ObjectName	targetObjectName	= iter.next();
 			final ObjectName	proxyObjectName		=
 				createProxyName( targetObjectName, info.getUseNewNames() );
 			

@@ -62,7 +62,7 @@ public class BoundaryStatisticImpl extends StatisticImpl
 	}
 	
 		public
-	BoundaryStatisticImpl( final Map m )
+	BoundaryStatisticImpl( final Map<String,Object> m )
 	{
 		this( new MapStatisticImpl( m ) );
 	}

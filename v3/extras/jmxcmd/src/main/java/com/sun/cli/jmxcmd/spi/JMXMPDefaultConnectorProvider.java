@@ -85,7 +85,7 @@ public final class JMXMPDefaultConnectorProvider
 	
 	
 		public JMXConnector
-	connect( java.util.Map m )
+	connect( Map<String,String> m )
 		throws IOException,
 		KeyStoreException, NoSuchAlgorithmException, CertificateException,
 		KeyManagementException, UnrecoverableKeyException
@@ -103,7 +103,7 @@ public final class JMXMPDefaultConnectorProvider
 		final String	sasl			= (String)m.get( SASL );
 		
         final boolean	useTLS	= trustStoreFile != null;
-		final HashMap	env	= new HashMap();
+		final HashMap<String,Object>	env	= new HashMap<String,Object>();
 		
 		final SaslClientSetup	setup	= new SaslClientSetup( env, useTLS );
 		if ( useTLS )
@@ -123,7 +123,7 @@ public final class JMXMPDefaultConnectorProvider
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
 		GSetUtil.newUnmodifiableStringSet( JMXMP_PROTOCOL );
 	
-		protected Set
+		protected Set<String>
 	getSupportedProtocols()
 	{
 		return( SUPPORTED_PROTOCOLS );

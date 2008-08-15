@@ -18,7 +18,7 @@ import com.sun.cli.jcmd.util.misc.StringUtil;
 public class SaslServerSetup extends SaslSetup
 {
 		public
-	SaslServerSetup( final Map env, final boolean	useTLS )
+	SaslServerSetup( final Map<String,Object> env, final boolean	useTLS )
 	{
 		super( env, useTLS );
 	}

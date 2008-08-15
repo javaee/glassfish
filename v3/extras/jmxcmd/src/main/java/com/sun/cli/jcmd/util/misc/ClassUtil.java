@@ -826,11 +826,11 @@ public final class ClassUtil
 	/**
 		Find all methods that match the name.
 	 */
-		public static final Method
+		public static final <T> Method
 	findMethod(
-		final Class		theClass,
-		final String	methodName,
-		final Class[]	sig )
+		final Class<T>		theClass,
+		final String	    methodName,
+		final Class<?>[]	sig )
 	{
 		Method	m	= null;
 		try

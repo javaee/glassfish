@@ -72,7 +72,7 @@ import com.sun.cli.jmxcmd.util.jmx.stringifier.MBeanFeatureInfoStringifierOption
 /**
 	Caution: this Comparator may be inconsistent with equals() because it ignores the description.
  */
-public final class MBeanAttributeInfoComparator implements java.util.Comparator
+public final class MBeanAttributeInfoComparator implements java.util.Comparator<MBeanAttributeInfo>
 {
 	private static final MBeanAttributeInfoStringifier		ATTRIBUTE_INFO_STRINGIFIER	=
 		new MBeanAttributeInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
@@ -82,7 +82,7 @@ public final class MBeanAttributeInfoComparator implements java.util.Comparator
 	private	MBeanAttributeInfoComparator()	{}
 	
 		public int
-	compare( Object o1, Object o2 )
+	compare( MBeanAttributeInfo o1, MBeanAttributeInfo o2 )
 	{
 		final String	s1	= ATTRIBUTE_INFO_STRINGIFIER.stringify( (MBeanAttributeInfo)o1 );
 		final String	s2	= ATTRIBUTE_INFO_STRINGIFIER.stringify( (MBeanAttributeInfo)o2 );

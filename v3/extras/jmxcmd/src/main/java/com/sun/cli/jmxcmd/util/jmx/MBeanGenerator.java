@@ -86,7 +86,7 @@ import com.sun.cli.jmxcmd.util.jmx.AttributeNameMapperImpl;
 public class MBeanGenerator implements MBeanGeneratorHook
 {
 	boolean					mEmitComments;
-	Map						mCounts;
+	Map<String,Integer>		mCounts;
 	AttributeNameMapper		mMapper;
 	
 		public 
@@ -120,7 +120,7 @@ public class MBeanGenerator implements MBeanGeneratorHook
 				
 	
 		private static void
-	countType( Map counts, String typeIn )
+	countType( Map<String,Integer> counts, String typeIn )
 	{
 		final String	type	= stripBrackets( ClassUtil.getFriendlyClassname( typeIn ) );
 		
@@ -141,7 +141,7 @@ public class MBeanGenerator implements MBeanGeneratorHook
 		Count how many times an Attribute type is used.
 	 */
 		public static void
-	countTypes( Map counts, MBeanAttributeInfo[]	infos )
+	countTypes( Map<String,Integer> counts, MBeanAttributeInfo[]	infos )
 	{
 		for( int i = 0; i < infos.length; ++i )
 		{
@@ -153,7 +153,7 @@ public class MBeanGenerator implements MBeanGeneratorHook
 		Count how many times the return type and parameter types are used.
 	 */
 		private static void
-	countTypes( Map counts, MBeanOperationInfo[]	infos )
+	countTypes( Map<String,Integer> counts, MBeanOperationInfo[]	infos )
 	{
 		for( int i = 0; i < infos.length; ++i )
 		{
@@ -183,10 +183,10 @@ public class MBeanGenerator implements MBeanGeneratorHook
 	}
 	
 	
-		private Map
+		private Map<String,Integer>
 	countAllTypes( MBeanInfo	info )
 	{
-		final Map	counts	= new HashMap();
+		final Map<String,Integer>	counts	= new HashMap<String,Integer>();
 		final MBeanAttributeInfo[]	attrInfos		= info.getAttributes();
 		final MBeanOperationInfo[]	operationInfos	= info.getOperations();
 		if ( attrInfos != null )
@@ -202,7 +202,7 @@ public class MBeanGenerator implements MBeanGeneratorHook
 	}
 	
 		private String
-	getImportBlock( Map counts )
+	getImportBlock( Map<String,Integer> counts )
 	{
 		final StringBuffer	buf		= new StringBuffer();
 		final Iterator		iter	= counts.keySet().iterator();

@@ -138,7 +138,7 @@ public final class NoOpAttributeNameMapper implements AttributeNameMapper
 		return( derivedName );
 	}
 	
-		public Set
+		public Set<String>
 	getAttributeNames( )
 	{
 		return( Collections.unmodifiableSet( mAttributeSet ) );

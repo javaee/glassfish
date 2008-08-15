@@ -58,14 +58,14 @@ package com.sun.cli.jmxcmd.util.jmx;
 
 import javax.management.ObjectName;
 
-public final class ObjectNameComparator implements java.util.Comparator
+public final class ObjectNameComparator implements java.util.Comparator<ObjectName>
 {
 	public static final ObjectNameComparator	INSTANCE	= new ObjectNameComparator();
 	
 	private	ObjectNameComparator()	{}
 	
 		public int
-	compare( final Object o1, final Object o2 )
+	compare( final ObjectName o1, final ObjectName o2 )
 	{
 	    int result  = 0;
 	    
@@ -83,8 +83,8 @@ public final class ObjectNameComparator implements java.util.Comparator
 	    }
 	    else
 	    {
-    		final String name1	= JMXUtil.toString( (ObjectName)o1 );
-    		final String name2	= JMXUtil.toString( (ObjectName)o2 );
+    		final String name1	= JMXUtil.toString( o1 );
+    		final String name2	= JMXUtil.toString( o2 );
     		
     		result  = name1.toString().compareTo( name2.toString() );
 		}

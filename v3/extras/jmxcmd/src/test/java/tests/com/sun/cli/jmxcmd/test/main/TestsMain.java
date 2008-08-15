@@ -13,13 +13,16 @@ package com.sun.cli.jmxcmd.test.main;
 
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.extensions.ActiveTestSuite;
+import junit.framework.TestCase;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelperTest;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoTest;
 import com.sun.cli.jcmd.util.misc.TokenizerTest;
 import com.sun.cli.jcmd.util.misc.CompareUtilTest;
+import com.sun.cli.jcmd.util.misc.ListUtil;
 import com.sun.cli.jcmd.util.misc.StringEscaperTest;
 import com.sun.cli.jmxcmd.support.ArgParserTest;
 import com.sun.cli.jmxcmd.support.AliasMgrTest;
@@ -27,10 +30,12 @@ import com.sun.cli.jmxcmd.support.CLISupportMBeanImplTest;
 import com.sun.cli.jmxcmd.util.jmx.ObjectNameQueryImplTest;
 import com.sun.cli.jcmd.util.stringifier.IteratorStringifierTest;
 
+
+
 public class TestsMain
 {
-	final static Class [] TEST_CLASSES = 
-	{
+    @SuppressWarnings("unchecked")
+	final static List<Class<? extends TestCase>>  TEST_CLASSES = ListUtil.newList(
 		StringEscaperTest.class,
 		CompareUtilTest.class,
 		
@@ -45,11 +50,11 @@ public class TestsMain
 		
 		AliasMgrTest.class,
 		ObjectNameQueryImplTest.class,
-		CLISupportMBeanImplTest.class,
-	};
+		CLISupportMBeanImplTest.class
+	);
 	
 		static void
-	testClass( Class theClass )
+	testClass( Class<? extends TestCase> theClass )
 	{
 		System.out.println( "*** testing " + theClass.getName() + " ***");
 		// use 'ActiveTestSuite' to thread the tests
@@ -60,13 +65,9 @@ public class TestsMain
 		public static void
 	main( String [] args )
 	{
-		final Iterator iter	= Arrays.asList( TEST_CLASSES ).iterator();
-		
-		while ( iter.hasNext() )
+        for( final Class<? extends TestCase> clazz : TEST_CLASSES )
 		{
-			final Class	theClass	= (Class)iter.next();
-			
-			testClass( theClass );
+			testClass( clazz );
 		}
 	}
 }

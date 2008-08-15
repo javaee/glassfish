@@ -293,10 +293,10 @@ public class SecurityCmd extends JMXCmd
 	
 		
 		private void
-	getAliases( KeyStore ks, Set trustedCertificateAliases, Set keyAliases)
+	getAliases( KeyStore ks, Set<String> trustedCertificateAliases, Set<String> keyAliases)
 		throws KeyStoreException
 	{
-		Iterator iter	= new EnumerationIterator( ks.aliases() );
+		Iterator<String> iter	= new EnumerationIterator<String>( ks.aliases() );
 		while ( iter.hasNext() )
 		{
 			final String	alias	= (String)iter.next();
@@ -321,7 +321,7 @@ public class SecurityCmd extends JMXCmd
 	getTrustedCertificateAliases( KeyStore ks )
 		throws KeyStoreException
 	{
-		final Set	trustedCertificateAliases	= new HashSet();
+		final Set<String>	trustedCertificateAliases	= new HashSet<String>();
 		
 		getAliases( ks, trustedCertificateAliases, null );
 		return( (String[])
@@ -333,7 +333,7 @@ public class SecurityCmd extends JMXCmd
 	getKeyAliases( KeyStore ks )
 		throws KeyStoreException
 	{
-		final Set	keyAliases	= new HashSet();
+		final Set<String>	keyAliases	= new HashSet<String>();
 		
 		getAliases( ks, null, keyAliases );
 		return( (String[])

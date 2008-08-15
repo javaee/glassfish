@@ -475,7 +475,7 @@ public class MBeanServerConnection_Hook implements MBeanServerConnection
 		final Object []	args	= new Object [] { name, query };
 		final long id = callPreHook( QUERY_NAMES, args );
 		
-		Set	result	= null;
+		Set<ObjectName>	result	= null;
 		try
 		{
 			result	= getConn().queryNames( name, query );

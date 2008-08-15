@@ -283,7 +283,7 @@ public class ConfigureCmd extends CmdBase
 		{
 			final String	part	= parts[ i ];
 			
-			final URL	url	= new File( part ).toURL();
+			final URL	url	= new File( part ).toURI().toURL();
 			
 			getClassLoader().addURL( url );
 			
@@ -334,7 +334,7 @@ public class ConfigureCmd extends CmdBase
 					final File	f	= new File( parts[ i ] );
 					if ( f.exists() )
 					{
-						final URL	url	= f.toURL();
+						final URL	url	= f.toURI().toURL();
 						
 						loader.addURL( url );
 					}

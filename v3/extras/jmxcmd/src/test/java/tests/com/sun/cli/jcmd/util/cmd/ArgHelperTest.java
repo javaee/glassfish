@@ -63,7 +63,7 @@ public class ArgHelperTest extends TestCase
 		final String []	tokens	= (input.length() == 0) ?
 							new String [0] : input.split( " " );
 		
-		final ListIterator	iter	= Arrays.asList( tokens ).listIterator( startOffset );
+		final ListIterator<String>	iter	= Arrays.asList( tokens ).listIterator( startOffset );
 		final ArgHelper		argHelper = new ArgHelperImpl( iter, optionsInfo );
 		
 		return( argHelper );

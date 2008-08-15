@@ -122,7 +122,7 @@ public class StatisticStringifier implements Stringifier
 		buf.append( statistic.getName() + ": " );
 		
 		final SortedMap<String,Object> pairs =
-		    new TreeMap( J2EEUtil.statisticToMap( statistic ) );
+		    new TreeMap<String,Object>( J2EEUtil.statisticToMap( statistic ) );
 		
 		// first emit the standard value names in a proscribed order
 		for( int i = 0; i < ORDERED_VALUES.length; ++i )
@@ -138,10 +138,10 @@ public class StatisticStringifier implements Stringifier
 		}
 		
 		
-		final Iterator	iter	= pairs.keySet().iterator();
+		final Iterator<String>	iter	= pairs.keySet().iterator();
 		while ( iter.hasNext() )
 		{	
-			final String	name	= (String)iter.next();
+			final String	name	= iter.next();
 			final Object	value	= pairs.get( name );
 			
 			buf.append( createNameValuePair( name, value ) );

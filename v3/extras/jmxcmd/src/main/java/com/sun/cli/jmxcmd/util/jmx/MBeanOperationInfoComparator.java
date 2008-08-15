@@ -55,12 +55,6 @@
  * [name of copyright owner]
  */
  
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/util/jmx/MBeanOperationInfoComparator.java,v 1.4 2005/11/08 22:40:22 llc Exp $
- * $Revision: 1.4 $
- * $Date: 2005/11/08 22:40:22 $
- */
- 
 
 package com.sun.cli.jmxcmd.util.jmx;
 
@@ -73,7 +67,7 @@ import com.sun.cli.jmxcmd.util.jmx.stringifier.MBeanFeatureInfoStringifierOption
 /**
 	Caution: this Comparator may be inconsistent with equals() because it ignores the description.
  */
-public final class MBeanOperationInfoComparator implements java.util.Comparator
+public final class MBeanOperationInfoComparator implements java.util.Comparator<MBeanOperationInfo>
 {
 	private static final MBeanOperationInfoStringifier		OPERATION_INFO_STRINGIFIER	=
 		new MBeanOperationInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
@@ -84,13 +78,9 @@ public final class MBeanOperationInfoComparator implements java.util.Comparator
 	private	MBeanOperationInfoComparator()	{}
 	
 		public int
-	compare( Object o1, Object o2 )
+	compare( MBeanOperationInfo info1, MBeanOperationInfo info2 )
 	{
 		final MBeanOperationInfoStringifier	sf	= OPERATION_INFO_STRINGIFIER;
-		
-		
-		final MBeanOperationInfo	info1	= (MBeanOperationInfo)o1;
-		final MBeanOperationInfo	info2	= (MBeanOperationInfo)o2;
 		
 		// we just want to sort based on name and signature; there can't be two operations with the
 		// same name and same signature, so as long as we include the name and signature the

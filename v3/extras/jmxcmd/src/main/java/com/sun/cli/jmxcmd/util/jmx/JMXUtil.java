@@ -250,7 +250,7 @@ public final class JMXUtil
 		if ( objectName.getKeyProperty( key ) != null )
 		{
 			final String				domain	= objectName.getDomain();
-			final java.util.Hashtable	props	= objectName.getKeyPropertyList();
+			final java.util.Hashtable<String,String>	props	= objectName.getKeyPropertyList();
 			
 			props.remove( key );
 			
@@ -330,7 +330,7 @@ public final class JMXUtil
 		@return an ObjectName[]
 	 */
 		public static ObjectName[]
-	objectNameSetToArray( final Set objectNameSet )
+	objectNameSetToArray( final Set<ObjectName> objectNameSet )
 	{
 		final ObjectName[]	objectNames	= new ObjectName[ objectNameSet.size() ];
 		objectNameSet.toArray( objectNames );
@@ -511,7 +511,7 @@ public final class JMXUtil
 	setKeyProperty( final ObjectName objectName, final String key, final String value )
 	{
 		final String	domain	= objectName.getDomain();
-		final java.util.Hashtable	props	= objectName.getKeyPropertyList();
+		final java.util.Hashtable<String,String>	props	= objectName.getKeyPropertyList();
 		
 		props.put( key, value );
 		
@@ -690,18 +690,15 @@ public final class JMXUtil
 		
 		@param attrs	the AttributeList
 	 */
-		public static <T> Map<String,T>
+		public static Map<String,Object>
 	attributeListToValueMap( final AttributeList attrs )
 	{
-		final Map<String,T>	map	= new HashMap<String,T>();
+		final Map<String,Object>	map	= new HashMap<String,Object>();
 		
-		for( int i = 0; i < attrs.size(); ++i )
+        final List<Attribute> l = attrs.asList();
+		for( final Attribute attr : l)
 		{
-			final Attribute	attr	= (Attribute)attrs.get( i );
-			
-		    final T     value   = (T)attr.getValue();
-		    
-			map.put( attr.getName(), value );
+			map.put( attr.getName(), attr.getValue() );
 		}
 		
 		return( map );
@@ -718,11 +715,11 @@ public final class JMXUtil
 	{
 		final Map<String,String>	map	= new HashMap<String,String>();
 		
-		for( int i = 0; i < attrs.size(); ++i )
+        final List<Attribute> l = attrs.asList();
+		for( final Attribute attr : l)
 		{
-			final Attribute	attr	= (Attribute)attrs.get( i );
-			
-			map.put( attr.getName(), attr.getValue().toString() );
+            final Object value = attr.getValue();
+			map.put( attr.getName(), attr == null ? null : (""+value) );
 		}
 		
 		return( map );
@@ -761,7 +758,7 @@ public final class JMXUtil
 		
 		if ( attributeNames.length != 0 )
 		{
-			final Map	infos	= JMXUtil.attributeInfosToMap( origInfo.getAttributes() );
+			final Map<String,MBeanAttributeInfo>	infos	= JMXUtil.attributeInfosToMap( origInfo.getAttributes() );
 			
 			for( int i = 0; i < attributeNames.length; ++i )
 			{
@@ -1006,7 +1003,7 @@ public final class JMXUtil
 	/**
 		Caution: this Comparator may be inconsistent with equals() because it ignores the description.
 	 */
-	public static final class MBeanOperationInfoComparator implements java.util.Comparator
+	public static final class MBeanOperationInfoComparator implements java.util.Comparator<MBeanOperationInfo>
 	{
 		private static final MBeanOperationInfoStringifier		OPERATION_INFO_STRINGIFIER	=
 			new MBeanOperationInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
@@ -1017,12 +1014,9 @@ public final class JMXUtil
 		private	MBeanOperationInfoComparator()	{}
 		
 			public int
-		compare( Object o1, Object o2 )
+		compare( MBeanOperationInfo info1, MBeanOperationInfo info2 )
 		{
 			final MBeanOperationInfoStringifier	sf	= OPERATION_INFO_STRINGIFIER;
-			
-			final MBeanOperationInfo	info1	= (MBeanOperationInfo)o1;
-			final MBeanOperationInfo	info2	= (MBeanOperationInfo)o2;
 			
 			// we just want to sort based on name and signature; there can't be two operations with the
 			// same name and same signature, so as long as we include the name and signature the
@@ -1053,7 +1047,7 @@ public final class JMXUtil
 	/**
 		Caution: this Comparator may be inconsistent with equals() because it ignores the description.
 	 */
-	public static final class MBeanAttributeInfoComparator implements java.util.Comparator
+	public static final class MBeanAttributeInfoComparator implements java.util.Comparator<MBeanAttributeInfo>
 	{
 		private static final MBeanAttributeInfoStringifier		ATTRIBUTE_INFO_STRINGIFIER	=
 			new MBeanAttributeInfoStringifier( new MBeanFeatureInfoStringifierOptions( false, ",") );
@@ -1063,10 +1057,10 @@ public final class JMXUtil
 		private	MBeanAttributeInfoComparator()	{}
 		
 			public int
-		compare( Object o1, Object o2 )
+		compare( MBeanAttributeInfo o1, MBeanAttributeInfo o2 )
 		{
-			final String	s1	= ATTRIBUTE_INFO_STRINGIFIER.stringify( (MBeanAttributeInfo)o1 );
-			final String	s2	= ATTRIBUTE_INFO_STRINGIFIER.stringify( (MBeanAttributeInfo)o2 );
+			final String	s1	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o1 );
+			final String	s2	= ATTRIBUTE_INFO_STRINGIFIER.stringify( o2 );
 			
 			return( s1.compareTo( s2 ) );
 		}

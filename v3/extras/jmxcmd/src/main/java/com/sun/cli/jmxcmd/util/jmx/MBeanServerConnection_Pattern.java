@@ -136,12 +136,12 @@ public class MBeanServerConnection_Pattern extends MBeanServerConnection_Hook
 		
 		if ( input.isPattern() )
 		{
-			final Set	resolvedNames	= getConn().queryNames( input, null );
+			final Set<ObjectName>	resolvedNames	= getConn().queryNames( input, null );
 			final int	numNames	= resolvedNames.size();
 			
 			if ( numNames == 1 )
 			{
-				resolvedName	= (ObjectName)SetUtil.getSingleton( resolvedNames );
+				resolvedName	= SetUtil.getSingleton( resolvedNames );
 			}
 			else if ( numNames > 1 )
 			{

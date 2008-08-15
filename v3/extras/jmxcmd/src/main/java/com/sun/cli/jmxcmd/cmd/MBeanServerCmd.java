@@ -350,7 +350,7 @@ public class MBeanServerCmd extends JMXCmd
 		MBeanServer			server,
 		final int			port,
 		final ObjectName	objectName, 
-		Map					env )
+		Map<String,Object>					env )
 		throws MalformedURLException, IOException,
 		InstanceAlreadyExistsException, InstanceNotFoundException, MalformedObjectNameException,
 		MBeanRegistrationException, NotCompliantMBeanException
@@ -380,7 +380,7 @@ public class MBeanServerCmd extends JMXCmd
 		throws Exception
 	{
 		final MBeanServer	server	= getMBeanServer();
-		final Map			env	= new HashMap();
+		final Map<String,Object>			env	= new HashMap<String,Object>();
 		final boolean		useTLS	= keyStoreFile != null;
 		
 		final SaslServerSetup	setup	= new SaslServerSetup( env, useTLS );
@@ -641,7 +641,7 @@ public class MBeanServerCmd extends JMXCmd
 	{
 		final MBeanServer	server	= findMBeanServer( getDefaultConnectionName() );
 		
-		final HashMap	map	= new HashMap();
+		final HashMap<String,Object>	map	= new HashMap<String,Object>();
 		
 		if ( sRMIRegistry == null )
 		{

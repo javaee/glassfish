@@ -66,7 +66,7 @@ public interface JMXConnectorProvider
 		@param m	the Map containing options entered as argument to jmxcmd
 		@return		true if supported, false if not
 	 */
-	public boolean		isSupported( java.util.Map m );
+	public boolean		isSupported( java.util.Map<String,String> m );
 	
 	/**
 		Connect to a server using the specified values found in the Map.
@@ -74,7 +74,7 @@ public interface JMXConnectorProvider
 		@param m	the Map containing the connection information.
 		@return		a JMXConnector
 	 */
-	public JMXConnector	connect( java.util.Map m ) throws Exception;
+	public JMXConnector	connect( java.util.Map<String,String> m ) throws Exception;
 	
 }
 

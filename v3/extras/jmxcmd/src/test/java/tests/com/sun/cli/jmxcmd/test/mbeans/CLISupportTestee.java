@@ -216,7 +216,7 @@ public final class CLISupportTestee implements DynamicMBean
 	{
 		final Method []	allMethods	= this.getClass().getDeclaredMethods();
 		
-		final List<Method>	exportMethods	= new ArrayList<Method>();
+		final List<MBeanOperationInfo>	exportMethods	= new ArrayList<MBeanOperationInfo>();
 		final int 		allCount	= Array.getLength( allMethods );
 		for( int i = 0; i < allCount; ++i )
 		{
@@ -329,16 +329,16 @@ public final class CLISupportTestee implements DynamicMBean
 	
 	
 		public MBeanOperationInfo
-	createVirtualOperationInfo( String operationName, Class [] argClasses )
+	createVirtualOperationInfo( String operationName, Class<?> [] argClasses )
 	{
 		final int	numArgs	= Array.getLength( argClasses );
 		
 		// create a method for each supported class
-		final ArrayList	paramInfos	= new ArrayList();
+		final List<MBeanParameterInfo>	paramInfos	= new ArrayList<MBeanParameterInfo>();
 		
 		for( int i = 0; i < numArgs; ++i )
 		{
-			final Class	theClass	= argClasses[ i ];
+			final Class<?>	theClass	= argClasses[ i ];
 			
 			// create single parameter with name of "pX", where X is the index of the param 1,2,3, etc
 			final String	parameterName	= "p" + (i + 1);

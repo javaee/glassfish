@@ -222,8 +222,8 @@ public class NotificationBuilder
 		final String		key,
 		final Serializable	value )
 	{
-	    final Map<String,Serializable>   userData    =
-	        (Map<String,Serializable>)notif.getUserData();
+        @SuppressWarnings("unchecked")
+	    final Map<String,Serializable>   userData    = (Map<String,Serializable>)notif.getUserData();
 	        
 		userData.put( key, value );
 	}
@@ -236,8 +236,8 @@ public class NotificationBuilder
 		final Notification	              notif,
 		final Map<String,? extends Serializable>    additionalUserData )
 	{
-	    final Map<String,Serializable>   userData    =
-	        (Map<String,Serializable>)notif.getUserData();
+        @SuppressWarnings("unchecked")
+	    final Map<String,Serializable>   userData    = Map.class.cast(notif.getUserData());
 	        
 		userData.putAll( additionalUserData );
 	}

@@ -115,7 +115,7 @@ public final class RMIDefaultConnectorProvider
 	
 		
 		public JMXConnector
-	connect( java.util.Map params )
+	connect( java.util.Map<String,String> params )
 		throws IOException
 	{
 		System.out.println( SmartStringifier.toString( params ) );
@@ -128,7 +128,7 @@ public final class RMIDefaultConnectorProvider
 		requireParam( host, "host" );
 		requireParam( port, "port" );
 		
-		final Map	env	= initEnv( params );
+		final Map<String,Object>	env	= initEnv( params );
 		
 		String urlString	= null;
 		if ( jndiName != null )
@@ -185,7 +185,7 @@ public final class RMIDefaultConnectorProvider
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
 		GSetUtil.newUnmodifiableStringSet( RMI_PROTOCOL );
 	
-		protected Set
+		protected Set<String>
 	getSupportedProtocols()
 	{
 		return( SUPPORTED_PROTOCOLS );

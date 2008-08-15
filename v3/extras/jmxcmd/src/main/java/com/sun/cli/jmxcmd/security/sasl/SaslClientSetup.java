@@ -17,7 +17,7 @@ import java.util.Map;
 public class SaslClientSetup extends SaslSetup
 {
 		public
-	SaslClientSetup( final Map env, final boolean useTLS )
+	SaslClientSetup( final Map<String,Object> env, final boolean useTLS )
 	{
 		super( env, useTLS );
 	}

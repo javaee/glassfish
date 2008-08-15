@@ -33,7 +33,7 @@ public abstract class JMXConnectorProviderBase
 	{
 	}
 
-	protected abstract Set	getSupportedProtocols();
+	protected abstract Set<String>	getSupportedProtocols();
 	
 	
 		protected void
@@ -48,36 +48,36 @@ public abstract class JMXConnectorProviderBase
 	
 	
 		protected String
-	getHost( final Map params )
+	getHost( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.HOST ) );
 	}
 		protected String
-	getPort( final Map params )
+	getPort( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.PORT ) );
 	}
 	
 		protected String
-	getProtocol( final Map params )
+	getProtocol( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.PROTOCOL ) );
 	}
 	
 		protected String
-	getTruststore( final Map params )
+	getTruststore( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.TRUSTSTORE_FILE ) );
 	}
 	
 		protected String
-	getTruststorePassword( final Map params )
+	getTruststorePassword( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.TRUSTSTORE_PASSWORD ) );
 	}
 	
 		protected String
-	getJNDIName( final Map params )
+	getJNDIName( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.JNDI_NAME ) );
 	}
@@ -85,7 +85,7 @@ public abstract class JMXConnectorProviderBase
 	
 	
 		protected int
-	getPortInt( final Map params )
+	getPortInt( final Map<String,String> params )
 	{
 		final String	portParam	= getPort( params );
 		
@@ -98,19 +98,19 @@ public abstract class JMXConnectorProviderBase
 	}
 	
 		protected String
-	getUser( final Map params )
+	getUser( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.USER ) );
 	}
 	
 		protected String
-	getPassword( final Map params )
+	getPassword( final Map<String,String> params )
 	{
 		return( (String)params.get( JMXConnectorProvider.PASSWORD ) );
 	}
 	
 		protected String[]
-	getCredentials( final Map params )
+	getCredentials( final Map<String,String> params )
 	{
 		String[]	credentials	= null;
 		
@@ -124,10 +124,10 @@ public abstract class JMXConnectorProviderBase
 		return credentials;
 	}
 	
-		protected Map
-	initEnv( final Map params )
+		protected Map<String,Object>
+	initEnv( final Map<String,String> params )
 	{
-		final HashMap	env	= new HashMap();
+		final HashMap<String,Object>	env	= new HashMap<String,Object>();
 		
 		final String[]	credentials	= getCredentials( params );
 		if ( credentials != null )
@@ -140,12 +140,12 @@ public abstract class JMXConnectorProviderBase
 	
 	
 		public boolean
-	isSupported( java.util.Map m )
+	isSupported( java.util.Map<String,String> m )
 	{
 		boolean 		supports	= false;
 		final String	requestedProtocol	= (String)m.get( PROTOCOL );
 		
-		final Set	protocols	= getSupportedProtocols();
+		final Set<String>	protocols	= getSupportedProtocols();
 		
 		return( protocols.contains( requestedProtocol ) );
 	}
@@ -153,7 +153,7 @@ public abstract class JMXConnectorProviderBase
 		protected JMXConnector
 	connect(
 		final String	urlString,
-		final Map		env )
+		final Map<String,Object>		env )
 		throws MalformedURLException, IOException
 	{
 		final JMXServiceURL	url			= new JMXServiceURL( urlString );

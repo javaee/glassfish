@@ -2,13 +2,6 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/jsr77/statistics/StatsImpl.java,v 1.1 2004/10/14 19:06:26 llc Exp $
- * $Revision: 1.1 $
- * $Date: 2004/10/14 19:06:26 $
- */
-
 package com.sun.cli.jmxcmd.jsr77.statistics;
 
 import java.util.Iterator;
@@ -66,7 +59,7 @@ import com.sun.cli.jcmd.util.misc.SetUtil;
 	</ul>
  */
 public class StatsImpl
-	extends MapGetterInvocationHandler
+	extends MapGetterInvocationHandler<Statistic>
 	implements Stats, Serializable
 {
 	static final long serialVersionUID = 6228973710059979557L;
@@ -81,11 +74,11 @@ public class StatsImpl
 		this( createStatisticsMap( compositeData ) );
 	}
 	
-		private static Map
-	requireSerializableMap( final Map m )
+		private static Map<String,Statistic>
+	requireSerializableMap( final Map<String,Statistic> m )
 	{
 		// required every entry to be a Statistic
-		final Iterator	iter	= m.values().iterator();
+		final Iterator<Statistic>	iter	= m.values().iterator();
 		while ( iter.hasNext() )
 		{
 			if ( ! ( iter.next() instanceof Statistic ) )
@@ -94,7 +87,7 @@ public class StatsImpl
 			}
 		}
 		
-		Map	sMap	= null;
+		Map<String,Statistic>	sMap	= null;
 		
 		if ( m instanceof Serializable )
 		{
@@ -102,7 +95,7 @@ public class StatsImpl
 		}
 		else
 		{
-			sMap	= new HashMap( m );
+			sMap	= new HashMap<String,Statistic>( m );
 		}
 		
 		return( sMap );
@@ -194,7 +187,7 @@ public class StatsImpl
 		and whose values are the Statistics.
 	 */
 		public
-	StatsImpl( final Map statisticsIn )
+	StatsImpl( final Map<String,Statistic> statisticsIn )
 	{
 		super( requireSerializableMap( statisticsIn ) );
 	}
@@ -209,14 +202,14 @@ public class StatsImpl
 	}
 	
 	
-		private static Map
+		private static Map<String,Statistic>
 	createStatisticsMap( final CompositeData compositeData )
 	{
 		final CompositeType	compositeType	= compositeData.getCompositeType();
-		final Set		keySet	= compositeType.keySet();
-		final Iterator	iter	= keySet.iterator();
+		final Set<String>		keySet	= compositeType.keySet();
+		final Iterator<String>	iter	= keySet.iterator();
 		
-		final HashMap	map	= new HashMap();
+		final HashMap<String,Statistic>	map	= new HashMap<String,Statistic>();
 		
 		while ( iter.hasNext() )
 		{
@@ -229,10 +222,10 @@ public class StatsImpl
 		return( map );
 	}
 	
-		private static Map
+		private static Map<String,Statistic>
 	createStatisticsMap( final Statistic[]	statistics )
 	{
-		final Map	m	= new HashMap();
+		final Map<String,Statistic>	m	= new HashMap<String,Statistic>();
 		
 		for( int i = 0; i < statistics.length; ++i )
 		{
@@ -266,7 +259,7 @@ public class StatsImpl
 		public String[]
 	getStatisticNames()
 	{
-		final Set	names	= getMap().keySet();
+		final Set<String>	names	= getMap().keySet();
 		
 		return( SetUtil.toStringArray( names ) );
 	}
@@ -274,7 +267,7 @@ public class StatsImpl
 		public Statistic[]
 	getStatistics()
 	{
-		final Collection	values	= getMap().values();
+		final Collection<Statistic>	values	= getMap().values();
 		final Statistic[]	statistics	= new Statistic[ values.size() ];
 		
 		return( (Statistic[])values.toArray( statistics ) );

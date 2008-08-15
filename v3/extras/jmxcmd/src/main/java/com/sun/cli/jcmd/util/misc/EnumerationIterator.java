@@ -54,12 +54,6 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jcmd/util/misc/EnumerationIterator.java,v 1.4 2005/11/08 22:39:21 llc Exp $
- * $Revision: 1.4 $
- * $Date: 2005/11/08 22:39:21 $
- */
 package com.sun.cli.jcmd.util.misc;
 
 import java.util.Iterator;
@@ -69,12 +63,12 @@ import java.util.Enumeration;
 /**
 	Implements the Iterator interface over an Enumeration
  */
-public final class EnumerationIterator implements Iterator
+public final class EnumerationIterator<T> implements Iterator<T>
 {
-	private final Enumeration	mEnum;
+	private final Enumeration<T>	mEnum;
 	
 		public
-	EnumerationIterator( Enumeration enumIn )
+	EnumerationIterator( Enumeration<T> enumIn )
 	{
 		mEnum	= enumIn;
 	}
@@ -85,7 +79,7 @@ public final class EnumerationIterator implements Iterator
 		return( mEnum.hasMoreElements() );
 	}
 	
-		public Object
+		public T
 	next()
 	{
 		return( mEnum.nextElement() );

@@ -67,7 +67,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-import com.sun.appserv.management.client.ConnectionSource;
 
 
 /**

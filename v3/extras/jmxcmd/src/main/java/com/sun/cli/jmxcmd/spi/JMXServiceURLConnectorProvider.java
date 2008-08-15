@@ -66,14 +66,14 @@ public final class JMXServiceURLConnectorProvider
 	}
 	
 		public JMXConnector
-	connect( java.util.Map params )
+	connect( java.util.Map<String,String> params )
 		throws IOException
 	{
 		final String	urlString		= (String)params.get( URL );
 		
 		requireParam( urlString, "url" );
 		
-		final Map		env	= initEnv( params );
+		final Map<String,Object>		env	= initEnv( params );
 				
 		return( connect( urlString, env ) );
 	}
@@ -82,7 +82,7 @@ public final class JMXServiceURLConnectorProvider
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
 		GSetUtil.newUnmodifiableStringSet( URL_PROTOCOL );
 	
-		protected Set
+		protected Set<String>
 	getSupportedProtocols()
 	{
 		return( SUPPORTED_PROTOCOLS );

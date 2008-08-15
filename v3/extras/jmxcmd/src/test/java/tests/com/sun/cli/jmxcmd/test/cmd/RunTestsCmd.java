@@ -2,17 +2,12 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/tests/com/sun/cli/jmxcmd/test/cmd/RunTestsCmd.java,v 1.11 2004/10/14 19:06:46 llc Exp $
- * $Revision: 1.11 $
- * $Date: 2004/10/14 19:06:46 $
- */
- 
 package com.sun.cli.jmxcmd.test.cmd;
 
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.sun.cli.jcmd.framework.CmdBase;
 import com.sun.cli.jcmd.framework.CmdHelp;
@@ -25,9 +20,11 @@ import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 
 
+
 import com.sun.cli.jcmd.util.cmd.ArgHelperTest;
 import com.sun.cli.jcmd.util.cmd.OptionsInfoTest;
 import com.sun.cli.jcmd.util.misc.TokenizerTest;
+import com.sun.cli.jcmd.util.misc.ListUtil;
 import com.sun.cli.jcmd.util.misc.CompareUtilTest;
 import com.sun.cli.jcmd.util.misc.StringEscaperTest;
 import com.sun.cli.jcmd.util.misc.StringUtil;
@@ -46,6 +43,7 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 import com.sun.cli.jmxcmd.util.jmx.ObjectNameQueryImplTest;
 
 import junit.extensions.ActiveTestSuite;
+import junit.framework.TestCase;
 
 
 /**
@@ -59,9 +57,8 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 		super( env );
 	}
 	
-	
-	private final static Class [] TEST_CLASSES = 
-	{
+	@SuppressWarnings("unchecked")
+	private final static List<Class<? extends TestCase>> TEST_CLASSES = ListUtil.newList(
 		StringEscaperTest.class,
 		CompareUtilTest.class,
 		
@@ -76,8 +73,8 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 		
 		AliasMgrTest.class,
 		ObjectNameQueryImplTest.class,
-		CLISupportMBeanImplTest.class,
-	};
+		CLISupportMBeanImplTest.class
+	);
 	
 	
 	static final class RunTestsCmdHelp extends CmdHelpImpl
@@ -124,7 +121,7 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 
 
 		 int
-	testClass( Class theClass )
+	testClass( Class<? extends TestCase> theClass )
 	{
 		System.out.println( "*** testing " + theClass.getName() + " ***");
 		// use 'ActiveTestSuite' to thread the tests
@@ -136,12 +133,12 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 	
 	
 		 void
-	runTests( Class[] classes )
+	runTests( final List<Class<? extends TestCase>> classes )
 		throws CmdException
 	{
-		for( int i = 0; i < classes.length; ++i )
+		for( final Class<? extends TestCase> c : classes )
 		{
-			final int failureCount	= testClass( classes[ i ] );
+			final int failureCount	= testClass( c);
 			if ( failureCount != 0 )
 			{
 				throw new CmdException( getSubCmdNameAsInvoked(), "Unit had failures: " + failureCount );
@@ -154,12 +151,14 @@ public class RunTestsCmd extends com.sun.cli.jcmd.framework.CmdBase
 	runTests( String[] names )
 		throws ClassNotFoundException, CmdException
 	{
-		final Class[]	classes	= new Class[ names.length ];
+		final List<Class<? extends TestCase>>	classes	= new ArrayList<Class<? extends TestCase>>();
 		
-		for( int i = 0; i < classes.length; ++i )
+		for( int i = 0; i < names.length; ++i )
 		{
-			classes[ i ]	= ClassUtil.getClassFromName( names[ i ] );
-			if ( ! junit.framework.TestCase.class.isAssignableFrom( classes[ i ] ) )
+        @SuppressWarnings("unchecked")
+            final Class<? extends TestCase> c = (Class<? extends TestCase>)ClassUtil.getClassFromName( names[ i ] );
+            classes.add(c);
+			if ( ! TestCase.class.isAssignableFrom( c) )
 			{
 				throw new CmdException( getSubCmdNameAsInvoked(), "class " +
 					StringUtil.quote( names[ i ] ) + " does not extend junit.framework.TestCase" ); 

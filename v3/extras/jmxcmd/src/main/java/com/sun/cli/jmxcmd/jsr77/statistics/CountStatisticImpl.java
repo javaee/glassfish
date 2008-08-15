@@ -67,7 +67,7 @@ public class CountStatisticImpl extends StatisticImpl
 	}
 	
 		public
-	CountStatisticImpl( final Map data )
+	CountStatisticImpl( final Map<String,Object> data )
 	{
 		this( new MapStatisticImpl( data ) );
 	}

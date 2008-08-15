@@ -91,14 +91,14 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 		A null pattern matches anything.
 	 */
 		boolean
-	match( Hashtable properties, Pattern propertyPattern, Pattern valuePattern )
+	match( Hashtable<String,String> properties, Pattern propertyPattern, Pattern valuePattern )
 	{
-		final Iterator	keys	= new EnumerationIterator( properties.keys() );
+		final Iterator<String>	keys	= new EnumerationIterator<String>( properties.keys() );
 		boolean	matches	= false;
 		
 		while ( keys.hasNext() )
 		{
-			final String	key	= (String)keys.next();
+			final String	key	= keys.next();
 			
 			if ( propertyPattern == null || propertyPattern.matcher( key ).matches() )
 			{
@@ -138,7 +138,7 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 	{
 		boolean	matches	= true;
 		
-		final Hashtable	properties	= name.getKeyPropertyList();
+		final Hashtable<String,String>	properties	= name.getKeyPropertyList();
 		
 		for( int i = 0; i < propertyPatterns.length; ++i )
 		{
@@ -168,7 +168,7 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 	{
 		boolean	matches	= false;
 		
-		final Hashtable	properties	= name.getKeyPropertyList();
+		final Hashtable<String,String>	properties	= name.getKeyPropertyList();
 		
 		for( int i = 0; i < propertyPatterns.length; ++i )
 		{
@@ -245,8 +245,8 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 	}
 	
 
-		Set
-	matchEither( Matcher matcher, Set startingSet, String [] regexNames, String [] regexValues )
+		Set<ObjectName>
+	matchEither( Matcher matcher, Set<ObjectName> startingSet, String [] regexNames, String [] regexValues )
 	{
 		if ( regexNames == null && regexValues == null )
 		{
@@ -254,8 +254,8 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 			return( startingSet );
 		}
 		
-		final Iterator	iter	= startingSet.iterator();
-		final Set		results	= new HashSet();
+		final Iterator<ObjectName>	iter	= startingSet.iterator();
+		final Set<ObjectName>		results	= new HashSet<ObjectName>();
 		
 		int	numMatches	= 0;
 		if ( regexNames != null )
@@ -272,7 +272,7 @@ public class ObjectNameQueryImpl implements ObjectNameQuery
 		
 		while ( iter.hasNext() )
 		{
-			final ObjectName	name	= (ObjectName)iter.next();
+			final ObjectName	name	= iter.next();
 			
 			if ( matcher.match( name, namePatterns, valuePatterns ) )
 			{

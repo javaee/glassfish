@@ -249,10 +249,10 @@ public class JCmdMain
 			InstantiationException, InvocationTargetException,
 			IllegalAccessException
 	{
-		final Class	theClass	= ClassUtil.getClassFromName( className );
+		final Class<?>	theClass	= ClassUtil.getClassFromName( className );
 		
-		final Class[]		sig	= new Class[] { Map.class };
-		final Constructor	c	= theClass.getConstructor( sig );
+		final Class<?>[]		sig	= new Class[] { Map.class };
+		final Constructor<?>	c	= theClass.getConstructor( sig );
 		
 		return ( (CmdMgr)c.newInstance( new Object[] { metaOptions } ) );
 	}

@@ -121,7 +121,7 @@ public final class StatisticFactory
 		@param	mappings		a Map containing keys of type String and their Object values
 	 */
 		public static Statistic
-	create( Class theInterface, final Map mappings )
+	create( Class theInterface, final Map<String,Object> mappings )
 	{
 		Statistic	result	= null;
 		
@@ -160,8 +160,8 @@ public final class StatisticFactory
 	}
 	
 
-	
-	private static final Class[] KNOWN_STATISTICS	= new Class[]
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends Statistic>[] KNOWN_STATISTICS	= new Class[]
 	{
 		CountStatistic.class,
 		TimeStatistic.class,
@@ -170,16 +170,16 @@ public final class StatisticFactory
 		BoundaryStatistic.class,
 	};
 	
-		public static Class
+		public static Class<? extends Statistic>
 	getInterface( final Statistic s )
 	{
-		final Class	implClass	= s.getClass();
+		final Class<? extends Statistic>	implClass	= s.getClass();
 		
-		Class	theInterface	= MapStatistic.class;
+		Class<? extends Statistic>	theInterface	= MapStatistic.class;
 		
 		for( int i = 0; i < KNOWN_STATISTICS.length; ++i )
 		{
-			final Class	candidateInterface	= KNOWN_STATISTICS[ i ];
+			final Class<? extends Statistic>	candidateInterface	= KNOWN_STATISTICS[ i ];
 			
 			if ( candidateInterface.isAssignableFrom( implClass )  )
 			{

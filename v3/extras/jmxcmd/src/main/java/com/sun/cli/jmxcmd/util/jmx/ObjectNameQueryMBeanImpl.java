@@ -100,7 +100,7 @@ public class ObjectNameQueryMBeanImpl
 	}
 	
 		public Set<ObjectName>
-	matchAll( Set startingSet, String [] regexNames, String [] regexValues )
+	matchAll( Set<ObjectName> startingSet, String [] regexNames, String [] regexValues )
 	{
 		return( mImpl.matchAll( startingSet, regexNames, regexValues ) );
 	}

@@ -57,10 +57,10 @@ public interface MapStatistic extends Statistic
 		
 		@return an unmodifiableSet of the field names (String)
 	 */
-	public Set	valueNames();
+	public Set<String>	valueNames();
 	
 	
-	public Map		asMap();
+	public Map<String,Object>		asMap();
 	public String	toString();
 }
 

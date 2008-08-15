@@ -890,7 +890,7 @@ public abstract class CmdBase implements Cmd
 		@param theClass	the class of the command
 	 */
 		public static CmdInfos
-	getCmdInfos( final Class theClass )
+	getCmdInfos( final Class<?> theClass )
 		throws java.lang.NoSuchMethodException,
 			java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException
 	{

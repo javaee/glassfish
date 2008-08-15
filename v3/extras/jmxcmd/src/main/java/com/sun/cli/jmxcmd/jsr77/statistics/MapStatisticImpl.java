@@ -33,14 +33,14 @@ public class MapStatisticImpl implements MapStatistic, Serializable
 {
 	static final long serialVersionUID = -5921306849633125922L;
 	
-	final Map	mItems;
+	final Map<String,Object>	mItems;
 	
 	/**
 	 */
 		public
-	MapStatisticImpl( final Map map )
+	MapStatisticImpl( final Map<String,Object> map )
 	{
-		mItems	= new HashMap( map );
+		mItems	= new HashMap<String,Object>( map );
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class MapStatisticImpl implements MapStatistic, Serializable
 	{
 		if ( statistic instanceof MapStatistic )
 		{
-			mItems	= new HashMap();
+			mItems	= new HashMap<String,Object>();
 			
 			mItems.putAll( ((MapStatistic)statistic).asMap() );
 		}
@@ -191,14 +191,14 @@ public class MapStatisticImpl implements MapStatistic, Serializable
 		
 		@return an unmodifiableSet of the field names (String)
 	 */
-		public Set
+		public Set<String>
 	valueNames()
 	{
  		return( Collections.unmodifiableSet( mItems.keySet() ) );
 	}
 	
 	
-		public Map
+		public Map<String,Object>
 	asMap()
 	{
 		return( Collections.unmodifiableMap( mItems ) );

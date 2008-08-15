@@ -636,7 +636,7 @@ public final class ArgParserImpl implements ArgParser
 		mInput		= input;
 		mCurIndex	= 0;
 		
-		final ArrayList	list	= new ArrayList();
+		final List<String>	list	= new ArrayList<String>();
 		
 		StringBuffer	buf	= new StringBuffer();
 		while ( true )
@@ -658,7 +658,7 @@ public final class ArgParserImpl implements ArgParser
 		}
 		
 		
-		final String []	results	= (String [])list.toArray( new String [ list.size() ]);
+		final String []	results	= list.toArray( new String [ list.size() ]);
 		
 		return( results );
 	}
@@ -674,7 +674,7 @@ public final class ArgParserImpl implements ArgParser
 		mInput		= input;
 		mCurIndex	= 0;
 		
-		final ArrayList	results	= new ArrayList();
+		final List<ParseResult>	results	= new ArrayList<ParseResult>();
 		
 		while ( inputRemainingCount() > 0 )
 		{

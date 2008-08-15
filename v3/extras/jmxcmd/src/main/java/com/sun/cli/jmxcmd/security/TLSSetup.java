@@ -35,7 +35,7 @@ import com.sun.cli.jcmd.util.misc.StringUtil;
 
 public final class TLSSetup
 {
-	private	TLSSetup( final Map env, boolean useTLS )	{}
+	private	TLSSetup()	{}
 	
 	
 		public static KeyStore
@@ -121,7 +121,7 @@ public final class TLSSetup
 	
 		public static void
 	setupTLSForJMXMP(
-		final Map		env,
+		final Map<String,Object>		env,
 		final File		keystoreFile,
 		final String	optionalKeystorePassword,
 		final String	optionalKeyPassword )

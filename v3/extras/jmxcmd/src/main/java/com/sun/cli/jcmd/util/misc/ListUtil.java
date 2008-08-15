@@ -63,12 +63,14 @@ package com.sun.cli.jcmd.util.misc;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Enumeration;
 
 
 public final class ListUtil
 {
-		private
+	private
 	ListUtil( )
 	{
 		// disallow instantiation
@@ -79,20 +81,47 @@ public final class ListUtil
 	 */
 		public static <T> void
 	addArray(
-		final List<T>		list,
-		final T[]	array )
+		final List<T> 	 list,
+		final T[]	     array )
 	{
 		for( int i = 0; i < array.length; ++i )
 		{
 			list.add( array[ i ] );
 		}
 	}
-	
+        
+        public static  List<String>
+    asStringList( final Object value )
+    {
+        List<String> values = null;
+        
+        if ( value instanceof String )
+        {
+            values = Collections.singletonList( (String)value );
+        }
+        else if ( value instanceof String[] )
+        {
+            values = ListUtil.newListFromArray( (String[])value );
+        }
+        else if ( value instanceof List )
+        {
+            final List<String> checkedList = TypeCast.checkList( TypeCast.asList(value), String.class );
+            values = new ArrayList<String>( checkedList );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "" + value );
+        }
+        
+        return values;
+    }
+
+
 	/**
 		Convert a List to a String[]
 	 */
 		public static String[]
-	toStringArray( final List	list )
+	toStringArray( final List<?>	list )
 	{
 		final String[]	names	= new String[ list.size() ];
 		
@@ -112,18 +141,30 @@ public final class ListUtil
 		public static <T> List<T>
 	newListFromCollection( final Collection<T> c )
 	{
-		final ArrayList<T>	list	= new ArrayList<T>();
+		final List<T>	list	= new ArrayList<T>();
 		
 		list.addAll( c );
 		
 		return( list );
 	}
 	
+        public static <T> List<T>
+    newList( final Enumeration<T> e )
+    {
+        final List<T> items = new ArrayList<T>();
+        while ( e.hasMoreElements() )
+        {
+            items.add( e.nextElement() );
+        }
+        return items;
+    }
+
+
 	/**
 		Create a new List from a Collection
 	 */
-		public static <T> List<T>
-	newListFromIterator( final Iterator<T> iter )
+		public static <T> List<? extends T>
+	newListFromIterator( final Iterator<? extends T> iter )
 	{
 		final List<T>	list	= new ArrayList<T>();
 		
@@ -139,7 +180,7 @@ public final class ListUtil
 		Create a new List with one member.
 	 */
 		public static <T> List<T>
-	newList( final T m1 )
+	newList( T m1 )
 	{
 		final List<T>	list	= new ArrayList<T>();
 		
@@ -174,7 +215,7 @@ public final class ListUtil
 		final T m2, 
 		final T m3 )
 	{
-		final List<T>	list	= new ArrayList<T>();
+		final List<T> 	list	= new ArrayList<T>();
 		
 		list.add( m1 );
 		list.add( m2 );
@@ -193,7 +234,7 @@ public final class ListUtil
 		final T m3, 
 		final T m4 )
 	{
-		final List<T>	list	= new ArrayList<T>();
+		final List<T> 	list	= new ArrayList<T> ();
 		
 		list.add( m1 );
 		list.add( m2 );
@@ -214,7 +255,7 @@ public final class ListUtil
 		final T m4, 
 		final T m5 )
 	{
-		final List<T>	list	= new ArrayList<T>();
+		final List<T> 	list	= new ArrayList<T> ();
 		
 		list.add( m1 );
 		list.add( m2 );
@@ -225,7 +266,17 @@ public final class ListUtil
 		return( list );
 	}
 	
-	
+		public static <T> List<T>
+	newList( final T... args)
+	{
+        final List<T> items = new ArrayList<T>();
+        for( final T item : args )
+        {
+            items.add( item );
+        }
+        return items;
+    }
+
 
 		public static <T> List<T>
 	newListFromArray( final T []  items )
@@ -248,7 +299,7 @@ public final class ListUtil
 	reverse( final List<T> list )
 	{
 		final int	numItems	= list.size();
-		final List<T>	result		= new ArrayList<T>( numItems );
+		final List<T> result		= new ArrayList<T>( numItems );
 		
 		for( int i = 0; i < numItems; ++i )
 		{

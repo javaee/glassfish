@@ -295,7 +295,7 @@ public class AttributeNameMapperImpl implements AttributeNameMapper
 	}
 	
 	
-		public Set
+		public Set<String>
 	getAttributeNames( )
 	{
 		return( mAllNames );

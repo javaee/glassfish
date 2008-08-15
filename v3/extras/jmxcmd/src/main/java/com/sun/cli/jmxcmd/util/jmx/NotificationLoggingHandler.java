@@ -54,12 +54,6 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/util/jmx/NotificationLoggingHandler.java,v 1.1 2005/11/08 22:40:24 llc Exp $
- * $Revision: 1.1 $
- * $Date: 2005/11/08 22:40:24 $
- */
 
 package com.sun.cli.jmxcmd.util.jmx;
 
@@ -69,7 +63,6 @@ import java.util.logging.Handler;
 import javax.management.ObjectName;
 import javax.management.Notification;
 
-import com.sun.appserv.management.base.AMXMBeanLogging;
 import com.sun.cli.jmxcmd.util.jmx.NotificationSender;
 import com.sun.cli.jmxcmd.util.jmx.NotificationBuilder;
 

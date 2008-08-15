@@ -2,20 +2,11 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-
- 
-/*
- * $Header: /m/jws/jmxcmd/tests/com/sun/cli/jcmd/util/misc/CompareUtilTest.java,v 1.1 2003/11/12 02:25:26 llc Exp $
- * $Revision: 1.1 $
- * $Date: 2003/11/12 02:25:26 $
- */
  
 package com.sun.cli.jcmd.util.misc;
 
 
 import junit.framework.TestCase;
-
-
 
 public class CompareUtilTest extends TestCase
 {

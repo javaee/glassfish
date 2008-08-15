@@ -123,7 +123,7 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 		final ConnectInfo connectInfo )
 		throws Exception
 	{
-		final Map	map	= createMapForConnectorProvider( connectInfo );
+		final Map<String,String>	map	= createMapForConnectorProvider( connectInfo );
 		
 		final JMXConnectorProvider []	providers	= getProviders();
 			
@@ -201,11 +201,11 @@ public final class ConnectionMgrImpl implements ConnectionMgr
 		return( password );
 	}
 	
-		private Map
+		private Map<String,String>
 	createMapForConnectorProvider( final ConnectInfo connectInfo )
 		throws java.io.FileNotFoundException,IOException
 	{
-		final HashMap	map	= new HashMap();
+		final Map<String,String>	map	= new HashMap<String,String>();
 		
 		map.putAll( connectInfo.getParams() );
 		

@@ -42,10 +42,10 @@ public final class ConnectInfo
 	 */
 	public final static String	CACHE_MBEAN_INFO	= "cache-mbean-info";
 	
-		static Map
+		static Map<String,String>
 	connectStringToParams( final String connectString )
 	{
-		final Map	m	= new java.util.HashMap();
+		final Map<String,String>	m	= new java.util.HashMap<String,String>();
 		
 		final ArgParserImpl.ParseChars	parseChars	= new ArgParserImpl.ParseChars();
 		parseChars.mArgDelim	= PAIR_DELIM;
@@ -114,7 +114,7 @@ public final class ConnectInfo
 		mParams	= new HashMap<String,String>(rhs.mParams);
 	}
 	
-		public Map
+		public Map<String,String>
 	getParams()
 	{
 		return( Collections.unmodifiableMap( mParams ) );

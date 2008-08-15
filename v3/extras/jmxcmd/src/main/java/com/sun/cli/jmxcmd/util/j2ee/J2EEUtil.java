@@ -78,8 +78,8 @@ import com.sun.cli.jmxcmd.util.jmx.OpenMBeanUtil;
 import com.sun.cli.jcmd.util.misc.SetUtil;
 import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
 
-import com.sun.appserv.management.j2ee.statistics.MapStatistic;
-import com.sun.appserv.management.j2ee.statistics.StringStatistic;
+import com.sun.cli.jmxcmd.jsr77.statistics.MapStatistic;
+
 
 /**
 	J2EE JSR 77 utilities
@@ -107,7 +107,7 @@ public class J2EEUtil
 		public static Map<String,Object>
 	statisticToMap( Statistic statistic )
 	{
-		final Map<String,Object>	result	= new HashMap();
+		final Map<String,Object>	result	= new HashMap<String,Object>();
 		
 		if ( statistic instanceof MapStatistic )
 		{
@@ -193,14 +193,14 @@ public class J2EEUtil
 		TimeStatistic.class,
 		RangeStatistic.class,
 		CountStatistic.class,
-		StringStatistic.class,
+		//StringStatistic.class,
 		MapStatistic.class,
 	};
 	
 	
 	
 		private static CompositeType
-	statisticMapToCompositeType( final String statisticType, final Map map )
+	statisticMapToCompositeType( final String statisticType, final Map<String,Object> map )
 		throws OpenDataException
 	{
 		final String	description	= "J2EE management statistic " + statisticType;
@@ -393,7 +393,7 @@ public class J2EEUtil
 	{
 		final String[]	statisticNames	= stats.getStatisticNames();
 		
-		final Class			statsClass	= stats.getClass();
+		final Class<? extends Stats>			statsClass	= stats.getClass();
 		final Method[]		methods		= new Method[ statisticNames.length ];
 		
 		for( int i = 0; i < statisticNames.length; ++i )

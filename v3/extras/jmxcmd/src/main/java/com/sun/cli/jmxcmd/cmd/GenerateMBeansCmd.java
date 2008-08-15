@@ -228,8 +228,8 @@ public class GenerateMBeansCmd extends JMXCmd
 	{
 		final MBeanServerConnection		conn	= getConnection();
 		final String[]					interfaces	= new String[ objectNames.length ];
-		final Map						infosMap	= new HashMap();
-		final Map						intfToObjectNamesMap			= new HashMap();
+		final Map<ObjectName,MBeanInfo> infosMap	= new HashMap<ObjectName,MBeanInfo>();
+		final Map<String,Set<ObjectName>> intfToObjectNamesMap = new HashMap<String,Set<ObjectName>>();
 		
 		// Map the list of MBeanInfos into Sets of ObjectNames with the same interface
 		for( int i = 0; i < objectNames.length; ++i )
@@ -244,10 +244,10 @@ public class GenerateMBeansCmd extends JMXCmd
 								ArrayStringifier.stringify( info.getAttributes(), "," ) +
 								ArrayStringifier.stringify( info.getOperations(), "," );
 			
-			Set	names	= (Set)intfToObjectNamesMap.get( infoString );
+			Set<ObjectName>	names	= intfToObjectNamesMap.get( infoString );
 			if ( names == null )
 			{
-				names	= new HashSet();
+				names	= new HashSet<ObjectName>();
 				names.add( objectNames[ i ] );
 			}
 			else
@@ -257,12 +257,12 @@ public class GenerateMBeansCmd extends JMXCmd
 			intfToObjectNamesMap.put( infoString, names );
 		}
 		
-		final List	generatedClasses	= new ArrayList();
-		final Iterator	iter	= intfToObjectNamesMap.keySet().iterator();
+		final List<GeneratedClass>	generatedClasses	= new ArrayList<GeneratedClass>();
+		final Iterator<String>	iter	= intfToObjectNamesMap.keySet().iterator();
 		while ( iter.hasNext() )
 		{
-			final String	key				= (String)iter.next();
-			final Set		objectNameSet	= (Set)intfToObjectNamesMap.get( key );
+			final String	key				= iter.next();
+			final Set<ObjectName>		objectNameSet	= intfToObjectNamesMap.get( key );
 			
 			final ObjectName[]	sharedNames	=
 				(ObjectName[])objectNameSet.toArray( new ObjectName[ objectNameSet.size() ] );

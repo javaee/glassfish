@@ -6,83 +6,64 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>mc</name>
-  
-	<repositories>
-	
-		<repository>
-		  <id>glassfish-repository</id>
-		  <url>http://download.java.net/maven/glassfish</url>
-		</repository>
-		
-		<repository>
-		  <id>java.net</id>
-		  <url>http://download.java.net/maven/1</url>
-		  <layout>legacy</layout>
-		</repository>
-		
-		<repository>
-		  <id>mvnrepository</id>
-		  <url>http://www.mvnrepository.com/archive</url>
-		</repository>
-		
-		<repository>
-			<id>jline</id>
-			<name>JLine Project Repository</name>
-			<url>http://jline.sourceforge.net/m2repo</url>
-		</repository>
-		
-	</repositories>
-      
+  <repositories>
+    <repository>
+      <id>glassfish-repository</id>
+      <url>http://download.java.net/maven/glassfish</url>
+    </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>mvnrepository</id>
+      <url>http://www.mvnrepository.com/artifact</url>
+    </repository>
+    <repository>
+      <id>jline</id>
+      <name>JLine Project Repository</name>
+      <url>http://jline.sourceforge.net/m2repo</url>
+    </repository>
+  </repositories>
   <build>
-	   <plugins>
-	     <plugin>
-	       <groupId>org.apache.maven.plugins</groupId>
-	       <artifactId>maven-compiler-plugin</artifactId>
-	       <configuration>
-	         <source>1.6</source>
-	         <target>1.6</target>
-	         <compilerArgument>-Xlint:all</compilerArgument>
-	       </configuration>
-	     </plugin>
-	   </plugins>
-
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+        <!-- Mac: 'export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home' -->
+          <source>1.6</source>
+          <target>1.6</target>
+          <compilerArgument>-Xlint:all</compilerArgument>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-  
- <developers>
-   <developer>
-     <id>lloyd</id>
-     <name>Lloyd Chambers</name>
-     <email>lloyd.chambers@sun.com</email>
-     <organization>Sun Microsystems</organization>
-     <organizationUrl>https://glassfish.dev.java.net/</organizationUrl>
-     <roles>
-       <role>lead</role>
-     </roles>
-   </developer>
- </developers>
-    <properties>
-        <management-api.version>1.1-rev-1</management-api.version>  
-        <amx-api.version>10.0-SNAPSHOT</amx-api.version>      
-    </properties>
-	
-
+  <developers>
+    <developer>
+      <id>lloyd</id>
+      <name>Lloyd Chambers</name>
+      <email>lloyd.chambers@sun.com</email>
+      <organization>Sun Microsystems</organization>
+      <organizationUrl>https://glassfish.dev.java.net/</organizationUrl>
+      <roles>
+        <role>lead</role>
+      </roles>
+    </developer>
+  </developers>
+  <properties>
+    <management-api.version>1.1-rev-1</management-api.version>
+    <amx-api.version>10.0-SNAPSHOT</amx-api.version>
+  </properties>
   <dependencies>
-	
-	<dependency>
-	<!-- http://jline.sourceforge.net/ -->
-		<groupId>jline</groupId>
-		<artifactId>jline</artifactId>
-		<version>0.9.9</version>
-	</dependency>
-        
-   <!--
-	<dependency>
-		<groupId>org.glassfish.common</groupId>
-		<artifactId>amx-api</artifactId>
-		<version>${amx-api.version}</version>
-	</dependency>
-      -->
-
+    <dependency>
+      <!-- http://jline.sourceforge.net/ -->
+      <groupId>jline</groupId>
+      <artifactId>jline</artifactId>
+      <version>0.9.9</version>
+    </dependency>
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -90,42 +71,43 @@
       <scope>test</scope>
     </dependency>
 	
-   <!--
+<!--
+	<dependency>
+		<groupId>javax.management</groupId>
+		<artifactId>jmxremote_optional</artifactId>
+		<version>1.0.1_04</version>
+	</dependency>
+-->
+
 	<dependency>
         <groupId>org.glassfish</groupId>
 		<artifactId>javax.management.j2ee</artifactId>
-		<version>${project.version}</version>
+		<version>10.0-SNAPSHOT</version>
 		<scope>provided</scope>
 	</dependency>
-   -->
-	
-	<dependency>
-		<groupId>org.glassfish.external</groupId>
-		<artifactId>jmxremote_optional-repackaged</artifactId>
-		<version>${project.version}</version>
-	</dependency> 
-	
-	
-<!-- is there any repository which has this? 
-mvn install:install-file -DgroupId=javax.management -DartifactId=jmxremote_optional -Dversion=1.0.1_04 -Dpackaging=jar -Dfile=jmxremote_optional.jar
 
 	<dependency>
-	    <groupId>javax.management</groupId>
-	    <artifactId>jmxremote_optional</artifactId>
-	    <version>1.0.1_04</version>
+        <groupId>org.jvnet.opendmk</groupId>
+		<artifactId>jmxremote_optional</artifactId>
+		<version>1.0_01-ea</version>
 		<scope>provided</scope>
 	</dependency>
--->
-
 <!--
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.javaee</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
+	<dependency>
+		<groupId>org.glassfish</groupId>
+		<artifactId>javax.javaee</artifactId>
+		<version>${project.version}</version>
+		<scope>provided</scope>
+	</dependency>
 -->
+    
+    <!--
+	<dependency>
+		<groupId>org.glassfish.common</groupId>
+		<artifactId>amx-api</artifactId>
+		<version>${amx-api.version}</version>
+	</dependency>
+    -->
 
   </dependencies>
-  
 </project>

@@ -214,7 +214,7 @@ public class RMISSLClientSocketFactory
 		
 		try
 		{
-			final Class	envClass	= Class.forName( className );
+			final Class<?>	envClass	= Class.forName( className );
 			final Method    m   = envClass.getMethod( "getInstance", (Class[])null);
 			env	= (RMISSLClientSocketFactoryEnv)
 				m.invoke( (Class[])null, (Object[])null );

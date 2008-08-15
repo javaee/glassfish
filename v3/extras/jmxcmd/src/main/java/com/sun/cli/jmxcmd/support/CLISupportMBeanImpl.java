@@ -2,14 +2,6 @@
  * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/support/CLISupportMBeanImpl.java,v 1.18 2004/06/24 23:28:28 llc Exp $
- * $Revision: 1.18 $
- * $Date: 2004/06/24 23:28:28 $
- */
- 
-
 package com.sun.cli.jmxcmd.support;
  
 import java.lang.reflect.Array;
@@ -40,7 +32,7 @@ import com.sun.cli.jmxcmd.util.jmx.ReadWriteAttributeFilter;
 	 
 interface ClassQuery
 {
-	public Class	getClassForName( String argName )
+	public Class<?>	getClassForName( String argName )
 		throws ClassNotFoundException;
 }
 
@@ -57,11 +49,11 @@ final class AttributeClassQuery implements ClassQuery
 		mNumInfos		= Array.getLength( attributeInfo );
 	}
 	
-		public Class
+		public Class<?>
 	getClassForName( final String attributeName )
 		throws ClassNotFoundException
 	{
-		Class	theClass	= Object.class;
+		Class<?>	theClass	= Object.class;
 		
 		for( int i = 0; i < mNumInfos; ++i )
 		{
@@ -232,7 +224,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 
 
 		private static void
-	checkAssignable( Class requiredClass, Class assignee )
+	checkAssignable( Class<?> requiredClass, Class<?> assignee )
 	{
 		if ( ! requiredClass.isAssignableFrom( assignee ) )
 		{
@@ -680,8 +672,8 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		final String					operationName,
 		final MBeanOperationInfo []		operationInfos)
 	{
-		final List	caseSensitiveMatches	= new ArrayList();
-		final List	caseInsensitiveMatches	= new ArrayList();
+		final List<MBeanOperationInfo>	caseSensitiveMatches	= new ArrayList<MBeanOperationInfo>();
+		final List<MBeanOperationInfo>	caseInsensitiveMatches	= new ArrayList<MBeanOperationInfo>();
 		
 		final int	numOps	= operationInfos.length;
 		for ( int i = 0; i < numOps; ++i )
@@ -701,10 +693,10 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		}
 		
 		// preferentially return the case-sensitive matches
-		final List	opList	= caseSensitiveMatches.size() != 0 ?
+		final List<MBeanOperationInfo>	opList	= caseSensitiveMatches.size() != 0 ?
 									caseSensitiveMatches : caseInsensitiveMatches;
 		
-		return( (MBeanOperationInfo [])opList.toArray( new MBeanOperationInfo [ opList.size() ] ) );
+		return opList.toArray( new MBeanOperationInfo [ opList.size() ] );
 	}
 	
 	
@@ -773,7 +765,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		final int	numArgs			= parsedArgs.length;
 		final int	numCandidates	= candidates.length;
 		
-		final List	opList	= new ArrayList();
+		final List<MatchedOperation>	opList	= new ArrayList<MatchedOperation>();
 				
 		for ( int i = 0; i < numCandidates; ++i )
 		{
@@ -953,14 +945,14 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		
 	}
 	
-		private Set
+		private Set<String>
 	resolveAttributeName(
 		final MBeanAttributeInfo[]	infos,
 		final String[]				allAttrNames,
 		final String				attrExpr ) throws Exception
 	{
 		final int	wildcardType	= GetWildcardType( attrExpr );
-		Set			result	= null;
+		Set<String>			result	= null;
 		
 		if ( wildcardType == WILDCARD_ALL )
 		{
@@ -982,7 +974,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		}
 		else if ( wildcardType == WILDCARD_MIXED )
 		{
-			result	= new HashSet();
+			result	= new HashSet<String>();
 			
 			// pattern matching, dude
 			final Pattern	pattern	= Pattern.compile( RegexUtil.wildcardToJavaRegex( attrExpr ) );
@@ -1012,18 +1004,18 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		final ObjectName		objectName,
 		final String[]			attrExprs ) throws Exception
 	{
-		final Set		resolvedNames	= new HashSet();
+		final Set<String>		resolvedNames	= new HashSet<String>();
 		final MBeanAttributeInfo[]	attrInfos	=
 			mConnection.getMBeanInfo( objectName ).getAttributes();
 		final String[]				attrNames	= JMXUtil.getAttributeNames( attrInfos );
 		
 		for( int i = 0; i < attrExprs.length; ++i )
 		{
-			final Set	tempSet	= resolveAttributeName( attrInfos, attrNames, attrExprs[ i ] );
+			final Set<String>	tempSet	= resolveAttributeName( attrInfos, attrNames, attrExprs[ i ] );
 			resolvedNames.addAll( tempSet );
 		}
 		
-		return( (String[])resolvedNames.toArray( new String[ resolvedNames.size() ] ) );
+		return resolvedNames.toArray( new String[ resolvedNames.size() ] );
 	}
 
 
@@ -1063,7 +1055,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 			}
 			
 			AttributeList 	idxResults	= null;
-			final HashSet	problemNames	= new HashSet();
+			final Set<String>	problemNames	= new HashSet<String>();
 			try
 			{
 				/*p( "mbeanGet: getting for: " + objectName.toString() +
@@ -1246,11 +1238,11 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		then the set will consist of a single item (if it exists).  If the pattern is a true
 		pattern, then there may be 1 or more ObjectNames returned.
 	 */
-		 private Set
+		 private Set<ObjectName>
 	findObjects( final ObjectName name )
 		throws MalformedObjectNameException, IOException
 	{
-		Set	results	= Collections.EMPTY_SET;
+		Set<ObjectName>	results	= Collections.emptySet();
 		
 		if ( name.isPattern())
 		{
@@ -1295,12 +1287,12 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 	 	
 	 	@param target	target to resolve
 	  */
-	 	Set
+	 	Set<ObjectName>
 	 resolveTarget( final String targetIn )
 	 	throws MalformedObjectNameException, MBeanException, ReflectionException,
 	 	InstanceNotFoundException, IOException
 	 {
-		Set		objectNames		= new HashSet();
+		Set<ObjectName>		objectNames		= new HashSet<ObjectName>();
 		String	actualTarget	= targetIn;
 		
 		boolean	isNegation	= false;
@@ -1341,14 +1333,14 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 			// not an alias, so it must be an ObjectName or pattern
 			// OR an *abbreviated form* that we allow or a pattern
 			final ObjectName	objectName	= createObjectName( actualTarget );
-			final Set			nameSet	= findObjects( objectName );
+			final Set<ObjectName>			nameSet	= findObjects( objectName );
  			objectNames.addAll( nameSet );
 		}
 		
 		if ( isNegation )
 		{
 			// get all MBeans, and remove the ones we've just resolved
-			final Set	tempSet	= resolveTarget( "*" );
+			final Set<ObjectName>	tempSet	= resolveTarget( "*" );
 			tempSet.removeAll( objectNames );
 			objectNames	= tempSet;
 		}
@@ -1369,13 +1361,13 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 	 {
 	 	final int	numTargets	= targets.length;
 	 	
-		final Set	objectNames			= new HashSet();
+		final Set<ObjectName>	objectNames			= new HashSet<ObjectName>();
 			
 	 	for( int i = 0; i < numTargets; ++i )
 	 	{
 	 		String	name	= targets[ i ];
 	 		
-	 		final Set	values	= resolveTarget( name );
+	 		final Set<ObjectName>	values	= resolveTarget( name );
 	 		objectNames.addAll( values );
 	 	}
 	 	
@@ -1475,13 +1467,13 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		
 		Supports the wildcard character '*'
 	 */
-		private List
+		private List<MBeanFeatureInfo>
 	FilterInfoByName( final MBeanFeatureInfo [] infos, final String [] names)
 	{
 		final int numNames	= names.length;
 		final int numInfos	= infos.length;
 	
-		final ArrayList	filteredInfo	= new ArrayList();
+		final List<MBeanFeatureInfo>	filteredInfo	= new ArrayList<MBeanFeatureInfo>();
 		
 		// optimize for the "all" case; it has the most to lose in terms of speed
 		if ( containsWildcard( names ) && names.length >= 1 && names[ 0 ] == "*" )
@@ -1573,17 +1565,17 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		{
 			final String []		names	= mParser.ParseNames( request.attrs );
 			
-			final List	filteredInfo	= FilterInfoByName( attrs, names );
+			final List<MBeanFeatureInfo> filteredInfo	= FilterInfoByName( attrs, names );
 			
 			final MBeanAttributeInfo []	results	= new MBeanAttributeInfo[ filteredInfo.size() ];
-			result.attrInfo	= (MBeanAttributeInfo [])filteredInfo.toArray( results );
+			result.attrInfo	= filteredInfo.toArray( results );
 		}
 		
 		if ( request.operations != null )
 		{
 			final String []		names	= mParser.ParseNames( request.operations  );
 			
-			final List	filteredInfo	= FilterInfoByName( ops, names );
+			final List<MBeanFeatureInfo>	filteredInfo	= FilterInfoByName( ops, names );
 			
 			final MBeanOperationInfo []	results	= new MBeanOperationInfo[ filteredInfo.size() ];
 			result.operationsInfo	= (MBeanOperationInfo [])filteredInfo.toArray( results );
@@ -1663,11 +1655,11 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 			regexValues[ i ]	= pair.substring( delimIndex + 1, pair.length() );
 		}
 		
-		final Set		startingSet	= new HashSet();
+		final Set<ObjectName>		startingSet	= new HashSet<ObjectName>();
 		startingSet.addAll( java.util.Arrays.asList( candidates ) );
 		
 		final ObjectNameQueryImpl	query	= new ObjectNameQueryImpl();
-		final Set	resultSet	= query.matchAll( startingSet, regexNames, regexValues );
+		final Set<ObjectName>	resultSet	= query.matchAll( startingSet, regexNames, regexValues );
 		
 		final ObjectName []	results	= new ObjectName [ resultSet.size() ];
 		
@@ -1732,7 +1724,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		Object handback ) throws Exception
 	{
 		final ObjectName []	names	= resolveTargets( targets );
-		final List		broadcasters	= new ArrayList();
+		final List<ObjectName>		broadcasters	= new ArrayList<ObjectName>();
 		
 		for( int i = 0; i < targets.length; ++i )
 		{

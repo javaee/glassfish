@@ -200,7 +200,7 @@ public class TestServer
 		{
 			// ignore
 		}
-		final AliasMgr	aliasMgr	= new AliasMgrImpl( aliasImpl );
+		final AliasMgrMBean	aliasMgr	= new AliasMgrImpl( aliasImpl );
 			
 		StandardAliasesIniter.init( aliasMgr );
 		

@@ -33,7 +33,7 @@ public final class IteratorStringifierTest extends junit.framework.TestCase
 	testEmpty(  ) throws Exception
 	{
 		final Set<String>		s	= new HashSet<String>();
-		final Iteratorr<String>	iter	= s.iterator();
+		final Iterator<String>	iter	= s.iterator();
 		
 		final String	stringified	= IteratorStringifier.stringify( iter, ",");
 		
@@ -63,7 +63,7 @@ public final class IteratorStringifierTest extends junit.framework.TestCase
 		list.add( "hello" );
 		list.add( "there" );
 		
-		final Iteratorr<String>	iter	= list.iterator();
+		final Iterator<String>	iter	= list.iterator();
 		
 		final String	stringified	= IteratorStringifier.stringify( iter, ",");
 		

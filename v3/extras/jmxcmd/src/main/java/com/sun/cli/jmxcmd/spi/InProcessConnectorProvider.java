@@ -168,7 +168,7 @@ public final class InProcessConnectorProvider
 	}
 	
 		public JMXConnector
-	connect( java.util.Map m )
+	connect( java.util.Map<String,String> m )
 		throws java.io.IOException
 	{
 		MBeanServer server	= null;
@@ -181,7 +181,8 @@ public final class InProcessConnectorProvider
 		{
 			final CmdEnv	env	= JCmdMain.getCmdMgr().getEnv();
 			
-			final HashMap	servers	= (HashMap)env.get( JMXCmdEnvKeys.MBEAN_SERVERS );
+            @SuppressWarnings("unchecked")
+			final HashMap<String,MBeanServer>	servers	= (HashMap<String,MBeanServer>)env.get( JMXCmdEnvKeys.MBEAN_SERVERS );
 		
 			if ( servers != null )
 			{
@@ -200,7 +201,7 @@ public final class InProcessConnectorProvider
 	public static final Set<String>	SUPPORTED_PROTOCOLS	=
 		GSetUtil.newUnmodifiableStringSet( IN_PROCESS_PROTOCOL );
 	
-		protected Set
+		protected Set<String>
 	getSupportedProtocols()
 	{
 		return( SUPPORTED_PROTOCOLS );

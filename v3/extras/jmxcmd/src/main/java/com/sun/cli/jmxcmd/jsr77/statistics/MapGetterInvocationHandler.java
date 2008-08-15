@@ -21,30 +21,30 @@ import com.sun.cli.jcmd.util.misc.MapUtil;
 	Serializable so that it may be used to return a result remotely.
 	<br><b>Internal use only</b>
  */
-public class MapGetterInvocationHandler
+public  class MapGetterInvocationHandler<T>
 	extends GetterInvocationHandler
 	implements Serializable 
 {
 	static final long serialVersionUID = -8751876448821319456L;
 
-	private final Map	mMap;
+	private final Map<String,T>	mMap;
 	
 	/**
 		Create a new instance using the Map, which is <b>not</b> copied.
 	 */
 		public
-	MapGetterInvocationHandler( final Map map )
+	MapGetterInvocationHandler( final Map<String,T> map )
 	{
 		mMap	= map;
 	}
 	
-		protected Map
+		protected Map<String,T>
 	getMap()
 	{
 		return( mMap );
 	}
 	
-		protected Object
+		protected T
 	getValue( final String name )
 	{
 		return( mMap.get( name ) );

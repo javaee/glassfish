@@ -15,6 +15,7 @@ package com.sun.cli.jmxcmd.cmd;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.net.MalformedURLException;
 
@@ -237,7 +238,9 @@ public abstract class JMXCmd extends CmdBase
 			{
 				try
 				{
-					final Class	theClass	= ClassUtil.getClassFromName( providers[ i ] );
+                    @SuppressWarnings("unchecked")
+					final Class<? extends JMXConnectorProvider>	theClass =
+                        (Class<? extends JMXConnectorProvider>)ClassUtil.getClassFromName( providers[ i ] );
 				
 					mgr.addProvider( theClass );
 					// println( "Added JMXConnectorProvider: " + providers[ i ] );
@@ -285,14 +288,15 @@ public abstract class JMXCmd extends CmdBase
 	}
 	
 	
-		private synchronized HashMap
+		private synchronized Map<String,MBeanServer>
 	getMBeanServers( )
 	{
-		HashMap	map	= (HashMap)envGet( JMXCmdEnvKeys.MBEAN_SERVERS );
+        @SuppressWarnings("unchecked")
+		Map<String,MBeanServer>	map	= (HashMap<String,MBeanServer>)envGet( JMXCmdEnvKeys.MBEAN_SERVERS );
 		
 		if ( map == null )
 		{
-			map	= new HashMap();
+			map	= new HashMap<String,MBeanServer>();
 			envPut( JMXCmdEnvKeys.MBEAN_SERVERS, map, false );
 		}
 		
@@ -358,7 +362,7 @@ public abstract class JMXCmd extends CmdBase
 		protected ConnectInfo
 	getMBeanServerConnectInfo( final String name )
 	{
-		final HashMap	params	= new HashMap();
+		final HashMap<String,String>	params	= new HashMap<String,String>();
 		
 		params.put( JMXConnectorProvider.PROTOCOL,
 			InProcessConnectorProvider.IN_PROCESS_PROTOCOL );

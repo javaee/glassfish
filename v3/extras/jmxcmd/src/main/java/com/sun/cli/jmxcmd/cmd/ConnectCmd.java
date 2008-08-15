@@ -141,7 +141,7 @@ public class ConnectCmd extends JMXCmd
 				extra	= "\n\nConnector usage:\n";
 			
 				final JMXConnectorProvider []	providers	= getConnectionMgr().getProviders();
-				
+				 
 				
 				for ( int i = 0; i < providers.length; ++i )
 				{
@@ -316,8 +316,8 @@ public class ConnectCmd extends JMXCmd
 		handleNamedConnect( name );
 	}
 	
-		static void
-	maybePut( Map m, String key, Object value )
+		static <T,V> void
+	maybePut( Map<T,V> m, T key, V value )
 	{
 		if ( value != null )
 		{
@@ -327,7 +327,7 @@ public class ConnectCmd extends JMXCmd
 	
 	
 		static void
-	addOptions( String optionsString, Map m )
+	addOptions( String optionsString, Map<String,String> m )
 		throws TokenizerException
 	{
 		// Tokenize them into name/value pairs
@@ -479,7 +479,7 @@ public class ConnectCmd extends JMXCmd
 			final boolean	cacheMBeanInfo	=
 				getBoolean( CACHE_MBEAN_INFO_OPTION.getShortName(), Boolean.FALSE ).booleanValue();
 			
-			final HashMap	params	= new HashMap();
+			final HashMap<String,String>	params	= new HashMap<String,String>();
 			maybePut( params, JMXConnectorProvider.HOST, host );
 			maybePut( params, JMXConnectorProvider.PORT, port );
 			maybePut( params, JMXConnectorProvider.PROTOCOL, protocol );

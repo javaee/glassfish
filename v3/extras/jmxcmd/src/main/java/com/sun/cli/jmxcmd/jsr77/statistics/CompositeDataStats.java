@@ -28,7 +28,7 @@ import com.sun.cli.jmxcmd.util.jmx.OpenMBeanUtil;
  */
 public final class CompositeDataStats implements Stats
 {
-	final Map	mItems;
+	final Map<String,Object>	mItems;
 	
 	/**
 		Create a new CompositeDataStats using the specified CompositeData
@@ -54,9 +54,9 @@ public final class CompositeDataStats implements Stats
 		public String[]
 	getStatisticNames()
 	{
-		final Set	nameSet	= mItems.keySet();
+		final Set<String>	nameSet	= mItems.keySet();
 		
-		return( (String[])nameSet.toArray( new String[ nameSet.size() ] ) );
+		return nameSet.toArray( new String[ nameSet.size() ] );
 	}
 	
 		public Statistic[]

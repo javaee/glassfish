@@ -54,13 +54,6 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/util/jmx/OpenMBeanUtil.java,v 1.6 2005/11/15 20:21:48 llc Exp $
- * $Revision: 1.6 $
- * $Date: 2005/11/15 20:21:48 $
- */
- 
 
 package com.sun.cli.jmxcmd.util.jmx;
 
@@ -105,7 +98,7 @@ public final class OpenMBeanUtil
 	{
 		if ( SIMPLETYPES_MAP == null )
 		{
-			final Map<Class,SimpleType> m	= new HashMap();
+			final Map<Class,SimpleType> m	= new HashMap<Class,SimpleType>();
 			
 			m.put( Byte.class, SimpleType.BYTE );
 			m.put( Short.class, SimpleType.SHORT );
@@ -215,7 +208,7 @@ public final class OpenMBeanUtil
 		
 		if ( type == null )
 		{
-			final Class	theClass	= o.getClass();
+			final Class<?>	theClass	= o.getClass();
 			
 			if ( theClass.isArray() )
 			{
@@ -287,12 +280,12 @@ public final class OpenMBeanUtil
 		public static Map<String,Object>
 	convertTypes( final Map<String,?> orig )
 	{
-		final Map<String,Object>		result	= new HashMap();
-		final Iterator			iter	= orig.keySet().iterator();
+		final Map<String,Object>		result	= new HashMap<String,Object>();
+		final Iterator<String>			iter	= orig.keySet().iterator();
 		
 		while ( iter.hasNext() )
 		{
-			final String	key	= (String)iter.next();
+			final String	key	= iter.next();
 			final Object	value	= orig.get( key );
 			
 			if ( value instanceof Collection )
@@ -391,7 +384,7 @@ public final class OpenMBeanUtil
 	{
 		final Map<String,Object>		map	= new HashMap<String,Object>();
 		final CompositeType		type	= data.getCompositeType();
-		final Set<String>   keySet  = (Set<String>)type.keySet();
+		final Set<String>   keySet  = type.keySet();
 		
 		for( String name : keySet )
 		{

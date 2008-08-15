@@ -37,13 +37,13 @@ public final class StatsFactory
 		
 		@param theInterface		interface which the Stats should implement, must extend Stats
 	 */
-		public static Stats
-	create( Class theInterface, final CompositeData data )
+		public static <T extends Stats> Stats
+	create( Class<T> theInterface, final CompositeData data )
 	{
 		return( createStats( theInterface, compositeDataToMap( data ) ) );
 	}
 	
-		public static Map
+		public static Map<String,Object>
 	compositeDataToMap( final CompositeData data )
 	{
 		return( OpenMBeanUtil.compositeDataToMap( data ) );
@@ -58,11 +58,11 @@ public final class StatsFactory
 	createStats( final CompositeData data )
 	{
 		final String	typeName		= data.getCompositeType().getTypeName();
-		Class			theInterface	= null;
+		Class<? extends Stats>			theInterface	= null;
 		
 		try
 		{
-			theInterface	= ClassUtil.classForName( typeName );
+			theInterface	= (Class<? extends Stats>)ClassUtil.classForName( typeName );
 		}
 		catch( Exception e )
 		{
@@ -82,8 +82,8 @@ public final class StatsFactory
 		@param	theInterface	the Stats sub-interface which the resulting should implement
 		@param	statistics		a Map containing keys of type String and their Statistic values
 	 */
-		public static Stats
-	createStats( Class theInterface, final Map statistics )
+		public static <C extends Stats,T extends Statistic> Stats
+	createStats( Class<C> theInterface, final Map<String,Object> statistics )
 	{
 		if ( ! Stats.class.isAssignableFrom( theInterface ) )
 		{
@@ -93,7 +93,7 @@ public final class StatsFactory
 		Stats	result	= null;
 		
 		// generate a proxy
-		final MapGetterInvocationHandler	handler	= new MapGetterInvocationHandler( statistics );
+		final MapGetterInvocationHandler<Statistic>	handler	= new MapGetterInvocationHandler<Statistic>( statistics );
 		final ClassLoader					classLoader	= theInterface.getClassLoader();
 		
 		result	= (Stats)Proxy.newProxyInstance(
@@ -106,145 +106,147 @@ public final class StatsFactory
 		Calls createStats( theInterface, J2EEUtil.statisticsToMap( statistics ) )
 	 */
 		public static Stats
-	createStats( Class theInterface, final Statistic[] statistics )
+	createStats( Class<? extends Stats> theInterface, final Statistic[] statistics )
 	{
 		return( createStats( theInterface, J2EEUtil.statisticsToMap( statistics ) ) );
 	}
 	
-		public static EJBStats
-	createEJBStats( final Map statistics )
+		public static <T extends Statistic> EJBStats
+	createEJBStats( final Map<String,T> statistics )
 	{
 		return( (EJBStats)createStats( EJBStats.class, statistics ) );
 	}
 	
-		public static URLStats
-	createURLStats( final Map statistics )
+		public static <T extends Statistic> URLStats
+	createURLStats( final Map<String,T> statistics )
 	{
 		return( (URLStats)createStats( URLStats.class, statistics ) );
 	}
 	
-		public static EntityBeanStats
-	createEntityBeanStats( final Map statistics )
+		public static <T extends Statistic> EntityBeanStats
+	createEntityBeanStats( final Map<String,T> statistics )
 	{
 		return( (EntityBeanStats)createStats( EntityBeanStats.class, statistics ) );
 	}
 	
-		public static JavaMailStats
-	createJavaMailStats( final Map statistics )
+    /*
+		public static <T extends Statistic> JavaMailStats
+	createJavaMailStats( final Map<String,T> statistics )
 	{
 		return( (JavaMailStats)createStats( JavaMailStats.class, statistics ) );
 	}
+    */
 	
-		public static JCAConnectionPoolStats
-	createJCAConnectionPoolStats( final Map statistics )
+		public static <T extends Statistic> JCAConnectionPoolStats
+	createJCAConnectionPoolStats( final Map<String,T> statistics )
 	{
 		return( (JCAConnectionPoolStats)createStats( JCAConnectionPoolStats.class, statistics ) );
 	}
 	
-		public static JCAConnectionStats
-	createJCAConnectionStats( final Map statistics )
+		public static <T extends Statistic> JCAConnectionStats
+	createJCAConnectionStats( final Map<String,T> statistics )
 	{
 		return( (JCAConnectionStats)createStats( JCAConnectionStats.class, statistics ) );
 	}
 	
-		public static JCAStats
-	createJCAStats( final Map statistics )
+		public static <T extends Statistic> JCAStats
+	createJCAStats( final Map<String,T> statistics )
 	{
 		return( (JCAStats)createStats( JCAStats.class, statistics ) );
 	}
 	
-		public static JDBCConnectionPoolStats
-	createJDBCConnectionPoolStats( final Map statistics )
+		public static <T extends Statistic> JDBCConnectionPoolStats
+	createJDBCConnectionPoolStats( final Map<String,T> statistics )
 	{
 		return( (JDBCConnectionPoolStats)createStats( JDBCConnectionPoolStats.class, statistics ) );
 	}
 	
-		public static JDBCConnectionStats
-	createJDBCConnectionStats( final Map statistics )
+		public static <T extends Statistic> JDBCConnectionStats
+	createJDBCConnectionStats( final Map<String,T> statistics )
 	{
 		return( (JDBCConnectionStats)createStats( JDBCConnectionStats.class, statistics ) );
 	}
 	
-		public static JDBCStats
-	createJDBCStats( final Map statistics )
+		public static <T extends Statistic> JDBCStats
+	createJDBCStats( final Map<String,T> statistics )
 	{
 		return( (JDBCStats)createStats( JDBCStats.class, statistics ) );
 	}
 	
-		public static JMSConnectionStats
-	createJMSConnectionStats( final Map statistics )
+		public static <T extends Statistic> JMSConnectionStats
+	createJMSConnectionStats( final Map<String,T> statistics )
 	{
 		return( (JMSConnectionStats)createStats( JMSConnectionStats.class, statistics ) );
 	}
 	
-		public static JMSConsumerStats
-	createJMSConsumerStats( final Map statistics )
+		public static <T extends Statistic> JMSConsumerStats
+	createJMSConsumerStats( final Map<String,T> statistics )
 	{
 		return( (JMSConsumerStats)createStats( JMSConsumerStats.class, statistics ) );
 	}
 	
-		public static JMSEndpointStats
-	createJMSEndpointStats( final Map statistics )
+		public static <T extends Statistic> JMSEndpointStats
+	createJMSEndpointStats( final Map<String,T> statistics )
 	{
 		return( (JMSEndpointStats)createStats( JMSEndpointStats.class, statistics ) );
 	}
 	
-		public static JMSProducerStats
-	createJMSProducerStats( final Map statistics )
+		public static <T extends Statistic> JMSProducerStats
+	createJMSProducerStats( final Map<String,T> statistics )
 	{
 		return( (JMSProducerStats)createStats( JMSProducerStats.class, statistics ) );
 	}
 	
-		public static JMSSessionStats
-	createJMSSessionStats( final Map statistics )
+		public static <T extends Statistic> JMSSessionStats
+	createJMSSessionStats( final Map<String,T> statistics )
 	{
 		return( (JMSSessionStats)createStats( JMSSessionStats.class, statistics ) );
 	}
 	
-		public static JMSStats
-	createJMSStats( final Map statistics )
+		public static <T extends Statistic> JMSStats
+	createJMSStats( final Map<String,T> statistics )
 	{
 		return( (JMSStats)createStats( JMSStats.class, statistics ) );
 	}
 	
-		public static JTAStats
-	createJTAStats( final Map statistics )
+		public static <T extends Statistic> JTAStats
+	createJTAStats( final Map<String,T> statistics )
 	{
 		return( (JTAStats)createStats( JTAStats.class, statistics ) );
 	}
 	
-		public static JVMStats
-	createJVMStats( final Map statistics )
+		public static <T extends Statistic> JVMStats
+	createJVMStats( final Map<String,T> statistics )
 	{
 		return( (JVMStats)createStats( JVMStats.class, statistics ) );
 	}
 	
-		public static MessageDrivenBeanStats
-	createMessageDrivenBeanStats( final Map statistics )
+		public static <T extends Statistic> MessageDrivenBeanStats
+	createMessageDrivenBeanStats( final Map<String,T> statistics )
 	{
 		return( (MessageDrivenBeanStats)createStats( MessageDrivenBeanStats.class, statistics ) );
 	}
 	
-		public static ServletStats
-	createServletStats( final Map statistics )
+		public static <T extends Statistic> ServletStats
+	createServletStats( final Map<String,T> statistics )
 	{
 		return( (ServletStats)createStats( ServletStats.class, statistics ) );
 	}
 	
-		public static SessionBeanStats
-	createSessionBeanStats( final Map statistics )
+		public static <T extends Statistic> SessionBeanStats
+	createSessionBeanStats( final Map<String,T> statistics )
 	{
 		return( (SessionBeanStats)createStats( SessionBeanStats.class, statistics ) );
 	}
 	
-		public static StatefulSessionBeanStats
-	createStatefulSessionBeanStats( final Map statistics )
+		public static <T extends Statistic> StatefulSessionBeanStats
+	createStatefulSessionBeanStats( final Map<String,T> statistics )
 	{
 		return( (StatefulSessionBeanStats)createStats( StatefulSessionBeanStats.class, statistics ) );
 	}
 	
-		public static StatelessSessionBeanStats
-	createStatelessSessionBeanStats( final Map statistics )
+		public static <T extends Statistic> StatelessSessionBeanStats
+	createStatelessSessionBeanStats( final Map<String,T> statistics )
 	{
 		return( (StatelessSessionBeanStats)createStats( StatelessSessionBeanStats.class, statistics ) );
 	}

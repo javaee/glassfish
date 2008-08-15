@@ -73,7 +73,7 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
  */
 public class ListenCmd extends JMXCmd
 {
-	private static final Set		sListeners	= new HashSet();
+	private static final Set<MyNotificationListener>		sListeners	= new HashSet<MyNotificationListener>();
 	
 	
 		public
@@ -240,18 +240,18 @@ public class ListenCmd extends JMXCmd
 	
 	
 	
-		Set
+		Set<String>
 	getAllListenerNames( )
 	{
-		Set	names	= new HashSet();
+		Set<String>	names	= new HashSet<String>();
 		
-		final Set	listeners		= getEnvKeys( LISTENER_PREFIX + ".*" );
+		final Set<String>	listeners		= getEnvKeys( LISTENER_PREFIX + ".*" );
 		final int	prefixLength	= LISTENER_PREFIX.length();
 		
-		final Iterator	iter	= listeners.iterator();
+		final Iterator<String>	iter	= listeners.iterator();
 		while ( iter.hasNext() )
 		{
-			final String	m	= (String)iter.next();
+			final String	m	= iter.next();
 			
 			names.add( m.substring( prefixLength, m.length() ) );
 		}
@@ -281,7 +281,7 @@ public class ListenCmd extends JMXCmd
 	{
 		final Set	listenersSetToStop	= getListenerNames( listenersToStop );
 		
-		final Iterator	iter	= sListeners.iterator();
+		final Iterator<MyNotificationListener>	iter	= sListeners.iterator();
 		while ( iter.hasNext() )
 		{
 			final MyNotificationListener	listener	= (MyNotificationListener)iter.next();
@@ -374,7 +374,7 @@ public class ListenCmd extends JMXCmd
 	{
 		MyNotificationListener	listener	= null;
 		
-		final Iterator	iter	= sListeners.iterator();
+		final Iterator<MyNotificationListener>	iter	= sListeners.iterator();
 		while ( iter.hasNext() )
 		{
 			final MyNotificationListener	l	= (MyNotificationListener)iter.next();

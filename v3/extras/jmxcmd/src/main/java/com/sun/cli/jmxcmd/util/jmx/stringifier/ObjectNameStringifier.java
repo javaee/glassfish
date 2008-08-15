@@ -86,15 +86,14 @@ public final class ObjectNameStringifier implements Stringifier
 {
 	public final static ObjectNameStringifier DEFAULT = new ObjectNameStringifier();
 	
-	private static List	PROPS	= null;
+	private static List<String>	PROPS	= null;
 	
-		private synchronized static List
+		private synchronized static List<String>
 	getPROPS()
 	{
 		if ( PROPS == null )
 		{
-		PROPS	= Collections.unmodifiableList( ListUtil.newListFromArray( new String[]
-			{
+		PROPS	= Collections.unmodifiableList( ListUtil.newList(
 				"j2eeType","type",
 				"name",
 				
@@ -126,15 +125,14 @@ public final class ObjectNameStringifier implements Stringifier
 				"JNDIResource",
 				"JTAResource",
 				"RMI_IIOPResource",
-				"URL_Resource",
-				
-			} ));
-		}
+				"URL_Resource"
+			));
+        }
 		return( PROPS );
 	}
 	
 	
-	private List	mOrderedProps;
+	private List<String>	mOrderedProps;
 	private boolean	mOmitDomain;
 	
 		public
@@ -144,7 +142,7 @@ public final class ObjectNameStringifier implements Stringifier
 	}
 	
 		public
-	ObjectNameStringifier( final List props )
+	ObjectNameStringifier( final List<String> props )
 	{
 		mOrderedProps	= props;
 		mOmitDomain	= false;
@@ -182,7 +180,7 @@ public final class ObjectNameStringifier implements Stringifier
 		
 		final Map<String,String>	props	= on.getKeyPropertyList();
 		
-		final List<String>	ordered	= new ArrayList( mOrderedProps );
+		final List<String>	ordered	= new ArrayList<String>( mOrderedProps );
 		ordered.retainAll( props.keySet() );
 		
 		// go through each ordered property, and if it exists, emit it
@@ -216,14 +214,14 @@ public final class ObjectNameStringifier implements Stringifier
 		return( result );
 	}
 	
-		public List
+		public synchronized List<String>
 	getProps()
 	{
 		return( mOrderedProps );
 	}
 	
-		public void
-	setProps( final List props )
+		public synchronized void
+	setProps( final List<String> props )
 	{
 		mOrderedProps	= props;
 	}

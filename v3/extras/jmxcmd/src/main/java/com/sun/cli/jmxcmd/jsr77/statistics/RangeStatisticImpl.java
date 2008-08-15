@@ -66,7 +66,7 @@ public class RangeStatisticImpl extends StatisticImpl
 	}
 	
 		public
-	RangeStatisticImpl( final Map m )
+	RangeStatisticImpl( final Map<String,Object> m )
 	{
 		this( new MapStatisticImpl( m ) );
 	}

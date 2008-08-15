@@ -159,10 +159,10 @@ public class ProxyCmd extends JMXCmd
 	}
 	
 	
-		private Set
+		private Set<String>
 	resolveAliases( final String[]	targets )
 	{
-		final Set	results	= new HashSet();
+		final Set<String>	results	= new HashSet<String>();
 		
 		final AliasMgr	mgr	= getAliasMgr();
 		
@@ -185,16 +185,16 @@ public class ProxyCmd extends JMXCmd
 		return( results );
 	}
 	
-		private Set
-	stringsToObjectNames( final Set	exprs )
+		private Set<ObjectName>
+	stringsToObjectNames( final Set<String>	exprs )
 		throws MalformedObjectNameException
 	{
-		final Set	results	= new HashSet();
+		final Set<ObjectName>	results	= new HashSet<ObjectName>();
 		
-		final Iterator	iter	= exprs.iterator();
+		final Iterator<String>	iter	= exprs.iterator();
 		while ( iter.hasNext() )
 		{
-			final String	orig	= (String)iter.next();
+			final String	orig	= iter.next();
 			
 			String	expr	= orig;
 			
@@ -244,8 +244,8 @@ public class ProxyCmd extends JMXCmd
 		final ConnectionSource	connectionSource	= getConnectionSource( srcConnectionName );
 		final MBeanProxyMgr	proxyMgr	= getProxyMgr( server, connectionSource );
 		
-		final Set	resolvedStrings	= resolveAliases( targets );
-		final Set	objectNames		= stringsToObjectNames( resolvedStrings );
+		final Set<String>	resolvedStrings	= resolveAliases( targets );
+		final Set<ObjectName>	objectNames		= stringsToObjectNames( resolvedStrings );
 		
 		final ObjectName[]	objectNamesArray	= new ObjectName[ objectNames.size() ];
 		objectNames.toArray( objectNamesArray );

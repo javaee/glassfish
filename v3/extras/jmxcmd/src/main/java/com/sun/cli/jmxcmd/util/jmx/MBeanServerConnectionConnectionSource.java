@@ -54,12 +54,6 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
- 
-/*
- * $Header: /m/jws/jmxcmd/src/com/sun/cli/jmxcmd/util/jmx/MBeanServerConnectionConnectionSource.java,v 1.1 2005/11/08 22:40:23 llc Exp $
- * $Revision: 1.1 $
- * $Date: 2005/11/08 22:40:23 $
- */
 
 package com.sun.cli.jmxcmd.util.jmx;
 
@@ -67,8 +61,6 @@ import java.io.IOException;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
-
-import com.sun.appserv.management.client.ConnectionSource;
 
 
 /**

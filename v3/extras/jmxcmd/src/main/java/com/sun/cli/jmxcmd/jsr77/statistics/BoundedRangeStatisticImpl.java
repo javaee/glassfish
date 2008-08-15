@@ -62,7 +62,7 @@ public class BoundedRangeStatisticImpl extends RangeStatisticImpl
 	}
 	
 		public
-	BoundedRangeStatisticImpl( final Map m )
+	BoundedRangeStatisticImpl( final Map<String,Object> m )
 	{
 		this( new MapStatisticImpl( m ) );
 	}

@@ -40,7 +40,7 @@ public class CompositeDataStatistic extends MapStatisticImpl
 		whose keys are the Statistic names.
 	 */
 		public
-	CompositeDataStatistic( final Map map )
+	CompositeDataStatistic( final Map<String,Object> map )
 	{
 		super( map );
 	}

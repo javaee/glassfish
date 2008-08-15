@@ -193,7 +193,9 @@ public class FindCmd extends JMXCmd
 		Set<String>
 	getCurrent()
 	{
-		return( (Set<String>)envGet( JMXCmdEnvKeys.FIND_RESULT ) );
+        @SuppressWarnings("unchecked")
+        final Set<String> s = (Set)envGet( JMXCmdEnvKeys.FIND_RESULT );
+        return s;
 	}
 	
 	private final static String	ARG_DELIM	= ",";
@@ -241,7 +243,7 @@ public class FindCmd extends JMXCmd
 		throws java.io.IOException, ReflectionException, IntrospectionException,InstanceNotFoundException
 	{
 		final MBeanServerConnection	conn	= getConnection();
-		final HashSet	resultSet		= new HashSet();
+		final Set<ObjectName>	resultSet		= new HashSet<ObjectName>();
 		final Pattern[]	patterns		= RegexUtil.exprsToPatterns( argListToExprs( argList ) );
 		
 		for( final ObjectName objectName : objectNames )
@@ -266,7 +268,7 @@ public class FindCmd extends JMXCmd
 		throws java.io.IOException, ReflectionException, IntrospectionException,InstanceNotFoundException
 	{
 		final MBeanServerConnection	conn	= getConnection();
-		final HashSet	resultSet		= new HashSet();
+		final Set<ObjectName>	resultSet		= new HashSet<ObjectName>();
 		final Pattern[]	patterns		= RegexUtil.exprsToPatterns( argListToExprs( argList ) );
 		
 		for( final ObjectName objectName : objectNames )
@@ -306,7 +308,7 @@ public class FindCmd extends JMXCmd
 	 	-*		no MBeans
 	 	* -:* +Test:*	all MBeans, then remove all MBeans in default domain, then add all MBeans in 'Test' domain
 	*/
-		Set
+		Set<ObjectName>
 	resolveQualifiedTargets( final String[] qualifiedTargets )
 		throws Exception
 	{
@@ -330,7 +332,7 @@ public class FindCmd extends JMXCmd
 			}
 		}
 		
-		final Set	all	= new HashSet();
+		final Set<ObjectName>	all	= new HashSet<ObjectName>();
 		
 		// now we have targets without qualification--resolve them
 		final CLISupportMBeanProxy	proxy	= getProxy();
@@ -343,7 +345,7 @@ public class FindCmd extends JMXCmd
 			
 			final ObjectName[]	objectNames	= resolveTargets( proxy, arrayOfOne );
 			
-			final Set	objectNameSet	= ArrayConversion.arrayToSet( objectNames );
+			final Set<ObjectName>	objectNameSet	= ArrayConversion.arrayToSet( objectNames );
 			switch( qualifiers[ i ] )
 			{
 				default:
@@ -433,8 +435,8 @@ public class FindCmd extends JMXCmd
 			Set<ObjectName>	filteredSet	= new HashSet<ObjectName>();
 			if ( operationsExpr != null || attrsExpr != null )
 			{
-				Set<ObjectName>	operationsSet	= Collections.EMPTY_SET;
-				Set<ObjectName>	attrsSet		= Collections.EMPTY_SET;
+				Set<ObjectName>	operationsSet	= Collections.emptySet();
+				Set<ObjectName>	attrsSet		= Collections.emptySet();
 				
 				if ( operationsExpr != null )
 				{

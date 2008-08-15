@@ -13,6 +13,8 @@ package com.sun.cli.jmxcmd.spi;
 
 import javax.management.remote.JMXConnector;
 
+import java.lang.reflect.Method;
+
 /**
  	Info as supplied from a JMXConnectorProvider along with a routine
  	to get it via expected name of getInfo().
@@ -47,13 +49,13 @@ public interface JMXConnectorProviderInfo
 			available.  Return null if not present.
 		 */
 			public static JMXConnectorProviderInfo
-		getInfo( Class theClass )
+		getInfo( Class<?> theClass )
 		{
 			JMXConnectorProviderInfo	info	= null;
 			
 			try
 			{
-				java.lang.reflect.Method	m	= theClass.getDeclaredMethod( "getInfo", (Class[])null );
+				Method	m	= theClass.getDeclaredMethod( "getInfo", (Class[])null );
 			
 				info	= (JMXConnectorProviderInfo)m.invoke( theClass, (Object[])null );
 			}

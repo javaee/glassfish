@@ -830,7 +830,7 @@ class MonitorThread extends Thread implements CmdEventListener
 		private AttributeChangedInfo[]
 	compare( MonitoringTarget data, Map currentAttrs )
 	{
-		final ArrayList	changeList	= new ArrayList();
+		final List<AttributeChangedInfo>	changeList	= new ArrayList<AttributeChangedInfo>();
 		
 		final Iterator oldIter	= data.getLastAttributes().keySet().iterator();
 		while ( oldIter.hasNext() )
@@ -851,7 +851,7 @@ class MonitorThread extends Thread implements CmdEventListener
 			}
 		}
 		
-		return( (AttributeChangedInfo[])changeList.toArray( new AttributeChangedInfo[ changeList.size() ] ) );
+		return changeList.toArray( new AttributeChangedInfo[ changeList.size() ] );
 	}
 	
 		private Map<String,Object>
