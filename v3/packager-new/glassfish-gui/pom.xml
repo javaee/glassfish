@@ -117,16 +117,6 @@
             <artifactId>console-updatecenter-plugin</artifactId>
             <version>${project.version}</version>
     	</dependency>
-     	<dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-web-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-	    <artifactId>console-jdbc-plugin</artifactId>
-            <version>${project.version}</version>
-    	</dependency> 
         <dependency>        
            <groupId>org.glassfish.admingui</groupId>
            <artifactId>war</artifactId>

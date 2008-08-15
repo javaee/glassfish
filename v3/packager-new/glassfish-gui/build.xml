@@ -19,7 +19,7 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish jdbc management package creation" default="create.package" basedir=".">
+<project name="glassfish admin GUI package creation" default="create.package" basedir=".">
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
 
