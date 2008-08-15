@@ -106,6 +106,31 @@
         </plugins>
     </build>
 
+    <!--
+    Activate this profile with "mvn -P ips"
+    <profiles>
+        <profile>
+            <id>ips</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+            <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-nucleus-distributions"/>
+                    </tasks>
+                </configuration>
+             </plugin>
+            </plugins>
+            </build>
+        </profile>
+   </profiles>
+    -->
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
@@ -142,6 +167,12 @@
             <type>zip</type>
         </dependency>
         <dependency>
+           <groupId>com.sun.pkg.client</groupId>
+           <artifactId>ucbootstrap</artifactId>
+           <version>0.0.0.13</version>
+           <type>zip</type>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish.version}</version>
@@ -155,4 +186,3 @@
         </dependency>
     </dependencies>
 </project>
-

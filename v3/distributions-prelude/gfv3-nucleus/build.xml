@@ -26,6 +26,8 @@ own identifying information: Portions Copyright [yyyy]
             <fileset dir="target/stage">
                 <include name="*.zip"/>
                 <exclude name="nucleus-base*.zip"/>
+                <exclude name="ucbootstrap*.zip"/>
+                <exclude name="pkg-java*.zip"/>
             </fileset>
         </unzip>
         <unzip dest="target/stage/glassfishv3-prelude">
@@ -36,6 +38,13 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="**/domains/**"/>
             </patternset>
         </unzip>
+        <copy todir="../.">
+            <fileset dir="target/stage">
+                <include name="nucleus-base*.zip"/>
+                <include name="ucbootstrap*.zip"/>
+                <include name="pkg-java*.zip"/>
+            </fileset>
+        </copy>
         <delete dir="target/stage" includes="*.zip"/>
         <zip file="target/gfv3-nucleus.zip" basedir="target/stage"/>
 

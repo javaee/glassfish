@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="GlassFish Distributions (IPS) Creation" default="create-prelude-image" basedir=".">
+
+<property name="image.root" value="local_image"/>
+<property name="installer.image.dir" value="${image.root}/installer"/>
+<property name="glassfish.image.dir" value="${image.root}/glassfish"/>
+<property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
+<!-- property name="repo.url" value="http://localhost:10000"/ -->
+<property name="repo.host" value="http://pkg.glassfish.org"/>
+<property name="authority" value="glassfish.org"/>
+<property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
+
+<target name="init"> 
+    
+</target>
+
+<target name="create-nucleus-distributions"> 
+    <ant antfile="../gfv3-nucleus/nucleus-distributions.xml"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="gfv3-nucleus"/>
+    </antcall>
+</target>
+
+<target name="create-scripting-distributions" depends="create-nucleus-distributions"> 
+    <ant antfile="../gfv3-scripting/scripting-distributions.xml"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="gfv3-scripting"/>
+    </antcall>
+</target>
+
+<target name="create-web-nb-distributions" depends="create-scripting-distributions"> 
+    <ant antfile="../gfv3-web-nb/web-nb-distributions.xml"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="gfv3-web-nb"/>
+    </antcall>
+</target>
+
+<target name="create-prelude-distributions" depends="create-web-nb-distributions"> 
+    <ant antfile="../gfv3-prelude/prelude-distributions.xml"/>
+    <mkdir dir="${image.root}"/>
+    <mkdir dir="${installer.image.dir}"/>
+    <antcall target="create-distributions"> 
+         <param name="image.name" value="gfv3-prelude"/>
+    </antcall>
+</target>
+
+<target name="create-distributions" description="Creating IPS Distributions">
+    <!-- zip destfile="target/${image.name}-ips-installer.zip">
+            <fileset dir="${installer.image.dir}/glassfishv3-prelude" includes="**/*" />
+    </zip>
+    <zip destfile="target/${image.name}-ips.zip">
+            <fileset dir="${glassfish.image.dir}" includes="**/*" />
+    </zip !-->
+
+    <chmod file="${installer.image.dir}/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
+    <!-- chmod file="${installer.image.dir}/glassfishv3-prelude/glassfish/bin/**" perm="ugo+rx"/ -->
+    <exec dir="${installer.image.dir}/glassfishv3-prelude" executable="zip">
+        <arg line= "-r ../../../target/${image.name}-ips-installer.zip ."/>
+    </exec>
+
+    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/bin/**" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/glassfish/bin/**" perm="ugo+rx"/>
+    <exec dir="${glassfish.image.dir}" executable="zip">
+        <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-prelude"/>
+    </exec>
+    <!-- delete dir="${image.root}"/ -->
+</target>
+
+<target name="create-local-image" depends="check-ips"
+    description="Create local IPS image using ${repo.url}">
+    <echo message="Creating local IPS image for ${repo.url} to ${image.dir}"/>
+    <mkdir dir="${image.dir}"/>
+    <exec executable="pkg" failonerror="true">
+        <arg line="image-create -U -a ${authority}=${repo.url} ${image.dir}" />
+    </exec>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="refresh" />
+    </exec>
+</target>
+
+<target name="install-package" depends="check-ips"
+    description="Install Package ${package.name} from ${repo.url}">
+    <echo message="Install Package ${package.name} from ${repo.url} to ${image.dir}"/>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="install ${package.name}" />
+    </exec>
+</target>
+
+<target name="check-ips">
+    <available file="pkg" property="ips.present"/>
+    <!-- fail message="Install IPS/UC2.0 Client. Unable to find pkg, pkgsend commands" unless="ips.present"/ -->
+</target>
+
+<target name="update-cfg-cache" depends="check-ips">
+    <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
+    <echo message="Updating cfg_cache in local IPS image with ${repo.url}"/>
+    <echo message="image.dir: ${image.dir}"/>
+    <echo message="cfg_cache: ${image.cache}"/>
+    <available file="${image.dir}/.org.opensolaris,pkg/cfg_cache" property="cache.present"/>
+    <fail message="${image.dir}/.org.opensolaris,pkg/cfg_cache File NOT present, call create-local-image target first" unless="cache.present"/>
+    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-windows-i386 = ${repo.host}/dev/windows/v3prelude/${line.separator}</echo>
+    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-sunos-i386 = ${repo.host}/dev/solaris-x86/v3prelude/${line.separator}</echo>
+    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-sunos-sparc = ${repo.host}/dev/solaris-sparc/v3prelude/${line.separator}</echo>
+    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-linux-i386 = ${repo.host}/dev/linux/v3prelude/${line.separator}</echo>
+    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-darwin-universal = ${repo.host}/dev/mac/v3prelude/${line.separator}</echo>
+</target>
+</project>

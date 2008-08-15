@@ -106,6 +106,31 @@
         </plugins>
     </build>
 
+    <!--
+    Activate this profile with "mvn -P ips"
+    <profiles>
+        <profile>
+            <id>ips</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+            <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.distribution"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-nb-distributions"/>
+                    </tasks>
+                </configuration>
+             </plugin>
+            </plugins>
+            </build>
+        </profile>
+   </profiles>
+   -->
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
@@ -121,6 +146,18 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-common</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-security</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-deployment</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
         </dependency>
@@ -192,4 +229,3 @@
         </dependency> 
     </dependencies>
 </project>
-
