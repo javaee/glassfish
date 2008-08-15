@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.sun.enterprise</groupId>
     <artifactId>hk2-parent</artifactId>
-    <version>0.3.14-SNAPSHOT</version>
+    <version>0.3.14</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hk2-maven</artifactId>
