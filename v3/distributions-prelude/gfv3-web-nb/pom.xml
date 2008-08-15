@@ -126,18 +126,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-security</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-deployment</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-registration</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
