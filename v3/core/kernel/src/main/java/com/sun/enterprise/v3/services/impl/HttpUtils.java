@@ -284,6 +284,8 @@ public class HttpUtils {
                         byteBuffer.position(startPos);
                         byteBuffer.limit(endPos);
                         byteBuffer.get(host);
+                        
+                        lastState.setCompleted(true);
                         return host;
 
                     default:

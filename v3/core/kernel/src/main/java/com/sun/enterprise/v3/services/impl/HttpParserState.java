@@ -104,4 +104,21 @@ public class HttpParserState {
     public void setCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer("HttpParser state(").
+                append(hashCode()).append(')');
+        
+        sb.append(" Buffer: ").append(buffer);
+        sb.append(" isCompleted: ").append(isCompleted);
+        sb.append(" State: ").append(state);
+        sb.append(" position: ").append(position);
+        for(int i=0; i<stateParameters.length; i++) {
+            sb.append("; parameter[").append(i).append("]: ").
+                    append(stateParameters[i]);
+        }
+
+        return sb.toString();
+    }
 }

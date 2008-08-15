@@ -168,8 +168,8 @@ public class ContainerMapper {
             if (contextBytes != null) {
                 state.setState(0);
                 // Read available bytes and try to find the host header.
-                // HTTP 1.0 doesn't have any hos?, hence the time out must be small.
-                hostBytes = HttpUtils.readHost(selectionKey, state, 1000);
+                hostBytes = HttpUtils.readHost(selectionKey, state,
+                        InputReader.getDefaultReadTimeout());
             }
         } finally {
             parserStates.offer(state);
