@@ -45,9 +45,8 @@ own identifying information: Portions Copyright [yyyy]
 		<fileset dir="src/main/resources/config"/>
 	</copy>
 
-	<chmod dir="target/stage/glassfishv3-prelude/bin" perm="ugo+rx"/>
-	
-	<chmod dir="target/stage/glassfishv3-prelude/glassfish/bin" perm="ugo+rx"/>
+	<chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
+	<chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
 
 	 <!-- TODO - would be nice if we can find a way to iterate through all
 	   "dependency" packages without having to define each intermediate 
