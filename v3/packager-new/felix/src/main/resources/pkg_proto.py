@@ -44,12 +44,12 @@ pkg = {
     "name"          : "felix",
     "version"       : conf.felix_version,
     "attributes"    : {
-                        "description" : conf.glassfish_description,
-                        "description_long" : conf.glassfish_description_log,
-                        "info.classification" : conf.glassfish_info_classification,
+                        "description" : "OSGi R4 Service Platform",
+                        "description_long" : "Felix is a community effort to implement the OSGi R4 Service Platform, which includes the OSGi framework and standard services, as well as providing and supporting other interesting OSGi-related technologies.",
+                        "info.classification" : "OSGi Service Platform Release 4",
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
-                        "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
+                        "../../../../ApacheLicense.txt" : {"license" : "ApacheV2"},
                       }
  }
