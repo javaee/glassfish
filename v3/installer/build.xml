@@ -149,7 +149,7 @@
          <echo message="Copying Glassfish zip file"/>
  
          <copy tofile="${stage.dir}/Product/Packages/glassfish.zip"
-               file="${gf.zip.dir}/gfv3-prelude-installer.zip" />
+               file="${gf.zip.dir}/gfv3-prelude-ips-installer.zip" />
 
          <echo message="Copying openInstaller zip files"/>
  
