@@ -37,6 +37,10 @@ public class EventsImpl implements Events {
     }
 
     public void send(final Event event) {
+        send(event, true);
+    }
+
+    public void send(final Event event, boolean asynchronously) {
         
         List<EventListener> l = new ArrayList<EventListener>();
         l.addAll(listeners);
@@ -60,16 +64,20 @@ public class EventsImpl implements Events {
                     }
                 }
             }
-            
-            executor.submit(new Runnable() {
-                public void run() {
-                    try {
-                        listener.event(event);
-                    } catch(Exception e) {
-                        logger.log(Level.WARNING, "Exception while dispatching an event", e);
+
+            if (asynchronously) {
+                executor.submit(new Runnable() {
+                    public void run() {
+                        try {
+                            listener.event(event);
+                        } catch(Exception e) {
+                            logger.log(Level.WARNING, "Exception while dispatching an event", e);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                listener.event(event);
+            }
         }
     }
 }
