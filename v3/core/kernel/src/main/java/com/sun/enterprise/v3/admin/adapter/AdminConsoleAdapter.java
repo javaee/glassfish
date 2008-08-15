@@ -145,7 +145,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String STATUS_TOKEN     = "%%%STATUS%%%";
 
     static final String ADMIN_APP_NAME           = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
-    static final String ADMIN_APP_WAR            = ADMIN_APP_NAME + ".war";
+    
+    //ADMIN_APP_WAR is not related to ADMIN_APP_NAME at all.  This is the war file name that is installed through the IPS package.
+    //This needs to match the tofile attribute of the <copy> command in v3/packager-new/glassfish-gui/build.xml
+    static final String ADMIN_APP_WAR            = "admingui.war"; 
+    
     public AdminConsoleAdapter() throws IOException {
 	initHtml   = Utils.packageResource2String("downloadgui.html");
 	statusHtml = Utils.packageResource2String("status.html");
