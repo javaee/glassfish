@@ -118,13 +118,30 @@
             <type>zip</type>
         </dependency>
 
-        <!-- admin ui package -->
+	<!-- admin ui package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-gui</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
-        </dependency>     
+        </dependency>
+
+        <!-- admin web container ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web-gui</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
+
+    
+        <!-- admin jdbc ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-gui</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
 
         <!-- javadb package -->
         <dependency>
