@@ -82,28 +82,11 @@ own identifying information: Portions Copyright [yyyy]
                  </scope>		 
 	 </graphDef>   
 
-	 <graphDef id="remove-security-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-common-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-security"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>     
-
-	 <graphDef id="remove-deployment-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-security-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-deployment"/>			                       
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
 
 	 <graphDef id="remove-registration-modules" tolerateBrokenPOMs="true">
 		 <scope level="compile,runtime">       
 			  <subtract>
-				 <graphRef refid="remove-deployment-modules"/>
+				 <graphRef refid="remove-common-modules"/>
 				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-registration"/>			                         
 			 </subtract>
                  </scope>		 

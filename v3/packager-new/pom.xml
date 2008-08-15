@@ -61,8 +61,6 @@
 	<module>glassfish-api</module>
 	<module>glassfish-nucleus</module>
 	<module>glassfish-common</module>
-	<module>glassfish-security</module>
-	<module>glassfish-deployment</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
 	<module>glassfish-amx</module>

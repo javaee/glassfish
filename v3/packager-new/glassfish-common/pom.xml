@@ -94,6 +94,53 @@
            <version>9.0.1</version>
            <type>distribution-fragment</type>
         </dependency>
+   <!--  moving stuff from killed glassfish-deployment package -->
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>dol</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-client</artifactId>
+            <version>${project.version}</version>
+   	 </dependency>
+    	<dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-javaee-core</artifactId>
+            <version>${project.version}</version>
+    	</dependency>
+    	<dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-autodeploy</artifactId>
+            <version>${project.version}</version>
+      	</dependency>
+    	<dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- moving stuff from killed glassfish-security package -->
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>realms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>security</artifactId>
+            <version>${project.version}</version>
+   	 </dependency>
       	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->

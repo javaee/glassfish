@@ -125,18 +125,6 @@
            <version>${project.version}</version>
            <type>zip</type>
     	</dependency>
-	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-security</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>  
-   	<dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-deployment</artifactId>
-           <version>${project.version}</version>
-           <type>zip</type>
-   	</dependency>
   	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-registration</artifactId>
