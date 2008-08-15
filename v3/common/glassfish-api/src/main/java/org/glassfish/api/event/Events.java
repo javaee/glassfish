@@ -48,7 +48,25 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface Events {
 
+    /**
+     * Registers a new listener for global events
+     * 
+     * @param listener the new listener
+     */
     public void register(EventListener listener);
 
+    /**
+     * Sends a event asynchronously
+     *
+     * @param event event to send
+     */
     public void send(EventListener.Event event);
+
+    /**
+     * Sends a event to all listener synchronously or asynchronously.
+     *
+     * @param event event to send
+     * @param asynchronously true if the event should be sent asynchronously
+     */
+    public void send(EventListener.Event event, boolean asynchronously);
 }
