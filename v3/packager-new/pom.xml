@@ -86,6 +86,21 @@
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <version>1.32</version>
+<!-- start of ant execution -->
+		<executions>
+		    <execution>
+		        <phase>generate-sources</phase>
+			<configuration>
+			    <tasks>
+			        <filter token="BUILD_ID" value="${build.id}"/>
+				<copy file="pkg_conf.py.template" tofile="pkg_conf.py" filtering="true" failonerror="false"/>
+		            </tasks>
+                        </configuration>
+                        <goals>
+                           <goal>run</goal>
+	                </goals>
+	            </execution>
+		</executions>    
             </plugin> 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
