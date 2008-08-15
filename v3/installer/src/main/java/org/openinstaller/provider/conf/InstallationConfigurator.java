@@ -542,11 +542,11 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
         
             if (isWindows) {
                  javaCommand = System.getProperty("java.home") + "\\bin\\javaw.exe";
-                 bootstrapJar = installDir + "\\updatetool\\lib\\ucbootstrap.jar";
+                 bootstrapJar = installDir + "\\pkg\\lib\\pkg-bootstrap.jar";
             }
             else {
                 javaCommand = System.getProperty("java.home") + "/bin/java";
-                bootstrapJar = installDir + "/updatetool/lib/ucbootstrap.jar";
+                bootstrapJar = installDir + "/pkg/lib/pkg-bootstrap.jar";
             }
 
             String[] javaCommandArray = { javaCommand, 
@@ -568,37 +568,9 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
             LOGGER.log(Level.INFO, "Exception while boostrapping updatetool: " + e.getMessage()); 
        }
 
-    //register notifier if appropriate option is set
+    //notifier is now being registered as part of bootstrap, so explicit
+    //call to updatetoolconfig is being removed
     
-    if (allowUpdateCheck.equalsIgnoreCase("true")) {
-        try {
-
-            String configCommand;
-        
-            if (isWindows) {
-                 configCommand = installDir + "\\updatetool\\bin\\updatetoolconfig.bat";
-            }
-            else {
-                configCommand = installDir + "/updatetool/bin/updatetoolconfig";
-            }
-
-            String[] configCommandArray = { configCommand, 
-                "--register" };
-            
-            LOGGER.log(Level.INFO, "Registering notifier process");
-            
-            ExecuteCommand configExecuteCommand = new ExecuteCommand(configCommandArray);
-            configExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
-            configExecuteCommand.setCollectOutput(true);
-        
-            configExecuteCommand.execute();
-
-            productError = productError +configExecuteCommand.getErrors();
-       } catch (Exception e) {
-
-            LOGGER.log(Level.INFO, "Exception while registering notifier: " + e.getMessage()); 
-       }
-    }    
 
 }
 
