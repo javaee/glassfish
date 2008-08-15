@@ -110,17 +110,6 @@
             <url>http://download.java.net/maven/2/</url>
         </pluginRepository>
     </pluginRepositories>
-    <reporting>
-        <plugins>
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jxr-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <testSourceDirectory>test/java</testSourceDirectory>
@@ -229,4 +218,38 @@
     <properties>
         <java.net.username>${user.name}</java.net.username>
     </properties>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!--
+                 Maven releaase process fails with NPE when a dependency report generation
+                 tries to obtain a POM for the system-scope Artifact.
+		 See MPIR-37 for the bug report. Kohsuke to file a bug report on this
+		 with a proposed patch.
+              -->
+              <!--report>dependencies</report-->
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <report>cim</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jxr-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
