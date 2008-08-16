@@ -89,7 +89,7 @@
 <!-- start of ant execution -->
 		<executions>
 		    <execution>
-		        <phase>generate-sources</phase>
+		        <phase>package</phase>
 			<configuration>
 			    <tasks>
 			        <filter token="BUILD_ID" value="${build.id}"/>
