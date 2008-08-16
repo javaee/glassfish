@@ -38,7 +38,9 @@ own identifying information: Portions Copyright [yyyy]
             <fileset dir="target/stage/glassfishv3-prelude/glassfish/javadb"/>
   	</copy>
 	       
-
+       <!-- Changing file permissions of javadb scripts -->
+       <chmod file="target/stage/glassfishv3-prelude/javadb/frameworks/NetworkServer/bin/*" perm="ugo+rx"/>
+       <chmod file="target/stage/glassfishv3-prelude/javadb/frameworks/embedded/bin/*" perm="ugo+rx"/>
        <delete dir="target/stage/glassfishv3-prelude/glassfish"/>
 
        <zip file="target/javadb.zip" basedir="target/stage"/>
