@@ -43,7 +43,7 @@ pkg = {
     "name"          : "glassfish-jpa",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : conf.glassfish_description,
+                        "description" : "glassfish-jpa",
                         "description_long" : conf.glassfish_description_log,
                         "info.classification" : conf.glassfish_info_classification,
                       },
