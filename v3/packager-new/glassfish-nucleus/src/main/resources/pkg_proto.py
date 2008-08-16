@@ -47,7 +47,7 @@ pkg = {
                         "description_long" : conf.glassfish_description_log,
                         "info.classification" : conf.glassfish_info_classification,
                       },
-    "dirtrees"      : [ "glassfish" ],
+    "dirtrees"      : [ "glassfish", "bin" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
                       },
