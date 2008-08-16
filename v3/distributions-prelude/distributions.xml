@@ -81,7 +81,7 @@ own identifying information: Portions Copyright [yyyy]
     <chmod file="${glassfish.image.dir}/glassfishv3-prelude/bin/**" perm="ugo+rx"/>
     <chmod file="${glassfish.image.dir}/glassfishv3-prelude/glassfish/bin/**" perm="ugo+rx"/>
     <exec dir="${glassfish.image.dir}" executable="zip">
-        <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-prelude"/>
+        <arg line= "-r ../../target/${image.name}-ips.zip glassfishv3-prelude"/>
     </exec>
     <!-- delete dir="${image.root}"/ -->
 </target>
