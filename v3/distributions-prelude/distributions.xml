@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="GlassFish Distributions (IPS) Creation" default="create-prelude-image" basedir=".">
 
-<property name="image.root" value="local_image"/>
+<property name="image.root" value="target/local_image"/>
 <property name="installer.image.dir" value="${image.root}/installer"/>
 <property name="glassfish.image.dir" value="${image.root}/glassfish"/>
 <property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
@@ -65,21 +65,22 @@ own identifying information: Portions Copyright [yyyy]
 </target>
 
 <target name="create-distributions" description="Creating IPS Distributions">
-    <!-- zip destfile="target/${image.name}-ips-installer.zip">
-            <fileset dir="${installer.image.dir}/glassfishv3-prelude" includes="**/*" />
-    </zip>
-    <zip destfile="target/${image.name}-ips.zip">
-            <fileset dir="${glassfish.image.dir}" includes="**/*" />
-    </zip !-->
-
     <chmod file="${installer.image.dir}/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
-    <!-- chmod file="${installer.image.dir}/glassfishv3-prelude/glassfish/bin/**" perm="ugo+rx"/ -->
+    <chmod file="${installer.image.dir}/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+    <!-- Delete all contents under ips-metadata download directory --> 
+    <delete includeemptydirs="true">
+        <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
+    </delete>
     <exec dir="${installer.image.dir}/glassfishv3-prelude" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips-installer.zip ."/>
     </exec>
 
-    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/bin/**" perm="ugo+rx"/>
-    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/glassfish/bin/**" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+    <!-- Delete all contents under ips-metadata download directory --> 
+    <delete includeemptydirs="true">
+        <fileset dir="${glassfish.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
+    </delete>
     <exec dir="${glassfish.image.dir}" executable="zip">
         <arg line= "-r ../../target/${image.name}-ips.zip glassfishv3-prelude"/>
     </exec>

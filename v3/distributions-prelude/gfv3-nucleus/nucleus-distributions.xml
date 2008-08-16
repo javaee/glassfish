@@ -41,8 +41,8 @@ own identifying information: Portions Copyright [yyyy]
 
     <!-- copy domains -->
     <!-- unzip dest="${image.dir}" -->
-    <unzip dest="local_image/glassfish/glassfishv3-prelude">
-        <fileset dir="target">
+    <unzip dest="target/local_image/glassfish/glassfishv3-prelude">
+        <fileset dir="../target">
             <include name="nucleus-base*.zip"/>
         </fileset>
         <patternset>
@@ -89,14 +89,14 @@ own identifying information: Portions Copyright [yyyy]
 
     <!-- copy pkg-java -->
     <unzip dest="${image.dir}/..">
-        <fileset dir="../.">
+        <fileset dir="../target">
             <include name="pkg-java*.zip"/>
         </fileset>
     </unzip>
 
     <!-- copy uc client scripts -->
     <unzip dest="${image.dir}/bin">
-        <fileset dir="../.">
+        <fileset dir="../target">
             <include name="ucbootstrap*.zip"/>
         </fileset>
     </unzip>

@@ -38,7 +38,8 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="**/domains/**"/>
             </patternset>
         </unzip>
-        <copy todir="../.">
+        <mkdir dir="../target"/>
+        <copy todir="../target">
             <fileset dir="target/stage">
                 <include name="nucleus-base*.zip"/>
                 <include name="ucbootstrap*.zip"/>
