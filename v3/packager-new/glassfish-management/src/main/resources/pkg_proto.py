@@ -43,7 +43,7 @@ pkg = {
     "name"          : "glassfish-management",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : conf.glassfish_description,
+                        "description" : "glassfish-management",
                         "description_long" : conf.glassfish_description_log,
                         "info.classification" : conf.glassfish_info_classification,
                       },
