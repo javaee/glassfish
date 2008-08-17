@@ -37,7 +37,12 @@ own identifying information: Portions Copyright [yyyy]
             </patternset>
         </unzip>
         <delete dir="target/stage" includes="*.zip"/>
-        <zip file="target/gfv3-scripting.zip" basedir="target/stage"/>
+
+        <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+        <exec dir="target/stage" executable="zip">
+            <arg line= "-r ../gfv3-scripting.zip glassfishv3-prelude"/>
+        </exec>
 
         <!-- Deploy distribution artifact to maven repository" -->
         <attachArtifact file="target/gfv3-scripting.zip"/>

@@ -46,8 +46,21 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="pkg-java*.zip"/>
             </fileset>
         </copy>
+
+        <!-- copy pkg-java -->
+        <unzip dest="target/stage">
+            <fileset dir="target/stage">
+                <include name="pkg-java*.zip"/>
+            </fileset>
+        </unzip>
+
         <delete dir="target/stage" includes="*.zip"/>
-        <zip file="target/gfv3-nucleus.zip" basedir="target/stage"/>
+
+        <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+        <exec dir="target/stage" executable="zip">
+            <arg line= "-r ../gfv3-nucleus.zip glassfishv3-prelude"/>
+        </exec>
 
         <!-- Deploy distribution artifact to maven repository" -->
         <attachArtifact file="target/gfv3-nucleus.zip"/>

@@ -28,6 +28,8 @@ own identifying information: Portions Copyright [yyyy]
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="authority" value="glassfish.org"/>
+<property name="title" value="GlassFish v3 Prelude"/>
+<property name="description" value="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0)."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 
 <target name="init"> 
@@ -97,6 +99,16 @@ own identifying information: Portions Copyright [yyyy]
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="refresh" />
     </exec>
+
+    <!-- Set title and description properties in UC cfg_cache -->
+    <echo message="title: ${title}"/>
+    <echo message="description: ${description}"/>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-property title 'GlassFish v3 Prelude'"/>
+    </exec>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="set-property description 'GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0).'"/>
+    </exec>
 </target>
 
 <target name="install-package" depends="check-ips"
@@ -119,10 +131,28 @@ own identifying information: Portions Copyright [yyyy]
     <echo message="cfg_cache: ${image.cache}"/>
     <available file="${image.dir}/.org.opensolaris,pkg/cfg_cache" property="cache.present"/>
     <fail message="${image.dir}/.org.opensolaris,pkg/cfg_cache File NOT present, call create-local-image target first" unless="cache.present"/>
-    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-windows-i386 = ${repo.host}/dev/windows/v3prelude/${line.separator}</echo>
-    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-sunos-i386 = ${repo.host}/dev/solaris-x86/v3prelude/${line.separator}</echo>
-    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-sunos-sparc = ${repo.host}/dev/solaris-sparc/v3prelude/${line.separator}</echo>
-    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-linux-i386 = ${repo.host}/dev/linux/v3prelude/${line.separator}</echo>
-    <echo file="${image.dir}/.org.opensolaris,pkg/cfg_cache" append="true">origin-for-darwin-universal = ${repo.host}/dev/mac/v3prelude/${line.separator}</echo>
+
+    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
+    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="ssl_key = None">
+        <replacevalue><![CDATA[origin-for-windows-i386
+origin-for-sunos-i386
+origin-for-sunos-sparc
+origin-for-linux-i386
+origin-for-darwin-universal
+ssl_key = None]]>
+        </replacevalue>
+    </replace>
+    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
+        <replacefilter token="origin-for-windows-i386"
+            value="origin-for-windows-i386 = ${repo.host}/dev/windows/v3prelude/"/>
+        <replacefilter token="origin-for-sunos-i386"
+            value="origin-for-sunos-i386 = ${repo.host}/dev/solaris-x86/v3prelude/"/>
+        <replacefilter token="origin-for-sunos-sparc"
+            value="origin-for-sunos-sparc = ${repo.host}/dev/solaris-sparc/v3prelude/"/>
+        <replacefilter token="origin-for-linux-i386"
+            value="origin-for-linux-i386 = ${repo.host}/dev/linux/v3prelude/"/>
+        <replacefilter token="origin-for-darwin-universal"
+            value="origin-for-darwin-universal = ${repo.host}/dev/mac/v3prelude/"/>
+    </replace>
 </target>
 </project>
