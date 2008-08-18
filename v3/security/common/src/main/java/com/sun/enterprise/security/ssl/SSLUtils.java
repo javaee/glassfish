@@ -308,6 +308,11 @@ public final class SSLUtils implements PostConstruct {
     public SecuritySupport getSecuritySupport() {
         return secSupp;
     }
+    
+    public String[] getSupportedCipherSuites() {
+         //postConstruct is already setting this.
+         return  HttpsURLConnection.getDefaultSSLSocketFactory().getSupportedCipherSuites();
+    }
 
     private void initKeyManagers(KeyStore[] kstores, String[] pwds)
             throws Exception {
