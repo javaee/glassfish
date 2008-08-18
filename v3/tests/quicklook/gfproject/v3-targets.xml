@@ -157,5 +157,75 @@
   </exec>      
 </target>
 
+
+<target name="create-user-common-v3-impl" depends="setOSConditions">
+    <antcall target="create-user-common-v3-impl-unix"/>
+    <antcall target="create-user-common-v3-impl-windows"/>    
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create the user in file realm the AppServ  -->
+<!-- ================================================================ -->
+<target name="create-user-common-v3-impl-unix" if="isUnix">    
+    <property name="user.password.file" value="asadminuserpassword.txt"/>
+    <echo file="${user.password.file}" append="false">
+        AS_ADMIN_USERPASSWORD=${password}
+        AS_ADMIN_PASSWORD=${admin.password}
+        AS_ADMIN_ADMINPASSWORD=${admin.password}
+        AS_ADMIN_MASTERPASSWORD=${master.password}
+    </echo>
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <arg line="create-file-user"/>
+        <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+        <arg line="--groups ${groups}"/>
+        <arg line="--authrealmname ${authrealmname}"/>
+        <arg line="${user}"/>
+    </exec>
+    <delete file="${user.password.file}" failonerror="false"/>    
+</target>
+
+<target name="create-user-common-v3-impl-windows" if="isWindows">   
+    <property name="user.password.file" value="asadminuserpassword.txt"/>
+    <echo file="${user.password.file}" append="false">
+        AS_ADMIN_USERPASSWORD=${password}
+        AS_ADMIN_PASSWORD=${admin.password}
+        AS_ADMIN_ADMINPASSWORD=${admin.password}
+        AS_ADMIN_MASTERPASSWORD=${master.password}
+    </echo>
+    <exec executable="cmd">
+        <arg value="/c"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
+        <arg line="create-file-user"/>
+        <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+        <arg line="--groups ${groups}"/>
+        <arg line="--authrealmname ${authrealmname}"/>
+        <arg line="${user}"/>
+    </exec>
+    <delete file="${user.password.file}" failonerror="false"/>        
+</target>
+
+<target name="delete-user-common-v3-impl" depends="setOSConditions">
+    <antcall target="delete-user-common-v3-impl-unix"/>
+    <antcall target="delete-user-common-v3-impl-windows"/>    
+</target>
+
+<target name="delete-user-common-v3-impl-unix" if="isUnix">    
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <arg line="delete-file-user"/>
+        <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+        <arg line="--authrealmname ${authrealmname}"/>
+        <arg line="${user}"/>
+    </exec>    
+</target>
+
+<target name="delete-user-common-v3-impl-windows" if="isWindows">    
+    <exec executable="${glassfish.home}\bin\asadmin.bat">
+        <arg line="delete-file-user"/>
+        <arg line="--user ${admin.user} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+        <arg line="--authrealmname ${authrealmname}"/>
+        <arg line="${user}"/>
+    </exec>    
+</target>
+
 </project>
 
