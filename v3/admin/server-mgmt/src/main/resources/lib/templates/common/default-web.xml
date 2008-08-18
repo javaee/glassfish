@@ -1071,7 +1071,22 @@
     <extension>zip</extension>
     <mime-type>application/zip</mime-type>
   </mime-mapping>
-
+  <mime-mapping>
+    <extension>odp</extension>
+    <mime-type>application/x-vnd.oasis.opendocument.presentation</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>odt</extension>
+    <mime-type>application/x-vnd.oasis.opendocument.text</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>ods</extension>
+    <mime-type>application/x-vnd.oasis.opendocument.spreadsheet</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>odg</extension>
+    <mime-type>application/x-vnd.oasis.opendocument.graphics</mime-type>
+  </mime-mapping>
 
 
   <!-- ==================== Default Welcome File List ===================== -->
