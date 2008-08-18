@@ -31,6 +31,7 @@ import com.sun.common.util.logging.LoggingOutputStream;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.branding.Branding;
+import org.glassfish.api.admin.FileMonitoring;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -69,6 +70,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject(optional=true)
     Agent agent=null;
 
+    @Inject
+    FileMonitoring fileMonitoring;
+
     /**
      * Initialize the loggers
      */
@@ -83,7 +87,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         }
         
         // logging.properties nassaging.
-        LogManager logMgr = LogManager.getLogManager();
+        final LogManager logMgr = LogManager.getLogManager();
         File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
@@ -130,6 +134,19 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
         los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
         System.setErr(new PrintStream(los, true));
+
+        // finally listen to changes to the logging.properties file
+        if (logging!=null) {
+            fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
+                public void changed(File changedFile) {
+                    try {
+                        logMgr.readConfiguration();
+                    } catch (IOException e) {
+                        logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
+                    }
+                }
+            });
+        }
 
     }
 
