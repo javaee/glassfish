@@ -949,7 +949,14 @@ public class StandardManager
 
         Session sessions[] = findSessions();
         for (int i = 0; i < sessions.length; i++) {
-            sessions[i].isValid();
+            StandardSession sess = (StandardSession) sessions[i];
+            if (sess.lockBackground()) {
+                try {
+                    sess.isValid();
+                } finally {
+                    sess.unlockBackground();
+                }
+            }
         }
 
         long timeEnd = System.currentTimeMillis();
