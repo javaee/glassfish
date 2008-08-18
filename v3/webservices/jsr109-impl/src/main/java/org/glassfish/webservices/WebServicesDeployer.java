@@ -341,9 +341,8 @@ public class WebServicesDeployer extends WebDeployer {
         String[] otherExportedPackages = new String[] {
                  "org.glassfish.webservices.jsr109-impl",
                  "org.glassfish.web.web-glue",
-                 "com.sun.xml.ws.webservices-rt",
-                 "com.sun.tools.ws.webservices-tools",
-                 "javax.xml.webservices-api"
+                 "javax.xml.ws",
+                 "javax.xml.bind"
 
                  };
 
