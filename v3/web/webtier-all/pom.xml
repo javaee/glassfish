@@ -77,11 +77,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>websecurity</artifactId>
             <version>${project.version}</version>

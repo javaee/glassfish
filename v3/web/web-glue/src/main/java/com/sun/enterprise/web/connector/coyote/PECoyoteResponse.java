@@ -38,7 +38,9 @@ package com.sun.enterprise.web.connector.coyote;
 
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
+import org.apache.catalina.connector.CoyoteWriter;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.connector.OutputBuffer;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.logging.pwc.LogDomains;
 
@@ -49,7 +51,6 @@ public class PECoyoteResponse extends Response {
 
     private static final Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
 
-    
     /*
      * Constructor.
      */
@@ -57,6 +58,10 @@ public class PECoyoteResponse extends Response {
 	super(chunkingDisabled);
     }
 
+    @Override
+    protected CoyoteWriter createWriter(OutputBuffer outbuf) {
+        return new PECoyoteWriter(outbuf);
+    }
 
     // START GlassFish 898
     /**
@@ -77,4 +82,13 @@ public class PECoyoteResponse extends Response {
         return getCookieString(cookie, encodeCookies);
     }*/
     // END GlassFish 898
+
+    static class PECoyoteWriter
+                    extends org.apache.catalina.connector.CoyoteWriter
+                    implements org.glassfish.jsp.api.ByteWriter {
+
+        public PECoyoteWriter(OutputBuffer ob) {
+            super(ob);
+        }
+    }
 }

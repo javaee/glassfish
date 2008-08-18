@@ -46,7 +46,7 @@ import javax.servlet.jsp.tagext.JspTag;
 
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.catalina.core.StandardContext;
-import org.apache.jasper.runtime.ResourceInjector;
+import org.glassfish.jsp.api.ResourceInjector;
 import org.glassfish.internal.api.ServerContext;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
@@ -55,7 +55,7 @@ import com.sun.enterprise.web.WebModule;
 import com.sun.logging.LogDomains; 
 
 /**
- * SJSAS implementation of the org.apache.jasper.runtime.ResourceInjector
+ * SJSAS implementation of the org.glassfish.jsp.api.ResourceInjector
  * interface.
  *
  * @author Jan Luehe

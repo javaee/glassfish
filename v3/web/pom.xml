@@ -50,7 +50,6 @@
     <name>GlassFish Web container related modules</name>  
     <modules>
         <module>web-naming</module>
-        <module>web-common</module>
         <module>web-core</module>
         <module>war-util</module>
         <module>el</module>

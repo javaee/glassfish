@@ -125,7 +125,7 @@ public class Response
         // START OF SJSAS 6231069
         outputBuffer = new OutputBuffer();
         outputStream = new CoyoteOutputStream(outputBuffer);
-        writer = new CoyoteWriter(outputBuffer);
+        writer = createWriter(outputBuffer);
         // END OF SJSAS 6231069
         urlEncoder.addSafeCharacter('/');
     }
@@ -134,7 +134,7 @@ public class Response
     public Response(boolean chunkingDisabled) {
         outputBuffer = new OutputBuffer(chunkingDisabled);
         outputStream = new CoyoteOutputStream(outputBuffer);
-        writer = new CoyoteWriter(outputBuffer);
+        writer = createWriter(outputBuffer);
         urlEncoder.addSafeCharacter('/');
     }
     // END OF SJSAS 6231069
@@ -632,7 +632,7 @@ public class Response
         if (outputBuffer.isNew()) {
             outputBuffer.checkConverter();
             if (writer == null) {
-                writer = new CoyoteWriter(outputBuffer);
+                writer = createWriter(outputBuffer);
             }
             return writer;
         } else {
@@ -733,7 +733,7 @@ public class Response
         usingWriter = true;
         outputBuffer.checkConverter();
         if (writer == null) {
-            writer = new CoyoteWriter(outputBuffer);
+            writer = createWriter(outputBuffer);
         }
         return writer;
 
@@ -1732,6 +1732,12 @@ public class Response
 
     }
 
+    /**
+     * Create an instance of CoyoteWriter
+     */
+    protected CoyoteWriter createWriter(OutputBuffer outbuf) {
+        return new CoyoteWriter(outbuf);
+    }
 
     // START GlassFish 898
     /**

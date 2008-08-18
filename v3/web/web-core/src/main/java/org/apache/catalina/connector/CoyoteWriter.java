@@ -62,7 +62,6 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
 import org.apache.catalina.util.StringManager;
-import com.sun.enterprise.web.io.ByteWriter;
 
 
 /**
@@ -72,7 +71,7 @@ import com.sun.enterprise.web.io.ByteWriter;
  * @author Kin-man Chung
  */
 public class CoyoteWriter
-    extends PrintWriter implements ByteWriter {
+    extends PrintWriter {
 
 
     // -------------------------------------------------------------- Constants
@@ -256,10 +255,7 @@ public class CoyoteWriter
     }
 
 
-    // --------------------------------------------------- ByteWriter Methods
-
-
-    public void write(byte[] buff, int off, int len, int strlen) {
+    public void write(byte[] buff, int off, int len) {
 
         // Disallow operation if the object has gone out of scope
         if (ob == null) {
