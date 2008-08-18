@@ -63,9 +63,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 // START PWC 1.2
 import java.security.SecurityPermission;
 // START PWC 1.2
@@ -156,7 +158,7 @@ public class ApplicationContext
     /**
      * The context attributes for this context.
      */
-    private HashMap attributes = new HashMap();
+    private Map attributes = new ConcurrentHashMap();
 
 
     /**
@@ -248,11 +250,7 @@ public class ApplicationContext
      * @param name Name of the context attribute to return
      */
     public Object getAttribute(String name) {
-
-        synchronized (attributes) {
-            return (attributes.get(name));
-        }
-
+        return (attributes.get(name));
     }
 
 
@@ -261,11 +259,7 @@ public class ApplicationContext
      * associated with this context.
      */
     public Enumeration getAttributeNames() {
-
-        synchronized (attributes) {
-            return new Enumerator(attributes.keySet(), true);
-        }
-
+        return new Enumerator(attributes.keySet(), true);
     }
 
 
