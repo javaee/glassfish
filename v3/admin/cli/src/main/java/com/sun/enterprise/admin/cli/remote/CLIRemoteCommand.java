@@ -54,7 +54,7 @@ import com.sun.enterprise.universal.BASE64Encoder;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class CLIRemoteCommand {
+public class CLIRemoteCommand {    
     
     public CLIRemoteCommand(String... args) throws CommandException {
         initialize(args);
@@ -112,6 +112,10 @@ public class CLIRemoteCommand {
                 for(Map.Entry<String,String> entry : encodedPasswords.entrySet()) {
                     addOption(uriString, entry.getKey() + "=" + entry.getValue());
                 }
+            }
+            
+            if (commandName.equalsIgnoreCase("change-admin-password")) {
+                addOption(uriString, "username="+user);
             }
 
             //add operands
@@ -538,6 +542,7 @@ public class CLIRemoteCommand {
             user = li.getUser();
         }
     }
+    
     private void initializePassword(LoginInfo li) throws CommandException {
         String pwfile = params.get("passwordfile");
 
@@ -548,9 +553,102 @@ public class CLIRemoteCommand {
         }
         if (!ok(password) && li != null) { //not in passwordfile and in .asadminpass
             password = li.getPassword();
+        }        
+        if (!ok(password)) {
+            if (commandName.equalsIgnoreCase("change-admin-password")) {
+                try {
+                    password = getInteractiveOptionWithConfirmation();
+                    base64encode(encodedPasswords);
+                } catch (CommandValidationException cve) {
+                    throw new CommandException(cve);
+                }
+            }
         }
     }
     
+    private String getInteractiveOptionWithConfirmation() 
+    throws CommandValidationException {
+
+        encodedPasswords = new HashMap<String, String>();
+        
+        final String prompt = getLocalizedString("AdminPasswordPrompt");
+        final String newprompt = getLocalizedString("AdminNewPasswordPrompt");
+        final String confirmationPrompt = 
+            getLocalizedString("AdminNewPasswordConfirmationPrompt");
+
+        String oldpassword = getInteractiveOption(prompt);
+        if (!isPasswordValid(oldpassword)) {
+            throw new CommandValidationException(getLocalizedString(
+                    "PasswordLimit", new Object[]{"Admin"}));
+        }
+        encodedPasswords.put(CLIUtil.ENV_PREFIX+"PASSWORD",oldpassword);
+        
+        String newpassword = getInteractiveOption(newprompt);
+        if (!isPasswordValid(newpassword)) {
+            throw new CommandValidationException(getLocalizedString(
+                    "PasswordLimit", new Object[]{"Admin"}));
+        }
+        encodedPasswords.put(CLIUtil.ENV_PREFIX+"NEWPASSWORD",newpassword);
+        
+        String newpasswordAgain = 
+            getInteractiveOption(confirmationPrompt);
+        if (!newpassword.equals(newpasswordAgain)) {
+            throw new CommandValidationException(getLocalizedString(
+                "OptionsDoNotMatch", new Object[]{"Admin Password"}));
+        }
+        return oldpassword;
+    }
+
+    protected String getInteractiveOption(String prompt)
+            throws CommandValidationException {
+
+        String optionValue;
+        try {
+            InputsAndOutputs.getInstance().getUserOutput().print(prompt);
+            InputsAndOutputs.getInstance().getUserOutput().flush();
+            optionValue = new CliUtil().getPassword();
+        } catch (java.lang.NoClassDefFoundError e) {
+            optionValue = readInput();
+        } catch (java.lang.UnsatisfiedLinkError e) {
+            optionValue = readInput();
+        } catch (Exception e) {
+            throw new CommandValidationException(e);
+        }
+        return optionValue;
+    }
+    
+    private String readInput() {
+        try {
+            return InputsAndOutputs.getInstance().getUserInput().getLine();
+        } catch (IOException ioe) {
+            return null;
+        }
+    }
+
+    protected boolean isPasswordValid(String passwd) {
+        return (passwd.length() < 8)? false:true;
+    }
+
+    private String getLocalizedString(String key) {
+        LocalStringsManager lsm = null;
+        try {
+            lsm = LocalStringsManagerFactory.getCommandLocalStringsManager();
+        } catch (CommandValidationException cve) {
+            return LocalStringsManager.DEFAULT_STRING_VALUE;
+        }
+        return lsm.getString(key);
+    }
+    
+    private String getLocalizedString(String key, Object[] toInsert) {
+        LocalStringsManager lsm = null;
+        try {
+            lsm = LocalStringsManagerFactory.getCommandLocalStringsManager();
+            return lsm.getString(key, toInsert);
+        } catch (CommandValidationException cve) {
+            return LocalStringsManager.DEFAULT_STRING_VALUE;
+        }
+    }
+
     private static void base64encode(Map<String,String> map) {
         if(map == null || map.isEmpty())
             return;
