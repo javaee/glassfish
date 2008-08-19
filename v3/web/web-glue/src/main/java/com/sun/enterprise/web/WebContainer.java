@@ -660,9 +660,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 habitat, 
                 null);
         HttpServiceConfigListener configListener = womb.get(null);
-        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(
+        
+        ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
                 configListener.httpService);
-        bean.addListener(configListener);    
+        httpServiceBean.addListener(configListener);    
+        
         configListener.setContainer(this);
         configListener.setLogger(_logger);
     }
@@ -2237,7 +2239,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebModuleConfig wmInfo)
             throws LifecycleException {
         
-        String defaultContextPath = wmInfo.getContextPath();
+        String defaultContextPath = null;
+        if (wmInfo!=null) {
+            defaultContextPath = wmInfo.getContextPath();
+        }
         if (defaultContextPath != null
                 && !defaultContextPath.startsWith("/")) {
             defaultContextPath = "/" + defaultContextPath;
@@ -3730,6 +3735,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         
         Engine[] engines = _embedded.getEngines();
         VirtualServer vs = (VirtualServer)engines[0].findChild(vsBean.getId());
+        if (vs==null) {
+            return;
+        }
         vs.setBean(vsBean);
         
         if (name == null) {
