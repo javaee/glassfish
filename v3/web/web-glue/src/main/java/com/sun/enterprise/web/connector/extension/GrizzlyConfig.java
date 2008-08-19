@@ -108,10 +108,13 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     /**
      * Creates the monitoring helper.
      */
-    public GrizzlyConfig(String domain, int port){
+    public GrizzlyConfig(WebContainer webContainer, String domain, int port) {
+
         this.domain = domain;
         this.port = port;
-        
+
+        this.habitat = webContainer.getServerContext().getDefaultHabitat();
+
         // get an instance of the MBeanServer
         ArrayList servers = MBeanServerFactory.findMBeanServer(null);
         if(!servers.isEmpty())
@@ -134,7 +137,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     private void initMonitoringLevel() {
         try{
-            Config cfg = getHabitat().getComponent(Config.class);
+            Config cfg = habitat.getComponent(Config.class);
             
             MonitoringLevel monitoringLevel = MonitoringLevel.OFF; // default per DTD
 
@@ -165,10 +168,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     
     public void registerMonitoringLevelEvents() {
-        if (WebContainer.getInstance()==null) {
-            return;
-        }
-        MonitoringRegistry monitoringRegistry = getHabitat().getComponent(MonitoringRegistry.class);
+        MonitoringRegistry monitoringRegistry = habitat.getComponent(MonitoringRegistry.class);
         if (monitoringRegistry!=null) {
             monitoringRegistry.registerMonitoringLevelListener(
                 this, MonitoredObjectType.HTTP_LISTENER);
@@ -177,10 +177,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
 
     
     private void unregisterMonitoringLevelEvents() {
-        if (WebContainer.getInstance()==null) {
-            return;
-        }
-        MonitoringRegistry monitoringRegistry = getHabitat().getComponent(MonitoringRegistry.class);
+        MonitoringRegistry monitoringRegistry = habitat.getComponent(MonitoringRegistry.class);
         if (monitoringRegistry!=null) {
             monitoringRegistry.unregisterMonitoringLevelListener(this);
         }
@@ -257,17 +254,5 @@ public class GrizzlyConfig implements MonitoringLevelListener{
      */
     public int getPort(){
         return port;
-    }
-    
-    /**
-     * Return this server context's default habitat/
-     */
-    public Habitat getHabitat() {
-        
-        if (habitat == null) {
-            habitat = WebContainer.getInstance().getServerContext().getDefaultHabitat();
-        }
-        return habitat;
-    }
-   
+    }   
 }

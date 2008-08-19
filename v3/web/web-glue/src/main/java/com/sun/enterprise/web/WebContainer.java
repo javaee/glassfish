@@ -3248,12 +3248,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * { // throws AdminEventListenerException {
      * }*/
 
-    /**
-     * Return the current <code>WebContainer</code> child instance.
-     */
-    public static WebContainer getInstance(){
-        return webContainer;
-    }
 
     /**
      * Return the parent/top-level container in _embedded for virtual

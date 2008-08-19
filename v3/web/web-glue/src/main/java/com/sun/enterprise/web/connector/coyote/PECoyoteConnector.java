@@ -780,7 +780,7 @@ public class PECoyoteConnector extends Connector {
     public void initialize() throws LifecycleException {
         super.initialize();
         // Set the monitoring.
-        grizzlyMonitor = new GrizzlyConfig(domain,getPort());
+        grizzlyMonitor = new GrizzlyConfig(webContainer, domain, getPort());
     }
 
 
