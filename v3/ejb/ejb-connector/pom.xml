@@ -110,6 +110,12 @@
     </developers>    
     <dependencies>
         <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>ejb-alpha</artifactId>
+            <version>3.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
@@ -123,12 +129,6 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${glassfish-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
