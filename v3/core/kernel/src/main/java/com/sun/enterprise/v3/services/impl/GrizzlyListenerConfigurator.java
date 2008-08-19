@@ -331,14 +331,16 @@ public class GrizzlyListenerConfigurator {
      * @param grizzlyListener HTTP grizzlyListener to configure
      * @param httpProtocol http-protocol config to use
      */
-    private static void configureHttpProtocol(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
-                                       HttpProtocol httpProtocol) {
+    private static void configureHttpProtocol(
+            GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
+            HttpProtocol httpProtocol) {
     
         if (httpProtocol == null) {
             return;
         }
 
-        //grizzlyListener.setEnableLookups(httpProtocol.isDnsLookupEnabled());
+        // http-protocol's "dns-lookup-enabled" attribute configured at
+        // Connector level
         grizzlyEmbeddedHttp.setForcedRequestType(httpProtocol.getForcedType());
         grizzlyEmbeddedHttp.setDefaultResponseType(httpProtocol.getDefaultType());
     }

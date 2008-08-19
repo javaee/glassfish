@@ -1225,10 +1225,10 @@ public class PECoyoteConnector extends Connector {
             return;
         }
 
-        /*connector.setEnableLookups(httpProtocol.isDnsLookupEnabled());
-        connector.setForcedRequestType(httpProtocol.getForcedType());
-        connector.setDefaultResponseType(httpProtocol.getDefaultType());
-         */
+        // http-protocol's "forced-type" and "default-type" attributes
+        // now configured directly at Grizzly level
+        setEnableLookups(
+            Boolean.parseBoolean(httpProtocol.getDnsLookupEnabled()));
     }
 
 
