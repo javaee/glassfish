@@ -181,11 +181,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void postConstruct() {
         HttpService httpService = config.getHttpService();
         try {
+            createProbeProviders();
             futures = new ArrayList<Future<Result<Thread>>>();
             for (HttpListener listener : httpService.getHttpListener()) {
                futures.add(createNetworkProxy(listener, httpService));
             }
-            createProbeProviders();
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.WARNING, "Closing initialized network proxies");
