@@ -70,8 +70,6 @@ public class SingletonContainer
     public SingletonContainer(EjbDescriptor desc, ClassLoader cl)
             throws Exception {
         super(ContainerType.SINGLETON, desc, cl);
-
-        System.out.println("****** [SINGLETON CONTAINER CREATED] for: " + desc.getEjbClassName());
     }
 
     public void setSingletonLifeCycleManager(SingletonLifeCycleManager lcm) {
