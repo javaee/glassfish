@@ -31,6 +31,7 @@
  * holder.
  */
 
+
 #include "java.h"
 
 #define AWT_HEADLESS_OPTION "-Djava.awt.headless=true"
@@ -951,7 +952,11 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
                 goto error;
             }
             *pUseAnswerFileOption = JNI_TRUE;
-            *pAnswerFile = StrDup(*argv);
+            
+	    /* Convert the path to absolute path, otherwise the file
+		gets written to the temp directory that is eventually cleaned up
+		immediately after installation. */
+            *pAnswerFile = FindAbsolutePath(*argv);
    	    if (access(*pAnswerFile, R_OK) != 0) 
 	    {
         	char *message = GetLocalizedMessage("answerfile_not_accessible");
@@ -1041,8 +1046,11 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
             }
 	
             *pStoreAnswerFile = JNI_TRUE;
-            *pAnswerFileLocation = StrDup(*argv);
-	    /* If the file already exists, then bail out */
+	    /* Convert the path to absolute path, otherwise the file
+		gets written to the temp directory that is eventually cleaned up
+		immediately after installation. */
+           *pAnswerFileLocation = FindAbsolutePath(*argv);
+  	    /* If the file already exists, then bail out */
 	    if (access(*pAnswerFileLocation, F_OK) == 0) 
 	    {
         	char *message = GetLocalizedMessage("answer_file_already_exists");
@@ -1059,15 +1067,11 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
 	    
         }	
 
-	/* Check if -t is passed for command line mode */
-        else if (strcmp(arg, "-t") == 0)
+	/* Check if -s is passed for silent */
+        else if (strcmp(arg, "-s") == 0)
         {
-           /* FIX THIS when CONSOLE mode is enabled */
-           /*
 	    AddProp(StrDup("-p"));
-            AddProp(StrDup(CONSOLE_MODE_PROP));
-           */
-            consoleOption = JNI_TRUE;
+            AddProp(StrDup(SILENT_MODE_PROP));
             appArgc++;
         }
 	
@@ -1123,29 +1127,8 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
 	AddProp(StrDup(DEFAULT_LOG_LEVEL_PROP));
     }
 
-#ifdef WIN32
-    cwd = (char *)MemAlloc(size);
-    while (GetCurrentDirectory(size, cwd) >= size)
-    {
-        size += MAXPATHLEN;
-        free(cwd);
-        cwd = (char *)MemAlloc(size);
-    }
-#else
-    while ((cwd = getcwd(NULL, size)) == NULL)
-        size += MAXPATHLEN;
-#endif
-    if (*pJavaHome && !IsAbsolutePath(*pJavaHome))
-    {
-        char *tmp = (char *)MemAlloc(strlen(cwd) + strlen(*pJavaHome) + 2);
-        sprintf(tmp, "%s%c%s", cwd, FILE_SEPARATOR_CHAR, *pJavaHome);
-        free(*pJavaHome);
-        *pJavaHome = tmp;
-    }
+    *pJavaHome = FindAbsolutePath(*pJavaHome);
 
- 
-    free(cwd);
-    cwd = NULL;
 
 #ifdef WIN32
     /* If running in GUI mode, check if there are enough colors */
@@ -1239,6 +1222,7 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
     return JNI_TRUE;
 
 error:
+/*
     if (appArgv)
     {
         free(appArgv);
@@ -1285,6 +1269,7 @@ error:
     }
 
     *pargv = NULL;
+*/
     return JNI_FALSE;
 }
 
@@ -1508,7 +1493,41 @@ DeleteWorkingDirectory()
     workdir = NULL;
 }
 
+/*
+ * Find and return the absolute path of the given file.
+ */
+char *
+FindAbsolutePath(char *filePath) {
+char *absolutePath = NULL;
+char *currentDirectory = NULL;
+unsigned int size = MAXPATHLEN;
+#ifdef WIN32
+	currentDirectory = (char *)MemAlloc(size);
+	while (GetCurrentDirectory(size, currentDirectory) >= size)
+    	{
+	       size += MAXPATHLEN;
+	       free(currentDirectory);
+	       currentDirectory = (char *)MemAlloc(size);
+	}
+#else
+    while ((currentDirectory = getcwd(NULL, size)) == NULL)
+        size += MAXPATHLEN;
+#endif
+    
+if (filePath && !IsAbsolutePath(filePath))
+{
+      absolutePath = (char *)MemAlloc(strlen(currentDirectory ) + strlen(filePath) + 2);
+      sprintf(absolutePath, "%s%c%s", currentDirectory, FILE_SEPARATOR_CHAR, filePath);
+}
+else
+{
+      absolutePath = filePath;
+}
 
+free(currentDirectory);
+currentDirectory = NULL;
+return absolutePath;
+}
 
 /*
  * Unzip the contents of a zip file into the specified directory.

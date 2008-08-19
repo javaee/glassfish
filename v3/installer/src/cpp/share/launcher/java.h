@@ -30,6 +30,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 #ifndef _JAVA_H_
 #define _JAVA_H_
 
@@ -88,6 +89,7 @@
 
 #define DEFAULT_PRODUCTID_PROP "Default-Product-ID=glassfish"
 #define CONSOLE_MODE_PROP "Display-Mode=CUI"
+#define SILENT_MODE_PROP "Display-Mode=SILENT"
 
 #define PKG_FORMAT_PROP "Pkg-Format=zip"
 
@@ -200,6 +202,9 @@ GetApplicationHome(void);
 
 extern const char *
 GetExecName(void);
+
+extern char *
+FindAbsolutePath(char *filePath);
 
 extern jboolean
 IsAbsolutePath(const char *path);
