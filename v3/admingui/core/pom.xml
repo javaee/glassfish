@@ -163,7 +163,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>websecurity</artifactId>
+            <artifactId>securitycommon</artifactId>
             <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>

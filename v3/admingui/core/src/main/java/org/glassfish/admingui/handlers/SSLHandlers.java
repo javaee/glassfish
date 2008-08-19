@@ -69,9 +69,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.MiscUtil;
 import org.glassfish.admingui.common.util.AMXUtil;
 
-import com.sun.web.security.SSLSocketFactory;
-import javax.net.ssl.HttpsURLConnection;
-//import javax.net.ssl.SSLServerSocketFactory;
+import com.sun.enterprise.security.ssl.SSLUtils; 
 
 /**
  *
@@ -538,9 +536,8 @@ public class SSLHandlers {
             String[] supportedCiphers = factory.getDefaultCipherSuites();
          */
          try{
-             SSLSocketFactory.initStoresAtStartup();
-             //String[] supportedCiphers = HttpsURLConnection.getDefaultSSLSocketFactory().getDefaultCipherSuites();
-             return  HttpsURLConnection.getDefaultSSLSocketFactory().getSupportedCipherSuites();
+             SSLUtils sslUtils = GuiUtil.getHabitat().getComponent(SSLUtils.class); 
+             return sslUtils.getSupportedCipherSuites(); 
          }catch(Exception ex){
              //TODO log exception
              ex.printStackTrace();
