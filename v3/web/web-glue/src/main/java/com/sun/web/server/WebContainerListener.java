@@ -138,9 +138,15 @@ public final class WebContainerListener
                 postInvoke((Context) event.getContainer());
             }
         } catch (Exception ex) {
-            String msg = _logger.getResourceBundle().getString(
-                "web_server.excep_handle_event");
-            msg = MessageFormat.format(msg, new Object[] { type });
+            String msg = null;
+            ResourceBundle rb = _logger.getResourceBundle();
+            if (rb != null) {
+                msg = _logger.getResourceBundle().getString(
+                    "web_server.excep_handle_event");
+                msg = MessageFormat.format(msg, new Object[] { type });
+            } else {
+                msg = "Exception during handling of " + type + " event";
+            }
             throw new RuntimeException(msg, ex);
         } finally {
             if (type.equals(ContainerEvent.AFTER_FILTER_DESTROYED)) {
