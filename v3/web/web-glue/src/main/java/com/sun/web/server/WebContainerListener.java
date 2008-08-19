@@ -141,8 +141,7 @@ public final class WebContainerListener
             String msg = null;
             ResourceBundle rb = _logger.getResourceBundle();
             if (rb != null) {
-                msg = _logger.getResourceBundle().getString(
-                    "web_server.excep_handle_event");
+                msg = rb.getString("web_server.excep_handle_event");
                 msg = MessageFormat.format(msg, new Object[] { type });
             } else {
                 msg = "Exception during handling of " + type + " event";
