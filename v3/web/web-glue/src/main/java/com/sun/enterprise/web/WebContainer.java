@@ -1133,24 +1133,32 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void configureHost(VirtualServer vs,
                                  HttpService httpService,
                                  SecurityService securityService) {
-        com.sun.enterprise.config.serverbeans.VirtualServer vsBean
-            = vs.getBean();
-       
+        com.sun.enterprise.config.serverbeans.VirtualServer vsBean = vs.getBean();
+
         vs.configureAliases();
 
         // Set the ports with which this virtual server is associated
         List<String> listeners = StringUtils.parseStringList(
-                                                vsBean.getHttpListeners(), ",");
+            vsBean.getHttpListeners(), ",");
         if (listeners == null) {
             return;
         }
         
-        HttpListener[] httpListeners = new HttpListener[listeners.size()];
+        HashSet<HttpListener> httpListeners = new HashSet<HttpListener>();
         for (int i=0; i < listeners.size(); i++){
+            boolean found = false;
             for (HttpListener httpListener : httpService.getHttpListener()) {
                 if (httpListener.getId().equals(listeners.get(i))) {
-                    httpListeners[i] = httpListener;
+                    httpListeners.add(httpListener);
+                    found = true;
+                    break;
                 }
+            }
+            if (!found) {
+                _logger.log(Level.SEVERE,
+                            "Listener " + listeners.get(i) +
+                            " referenced by virtual server " +
+                            vs.getName() + " does not exist");
             }
         }
         
@@ -1167,17 +1175,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param httpListeners The http listeners with which the given virtual
      * server is associated
      */
-    protected void configureHostPortNumbers(VirtualServer vs,
-                                            HttpListener[] httpListeners){
+    protected void configureHostPortNumbers(
+            VirtualServer vs,
+            HashSet<HttpListener> httpListeners){
        
         boolean addJkListenerPort = (jkConnector != null
             && !vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS));
 
         ArrayList<Integer> portsList = new ArrayList();
-       
-        for (int i=0; i < httpListeners.length; i++){
-            if (Boolean.valueOf(httpListeners[i].getEnabled())){
-                Integer port = portMap.get(httpListeners[i].getId());
+        for (HttpListener httpListener : httpListeners){
+            if (Boolean.valueOf(httpListener.getEnabled())){
+                Integer port = portMap.get(httpListener.getId());
                 if (port != null) {
                     portsList.add(port);
                 }               
@@ -1185,14 +1193,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
                     String msg = _rb.getString(
                         "pewebcontainer.httpListener.mustNotDisable");
-                    msg = MessageFormat.format(
-                        msg,
-                            httpListeners[i].getId(),
-                            vs.getName());
+                    msg = MessageFormat.format(msg, httpListener.getId(),
+                                               vs.getName());
                     throw new IllegalArgumentException(msg);
                 }
             }   
-             
         }
         
         int numPorts = portsList.size();
@@ -3584,10 +3589,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         virtualServer.configureAliases();
             
         virtualServer.reconfigureAccessLog(globalAccessLogBufferSize,
-                                    globalAccessLogWriteInterval,
-                                    habitat,
-                                    domain,
-                                    globalAccessLoggingEnabled);
+                                           globalAccessLogWriteInterval,
+                                           habitat,
+                                           domain,
+                                           globalAccessLoggingEnabled);
             
         String docroot = vsBean.getPropertyValue("docroot");
         if (docroot == null) {
@@ -3602,12 +3607,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         List<String> listeners = StringUtils.parseStringList(
             vsBean.getHttpListeners(), ",");
         if (listeners != null) {
-            HttpListener[] httpListeners = new HttpListener[listeners.size()];
+            HashSet<HttpListener> httpListeners = new HashSet<HttpListener>();
             for (int i=0; i < listeners.size(); i++){
+                boolean found = false;
                 for (HttpListener httpListener : httpService.getHttpListener()) {
                     if (httpListener.getId().equals(listeners.get(i))) {
-                        httpListeners[i] = httpListener;
+                        httpListeners.add(httpListener);
+                        found = true;
+                        break;
                     }
+                }
+                if (!found) {
+                    _logger.log(Level.SEVERE,
+                                "Listener " + listeners.get(i) +
+                                " referenced by virtual server " +
+                                virtualServer.getName() + " does not exist");
                 }
             }
             // Update the port numbers with which the virtual server is
