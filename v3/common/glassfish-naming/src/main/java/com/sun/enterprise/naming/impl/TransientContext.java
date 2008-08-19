@@ -99,10 +99,7 @@ public class TransientContext implements Context, Serializable {
     public Context drillDownAndCreateSubcontext(String name)
             throws NamingException {
         Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot create empty subcontext");
-        }
-        if (n.size() == 1) { // bottom
+        if (n.size() <= 1) { // bottom
             if (bindings.containsKey(name)) {
                 throw new NameAlreadyBoundException("Subcontext " +
                         name + "already present");
@@ -615,12 +612,6 @@ public class TransientContext implements Context, Serializable {
         for (Enumeration en = ht.keys(); en.hasMoreElements();) {
             Object key = en.nextElement();
             Object value = ht.get(key);
-            /** IASRI 4660742
-             System.out.println("[" + key + ":" + key.getClass().getName() +
-             ", " + value + ":" + value.getClass().getName()
-             + "]");
-             **/
-            // START OF IASRI 4660742
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "[" + key + ":" +
                         key.getClass().getName() +

@@ -72,7 +72,6 @@ public class LocalSerialContextProviderImpl
 
     public void bind(String name, Object obj)
             throws NamingException, RemoteException {
-
         super.bind(name, obj);
     }
 

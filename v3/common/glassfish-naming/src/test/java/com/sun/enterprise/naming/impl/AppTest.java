@@ -114,6 +114,26 @@ public class AppTest
         }
     }
 
+    public void testEmptySubContext() {
+        try {
+            Context ctx = new InitialContext();
+            ctx.bind("//rmi://a//b/c/d/name", "Name1");
+            ctx = new InitialContext();
+            ctx.bind("//rmi:/abc/a//b/c/d/name", "Name2");
+
+            String name1 = (String) ctx.lookup("//rmi://a//b/c/d/name");
+            String name2 = (String) ctx.lookup("//rmi:/abc/a//b/c/d/name");
+            System.out.println("testEmptySubContext: " + name1 + "  " + name2);
+            assert(name1.equals("Name1") && name2.equals("Name2"));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        } finally {
+        }
+    }
+
+
     public void testCachingNamingObjectFactory() {
         GlassfishNamingManager nm = null;
         try {
