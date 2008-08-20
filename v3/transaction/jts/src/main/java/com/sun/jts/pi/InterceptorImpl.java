@@ -70,7 +70,7 @@ import com.sun.corba.ee.spi.ior.ObjectAdapterId;
 import com.sun.corba.ee.spi.ior.iiop.IIOPProfile;
 import com.sun.corba.ee.spi.orb.ORBVersionFactory;
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
-import com.sun.corba.ee.impl.orbutil.ORBConstants;
+import com.sun.corba.ee.spi.orbutil.ORBConstants;
  
 import java.util.logging.Logger;
 import java.util.logging.Level;

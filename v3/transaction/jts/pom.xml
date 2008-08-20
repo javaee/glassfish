@@ -60,6 +60,12 @@
                         com.sun.jts.utils,
                         com.sun.jts.utils.RecoveryHooks
                         </Export-Package>
+                        <Import-Package>
+                        com.sun.corba.ee.spi.oa.rfm;resolution:=optional,
+                        com.sun.corba.ee.impl.txpoa;resolution:=optional,
+                        com.sun.corba.ee.spi.presentation.rmi;resolution:=optional,
+                        *
+                        </Import-Package>
                     </instructions>
                 </configuration>
                 <executions>
@@ -134,13 +140,12 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
+            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-peorb</artifactId>
-            <version>1.0</version>
+            <artifactId>glassfish-corba-orb</artifactId>
+            <version>${glassfish-corba.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

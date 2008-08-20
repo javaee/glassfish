@@ -88,13 +88,11 @@
             <type>pom</type>
         </dependency>
 
- <!-- commented out until CORBA dependency resolution 
         <dependency>
             <groupId>org.glassfish.transaction</groupId>
             <artifactId>jts</artifactId>
             <version>${project.version}</version>
         </dependency>
- -->
 
     </dependencies>
 </project>
