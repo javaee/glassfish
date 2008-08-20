@@ -144,7 +144,9 @@ public class MonitoringHandlers {
                 coll = statsNode.getChildNodes();
             } else {
                 String ype = type.substring(1);
-                coll = statsNode.getNodes(".*"+ype+".*");
+                String t = type.substring(0,1);
+                String T = t.toUpperCase();
+                coll = statsNode.getNodes("*applications."+application+"."+virtualServer+"."+"*"+"["+t+T+"]"+ype+"*");
             }
             for (TreeNode tn : coll) {
                 Map statMap = new HashMap();
