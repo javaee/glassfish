@@ -100,7 +100,7 @@
                  <event>
                     <!afterCreate
                         getUIComponent(clientId="form:cts"  component=>$attribute{component})
-                        includeIntegrations(type="commonTask" root="#{component}");
+                        includeIntegrations(type="org.glassfish.admingui:commonTask" root="#{component}");
                     />
                 </event>
 #include "/sysnet/regReminder.inc"
