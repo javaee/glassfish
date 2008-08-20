@@ -609,7 +609,7 @@ public class ResourcesXMLParser implements EntityResolver
         }
         if (connectionLeakReclaimNode != null) {
            jdbcConnPool.setAttribute(CONNECTION_LEAK_RECLAIM, 
-                                        validateAtmostOncePeriodNode.getNodeValue());
+                                        connectionLeakReclaimNode.getNodeValue());
         }
         if (connectionCreationRetryAttemptsNode != null) {
            jdbcConnPool.setAttribute(CONNECTION_CREATION_RETRY_ATTEMPTS, 
