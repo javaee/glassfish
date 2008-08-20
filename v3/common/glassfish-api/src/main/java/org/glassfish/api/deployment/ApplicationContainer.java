@@ -45,10 +45,10 @@ public interface ApplicationContainer<T> {
      * use their prefered Logger instance to log any issue they encounter while 
      * starting. Returning false from a start mean that the container failed 
      * to start
-     * @param cl the application classloader 
+     * @param startupContext the start up context 
      * @return true if the container startup was successful. 
      */
-    public boolean start(ClassLoader cl);
+    public boolean start(StartupContext startupContext);
     
     /**
      * Stop the application container

@@ -37,7 +37,7 @@ import com.sun.enterprise.module.ModuleDefinition;
  *
  * @author Jerome Dochez
  */
-public interface DeploymentContext extends ExecutionContext {
+public interface DeploymentContext extends StartupContext, ExecutionContext {
 
     /**
      * Application bits, at the raw level. Deployer's should avoid
@@ -53,21 +53,6 @@ public interface DeploymentContext extends ExecutionContext {
      * @return the command parameters
      */
     public Properties getCommandParameters();
-
-    /**
-     * Returns the class loader associated to this deployment request.
-     * ClassLoader instances are usually obtained by the getClassLoader API on
-     * the associated ArchiveHandler for the archive type being deployed.
-     *
-     * This can return null and the container should allocate a ClassLoader
-     * while loading the application.
-     *
-     * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
-     *
-     * @return a class loader capable of loading classes and resources from the
-     * source
-     */
-    public ClassLoader getClassLoader();
 
     /**
      * Returns a scratch directory that can be used to store things in.
