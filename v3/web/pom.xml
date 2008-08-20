@@ -52,8 +52,6 @@
         <module>web-naming</module>
         <module>web-core</module>
         <module>war-util</module>
-        <module>el</module>
-        <module>jstl</module>
         <module>jstl-connector</module>
         <module>jsf-connector</module>
         <module>gui-plugin-common</module>
