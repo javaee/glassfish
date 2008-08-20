@@ -2098,14 +2098,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             // set the sun-web config bean
             ctx.setIasWebAppConfigBean(iasBean);
-
+            
             // Configure SingleThreadedServletPools, work/tmp directory etc
             ctx.configureMiscSettings(iasBean, vs, displayContextPath);
 
             // Configure alternate docroots if dummy web module
-            if (Constants.DEFAULT_WEB_MODULE_NAME.equals(ctx.getID())) {
+            if (ctx.getID().startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
                 ctx.setAlternateDocBases(vs.getProperties());
-            }
+            } 
 
             // Configure the class loader delegation model, classpath etc
             Loader loader = ctx.configureLoader(iasBean, wmInfo);
