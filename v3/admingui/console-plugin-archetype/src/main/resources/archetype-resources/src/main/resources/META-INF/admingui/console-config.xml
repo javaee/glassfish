@@ -2,6 +2,6 @@
 
 <console-config id="tabtest">
     <integration-point id="tabtestTreeNode" type="tree" priority="40" parentId="Resources" content="treeNode.jsf" />
-    <integration-point id="tab2" type="serverInstTab" priority="22" parentId="jvmSettings" content="newTab2.jsf" />
-    <integration-point id="tab1" type="serverInstTab" priority="28" parentId="serverInstTabs" content="newTab1.jsf" />
+    <integration-point id="tab2" type="org.glassfish.admingui:tab" priority="22" parentId="jvmSettings" content="newTab2.jsf" />
+    <integration-point id="tab1" type="org.glassfish.admingui:tab" priority="28" parentId="serverInstTabs" content="newTab1.jsf" />
 </console-config> 

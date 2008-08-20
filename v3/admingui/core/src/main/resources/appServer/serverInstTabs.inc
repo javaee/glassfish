@@ -180,6 +180,6 @@
 </sun:tabSet>
 <event>
     <!afterCreate
-	includeIntegrations(type="serverInstTab");
+	includeIntegrations(type="org.glassfish.admingui:tab");
     />
 </event>
