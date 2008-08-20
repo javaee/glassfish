@@ -9,14 +9,14 @@
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.uc.commonTask.update}"
-        toolTip="$resource{i18n.uc.commonTask.updateTip}"
+        toolTip="$resource{i18n.uc.commonTask.updateToolTip}"
         infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=updatecenter.html" 
         onClick="admingui.nav.selectTreeNodeById('form:tree:uc'); 
             parent.location='#{facesContext.externalContext.requestContextPath}/updateCenter/update.jsf'; return false;">
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.uc.commonTask.addOn}"
-        toolTip="$resource{i18n.uc.commonTask.addOnTip}"
+        toolTip="$resource{i18n.uc.commonTask.addOnToolTip}"
         infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=updatecenter.html" 
         onClick="admingui.nav.selectTreeNodeById('form:tree:uc'); 
             parent.location='#{facesContext.externalContext.requestContextPath}/updateCenter/addOn.jsf'; return false;">
