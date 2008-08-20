@@ -10,7 +10,7 @@
         />
        <integration-point 
                 id="ucCommonTask" 
-                type="org.glassfish.admingui:commonTask" 
+                type="org.glassfish.admingui:commonTaskGroup" 
                 priority="100" 
                 content="ucCommonTask.jsf" 
         />
