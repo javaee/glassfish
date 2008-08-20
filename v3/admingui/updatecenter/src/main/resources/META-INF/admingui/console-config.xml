@@ -5,7 +5,7 @@
                 id="uc" 
                 type="tree" 
                 priority="100" 
-                parentId="tree" 
+                parentId="org.glassfish.admingui:treeNode" 
                 content="updateCenterNode.jsf" 
         />
        <integration-point 

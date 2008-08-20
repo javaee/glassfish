@@ -156,7 +156,7 @@
 	<event>
 	    <!afterCreate
                 getUIComponent(clientId="form:tree"  component=>$attribute{component})
-		includeIntegrations(type="tree" root="#{component}");
+		includeIntegrations(type="org.glassfish.admingui:treeNode" root="#{component}");
 	    />
 	</event>
       </sun:form>

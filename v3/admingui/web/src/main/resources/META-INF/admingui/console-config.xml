@@ -3,14 +3,14 @@
 <console-config id="web">
         <integration-point 
                 id="web" 
-                type="tree" 
+                type="org.glassfish.admingui:treeNode" 
                 priority="300" 
                 parentId="configuration" 
                 content="webContainerNode.jsf" 
         />
         <integration-point 
                 id="monitor" 
-                type="tree" 
+                type="org.glassfish.admingui:treeNode" 
                 priority="350"
                 parentId="configuration" 
                 content="monitor/monitoringNode.jsf"/>
