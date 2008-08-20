@@ -68,6 +68,10 @@ public class DeploymentContextImpl implements DeploymentContext {
         return parameters;
     }
 
+    public Properties getStartupParameters() {
+        return parameters;
+    }
+
     public Logger getLogger() {
         return logger;
     }

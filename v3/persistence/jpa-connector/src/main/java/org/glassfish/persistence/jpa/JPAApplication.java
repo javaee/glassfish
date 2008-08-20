@@ -24,6 +24,7 @@
 package org.glassfish.persistence.jpa;
 
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
@@ -91,7 +92,7 @@ public class JPAApplication implements ApplicationContainer {
         return null;
     }
 
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContxt) {
         return true;
     }
 

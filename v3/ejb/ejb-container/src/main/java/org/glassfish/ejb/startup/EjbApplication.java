@@ -30,6 +30,7 @@ import com.sun.ejb.containers.SingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
@@ -84,7 +85,7 @@ public class EjbApplication
         return ejbs;
     }
 
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContext) {
         /*
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 

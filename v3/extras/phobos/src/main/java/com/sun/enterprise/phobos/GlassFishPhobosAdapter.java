@@ -38,6 +38,7 @@ import com.sun.grizzly.tcp.Response;
 import com.sun.phobos.container.RequestWrapper;
 import com.sun.phobos.container.ResponseWrapper;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.api.container.Adapter;
 
 
@@ -115,10 +116,10 @@ public class GlassFishPhobosAdapter extends GrizzlyPhobosAdapter implements Appl
      * use their prefered Logger instance to log any issue they encounter while
      * starting. Returning false from a start mean that the container failed
      * to start.
-     * @param cl the application classloader
+     * @param startupContext the start up context
      * @return true if the container startup was successful.
      */
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContext) {
         return true;
     }
 

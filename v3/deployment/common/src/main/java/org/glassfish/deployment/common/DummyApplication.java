@@ -24,6 +24,7 @@
 package org.glassfish.deployment.common;
 
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.api.container.Container;
 
 /**
@@ -38,7 +39,7 @@ public class DummyApplication implements ApplicationContainer<Object> {
     public DummyApplication() {
     }
 
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContext) {
         return true;
     }
 

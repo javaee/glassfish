@@ -689,7 +689,7 @@ public class ApplicationLifecycle {
 
             try {
                 module.getApplicationContainer().start(
-                    context.getClassLoader());
+                    context);
                 tracker.add("started", ModuleInfo.class, module);
 
                 // add the endpoint

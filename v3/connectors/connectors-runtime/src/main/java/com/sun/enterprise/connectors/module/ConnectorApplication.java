@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.module;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.javaee.services.ResourceManager;
 
 import java.util.logging.Level;
@@ -79,10 +80,10 @@ public class ConnectorApplication implements ApplicationContainer {
      * use their prefered Logger instance to log any issue they encounter while
      * starting. Returning false from a start mean that the container failed
      * to start
-     * @param cl the application classloader
+     * @param startupContext the start up context
      * @return true if the container startup was successful.
      */
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContext) {
         boolean started = false;
 
         deployResources(moduleName);

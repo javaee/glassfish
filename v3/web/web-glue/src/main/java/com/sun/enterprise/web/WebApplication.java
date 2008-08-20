@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.plugin.common.WebAppConfig;
 import org.glassfish.web.plugin.common.EnvEntry;
@@ -77,8 +78,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }
 
 
-    public boolean start(ClassLoader cl) {
-        wmInfo.setAppClassLoader(cl);
+    public boolean start(StartupContext startupContext) {
+        wmInfo.setAppClassLoader(startupContext.getClassLoader());
         applyApplicationConfig();
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");

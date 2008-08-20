@@ -24,6 +24,7 @@
 package com.sun.enterprise.web.tomcat;
 
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.StartupContext;
 import org.apache.catalina.core.StandardContext;
 
 public class TomcatApplication implements ApplicationContainer {
@@ -36,7 +37,7 @@ public class TomcatApplication implements ApplicationContainer {
         this.ctx = ctx;
     }
 
-    public boolean start(ClassLoader cl) {
+    public boolean start(StartupContext startupContext) {
         return true;
     }
 
