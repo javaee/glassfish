@@ -84,7 +84,7 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private void fetch() {
+    private synchronized void fetch() {
         if(real!=null)  return;
 
         try {
