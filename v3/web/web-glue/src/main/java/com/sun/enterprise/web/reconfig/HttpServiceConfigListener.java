@@ -50,6 +50,7 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.web.WebContainer;
 
 import org.apache.catalina.LifecycleException;
@@ -89,6 +90,12 @@ public class HttpServiceConfigListener implements ConfigListener {
     @Inject(optional=true)
     public RequestProcessing requestProcessing;
  
+    @Inject(name="http-listener-1") 
+    public HttpListener httpListener;
+
+    @Inject(name="server") 
+    public VirtualServer virtualServer;
+    
     private WebContainer container;
     
     private Logger logger;
@@ -120,17 +127,14 @@ public class HttpServiceConfigListener implements ConfigListener {
                     logger.fine("HttpService config changed "+type+" "+tClass+" "+t);
                 }
                 try {
-                    if (t instanceof com.sun.enterprise.config.serverbeans.VirtualServer) {
+                    if (t instanceof VirtualServer) {
                         if (type==TYPE.ADD) {                           
                             container.createHost(
-                            (com.sun.enterprise.config.serverbeans.VirtualServer)t,
-                             httpService, null);
+                                    (VirtualServer)t, httpService, null);
                         } else if (type==TYPE.REMOVE) {
                             container.deleteHost(httpService);
                         } else if (type==TYPE.CHANGE) {
-                            container.updateHost(
-                                    (com.sun.enterprise.config.serverbeans.VirtualServer)t, 
-                                    httpService);
+                            container.updateHost((VirtualServer)t, httpService);
                         }
                         return null;
                     } else if (t instanceof HttpListener) {
