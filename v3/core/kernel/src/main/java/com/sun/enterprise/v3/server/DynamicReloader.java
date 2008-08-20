@@ -67,13 +67,12 @@ public class DynamicReloader implements Runnable {
     
     private Applications applications;
     
-    private Logger logger;
+    private Logger logger = Logger.getLogger(getClass().getName());
     
     private Habitat habitat;
     
-    DynamicReloader(Applications applications, Logger logger, Habitat habitat) throws URISyntaxException {
+    DynamicReloader(Applications applications, Habitat habitat) throws URISyntaxException {
         this.applications = applications;
-        this.logger = logger;
         this.habitat = habitat;
         initAppReloadInfo(applications);
         inProgress = new AtomicBoolean(false);

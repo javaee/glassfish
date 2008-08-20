@@ -23,7 +23,10 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.config.serverbeans.DasConfig;
-import com.sun.logging.LogDomains;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -37,6 +40,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * A service wrapper around the autodeployer.
@@ -54,7 +60,7 @@ import org.jvnet.hk2.component.Singleton;
 @Service
 @Scoped(Singleton.class)
 @Async
-public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
+public class AutoDeployService implements Startup, PostConstruct, PreDestroy, ConfigListener {
 
     @Inject
     DasConfig activeDasConfig;
@@ -71,8 +77,15 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
     private String target;
     
     private static final String DAS_TARGET = "server";
-    
-    private static final Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+
+    private static final List<String> configPropertyNames = Arrays.asList(new String[] {
+            "autodeploy-enabled", "autodeploy-polling-interval-in-seconds", 
+            "autodeploy-verifier-enabled", "autodeploy-jsp-precompilation-enabled"
+            });
+        
+ 
+    /** Cannot find the resource bundle unless we want until postConstruct to create the logger. */
+    private Logger logger;
     
     private static final String DEFAULT_POLLING_INTERVAL_IN_SECONDS = "2";
     private static final String DEFAULT_AUTO_DEPLOY_ENABLED = "true";
@@ -83,17 +96,21 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
     }
 
     public void postConstruct() {
-        /*
-         * Create the auto-deployer right away, even if its use is disabled 
+        logger = Logger.getLogger(
+            getClass().getName(),
+            "/" + getClass().getPackage().getName().replace('.','/') + "/LocalStrings");
+        
+        /* Create the auto-deployer right away, even if its use is disabled 
          * currently.  This way any initialization errors will appear early 
          * in the log rather than later if and when the auto-deployer is 
          * enabled.
          */
+        String directory = activeDasConfig.getAutodeployDir();
         target = getTarget();
         try {
             autoDeployer = new AutoDeployer(
                     target,
-                    activeDasConfig.getAutodeployDir(),
+                    directory,
                     getDefaultVirtualServer(),
                     Boolean.parseBoolean(activeDasConfig.getAutodeployJspPrecompilationEnabled()),
                     Boolean.parseBoolean(activeDasConfig.getAutodeployVerifierEnabled()),
@@ -108,21 +125,24 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
              */
             autoDeployerTimer = new Timer("AutoDeployer", true);
 
-            autoDeployerTimerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        try {
-                            autoDeployer.run();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                };
-
-            if (isAutoDeployEnabled()) {
-                startAutoDeployer();
+            boolean isEnabled = isAutoDeployEnabled();
+            int pollingIntervalInSeconds = Integer.valueOf(DEFAULT_POLLING_INTERVAL_IN_SECONDS);
+            try {
+                pollingIntervalInSeconds = getPollingIntervalInSeconds();
+            } catch (NumberFormatException ex) {
+                logger.log(
+                        Level.WARNING, 
+                        "enterprise.deployment.autodeploy.error_parsing_polling_interval", 
+                        new Object[] {
+                            activeDasConfig.getAutodeployPollingIntervalInSeconds(),
+                            ex.getClass().getName(),
+                            ex.getLocalizedMessage()
+                            }
+                    );
             }
-                logger.fine("[AutoDeployer] Service start-up complete");
+            if (isEnabled) {
+                startAutoDeployer(pollingIntervalInSeconds);
+            }
         } catch (AutoDeploymentException e) {
             logger.log(Level.SEVERE, e.getLocalizedMessage(), e); 
         }
@@ -137,7 +157,17 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
         return (value == null || value.equals("")) ? defaultValue : value;
     }
     
-
+    private void logConfig(String title, 
+            boolean isEnabled,
+            int pollingIntervalInSeconds,
+            String directory) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("[AutoDeploy] " + title + ", enabled=" + isEnabled +
+                    ", polling interval(seconds)=" + pollingIntervalInSeconds +
+                    ", directory=" + directory);
+        }
+    }
+    
     private String getTarget() {
         // XXX should this also be configurable ?
         return DAS_TARGET;
@@ -154,22 +184,32 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
                 DEFAULT_AUTO_DEPLOY_ENABLED));
     }
     
-    private long getPollingIntervalInSeconds() {
+    private int getPollingIntervalInSeconds() throws NumberFormatException {
         return Integer.parseInt(
                 getValue(activeDasConfig.getAutodeployPollingIntervalInSeconds(), 
                 DEFAULT_POLLING_INTERVAL_IN_SECONDS));
     }
     
-    private void startAutoDeployer() {
-        long pollingInterval = getPollingIntervalInSeconds() * 1000;
+    private void startAutoDeployer(int pollingIntervalInSeconds) {
+        long pollingInterval = pollingIntervalInSeconds * 1000;
         autoDeployerTimer.schedule(
-                autoDeployerTimerTask, 
+                autoDeployerTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            autoDeployer.run();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }, 
                 pollingInterval, 
                 pollingInterval);
-        logger.fine("[AutoDeployer] Started, monitoring " + 
-                    activeDasConfig.getAutodeployDir() + " every " +
-                    getPollingIntervalInSeconds()
-                    );
+        logConfig(
+                "Started", 
+                isAutoDeployEnabled(), 
+                pollingIntervalInSeconds, 
+                activeDasConfig.getAutodeployDir());
     }
 
     private void stopAutoDeployer() {
@@ -177,24 +217,123 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
          * Tell the running autodeployer to stop, then cancel the timer task 
          * and the timer.
          */
-        logger.fine("[AutoDeployer] Stopping");
+        logger.fine("[AutoDeploy] Stopping");
         autoDeployer.cancel(true);
         autoDeployerTimerTask.cancel();
-        autoDeployerTimer.cancel();
     }
     
     /**
      * Reschedules the autodeployer because a configuration change has altered
      * the frequency.
      */
-    private void rescheduleAutoDeployer() {
-        logger.fine("[AutoDeployer] Restarting...");
+    private void rescheduleAutoDeployer(int pollingIntervalInSeconds) {
+        logger.fine("[AutoDeploy] Restarting...");
         stopAutoDeployer();
         try {
             autoDeployer.waitUntilIdle();
         } catch (InterruptedException e) {
             // XXX OK to glide through here?
         }
-        startAutoDeployer();
+        startAutoDeployer(pollingIntervalInSeconds);
+    }
+
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        /*
+         * Deal with any changes to the DasConfig that might affect whether
+         * the autodeployer should be stopped or started or rescheduled with a
+         * different frequency.  Those change are handled here, by this
+         * class.
+         */
+        
+       /* Record any events we tried to process but could not. */
+        List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
+        
+        Boolean newEnabled = null;
+        Integer newPollingIntervalInSeconds = null;
+        
+        for (PropertyChangeEvent event : events) {
+            if (event.getSource() instanceof DasConfig) {
+                String propName = event.getPropertyName();
+                if (configPropertyNames.contains(propName) && event.getOldValue().equals(event.getNewValue())) {
+                    logger.fine("[AutoDeploy] Ignoring reconfig of " + propName + 
+                            " from " + event.getOldValue() + " to " + event.getNewValue());
+                    continue;
+                }
+                if (propName.equals("autodeploy-enabled")) {
+                    /*
+                     * Either start the currently stopped autodeployer or stop the
+                     * currently running one.
+                     */
+                    newEnabled = Boolean.valueOf((String) event.getNewValue());
+                    logger.fine("[AutoDeploy] Reconfig - enabled changed to " + newEnabled);
+                } else if (propName.equals("autodeploy-polling-interval-in-seconds")) {
+                    try {
+                        newPollingIntervalInSeconds = new Integer((String) event.getNewValue());
+                        logger.fine("[AutoDeploy] Reconfig - polling interval (seconds) changed from " 
+                                + ((String) event.getOldValue()) + " to " + 
+                                newPollingIntervalInSeconds);
+                    } catch (NumberFormatException ex) {
+                        logger.log(Level.WARNING, "enterprise.deployment.autodeploy.error_processing_config_change", 
+                                new Object[] {
+                                    propName, 
+                                    event.getOldValue(), 
+                                    event.getNewValue(), 
+                                    ex.getClass().getName(), 
+                                    ex.getLocalizedMessage()} );
+                        unprocessedEvents.add(new UnprocessedChangeEvent(
+                                event, 
+                                ex.getLocalizedMessage()));
+                    }
+                } else if (propName.equals("autodeploy-dir")) {
+                    String newDir = (String) event.getNewValue();
+                    try {
+                        autoDeployer.setDirectory(newDir);
+                        logger.fine("[AutoDeploy] Reconfig - directory changed from " + 
+                                ((String) event.getOldValue()) + " to " +
+                                newDir);
+                    } catch (AutoDeploymentException ex) {
+                        logger.log(Level.WARNING, "enterprise.deployment.autodeploy.error_processing_config_change",
+                                new Object[] {
+                                    propName, 
+                                    event.getOldValue(), 
+                                    event.getNewValue(), 
+                                    ex.getClass().getName(), 
+                                    ex.getCause().getLocalizedMessage()});
+                        unprocessedEvents.add(new UnprocessedChangeEvent(event, ex.getLocalizedMessage()));
+                    }
+                } else if (propName.equals("autodeploy-verifier-enabled")) {
+                    boolean newVerifierEnabled = Boolean.parseBoolean((String) event.getOldValue());
+                    autoDeployer.setVerifierEnabled(newVerifierEnabled);
+                    logger.fine("[AutoDeploy] Reconfig - verifierEnabled changed from " + 
+                            Boolean.parseBoolean((String) event.getOldValue()) +
+                            " to " + newVerifierEnabled);
+                } else if (propName.equals("autodeploy-jsp-precompilation-enabled")) {
+                    boolean newJspPrecompiled = Boolean.parseBoolean((String) event.getNewValue());
+                    autoDeployer.setJspPrecompilationEnabled(newJspPrecompiled);
+                    logger.fine("[AutoDeploy] Reconfig - jspPrecompilationEnabled changed from " + 
+                            Boolean.parseBoolean((String) event.getOldValue()) +
+                            " to " + newJspPrecompiled);
+                }
+            }
+        }
+        if (newEnabled != null) {
+            if (newEnabled) {
+                startAutoDeployer(newPollingIntervalInSeconds == null ? 
+                    getPollingIntervalInSeconds() : newPollingIntervalInSeconds);
+            } else {
+                stopAutoDeployer();
+            }
+        } else {
+            if ((newPollingIntervalInSeconds != null) && isAutoDeployEnabled()) {
+                /*
+                 * There is no change in whether the autodeployer should be running, only
+                 * in how often it should run.  If it is not running now don't
+                 * start it.  If it is running now, restart it to use the new
+                 * polling interval.
+                 */
+                rescheduleAutoDeployer(newPollingIntervalInSeconds.intValue());
+            }
+        }
+        return (unprocessedEvents.size() > 0) ? new UnprocessedChangeEvents(unprocessedEvents) : null;
     }
 }

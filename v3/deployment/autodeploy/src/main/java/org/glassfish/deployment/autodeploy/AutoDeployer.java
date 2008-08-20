@@ -325,6 +325,12 @@ public class AutoDeployer {
      */
     public void run() {
         run(DEFAULT_INCLUDE_SUBDIR);
+        /*
+         * If the cancel request was set then it has already caused the
+         * earlier logic to end.  Clear it so the next iteration will run
+         * normally.
+         */
+        cancelDeployment = false;
     }
     
     public void run(boolean includeSubdir) {

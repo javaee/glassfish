@@ -25,6 +25,9 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -39,6 +42,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
@@ -64,7 +68,7 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     @Inject
     Habitat habitat;
     
-    private static final Logger logger = Logger.getLogger("org.glassfish.deployment");
+    private Logger logger;
     
     private Timer timer;
     
@@ -75,6 +79,10 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     private static final String DEFAULT_POLL_INTERVAL_IN_SECONDS = "2";
     private static final String DEFAULT_DYNAMIC_RELOAD_ENABLED = "true";
     
+    private static final List<String> configPropertyNames = Arrays.asList(new String[] {
+            "dynamic-reload-enabled", "dynamic-reload-poll-interval-in-seconds"
+            });
+
     public DynamicReloadService() {
     }
 
@@ -84,6 +92,7 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     }
 
     public void postConstruct() {
+        logger = Logger.getLogger(DynamicReloadService.class.getName());
         /*
          * Create the dynamic reloader right away, even if its use is disabled 
          * currently.  This way any initialization errors will appear early 
@@ -94,7 +103,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
             logger.fine("[Reloader] ReloaderService starting");
             reloader = new DynamicReloader(
                     applications,
-                    logger,
                     habitat
                     );
             
@@ -103,17 +111,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
              * we need to stop and restart the task.
              */
             timer = new Timer("DynamicReloader", true);
-
-            timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        try {
-                            reloader.run();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                };
 
             if (isEnabled(activeDasConfig)) {
                 start(getPollIntervalInSeconds(activeDasConfig));
@@ -152,7 +149,16 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     private void start(int pollIntervalInSeconds) {
         long pollIntervalInMS = pollIntervalInSeconds * 1000;
         timer.schedule(
-                timerTask, 
+                timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            reloader.run();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }, 
                 pollIntervalInMS, 
                 pollIntervalInMS);
         logger.fine("[Reloader] Started, monitoring every " +
@@ -168,7 +174,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
         logger.fine("[Reloader] Stopping");
         reloader.cancel();
         timerTask.cancel();
-        timer.cancel();
     }
     
     /**
@@ -193,19 +198,35 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
          * different frequency.  Those change are handled here, by this
          * class.
          */
+       
+        /* Record any events we tried to process but could not. */
+        List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
+
         Boolean newEnabled = null;
         Integer newPollIntervalInSeconds = null;
         
         for (PropertyChangeEvent event : events) {
+            String propName = event.getPropertyName();
             if (event.getSource() instanceof DasConfig) {
-                if (event.getPropertyName().equals("dynamic-reload-enabled")) {
+                if (configPropertyNames.contains(propName) && (event.getOldValue().equals(event.getNewValue()))) {
+                    logger.fine("[DynamicReload] Ignoring reconfig of " + propName + 
+                            " from " + event.getOldValue() + " to " + event.getNewValue());
+                    continue;
+                }
+                if (propName.equals("dynamic-reload-enabled")) {
                     /*
                      * Either start the currently stopped reloader or stop the
                      * currently running one.
                      */
                     newEnabled = Boolean.valueOf((String) event.getNewValue());
-                } else if (event.getPropertyName().equals("dynamic-reload-poll-interval-in-seconds")) {
-                    newPollIntervalInSeconds = new Integer((String) event.getNewValue());
+                } else if (propName.equals("dynamic-reload-poll-interval-in-seconds")) {
+                    try {
+                        newPollIntervalInSeconds = new Integer((String) event.getNewValue());
+                    } catch (NumberFormatException ex) {
+                        String reason = ex.getClass().getName() + " " + ex.getLocalizedMessage();
+                        logger.log(Level.WARNING, reason);
+                        unprocessedEvents.add(new UnprocessedChangeEvent(event, reason));
+                    }
                 }
             }
         }
@@ -226,6 +247,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
                 reschedule(newPollIntervalInSeconds);
             }
         }
-        return null;
+        return (unprocessedEvents.size() > 0) ? new UnprocessedChangeEvents(unprocessedEvents) : null;
     }
 }
