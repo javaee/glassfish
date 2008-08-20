@@ -26,10 +26,10 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.v3.admin.AdminAdapter;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
@@ -40,10 +40,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +50,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
@@ -106,7 +102,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private String proxyHost;
     private int proxyPort;
     private long visitorId;
-    private AdapterState state      = AdapterState.UNINITIAZED; //handle with care
+    private AdapterState state      = AdapterState.APPLICATION_NOT_INSTALLED; //handle with care
     private ProgressObject progress = new ProgressObject();
 
     private final CountDownLatch latch = new CountDownLatch(1);
@@ -128,6 +124,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     @Inject
     Events events;
+    
+    @Inject (name="server-config")
+    Config serverConfig;
+    
+    AdminEndpointDecider epd;
 
     private String statusHtml;
     private String initHtml;
@@ -156,7 +157,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     public String getContextRoot() {
-       return contextRoot; //default is /admin
+       return epd.getGuiContextRoot(); //default is /admin
     }
 
     public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
@@ -227,22 +228,15 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private void init() {
-	if (as == null || as.getProperty() == null || as.getProperty().isEmpty()) {
-	    String msg = "Define following properties in <admin-service> element in domain.xml" +
-		    "for admin console to work properly\n" +
-		    ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT + ", " +
-		    ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION + ", " +
-		    ServerTags.ADMIN_CONSOLE_LOCATION_ON_DISK;
-	    log.info(msg);
-	    return;
-	}
 	List<Property> props = as.getProperty();
 	for (Property prop : props) {
-	    setContextRoot(prop);
+	    //setContextRoot(prop);
 	    //setDownloadLocations(prop);
 	    setLocationOnDisk(prop);
 	}
 	initState();
+        epd = new AdminEndpointDecider(serverConfig, log);
+        contextRoot = epd.getGuiContextRoot();
     }
 
     private void initState() {
@@ -279,21 +273,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    }
 	}
     }
-    private void setContextRoot(Property prop) {
-	if (prop == null) {
-	    contextRoot = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
-	    return;
-	}
-	if (ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
-	    if ((prop.getValue() != null) && prop.getValue().startsWith("/")) {
-		contextRoot = prop.getValue();
-		log.info("Admin Console Adapter: context root: " + contextRoot);
-	    } else {
-		log.info("Invalid context root for the admin console application, using default:" + ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT);
-		contextRoot = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
-	    }
-	}
-    }
+
 
     /*
     private void setDownloadLocations(Property prop) {
@@ -330,17 +310,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	}
     }
 
-    private URL getMyUrl(GrizzlyRequest req) {
-	try {
-	    String host = InetAddress.getLocalHost().getHostName(); //for now.
-	    URL url     = new URL ("http://" + host + ":" + req.getServerPort() + contextRoot);
-	    return ( url );
-	} catch (MalformedURLException me) {
-	    throw new RuntimeException(me); //can't really do anything at this point.
-	} catch (UnknownHostException ue) {
-	    throw new RuntimeException(ue); //can't really do anything at this point.
-	}
-    }
 
     enum InteractionResult {
 	OK,
@@ -399,8 +368,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	byte[] bytes;
 	try {
 	    try {
-		String hp = (contextRoot.startsWith("/")) ? "" : "/";
-		hp += contextRoot + "/";
+		String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
 		visitorId = System.currentTimeMillis(); //sufficiently unique
 		bytes = initHtml.replace(MYURL_TOKEN, hp).replace(VISITOR_TOKEN, visitorId+"").getBytes();
 	    } catch(Exception e) {
@@ -449,7 +417,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private synchronized void handleInstalledButNotLoadedState(GrizzlyRequest req, GrizzlyResponse res) {
-	//hook for Jerome
 	Application config = getConfig();
 	if (config==null) {
 	    throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
@@ -457,14 +424,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	String sn = env.getInstanceName();
 	ApplicationRef ref = domain.getApplicationRefInServer(sn, ADMIN_APP_NAME);
 	habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
+        System.out.println("processApplication returned, "  + Thread.currentThread().getName());
 	state=AdapterState.APPLICATION_LOADED;
-	try {
-	    sendStatusPage(res);
-	    res.finishResponse();
-	} catch (java.io.IOException ex) {
-	    //TODO : Fix me
-	    ex.printStackTrace();
-	}
     }
 
     private void handleLoadedState() {
@@ -477,5 +438,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private void logFine(String s) {
 	if (log.isLoggable(Level.FINE))
 	    log.log(Level.FINE, s);
+    }
+    
+    public int getListenPort() {
+        return epd.getListenPort();
+    }
+    
+    public List<String> getVirtualServers() {
+        return epd.getGuiHosts();
     }
 }

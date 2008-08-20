@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -57,12 +58,14 @@ import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -105,11 +108,18 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
 
     @Inject
     Events events;
+    
+    @Inject(name="server-config")
+    Config config;
 
+    private AdminEndpointDecider epd = null;
+            
     CountDownLatch latch = new CountDownLatch(1);
 
     public void postConstruct() {
         events.register(this);
+        
+        epd = new AdminEndpointDecider(config, logger);
     }
 
     /**
@@ -281,7 +291,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
      * @return context root
      */
     public String getContextRoot() {
-        return PREFIX_URI;
+        return epd.getAsadminContextRoot();
     }
 
 
@@ -455,4 +465,12 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             }
         }
    }
+    
+    public int getListenPort() {
+        return epd.getListenPort();
+    }
+    
+    public List<String> getVirtualServers() {
+        return epd.getAsadminHosts();
+    }
 }

@@ -43,6 +43,8 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
+import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
 import java.lang.reflect.*;
@@ -276,8 +278,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
-                registerEndpoint(subAdapter.getContextRoot(), hosts, 
+                if (subAdapter instanceof AdminAdapter) {
+                    registerAdminAdapter((AdminAdapter)subAdapter);
+                } else if (subAdapter instanceof AdminConsoleAdapter) {
+                    registerAdminConsoleAdapter((AdminConsoleAdapter)subAdapter);
+                } else {
+                    registerEndpoint(subAdapter.getContextRoot(), hosts, 
                         subAdapter, null);
+                }
             } catch(EndpointRegistrationException e) {
                 logger.log(Level.WARNING, 
                         "GrizzlyService endpoint registration problem", e);
@@ -371,4 +379,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         };
     }
 
+    private void registerAdminAdapter(AdminAdapter aa) throws EndpointRegistrationException {
+        int port        = aa.getListenPort();
+        List<String> vs = aa.getVirtualServers();
+        String cr       = aa.getContextRoot();
+        this.registerEndpoint(cr, port, vs, aa, null);
+    }
+    
+    private void registerAdminConsoleAdapter(AdminConsoleAdapter aca) throws EndpointRegistrationException {
+        int port        = aca.getListenPort();
+        List<String> vs = aca.getVirtualServers();
+        String cr       = aca.getContextRoot();
+        this.registerEndpoint(cr, port, vs, aca, null);        
+    }
 }

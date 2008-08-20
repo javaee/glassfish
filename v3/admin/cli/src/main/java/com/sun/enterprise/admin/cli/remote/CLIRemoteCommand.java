@@ -448,7 +448,7 @@ public class CLIRemoteCommand {
         }
 
         if(!ok(port))
-            hostPort = 8080;
+            hostPort = 4848; //the default port
     }
 
     private void initializeLogger() {
