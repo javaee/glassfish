@@ -3976,12 +3976,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
             if (m.getPort() == port) {
                 mapper = m;
-                /*
-                 * FIXME: Uncomment as soon as Habitat.removeIndex has
-                 * been fixed
-                 *
-                 * break;
-                 */
+                break;
             }
         }
 

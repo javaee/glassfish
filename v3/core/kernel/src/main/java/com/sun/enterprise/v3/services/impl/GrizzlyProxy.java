@@ -164,10 +164,9 @@ public class GrizzlyProxy implements NetworkProxy {
 
 
     public void destroy() {
-        /*
-         * FIXME: Uncomment as soon as Habitat.removeIndex has been fixed
-         * grizzlyService.getHabitat().removeIndex("com.sun.grizzly.util.http.mapper.Mapper", String.valueOf(portNumber));
-         */
+        grizzlyService.getHabitat().removeIndex(
+            "com.sun.grizzly.util.http.mapper.Mapper",
+            String.valueOf(portNumber));
     }
 
 
