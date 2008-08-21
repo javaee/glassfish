@@ -112,6 +112,7 @@ public final class AdminEndpointDecider {
             HttpListener effective = lss.get(0);
             String dvs = effective.getDefaultVirtualServer();
             guiHosts = Collections.unmodifiableList(Arrays.asList(dvs));
+            asadminHosts = guiHosts;
             try {
                 port = Integer.valueOf(effective.getPort());
             } catch(NumberFormatException ne) {
