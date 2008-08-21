@@ -153,10 +153,6 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
         this.registry = registry;
     }
 
-    public void stop() {
-
-    }
-
     public ClassLoader getClassLoader() {
         return mainClassLoader;
     }

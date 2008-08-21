@@ -3,9 +3,7 @@ package com.sun.enterprise.v3.server;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.*;
 import org.glassfish.api.Startup;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -23,10 +21,12 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * Time: 3:49:36 PM
  */
 @Service
-public class ApplicationLoaderInjector implements Startup, PostConstruct {
+public class ApplicationLoaderInjector implements Startup, PostConstruct, PreDestroy {
 
     @Inject
     Habitat habitat;
+
+    ApplicationLoaderService service=null;
 
     /**
      * Returns the life expectency of the service
@@ -42,7 +42,7 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct {
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        ApplicationLoaderService service = new ApplicationLoaderService();
+        service = new ApplicationLoaderService();
         service.server = habitat.getComponent(Server.class);
         service.applications = habitat.getComponent(Applications.class);
         service.archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -63,5 +63,11 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct {
             grizzly.release();
             throw e;
         }            
+    }
+
+    public void preDestroy() {
+        if (service!=null) {
+            service.preDestroy();
+        }
     }
 }

@@ -224,9 +224,8 @@ public class AppServerStartup implements ModuleStartup {
 
     public void stop() {
 
-        // first send the shutdown event synchronously
-        events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
-        
+        events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
+
         try {
             for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
                 try {
@@ -243,6 +242,9 @@ public class AppServerStartup implements ModuleStartup {
                     e.printStackTrace();
                 }
             }
+
+            // first send the shutdown event synchronously
+            events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
 
         } catch(ComponentException e) {
             // do nothing.
