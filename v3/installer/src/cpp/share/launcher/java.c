@@ -31,7 +31,6 @@
  * holder.
  */
 
-
 #include "java.h"
 
 #define AWT_HEADLESS_OPTION "-Djava.awt.headless=true"
@@ -573,9 +572,9 @@ main(int argc, char **argv)
     {
     	s = (char *)MemAlloc(strlen(ANSWER_FILE_PROP) + strlen(answerFile) + strlen(workdir) + 100);
 #ifdef WIN32
-	sprintf(s, ANSWER_FILE_PROP "%s,file:///%s" FILE_SEPARATOR "install.windows.properties" ,answerFile, workdir);
+	sprintf(s, ANSWER_FILE_PROP ",file:///%s" FILE_SEPARATOR "install.windows.properties,%s" ,workdir, answerFile);
 #else
-	sprintf(s, ANSWER_FILE_PROP "%s,file://%s" FILE_SEPARATOR "install.properties" ,answerFile, workdir);
+	sprintf(s, ANSWER_FILE_PROP ",file://%s" FILE_SEPARATOR "install.properties,%s" ,workdir, answerFile);
 #endif
     }
     else
