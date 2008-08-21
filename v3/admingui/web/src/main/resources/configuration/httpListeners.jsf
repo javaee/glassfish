@@ -68,7 +68,8 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n.httpListeners.ListPageTitle}"
                  helpText="$resource{i18n.httpListeners.ListPageHelp}"/>
 		 "<br /> <br />
-#include "listenersTable.inc"                 
+#include "listenersTable.inc" 
+            <sun:hidden id="helpKey" value="$resource{help.httpListeners}" />
             </sun:form>
         </sun:body>
     </sun:html>

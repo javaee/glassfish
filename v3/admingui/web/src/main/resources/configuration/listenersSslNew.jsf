@@ -63,6 +63,7 @@
 #include "/web/shared/sslPropertiesButtons.inc"
                     </facet>                     
                 </sun:title>
+                <sun:hidden id="helpKey" value="$resource{help.httpListenerNew2}" />
             </sun:form>
         </sun:body>
 #include "/web/shared/sslValidationsJS.inc"        
