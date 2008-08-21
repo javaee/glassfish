@@ -596,10 +596,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Configure HTTP listeners
             List<HttpListener> httpListeners = httpService.getHttpListener();
             for (HttpListener httpListener : httpListeners) {
-                if ("admin-listener".equals(httpListener.getId())) {
-                    // XXX TBD
-                    continue;
-                } else if ("jk-connector".equals(httpListener.getId())) {
+                if ("jk-connector".equals(httpListener.getId())) {
                     createJKConnector(httpListener, httpService);
                 } else {
                     createHttpListener(httpListener, httpService);
