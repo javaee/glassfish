@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -61,12 +62,12 @@ final class InstallerThread extends Thread {
     private final Domain domain;
     private final ServerEnvironmentImpl env;
     private final String contextRoot;
-
+    private final List<String> vss;
 
     /**
      *	Constructor.
      */
-    InstallerThread(List<URL> urls, File toFile, String proxyHost, int proxyPort, ProgressObject progress, Domain domain, ServerEnvironmentImpl env, String contextRoot) {
+    InstallerThread(List<URL> urls, File toFile, String proxyHost, int proxyPort, ProgressObject progress, Domain domain, ServerEnvironmentImpl env, String contextRoot, List<String>vss) {
 
         this.urls        = urls;
         this.toFile      = toFile;
@@ -77,6 +78,7 @@ final class InstallerThread extends Thread {
         this.domain      = domain;
         this.env         = env;
         this.contextRoot = contextRoot;
+        this.vss         = vss;  //defensive copying is not required here
     }
     
     /**
@@ -247,7 +249,7 @@ System.out.println("!!!!!!!  cannot create Image");
                 ApplicationRef aref = ConfigSupport.createChildOf(s, ApplicationRef.class);
                 aref.setRef(app.getName());
                 aref.setEnabled(Boolean.TRUE.toString());
-                //aref.setVirtualServers("__asadmin"); //TODO
+                aref.setVirtualServers(getVirtualServerList()); //TODO
                 arefs.add(aref);
                 return ( true );
             }
@@ -255,5 +257,14 @@ System.out.println("!!!!!!!  cannot create Image");
         Server server = domain.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
         syncMessage("Installed the application ...");
+    }
+ 
+    private String getVirtualServerList() {
+        if (vss == null)
+            return "";
+        String s = Arrays.toString(vss.toArray(new String[0]));
+        //standard JDK implemetation always returns this enclosed in [], remove them
+        s = s.substring(1, s.length()-1);
+        return ( s );
     }
 }

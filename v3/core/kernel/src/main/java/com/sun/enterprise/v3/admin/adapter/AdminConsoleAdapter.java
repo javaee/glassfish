@@ -334,7 +334,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private void startThread() {
-	new InstallerThread(urls, diskLocation, proxyHost, proxyPort, progress, domain, env, contextRoot).start();
+	new InstallerThread(urls, diskLocation, proxyHost, proxyPort, progress, domain, env, contextRoot, epd.getGuiHosts()).start();
     }
 
     private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
