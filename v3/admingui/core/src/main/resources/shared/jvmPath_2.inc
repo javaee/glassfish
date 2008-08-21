@@ -49,14 +49,14 @@
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.SystemClasspath}" helpText="$resource{i18n.jvm.SystemClasspathHelp}">
-                                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{requestScope.systemClasspath}"/>   
-                            </sun:property>
                             <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.EnvironmentClasspath}">
                                 <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{requestScope.ignoreEnvClasspath}" />         
                             </sun:property>
                             <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ServerClasspath}" helpText="$resource{i18n.jvm.ServerClasspathHelp}">
-                                <sun:textArea id="ServerClasspath" rows="$int{4}" columns="$int{75}" text="#{requestScope.serverClasspath}"/>       
+                                <sun:staticText id="ServerClasspath"  text="#{requestScope.serverClasspath}"/>       
+                            </sun:property>
+                            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.SystemClasspath}" helpText="$resource{i18n.jvm.SystemClasspathHelp}">
+                                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{requestScope.systemClasspath}"/>   
                             </sun:property>
                             <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ClasspathPrefix}" helpText="$resource{i18n.jvm.ClasspathPrefixHelp}">
                                 <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{requestScope.classpathPrefix}"/>        
