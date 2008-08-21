@@ -62,6 +62,7 @@
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                 <sun:title id="configPageTitle"  title="$resource{web.monitoring.Title}" 
                     helpText="$resource{web.monitoring.PageHelp}">
                     <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
