@@ -23,6 +23,7 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
+import com.sun.enterprise.admin.cli.remote.CommandInvoker;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
@@ -84,7 +85,7 @@ public class StartDomainCommand extends AbstractCommand {
             pinged:
             while(!timedOut(startWait)) {
                 for (int port : ports) {
-                    if (CLIRemoteCommand.pingDAS(port)) {
+                    if (isServerAlive(port)) {
                         alive = true;
                         break pinged;
                     }
@@ -108,6 +109,14 @@ public class StartDomainCommand extends AbstractCommand {
         }                
     }
     
+    private boolean isServerAlive(int port) {
+        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND); //
+        invoker.put(PORT, ""+port);
+        invoker.put(USER, getOption(USER));
+        invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
+        //what about --secure, that's next!
+        return (CLIRemoteCommand.pingDAS(invoker));
+    }
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
     }

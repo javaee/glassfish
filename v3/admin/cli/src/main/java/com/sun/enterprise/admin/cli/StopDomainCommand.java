@@ -36,22 +36,19 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
+import com.sun.enterprise.admin.cli.remote.CommandInvoker;
 import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
-import java.net.*;
 import java.net.Socket;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A local StopDomain command
@@ -84,13 +81,12 @@ public class StopDomainCommand extends AbstractCommand {
         int adminPort = ports[0];
 
         // Verify that the DAS is running and reachable
-        if(!CLIRemoteCommand.pingDASQuietly(adminPort))
+        if(!isServerAlive(adminPort))
             throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
 
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            CLIRemoteCommand rc = new CLIRemoteCommand(getCmd("" + adminPort));
-            rc.runCommand();
+            invokeCommand(adminPort);
             waitForDeath(adminPort);
         }
         finally {
@@ -121,26 +117,13 @@ public class StopDomainCommand extends AbstractCommand {
     }
 
     ///// Private Methods /////
-    private String[] getCmd(String port) {
-        List<String> cmd = new ArrayList<String>();
-        cmd.add("stop-domain");
-        cmd.add("--" + PORT);
-        cmd.add(port);
-        addOption(cmd, USER);
-        addOption(cmd, PASSWORDFILE);
-        addOption(cmd, FORCE);
-        return cmd.toArray(new String[cmd.size()]);
-    }
-
-    private void addOption(List<String> cmd, String option) {
-        //adds the option to list as "--option" followed by its value iff value is non-null
-        // "value" is higher precedence than "defaultValue"
-        String value = getOption(option);
-
-        if ( value != null) {
-            cmd.add("--" + option); //get it as long option, a suitable method is not available :(
-            cmd.add(value);
-        }
+    private void invokeCommand(int port) throws CommandException {
+        CommandInvoker invoker = new CommandInvoker("stop-domain");
+        invoker.put(PORT, ""+port);  // note: --port is NOT an option for stop-domain command
+        invoker.put(USER, getOption(USER));
+        invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
+        invoker.put(FORCE, getOption(FORCE));
+        invoker.invoke();
     }
 
     private void getDomainRootDir() throws CommandValidationException {
@@ -262,6 +245,15 @@ public class StopDomainCommand extends AbstractCommand {
 
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
+    }
+    
+    private boolean isServerAlive(int port) {
+        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND);
+        invoker.put(PORT, ""+port);
+        invoker.put(USER, getOption(USER));
+        invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
+        //what about --secure, that's next!
+        return (CLIRemoteCommand.pingDASQuietly(invoker));
     }
     private File domainsDir;
     private File domainRootDir;

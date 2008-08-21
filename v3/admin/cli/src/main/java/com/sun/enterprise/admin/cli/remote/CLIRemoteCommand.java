@@ -39,7 +39,6 @@ import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.StoreException;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -48,7 +47,6 @@ import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import java.util.logging.Level;
 import com.sun.enterprise.universal.BASE64Encoder;
 import java.util.zip.ZipEntry;
@@ -373,10 +371,9 @@ public class CLIRemoteCommand {
      * @param port The admin port of DAS
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
-    public static boolean pingDAS(int port) {
+    public static boolean pingDAS(CommandInvoker invoker) {
         try {
-            CLIRemoteCommand rcmd = new CLIRemoteCommand("version", "--port", Integer.toString(port));
-            rcmd.runCommand();
+            invoker.invoke();
             return true;
         }
         catch (Exception ex) {
@@ -389,10 +386,10 @@ public class CLIRemoteCommand {
      * @param port The admin port of DAS
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
-    public static boolean pingDASQuietly(int port) {
+    public static boolean pingDASQuietly(CommandInvoker invoker) {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            return pingDAS(port);
+            return pingDAS(invoker);
         }
         finally {
             CLILogger.getInstance().popAndUnlockLevel();
@@ -719,6 +716,6 @@ public class CLIRemoteCommand {
     private static final String QUERY_STRING_INTRODUCER = "?";
     private static final String QUERY_STRING_SEPARATOR = "&";
     private static final String ADMIN_URI_PATH = "/__asadmin/";
-    
+    public static final String  RELIABLE_COMMAND = "version";
 }
 
