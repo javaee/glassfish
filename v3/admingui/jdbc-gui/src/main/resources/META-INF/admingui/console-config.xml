@@ -46,4 +46,10 @@
                 parentId="Resources" 
                 content="jdbcTreeNode.jsf" 
         />
+        <integration-point 
+                id="jdbcCommonTask" 
+                type="org.glassfish.admingui:commonTaskGroup" 
+                priority="100" 
+                content="jdbcCommonTask.jsf"
+        />
 </console-config>
