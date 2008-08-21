@@ -24,58 +24,91 @@ package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipFile;
 
-import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
+import org.glassfish.api.Async;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Manages retrying of autodeployed files in case a file is copied slowly.
  * <p>
  * If a file is copied into the autodeploy directory slowly, it can appear there
- * before the copy has finished, causing the attempt to autodeploy it to fail.
- * This class encapsulates logic to retry such files on successive loops through
- * the autodeployer thread, reporting failure only if the candidate file remains
- * stable in size and cannot be opened after a period of time which defaults below
- * and is configurable using the config property name defined below.
+ * before the copy operation has finished, causing the attempt to autodeploy it to fail.
+ * This class encapsulates logic to decide whether to retry the deployment of
+ * such files on successive loops through
+ * the autodeployer thread, reporting failure only if the candidate file has
+ * failed to deploy earlier and has remained stable in size for a 
+ * (configurable) period of time.  
  * <p>
- * The main public entry point is the testFileAsArchive method, which accepts a file and
- * if it is not a directory tries to open it as an archive (a zip file).  When AutoDeployer tries
- * and fails to open such a file as an archive, it records
- * that fact internally.  The manager adds to or updates
- * a map that describes all such failed files.  If AutoDeployer previously
- * noted failures to open the file and the file's size has been stable
- * for a configurable period of time, then the manager concludes that the
- * file is not simply a slow-copying file but is truly invalid.  In that case
- * it throws an exception.  When a file fails to open as a zip file the first time,
- * or if it has failed to open before but its size has changed within the configurable
- * time, then the manager returns a null to indicate that we need to wait before trying
- * to process the file.  Once a file opens successfully, any record of that file is removed
- * from the map.
+ * The main public entry point are the {@link ç} method and
+ * the {@link reportSuccessfulDeployment}, 
+ * {@link reportFailedDeployment}, {@link reportSuccessfulUndeployment}, and
+ * {@link reportUnsuccessfulUndeployment} methods.  
+ * <p>
+ * The client should invoke {@link shouldAttemptDeployment} when it has identified
+ * a candidate file for deployment but before trying to deploy that file.  This
+ * retry manager will return whether the caller should attempt to deploy the file,
+ * at least based on whether there has been a previous unsuccessful attempt to
+ * deploy it and, if so, whether the file seems to be stable in size or not.  
+ * <p>
+ * When the caller actually tries to deploy a file, it must invoke 
+ * {@link reportSuccessfulDeployment} or {@link reportFailedDeployment) 
+ * so that the retry manager keeps its information about the file up-to-date.
+ * Similarly, when the caller tries to undeploy a file it must invoke
+ * {@link reportSuccessfulUndeployment} or {@link reportFailedUndeployment}.
+ * <P>
+ * Internally for each file that has failed to deploy the retry manager records
+ * the file's size and the timestamp of the most recent failure and the timestamp at 
+ * which that file will be assumed to be fully copied.  At that time the file's
+ * retry period will expire.  This retry expiration value is extended each time 
+ * the file changes size since the last time it was checked.
+ * <p>
+ * If AutoDeployer previously reported failures to deploy the file and the 
+ * file's size has been stable for its retry expiration time, then the 
+ * {@link shouldAttemptDeployment} method returns true to trigger another attempt to
+ * deploy the file.  If the autodeployer reports another failed deployment
+ * then the retry manager concludes that the file is not simply a slow-copying 
+ * file but is truly invalid.  In that case 
+ * it throws an exception.  
+ * <p>
+ * Once the caller reports a successful deployment of a file by invoking
+ * {@link reportSuccessfulDeployment} the retry manager discards any record of 
+ * that file from its internal data structures.  Similarly the retry manager
+ * stops monitoring a file once the autodeployer has made an attempt - 
+ * successful or unsuccessful - to undeploy it.
+ * <p>
+ * An important change from v2 to v3 is the change in the default retry limit.
+ * In v2 we could try to open a file as a ZIP file to help decide if it had
+ * finished copying, but in v3 we cannot make assumptions about how apps
+ * will be packaged (some may be ZIPs, but others may be single files).  We
+ * need to provide a balance between prompt reporting of a failed auto-deployment
+ * vs. handling the case of a slow copy operation which, for a while, manifests
+ * itself as a failed deployment.  
  *
  * @author tjquinn
  */
 @Service
+@Scoped(Singleton.class)
 public class AutodeployRetryManager implements PostConstruct {
         
     /**
      *Specifies the default value for the retry limit.
      */
-    private static final int RETRY_LIMIT_DEFAULT = 30; // 30 seconds
+    private static final int RETRY_LIMIT_DEFAULT = 8; // 8 seconds
 
     /** Maps an invalid File to its corresponding Info object. */
     private HashMap<File,Info> invalidFiles = new HashMap<File,Info>();
 
-    private static final Logger sLogger=LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private Logger sLogger;
+    
     private static final LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AutodeployRetryManager.class);
 
@@ -85,109 +118,10 @@ public class AutodeployRetryManager implements PostConstruct {
     private int timeout = RETRY_LIMIT_DEFAULT;
 
     public void postConstruct() {
+        sLogger = Logger.getLogger(getClass().getName());
         setTimeout();
     }
     
-    /**
-     *Tests to see if the file can be opened as an archive.
-     *<p>
-     *This method will not be needed if the main autodeployer uses
-     *the deployment facility.  This is because the deployment facility
-     *method invocations use an archive, so the openFileAsArchive method
-     *will be used instead of this one.
-     *@param file spec to be tested
-     *@return whether the file was opened as an archive (DEPLOY_SUCCESS), 
-     *   was not but should be tried later (DEPLOY_PENDING), or was
-     *   not and should not be tried later (DEPLOY_FAILURE).
-     *@throws AutoDeploymentException if an error occurred closing the archive
-     */
-    AutodeploymentStatus testFileAsArchive(String file) throws AutoDeploymentException {
-        AutodeploymentStatus result;
-        try {
-            File inFile = new File(file);
-            if (!inFile.isDirectory()) {
-                // either a j2ee jar file or a directory or a .class file
-                if (file.endsWith(".class")) {
-                    return AutodeploymentStatus.SUCCESS;
-                }
-                
-                /*
-                 * The file is not a directory and not a .class file.  It should
-                 * be a file archive.  An inexpensive way to see if it might be
-                 * valid is to try to open it as a zip file.  
-                 */
-                ZipFile zipFile = openFileAsZipFile(inFile);
-                if (zipFile != null) {
-                    result = AutodeploymentStatus.SUCCESS;
-                    zipFile.close();
-                } else {
-                    result = AutodeploymentStatus.PENDING;
-                }
-            } else {
-                /*
-                 * The file is a directory.  Try deploying it because there is 
-                 * no way other than that of finding out if the directory is
-                 * complete.  And even then it might not be if files in 
-                 * subdirectories are added later.
-                 */
-                
-                // XXX Need to allow failed deployments (as for directories) to trigger monitoring and retry of directories
-
-                result = AutodeploymentStatus.SUCCESS;
-            }
-        } catch (AutoDeploymentException ade) {
-            result = AutodeploymentStatus.FAILURE;
-        } catch (IOException ioe) {
-            String msg = localStrings.getLocalString(
-                    "enterprise.deployment.autodeploy.error_closing_archive", 
-                    "error closing file {0} after testing it as an archive");
-            throw new AutoDeploymentException(msg, ioe);
-        }
-        return result;
-    }
-
-    /**
-     *Opens the specified file as an archive and tracks files that have
-     *failed to open as archives.
-     *@param f the file to try opening as an archive
-     *@return the AbstractArchive for the file (null if it shoudl be tried later)
-     *@throws AutoDeploymenException if the manager has been unable to open
-     *the file as an archive past the configured expiration time
-     */
-    private ZipFile openFileAsZipFile(File f) throws AutoDeploymentException {
-        ZipFile zipFile = null;
-        try {
-            /*
-             Try to open the file as an archive and then remove the file, if
-             *it is present, from the map tracking invalid files.
-             */
-            zipFile = new ZipFile(f);
-
-            recordSuccessfulOpen(f);
-
-        } catch (IOException ioe) {
-            String errorMsg = null;
-            /*
-             *If the archive variable was not assigned a non-null, then the file
-             *is not a valid archive.
-             */
-            if (zipFile == null) {
-                boolean failedPreviously = recordFailedOpen(f);
-                if ( ! failedPreviously) {
-                    Info info = get(f);
-                    errorMsg = localStrings.getLocalString(
-                            "enterprise.deployment.autodeploy.error_opening_start_retry", 
-                            "error opening {0} as JAR; may be slow copy; starting retry until {1}",
-                            f, 
-                            new Date(info.retryExpiration).toString());
-                    sLogger.log(Level.INFO, errorMsg);
-                }
-            }
-        }
-        return zipFile;
-    }
-
-
     /**
      *Retrieves the Info object describing the specified file.
      *@param File for which the Info object is requested
@@ -200,15 +134,14 @@ public class AutodeployRetryManager implements PostConstruct {
     }
 
     /**
-     *Indicates whether the AutoDeployer should try opening the specified
-     *file as an archive.
+     *Indicates whether the AutoDeployer should try deploying the specified file.
      *<p>
-     *The file should be opened if this retry manager has no information
+     *Attempt to deploy the file if this retry manager has no information
      *about the file or if information is present and the file size is
      *unchanged from the previous failure to open.
      *@return if the file should be opened as an archive
      */
-    boolean shouldOpen(File file) {
+    boolean shouldAttemptDeployment(File file) {
         boolean result = true; // default is true in case the file is not being monitored
         String msg = null;
         boolean loggable = sLogger.isLoggable(Level.FINE);

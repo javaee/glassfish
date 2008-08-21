@@ -78,10 +78,10 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
     
     private static final String DAS_TARGET = "server";
 
-    private static final List<String> configPropertyNames = Arrays.asList(new String[] {
+    private static final List<String> configPropertyNames = Arrays.asList(
             "autodeploy-enabled", "autodeploy-polling-interval-in-seconds", 
             "autodeploy-verifier-enabled", "autodeploy-jsp-precompilation-enabled"
-            });
+            );
         
  
     /** Cannot find the resource bundle unless we want until postConstruct to create the logger. */

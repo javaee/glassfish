@@ -117,7 +117,8 @@ public abstract class AutoOperation {
             ActionReport report = new PropsFileActionReporter();
             commandRunner.doCommand(commandName, command, props, report);
             AutodeploymentStatus ds = AutodeploymentStatus.forExitCode(report.getActionExitCode());
-            sLogger.log(Level.INFO, getMessageString(ds, file));
+            Level messageLevel = (ds.status ? Level.INFO : Level.WARNING);
+            sLogger.log(messageLevel, getMessageString(ds, file));
             markFiles(ds, file);
             return ds.status;
         } catch (Exception ex) {

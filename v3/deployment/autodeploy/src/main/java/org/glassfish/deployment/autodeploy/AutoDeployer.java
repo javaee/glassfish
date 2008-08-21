@@ -51,6 +51,7 @@ import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 /**
  * Handles the logic of deploying the module/app to the required destination.</br>
@@ -71,7 +72,7 @@ public class AutoDeployer {
     private String virtualServer = null;
     
     private String target=null;
-    private static final Logger sLogger=LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private static final Logger sLogger=Logger.getLogger(AutoDeployer.class.getName());
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
     private DirectoryScanner directoryScanner=null;
     
@@ -94,7 +95,7 @@ public class AutoDeployer {
     protected static final int DEPLOY_FAILURE = 2;
     protected static final int DEPLOY_PENDING = 3;
     
-    private AutodeployRetryManager retryManager = new AutodeployRetryManager();
+    private AutodeployRetryManager retryManager;
 
     private static final boolean DEFAULT_RENAME_ON_SUCCESS = true;
     private static final boolean DEFAULT_FORCE_DEPLOY = true;
@@ -158,6 +159,7 @@ public class AutoDeployer {
         setVirtualServer(virtualServer);
         setEnabled(enabled);
         setHabitat(habitat);
+        setRetryManager(habitat);
     }
     
     public AutoDeployer(
@@ -337,7 +339,7 @@ public class AutoDeployer {
         markInProgress();
         try {
             deployAll(directory, includeSubdir);
-            undeployAll(directory);
+            undeployAll(directory, includeSubdir);
         } catch (AutoDeploymentException e) {
             // print and continue
             e.printStackTrace();
@@ -346,6 +348,10 @@ public class AutoDeployer {
         }
     }
 
+    private void setRetryManager(Habitat habitat) {
+        retryManager = habitat.getComponent(AutodeployRetryManager.class);
+    }
+    
     private void markInProgress() {
         inProgress.set(true);
     }
@@ -418,7 +424,7 @@ public class AutoDeployer {
      * @param autoDeployDir the directory to scan for deleted files
      * @throws org.glassfish.deployment.autodeploy.AutoDeploymentException 
      */
-    public void undeployAll(File autoDeployDir) throws AutoDeploymentException {
+    public void undeployAll(File autoDeployDir, boolean includeSubdir) throws AutoDeploymentException {
         
         
         //create with default scanner
@@ -429,7 +435,7 @@ public class AutoDeployer {
         File[] apps= null;
         
         //get me all apps
-        apps= directoryScanner.getAllFilesForUndeployment(autoDeployDir);
+        apps= directoryScanner.getAllFilesForUndeployment(autoDeployDir, includeSubdir);
         
         //deploying all applications
         if(apps !=null) {
@@ -462,6 +468,9 @@ public class AutoDeployer {
                 target);
         sLogger.log(Level.INFO, "Autoundeploying application :" + name);
         status = au.run();
+        if (status) {
+        } else {
+        }
         return status;
         
     }
@@ -494,15 +503,13 @@ public class AutoDeployer {
         
         AutodeploymentStatus status = AutodeploymentStatus.FAILURE;
         String file=deployablefile.getAbsolutePath();
-        status = retryManager.testFileAsArchive(file);
-        if (status != AutodeploymentStatus.SUCCESS) {
-            return status;
+        if ( ! retryManager.shouldAttemptDeployment(deployablefile)) {
+            return AutodeploymentStatus.PENDING;
         }
-
         String msg = localStrings.getLocalString(
                 "enterprise.deployment.autodeploy.selecting_file",
                 "selecting {0} for autodeployment",
-                deployablefile.getAbsolutePath());
+                file);
         sLogger.log(Level.INFO, msg);
 
 

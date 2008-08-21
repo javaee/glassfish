@@ -114,11 +114,11 @@ public class AutoDeployDirectoryScanner implements DirectoryScanner{
         
     }
     // this should never be called from system dir autodeploy code...
-    public File[] getAllFilesForUndeployment(File autodeployDir) {
+    public File[] getAllFilesForUndeployment(File autodeployDir, boolean includeSubdir) {
 
         try {
             AutoDeployedFilesManager adfm = AutoDeployedFilesManager.loadStatus(autodeployDir);
-            return adfm.getFilesForUndeployment(getListOfFiles(autodeployDir, true));
+            return adfm.getFilesForUndeployment(getListOfFiles(autodeployDir, includeSubdir));
             } catch (Exception e) {
                 printException(e);
                 return new File[0];
@@ -162,28 +162,31 @@ public class AutoDeployDirectoryScanner implements DirectoryScanner{
         for (File dirFile : dirFiles) {
             String name = dirFile.getName();
             String fileType = name.substring(name.lastIndexOf(".") + 1);
-            if (fileType != null && !fileType.equals("") &&
-                   (fileType.equals(AutoDeployConstants.EAR_EXTENSION) ||
-                    fileType.equals(AutoDeployConstants.WAR_EXTENSION) ||
-                    fileType.equals(AutoDeployConstants.JAR_EXTENSION) ||
-                    fileType.equals(AutoDeployConstants.RAR_EXTENSION))) {
+            if ( ! dirFile.isDirectory()) {
+                if (fileType != null && !fileType.equals("") &&
+                        ! typeIsMarkerType(fileType)) {
                     result.add(dirFile);
                     continue;
-            }
-            if (dirFile.isDirectory()) {
-                if (includeSubDir && !(dirFile.getName().equals(AutoDeployer.STATUS_SUBDIR_PATH))) {
-                    result.addAll(getListOfFilesAsSet(dirFile, true));
                 }
             } else {
-                if(fileType != null && !fileType.equals("") &&
-                       (fileType.equals(AutoDeployConstants.ZIP_EXTENSION) ||
-                        fileType.equals("class"))) {
-                    result.add(dirFile);
+                if (! dirFile.getName().equals(AutoDeployer.STATUS_SUBDIR_PATH)) {
+                    if (includeSubDir) {
+                        result.addAll(getListOfFilesAsSet(dirFile, true));
+                    } else {
+                        result.add(dirFile);
+                    }
                 }
-                
             }
         }
         return result;
     }    
     
+    private static boolean typeIsMarkerType(String fileType) {
+        for (String markerSuffix : AutoDeployConstants.MARKER_FILE_SUFFIXES) {
+            if (fileType.endsWith(markerSuffix)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

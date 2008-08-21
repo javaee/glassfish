@@ -42,6 +42,9 @@
 
 package org.glassfish.deployment.autodeploy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *constants detail
  *
@@ -99,12 +102,20 @@ public class AutoDeployConstants {
     public static final String UNDEPLOYED       = "_undeployed";
     public static final String UNDEPLOY_FAILED       = "_undeployFailed";
     
-    public static final String EAR_EXTENSION       = "ear";
-    public static final String JAR_EXTENSION       = "jar";
-    public static final String WAR_EXTENSION       = "war";
-    public static final String RAR_EXTENSION       = "rar";
-    public static final String ALL_EXTENSION       = "all";
-    public static final String ZIP_EXTENSION       = "zip";
-        
     public static final String UNDEPLOY_REQUESTED = "_undeployRequested";
+    
+    public static final List<String> MARKER_FILE_SUFFIXES = initMarkerFileSuffixes();
+    
+    private static List<String> initMarkerFileSuffixes() {
+        List<String> result = new ArrayList<String>();
+        result.add(DEPLOYED);
+        result.add(NOTDEPLOYED);
+        result.add(PENDING);
+        result.add(DEPLOY_FAILED);
+        result.add(UNDEPLOYED);
+        result.add(UNDEPLOY_FAILED);
+        result.add(UNDEPLOY_REQUESTED);
+        
+        return result;
+    }
 }

@@ -179,19 +179,25 @@ public class AutoDeployedFilesManager {
             
             // calculate the original file as it was copied in the autodeploy
             // directory
-            File filePath = statusDir.getParentFile();
+            File filePath = autodeployDir;
             File f = statusDirFile.getParentFile();
             while (!f.equals(statusDir)) {
                 filePath = new File(filePath, f.getName());
                 f = f.getParentFile();
             }
             filePath  = new File(filePath,  statusDirFile.getName());
-            appNames.add(filePath);
+            
+            // Make sure a _deployed marker exists for this file before
+            // trying to undeploy it.
+            File _deployedMarkerFile = new File(filePath + AutoDeployConstants.DEPLOYED);
+            if (_deployedMarkerFile.exists()) {
+                appNames.add(filePath);
+            }
         }
         
         // Add to the app names files any entries for which auto-undeployment
         // has been requested by the user's creation of xxx_undeploy_requested.
-        appNames.addAll(getFilesToUndeployByRequest(latestFiles));
+        appNames.addAll(getFilesToUndeployByRequest(autodeployDir, statusDir));
         return appNames.toArray(new File[0]);
     }    
     
@@ -201,16 +207,16 @@ public class AutoDeployedFilesManager {
      * @param latestFiles the files in the autodeploy directory
      * @return Collection of File objects to undeploy due to the request marker files
      */
-    private Collection<? extends File> getFilesToUndeployByRequest(File[] latestFiles) {
+    private Collection<? extends File> getFilesToUndeployByRequest(File autodeployDir, File statusDir) {
         ArrayList<File> appsRequested = new ArrayList<File>();
         
-        for (File f : latestFiles) {
+        for (File f : statusDir.listFiles()) {
             /*
              * See if there is a corresponding _undeployRequested file for this
              * file.
              */
-            if (isUndeployRequested(f)) {
-                appsRequested.add(new UndeployRequestedFile(f));
+            if (isUndeployRequested(autodeployDir, f)) {
+                appsRequested.add(new UndeployRequestedFile(new File(autodeployDir, f.getName())));
             }
         }
         if (sLogger.isLoggable(Level.FINE) && ! appsRequested.isEmpty()) {
@@ -228,8 +234,8 @@ public class AutoDeployedFilesManager {
      * @param f the file to check
      * @return whether or not an undeployment has been requested for the specified file
      */
-    private static boolean isUndeployRequested(File f) {
-        return appToUndeployRequestFile(f).exists();
+    private static boolean isUndeployRequested(File autodeployDir, File f) {
+        return appToUndeployRequestFile(autodeployDir, f).exists();
     }
     
     /*
@@ -238,9 +244,13 @@ public class AutoDeployedFilesManager {
      * @param f the File to check for an undeployment request
      * @return a File object for the undeploy request file itself
      */
-    protected static File appToUndeployRequestFile(File f) {
-        File undeployRequest = new File(f.getPath() + AutoDeployConstants.UNDEPLOY_REQUESTED);
+    protected static File appToUndeployRequestFile(File autodeployDir, File f) {
+        File undeployRequest = new File(autodeployDir, f.getName() + AutoDeployConstants.UNDEPLOY_REQUESTED);
         return undeployRequest;
+    }
+    
+    protected static File appToUndeployRequestFile(File f) {
+        return appToUndeployRequestFile(f.getParentFile(), f);
     }
     
     /* 
