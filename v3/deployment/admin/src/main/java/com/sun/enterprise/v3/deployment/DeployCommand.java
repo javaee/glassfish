@@ -392,17 +392,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             // also save the application config data
             appConfigList = 
                 ConfigBeansUtilities.getApplicationConfig(target, name);
-        }
-    }
+            if (appConfigList != null) {
+                addApplicationConfigToProps(parameters, appConfigList);
+            }
 
-    private void addApplicationConfigToProps (Properties moduleProps,
-        List<ApplicationConfig> appConfigList) {
-
-        for (ApplicationConfig appConfig : appConfigList) {
-            String appConfigName = DeploymentProperties.APP_CONFIG + "." + 
-                appConfig.getType();
-            String appConfigValue = appConfig.getConfig();
-            moduleProps.setProperty(appConfigName, appConfigValue);
         }
     }
 }

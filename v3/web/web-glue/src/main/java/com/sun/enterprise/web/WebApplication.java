@@ -53,6 +53,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.plugin.common.WebAppConfig;
 import org.glassfish.web.plugin.common.EnvEntry;
@@ -61,6 +62,7 @@ import org.glassfish.web.plugin.common.ContextParam;
 import java.util.List;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -80,7 +82,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     public boolean start(StartupContext startupContext) {
         wmInfo.setAppClassLoader(startupContext.getClassLoader());
-        applyApplicationConfig();
+        applyApplicationConfig(startupContext);
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         return start(vsList);
@@ -245,16 +247,16 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }    
 
 
-    private void applyApplicationConfig() {
-        ApplicationConfig appConfig = 
-            ConfigBeansUtilities.getApplicationConfigByType(
-                container.instanceName, wmInfo.getName(), "web");
-        if (appConfig != null) {
+    private void applyApplicationConfig(StartupContext startupContext) {
+        Properties startupParams = startupContext.getStartupParameters(); 
+        String config = startupParams.getProperty(
+            DeploymentProperties.APP_CONFIG + ".web");
+        if (config != null) {
             // parse the appConfigData and set in the descriptor
-            WebBundleDescriptor descriptor = wmInfo.getDescriptor();
+            WebAppConfig c = ApplicationConfig.Util.decodeConfigData(
+                container._serverContext.getDefaultHabitat(), config);
 
-            WebAppConfig c = appConfig.getConfigData(
-                container._serverContext.getDefaultHabitat()); 
+            WebBundleDescriptor descriptor = wmInfo.getDescriptor();
 
             for (EnvEntry env : c.getEnvEntry()) {
                 for (EnvironmentEntry envEntry : 

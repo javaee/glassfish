@@ -1144,8 +1144,24 @@ public class ApplicationLifecycle {
                 appRef.getVirtualServers());
         }
 
+        if (appRef.getApplicationConfig() != null) {
+            addApplicationConfigToProps(deploymentParams, 
+                appRef.getApplicationConfig());
+        }
+
         return deploymentParams;
     }
+
+    protected void addApplicationConfigToProps (Properties props,
+        List<ApplicationConfig> appConfigList) {
+        for (ApplicationConfig appConfig : appConfigList) {
+            String appConfigName = DeploymentProperties.APP_CONFIG + "." +
+                appConfig.getType();
+            String appConfigValue = appConfig.getConfig();
+            props.setProperty(appConfigName, appConfigValue);
+        }
+    }
+
 
     // set the neccessary information in DeploymentContext props from
     // domain.xml

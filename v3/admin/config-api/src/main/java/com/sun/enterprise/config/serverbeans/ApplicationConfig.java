@@ -169,8 +169,6 @@ public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
        /** for encoding and decoding the config attribute contents */
         private static final String ENCODING = "UTF-8";
 
-        private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-
         public static String getFormattedConfig(ApplicationConfig me) {
             try {
                 return URLDecoder.decode(me.getConfig(), ENCODING);
@@ -204,8 +202,17 @@ public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
          * element of the application configuration information.
          */
         public static <T extends ConfigBeanProxy> T getConfigData(ApplicationConfig me, Habitat habitat) {
+            return (T) Util.decodeConfigData(habitat, me.getConfig());
+        }
+    }
+
+    public class Util {
+        private static final String ENCODING = "UTF-8";
+        private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
+        public static <T extends ConfigBeanProxy> T decodeConfigData(Habitat habitat, String encodedValue) {
             try {
-                String xmlData = URLDecoder.decode(me.getConfig(), ENCODING);
+                String xmlData = URLDecoder.decode(encodedValue, ENCODING);
                 ConfigParser parser = new ConfigParser(habitat);
                 XMLStreamReader reader = xmlInputFactory.createXMLStreamReader(new StringReader(xmlData));
                 DomDocument dom = parser.parse(reader);
@@ -215,7 +222,7 @@ public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
                 throw new RuntimeException(uce); // should never happen
             } catch (XMLStreamException xse) {
                 throw new RuntimeException(xse); // should never happen
-            }
+            }            
         }
-   }
+    }
 }
