@@ -83,7 +83,7 @@ function disableComponent(componentName, type) {
         component = getSelectElement(componentName);
     }
     else {
-        alert('new/edit realm');
+        //alert('new/edit realm');
         component = getTextElement(componentName);
         component.value='';
     }
