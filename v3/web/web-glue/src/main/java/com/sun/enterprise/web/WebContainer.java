@@ -3583,6 +3583,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             updateAlternateDocroot(vs, vsBean);
         } else if ("setCacheControl".equals(name)){
             vs.configureCacheControl(value);
+        } else if (Constants.ACCESS_LOGGING_ENABLED.equals(name)){
+            vs.reconfigureAccessLog(globalAccessLogBufferSize,
+                                    globalAccessLogWriteInterval,
+                                    habitat,
+                                    domain,
+                                    globalAccessLoggingEnabled);
         } else if (Constants.ACCESS_LOG_PROPERTY.equals(name)){
             vs.reconfigureAccessLog(globalAccessLogBufferSize,
                                     globalAccessLogWriteInterval,
