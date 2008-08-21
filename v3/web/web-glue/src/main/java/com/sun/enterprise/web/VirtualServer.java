@@ -525,6 +525,7 @@ public class VirtualServer extends StandardHost {
 
         String contextRoot = null;
         WebModuleConfig wmInfo = null;
+        String location = null;
         Applications appsBean = domain.getApplications();
 
         String wmID = getDefaultWebModuleID();
@@ -532,19 +533,21 @@ public class VirtualServer extends StandardHost {
             // Check if the default-web-module is part of a
             // j2ee-application
             wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);
-
+            
             if (wmInfo == null) {
                 contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
-                File docroot = new File(ConfigBeansUtilities.getLocation(wmID));
-                WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
-                wmInfo = new WebModuleConfig();
-                wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
-                wbd.setContextRoot(contextRoot);
-                wmInfo.setLocation(docroot);            
-                wmInfo.setDescriptor(wbd);
-                wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
-                wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
-            
+                location = ConfigBeansUtilities.getLocation(wmID);
+                if ((contextRoot!=null) && (location != null)) {
+                    File docroot = new File(location);
+                    WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
+                    wmInfo = new WebModuleConfig();
+                    wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
+                    wbd.setContextRoot(contextRoot);
+                    wmInfo.setLocation(docroot);            
+                    wmInfo.setDescriptor(wbd);
+                    wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
+                    wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
+                }
             } else {
                 WebModule wm = wmInfo.getBean();
                 contextRoot = wm.getContextRoot();
@@ -719,6 +722,9 @@ public class VirtualServer extends StandardHost {
         
         if (vsBean != null) {
             wmID = vsBean.getDefaultWebModule();
+            if ((wmID!=null) && (wmID.equals(""))) {
+                wmID = null;
+            }
             if (wmID != null && _debug) {
                 Object[] params = { wmID, _id };
                 _logger.log(Level.FINE, "vs.defaultWebModule", params);
