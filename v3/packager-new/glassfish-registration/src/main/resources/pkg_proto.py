@@ -45,7 +45,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "description" : "glassfish-registration",
-                        "description_long" : conf.glassfish_description_log,
+                        "description_long" : conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],
