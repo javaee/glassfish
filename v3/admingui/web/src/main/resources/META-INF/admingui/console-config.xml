@@ -16,25 +16,25 @@
                 content="monitor/monitoringNode.jsf"/>
         <integration-point
                 id="monitoring" 
-                type="org.glassfish.admingui:tab" 
+                type="org.glassfish.admingui:serverInstTab" 
                 priority="20" 
                 parentId="serverInstTabs" 
                 content="monitor/monitoringTab.jsf" />
         <integration-point
                 id="monitor_web" 
-                type="org.glassfish.admingui:tab" 
+                type="org.glassfish.admingui:serverInstTab" 
                 priority="20" 
                 parentId="monitoring" 
                 content="monitor/webContainerTab.jsf" />
        <integration-point
                 id="monitor_http" 
-                type="org.glassfish.admingui:tab" 
+                type="org.glassfish.admingui:serverInstTab" 
                 priority="30" 
                 parentId="monitoring" 
                 content="monitor/httpServiceTab.jsf" />
        <integration-point
                 id="monitor_jvm" 
-                type="org.glassfish.admingui:tab" 
+                type="org.glassfish.admingui:serverInstTab" 
                 priority="40" 
                 parentId="monitoring" 
                 content="monitor/jvmTab.jsf" />
