@@ -83,72 +83,33 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     public boolean start(StartupContext startupContext) {
         wmInfo.setAppClassLoader(startupContext.getClassLoader());
         applyApplicationConfig(startupContext);
-        String vsIDs = wmInfo.getVirtualServers();
-        List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
-        return start(vsList);
+        return start();
     }
 
-    boolean start(List<String> vsList) {
 
-        final String contextRoot = wmInfo.getDescriptor().getContextRoot();
-        boolean loadToAll = (vsList == null) || (vsList.size() == 0);
-
+    private boolean start() {
         // TODO : dochez : add action report here...
-        List<Result<WebModule>> results = container.loadWebModule(wmInfo, "null");
-        if (results==null) {
-            logger.log(Level.SEVERE, "Unknown error, loadWebModule returned null, file a bug");
+        List<Result<WebModule>> results = container.loadWebModule(wmInfo,
+                                                                  "null");
+        if (results == null) {
+            logger.log(Level.SEVERE,
+                "Unknown error, loadWebModule returned null, file a bug");
             return false;
         }
 
-        logger.info("Loading application " + wmInfo.getDescriptor().getName()
-                + " at " + wmInfo.getDescriptor().getContextRoot());
+        logger.info("Loading application " + wmInfo.getDescriptor().getName() +
+                    " at " + wmInfo.getDescriptor().getContextRoot());
 
         return true;
     }
 
+
     public boolean stop() {
-        return stop(null);
-    }
 
-    boolean stop(List<String> targets) {
+        container.unloadWebModule(getDescriptor().getContextRoot(), null,
+                                  null);
 
-        boolean isLeftOver = false;
-        boolean unloadFromAll = (targets == null) || (targets.size() == 0);
-        final String ctxtRoot = getDescriptor().getContextRoot();
-
-        Container[] hosts = container.engine.findChildren();
-        for (int i = 0; i < hosts.length; i++) {
-            StandardHost vs = (StandardHost) hosts[i];
-
-            if (unloadFromAll && ADMIN_VS.equals(vs.getName())) {
-                // Do not unload from __asadmin
-                continue;
-            }
-
-            StandardContext ctxt = (StandardContext) vs.findChild(ctxtRoot);
-            if (ctxt != null) {
-                if (unloadFromAll
-                        || targets.contains(vs.getName())
-                        || isAliasMatched(targets, vs)) {
-                    vs.removeChild(ctxt);
-                    try {
-                        ctxt.destroy();
-                    } catch (Exception ex) {
-                        logger.log(Level.WARNING,
-                                "Unable to destroy web module "
-                                        + ctxt, ex);
-                    }
-                    logger.info("Undeployed web module " + ctxt
-                            + " from virtual server "
-                            + vs.getName());
-                } else {
-                    isLeftOver = true;
-                }
-            }
-        }
-
-        if ((unloadFromAll || !isLeftOver)
-                && (getClassLoader() instanceof WebappClassLoader)) {
+        if (getClassLoader() instanceof WebappClassLoader) {
             try {
                 ((WebappClassLoader) getClassLoader()).stop();
             } catch (Exception e) {
@@ -160,6 +121,27 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return true;
     }
 
+
+    /**
+     * Suspends this application on all virtual servers.
+     */
+    public boolean suspend() {
+        return container.suspendWebModule(
+            wmInfo.getDescriptor().getContextRoot(), "null", null);
+    }
+
+
+    /**
+     * Resumes this application on all virtual servers.
+     */
+    public boolean resume() {
+        // WebContainer.loadWebModule(), which is called by start(), 
+        // already checks if the web module has been suspended, and if so,
+        // just resumes it and returns
+        return start();
+    }
+
+
     /**
      * Returns the class loader associated with this application
      *
@@ -169,9 +151,11 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return wmInfo.getAppClassLoader();
     }
 
+
     WebContainer getContainer() {
         return container;
     }
+
 
     /**
      * Returns the deployment descriptor associated with this application
@@ -181,70 +165,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     public WebBundleDescriptor getDescriptor() {
         return wmInfo.getDescriptor();
     }
-
-    /**
-     * Suspends this application on all virtual servers.
-     */
-    public boolean suspend() {
-        return suspend(null);
-    }
-
-    /**
-     * Suspends this application on the specified virtual servers.
-     *
-     * @param vsList the virtual servers on which to suspend this application
-     */
-    public boolean suspend(List<String> vsList) {
-        return container.suspendWebModule(
-            wmInfo.getDescriptor().getContextRoot(), "null", vsList);
-    }
-
-    /**
-     * Resumes this application on all virtual servers.
-     */
-    public boolean resume() {
-        return resume(null);
-    }
-
-    /**
-     * Resumes this application on the specified virtual servers.
-     *
-     * @param vsList the virtual servers on which to suspend this application
-     */
-    public boolean resume(List<String> vsList) {
-        // WebContainer.loadWebModule(), which is called by start(), 
-        // already checks if the web module has been suspended, and if so,
-        // just resumes it and returns
-        return start(vsList);
-    }
-
-    /*
-     * @return true if the list of target virtual server names matches an
-     * alias name of the given virtual server, and false otherwise
-     */
-    private boolean isAliasMatched(List targets, StandardHost vs){
-
-        String[] aliasNames = vs.getAliases();
-        for (int i=0; i<aliasNames.length; i++) {
-            if (targets.contains(aliasNames[i]) ){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Deploy on aliases as well as host.
-     */
-    private boolean verifyAlias(List vsList,VirtualServer vs){
-        for(int i=0; i < vs.getAliases().length; i++){
-            if (vsList.contains(vs.getAliases()[i]) ){
-                return true;
-            }
-        }
-        return false;
-    }    
 
 
     private void applyApplicationConfig(StartupContext startupContext) {

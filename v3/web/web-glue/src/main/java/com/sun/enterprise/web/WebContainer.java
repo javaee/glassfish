@@ -2419,7 +2419,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         Engine[] engines = _embedded.getEngines();
         List hostList = StringUtils.parseStringList(virtualServers, " ,");
-        boolean unloadToAll = (hostList == null) || (hostList.size() == 0);
+        boolean unloadFromAll = (hostList == null) || (hostList.size() == 0);
         boolean hasBeenUndeployed = false;
         Container[] hostArray = null;
         VirtualServer host = null;
@@ -2434,12 +2434,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * Related to Bug: 4904290
                  * Do not unloadload module on ADMIN_VS
                  */
-                if ( unloadToAll && host.getName().equalsIgnoreCase(
+                if ( unloadFromAll && host.getName().equalsIgnoreCase(
                         VirtualServer.ADMIN_VS)){
                     continue;
                 }
 
-                if (unloadToAll
+                if (unloadFromAll
                         || hostList.contains(host.getName())
                         || verifyAlias(hostList,host)){
 
@@ -2545,20 +2545,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    /**
-     * Suspends the web application with the given appName that has been
-     * deployed at the given contextRoot on the given virtual servers.
-     *
-     * @param contextRoot the context root
-     * @param appName the J2EE appname used at deployment time
-     * @param hosts the comma- or space-separated list of virtual servers
-     */
-    public boolean suspendWebModule(String contextRoot,
-                                    String appName,
-                                    String hosts) {
-        return suspendWebModule(contextRoot, appName,
-                                StringUtils.parseStringList(hosts, " ,"));
-    }
 
     /**
      * Suspends the web application with the given appName that has been
@@ -2570,14 +2556,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public boolean suspendWebModule(String contextRoot,
                                     String appName,
-                                    List<String> hosts) {
+                                    String hosts) {
         // tomcat contextRoot starts with "/"
         if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
 
         Engine[] engines = _embedded.getEngines();
-        boolean suspendOnAll = (hosts == null) || (hosts.size() == 0);
+        List hostList = StringUtils.parseStringList(hosts, " ,");
+        boolean suspendOnAll = (hostList == null) || (hostList.size() == 0);
         boolean hasBeenSuspended = false;
         Container[] hostArray = null;
         VirtualServer host = null;
@@ -2598,8 +2585,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
 
                 if (suspendOnAll
-                        || hosts.contains(host.getName())
-                        || verifyAlias(hosts,host)){
+                        || hostList.contains(host.getName())
+                        || verifyAlias(hostList, host)){
 
                     context = (Context) host.findChild(contextRoot);
                     if (context != null) {
