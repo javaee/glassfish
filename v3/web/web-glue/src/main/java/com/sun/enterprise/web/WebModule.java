@@ -385,9 +385,6 @@ public class WebModule extends PwcWebModule {
         // load the specified listener and valve classes.
         configureCatalinaProperties();
 
-        // Register monitoring mbeans, which delegate to the Tomcat mbeans
-        webContainer.enableMonitoring(this, vsId);
-
         webModuleStartedEvent();
 
         hasStarted = true;
@@ -402,7 +399,6 @@ public class WebModule extends PwcWebModule {
         // successfully started, because if stop() is called during an
         // aborted start(), no monitoring mbeans will have been registered
         if (hasStarted) {
-            webContainer.disableMonitoring(this, vsId);
             webModuleStoppedEvent();
             hasStarted = false;
         }

@@ -648,8 +648,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
 
         }
-        enableAllWSEndpoints();    
-         */
+        */
 
         ConstructorWomb<HttpServiceConfigListener> womb = 
                 new ConstructorWomb<HttpServiceConfigListener>(
@@ -1912,7 +1911,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 unloadWebModule(wmContextPath,
                         ctx.getJ2EEApplication(),
                         vs.getName(),
-                        null,
                         true);
             } else if (!ctx.getAvailable()){
                 /*
@@ -2210,7 +2208,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             result = new Result(ctx);
         }
 
-        enableWSMonitoring(wbd, j2eeServer);
         //return exception;
         return result;
 
@@ -2384,9 +2381,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public void unloadWebModule(String contextRoot,
             String appName,
-            String virtualServers,
-            WebBundleDescriptor wbd) {
-        unloadWebModule(contextRoot, appName, virtualServers, wbd, false);
+            String virtualServers) {
+        unloadWebModule(contextRoot, appName, virtualServers, false);
     }
 
     /**
@@ -2404,9 +2400,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void unloadWebModule(String contextRoot,
             String appName,
             String virtualServers,
-            WebBundleDescriptor wbd,
             boolean dummy) {
-        disableWSMonitoring(wbd);
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("WebContainer.unloadWebModule(): contextRoot: "
@@ -2802,163 +2796,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    /**
-     * Enables monitoring of web service endpoints in for all webmodules.
-     */
-    private void enableAllWSEndpoints() {
-        for (J2eeApplication appBean : domain.getApplications().getModules(J2eeApplication.class)) {
-            //Begin EE: 4927099 - load only associated applications
-            if ( isReferenced(appBean.getName()) ) {
-                enableWSMonitoring(appBean.getName());
-            }
-            //End EE: 4927099 - load only associated applications
-        }
-    }
-
-    /**
-     * Disables monitoring of web service endpoints in a webmodule.
-     *
-     * @param wbd WebBundleDescriptor of the web module
-     *
-     * @return boolean true, if web service mbeans were unloaded successfully
-     */
-    private boolean disableWSMonitoring(WebBundleDescriptor wbd)    {
-
-        boolean result = true;
-/*
-            try {
-            Switch.getSwitch().getManagementObjectManager().
-                deleteWSEndpointMBeans(wbd, instance.getName());
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
- */
-        return true;
-    }
-
-    /**
-     * Enables monitoring of web service endpoints in a webmodule.
-     *
-     * @param id ID of the application
-     *
-     * @return boolean true, if web service mbeans were intialized successfully
-     */
-    private boolean enableWSMonitoring(String id)    {
-
-        boolean result = true;
-/*
-       ApplicationRegistry registry = ApplicationRegistry.getInstance();
-            ClassLoader appLoader = registry.getClassLoaderForApplication(id);
-            if (appLoader != null) {
-                Application appDesc = registry.getApplication(appLoader);
-
-                // Check to see if this app had deployed successfully (4663247)
-                if(appDesc == null){
-                    Object[] params = { id };
-                    _logger.log(Level.SEVERE, "webcontainer.notLoaded",
-                                params);
-                } else {
-                    //end Hercules: add
-                    String j2eeApplication = appDesc.getRegistrationName();
-                    Set wbds = appDesc.getWebBundleDescriptors();
-                    WebBundleDescriptor wbd = null;
-                    for (Iterator itr = wbds.iterator(); itr.hasNext(); ) {
-                        wbd = (WebBundleDescriptor) itr.next();
-
-                        try {
-                            Switch.getSwitch().getManagementObjectManager().
-                            createWSEndpointMBeans(wbd, instance.getName());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-                }
-            }
- */
-        return true;
-    }
-
-    void enableWSMonitoring(WebBundleDescriptor wbd, String serverName) {
-/*
-        try {
-             Switch.getSwitch().getManagementObjectManager().
-             createWSEndpointMBeans(wbd, serverName);
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
- *
- */
-    }
-
-    /**
-     * Enables monitoring on the Servlets in a webmodule.
-     *
-     * @param ctx Web module to be monitored
-     * @param vsId  The engine that is currently loading the webmodule
-     */
-    void enableMonitoring(WebModule ctx, String vsId) {
-        /*  XXX not yet
-        if (!ctx.hasWebXml()) {
-            // Ad-hoc module
-            return;
-        }
-
-        String j2eeServer = _serverContext.getInstanceName();
-
-        // Register web module stats
-        registerWebModuleStats(ctx.getJ2EEApplication(), j2eeServer, vsId,
-                ctx, null);
-
-        // Register stats for each of the web module's servlets
-        Container[] children = ctx.findChildren();
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                registerServletStats(ctx.getJ2EEApplication(), j2eeServer,
-                        ctx.getModuleName(), vsId,
-                        ctx.getEncodedPath(),
-                        children[i].getName(), null);
-            }
-        }
-         */
-    }
-
-
-    /**
-     * Disables monitoring on the given web module.
-     */
-    protected void disableMonitoring(WebModule ctx, String vsId) {
-        /*
-        if (!ctx.hasWebXml()) {
-            // Ad-hoc module
-            return;
-        }
-
-        /*
-         * Standalone webmodules are loaded with the application name set to
-         * the string "null"
-         *
-        String appName = ctx.getJ2EEApplication();
-        if ("null".equalsIgnoreCase(appName)) {
-            appName = null;
-        }
-
-        // Unregister stats for each of the web module's servlets
-        Container[] children = ctx.findChildren();
-        if (children != null) {
-            for (int k = 0; k < children.length; k++) {
-                unregisterServletStats(appName, ctx.getModuleName(),
-                        ctx.getEncodedPath(), vsId,
-                        children[k].getName());
-            }
-        }
-        // Unregister web module stats
-        unregisterWebModuleStats(appName, ctx.getModuleName(),
-                ctx.getEncodedPath(), vsId);
-         */
-
-    }
 
     /*
      * Includes, from TLD scanning, any user specified JARs on the classpath
@@ -3459,7 +3296,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 && Constants.DEFAULT_WEB_MODULE_NAME.equals(
                 ctx.getModuleName())) {
             unloadWebModule("", ctx.getJ2EEApplication(),
-                    vs.getName(), null, true);
+                    vs.getName(), true);
         }
     }
 
@@ -3540,8 +3377,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 for (int j=0; j < webModules.length; j++){
                     unloadWebModule(webModules[j].getName(),
                                     webModules[j].getName(), 
-                                    virtualServer.getID(),
-                                    null);
+                                    virtualServer.getID());
                 }
                 try {                
                     virtualServer.destroy();
