@@ -115,18 +115,9 @@ public class ContainerMapper {
         }
 
         for (String host : vs) {
-            mapper.addContext(host, slash(contextRoot),
+            mapper.addContext(host, contextRoot,
                     new ContextRootInfo(adapter, container, contextProtocolFilters), new String[0], null);
         }
-    }
-
-    
-    private String slash(String path) {
-        if (!path.startsWith(ROOT)) {
-            return ROOT + path;
-        }
-
-        return path;
     }
 
     
@@ -134,7 +125,7 @@ public class ContainerMapper {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER (" + this + ") UNREGISTER contextRoot: " + contextRoot);
         }
-        mapper.removeContext(defaultHostName,slash(contextRoot));
+        mapper.removeContext(defaultHostName, contextRoot);
     }
 
     

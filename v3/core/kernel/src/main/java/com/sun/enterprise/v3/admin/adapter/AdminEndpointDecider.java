@@ -94,7 +94,7 @@ public final class AdminEndpointDecider {
         boolean dedicatedAdmin = false;
         for (HttpListener ls : lss) {
             if(ADMIN_LISTENER_ID.equals(ls.getId())) {
-                guiContextRoot = "/";  //at the root context for separate admin-listener
+                guiContextRoot = "";  //at the root context for separate admin-listener
                 String dvs     = ls.getDefaultVirtualServer();
                 guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
                 asadminHosts   = guiHosts;  //same for now

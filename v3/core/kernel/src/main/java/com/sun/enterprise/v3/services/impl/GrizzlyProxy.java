@@ -187,9 +187,6 @@ public class GrizzlyProxy implements NetworkProxy {
                                  Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
-        if (!contextRoot.startsWith("/")) {
-            contextRoot = "/" + contextRoot;
-        }
         // THis is a hack, but we don't want to add virtual server support
         // for the Web Container as it already supports it.
         if (!nvVsMapper.contains(endpointAdapter.getClass().getName())) {
@@ -208,15 +205,6 @@ public class GrizzlyProxy implements NetworkProxy {
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
         grizzlyListener.getEmbeddedHttp().unregisterEndpoint(contextRoot, app);
         vsMapper.unregisterEndpoint(contextRoot, app);
-    }
-
-
-    /**
-     * Returns the context root for this adapter.
-     * @return the context root
-     */
-    public String getContextRoot() {
-        return "/";
     }
 
 
