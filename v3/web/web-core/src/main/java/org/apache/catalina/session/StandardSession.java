@@ -659,7 +659,6 @@ public class StandardSession
         */
         // START SJSAS 6329289
         if (hasExpired()) {
-            context.sessionExpiredEvent(this);
             expire(true);
         }
         // END SJSAS 6329289
@@ -846,6 +845,7 @@ public class StandardSession
 
             // Notify interested session event listeners
             if (notify) {
+                context.sessionExpiredEvent(this);
                 fireSessionEvent(Session.SESSION_DESTROYED_EVENT, null);
             }
 
