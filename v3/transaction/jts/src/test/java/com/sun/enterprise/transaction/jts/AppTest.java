@@ -235,7 +235,7 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
 
             System.out.println("**Registering Synchronization ....");
-            TestSync s = new TestSync();
+            TestSync s = new TestSync(false);
             tx.registerSynchronization(s);
 
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
@@ -292,7 +292,7 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
 
             System.out.println("**Registering Synchronization ....");
-            TestSync s = new TestSync();
+            TestSync s = new TestSync(false);
             tx.registerSynchronization(s);
 
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
@@ -359,6 +359,76 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testTxCommitFailBC() {
+        System.out.println("**Testing TX commit with exception in beforeCompletion ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            Transaction tx = t.getTransaction();
+
+            System.out.println("**Registering Synchronization ....");
+            TestSync s = new TestSync(true);
+            tx.registerSynchronization(s);
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**TX Status after begin: " + status);
+
+            assertEquals (status, "Active");
+
+            System.out.println("**Calling TX commit ===>");
+            try {
+                tx.commit();
+                assert (false);
+            } catch (RollbackException ex) {
+                System.out.println("**Caught expected exception...");
+            }
+            System.out.println("**Status after commit: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
+                    + " <===");
+            assertTrue ("beforeCompletion was not called", s.called_beforeCompletion);
+            assertTrue ("afterCompletion was not called", s.called_afterCompletion);
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testTxCommitRollbackBC() {
+        System.out.println("**Testing TX commit with rollback in beforeCompletion ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            Transaction tx = t.getTransaction();
+
+            System.out.println("**Registering Synchronization ....");
+            TestSync s = new TestSync(t);
+            tx.registerSynchronization(s);
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**TX Status after begin: " + status);
+
+            assertEquals (status, "Active");
+
+            System.out.println("**Calling TX commit ===>");
+            try {
+                tx.commit();
+                assert (false);
+            } catch (RollbackException ex) {
+                System.out.println("**Caught expected exception...");
+            }
+            System.out.println("**Status after commit: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
+                    + " <===");
+            assertTrue ("beforeCompletion was not called", s.called_beforeCompletion);
+            assertTrue ("afterCompletion was not called", s.called_afterCompletion);
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     private UserTransaction createUtx() throws javax.naming.NamingException {
         UserTransaction utx = new UserTransactionImpl();
         InvocationManager im = new org.glassfish.api.invocation.InvocationManagerImpl();
@@ -369,12 +439,36 @@ public class AppTest extends TestCase {
     static class TestSync implements Synchronization {
 
         // Used to validate the calls
+        private boolean fail = false;
+        private TransactionManager t = null;
+
         protected boolean called_beforeCompletion = false;
         protected boolean called_afterCompletion = false;
+
+        public TestSync(boolean fail) {
+            this.fail = fail;
+        }
+
+        public TestSync(TransactionManager t) {
+            fail = true;
+            this.t = t;
+        }
 
         public void beforeCompletion() {
             System.out.println("**Called beforeCompletion  **");
             called_beforeCompletion = true;
+            if (fail) {
+                System.out.println("**Failing in beforeCompletion  **");
+                if (t != null) {
+                    try {
+                        t.setRollbackOnly();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw new RuntimeException("");
+                }
+            }
         }
 
         public void afterCompletion(int status) {
