@@ -91,7 +91,7 @@
       <dependency>
             <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-            <version>1.0.7-14.1084</version>
+            <version>1.0.7-14.1120</version>
      </dependency> 
     </dependencies>
 
