@@ -191,8 +191,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		} else if (state == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED) {
 // FIXME: Need to check for updated admingui.war
 		    handleInstalledButNotLoadedState(req, res);
-		}
-		if (state==AdapterState.APPLICATION_LOADED) {
+		} else if (state==AdapterState.APPLICATION_LOADED) {
 		    handleLoadedState();
 		}
 	    }
@@ -389,19 +388,25 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	byte[] bytes;
 	try {
 	    String status = "";
-	    synchronized(progress) {
-		status = progress.getMessage();
-		if (progress.isDone()) {
-		    if (progress.getAdapterState() == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED) {
-			//thread is done, and application was installed
-			this.state = AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED;
-                        status = "" + this.state;
-		    } else {
-			this.state = AdapterState.APPLICATION_NOT_INSTALLED;
-                        status = "" + this.state;
-		    }
-		}
-	    }
+            if (this.state == AdapterState.APPLICATION_LOADED) {
+                //just to make the browser send a final request so
+                // that web-container directly handles it
+                status = "Almost done ..."; //I18N
+            } else {
+                synchronized(progress) {
+                    status = progress.getMessage();
+                    if (progress.isDone()) {
+                        if (progress.getAdapterState() == AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED) {
+                            //thread is done, and application was installed
+                            this.state = AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED;
+                            status = "" + this.state;
+                        } else {
+                            this.state = AdapterState.APPLICATION_NOT_INSTALLED;
+                            status = "" + this.state;
+                        }
+                    }
+                }
+            }
 	    bytes = statusHtml.replace(STATUS_TOKEN, status).getBytes();
 	    res.setContentLength(bytes.length);
 	    ob.write(bytes, 0, bytes.length);
@@ -426,6 +431,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
         System.out.println("processApplication returned, "  + Thread.currentThread().getName());
 	state=AdapterState.APPLICATION_LOADED;
+        sendStatusPage(res);
     }
 
     private void handleLoadedState() {
