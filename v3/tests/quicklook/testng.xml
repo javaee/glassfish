@@ -66,12 +66,12 @@
        <class name="test.web.jsfinjection.JSFInjectionTestNG" />
     </classes>
   </test>
-  <test name="jdbcusertx">
+  <test name="jdbc_user_tx">
     <classes>
        <class name="test.jdbc.jdbcusertx.JdbcUserTxTestNG" />
     </classes>
   </test>
-  <test name="jpainjectemf">
+  <test name="jpa_inject_emf">
     <classes>
        <class name="test.jpa.jpainjectemf.JpaInjectEMFTestNG" />
     </classes>
