@@ -89,6 +89,9 @@ public class HttpServiceConfigListener implements ConfigListener {
     
     @Inject(name="accessLoggingEnabled")
     public Property accessLoggingEnabledProperty;
+        
+    @Inject(name="docroot")
+    public Property docroot;
     
     @Inject(optional=true)
     public RequestProcessing requestProcessing;

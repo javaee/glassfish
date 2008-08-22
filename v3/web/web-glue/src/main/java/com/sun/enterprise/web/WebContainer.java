@@ -3693,6 +3693,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                          httpService,
                                          null);
                 }
+                updateHost(virtualServer, httpService);
             }
         }
 
