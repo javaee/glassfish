@@ -66,7 +66,7 @@ import com.sun.appserv.management.config.SSLConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.MiscUtil;
+import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.AMXUtil;
 
 import com.sun.enterprise.security.ssl.SSLUtils; 

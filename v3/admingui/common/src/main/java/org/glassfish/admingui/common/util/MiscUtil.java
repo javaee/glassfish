@@ -33,8 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.admingui.util;
+package org.glassfish.admingui.common.util;
 
 import javax.faces.model.SelectItem;
 import java.lang.reflect.Array;
@@ -43,76 +42,74 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.swing.text.html.Option;
 
-
 /**
  *
  * @author anilam
  */
 public class MiscUtil {
 
-        
-    public static SelectItem[] getOptions(String[] values){
-        if (values == null){
-           SelectItem[] options = (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, 0);
-           return options;
+    public static SelectItem[] getOptions(String[] values) {
+        if (values == null) {
+            SelectItem[] options = (SelectItem[]) Array.newInstance(SUN_OPTION_CLASS, 0);
+            return options;
         }
         SelectItem[] options =
-                (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, values.length);
-        for (int i =0; i < values.length; i++) {
+                (SelectItem[]) Array.newInstance(SUN_OPTION_CLASS, values.length);
+        for (int i = 0; i < values.length; i++) {
             SelectItem option = getSunOption(values[i], values[i]);
             options[i] = option;
         }
         return options;
     }
-   
-     public static Option[] getOptionsArray(String[] values){
+
+    public static Option[] getOptionsArray(String[] values) {
         Option[] options =
-                (Option []) Array.newInstance(SUN_OPTION_CLASS, values.length);
-        for (int i =0; i < values.length; i++) {
+                (Option[]) Array.newInstance(SUN_OPTION_CLASS, values.length);
+        for (int i = 0; i < values.length; i++) {
             Option option = getOption(values[i], values[i]);
             options[i] = option;
         }
         return options;
     }
-     
+
     public static Option getOption(String value, String label) {
-	try {
-	    return (Option) SUN_OPTION_CONSTRUCTOR.newInstance(value, label);
-	} catch (Exception ex) {
-	    return null;
-	}
-    } 
-     
-    public static SelectItem[] getOptions(String[] values, String[] labels){
+        try {
+            return (Option) SUN_OPTION_CONSTRUCTOR.newInstance(value, label);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static SelectItem[] getOptions(String[] values, String[] labels) {
         SelectItem[] options =
-                (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, values.length);
-        for (int i =0; i < values.length; i++) {
+                (SelectItem[]) Array.newInstance(SUN_OPTION_CLASS, values.length);
+        for (int i = 0; i < values.length; i++) {
             SelectItem option = getSunOption(values[i], labels[i]);
             options[i] = option;
         }
         return options;
     }
-    
-    public static SelectItem[] getModOptions(String[] values){
-        int size = (values == null)? 1 : values.length +1;
+
+    public static SelectItem[] getModOptions(String[] values) {
+        int size = (values == null) ? 1 : values.length + 1;
         SelectItem[] options =
-	    (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, size);
+                (SelectItem[]) Array.newInstance(SUN_OPTION_CLASS, size);
         options[0] = getSunOption("", "");
-	for (int i = 0; i < values.length; i++) {
-	    SelectItem option = getSunOption(values[i], values[i]);
-	    options[i+1] = option;
-	}
+        for (int i = 0; i < values.length; i++) {
+            SelectItem option = getSunOption(values[i], values[i]);
+            options[i + 1] = option;
+        }
         return options;
     }
-   
+
     public static SelectItem getSunOption(String value, String label) {
-	try {
-	    return (SelectItem) SUN_OPTION_CONSTRUCTOR.newInstance(value, label);
-	} catch (Exception ex) {
-	    return null;
-	}
+        try {
+            return (SelectItem) SUN_OPTION_CONSTRUCTOR.newInstance(value, label);
+        } catch (Exception ex) {
+            return null;
+        }
     }
-    
+
     /**
      * <p>This utility method can be used to create a ValueExpression and set its value.
      * An example usage might look like this:</p>
@@ -126,26 +123,23 @@ public class MiscUtil {
     public static ValueExpression setValueExpression(String expression, Object value) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ValueExpression ve = facesContext.getApplication().getExpressionFactory().
-            createValueExpression(facesContext.getELContext(), expression, Object.class);
+                createValueExpression(facesContext.getELContext(), expression, Object.class);
         ve.setValue(facesContext.getELContext(), value);
-        
+
         return ve;
     }
-
-    private static Class	     SUN_OPTION_CLASS = null;
+    private static Class SUN_OPTION_CLASS = null;
     private static Constructor SUN_OPTION_CONSTRUCTOR = null;
+    
 
     static {
-	try {
-	    SUN_OPTION_CLASS =
-		Class.forName("com.sun.webui.jsf.model.Option");
-	    SUN_OPTION_CONSTRUCTOR = SUN_OPTION_CLASS.
-		getConstructor(new Class[] {Object.class, String.class});
-	} catch (Exception ex) {
-	    // Ignore exception here, NPE will be thrown when attempting to
-	    // use SUN_OPTION_CONSTRUCTOR.
-	}
+        try {
+            // TODO: Class.forName can cause problems under OSGi
+            SUN_OPTION_CLASS = Class.forName("com.sun.webui.jsf.model.Option");
+            SUN_OPTION_CONSTRUCTOR = SUN_OPTION_CLASS.getConstructor(new Class[]{Object.class, String.class});
+        } catch (Exception ex) {
+            // Ignore exception here, NPE will be thrown when attempting to
+            // use SUN_OPTION_CONSTRUCTOR.
+        }
     }
-        
-
 }

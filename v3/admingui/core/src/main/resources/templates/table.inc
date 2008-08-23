@@ -1,7 +1,3 @@
-<!initPage
-    setAttribute(key="tableInUse" value="#{true}");
-    getTableList(Properties="#{amxConfig.propertyConfigMap}", TableList=>$attribute{tableList});
-/>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.common.AdditionalProperties}" 
             deselectMultipleButton="$boolean{true}"
@@ -10,7 +6,7 @@
             selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
     <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
-/>
+    />
 <!-- Actions (Top) -->
     <!facet actionsTop>
     <sun:panelGroup id="topActionsGroup1">
