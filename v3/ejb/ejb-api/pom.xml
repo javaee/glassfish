@@ -45,9 +45,8 @@
     </parent>
 
     <groupId>javax.ejb</groupId>
-    <artifactId>ejb-alpha</artifactId>
+    <artifactId>ejb-api-3.1-alpha</artifactId>
     <packaging>jar</packaging>
-    <version>3.1-SNAPSHOT</version>
     <properties>
         <extension.name>javax.ejb</extension.name>
         <spec.version>3.1</spec.version>
