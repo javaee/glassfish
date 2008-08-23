@@ -281,7 +281,7 @@ private class HK2ServiceTrackerCustomizer implements ServiceTrackerCustomizer {
                 String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
                 habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
                 logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
-                        "addingService", "registerring service = {0}, contract = {1}, name = {2}", new Object[]{
+                        "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
                         object, contractName, name});
             }
         } else {
