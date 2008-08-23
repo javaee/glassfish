@@ -45,6 +45,7 @@
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.manageUsers.NewPageTitle}">
             <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
@@ -109,7 +110,6 @@
                     </sun:propertySheet>    
                         <sun:hidden id="helpKey" value="$resource{help.manageUserNew}" />
             </sun:form>
-        </sun:body>
 
 
 <f:verbatim>
@@ -127,5 +127,6 @@
 </script>
 </f:verbatim>
 
+        </sun:body>
     </sun:html>
 </sun:page>

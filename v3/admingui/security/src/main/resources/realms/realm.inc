@@ -56,14 +56,13 @@
 </event>
 
 <sun:html id="html">
-    <sun:head id="propertyhead" title="#{pageTitle}">
+    <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
         <sun:script url="/resource/js/selectElements.js" />
         <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
 
     <sun:body id="body" 
-        onLoad="initClassname('#{myOption}'); 
-            synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        onLoad="initClassname('#{myOption}'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="form1">
 
 #include "/shared/treeBreadcrumbs.inc"
@@ -100,9 +99,6 @@
     "<br/><br/>
 
     </sun:body>
-        
 #include "/security/realms/realmjs.inc"
 #include "/shared/changeButtonsJS.inc"
-
 </sun:html>
- 
