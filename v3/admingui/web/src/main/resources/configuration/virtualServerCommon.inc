@@ -38,7 +38,7 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="resource/js/adminjsf.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
