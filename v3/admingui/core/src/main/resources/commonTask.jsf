@@ -77,13 +77,31 @@
                     
 
                     <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Deployment}">
-			<sun:commonTask
-			    text="$resource{i18n.commonTasks.task.deployWAR}"
-			    toolTip="$resource{i18n.commonTasks.task.deployWAR.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html" 
-                            onClick="admingui.nav.selectTreeNodeById('form:tree:applications:webApplications'); parent.location='#{facesContext.externalContext.requestContextPath}/applications/upload.jsf?appType=webApp&cancelPage=homePage.jsf'; return false;">
-			</sun:commonTask>
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$attribute{deploymentTasksId});
+                        />
 		    </sun:commonTasksGroup>
+                    <event>
+                        <!afterCreate
+                            getUIComponent(clientId="#{deploymentTasksId}"  component=>$attribute{component})
+                            includeIntegrations(type="org.glassfish.admingui:commonTaskDeployment" root="#{component}");
+                        />
+                    </event>
+                    
+                    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Monitoring}">
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$attribute{monitoringTaskId});
+                        />
+		    </sun:commonTasksGroup>
+                    <event>
+                        <!afterCreate
+                            getUIComponent(clientId="#{monitoringTaskId}"  component=>$attribute{component})
+                            includeIntegrations(type="org.glassfish.admingui:commonTaskMonitoring" root="#{component}");
+                        />
+                    </event>
+                    
+                    
+                    
 #include "/commonTaskDoc.inc"                    
 		</sun:commonTasksSection>
                  <event>

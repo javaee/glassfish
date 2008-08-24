@@ -47,8 +47,9 @@
             setPageSessionAttribute(key="helpid" value="$resource{help.uploadCluster}");
         }
         setPageSessionAttribute(key="chooseType" value="#{true}");
-        getRequestValue(key="listPageLink" value=>$page{listPageLink});
-        getRequestValue(key="cancelPage" default="$pageSession{listPageLink}" value=>$page{cancelPage});
+        setPageSessionAttribute(key="listPageLink" value="/web/webApp/webApplications.jsf");
+        getRequestValue(key="cancelPage" default="#{listPageLink}" value=>$page{cancelPage});
+        println("!!!!! cancel=#{cancelPage}  listPage = #{listPageLink}");
         getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="target" value=>$page{target});
         setPageSessionAttribute(key="enabled" value="#{true}");

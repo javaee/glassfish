@@ -76,7 +76,6 @@
                     nextPage=>$attribute{nextPage}
                     rarProps=>$session{rarProps}
             );
-           #redirect(page="../$attribute{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
            redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />
 </sun:button>
@@ -84,6 +83,6 @@
 
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
     <!command
-        redirect(page="$pageSession{cancelPage}?name=$pageSession{target}");
+        redirect(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
     />
 </sun:button>
