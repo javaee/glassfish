@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/redeploy.jsf -->
+<!-- webApp/redeploy.jsf -->
 <sun:page id="page1" >
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
@@ -69,12 +69,12 @@
                                 }
                                 
                                 redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" );
-                                redirect(page="../$pageSession{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                                redirect(page="$pageSession{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                             />
                     </sun:button>
                     <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
                         <!command
-                            redirect(page="../$pageSession{nextPage}");
+                            redirect(page="$pageSession{nextPage}");
                         />
                     </sun:button>
                 </sun:panelGroup>

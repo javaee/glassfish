@@ -34,7 +34,7 @@
  holder.
 -->
 
-<!-- applications/edit.inc -->
+<!-- webApp/edit.inc -->
 <!-- used in enterpriseApplicationsEdit.jsf  ejbModulesEdit.jsf  webApplicationsEdit.jsf -->
 
 <!-- Page Title -->

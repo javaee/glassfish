@@ -33,46 +33,39 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/webApplications.jsf -->
-
+<!-- webApp/webDDEdit.jsf -->
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
-        setResourceBundle(key="help" bundle="core.Helplinks");
-        getDeployedWebInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
-        setPageSessionAttribute(key="editLink" value="/applications/webApplicationsEdit.jsf");
-        setPageSessionAttribute(key="targetLink" value="/applications/webApplicationTargets.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/applications/webApplications.jsf");
-        setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
-        setPageSessionAttribute(key="appType" value="webApp");
-        setPageSessionAttribute(key="viewKeyValue" value="webSummaryView");
-        
-   #include "/shared/viewSummaryDetail.inc"
+        getRequestValue(key="appName" value=>$page{name});
+        getRequestValue(key="descriptorName" value=>$page{descriptorName});
+        getDeploymentDescriptor(appName="$pageSession{name}", descriptorName="$pageSession{descriptorName}", 
+            descriptorText=>$attribute{descriptorText});
     />
-#include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webAplications.title}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:applications:webApplications'); admingui.nav.refreshTree('form:tree:webServices');;
-        synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
-            <sun:form id="propertyForm">
-<f:verbatim>
-    <script type="text/javascript">
-        admingui.nav.selectTreeNodeById('form:tree:applications:webApplications');
-    </script>
-</f:verbatim>
-#include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
-                <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n.webAplications.title}" helpText="$resource{i18n.webAplications.titleHelp}"/>
-                 "<br />
-#include "deployTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApplications}" />
-            </sun:form>
+        <sun:head id="propertyhead" title="$resource{i18n.webApp.viewDDPageTitle}"/>
+        <sun:body id="body3">
+		<!-- Page Title -->
+			<sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
+    			<!-- Buttons  -->                    
+    			<!facet pageButtonsTop>
+    			<sun:panelGroup id="topButtons">
+        			<sun:button id="closeButton" text="$resource{i18n.button.Close}" 
+                                    onclick="self.close()" primary="#{true}">  
+          			</sun:button>
+    			</sun:panelGroup>
+    			</facet>
+                        <!facet pageButtonsBottom>
+    			<sun:panelGroup id="bottomButtons">
+        			<sun:button id="closeButton2" text="$resource{i18n.button.Close}" 
+                                    onclick="self.close()" primary="#{true}">  
+          			</sun:button>
+    			</sun:panelGroup>
+    			</facet>
+			"<pre>
+            	<sun:staticText id="descriptorText" text="#{descriptorText}" escape="#{true}" style="font-size: large;"/>
+			"</pre>
+			</sun:title>
         </sun:body>
-#include "/shared/changeButtonsJS.inc"
     </sun:html>
 </sun:page>

@@ -9,6 +9,13 @@
                 content="webContainerNode.jsf" 
         />
         <integration-point 
+                id="web" 
+                type="org.glassfish.admingui:treeNode" 
+                priority="100" 
+                parentId="applications" 
+                content="webAppNode.jsf" 
+        />
+        <integration-point 
                 id="monitor" 
                 type="org.glassfish.admingui:treeNode" 
                 priority="350"

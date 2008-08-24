@@ -33,47 +33,49 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/webApplicationsEdit.jsf -->
+<!-- webApp/descriptorDisplay.jsf -->
 <sun:page id="page1" >
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings");
-    setSessionAttribute(key="appGeneralTabs" value="general");
     setResourceBundle(key="help" bundle="core.Helplinks")
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.editPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.editPageTitleHelp}");
-    setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
-    setPageSessionAttribute(key="hasHa" value="#{true}");
-    setPageSessionAttribute(key="hasContextRoot" value="#{true}");
-    #TODO-V3 omit Libraries
-    setPageSessionAttribute(key="hasLibraries" value="#{false}");
-    setPageSessionAttribute(key="hasThreadPool" value="#{false}");
-    setPageSessionAttribute(key="hasVS" value="#{true}");
-    setPageSessionAttribute(key="hasComponentTable" value="#{true}");
-    setPageSessionAttribute(key="hasActionColumn" value="#{false}");
-    setPageSessionAttribute(key="appType" value="webApp");
-    setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
-    setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-    setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
-    setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
-    if ($session{supportCluster} ){
-    	setPageSessionAttribute(key="hasVS" value="#{false}");
-    }
+    setPageSessionAttribute(key="descriptorPage" value="$attribute{pageName}");
+    setPageSessionAttribute(key="appName" value="$attribute{appName}");
     />
-#include "/shared/restart.inc"    
+#include "/shared/restart.inc"
 <sun:html id="html2">
     <sun:head id="propertyhead" title="#{pageTitle}" >
         <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
-        
-        #include "/shared/treeBreadcrumbs.inc"
-        # TODO-V3 no descriptor or target tab for TP2
-#include "/applications/appGeneralTabs.inc"
-#include "/shared/alertMsg.inc"
-#include "edit.inc"
-        #include "subComponentTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApplicationsEdit}" />
+#include "/shared/treeBreadcrumbs.inc"
+		<!-- Page Title -->
+			<sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
+    			<!-- Buttons  -->                    
+    			<!facet pageButtonsTop>
+    			<sun:panelGroup id="topButtons">
+        			<sun:button id="closeButton" text="$resource{i18n.button.Close}" primary="#{true}">  
+           				<!command
+        					urlencode(value="#{appName}", value=>$pageSession{appName});
+							redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
+          				/>
+          			</sun:button>
+    			</sun:panelGroup>
+    			</facet>
+                        <!facet pageButtonsBottom>
+    			<sun:panelGroup id="bottomButtons">
+        			<sun:button id="closeButton2" text="$resource{i18n.button.Close}" primary="#{true}">  
+           				<!command
+        					urlencode(value="#{appName}", value=>$pageSession{appName});
+							redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
+          				/>
+          			</sun:button>
+    			</sun:panelGroup>
+    			</facet>
+			"<pre>
+            	<sun:staticText id="descriptorText" text="#{descriptor}" escape="#{true}"/>
+			"</pre>
+			</sun:title>
         </sun:form>
     </sun:body>
   </sun:html>

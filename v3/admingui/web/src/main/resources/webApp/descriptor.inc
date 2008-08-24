@@ -33,39 +33,13 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/webDDEdit.jsf -->
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-        getRequestValue(key="appName" value=>$page{name});
-        getRequestValue(key="descriptorName" value=>$page{descriptorName});
-        getDeploymentDescriptor(appName="$pageSession{name}", descriptorName="$pageSession{descriptorName}", 
-            descriptorText=>$attribute{descriptorText});
-    />
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webApp.viewDDPageTitle}"/>
-        <sun:body id="body3">
-		<!-- Page Title -->
-			<sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
-    			<!-- Buttons  -->                    
-    			<!facet pageButtonsTop>
-    			<sun:panelGroup id="topButtons">
-        			<sun:button id="closeButton" text="$resource{i18n.button.Close}" 
-                                    onclick="self.close()" primary="#{true}">  
-          			</sun:button>
-    			</sun:panelGroup>
-    			</facet>
-                        <!facet pageButtonsBottom>
-    			<sun:panelGroup id="bottomButtons">
-        			<sun:button id="closeButton2" text="$resource{i18n.button.Close}" 
-                                    onclick="self.close()" primary="#{true}">  
-          			</sun:button>
-    			</sun:panelGroup>
-    			</facet>
-			"<pre>
-            	<sun:staticText id="descriptorText" text="#{descriptorText}" escape="#{true}" style="font-size: large;"/>
-			"</pre>
-			</sun:title>
-        </sun:body>
-    </sun:html>
-</sun:page>
+
+<!-- webApp/descriptor.inc -->
+<!-- used in enterpriseApplicationsDesc.jsf  ejbModulesDesc.jsf  webApplicationsDesc.jsf connectorModulesDesc.jsf  -->
+#include "appGeneralTabs.inc"
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
+    </sun:title>
+#include "descriptorsTable.inc"
+	
+

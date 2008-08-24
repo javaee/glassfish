@@ -32,7 +32,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/uploadButtons.inc -->
+<!-- webApp/uploadButtons.inc -->
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
             onClick="javascript: 
@@ -77,13 +77,13 @@
                     rarProps=>$session{rarProps}
             );
            #redirect(page="../$attribute{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
-           redirect(page="webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
+           redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />
 </sun:button>
 
 
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
     <!command
-        redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
+        redirect(page="$pageSession{cancelPage}?name=$pageSession{target}");
     />
 </sun:button>

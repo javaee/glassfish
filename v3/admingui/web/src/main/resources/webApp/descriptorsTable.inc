@@ -33,37 +33,30 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/appGeneralTabs.inc -->
-<sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
-    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
-        <!command
-            setSessionAttribute(key="appGeneralTabs" value="general");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{generalPage}?appName=#{name}");
-        />       
-    </sun:tab>
-    <sun:tab id="editDDTab" immediate="$boolean{true}" text="$resource{i18n.webApp.EditDDTab}">
-        <!command
-            setSessionAttribute(key="appGeneralTabs" value="editDDTab");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{editDDPage}?appName=#{name}");
-        />
-    </sun:tab>
-<!--
-    <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
-        <!command
-            setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{descriptorPage}?appName=#{name}");
-        />
-    </sun:tab>
-    <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
-        <!command
-            setSessionAttribute(key="appGeneralTabs" value="targetTab");
-                    urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{targetPage}?appName=#{name}");
-        />
-    </sun:tab>
--->
+<!-- webApp/descriptorsTable.jsf -->
 
-</sun:tabSet>
+<sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}"
+    title="$resource{i18n.deploy.descriptors}">
+
+    <sun:tableRowGroup id="rowGroup1" data={"$attribute{descriptors}"} sourceVar="td">      
+        <sun:tableColumn headerText="$resource{i18n.deploy.ApplicationName}" rowHeader="$boolean{false}" id="col1">
+        	<staticText id="name" value="#{td.value.name}" />
+        </sun:tableColumn>
+        <sun:tableColumn rendered="$pageSession{showSubComponentColumn}"  headerText="$resource{i18n.deploy.subCompName}" rowHeader="$boolean{false}" id="col2">
+        	<staticText id="name" value="#{td.value.moduleName}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.deploy.descriptorFileName}" rowHeader="$boolean{false}" id="col3">
+        	<sun:hyperlink id="link" text="#{td.value.descriptor}"> 
+				<!command
+					descriptorDisplay(filePath="#{td.value.descriptorPath}"
+									  appName="#{name}"
+									  pageName="#{descriptorPage}"
+									  descriptor=>$attribute{descriptor}
+									  appName=>$attribute{appName}
+									  pageName=>$attribute{pageName});	
+					navigate(page="/web/webApp/descriptorDisplay.jsf");
+				/>
+			</sun:hyperlink>
+        </sun:tableColumn>
+    </sun:tableRowGroup>
+</sun:table>    

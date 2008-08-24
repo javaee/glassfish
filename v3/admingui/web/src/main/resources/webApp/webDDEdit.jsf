@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/webDDEdit.jsf -->
+<!-- webApp/webDDEdit.jsf -->
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
@@ -56,7 +56,7 @@
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
-#include "/applications/appGeneralTabs.inc"         
+#include "/web/webApp/appGeneralTabs.inc"         
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitle}" >
@@ -107,7 +107,7 @@
             </sun:propertySheet> 
             "<br />
             "<br />
-#include "/applications/editWebDDTable.inc"
+#include "/web/webApp/editWebDDTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
             </sun:form>
         </sun:body>

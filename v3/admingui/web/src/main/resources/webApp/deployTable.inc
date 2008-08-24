@@ -33,7 +33,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/deployTable.inc -->
+<!-- webApp/deployTable.inc -->
 
 <sun:table id="deployTable" title="#{tableTitle}" sortPanelToggleButton="#{false}" 
        deselectMultipleButton="$boolean{true}"
@@ -50,7 +50,7 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
             <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
-                    <!command redirect(page="upload.jsf?cancelPage=#{listPageLink}&appType=#{appType}"); />
+                    <!command redirect(page="#{request.contextPath}/web/webApp/upload.jsf?cancelPage=#{listPageLink}&appType=#{appType}"); />
             </sun:button>
             <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                     onClick="javascript: return submitAndDisable(this, '$resource{i18n.button.Processing}');">
@@ -157,7 +157,7 @@
                 onClick="var win=window.open('webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
         </!if>        
         <sun:hyperlink id="link2" text="$resource{i18n.deployTable.redeploy}" 
-            url="/applications/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
+            url="#{request.contextPath}/web/webApp/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
         
     </sun:tableColumn>
     

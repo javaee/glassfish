@@ -33,51 +33,32 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- applications/descriptorDisplay.jsf -->
+<!-- webApp/webAppDesc.jsf -->
 <sun:page id="page1" >
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings");
     setResourceBundle(key="help" bundle="core.Helplinks")
-    setPageSessionAttribute(key="descriptorPage" value="$attribute{pageName}");
-    setPageSessionAttribute(key="appName" value="$attribute{appName}");
+    setPageSessionAttribute(key="showSubComponentColumn" value="$boolean{false}");
+    setPageSessionAttribute(key="name" value="$requestParameter{appName}");
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.descriptorPageTitle}");
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.descriptorPageTitleHelp}");
+    setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+    setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
+    setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
+    getDescriptors(appName="$requestParameter{appName}"  descriptors=>$attribute{descriptors});
     />
-#include "/shared/restart.inc"
+#include "/shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead" title="#{pageTitle}" >
         <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
+#include "/shared/alertMsg.inc"
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
-		<!-- Page Title -->
-			<sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
-    			<!-- Buttons  -->                    
-    			<!facet pageButtonsTop>
-    			<sun:panelGroup id="topButtons">
-        			<sun:button id="closeButton" text="$resource{i18n.button.Close}" primary="#{true}">  
-           				<!command
-        					urlencode(value="#{appName}", value=>$pageSession{appName});
-							redirect(page="#{descriptorPage}?appName=#{appName}");
-          				/>
-          			</sun:button>
-    			</sun:panelGroup>
-    			</facet>
-                        <!facet pageButtonsBottom>
-    			<sun:panelGroup id="bottomButtons">
-        			<sun:button id="closeButton2" text="$resource{i18n.button.Close}" primary="#{true}">  
-           				<!command
-        					urlencode(value="#{appName}", value=>$pageSession{appName});
-							redirect(page="#{descriptorPage}?appName=#{appName}");
-          				/>
-          			</sun:button>
-    			</sun:panelGroup>
-    			</facet>
-			"<pre>
-            	<sun:staticText id="descriptorText" text="#{descriptor}" escape="#{true}"/>
-			"</pre>
-			</sun:title>
+#include "descriptor.inc"
+	<sun:hidden id="helpKey" value="$resource{help.webApplicationDesc}" />
         </sun:form>
     </sun:body>
   </sun:html>
 </sun:page>
-
