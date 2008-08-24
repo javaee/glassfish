@@ -184,7 +184,8 @@ public class CommonHandlers {
         Object request = handlerCtx.getFacesContext().getExternalContext().getRequest();
         if (request instanceof javax.servlet.ServletRequest){
             String serverName = ((javax.servlet.ServletRequest)request).getServerName();
-            int serverPort = ((javax.servlet.ServletRequest)request).getServerPort();
+            String serverPortStr = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener").getPort();
+            int serverPort = Integer.parseInt(serverPortStr);
             sessionMap.put("serverName", serverName);
             sessionMap.put("severPort", serverPort);
         }else{
