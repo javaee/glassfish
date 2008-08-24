@@ -37,7 +37,8 @@
 <property name="proxiedProtocols" value="ws/tcp"/>
 </http-listener>
     <http-listener id="http-listener-2" address="0.0.0.0" port="%%%HTTP_SSL_PORT%%%" acceptor-threads="1" security-enabled="true" default-virtual-server="server" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false">
-<ssl cert-nickname="s1as" ssl3-enabled="false"/>
+        <ssl ssl3-enabled="false" cert-nickname="s1as" ssl2-enabled="false" tls-rollback-enabled="true" tls-enabled="true" client-auth-enabled="false">
+        </ssl>
 </http-listener>
     <http-listener id="admin-listener" address="0.0.0.0" port="%%%ADMIN_PORT%%%" acceptor-threads="1" security-enabled="false" default-virtual-server="__asadmin" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false"/>
      <virtual-server id="server" http-listeners="http-listener-1,http-listener-2" hosts="${com.sun.aas.hostName}" state="on" log-file="${com.sun.aas.instanceRoot}/logs/server.log">
