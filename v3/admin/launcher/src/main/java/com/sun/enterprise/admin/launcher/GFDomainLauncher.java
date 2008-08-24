@@ -22,14 +22,12 @@
  */
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import com.sun.enterprise.glassfish.bootstrap.ASMain;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**

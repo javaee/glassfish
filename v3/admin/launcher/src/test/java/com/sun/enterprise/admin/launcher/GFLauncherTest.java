@@ -93,14 +93,14 @@ public class GFLauncherTest {
      * Since we have more than 1 domain in there -- it should fail!
      */
     @Test(expected=GFLauncherException.class)    
-    public void test1() throws GFLauncherException {
+    public void test1() throws GFLauncherException, MiniXmlParserException {
         launcher.launch();
     }
     /**
      * Let's fake-launch domain1  -- which DOES have the jvm logging args
      */
     @Test
-    public void test2() throws GFLauncherException {
+    public void test2() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("domain1");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
@@ -119,7 +119,7 @@ public class GFLauncherTest {
      * Let's fake-launch domain2 -- which does NOT have the jvm logging args
      */
     @Test
-    public void test3() throws GFLauncherException {
+    public void test3() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("domain2");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
@@ -137,7 +137,7 @@ public class GFLauncherTest {
      * it has an XML error in it.
      */
     @Test(expected=GFLauncherException.class)
-    public void test4() throws GFLauncherException {
+    public void test4() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("NoSuchDomain");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
@@ -152,7 +152,7 @@ public class GFLauncherTest {
      * it has an XML error in it.
      */
     @Test(expected=GFLauncherException.class)
-    public void test5() throws GFLauncherException {
+    public void test5() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("baddomain");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();

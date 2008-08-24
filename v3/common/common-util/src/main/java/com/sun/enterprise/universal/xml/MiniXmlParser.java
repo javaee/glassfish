@@ -41,6 +41,10 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author bnevins
  */
 public class MiniXmlParser {
+    
+    private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
+    private static final String DEFAULT_VS_ID       = "server";
+    
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");  // default for a domain
     }
@@ -556,7 +560,7 @@ public class MiniXmlParser {
     
     private void parseHttpService() throws XMLStreamException, EndDocumentException {
         // cursor --> <http-service> in <config>
-        // we are looking for the virtual server: "__asadmin".
+        // we are looking for the virtual server: "DEFAULT_ADMIN_VS_ID".
         // inside it will be a ref. to a listener.  We get the port from the listener.
         // So -- squirrel away a copy of all the listeners and all the virt. servers --
         //then post-process.
@@ -579,7 +583,9 @@ public class MiniXmlParser {
             }
         }
         
-        String[] listenerNames = getListenerNamesForVS("__asadmin", vsAttributes);
+        String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
+        if (listenerNames == null || listenerNames.length == 0) 
+            listenerNames = getListenerNamesForVS(DEFAULT_VS_ID, vsAttributes); //plan B
         if(listenerNames == null || listenerNames.length <= 0) {
             return; // can not find ports
         }

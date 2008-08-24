@@ -40,6 +40,12 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
+import com.sun.enterprise.admin.cli.remote.CommandInvoker;
+import com.sun.enterprise.admin.launcher.GFLauncher;
+import com.sun.enterprise.admin.launcher.GFLauncherException;
+import com.sun.enterprise.admin.launcher.GFLauncherFactory;
+import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
 
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
@@ -48,6 +54,8 @@ import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 
 // jdk imports
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.util.Set;
 
 /**
  *  This is a local command that creates a new domain
@@ -67,6 +75,7 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
      *  on the specification in the xml properties file
      *  @return true if successfull
      */
+    @Override
     public boolean validateOptions() throws CommandValidationException
     {
         return super.validateOptions();
@@ -93,7 +102,9 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
                 //    getLocalizedString("ListOfDomains"));
                 //*end of bug fix*
                 for (int i = 0; i < domainsList.length; i++) {
-                    CLILogger.getInstance().printMessage(domainsList[i]);
+                    String dn = domainsList[i];
+                    String status = getStatus(dn);
+                    CLILogger.getInstance().printMessage("Name: " + dn + " " + status);
                 }
             } else {
                 CLILogger.getInstance().printDetailMessage(
@@ -105,6 +116,35 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
 						     new Object[] {name} ), ex);
         }
     }
-
-
+    // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
+    private String getStatus(String dn) {
+        try {
+            GFLauncher launcher = GFLauncherFactory.getInstance(
+                GFLauncherFactory.ServerType.domain);
+            GFLauncherInfo li = launcher.getInfo();
+            String parent = getOption(DOMAINDIR);
+            if (parent != null)
+                li.setDomainParentDir(parent);            
+            launcher.getInfo().setDomainName(dn);
+            launcher.setup(); //admin ports are not available otherwise
+            Set<Integer> adminPorts = launcher.getInfo().getAdminPorts();
+            boolean status = isServerAlive((adminPorts.toArray(new Integer[0])[0]));
+            if (status) 
+                return "Status: Running";
+            return
+                    "Status: Not Running";
+        } catch(GFLauncherException gf) {
+            return "Status: Unknown";
+        } catch(MiniXmlParserException me) {
+            return "Status: Unknown";
+        }
+    }
+    private boolean isServerAlive(int port) {
+        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND); //version
+        invoker.put(PORT, ""+port);
+        invoker.put(USER, getOption(USER));
+        invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
+        //what about --secure, that's next!
+        return (CLIRemoteCommand.pingDASQuietly(invoker));
+    }    
 }

@@ -60,10 +60,11 @@ public abstract class GFLauncher {
      * 
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
-    public final void launch() throws GFLauncherException {
+    public final synchronized void launch() throws GFLauncherException {
         try {
             startTime = System.currentTimeMillis();
-            setup();
+            if (!setupCalledByClients)
+                setup();
             internalLaunch();
         }
         catch (GFLauncherException gfe) {
@@ -78,6 +79,47 @@ public abstract class GFLauncher {
         }
     }
 
+    public final synchronized void setup() throws GFLauncherException, MiniXmlParserException {
+        ASenvPropertyReader pr;
+        if(isFakeLaunch()) {
+            pr = new ASenvPropertyReader(info.getInstallDir());
+        }
+        else {
+            pr = new ASenvPropertyReader();
+        }
+        
+        asenvProps = pr.getProps();
+        info.setup();
+        setupLogLevels();
+        MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
+        String domainName = parser.getDomainName();
+        if(GFLauncherUtils.ok(domainName)) {
+            info.setDomainName(domainName);
+        }
+        info.setAdminPorts(parser.getAdminPorts());
+        javaConfig = new JavaConfig(parser.getJavaConfig());
+        setupProfilerAndJvmOptions(parser);
+        sysPropsFromXml = parser.getSystemProperties();
+        asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
+        debugOptions = getDebug();
+        logFilename = parser.getLogFilename();
+        
+        // TODO temporary until we define a domain.xml attribute for setting this
+        // I'm pulling this out and putting the options into the default domain.xml
+        // There are problems when you use a non-Sun JVM -- like the JVM won't start!
+        // The user needs to be able to see & delete these args from domain.xml
+        //jvmOptions.addJvmLogging();
+        
+        
+        resolveAllTokens();
+        GFLauncherLogger.addLogFileHandler(logFilename);
+        setJavaExecutable();
+        setClasspath();
+        setCommandLine();
+        logCommandLine();
+        setupCalledByClients = true;
+    }
+    
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     //////     ALL private and package-private below   ////////////////////////
@@ -187,46 +229,6 @@ public abstract class GFLauncher {
     ///////              EVERYTHING BELOW IS PRIVATE                  //////////
     ////////////////////////////////////////////////////////////////////////////
 
-    private void setup() throws GFLauncherException, MiniXmlParserException {
-        ASenvPropertyReader pr;
-        if(isFakeLaunch()) {
-            pr = new ASenvPropertyReader(info.getInstallDir());
-        }
-        else {
-            pr = new ASenvPropertyReader();
-        }
-        
-        asenvProps = pr.getProps();
-        info.setup();
-        setupLogLevels();
-        MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
-        String domainName = parser.getDomainName();
-        if(GFLauncherUtils.ok(domainName)) {
-            info.setDomainName(domainName);
-        }
-        info.setAdminPorts(parser.getAdminPorts());
-        javaConfig = new JavaConfig(parser.getJavaConfig());
-        setupProfilerAndJvmOptions(parser);
-        sysPropsFromXml = parser.getSystemProperties();
-        asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
-        debugOptions = getDebug();
-        logFilename = parser.getLogFilename();
-        
-        // TODO temporary until we define a domain.xml attribute for setting this
-        // I'm pulling this out and putting the options into the default domain.xml
-        // There are problems when you use a non-Sun JVM -- like the JVM won't start!
-        // The user needs to be able to see & delete these args from domain.xml
-        //jvmOptions.addJvmLogging();
-        
-        
-        resolveAllTokens();
-        GFLauncherLogger.addLogFileHandler(logFilename);
-        setJavaExecutable();
-        setClasspath();
-        setCommandLine();
-        logCommandLine();
-    }
-    
     private void setCommandLine() throws GFLauncherException {
         // todo handle stuff in javaConfig like debug...
         commandLine = new ArrayList<String>();
@@ -430,7 +432,7 @@ public abstract class GFLauncher {
     private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
     private static final String NEWLINE = System.getProperty("line.separator");
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
-
+    private boolean setupCalledByClients = false; //handle with care
 }
 
 

@@ -29,6 +29,7 @@ import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.util.*;
 import java.util.logging.*;
 
@@ -55,6 +56,15 @@ public class StartDomainCommand extends AbstractCommand {
             boolean verbose = getBooleanOption("verbose");
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
+            launcher.setup();
+            // CLI calls this method only to ensure that domain.xml parsed
+            // independently of launching. This is a performance optimization.
+            // km@dev.java.net (Aug 2008)
+            if(isServerAlive(info.getAdminPorts())) {
+                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName()});
+                throw new CommandException(msg);
+            }
+            
             launcher.launch();
             
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
@@ -64,6 +74,9 @@ public class StartDomainCommand extends AbstractCommand {
         }
         catch(GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
+        }
+        catch(MiniXmlParserException me) {
+            throw new CommandException(me);
         }
     }
 
@@ -110,12 +123,18 @@ public class StartDomainCommand extends AbstractCommand {
     }
     
     private boolean isServerAlive(int port) {
-        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND); //
+        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND); // version
         invoker.put(PORT, ""+port);
         invoker.put(USER, getOption(USER));
         invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
         //what about --secure, that's next!
-        return (CLIRemoteCommand.pingDAS(invoker));
+        return (CLIRemoteCommand.pingDASQuietly(invoker));
+    }
+    
+    private boolean isServerAlive(Set<Integer> ports) {
+        if (ports == null || ports.size() == 0)
+            return false;
+        return ( isServerAlive(ports.toArray(new Integer[0])[0]) );
     }
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
