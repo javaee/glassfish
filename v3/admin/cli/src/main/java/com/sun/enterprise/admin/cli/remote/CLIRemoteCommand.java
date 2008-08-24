@@ -527,7 +527,7 @@ public class CLIRemoteCommand {
             li = store.read(hostName, hostPort);
         }
         catch (StoreException se) {
-            throw new CommandException(se.getMessage());
+            logger.printDebugMessage("Login info could not be read from ~/.asadminpass file");
         }
         initializeUser(li);
         initializePassword(li);
