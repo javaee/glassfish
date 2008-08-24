@@ -41,6 +41,7 @@
               pageTitle="$resource{web.monitoring.Title}" 
               helpText="$resource{web.monitoring.PageHelp}"
               helpBundle="org.glassfish.web.admingui.Helplinks"
+              helpkey="monitoringService"
               amxConfigName="monitoringServiceConfig.moduleMonitoringLevelsConfig"
               amxConfigAttributes={"HTTPService","webContainer", "JVM", "threadPool"}>
     <!define name="properties">
