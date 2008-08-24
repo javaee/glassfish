@@ -274,7 +274,7 @@ public class AMXRoot {
 
 
     /**
-     *	<p> Get the root of the Config mbean
+     *	<p> Get the ConfigConfig mbean based on its name
      *
      *	@param	configName  The name of the config.
      *
