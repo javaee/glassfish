@@ -52,4 +52,10 @@
                 priority="100" 
                 content="jdbcCommonTask.jsf"
         />
+        <integration-point 
+                id="jdbcResourceLink" 
+                type="org.glassfish.admingui:resources" 
+                priority="100" 
+                content="jdbcResourceLink.jsf"
+        />
 </console-config>

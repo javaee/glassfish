@@ -55,16 +55,16 @@
                 />
                 <sun:propertySheet>
                     <sun:propertySheetSection>
-                        <sun:property>
-
-                            <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.jdbc.tooltip}" 
-                                url="/resourceNode/jdbc.jsf" >
-                                <sun:image url="/resource/images/JDBC.gif" />
-                                <sun:staticText text="$resource{i18n.tree.jdbc}" />
-                            </sun:hyperlink>
-                        </sun:property>
+                         <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+                        />
                     </sun:propertySheetSection>
+                    <event>
+                        <!afterCreate
+                            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+                            includeIntegrations(type="org.glassfish.admingui:resources" root="#{component}");
+                        />
+                    </event>
                 </sun:propertySheet>
 
                 <sun:hidden id="helpKey" value="$resource{help.resources}" />
