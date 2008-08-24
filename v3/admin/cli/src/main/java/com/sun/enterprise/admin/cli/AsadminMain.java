@@ -49,9 +49,9 @@ public class AsadminMain {
 
         if(args.length <= 0) {
              String msg = "Usage: asadmin <command-name> [options]\n" + 
-                          "Multimode not available for TP2 release.\n" +
+                          "Multimode is not available.\n" +
                           "Start the server using \"asadmin start-domain\" or \"startserv\" script\n" +
-                          "and run \"asadmin list-commands\" to get a complete list of commands";
+                          "and run \"asadmin list-commands\" to get a complete list of commands.";
              System.out.println(msg);
              System.exit(0);
         }
