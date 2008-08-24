@@ -62,5 +62,6 @@
         <!-- not needed at the moment -->
         <module>backup</module>
         <module>launcher</module>
+        <module>javax.management.j2ee</module>
     </modules>
 </project>

@@ -127,23 +127,15 @@
         </dependency>
     </dependencies>
     <modules>
+        <module>api-pom</module>
         <module>javax.javaee</module> <!-- This is the assembly module-->  
         <module>javax.activation</module>
         <module>javax.annotation</module>
-        <module>javax.ejb</module>
-        <module>javax.enterprise.deploy</module>
         <module>javax.jms</module>
         <module>javax.jws</module>
         <module>javax.mail</module>
-        <module>javax.management.j2ee</module>
-        <module>javax.persistence</module>
-        <module>javax.resource</module>
-        <module>javax.security</module>
-        <module>javax.security.auth.message</module>
-        <module>javax.servlet</module>
         <module>javax.servlet.jsp</module>
         <module>javax.servlet.jsp.jstl</module>
-        <module>javax.transaction</module>
         <module>javax.xml.bind</module>
         <module>javax.xml.rpc</module>
         <module>javax.xml.soap</module>

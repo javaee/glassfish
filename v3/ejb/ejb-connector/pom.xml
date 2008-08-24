@@ -110,9 +110,9 @@
     </developers>    
     <dependencies>
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>ejb-alpha</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

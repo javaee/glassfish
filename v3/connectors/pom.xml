@@ -15,5 +15,6 @@
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
         <module>work-management</module>
+        <module>javax.resource</module>
   </modules>
 </project>

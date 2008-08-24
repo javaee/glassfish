@@ -55,5 +55,6 @@
         <module>javaee-core</module>
         <module>admin</module>
         <module>autodeploy</module>
+        <module>javax.enterprise.deploy</module>
     </modules>
 </project>
