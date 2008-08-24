@@ -1367,7 +1367,7 @@ public class VirtualServer extends StandardHost {
         if ( stateValue.equalsIgnoreCase(DISABLED) ) {
             // state="disabled"
             setIsDisabled(true);
-        } else if ( !Boolean.valueOf( stateValue ) ) {
+        } else if (!ConfigBeansUtilities.toBoolean(stateValue)) {
             // state="off"
             setIsOff(true);
         } else {

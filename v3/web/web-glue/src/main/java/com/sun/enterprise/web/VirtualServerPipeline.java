@@ -37,12 +37,14 @@
 package com.sun.enterprise.web;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +53,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
-import org.apache.catalina.util.StringManager;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.buf.CharChunk;
 
@@ -66,8 +67,8 @@ import com.sun.logging.LogDomains;
  */
 public class VirtualServerPipeline extends StandardPipeline {
 
-    private static final StringManager sm =
-        StringManager.getManager("com.sun.enterprise.web");
+    private static final ResourceBundle rb =
+        ResourceBundle.getBundle("com.sun.enterprise.web.LocalStrings");
 
     private static final Logger logger =
         LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -107,8 +108,8 @@ public class VirtualServerPipeline extends StandardPipeline {
             throws IOException, ServletException {
 
         if (isOff) {
-            String msg = sm.getString("virtualServerValve.vsOff",
-                                      vs.getName());
+            String msg = rb.getString("virtualServerValve.vsOff");
+            msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(msg);
             }
@@ -116,8 +117,8 @@ public class VirtualServerPipeline extends StandardPipeline {
                                             HttpServletResponse.SC_NOT_FOUND,
                                             msg);
         } else if (isDisabled) {
-            String msg = sm.getString("virtualServerValve.vsDisabled",
-                                      vs.getName());
+            String msg = rb.getString("virtualServerValve.vsDisabled");
+            msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(msg);
             }
