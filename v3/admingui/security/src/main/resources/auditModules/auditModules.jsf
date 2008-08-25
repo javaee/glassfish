@@ -49,7 +49,7 @@
     setPageSessionAttribute(key="editLink" value="/security/auditModules/auditModuleEdit.jsf");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteAuditModules}");
     />
-  #include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead"  title="$resource{i18n.auditModule.PageTitle}">
             <sun:script url="/resource/js/restart.js" />

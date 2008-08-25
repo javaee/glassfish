@@ -34,7 +34,7 @@
  holder.
 -->
 
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
             <sun:script url="/resource/js/restart.js" />
