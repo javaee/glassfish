@@ -48,7 +48,7 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >  
+                                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " onKeyPress="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); "  >  
                             <!command
                             prepareSuccessfulMsg();
                             saveServerJvmAttributes(
