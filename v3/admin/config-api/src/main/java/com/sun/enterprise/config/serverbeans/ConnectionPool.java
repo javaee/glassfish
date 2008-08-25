@@ -44,6 +44,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 
 
@@ -62,7 +63,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="4096", dataType=NonNegativeInteger.class)
     public String getQueueSizeInBytes();
 
     /**
