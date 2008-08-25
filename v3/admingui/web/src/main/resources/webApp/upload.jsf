@@ -49,7 +49,6 @@
         setPageSessionAttribute(key="chooseType" value="#{true}");
         setPageSessionAttribute(key="listPageLink" value="/web/webApp/webApplications.jsf");
         getRequestValue(key="cancelPage" default="#{listPageLink}" value=>$page{cancelPage});
-        println("!!!!! cancel=#{cancelPage}  listPage = #{listPageLink}");
         getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="target" value=>$page{target});
         setPageSessionAttribute(key="enabled" value="#{true}");
@@ -91,7 +90,7 @@
                 </facet>
                 
 #include "uploadComponent.inc"
-<sun:propertySheet id="ps">		
+<sun:propertySheet id="ps" >		
 #include "uploadFieldsCommon.inc"
 "<br />
 #include "/shared/targetSectionForCreate.inc"
