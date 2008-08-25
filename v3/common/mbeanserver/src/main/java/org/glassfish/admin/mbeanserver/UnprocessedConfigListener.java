@@ -63,7 +63,7 @@ public final class UnprocessedConfigListener implements Startup, PostConstruct, 
     
     public UnprocessedConfigListener()
     {
-        debug( "UnprocessedConfigListener.UnprocessedConfigListener" );
+        //debug( "UnprocessedConfigListener.UnprocessedConfigListener" );
     }
     
     public void postConstruct()
@@ -82,13 +82,13 @@ public final class UnprocessedConfigListener implements Startup, PostConstruct, 
 
         public synchronized void 
     unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes) {
-        debug( "UnprocessedConfigListener.unprocessedTransactedEvents: " + changes.size() );
+        //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: " + changes.size() );
         for( int i = 0; i < changes.size(); ++i )
         {
             debug( changes.get(i).toString() );
         }
         mUnprocessedChangeEvents.addAll(changes);
-        debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
+        //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
     }
     
     public synchronized List<UnprocessedChangeEvents>

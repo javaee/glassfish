@@ -26,6 +26,10 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
 
+import com.sun.logging.LogDomains;
+import java.util.logging.Logger;
+
+
 /**
     Can't use things in amx-api, so a few methods are place here.
  */
@@ -42,6 +46,8 @@ final class Util
             throw new RuntimeException("bad ObjectName", e);
         }
     }
+    
+    public static Logger getLogger() { return Logger.getLogger(LogDomains.ADMIN_LOGGER); }
 }
 
 

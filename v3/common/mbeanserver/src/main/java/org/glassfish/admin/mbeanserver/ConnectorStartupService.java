@@ -63,7 +63,6 @@ import org.glassfish.admin.connector.rmi.RemoteJmxProtocol;
 
 import javax.management.remote.JMXConnectorServer;
 import java.io.IOException;
-
 /**
     Responsible for starting JMXConnectors as configured.
  */
@@ -71,8 +70,6 @@ import java.io.IOException;
 @Async
 public final class ConnectorStartupService implements Startup, PostConstruct {
     private static void debug( final String s ) { System.out.println( "### " + s); }
-    
-    private volatile ConnectorsStarter   mConnectorsStarter;
     
     @Inject
     private MBeanServer     mMBeanServer;
@@ -82,90 +79,97 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     
     public ConnectorStartupService()
     {
-        debug( "ConnectorStartupService.ConnectorStartupService" );
-        mConnectorsStarter = null;
     }
-    
-    private static String toString( final JmxConnector c )
-    {
-        return "JmxConnector config: { name = " + c.getName() +
-            ", Protocol = " + c.getProtocol() +
-            ", Address = " + c.getAddress() +
-            ", Port = " + c.getPort() +
-            ", AcceptAll = " + c.getAcceptAll() +
-            ", AuthRealmName = " + c.getAuthRealmName() +
-            ", SecurityEnabled = " + c.getSecurityEnabled() +
-            "}";
+            
 
-    }
-    
-    private JMXConnectorServer startConnector( final JmxConnector conn )
-        throws IOException
-    {
-        final String protocol = conn.getProtocol();
-        final String address  = conn.getAddress();
-        final int port        = Integer.parseInt(conn.getPort());
-        final String authRealmName = conn.getAuthRealmName();
-        final boolean securityEnabled = Boolean.parseBoolean(conn.getSecurityEnabled());
-        
-        debug( toString(conn) );
-        
-        final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
-        dr.setMBeanServer(mMBeanServer);
-        dr.setProtocol( RemoteJmxProtocol.instance(protocol) );
-        dr.setPort( port );
-        //dr.setddress( address );
-        dr.setSsl( securityEnabled );
-        dr.setAuthentication( false );
-        dr.setRmiRegistrySecureFlag( false );
-        final JMXConnectorServer  server = dr.startConnectorServer();
-        
-        return server;
-    }
-    
     public void postConstruct()
     {
         if ( mMBeanServer != ManagementFactory.getPlatformMBeanServer() )
         {
             throw new IllegalStateException( "MBeanServer must be the Platform one" );
-        }
-        
-        final List<JmxConnector> l = mAdminService.getJmxConnector();
-        debug( "SystemJmxConnectorName: " + mAdminService.getSystemJmxConnectorName() + ", " + l.size() + " connectors found");
-        for( final JmxConnector c : l )
-        {
-            if ( ! Boolean.parseBoolean(c.getEnabled()) )
-            {
-                 debug( "JmxConnector " + c.getName() + " is disabled, skipping." );
-                 continue;
-            }
-            
-            try
-            {
-                startConnector(c);
-            }
-            catch( final Throwable t )
-            {
-                System.err.println( "ERROR starting JMX connector: " + toString(c) + ": " + t);
-            }
-        }
-        
-        // pull the code above into this class....
-        mConnectorsStarter = new ConnectorsStarter( mMBeanServer );
-        
-        new ConnectorsStarterThread(mConnectorsStarter).start();
+        }        
+       final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
+       //debug( "SystemJmxConnectorName: " + mAdminService.getSystemJmxConnectorName() );
+       new ConnectorsStarterThread( mMBeanServer, configuredConnectors).start();
     }
     
     private static final class ConnectorsStarterThread extends Thread
     {
-        private final ConnectorsStarter mConnectorsStarter;
-        public ConnectorsStarterThread( final ConnectorsStarter cs ) { mConnectorsStarter = cs; }
+        private final List<JmxConnector> mConfiguredConnectors;
+        private final MBeanServer mMBeanServer;
         
+        public ConnectorsStarterThread(
+            final MBeanServer mbs,
+            final List<JmxConnector> configuredConnectors )
+        {
+            mMBeanServer = mbs;
+            mConfiguredConnectors = configuredConnectors;
+        }
+        
+        private static String toString( final JmxConnector c )
+        {
+            return "JmxConnector config: { name = " + c.getName() +
+                ", Protocol = " + c.getProtocol() +
+                ", Address = " + c.getAddress() +
+                ", Port = " + c.getPort() +
+                ", AcceptAll = " + c.getAcceptAll() +
+                ", AuthRealmName = " + c.getAuthRealmName() +
+                ", SecurityEnabled = " + c.getSecurityEnabled() +
+                "}";
+
+        }
+
+        private JMXConnectorServer startConnector( final JmxConnector conn )
+            throws IOException
+        {
+            final String protocol = conn.getProtocol();
+            final String address  = conn.getAddress();
+            final int port        = Integer.parseInt(conn.getPort());
+            final String authRealmName = conn.getAuthRealmName();
+            final boolean securityEnabled = Boolean.parseBoolean(conn.getSecurityEnabled());
+            
+            Util.getLogger().fine( toString(conn) );
+            
+            final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
+            dr.setMBeanServer(mMBeanServer);
+            dr.setProtocol( RemoteJmxProtocol.instance(protocol) );
+            dr.setPort( port );
+            //dr.setddress( address );
+            dr.setSsl( securityEnabled );
+            dr.setAuthentication( false );
+            dr.setRmiRegistrySecureFlag( false );
+            final JMXConnectorServer  server = dr.startConnectorServer();
+            
+            return server;
+        }
+
         public void run()
         {
+            for( final JmxConnector c : mConfiguredConnectors )
+            {
+                if ( ! Boolean.parseBoolean(c.getEnabled()) )
+                {
+                     Util.getLogger().info( "JmxConnector " + c.getName() + " is disabled, skipping." );
+                     continue;
+                }
+
+                try
+                {
+                    startConnector(c);
+                }
+                catch( final Throwable t )
+                {
+                    Util.getLogger().severe( "ERROR starting JMX connector: " + toString(c) + ": " + t);
+                    //t.printStackTrace();
+                }
+
+            }
+
+            // this is for JMXMP, remove soon, use the config mechanism above
+            final JMXMPConnectorStarter jmxmpStarter = new JMXMPConnectorStarter( mMBeanServer);
             try
             {
-                mConnectorsStarter.startConnectors();
+                jmxmpStarter.start();
             }
             catch( Throwable t )
             {

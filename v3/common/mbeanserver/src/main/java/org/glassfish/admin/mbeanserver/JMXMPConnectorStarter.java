@@ -41,7 +41,7 @@ import java.util.Map;
 /**
     Start and stop JMX connectors.
  */
-final class ConnectorsStarter
+final class JMXMPConnectorStarter
 {
     protected static void debug( final String s ) { System.out.println(s); }
     
@@ -56,13 +56,13 @@ final class ConnectorsStarter
     
     private static volatile boolean    STARTED = false;
     
-    ConnectorsStarter( final MBeanServer mbs )
+    JMXMPConnectorStarter( final MBeanServer mbs )
     {
         mMBeanServer = mbs;
     }
     
         public synchronized void
-    startConnectors()
+    start()
     {
         if ( STARTED )  return;
         
@@ -94,7 +94,7 @@ final class ConnectorsStarter
         }
     }
 
-    public synchronized void stopConnectors() {
+    public synchronized void stop() {
         try {
             mJMXMP.stop();
         } catch (IOException e) {

@@ -93,9 +93,9 @@ class RmiStubRegistryHandler {
     private void logBindings(final Registry r, final int port) {
         try {
             final String[] bs = r.list();
-            logger.info("Initial Bindings in RmiRegistry at port: [" + port + "] :" + ((bs.length == 0 ) ? " NONE": ""));
+            logger.fine("Initial Bindings in RmiRegistry at port: [" + port + "] :" + ((bs.length == 0 ) ? " NONE": ""));
             for (int i = 0 ; i < bs.length ; i++) {
-                logger.info("JMX Connector RMI Registry binding: " + bs[i]);
+                logger.fine("JMX Connector RMI Registry binding: " + bs[i]);
             }
         }
         catch(final Exception e) {
