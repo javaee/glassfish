@@ -98,6 +98,7 @@ import javax.management.AttributeList;
 import javax.management.ObjectName;
 
 import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
@@ -773,10 +774,9 @@ public class ApplicationHandlers {
     public static void getDeployedWebInfo(HandlerContext handlerCtx){
         
         String serverName = (String) handlerCtx.getInputValue("serverName");
-        Iterator<ApplicationConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap().values().iterator();
+        Map<String, ApplicationConfig> webAppsConfig = AMXUtil.getApplicationConfigByType("web");
         List result = new ArrayList();
-        while(iter.hasNext()){
-            ApplicationConfig appConfig = iter.next();
+        for(ApplicationConfig appConfig : webAppsConfig.values()){
             if (ObjectTypeValues.USER.equals(appConfig.getObjectType())){
                 HashMap oneRow = new HashMap();
                 String protocol = "http" ;
@@ -804,7 +804,6 @@ public class ApplicationHandlers {
                 }
                 oneRow.put("selected", false);
                 //List<String> targets = TargetUtil.getDeployedTargets(appConfig, true);
-                
                 result.add(oneRow);
             }
         }
