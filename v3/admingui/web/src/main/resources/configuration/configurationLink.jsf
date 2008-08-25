@@ -1,0 +1,31 @@
+
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.webContainer.tooltip}" 
+        url="/web/configuration/webContainerGeneral.jsf?configName=#{configName}" 
+        >
+        <sun:image url="/resource/images/container.gif" />
+        <sun:staticText text="$resource{i18n.tree.webContainer}" />
+    </sun:hyperlink>
+</sun:property>
+
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.httpService.tooltip}" 
+        url="/web/configuration/httpService.jsf?configName=#{configName}" 
+        >
+    <sun:image url="/resource/images/http.gif" />
+    <sun:staticText text="$resource{i18n.tree.httpService}" />
+    </sun:hyperlink>
+</sun:property>
+
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.monitoring.tooltip}"
+        url="/web/monitor/monitoringPage.jsf?configName=#{configName}" 
+        >
+        <sun:image url="/resource/web/images/monitor.gif" />
+        <sun:staticText text="$resource{i18n.tree.monitoring}" />
+    </sun:hyperlink>
+</sun:property>
+

@@ -40,11 +40,6 @@
         setResourceBundle(key="i18n" bundle="core.Strings")
         setResourceBundle(key="help" bundle="core.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
-        compare(obj1="$pageSession{configName}" obj2="server-config" objEqual=>$attribute{isServerConfig});
-        setPageSessionAttribute(key="showIt" value="$boolean{false}");
-        if ($session{supportCluster} & !${isServerConfig}){
-            setPageSessionAttribute(key="showIt" value="$boolean{true}");
-        }
     />
 #include "/shared/restart.inc"    
     <sun:html>
@@ -55,182 +50,23 @@
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title 
-                id="configPageTitle" 
-                title="$resource{i18n.configuration.pageTitle}" 
-                helpText="$resource{i18n.configuration.pageTitleHelp}"
+                    id="configPageTitle" 
+                    title="$resource{i18n.configuration.pageTitle}" 
+                    helpText="$resource{i18n.configuration.pageTitleHelp}"
                 />
-                <sun:propertySheet>
-                    <sun:propertySheetSection>
-                        <!--
-                        <sun:property  rendered="$session{supportCluster}" >
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.jvmSettings.tooltip}" 
-                                url="/configuration/eeJvmGeneral.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/jvm.gif" />
-                                <sun:staticText text="$resource{i18n.tree.jvmSettings}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property rendered="$session{supportCluster}" >
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.loggerSettings.tooltip}" 
-                                url="/configuration/eeLogging.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/logger.gif" />
-                                <sun:staticText text="$resource{i18n.tree.loggerSettings}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        -->
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.webContainer.tooltip}" 
-                                url="/web/configuration/webContainerGeneral.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/container.gif" />
-                                <sun:staticText text="$resource{i18n.tree.webContainer}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <!--
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.ejbContainer.tooltip}" 
-                                url="/configuration/ejbContainerGeneral.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/container.gif" />
-                                <sun:staticText text="$resource{i18n.tree.ejbContainer}" />
-                            </sun:hyperlink>
-                        
-                            
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.javaMessageService.tooltip}" 
-                                url="/configuration/jmsService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/jms.gif" />
-                                <sun:staticText text="$resource{i18n.tree.javaMessageService}" />
-                            </sun:hyperlink>
-                        
-                        </sun:property>
-                        
-                        <sun:property rendered="$pageSession{showIt}">
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.availabilityService.tooltip}" 
-                                url="/availability/availabilityService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/availabilityservice.gif" />
-                                <sun:staticText text="$resource{i18n.tree.availabilityService}" />
-                            </sun:hyperlink>
-                        
-                        </sun:property>
-                        
-                        <sun:property>
-                            <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.security.tooltip}" 
-                                url="/configuration/security.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/Security.gif" />
-                                <sun:staticText text="$resource{i18n.tree.security}" />
-                            </sun:hyperlink>
-                        
-                        </sun:property>
-                        <sun:property>
-                        
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.transactionService.tooltip}" 
-                                url="/configuration/transactionService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/TransactionService.gif" />
-                                <sun:staticText text="$resource{i18n.tree.transactionService}" />
-                            </sun:hyperlink>
-                           
-                        </sun:property>
-                        -->
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.httpService.tooltip}" 
-                                url="/web/configuration/httpService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/http.gif" />
-                                <sun:staticText text="$resource{i18n.tree.httpService}" />
-                            </sun:hyperlink>
-                          
-                        </sun:property>
-                        
-                        <!--
-                        <sun:property>
-                        
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.orb.tooltip}" 
-                                url="/configuration/orb.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/ORB.gif" />
-                                <sun:staticText text="$resource{i18n.tree.orb}" />
-                            </sun:hyperlink>
-                            
-                            
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.threadPools.tooltip}" 
-                                url="/configuration/threadPools.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/threadPool.gif" />
-                                <sun:staticText text="$resource{i18n.tree.threadPools}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.adminService.tooltip}" 
-                                url="/configuration/adminService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/connector.gif" />
-                                <sun:staticText text="$resource{i18n.tree.adminService}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.connectorService.tooltip}" 
-                                url="/configuration/connectorService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/connectorservice.gif" />
-                                <sun:staticText text="$resource{i18n.tree.connectorService}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.monitoring.tooltip}" 
-                                url="/configuration/monitoringService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/monitor.gif" />
-                                <sun:staticText text="$resource{i18n.tree.monitoring}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.managementRules.tooltip}" 
-                                url="/mgmtRules/managementRules.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/management_rules.gif" />
-                                <sun:staticText text="$resource{i18n.tree.managementRules}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        
-                        <sun:property rendered="$pageSession{showIt}">
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.gms.tooltip}" 
-                                url="/configuration/gms.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/management_services.gif" />
-                                <sun:staticText text="$resource{i18n.tree.gms}" />
-                            </sun:hyperlink>
-                        
-                        </sun:property>
-                        
-                        <sun:property>
-                        <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.diagService.tooltip}" 
-                                url="/configuration/diagService.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/diagnostic_service.gif" />
-                                <sun:staticText text="$resource{i18n.tree.diagService}" />
-                            </sun:hyperlink>
-                            
-                        </sun:property>
-                        <sun:property >
-                         <sun:hyperlink 
-                                toolTip="$resource{i18n.tree.systemProps.tooltip}" 
-                                url="/configuration/systemProperties.jsf?configName=#{configName}" >
-                                <sun:image url="/resource/images/system_properties.png" />
-                                <sun:staticText text="$resource{i18n.tree.systemProps}" />
-                            </sun:hyperlink>
-                        </sun:property>
-                        -->
+                <sun:propertySheet id="propSheet">
+                    <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+                        />
+                    <sun:propertySheetSection id="propSheetSection">
                     </sun:propertySheetSection>
                 </sun:propertySheet>
+                <event>
+                        <!afterCreate
+                            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+                            includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
+                        />
+                    </event>
                 <sun:hidden id="helpKey" value="$resource{help.configuration}" />
             </sun:form>           
         </sun:body> 

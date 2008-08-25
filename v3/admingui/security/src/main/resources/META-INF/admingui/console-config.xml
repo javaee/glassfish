@@ -8,4 +8,13 @@
                 parentId="configuration" 
                 content="securityServiceNode.jsf" 
         />
+        
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point 
+                id="securityConfigurationLink" 
+                type="org.glassfish.admingui:configuration" 
+                priority="200"
+                parentId="propSheetSection"
+                content="configurationLink.jsf"
+        />
 </console-config>
