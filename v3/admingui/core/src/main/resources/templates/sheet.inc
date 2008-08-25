@@ -1,4 +1,4 @@
-<sun:propertySheet>
+<sun:propertySheet requiredFields="#{hasRequiredFields}">
 <!insert name="propertySheets">
     <sun:propertySheetSection>
     <!insert name="properties" />
