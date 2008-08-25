@@ -116,15 +116,27 @@ public class AppTest
 
     public void testEmptySubContext() {
         try {
-            Context ctx = new InitialContext();
-            ctx.bind("//rmi://a//b/c/d/name", "Name1");
-            ctx = new InitialContext();
-            ctx.bind("//rmi:/abc/a//b/c/d/name", "Name2");
+            String name1 = "rmi://a//b/c/d/name1";
+            String name2 = "rmi://a//b/c/d/name2";
 
-            String name1 = (String) ctx.lookup("//rmi://a//b/c/d/name");
-            String name2 = (String) ctx.lookup("//rmi:/abc/a//b/c/d/name");
-            System.out.println("testEmptySubContext: " + name1 + "  " + name2);
-            assert(name1.equals("Name1") && name2.equals("Name2"));
+            Context ctx = new InitialContext();
+            ctx.bind(name1, "Name1");
+            ctx = new InitialContext();
+            ctx.bind(name2, "Name2");
+
+	    Object v1 = ctx.lookup(name1);
+	    Object v2 = ctx.lookup(name2);
+
+	    Context ctx2 = (Context) (new InitialContext()).lookup("rmi://a//b");
+	    Object val1 = ctx2.lookup("c/d/name1");
+	    Object val2 = ctx2.lookup("c/d/name2");
+
+            System.out.println("testEmptySubContext: " + v1 + "  " + v2);
+            System.out.println("testEmptySubContext: " + val1 + "  " + val2);
+            boolean check1 = v1.equals("Name1") && v2.equals("Name2");
+            boolean check2 = val1.equals("Name1") && val2.equals("Name2");
+	
+	    assert(check1 && check2);
 
         } catch (Exception ex) {
             ex.printStackTrace();
