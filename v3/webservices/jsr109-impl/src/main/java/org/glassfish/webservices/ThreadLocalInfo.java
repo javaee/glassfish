@@ -34,50 +34,46 @@
  * holder.
  */
 
-package org.glassfish.webservices.monitoring;
 
-import com.sun.enterprise.deployment.WebServiceEndpoint;
+package org.glassfish.webservices;
 
+import org.glassfish.webservices.monitoring.MessageTraceImpl;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * This interface defines all information and behaviour 
- * accessible from a particular endpoint. 
+ * This class encapsulates all information contained in the thread local
+ * for servlet invocations to trace the messages.
  *
  * @author Jerome Dochez
  */
-public interface Endpoint {    
+public class ThreadLocalInfo {
     
-    /** 
-     * @return the endpoint selector as a string. For Http transport endpoing, 
-     * this is the URL web service clients use to invoke the endpoint.
-     */
-    public String getEndpointSelector();
+    final private String messageId;
+    final private HttpServletRequest request;
+    private MessageTraceImpl requestMessageTrace;
     
-    /**
-     * @return the endpoint type
-     */
-    public EndpointType getEndpointType();
+    /** Creates a new instance of ServletThreadLocalConfiguration */
+    public ThreadLocalInfo(String messageId, HttpServletRequest request) {
+        this.messageId = messageId;
+        this.request = request;
+    }
     
-    /**
-     * Returns the transport
-     */
-    public TransportType getTransport();
+    public String getMessageId() {
+        return messageId;
+    }
     
-    /**
-     * Returns the Deployment Descriptors associated with this endpoint
-     */
-    public WebServiceEndpoint getDescriptor();
+    public HttpServletRequest getRequest() {
+        return request;
+    }
     
-    /**
-     * registers a new SOAPMessageListener for this endpoint
-     * @param newListener the listener instance to register.
-     */
-    public void addListener(MessageListener newListener);
+    public void setRequestMessageTrace(MessageTraceImpl trace) {
+        requestMessageTrace = trace;
+    }
     
-    /**
-     * unregiters a SOAPMessageListener for this endpoint
-     * @param listener the listener instance to unregister.
-     */
-    public void removeListener(MessageListener listener);
+    public MessageTraceImpl getRequestMessageTrace() {
+        return requestMessageTrace;
+    }
+    
+    
 }
-

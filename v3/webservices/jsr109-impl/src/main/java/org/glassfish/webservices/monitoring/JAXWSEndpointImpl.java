@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
 
 import org.glassfish.webservices.SOAPMessageContext;
-import com.sun.enterprise.deployment.MessageListener;
+
 
 public class JAXWSEndpointImpl extends EndpointImpl {
         
@@ -92,9 +92,9 @@ public class JAXWSEndpointImpl extends EndpointImpl {
                     response.setEndpoint(this);
                     response.setMessageContext(messageContext);
                     //TODO BM check regarding this method
-                    /*for (MessageListener listener : listeners) {
+                    for (org.glassfish.webservices.monitoring.MessageListener listener : listeners) {
                         listener.invocationProcessed((MessageTrace) messageContext.get(REQUEST_TRACE), response);
-                    }*/
+                    }
                 }
             }
         } catch(Exception e) {

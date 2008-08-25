@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.MessageListener;
+
 
 /**
  * Implementation of the endpoint interface

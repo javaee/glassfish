@@ -38,51 +38,36 @@ package org.glassfish.webservices;
 
 //import com.sun.enterprise.Switch;
 
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.deployment.*;
 import com.sun.logging.LogDomains;
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.Adapter;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.developer.Stateful;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
+import org.apache.catalina.Loader;
+import org.glassfish.webservices.monitoring.Endpoint;
+import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
+import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.File;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Collection;
-
-import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
-import org.glassfish.webservices.monitoring.Endpoint;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.jvnet.hk2.annotations.Inject;
-import org.apache.catalina.Loader;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.server.Invoker;
-
-import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.MTOMFeature;
-
-import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.server.Adapter;
-import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
-import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.ServiceDefinition;
-import com.sun.xml.ws.api.server.WSEndpoint.PipeHead;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.Invoker;
-import com.sun.xml.ws.api.server.InstanceResolver;
-import com.sun.xml.ws.developer.Stateful;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The JAX-WS dispatcher servlet.
@@ -136,7 +121,7 @@ public class JAXWSServlet extends HttpServlet {
                           HttpServletResponse response)
         throws ServletException {
 
-       /* if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
+       if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
              (!(HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding())))) {
             Endpoint endpt = wsEngine_.getEndpoint(request.getServletPath());
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
@@ -144,7 +129,7 @@ public class JAXWSServlet extends HttpServlet {
                         endpt.getDescriptor());
                 return;
             }
-        }        */
+        }
         
         // lookup registered URLs and get the appropriate adapter;
         // pass control to the adapter
@@ -180,15 +165,15 @@ public class JAXWSServlet extends HttpServlet {
                 return;
             }
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
-                Loader loader = (Loader) endpt.getDescriptor().getBundleDescriptor().getExtraAttribute("WEBLOADER");
+               /* ClassLoader loader =  endpt.getDescriptor().getBundleDescriptor().getExtraAttribute("WEBLOADER");
                 if (loader != null) {
                     endpt.getDescriptor().getBundleDescriptor().setClassLoader(loader.getClassLoader());
                     endpt.getDescriptor().getBundleDescriptor().removeExtraAttribute("WEBLOADER");
-                }
+                }*/
                 //TODO BM fixe me
-                /*WebServiceTesterServlet.invoke(request, response,
+                WebServiceTesterServlet.invoke(request, response,
                         endpt.getDescriptor());
-                        */
+
                 return;
             }
         }
