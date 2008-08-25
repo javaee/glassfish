@@ -259,7 +259,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      */
     protected ProtocolFilter createReadFilter() {
         ReadFilter readFilter = new ReadFilter();
-        readFilter.setContinuousExecution(true);
+        readFilter.setContinuousExecution(GlassfishProtocolChain.CONTINUOUS_EXECUTION);
         return readFilter;
     }
     
