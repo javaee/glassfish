@@ -349,7 +349,8 @@ class ApplicationDispatcherForward {
 
         // Do nothing on a 1xx, 2xx and 3xx status
         if (response.isCommitted() || statusCode < 400
-                || responseFacade.getContentCount() > 0) {
+                || responseFacade.getContentCount() > 0
+                || Boolean.TRUE.equals(request.getAttribute("org.glassfish.jsp.error_handled"))) {
             return;
         }
 
