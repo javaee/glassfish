@@ -94,7 +94,7 @@
         </facet>   
     </sun:title>
     <!-- PropertySheet .... -->
-    <sun:propertySheet id="propertySheet">			 
+    <sun:propertySheet id="propertySheet" requiredFields="true">			 
         <event>
         <!beforeCreate
             getAuditModuleSettings(

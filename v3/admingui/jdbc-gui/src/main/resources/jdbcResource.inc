@@ -82,7 +82,7 @@
 </sun:title>
 
 <!-- PropertySheet .... -->
-<sun:propertySheet id="propertySheet">			 
+<sun:propertySheet id="propertySheet" requiredFields="true">			 
     <!-- Text Field section -->               
     <sun:propertySheetSection id="propertSectionTextField">
         <event>

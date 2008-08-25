@@ -97,7 +97,7 @@
                 </sun:title>
                
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
+                    <sun:propertySheet id="propertySheet" >			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >

@@ -36,7 +36,7 @@
 <!-- security/realms/realmAttrs.inc -->
 
 
-    <sun:propertySheet id="propertySheet">			 
+    <sun:propertySheet id="propertySheet" requiredFields="true">			 
         <sun:propertySheetSection id="propertySectionTextField">
             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.realm.realmName}" >
                 <sun:staticText id="NameStatic" text="#{name}"/> 

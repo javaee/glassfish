@@ -81,7 +81,7 @@
                     </facet> 
                     </sun:title>
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="sheet">			 
+                    <sun:propertySheet id="sheet" requiredFields="true">			 
                         <sun:propertySheetSection id="generalSheet" label="$resource{i18n.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                                 <sun:staticText id="Jndi" text="#{wizardPoolExtra.name}"/> 

@@ -76,7 +76,7 @@
                     </sun:panelGroup>
                     </facet>                     
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
+                    <sun:propertySheet id="propertySheet" requiredFields="true">			 
                         <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                                 <sun:textField id="name"  styleClass="required"  columns="$int{30}" text="#{wizardPoolExtra.name}" required="#{true}"/> 

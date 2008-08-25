@@ -116,8 +116,8 @@
                     </facet>                     
                 </sun:title>
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
-                        <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.jdbcPool.general}">
+                    <sun:propertySheet id="propertySheet" requiredFields="true">			 
+                        <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.jdbcPool.general}" requiredFields="true">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                                 <sun:staticText id="Jndi" text="#{jndiName}"/> 
                             </sun:property>   

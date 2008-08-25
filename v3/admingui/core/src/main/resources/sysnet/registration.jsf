@@ -111,7 +111,7 @@
                 </sun:title>
 
             <!-- PropertySheet .... -->
-            <sun:propertySheet id="pSheet">			 
+            <sun:propertySheet id="pSheet" requiredFields="true">			 
                 <sun:propertySheetSection id="pSection" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{sheetId});

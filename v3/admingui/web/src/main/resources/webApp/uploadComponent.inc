@@ -35,7 +35,7 @@
 -->
 <!-- uploadComponent.inc -->
 
-<sun:propertySheet id="sheet1">			 
+<sun:propertySheet id="sheet1" requiredFields="true">			 
     <sun:propertySheetSection id="section1" >
         <sun:property id="type" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}"  rendered="#{chooseType}" > 
             <sun:dropDown id="appType" selected="#{appType}" 

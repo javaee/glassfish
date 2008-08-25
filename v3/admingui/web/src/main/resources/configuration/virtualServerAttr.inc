@@ -50,7 +50,7 @@
         
 
 <!-- PropertySheet .... -->
-<sun:propertySheet id="propertySheet">		
+<sun:propertySheet id="propertySheet" requiredFields="true">		
         <!beforeCreate
             getVirtualServerSettings(
                 Edit="#{edit}",
