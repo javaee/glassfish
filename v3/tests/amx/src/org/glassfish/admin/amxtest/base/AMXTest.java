@@ -532,7 +532,7 @@ public final class AMXTest
                 }
             } else if (type.endsWith("Stats")) {
                 isSuitable = type.startsWith("com.sun.appserv.management.monitor.statistics") ||
-                        type.startsWith("javax.management.j2ee.statistics");
+                        type.startsWith("org.glassfish.j2ee.statistics");
             }
         }
 

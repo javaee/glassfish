@@ -44,7 +44,7 @@ import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 
-import javax.management.j2ee.statistics.*;
+import org.glassfish.j2ee.statistics.*;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;

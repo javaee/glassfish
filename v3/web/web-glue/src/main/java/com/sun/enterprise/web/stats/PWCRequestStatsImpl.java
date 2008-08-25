@@ -36,8 +36,8 @@
 package com.sun.enterprise.web.stats;
 
 import java.util.LinkedList;
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.admin.monitor.stats.PWCRequestStats;
 import com.sun.enterprise.admin.monitor.stats.MutableCountStatistic;

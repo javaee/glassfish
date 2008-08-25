@@ -37,8 +37,8 @@ package com.sun.appserv.management.monitor.statistics;
 
 import com.sun.appserv.management.j2ee.statistics.StringStatistic;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.Stats;
 
 /**
  * Stats interface for the monitorable attributes of a 

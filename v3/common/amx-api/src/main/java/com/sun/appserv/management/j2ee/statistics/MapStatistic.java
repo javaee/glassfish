@@ -42,7 +42,7 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import java.util.Map;
 import java.util.Set;
 

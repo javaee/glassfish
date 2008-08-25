@@ -167,11 +167,14 @@
             <artifactId>javax.servlet.jsp.jstl</artifactId>
             <version>${project.version}</version>
         </dependency>
+    <!--
+    Interrim removal for Prelude release
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.management.j2ee</artifactId>
             <version>${project.version}</version>
         </dependency>
+    -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.activation</artifactId>

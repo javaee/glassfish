@@ -41,7 +41,7 @@ package com.sun.appserv.management.monitor;
 
 import com.sun.appserv.management.base.XTypes;
 
-import javax.management.j2ee.statistics.JVMStats;
+import org.glassfish.j2ee.statistics.JVMStats;
 
 /**
 	For available Statistics, see {@link JVMStats}.

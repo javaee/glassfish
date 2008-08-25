@@ -47,7 +47,7 @@ import com.sun.appserv.management.j2ee.statistics.NumberStatistic;
 import com.sun.appserv.management.monitor.WebServiceEndpointMonitor;
 import com.sun.appserv.management.monitor.statistics.WebServiceEndpointAggregateStats;
 
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 import java.util.Iterator;
 import java.util.Set;
 

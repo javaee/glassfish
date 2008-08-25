@@ -36,8 +36,8 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.EJBStats;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.EJBStats;
 
 import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableCountStatisticImpl;
@@ -53,7 +53,7 @@ import com.sun.ejb.spi.stats.EJBStatsProvider;
 
 public abstract class EJBStatsImpl
     extends StatsImpl
-    implements javax.management.j2ee.statistics.EJBStats
+    implements org.glassfish.j2ee.statistics.EJBStats
 {
     protected EJBStatsProvider delegate;
 

@@ -43,9 +43,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.TimeStatistic;
+import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.TimeStatistic;
 
 import org.glassfish.admin.monitor.cli.MonitorContract;
 
@@ -54,7 +54,7 @@ import com.sun.appserv.management.monitor.statistics.AltServletStats;
 /** 
 	Defines additional Application Server specific statistics 
 	ServletStats interface.
-	Extension of javax.management.j2ee.statistics.ServletStats.
+	Extension of org.glassfish.j2ee.statistics.ServletStats.
 	@see com.sun.appserv.management.j2ee.Servlet
  */
 

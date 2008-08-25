@@ -38,9 +38,9 @@ package com.sun.enterprise.web.stats;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.TimeStatistic;
+import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.TimeStatistic;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.admin.monitor.stats.ServletStats;
 import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;

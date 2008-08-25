@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.RangeStatistic;
+import org.glassfish.j2ee.statistics.RangeStatistic;
 
 import com.sun.enterprise.admin.monitor.stats.BoundedRangeStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableBoundedRangeStatisticImpl;
@@ -52,7 +52,7 @@ import com.sun.ejb.spi.stats.SessionBeanStatsProvider;
 
 public abstract class SessionBeanStatsImpl
     extends EJBStatsImpl
-    implements javax.management.j2ee.statistics.SessionBeanStats
+    implements org.glassfish.j2ee.statistics.SessionBeanStats
 {
     protected SessionBeanStatsProvider		sessionDelegate;
 

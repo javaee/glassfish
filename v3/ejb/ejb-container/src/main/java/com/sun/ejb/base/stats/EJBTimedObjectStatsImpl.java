@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 
 import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableCountStatisticImpl;
@@ -60,7 +60,7 @@ public class EJBTimedObjectStatsImpl
     private MutableCountStatisticImpl	deliveredCountStat;
 
     public EJBTimedObjectStatsImpl(EJBTimedObjectStatsProvider delegate) {
-//	super(delegate, "javax.management.j2ee.statistics.TimerBeanStats");
+//	super(delegate, "org.glassfish.j2ee.statistics.TimerBeanStats");
 	this.timerDelegate = delegate;
 
 	initStats();

@@ -35,8 +35,8 @@
  */
 package com.sun.appserv.management.monitor;
 
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Stats;
 import javax.management.openmbean.CompositeDataSupport;
 
 /**
@@ -71,7 +71,7 @@ import javax.management.openmbean.CompositeDataSupport;
     @see com.sun.appserv.management.base.StdAttributesAccess
     @see com.sun.appserv.management.base.Util#getExtra
     @see com.sun.appserv.management.base.Extra
-    @see javax.management.j2ee.statistics.Statistic
+    @see org.glassfish.j2ee.statistics.Statistic
  */
 public interface MonitoringStats extends Monitoring
 {

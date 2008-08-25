@@ -44,7 +44,7 @@ package com.sun.appserv.management.j2ee.statistics;
 
 import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
 
-import javax.management.j2ee.statistics.RangeStatistic;
+import org.glassfish.j2ee.statistics.RangeStatistic;
 import javax.management.openmbean.CompositeData;
 import java.io.Serializable;
 import java.util.Map;

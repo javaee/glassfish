@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.RangeStatistic;
+import org.glassfish.j2ee.statistics.RangeStatistic;
 
 import com.sun.enterprise.admin.monitor.stats.BoundedRangeStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableBoundedRangeStatisticImpl;
@@ -51,13 +51,13 @@ import com.sun.ejb.spi.stats.StatefulSessionBeanStatsProvider;
 
 public class StatefulSessionBeanStatsImpl
     extends SessionBeanStatsImpl
-    implements javax.management.j2ee.statistics.StatefulSessionBeanStats
+    implements org.glassfish.j2ee.statistics.StatefulSessionBeanStats
 {
     protected StatefulSessionBeanStatsProvider	sfsbDelegate;
     private MutableBoundedRangeStatisticImpl	passivateCountStat;
 
     public StatefulSessionBeanStatsImpl(StatefulSessionBeanStatsProvider delegate) {
-	super(delegate, "javax.management.j2ee.statistics.StatefulSessionBeanStats");
+	super(delegate, "org.glassfish.j2ee.statistics.StatefulSessionBeanStats");
 	this.sfsbDelegate = delegate;
 
 	initSessionStats();

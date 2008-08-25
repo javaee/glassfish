@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.web.connector.extension;
 
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Stats;
 
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;

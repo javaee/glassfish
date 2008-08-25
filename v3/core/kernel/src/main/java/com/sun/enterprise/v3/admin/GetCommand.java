@@ -16,7 +16,7 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.statistics.Counter;
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /**

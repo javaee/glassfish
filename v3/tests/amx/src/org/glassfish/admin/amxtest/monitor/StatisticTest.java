@@ -40,7 +40,7 @@ import com.sun.appserv.management.util.j2ee.J2EEUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
 import org.glassfish.admin.amxtest.AMXTestBase;
 
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;

@@ -47,7 +47,7 @@ import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
 
 public class StatelessSessionBeanStatsImpl
     extends SessionBeanStatsImpl
-    implements javax.management.j2ee.statistics.StatelessSessionBeanStats
+    implements org.glassfish.j2ee.statistics.StatelessSessionBeanStats
 {
 
     private StatelessSessionBeanStatsProvider slsbDelegate;
@@ -55,7 +55,7 @@ public class StatelessSessionBeanStatsImpl
     public StatelessSessionBeanStatsImpl(
 	    StatelessSessionBeanStatsProvider delegate)
     {
-	super(delegate, "javax.management.j2ee.statistics.StatelessSessionBeanStats");
+	super(delegate, "org.glassfish.j2ee.statistics.StatelessSessionBeanStats");
 	this.slsbDelegate = delegate;
 	initSessionStats();
     }

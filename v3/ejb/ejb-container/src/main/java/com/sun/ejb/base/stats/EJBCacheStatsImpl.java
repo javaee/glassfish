@@ -36,8 +36,8 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.BoundedRangeStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.BoundedRangeStatistic;
 
 import com.sun.enterprise.admin.monitor.stats.EJBCacheStats;
 import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;

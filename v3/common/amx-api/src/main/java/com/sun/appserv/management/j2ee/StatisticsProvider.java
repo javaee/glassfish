@@ -43,7 +43,7 @@
 package com.sun.appserv.management.j2ee;
 
 import javax.management.ObjectName;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Stats;
 
 /**
 	Defines access to Stats.

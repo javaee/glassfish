@@ -40,7 +40,7 @@ import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
 
-import javax.management.j2ee.statistics.*;
+import org.glassfish.j2ee.statistics.*;
 import javax.management.openmbean.CompositeData;
 import java.lang.reflect.Proxy;
 import java.util.Map;

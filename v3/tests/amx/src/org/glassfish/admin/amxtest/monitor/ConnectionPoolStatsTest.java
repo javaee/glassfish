@@ -44,8 +44,8 @@ package org.glassfish.admin.amxtest.monitor;
 import com.sun.appserv.management.monitor.MonitoringStats;
 import com.sun.appserv.management.monitor.statistics.ConnectionPoolStats;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.RangeStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.RangeStatistic;
 import java.util.Iterator;
 import java.util.Set;
 

@@ -47,8 +47,8 @@ import com.sun.appserv.management.util.j2ee.stringifier.StatsStringifier;
 import com.sun.appserv.management.util.stringifier.StringifierRegistry;
 
 import javax.management.*;
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Stats;
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanConstructorInfo;
 import javax.management.modelmbean.ModelMBeanInfo;

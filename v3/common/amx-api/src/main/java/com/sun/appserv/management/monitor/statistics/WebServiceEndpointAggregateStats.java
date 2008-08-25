@@ -38,8 +38,8 @@ package com.sun.appserv.management.monitor.statistics;
 
 import com.sun.appserv.management.j2ee.statistics.NumberStatistic;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.Stats;
 
 /**
  * Web Service Endpoint's stats interface. It provides faults, response time,

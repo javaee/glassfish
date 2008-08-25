@@ -41,11 +41,11 @@ package com.sun.appserv.management.monitor;
 
 import com.sun.appserv.management.base.Container;
 
-import javax.management.j2ee.statistics.EJBStats;
-import javax.management.j2ee.statistics.EntityBeanStats;
-import javax.management.j2ee.statistics.MessageDrivenBeanStats;
-import javax.management.j2ee.statistics.StatefulSessionBeanStats;
-import javax.management.j2ee.statistics.StatelessSessionBeanStats;
+import org.glassfish.j2ee.statistics.EJBStats;
+import org.glassfish.j2ee.statistics.EntityBeanStats;
+import org.glassfish.j2ee.statistics.MessageDrivenBeanStats;
+import org.glassfish.j2ee.statistics.StatefulSessionBeanStats;
+import org.glassfish.j2ee.statistics.StatelessSessionBeanStats;
 import java.util.Map;
 
 

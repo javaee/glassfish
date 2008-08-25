@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.RangeStatistic;
+import org.glassfish.j2ee.statistics.RangeStatistic;
 import com.sun.enterprise.admin.monitor.stats.BoundedRangeStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableBoundedRangeStatisticImpl;
 
@@ -50,7 +50,7 @@ import com.sun.ejb.spi.stats.EntityBeanStatsProvider;
 
 public class EntityBeanStatsImpl
     extends EJBStatsImpl
-    implements javax.management.j2ee.statistics.EntityBeanStats
+    implements org.glassfish.j2ee.statistics.EntityBeanStats
 {
     protected EntityBeanStatsProvider		entityDelegate;
 
@@ -58,7 +58,7 @@ public class EntityBeanStatsImpl
     private MutableBoundedRangeStatisticImpl	readyCountStat;
 
     public EntityBeanStatsImpl(EntityBeanStatsProvider delegate) {
-	super(delegate, "javax.management.j2ee.statistics.EntityBeanStats");
+	super(delegate, "org.glassfish.j2ee.statistics.EntityBeanStats");
 	this.entityDelegate = delegate;
 
 	initStats();

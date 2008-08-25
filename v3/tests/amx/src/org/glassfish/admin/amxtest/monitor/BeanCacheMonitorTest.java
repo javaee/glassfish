@@ -46,8 +46,8 @@ import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.monitor.BeanCacheMonitor;
 import com.sun.appserv.management.monitor.statistics.EJBCacheStats;
 
-import javax.management.j2ee.statistics.BoundedRangeStatistic;
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.BoundedRangeStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 import java.util.Iterator;
 import java.util.Set;
 

@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 
 import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
 import com.sun.enterprise.admin.monitor.stats.MutableCountStatisticImpl;
@@ -50,13 +50,13 @@ import com.sun.ejb.spi.stats.MessageDrivenBeanStatsProvider;
 
 public class MessageDrivenBeanStatsImpl
     extends EJBStatsImpl
-    implements javax.management.j2ee.statistics.MessageDrivenBeanStats
+    implements org.glassfish.j2ee.statistics.MessageDrivenBeanStats
 {
     private MessageDrivenBeanStatsProvider	messageDelegate;
     private MutableCountStatisticImpl		messageCountStat;
 
     public MessageDrivenBeanStatsImpl(MessageDrivenBeanStatsProvider delegate) {
-	super(delegate, "javax.management.j2ee.statistics.MessageDrivenBeanStats");
+	super(delegate, "org.glassfish.j2ee.statistics.MessageDrivenBeanStats");
 	this.messageDelegate = delegate;
 
 	initStats();

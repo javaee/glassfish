@@ -43,14 +43,14 @@
 
 package com.sun.appserv.management.monitor.statistics;
 
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.ServletStats;
-import javax.management.j2ee.statistics.TimeStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.ServletStats;
+import org.glassfish.j2ee.statistics.TimeStatistic;
 
 /** 
 	Defines additional Sun ONE Application Server specific statistics 
 	ServletStats interface.
-	Extension of javax.management.j2ee.statistics.ServletStats.
+	Extension of org.glassfish.j2ee.statistics.ServletStats.
 	@see com.sun.appserv.management.j2ee.Servlet
  */
 public interface AltServletStats extends ServletStats

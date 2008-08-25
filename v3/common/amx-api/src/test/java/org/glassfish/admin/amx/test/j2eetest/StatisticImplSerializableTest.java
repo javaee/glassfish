@@ -46,7 +46,7 @@ import com.sun.appserv.management.j2ee.statistics.TimeStatisticImpl;
 import com.sun.appserv.management.util.misc.MapUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
 
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

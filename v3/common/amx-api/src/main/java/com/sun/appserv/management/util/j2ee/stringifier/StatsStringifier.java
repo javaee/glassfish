@@ -39,7 +39,7 @@ import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.Stringifier;
 
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Stats;
 import java.util.Arrays;
 
 /**

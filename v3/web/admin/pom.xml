@@ -125,6 +125,7 @@
     </build>
     
     <dependencies>
+		
          <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>

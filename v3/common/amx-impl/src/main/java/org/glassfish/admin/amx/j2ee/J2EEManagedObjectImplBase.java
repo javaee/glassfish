@@ -37,7 +37,7 @@ import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
 
 import javax.management.ObjectName;
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Stats;
 import java.util.*;
 
 import java.util.Map;

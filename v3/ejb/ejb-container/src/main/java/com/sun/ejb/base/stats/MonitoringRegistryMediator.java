@@ -40,7 +40,7 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.spi.stats.*;
 import com.sun.enterprise.admin.monitor.registry.*;
 
-import javax.management.j2ee.statistics.Stats;
+import org.glassfish.j2ee.statistics.Stats;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;

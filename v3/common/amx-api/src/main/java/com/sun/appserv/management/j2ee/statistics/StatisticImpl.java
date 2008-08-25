@@ -45,7 +45,7 @@ package com.sun.appserv.management.j2ee.statistics;
 import com.sun.appserv.management.util.j2ee.stringifier.StatisticStringifier;
 import com.sun.appserv.management.util.misc.ObjectUtil;
 
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import java.io.Serializable;
 
 

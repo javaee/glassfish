@@ -48,7 +48,7 @@ import com.sun.appserv.management.monitor.statistics.WebServiceEndpointAggregate
 import org.glassfish.admin.amxtest.AMXTestBase;
 import org.glassfish.admin.amxtest.Capabilities;
 
-import javax.management.j2ee.statistics.CountStatistic;
+import org.glassfish.j2ee.statistics.CountStatistic;
 import java.io.IOException;
 import java.util.Set;
 

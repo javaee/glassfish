@@ -40,7 +40,7 @@ import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.Stringifier;
 
-import javax.management.j2ee.statistics.Statistic;
+import org.glassfish.j2ee.statistics.Statistic;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
