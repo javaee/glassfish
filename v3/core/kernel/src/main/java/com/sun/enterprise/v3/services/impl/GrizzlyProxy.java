@@ -187,6 +187,10 @@ public class GrizzlyProxy implements NetworkProxy {
                                  Adapter endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
+        if (endpointAdapter == null) {
+            throw new EndpointRegistrationException("The endpoint adapter is null");
+        }
+
         // THis is a hack, but we don't want to add virtual server support
         // for the Web Container as it already supports it.
         if (!nvVsMapper.contains(endpointAdapter.getClass().getName())) {
