@@ -51,29 +51,6 @@
 
 package org.glassfish.admingui.handlers;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
-
-import com.sun.webui.jsf.component.TableRowGroup;
-
-import com.sun.jsftemplating.annotation.Handler;
-import com.sun.jsftemplating.annotation.HandlerInput;
-import com.sun.jsftemplating.annotation.HandlerOutput;
-import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
-import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-
-//import com.sun.enterprise.appclient.jws.NamingConventions;
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
-
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ApplicationConfig;
 import com.sun.appserv.management.config.ClusterConfig;
@@ -81,24 +58,49 @@ import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfigCR;
-import com.sun.appserv.management.config.ModuleConfig;
 import com.sun.appserv.management.config.EJBModuleConfig;
 import com.sun.appserv.management.config.Enabled;
+import com.sun.appserv.management.config.HTTPListenerConfig;
+import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.J2EEApplicationConfig;
 import com.sun.appserv.management.config.LifecycleModuleConfig;
+import com.sun.appserv.management.config.ModuleConfig;
 import com.sun.appserv.management.config.ObjectType;
 import com.sun.appserv.management.config.ObjectTypeValues;
 import com.sun.appserv.management.config.RARModuleConfig;
-import com.sun.appserv.management.config.ResourceAdapterConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
+import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.WebModuleConfig;
-import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.j2ee.J2EEServer;
+import com.sun.appserv.management.j2ee.StateManageable;
+
+import com.sun.jsftemplating.annotation.HandlerInput;
+import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.annotation.Handler;
+import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+
+import com.sun.webui.jsf.component.TableRowGroup;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
-
 import javax.management.ObjectName;
+
+import org.glassfish.admingui.common.util.AMXRoot;
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.util.TargetUtil;
+
 
 public class ApplicationHandlers {
     /** Creates a new instance of ApplicationsHandler */
@@ -1811,27 +1813,12 @@ public class ApplicationHandlers {
      */
     static String getPortForApplication(String appName) {
         
-        return "8080";
-        /* TODO-V3
-         * 
-         * 
-        ObjectName appRef = null;
-        try {
-            appRef = (ObjectName)JMXUtil.invoke
-                ("com.sun.appserv:type=server,name=server,category=config",
-                "getApplicationRefByRef",
-                new Object[]{appName},
-                new String[]{"java.lang.String"});
-        } catch(Exception e) {
-            //exception is thrown when application-ref doesn't. For now catch exception and return empty port
-            return "";
-        }
-
+        DeployedItemRefConfig appRef = TargetUtil.getDeployedItemRefObject(appName, "server");
         String vsId = null;
         if (appRef == null) { // no ref found for this application
             vsId = getNonAdminVirtualServer();
         } else {
-            vsId = (String)JMXUtil.getAttribute(appRef, "virtual-servers");
+            vsId = TargetUtil.getAssociatedVS(appName, "server");
             if (vsId == null || vsId.length() ==0) { // no vs found for this application
                 vsId = getNonAdminVirtualServer();
             } else {
@@ -1846,30 +1833,23 @@ public class ApplicationHandlers {
         String port = null;
         Boolean secure = false;
         try{
-        ObjectName vsObjectName = (ObjectName)
-            JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
-            "getVirtualServer",
-            new Object[]{vsId, null},
-            new String[]{"java.lang.String", "java.lang.String"});
-        if (vsObjectName != null) {
-            String listeners = (String)JMXUtil.getAttribute(vsObjectName, "http-listeners");
-            if (listeners != null) {
-                StringTokenizer tok = new StringTokenizer(listeners, ",");
-                String listener = "";
-                while (tok.hasMoreTokens()) {
-                    listener = tok.nextToken();
-                    ObjectName listenerObjectName = (ObjectName)
-                        JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
-                        "getHttpListener",
-                        new Object[]{listener, null},
-                        new String[]{"java.lang.String", "java.lang.String"});
-                    secure = Boolean.valueOf((String) JMXUtil.getAttribute(listenerObjectName, "security-enabled"));
-                    port = (String)JMXUtil.getAttribute(listenerObjectName, "port");
-                    if (! secure) break;
+            final HTTPServiceConfig httpServiceConfig = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig();
+             VirtualServerConfig vsConfig = httpServiceConfig.getVirtualServerConfigMap().get(vsId);
+             if (vsConfig != null) {
+                String listeners = vsConfig.getHTTPListeners();
+                if (!GuiUtil.isEmpty(listeners)) {
+                    StringTokenizer tok = new StringTokenizer(listeners, ",");
+                    String listener = "";
+                    while (tok.hasMoreTokens()) {
+                        listener = tok.nextToken();
+                        HTTPListenerConfig hConfig = httpServiceConfig.getHTTPListenerConfigMap().get(listener);
+                        secure = Boolean.valueOf(hConfig.getSecurityEnabled());
+                        port = hConfig.getPort();
+                        if (! secure) break;
+                    }
                 }
             }
-        }
-        return (secure) ? "-" + port : port;
+            return (secure) ? "-" + port : port;
         }catch(Exception ex){
             //Maybe the vitrual server is not found, maybe there is no http listener
             //this can be the case due to user error during deployment. refer to issue#2807.
@@ -1878,33 +1858,18 @@ public class ApplicationHandlers {
             return "";
         }
         
-        */
     }
     
     // returns 'first' nonadmin virtual server -
     private static String getNonAdminVirtualServer() {
         
-        return "server";
-        
-        /* TODO-V3
-         * 
-        String vsId = null;
-        ObjectName[] vsObjectNames = (ObjectName[])
-            JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
-            "listVirtualServers",
-            new Object[]{null},
-            new String[]{"java.lang.String"});
-        if (vsObjectNames != null) {
-            for (int i = 0; i < vsObjectNames.length; i++) {
-                String id = (String)JMXUtil.getAttribute(vsObjectNames[i], "id");
-                if (!(id.equals(VirtualServer.ADMIN_VS))) {
-                    vsId = id;
-                    break;
-                }
+        Map<String, VirtualServerConfig> vsMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getVirtualServerConfigMap();
+        for(String vsName : vsMap.keySet()){
+            if (! vsName.equals("__asadmin")){
+                return vsName;
             }
         }
-        return vsId;
-         */
+        return "";
     }
     
     static private boolean includeAppRef( String appName, String appType, String filterValue ){ 
