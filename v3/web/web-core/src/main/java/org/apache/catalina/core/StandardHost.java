@@ -944,9 +944,11 @@ public class StandardHost
                 ((StandardHostValve) pipeline.getBasic()).setErrorReportValve(valve);
                 // END SJSAS 6374691
             } catch (Throwable t) {
-                log.severe(
+                log.log(
+                    Level.SEVERE,
                     sm.getString("standardHost.invalidErrorReportValveClass", 
-                                 errorReportValveClass));
+                                 errorReportValveClass),
+                    t);
             }
         }
 
