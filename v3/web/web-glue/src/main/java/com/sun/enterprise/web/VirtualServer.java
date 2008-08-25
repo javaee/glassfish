@@ -139,7 +139,7 @@ public class VirtualServer extends StandardHost {
     /**
      * The resource bundle containing the message strings for _logger.
      */
-    protected static final ResourceBundle _rb = _logger.getResourceBundle();
+    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     /**
      * Indicates whether the logger level is set to any one of 
@@ -1676,7 +1676,7 @@ public class VirtualServer extends StandardHost {
             if (t != null) {
                 Lifecycle container = starter.getContainer();
                 ((Context) container).setAvailable(false);
-                String msg = _rb.getString("vs.startContextError");
+                String msg = rb.getString("vs.startContextError");
                 msg = MessageFormat.format(msg,
                                            new Object[] { container,
                                                           getID() });

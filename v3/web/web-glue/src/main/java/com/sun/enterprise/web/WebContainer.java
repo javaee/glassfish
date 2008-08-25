@@ -319,7 +319,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * The resource bundle containing the message strings for _logger.
      */
-    protected static final ResourceBundle _rb = _logger.getResourceBundle();
+    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     /*
      * The current web container monitoring level
@@ -526,7 +526,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             logServiceFile = logService.getFile();
         }
         
-        _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, logServiceFile);
+        _embedded = new EmbeddedWebContainer(_serverContext, this, logServiceFile);
         
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -633,7 +633,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             try {
                 appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
             } catch (ConfigException e) {
-               String msg = _rb.getString("webcontainer.appsConfigError");
+               String msg = rb.getString("webcontainer.appsConfigError");
                _logger.log(Level.SEVERE, msg, e);
             }
 
@@ -762,10 +762,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             port = Integer.parseInt(httpListener.getPort());
         } catch (NumberFormatException nfe) {
-            String msg = _rb.getString("pewebcontainer.http_listener.invalid_port");
-            msg = MessageFormat.format(msg,
-                    httpListener.getPort(),
-                    httpListener.getId());
+            String msg = rb.getString("pewebcontainer.http_listener.invalid_port");
+            msg = MessageFormat.format(msg, httpListener.getPort(),
+                                       httpListener.getId());
             throw new IllegalArgumentException(msg);
         }
 
@@ -1100,11 +1099,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // stop the process.
             boolean isValid = new File(docroot).exists();
             if ( !isValid && defaultWebModule == null){
-
-                String msg = 
-                    _rb.getString("pewebcontainer.virtual_server.invalid_docroot");
-                msg = MessageFormat.format(msg,
-                        vs_id, docroot);
+                String msg = rb.getString(
+                    "pewebcontainer.virtual_server.invalid_docroot");
+                msg = MessageFormat.format(msg, vs_id, docroot);
                 throw new IllegalArgumentException(msg);
             } else if (!isValid) {
 
@@ -1112,7 +1109,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             + " has an invalid docroot: " + docroot );
             }
         } else if (defaultWebModule == null) {
-            String msg = _rb.getString("pewebcontainer.virtual_server.missing_docroot");
+            String msg = rb.getString("pewebcontainer.virtual_server.missing_docroot");
             msg = MessageFormat.format(msg, vs_id);
             throw new IllegalArgumentException(msg);
         }
@@ -1189,7 +1186,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }               
             } else {
                 if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
-                    String msg = _rb.getString(
+                    String msg = rb.getString(
                         "pewebcontainer.httpListener.mustNotDisable");
                     msg = MessageFormat.format(msg, httpListener.getId(),
                                                vs.getName());
@@ -1259,11 +1256,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         vs.getID(),
                         null);
         } catch (MonitoringRegistrationException mre) {
-            String msg = _logger.getResourceBundle().getString(
-                            "web.monitoringRegistrationError");
-            msg = MessageFormat.format(
-                            msg,
-                    "PWCRequestStats");
+            String msg = rb.getString("web.monitoringRegistrationError");
+            msg = MessageFormat.format(msg, "PWCRequestStats");
             _logger.log(Level.WARNING, msg, mre);
         }
     }
@@ -1526,7 +1520,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void stop() throws LifecycleException {
         // Validate and update our current component state
         if (!_started) {
-            String msg = _rb.getString("webcontainer.notStarted");
+            String msg = rb.getString("webcontainer.notStarted");
             throw new LifecycleException(msg);
         }
 
@@ -1613,8 +1607,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             updateDefaultWebModule(vs, vs.getPorts(),
                                     wmInfo);
                         } catch (LifecycleException le) {
-                            String msg = _rb.getString(
-                                    "webcontainer.defaultWebModuleError");
+                            String msg = rb.getString(
+                                "webcontainer.defaultWebModuleError");
                             msg = MessageFormat.format(
                                     msg,
                                     defaultPath,
@@ -2327,7 +2321,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 String value = props[i].getAttributeValue(WebProperty.VALUE);
                 if (name == null || value == null) {
                     throw new IllegalArgumentException(
-                            _rb.getString("webcontainer.nullWebProperty"));
+                        rb.getString("webcontainer.nullWebProperty"));
                 }
 
                 if (name.equalsIgnoreCase("persistenceFrequency")) {
@@ -2356,7 +2350,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 String value = props[i].getAttributeValue(WebProperty.VALUE);
                 if (name == null || value == null) {
                     throw new IllegalArgumentException(
-                            _rb.getString("webcontainer.nullWebProperty"));
+                        rb.getString("webcontainer.nullWebProperty"));
                 }
 
                 if (name.equalsIgnoreCase("persistenceScope")) {
@@ -3310,7 +3304,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String propValue = prop.getValue();
             if (propName == null || propValue == null) {
                 throw new IllegalArgumentException(
-                        _rb.getString("webcontainer.nullWebProperty"));
+                    rb.getString("webcontainer.nullWebProperty"));
             }
 
             if (propName.equalsIgnoreCase("enableCookies")) {
@@ -3924,12 +3918,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             mReg.registerHttpListenerStats(httpStats, httpListenerId, vsId, null);
             pwcRequestStatsImpl.addHttpListenerStats(httpStats);
         } catch (MonitoringRegistrationException mre) {
-            String msg =
-                _logger.getResourceBundle().getString(
-                    "web.monitoringRegistrationError");
-            msg = MessageFormat.format(
-                    msg,
-                    new Object[] { "HTTPListenerStats" });
+            String msg = rb.getString("web.monitoringRegistrationError");
+            msg = MessageFormat.format(msg, new Object[] { "HTTPListenerStats" });
             _logger.log(Level.WARNING, msg, mre);
         }        
     }

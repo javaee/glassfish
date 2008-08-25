@@ -90,9 +90,10 @@ import com.sun.logging.LogDomains;
 
 public class WebModuleContextConfig extends ContextConfig {
 
-    private static final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(
+        LogDomains.WEB_LOGGER);
     
-    protected static final ResourceBundle _rb = logger.getResourceBundle();
+    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     public final static int CHILDREN = 0;
     public final static int SERVLET_MAPPINGS = 1;
@@ -235,7 +236,7 @@ public class WebModuleContextConfig extends ContextConfig {
             
         } catch (Exception exception) { 
             context.setAvailable(false);
-            String msg = _rb.getString("webcontainer.webModuleDisabled");
+            String msg = rb.getString("webcontainer.webModuleDisabled");
             msg = MessageFormat.format(msg,
                                        new Object[] { context.getName() });
             logger.log(Level.SEVERE, msg, exception);
@@ -254,7 +255,7 @@ public class WebModuleContextConfig extends ContextConfig {
                                                       webBundleDescriptor);
         } catch (Throwable t){
             context.setAvailable(false);
-            String msg = _rb.getString(
+            String msg = rb.getString(
                 "webModuleContextConfig.webModuleDisabled");
             msg = MessageFormat.format(msg,context.getName());
             logger.log(Level.SEVERE, msg, t);

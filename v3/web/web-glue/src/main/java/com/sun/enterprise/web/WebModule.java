@@ -104,7 +104,8 @@ public class WebModule extends PwcWebModule {
     // ----------------------------------------------------- Class Variables
 
     private static final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
-    protected static final ResourceBundle _rb = logger.getResourceBundle();
+    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+
     private static final String ALTERNATE_FROM = "from=";
     private static final String ALTERNATE_DOCBASE = "dir=";
 
@@ -892,7 +893,7 @@ public class WebModule extends PwcWebModule {
             Class clazz = getLoader().getClassLoader().loadClass(className);
             return clazz.newInstance();
         } catch (Throwable ex){
-            String msg = _rb.getString("webcontainer.unableToLoadExtension");
+            String msg = rb.getString("webcontainer.unableToLoadExtension");
             msg = MessageFormat.format(msg, new Object[] { className,
                                                            getName() });
             logger.log(Level.SEVERE, msg, ex);
@@ -1105,7 +1106,7 @@ public class WebModule extends PwcWebModule {
                 String value = props[i].getAttributeValue("value");
                 if (name == null || value == null) {
                     throw new IllegalArgumentException(
-                            _rb.getString("webcontainer.nullWebProperty"));
+                        rb.getString("webcontainer.nullWebProperty"));
                 }
 
                 if (name.equalsIgnoreCase("singleThreadedServletPoolSize")) {
@@ -1330,8 +1331,8 @@ public class WebModule extends PwcWebModule {
                             URL url = file.toURI().toURL();
                             loader.addRepository(url.toString());
                         } catch (MalformedURLException mue2) {
-                            String msg = _rb.getString(
-                                    "webcontainer.classpathError");
+                            String msg = rb.getString(
+                                "webcontainer.classpathError");
                             Object[] params = { path };
                             msg = MessageFormat.format(msg, params);
                             logger.log(Level.SEVERE, msg, mue2);
@@ -1376,7 +1377,7 @@ public class WebModule extends PwcWebModule {
 
             if (name == null || value == null) {
                 throw new IllegalArgumentException(
-                        _rb.getString("webcontainer.nullWebProperty"));
+                    rb.getString("webcontainer.nullWebProperty"));
             }
 
             if (name.equalsIgnoreCase("ignoreHiddenJarFiles")) {
@@ -1495,7 +1496,7 @@ public class WebModule extends PwcWebModule {
                 String value = props[i].getAttributeValue(WebProperty.VALUE);
                 if (name == null || value == null) {
                     throw new IllegalArgumentException(
-                        _rb.getString("webcontainer.nullWebProperty"));
+                        rb.getString("webcontainer.nullWebProperty"));
                 }
 
                 if (name.equalsIgnoreCase("timeoutSeconds")) {
@@ -1549,7 +1550,7 @@ public class WebModule extends PwcWebModule {
                     String value = props[i].getAttributeValue(WebProperty.VALUE);
                     if (name == null || value == null) {
                         throw new IllegalArgumentException(
-                            _rb.getString("webcontainer.nullWebProperty"));
+                            rb.getString("webcontainer.nullWebProperty"));
                     }
 
                     if (name.equalsIgnoreCase("cookieName")) {

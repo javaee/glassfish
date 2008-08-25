@@ -81,12 +81,12 @@ final class WebModuleListener
     /**
      * The logger used to log messages
      */
-    private static Logger _logger;
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
 
     /**
      * This indicates whether debug logging is on or not
      */
-    private static boolean _debugLog;
+    private static boolean _debugLog = _logger.isLoggable(Level.FINE);
 
     /**
      * Descriptor object associated with this web application.
@@ -124,14 +124,8 @@ final class WebModuleListener
      */
     public void lifecycleEvent(LifecycleEvent event) {
 
-        if (_logger == null) {
-            _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
-            _debugLog = _logger.isLoggable(Level.FINE);
-        }
-
-        WebModule webModule;
-
         // Identify the context we are associated with
+        WebModule webModule;
         try {
             webModule = (WebModule) event.getLifecycle();
         } catch (ClassCastException e) {

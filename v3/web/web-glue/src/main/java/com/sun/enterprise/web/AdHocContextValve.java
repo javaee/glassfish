@@ -38,6 +38,7 @@ package com.sun.enterprise.web;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -65,6 +66,8 @@ public class AdHocContextValve implements GlassFishValve {
 
     private static final Logger LOGGER =
         LogDomains.getLogger(LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     private static final String VALVE_INFO =
         "com.sun.enterprise.web.AdHocContextValve";
@@ -114,7 +117,7 @@ public class AdHocContextValve implements GlassFishValve {
                 adHocServlet.service(hreq, hres);
             } catch (Throwable t) {
                 hres.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                String msg = LOGGER.getResourceBundle().getString(
+                String msg = rb.getString(
                     "webmodule.adHocContextValve.adHocServletServiceError");
                 msg = MessageFormat.format(
                             msg,
@@ -128,7 +131,7 @@ public class AdHocContextValve implements GlassFishValve {
             }
         } else {
             hres.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            String msg = LOGGER.getResourceBundle().getString(
+            String msg = rb.getString(
                 "webmodule.adHocContextValve.noAdHocServlet");
             msg = MessageFormat.format(
                             msg,

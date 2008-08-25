@@ -60,9 +60,9 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
-import com.sun.web.server.WebContainerListener;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-
+import com.sun.logging.LogDomains;
+import com.sun.web.server.WebContainerListener;
 
 /**
  * Represents an embedded Catalina web container within the Application Server.
@@ -78,7 +78,13 @@ public final class EmbeddedWebContainer extends Embedded {
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    private Logger _logger = null;
+    protected static final Logger _logger
+        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+
+    /**
+     * The resource bundle containing the message strings for _logger.
+     */
+    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     private WebContainerFeatureFactory webContainerFeatureFactory;
 
@@ -100,12 +106,10 @@ public final class EmbeddedWebContainer extends Embedded {
  
     // ------------------------------------------------------------ Constructor
 
-    public EmbeddedWebContainer(Logger webLogger,
-                                ServerContext serverContext,
+    public EmbeddedWebContainer(ServerContext serverContext,
                                 WebContainer webContainer,
                                 String logServiceFile) {
         super();
-        _logger = webLogger;
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
         this.serverContext = serverContext;
@@ -284,7 +288,9 @@ public final class EmbeddedWebContainer extends Embedded {
             Class clazz = Class.forName(className);
             return (ContainerListener)clazz.newInstance();
         } catch (Throwable ex){
-            _logger.log(Level.SEVERE,ex.getMessage() + ":" + className, ex);          
+            _logger.log(Level.SEVERE,
+                        "Unable to instantiate ContainerListener of type " +
+                        className, ex);          
         }
         return null;
     }
@@ -378,9 +384,10 @@ public final class EmbeddedWebContainer extends Embedded {
             }
         }
 
-        _logger.log(Level.FINE,"Creating connector for address='" +
-                  ((address == null) ? "ALL" : address) +
-                  "' port='" + port + "' protocol='" + protocol + "'");
+        _logger.log(Level.FINE,
+                    "Creating connector for address='" +
+                    ((address == null) ? "ALL" : address) +
+                    "' port='" + port + "' protocol='" + protocol + "'");
 
         WebConnector connector = new WebConnector(webContainer);
 
@@ -416,7 +423,7 @@ public final class EmbeddedWebContainer extends Embedded {
      */
     public Engine createEngine() {
 
-        StandardEngine engine = new WebEngine(webContainer, _logger);
+        StandardEngine engine = new WebEngine(webContainer);
 
         engine.setDebug(debug);
         // Default host will be set to the first host added
@@ -436,13 +443,9 @@ public final class EmbeddedWebContainer extends Embedded {
     static class WebEngine extends StandardEngine {
 
         private WebContainer webContainer;
-        private Logger _logger;
-        private ResourceBundle _rb;
 
-        public WebEngine(WebContainer webContainer, Logger _logger) {
+        public WebEngine(WebContainer webContainer) {
             this.webContainer = webContainer;
-            this._logger = _logger;
-            this._rb = _logger.getResourceBundle();
         }
 
         public Realm getRealm(){
@@ -476,7 +479,7 @@ public final class EmbeddedWebContainer extends Embedded {
                 Throwable t = starter.waitDone(); 
                 if (t != null) {
                     Lifecycle container = starter.getContainer();
-                    String msg = _rb.getString("embedded.startVirtualServerError");
+                    String msg = rb.getString("embedded.startVirtualServerError");
                     msg = MessageFormat.format(msg, new Object[] { container });
                     _logger.log(Level.SEVERE, msg, t);
                 }
