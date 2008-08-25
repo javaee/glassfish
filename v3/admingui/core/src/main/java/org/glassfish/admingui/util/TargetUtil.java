@@ -54,7 +54,6 @@ import com.sun.appserv.management.config.ResourceRefConfig;
 import com.sun.appserv.management.config.ResourceRefConfigCR;
 import com.sun.appserv.management.config.Enabled;
 import com.sun.appserv.management.config.StandaloneServerConfig;
-import com.sun.appserv.management.config.ServerRefConfig;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 

@@ -58,7 +58,7 @@
 	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
 	     <sun:form id="form"> 
 <!-- #include "/shared/treeBreadcrumbs.inc" -->
-		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" id="cts"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
+		<sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
 		    <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
 			<sun:commonTask rendered="$session{showRegistration}"
 			    text="#{registrationNodeText}"
@@ -74,40 +74,16 @@
                             onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">                             
                         </sun:commonTask>
 		    </sun:commonTasksGroup>
-                    
-
-                    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Deployment}">
-                        <!afterCreate
-                            getClientId(component="$this{component}" clientId=>$attribute{deploymentTasksId});
-                        />
-		    </sun:commonTasksGroup>
-                    <event>
-                        <!afterCreate
-                            getUIComponent(clientId="#{deploymentTasksId}"  component=>$attribute{component})
-                            includeIntegrations(type="org.glassfish.admingui:commonTaskDeployment" root="#{component}");
-                        />
-                    </event>
-                    
-                    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Monitoring}">
-                        <!afterCreate
-                            getClientId(component="$this{component}" clientId=>$attribute{monitoringTaskId});
-                        />
-		    </sun:commonTasksGroup>
-                    <event>
-                        <!afterCreate
-                            getUIComponent(clientId="#{monitoringTaskId}"  component=>$attribute{component})
-                            includeIntegrations(type="org.glassfish.admingui:commonTaskMonitoring" root="#{component}");
-                        />
-                    </event>
-                    
-                    
+                     
+                    <sun:commonTasksGroup id="deployment" title="$resource{i18n.commonTasks.group.Deployment}" />
+                    <sun:commonTasksGroup id="monitoring"  title="$resource{i18n.commonTasks.group.Monitoring}" />
                     
 #include "/commonTaskDoc.inc"                    
 		</sun:commonTasksSection>
                  <event>
                     <!afterCreate
-                        getUIComponent(clientId="form:cts"  component=>$attribute{component})
-                        includeIntegrations(type="org.glassfish.admingui:commonTaskGroup" root="#{component}");
+                        getUIComponent(clientId="form:commonTasksSection"  component=>$attribute{component})
+                        includeIntegrations(type="org.glassfish.admingui:commonTask" root="#{component}");
                     />
                 </event>
 #include "/sysnet/regReminder.inc"
