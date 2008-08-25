@@ -40,10 +40,13 @@
  */
 package org.glassfish.admingui.common.util;
 
+import com.sun.appserv.management.config.ApplicationConfig;
+import com.sun.appserv.management.config.EngineConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.PropertyConfig;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.AMXRoot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -198,6 +201,27 @@ public class AMXUtil {
        if (GuiUtil.isEmpty(value))
            return;
        convertedMap.put(PropertiesAccess.PROPERTY_PREFIX + propName, value);
+    }
+    
+    public static boolean isAppType(ApplicationConfig testApp, String type){
+        Map<String, EngineConfig> engineConfigMap = testApp.getEngineConfigMap();
+        for(EngineConfig eConfig : engineConfigMap.values() ){
+            String sniffer = eConfig.getSniffer();
+            if (sniffer.equals(type))
+                return true;
+        }
+        return false;
+    }
+    
+    public static Map<String, ApplicationConfig> getApplicationConfigByType(String type){
+        Map result = new HashMap();
+        Map<String, ApplicationConfig> appConfigMap = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap();
+        for(ApplicationConfig aConfig : appConfigMap.values()){
+            if (isAppType(aConfig, type)){
+                result.put(aConfig.getName(), aConfig);
+            }
+        }
+        return result;
     }
 
 }

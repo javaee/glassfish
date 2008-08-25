@@ -2,17 +2,15 @@
 package org.glassfish.admingui.common.handlers;
         
 import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import org.glassfish.admingui.common.util.AMXUtil;
 
 import org.glassfish.admingui.common.tree.FilterTreeEvent;
 
 import java.util.ArrayList;
-
 import java.util.List;
-import javax.management.ObjectName;
 
 /**
  *
@@ -44,7 +42,7 @@ public class CommonTreeHandlers {
         String appType = (String)handlerCtx.getInputValue("appType");
         for(Object oneChild: orig ){
             if (oneChild instanceof ApplicationConfig){
-                if (isAppType( (ApplicationConfig) oneChild, appType)){
+                if (AMXUtil.isAppType( (ApplicationConfig) oneChild, appType)){
                     result.add(oneChild);
                 }
             }
@@ -52,8 +50,5 @@ public class CommonTreeHandlers {
         return result;
     }
      
-    private static boolean isAppType(ApplicationConfig testApp, String type){
-	//TODO: should loop through the sniffer to see if there is a matching one.
-        return true;
-    }
+    
 }
