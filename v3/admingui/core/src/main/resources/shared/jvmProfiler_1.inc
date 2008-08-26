@@ -39,7 +39,6 @@
 
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings")
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");   
         getServerProfilerAttributes(ConfigName="#{configName}", ProfilerName=>$page{profilerName}, ProfilerEnabled=>$attribute{profilerEnabled}, Classpath=>$attribute{classPath}, NativeLibrary=>$attribute{nativeLibrary}
                     edit=>$page{edit});

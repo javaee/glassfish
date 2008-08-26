@@ -35,7 +35,7 @@
 -->
 <!-- header.jsf -->
 <!initPage
-    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 />
 <sun:page>
     <!beforeCreate

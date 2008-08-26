@@ -36,9 +36,9 @@
 <!-- shared/jvmGeneral_1.inc -->
 <!-- when including this page, should followed by including jvmGeneral_2.inc to make a complete page -->
 
+
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings")
         # for EE, the following session attribute will just be ignored.
         setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");  
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");        

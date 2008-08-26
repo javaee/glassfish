@@ -34,11 +34,12 @@
  holder.
 -->
 <!-- configuration/configuration.jsf -->
-
+<!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
 <sun:page>
     <!beforeCreate 
-        setResourceBundle(key="i18n" bundle="core.Strings")
-        setResourceBundle(key="help" bundle="core.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
     />
 #include "/shared/restart.inc"    

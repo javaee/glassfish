@@ -37,7 +37,7 @@
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");/>
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
 
 <sun:html id="html1">
 <sun:head title="$resource{i18n.loginPageTitle}">

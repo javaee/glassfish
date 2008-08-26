@@ -35,8 +35,8 @@
 -->
 <!-- appServer/serverInstJvmGeneral.jsf -->
 <!initPage
-setResourceBundle(key="help" bundle="core.Helplinks")
-setAttribute(key="helpKey" value="$resource{help.serverInstJvmGeneral}" );
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
 #include "/shared/jvmGeneral_1.inc"
 #include "serverInstTabs.inc"

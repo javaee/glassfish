@@ -36,11 +36,12 @@
 -->
 
 <!-- appServer/serverInstGeneralPe.jsf -->
-
+<!initPage
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+/>
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-	setResourceBundle(key="help" bundle="core.Helplinks");
         setPageSessionAttribute(key="PE" value="#{false}");
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");

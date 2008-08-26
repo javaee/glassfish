@@ -35,7 +35,7 @@
 -->
 
 <!initPage
-    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
     getAmxRoot(amxRoot=>$attribute{amxRoot});
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");

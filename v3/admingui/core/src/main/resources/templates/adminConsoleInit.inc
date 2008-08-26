@@ -13,4 +13,4 @@ if (#{pageSession.configName}) {
         createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
     }
 }
-setAttribute(key="i18nBundle", value="core.Strings");
+setAttribute(key="i18nBundle", value="org.glassfish.admingui.core.Strings");

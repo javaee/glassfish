@@ -37,9 +37,6 @@
 <!-- when including this page, should followed by including jvmPath_2.inc to make a complete page -->
 
 <sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings")
-    />
     <event>
         <!beforeCreate
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");    
