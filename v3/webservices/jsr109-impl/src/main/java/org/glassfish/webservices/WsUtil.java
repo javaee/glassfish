@@ -37,10 +37,12 @@ package org.glassfish.webservices;
 
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.BindingID;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServiceHandlerChain;
 import com.sun.enterprise.deployment.WebServiceHandler;
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
@@ -2202,7 +2204,7 @@ public class WsUtil {
     
     /*
      * Calls @PreDestroy method in the implementor
-     *//*
+     */
     public void doPreDestroy(WebServiceEndpoint ep, ClassLoader loader) {
         // Call @PreDestroy in endpoint, if any
         try {
@@ -2238,7 +2240,7 @@ public class WsUtil {
         }        
     }
 
-    */
+    
     /*
      * Calls the PostConstruct / PreDestroy method
      */
@@ -2400,7 +2402,7 @@ public class WsUtil {
             ((javax.xml.ws.soap.SOAPBinding)bindingObj).setRoles(roles);
         }        
     }
-     /*
+
     public void configureJAXWSClientHandlers(javax.xml.ws.Service svcClass, ServiceReferenceDescriptor desc) {
 
         // Create a resolver and get all ports for the Service
@@ -2473,7 +2475,7 @@ public class WsUtil {
                 // one set for each protocol
                 for(Iterator<String> s = protocols.iterator(); s.hasNext();) {
                     javax.xml.ws.handler.PortInfo portInfo;
-                    portInfo = new PortInfoImpl(BindingID.parse(s.next()), 
+                    portInfo = new PortInfoImpl(BindingID.parse(s.next()),
                                     nextPort, desc.getServiceName());
                     resolver.setHandlerChain(portInfo, handlerInfo);
                 }
@@ -2485,7 +2487,7 @@ public class WsUtil {
         svcClass.setHandlerResolver(resolver);
         
         //XXX TODO : What to do with soap roles on client side ?
-    }*/
+    }
 
     /* This util is to implement the jaxws table that defines how MTOM is set
     *  

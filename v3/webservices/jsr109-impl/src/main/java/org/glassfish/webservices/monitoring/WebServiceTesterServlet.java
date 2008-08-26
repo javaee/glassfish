@@ -558,12 +558,12 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
     private String wsImport(URL wsdlLocation) throws IOException {
 
         ClassLoader parentCl = Thread.currentThread().getContextClassLoader();
-        URL urlforjavaee =   new File("javax.javaee-10.0-SNAPSHOT.jar").toURL();
+       /* URL urlforjavaee =   new File("javax.javaee-10.0-SNAPSHOT.jar").toURL();
         URL[] urls = new URL[1];
         urls[0]= urlforjavaee;
         URLClassLoader urlClassLoader = new  URLClassLoader(urls,parentCl);
         Thread.currentThread().setContextClassLoader(urlClassLoader);
-        File classesDir = new File(System.getProperty("java.io.tmpdir"));
+       */ File classesDir = new File(System.getProperty("java.io.tmpdir"));
         // create a dumy file to have a unique temporary name for a directory
         classesDir = File.createTempFile("jax-ws", "tester", classesDir);
         classesDir.delete();
