@@ -596,7 +596,8 @@ public final class PEAccessLogValve
     }
 
    
-    public void postInvoke(Request request, Response response){
+    public void postInvoke(Request request, Response response)
+            throws IOException {
 
         if (!started || (condition!=null &&
                 null!=request.getRequest().getAttribute(condition))) {
@@ -644,7 +645,7 @@ public final class PEAccessLogValve
      * Log the specified message to the log file, switching files if the date
      * has changed since the previous log call.
      */
-    public void log() {
+    public void log() throws IOException {
         
         if (rotatable){
 
@@ -909,7 +910,8 @@ public final class PEAccessLogValve
      * file, and false if we have rotated
      */
     private synchronized void open(String dateStamp,
-                                   boolean firstAccessLogFile) {
+                                   boolean firstAccessLogFile)
+            throws IOException {
         
         // Create the directory if necessary
         File dir = new File(directory);
@@ -973,13 +975,17 @@ public final class PEAccessLogValve
             fos = new FileOutputStream(logFile, true);
             fileChannel = fos.getChannel();
 
-        } catch (IOException e) {
-            try{
-                if ( fileChannel != null )
+        } catch (IOException ioe) {
+            try {
+                if ( fileChannel != null ) {
                     fileChannel.close();
-            } catch (IOException ex){
+                }
+            } catch (IOException e){
                 ;
             }
+            
+            // Rethrow IOException
+            throw ioe;
         } 
 
     }
@@ -1073,7 +1079,12 @@ public final class PEAccessLogValve
         dateFormatter.setTimeZone(tz);
 
         long systime = System.currentTimeMillis();
-        open(dateFormatter.format(new Date(systime)), true);
+        try {
+            open(dateFormatter.format(new Date(systime)), true);
+        } catch (IOException ioe) {
+            throw new LifecycleException(ioe);
+        }
+
         lastAccessLogCreationTime = systime;
 
         if (!flushRealTime){
@@ -1119,7 +1130,11 @@ public final class PEAccessLogValve
         // Loop until the termination semaphore is set
         while (!threadDone) {
             threadSleep();
-            log();
+            try {
+                log();
+            } catch (IOException ioe) {
+                threadDone = true;
+            }
         }
 
     }
