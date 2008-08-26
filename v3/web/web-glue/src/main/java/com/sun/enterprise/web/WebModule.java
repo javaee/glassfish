@@ -1567,6 +1567,8 @@ public class WebModule extends PwcWebModule {
                         cookieConfig.setDomain(value);
                     } else if (name.equalsIgnoreCase("cookieComment")) {
                         cookieConfig.setComment(value);
+                    } else if (name.equalsIgnoreCase("cookieSecure")) {
+                        cookieConfig.setSecure(value);
                     } else {
                         Object[] params = { name, value };
                         logger.log(Level.WARNING,
