@@ -184,7 +184,7 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand {
         } else {
             throw new CommandValidationException(getLocalizedString(
                     "OptionIsRequired",
-                    new Object[]{ADMIN_USER}));
+                    new Object[]{USER}));
         }
 
     }
