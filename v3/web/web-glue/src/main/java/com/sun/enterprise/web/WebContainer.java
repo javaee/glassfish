@@ -1459,7 +1459,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureState();
         vs.configureRemoteAddressFilterValve();
         vs.configureRemoteHostFilterValve(httpProtocol);
-        vs.configureSSOValve(globalSSOEnabled, webContainerFeatureFactory);
+        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
         vs.configureRedirect();
         vs.configureErrorPage();
 
@@ -3594,7 +3594,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 || "denyRemoteAddress".equals(name)) {
             vs.configureRemoteAddressFilterValve();
         } else if (Constants.SSO_ENABLED.equals(name)) {
-            vs.configureSSOValve(globalSSOEnabled, webContainerFeatureFactory);
+            vs.configureSingleSignOn(globalSSOEnabled,
+                                     webContainerFeatureFactory);
         } else if ("authRealm".equals(name)) {
             vs.configureAuthRealm(securityService);
         } else if (name.startsWith("send-error")) {

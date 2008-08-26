@@ -62,11 +62,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.logging.*;
- 
+import java.util.logging.*; 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
-
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.DefaultContext;
@@ -879,6 +879,18 @@ public class StandardHost
         return statusPages.get(Integer.valueOf(errorCode));
     }
     // END SJSAS 6324911
+
+
+    /**
+     * Configures the Secure attribute of the given SSO cookie.
+     *
+     * @param cookie the SSO cookie to be configured
+     * @param hreq the HttpServletRequest that has initiated the SSO session
+     */
+    public void configureSingleSignOnCookieSecure(Cookie cookie,
+                                                  HttpServletRequest hreq) {
+        cookie.setSecure(hreq.isSecure());
+    }
 
 
     /**

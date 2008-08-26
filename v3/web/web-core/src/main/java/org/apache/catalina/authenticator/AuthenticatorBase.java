@@ -96,6 +96,7 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.Session;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
@@ -961,7 +962,12 @@ public abstract class AuthenticatorBase
         Cookie cookie = new Cookie(Constants.SINGLE_SIGN_ON_COOKIE, value);
         cookie.setMaxAge(-1);
         cookie.setPath("/");
-        cookie.setSecure(hreq.isSecure());
+        StandardHost host = (StandardHost) context.getParent();
+        if (host != null) {
+            host.configureSingleSignOnCookieSecure(cookie, hreq);
+        } else {
+            cookie.setSecure(hreq.isSecure());
+        }
         hres.addCookie(cookie);
         
         // Register this principal with our SSO valve

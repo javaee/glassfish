@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.ContainerListener;
@@ -67,6 +68,8 @@ import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -82,12 +85,13 @@ public class VirtualServer extends StandardHost {
 
     public static final String ADMIN_VS = "__asadmin";
 
-    static final String STATE = "state";
-    static final String SSO_MAX_IDLE="sso-max-inactive-seconds";
-    static final String SSO_REAP_INTERVAL="sso-reap-interval-seconds";
-    static final String DISABLED = "disabled";
-    static final String OFF = "off";
-    static final String ON = "on";
+    private static final String STATE = "state";
+    private static final String SSO_MAX_IDLE ="sso-max-inactive-seconds";
+    private static final String SSO_REAP_INTERVAL ="sso-reap-interval-seconds";
+    private static final String SSO_COOKIE_SECURE ="ssoCookieSecure";
+    private static final String DISABLED = "disabled";
+    private static final String OFF = "off";
+    private static final String ON = "on";
 
     // ------------------------------------------------------------ Constructor
 
@@ -215,6 +219,10 @@ public class VirtualServer extends StandardHost {
      */
     private PEAccessLogValve accessLogValve;
     
+
+    // The value of the ssoCookieSecure property
+    private String ssoCookieSecure = null;
+
 
     // ------------------------------------------------------------- Properties
 
@@ -376,8 +384,6 @@ public class VirtualServer extends StandardHost {
     }
 
 
-    // --------------------------------------------------------- Public Methods
-
     /**
      * Return descriptive information about this ContractProvider implementation and
      * the corresponding version number, in the format
@@ -385,6 +391,26 @@ public class VirtualServer extends StandardHost {
      */
     public String getInfo() {
         return _info;
+    }
+
+
+    // --------------------------------------------------------- Public Methods
+
+
+    /**
+     * Configures the Secure attribute of the given SSO cookie.
+     *
+     * @param ssoCookie the SSO cookie to be configured
+     * @param hreq the HttpServletRequest that has initiated the SSO session
+     */
+    @Override
+    public void configureSingleSignOnCookieSecure(Cookie ssoCookie,
+                                                  HttpServletRequest hreq) {
+        super.configureSingleSignOnCookieSecure(ssoCookie, hreq);
+        if (ssoCookieSecure != null &&
+                !(ssoCookieSecure.equals(SessionCookieConfig.DYNAMIC_SECURE))) {
+            ssoCookie.setSecure(Boolean.parseBoolean(ssoCookieSecure));
+        }
     }
 
 
@@ -1380,7 +1406,7 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures the SSO valve of this VirtualServer.
      */
-    void configureSSOValve(
+    void configureSingleSignOn(
             boolean globalSSOEnabled,
             WebContainerFeatureFactory webContainerFeatureFactory) {
 
@@ -1443,6 +1469,8 @@ public class VirtualServer extends StandardHost {
 
                 addValve((GlassFishValve) sso);
 
+                configureSingleSignOnCookieSecure();
+
             } catch (Exception e) {
                 _logger.log(Level.WARNING, "webcontainer.ssobadconfig", e);
                 _logger.log(Level.WARNING, "webcontainer.ssodisabled",
@@ -1465,6 +1493,7 @@ public class VirtualServer extends StandardHost {
         }
         return null;
     }
+
     
     /**
      * Configures this VirtualServer with its state (on | off | disabled).
@@ -1739,9 +1768,8 @@ public class VirtualServer extends StandardHost {
      *
      * @return The value of the sso-enabled property for this VirtualServer
      */
-    private boolean isSSOEnabled(boolean globalSSOEnabled)
-    {
-        Property ssoProperty  = getPropertyByName(Constants.SSO_ENABLED);
+    private boolean isSSOEnabled(boolean globalSSOEnabled) {
+        Property ssoProperty = getPropertyByName(Constants.SSO_ENABLED);
 
         if (ssoProperty == null || ssoProperty.getValue() == null) {
             return globalSSOEnabled;
@@ -1770,6 +1798,7 @@ public class VirtualServer extends StandardHost {
             return ConfigBeansUtilities.toBoolean(prop.getValue());
         }
     }
+
 
     /**
      * Starts the children (web contexts) of this virtual server
@@ -1803,4 +1832,31 @@ public class VirtualServer extends StandardHost {
             }
         }
     }*/
+
+
+    /**
+     * Evaluates the ssoCookieSecure property of this virtual server, if
+     * present.
+     */
+    private void configureSingleSignOnCookieSecure() {
+
+        if (vsBean == null) {
+            return;
+        }
+        Property prop = vsBean.getProperty(SSO_COOKIE_SECURE);
+        if (prop != null) {
+            String propValue = prop.getValue();
+            if ((propValue == null) ||
+                    (!propValue.equalsIgnoreCase("true") &&
+                    !propValue.equalsIgnoreCase("false") &&
+                    !propValue.equalsIgnoreCase(
+                            SessionCookieConfig.DYNAMIC_SECURE))) {
+                _logger.warning("Illegal value for " + SSO_COOKIE_SECURE +
+                                " property: " + propValue);
+            } else {
+                ssoCookieSecure = propValue;
+            }        
+        }
+    }
+
 }
