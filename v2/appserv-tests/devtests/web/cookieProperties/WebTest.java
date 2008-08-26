@@ -128,6 +128,14 @@ public class WebTest {
                 fail = true;
             }
 
+            // Check cookie Secure attribute
+            String secure = getCookieField(cookie, "Secure");
+            if (secure == null) {
+                System.err.println("Missing cookie Secure attribute");
+                stat.addStatus(TEST_NAME, stat.FAIL);
+                fail = true;
+            }
+
         } else {
             System.err.println("Missing Set-Cookie response header");
             stat.addStatus(TEST_NAME, stat.FAIL);

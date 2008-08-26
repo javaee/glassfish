@@ -5,6 +5,7 @@
       <property name="cookiePath" value="/" />
       <property name="cookieDomain" value=".iplanet.com" />
       <property name="cookieComment" value="Sun-Java-System/Application-Server-PE-8.0 Session Tracking Cookie" />
+      <property name="cookieSecure" value="true" />
     </cookie-properties>
   </session-config>
 </sun-web-app>
