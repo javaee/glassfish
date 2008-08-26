@@ -58,7 +58,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
@@ -496,5 +495,5 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
     }
     
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
-    public static final String RESOURCE_NAME = "core.Strings";
+    public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
 }
