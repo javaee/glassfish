@@ -246,12 +246,15 @@ public interface DomainRoot extends Container
     
     public RuntimeMgr getRuntimeMgr();
     
+    public LoggingPropertiesMgr getLoggingPropertiesMgr();
+    
     /**
         Return the time the domain admin server has been running.
         uptime[0] contains the time in milliseconds.  uptime[1] contains a human-readable
         string describing the duration.
      */
     public Object[]     getUptimeMillis();
+    
 }
 
 
