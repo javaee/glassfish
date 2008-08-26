@@ -69,16 +69,16 @@ public class WebRequestTelemetry{
     //Provides the cumulative value of the error count. The error count represents 
     //the number of cases where the response code was greater than or equal to 400.
     private Counter errorCount = CounterFactory.createCount();
-    
+    private TreeNode webRequestNode = null;
     private TimeStats requestProcessTime = TimeStatsFactory.createTimeStatsMilli();
     private Collection<ProbeClientMethodHandle> handles;
-    private boolean webMonitoringEnabled;
-    private Logger logger;    
+    private Logger logger;
+    private boolean isEnabled = true;
     
     public WebRequestTelemetry(TreeNode parent, boolean webMonitoringEnabled, Logger logger) {
         try {
             this.logger = logger;
-            this.webMonitoringEnabled = webMonitoringEnabled;
+            webRequestNode = parent;
             //add maxTime attribute    
             Method m1 = requestProcessTime.getClass().getMethod("getMaximumTime", (Class[]) null);
             TreeNode maxTime = TreeNodeFactory.createMethodInvoker("maxTime", requestProcessTime, "request", m1);
@@ -102,15 +102,12 @@ public class WebRequestTelemetry{
         }
     }
 
-    ThreadLocal<Long> entry = new ThreadLocal<Long>();
-
     @ProbeListener("web:request::requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response) {
         logger.finest("[TM]requestStartEvent received - request = " + 
                             request + ": response = " + response);
-	//entry.set(System.currentTimeMillis());
         requestProcessTime.entry();
     }
 
@@ -124,15 +121,11 @@ public class WebRequestTelemetry{
         if (statusCode > 400)
             errorCount.increment();
         
-        //long timeTaken = System.currentTimeMillis() - entry.get();
-
         logger.finest("[TM]requestEndEvent received - request = " + 
                             request + ": response = " + response + 
                             " :Response code = " + statusCode + 
                             " :Response time = " + requestProcessTime.getTime());
 
-	//entry.set(null); //Not sure if we need this
-        
     }        
     
     public long getProcessTime() {
@@ -142,37 +135,24 @@ public class WebRequestTelemetry{
     
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
-        if (!webMonitoringEnabled){
-            //disable handles
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
     }
     
-    public void enableProbeListenerHandles(boolean isEnabled) {
-        if (isEnabled != webMonitoringEnabled) {
-            webMonitoringEnabled = isEnabled;
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
+    public boolean isEnabled() {
+        return isEnabled;
     }
     
-    private void tuneProbeListenerHandles(boolean shouldEnable) {
-        //disable handles
-        for (ProbeClientMethodHandle handle : handles) {
-            if (shouldEnable)
-                handle.enable();
-            else
-                handle.disable();
-        }
-        
-    }
-
-    public void enableMonitoring(boolean isEnable) {
+    public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
         //delegate the request to the child nodes
+        if (isEnabled != flag) {
+            for (ProbeClientMethodHandle handle : handles) {
+                if (flag == true) 
+                    handle.enable();
+                else
+                    handle.disable();
+            }
+            webRequestNode.setEnabled(flag);
+            isEnabled = flag;
+        }
     }
-    
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-    
 }

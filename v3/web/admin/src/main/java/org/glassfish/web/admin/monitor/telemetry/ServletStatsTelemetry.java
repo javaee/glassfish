@@ -58,10 +58,13 @@ public class ServletStatsTelemetry{
     private boolean webMonitoringEnabled;
     private String moduleName;
     private String vsName;
-    private Logger logger;    
+    private Logger logger;
+    private boolean isEnabled = true;
+    private TreeNode servletNode = null;
     
     public ServletStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
                                     boolean webMonitoringEnabled, Logger logger) {
+        servletNode = parent;
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
@@ -78,15 +81,21 @@ public class ServletStatsTelemetry{
     private Counter maxServletsLoadedCount = CounterFactory.createCount();
     private Counter totalServletsLoadedCount = CounterFactory.createCount();
 
-    public void enableMonitoring(boolean isEnable) {
+    public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
         //delegate the request to the child nodes
+        if (isEnabled != flag) {
+            for (ProbeClientMethodHandle handle : handles) {
+                if (flag == true) 
+                    handle.enable();
+                else
+                    handle.disable();
+            }
+            servletNode.setEnabled(flag);
+            isEnabled = flag;
+        }
     }
     
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-
     @ProbeListener("web:servlet::servletInitializedEvent")
     public void servletInitializedEvent(
                     @ProbeParam("servlet") Servlet servlet,
@@ -135,7 +144,11 @@ public class ServletStatsTelemetry{
             webMonitoringEnabled = isEnabled;
             tuneProbeListenerHandles(webMonitoringEnabled);
         }
-    }    
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
     
     private void tuneProbeListenerHandles(boolean shouldEnable) {
         //disable handles

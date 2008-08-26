@@ -57,13 +57,9 @@ public class JVMMemoryStatsTelemetry {
     private MemoryUsage heapUsage;
     private MemoryUsage nonheapUsage;
     private MemoryMXBean bean;
-    private static final String BYTE_UNITS = "monitor.stats.byte_units";
-    private static final StringManager localStrMgr = 
-                StringManager.getManager(JVMMemoryStatsTelemetry.class);
-
     private Counter commitHeapSize = CounterFactory.createCount();
-    private boolean jvmMonitoringEnabled;
     private Logger logger;
+    private boolean isEnabled = true;
     
     /** Creates a new instance of JVMMemoryStatsTelemetry */
     public JVMMemoryStatsTelemetry(TreeNode server, boolean jvmMonitoringEnabled, Logger logger) {
@@ -114,16 +110,20 @@ public class JVMMemoryStatsTelemetry {
         }
     }            
     
-    public void enableMonitoring(boolean isEnabled) {
-        if (isEnabled != jvmMonitoringEnabled) {
-            jvmMonitoringEnabled = isEnabled;
-            jvmNode.setEnabled(jvmMonitoringEnabled);
+    public void enableMonitoring(boolean flag) {
+        if (isEnabled != flag) {
+            isEnabled = flag;
+            jvmNode.setEnabled(flag);
         }
     }
     
     public Counter getCommittedHeapSize() {
         commitHeapSize.setCount(heapUsage.getCommitted());
         return commitHeapSize;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
     }
     
     /*

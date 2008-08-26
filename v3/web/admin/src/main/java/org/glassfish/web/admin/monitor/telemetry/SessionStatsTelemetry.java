@@ -58,16 +58,17 @@ import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 public class SessionStatsTelemetry{
     private String moduleName;
     private String vsName;
-    private TreeNode sessionTM;
-    private TreeNode sessionChildren[];
+    private TreeNode sessionNode = null;
 
     private Logger logger;    
     //Logger logger = LogDomains.getLogger(this.getClass().getName());
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
+    private boolean isEnabled = true;
     
     public SessionStatsTelemetry(TreeNode parent, String moduleName, String vsName, 
                                     boolean webMonitoringEnabled, Logger logger) {
+        sessionNode = parent;
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
@@ -100,13 +101,19 @@ public class SessionStatsTelemetry{
     private Counter activatedSessionsTotal = CounterFactory.createCount();
     
 
-    public void enableMonitoring(boolean isEnable) {
+    public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
         //delegate the request to the child nodes
-    }
-    
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
+        if (isEnabled != flag) {
+            for (ProbeClientMethodHandle handle : handles) {
+                if (flag == true) 
+                    handle.enable();
+                else
+                    handle.disable();
+            }
+            sessionNode.setEnabled(flag);
+            isEnabled = flag;
+        }
     }
     
     @ProbeListener("web:session::sessionCreatedEvent")
@@ -261,6 +268,10 @@ public class SessionStatsTelemetry{
         }
         activeSessionsCurrent.decrement();
         passivatedSessionsTotal.increment();
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
     }
     
     private void incrementActiveSessionsCurrent() {

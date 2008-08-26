@@ -38,14 +38,12 @@ package org.glassfish.web.admin.monitor.telemetry;
 import java.util.Collection;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.statistics.*;
-import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.*;
 import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.glassfish.flashlight.provider.annotations.*;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -56,7 +54,8 @@ public class ThreadPoolTelemetry{
     private TreeNode threadpoolNode;
     private Collection<ProbeClientMethodHandle> handles;
     private boolean threadpoolMonitoringEnabled;
-    private Logger logger;    
+    private Logger logger;
+    private boolean isEnabled = true;
 
 
     /* We would like to measure the following */
@@ -129,37 +128,22 @@ public class ThreadPoolTelemetry{
     
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
-        if (!threadpoolMonitoringEnabled){
-            //disable handles
-            tuneProbeListenerHandles(threadpoolMonitoringEnabled);
-        }
     }
     
-    public void enableProbeListenerHandles(boolean isEnabled) {
-        if (isEnabled != threadpoolMonitoringEnabled) {
-            threadpoolMonitoringEnabled = isEnabled;
-            tuneProbeListenerHandles(threadpoolMonitoringEnabled);
-        }
+    public boolean isEnabled() {
+        return isEnabled;
     }
     
-    private void tuneProbeListenerHandles(boolean shouldEnable) {
-        //disable handles
+    public void enableMonitoring(boolean flag) {
+        //loop through the handles for this node and enable/disable the listeners
+        //delegate the request to the child nodes
         for (ProbeClientMethodHandle handle : handles) {
-            if (shouldEnable)
+            if (flag == true) 
                 handle.enable();
             else
                 handle.disable();
         }
-        
+        //threadpoolNode.setEnabled(flag);
+        isEnabled = flag;
     }
-
-    public void enableMonitoring(boolean isEnable) {
-        //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
-    }
-    
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-    
 }

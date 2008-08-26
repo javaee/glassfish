@@ -60,9 +60,12 @@ public class JspStatsTelemetry{
     private String moduleName;
     private String vsName;
     private Logger logger;
+    private boolean isEnabled = true;
+    private TreeNode jspNode = null;
     
     public JspStatsTelemetry(TreeNode parent, String moduleName, String vsName,
            boolean webMonitoringEnabled, Logger logger) {
+        jspNode = parent;
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
@@ -79,15 +82,21 @@ public class JspStatsTelemetry{
     private Counter maxJspsLoadedCount = CounterFactory.createCount();
     private Counter totalJspsLoadedCount = CounterFactory.createCount();
 
-    public void enableMonitoring(boolean isEnable) {
+    public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
         //delegate the request to the child nodes
+        if (isEnabled != flag) {
+            for (ProbeClientMethodHandle handle : handles) {
+                if (flag == true) 
+                    handle.enable();
+                else
+                    handle.disable();
+            }
+            jspNode.setEnabled(flag);
+            isEnabled = flag;
+        }
     }
     
-    public void enableMonitoringForSubElements(boolean isEnable) {
-        //loop through the children and enable/disable all
-    }
-
     @ProbeListener("web:jsp::jspLoadedEvent")
     public void jspLoadedEvent(
         @ProbeParam("jsp") Servlet jsp,
@@ -133,7 +142,11 @@ public class JspStatsTelemetry{
             webMonitoringEnabled = isEnabled;
             tuneProbeListenerHandles(webMonitoringEnabled);
         }
-    }    
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
     
     private void tuneProbeListenerHandles(boolean shouldEnable) {
         //disable handles
