@@ -170,7 +170,7 @@ public class EjbOptionalIntfGenerator
         for (Class clz = superClass; clz != Object.class; clz = clz.getSuperclass()) {
             java.lang.reflect.Method[] beanMethods = clz.getDeclaredMethods();
             for (java.lang.reflect.Method mth : beanMethods) {
-                if (mth.getModifiers() == Modifier.PUBLIC) {
+                if (Modifier.isPublic(mth.getModifiers())) {
                     generateBeanMethod(tv, subClassName, mth, delegateClass);
                 }
             }
