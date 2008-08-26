@@ -259,7 +259,7 @@ public final class LBConfigHelper {
         LBConfig lbConfig = mDomainConfig.getLBConfigsConfig().createLBConfig(lbConfigName, params);
         
         //get the default values for health-checker
-        final Map healthCheckerAttrsMap = mDomainRoot.getDomainConfig().getDefaultValues(HealthCheckerConfig.J2EE_TYPE);
+        final Map healthCheckerAttrsMap = mDomainRoot.getDomainConfig().getDefaultValues(HealthCheckerConfig.J2EE_TYPE,false);
         final String healthCheckerUrl = (String) healthCheckerAttrsMap.get("url");
         final String healthCheckerInterval = (String) healthCheckerAttrsMap.get("interval-in-seconds");
         final String healthCheckerTimeout = (String) healthCheckerAttrsMap.get("timeout-in-seconds");

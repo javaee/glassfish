@@ -1056,29 +1056,53 @@ cdebug( "removeConfig: by  j2eeType + name" );
 	}
     
     
-    public String getDefaultValue( final String amxName )
+    public String getXMLAttributeName( final String name )
     {
-        final Class<? extends ConfigBeanProxy> myIntf = getConfigBean().getProxyType();
-        
-        final Map<String,String> defaultValues = _getDefaultValues( myIntf );
-        
-        final String xmlName = NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( amxName );
-        return defaultValues.get( xmlName );
+        return NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( name, true);
     }
     
+    public String getAMXAttributeName( final String name )
+    {
+        return NameMappingRegistry.getInstance(getJ2EEType()).getAMXName( name );
+    }
+
     
+    public String getDefaultValue( final String amxName )
+    {
+        try
+        {
+            final Class<? extends ConfigBeanProxy> myIntf = getConfigBean().getProxyType();
+            //cdebug( "AMXConfigImplBase.getDefaultValue: " + amxName + " for " + myIntf.getName() );
+            
+            final Map<String,String> defaultValues = _getDefaultValuesXMLNames( myIntf );
+            //cdebug( "defaultValues for " + myIntf.getName() + ": " + MapUtil.toString(defaultValues) );
+            
+            final String xmlName = getXMLAttributeName( amxName );
+            return defaultValues.get( xmlName );
+        }
+        catch( Throwable t ) {
+            t.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+        Get the default values, keyed by the XML element name.
+     */
         final Map<String,String>
-    _getDefaultValues( final Class<? extends ConfigBeanProxy> intf )
+    _getDefaultValuesXMLNames( final Class<? extends ConfigBeanProxy> intf )
     {
         final Map<String,String> result = new HashMap<String,String>();
         
         final Method[] methods = intf.getMethods();
         for( final Method m : methods )
         {
-            // cdebug( "Method: " + m );
+            //cdebug( "Method: " + m );
             if ( JMXUtil.isIsOrGetter(m) )
             {
                 final String attrName = JMXUtil.getAttributeName(m);
+                final String xmlName = getXMLAttributeName( attrName );
+                //cdebug( "attrName: " + attrName + ", xmlName: " + xmlName );
                 
                 final org.jvnet.hk2.config.Attribute attrAnn = m.getAnnotation( org.jvnet.hk2.config.Attribute.class );
                 if ( attrAnn != null )
@@ -1091,15 +1115,9 @@ cdebug( "removeConfig: by  j2eeType + name" );
                     //cdebug( "Method " + m + " has default value of " + (emptyDefault ? "\\u0000" : value) );
                     if ( ! emptyDefault )
                     {
-                        result.put( attrName, "" + attrAnn.defaultValue() );
+                        result.put( xmlName, "" + attrAnn.defaultValue() );
                     }
                 }
-                /*
-                else
-                {
-                    result.put( attrName, "N/A" );
-                }
-                */
             }
         }
         
@@ -1107,7 +1125,20 @@ cdebug( "removeConfig: by  j2eeType + name" );
     }
     
         public final Map<String,String>
+    getDefaultValues( final boolean useAMXAttributeName )
+    {
+        final Map<String,String> m = _getDefaultValuesXMLNames(getConfigBean().getProxyType() );
+        return useAMXAttributeName ? toAMXAttributeNames(m) : m;
+    }
+    
+        public final Map<String,String>
     getDefaultValues( final String j2eeTypeIn )
+    {
+        return getDefaultValues( j2eeTypeIn, true );
+    }
+    
+        public final Map<String,String>
+    getDefaultValues( final String j2eeTypeIn, final boolean useAMXAttributeName )
     {
         final String j2eeType = (j2eeTypeIn == null) ? getJ2EEType() : j2eeTypeIn;
         
@@ -1118,7 +1149,33 @@ cdebug( "removeConfig: by  j2eeType + name" );
             throw new IllegalArgumentException( "Illegal j2eeType: " + j2eeType );
         }
         
-        return _getDefaultValues( intf ); 
+        final Map<String,String> m = _getDefaultValuesXMLNames(intf);
+        return useAMXAttributeName ? toAMXAttributeNames(m) : m;
+    }
+    
+    
+        private Map<String,String>
+    toAMXAttributeNames( final Map<String,String> xmlMap )
+    {
+        final Map<String,String> m = new HashMap<String,String>();
+        
+        for( final String xmlName : xmlMap.keySet() )
+        {
+            final String amxName = getAMXAttributeName(xmlName);
+            final String value = xmlMap.get(xmlName);
+            if ( amxName == null )
+            {
+                System.out.println( "No corresponding AMX attribute name for xml attribute " + xmlName );
+                // if the AMX interface is out of date with respect to the underlying config, return
+                // the name as-is
+                m.put(xmlName, value);
+            }
+            else
+            {
+                m.put(amxName, value);
+            }
+        }
+        return m;
     }
     
     private volatile boolean _namesInited = false;
@@ -1167,7 +1224,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         if ( ! _namesInited ) initNames();
         
         String attrType = String.class.getName();
-        String amxAttrName = NameMappingRegistry.getInstance(getJ2EEType()).getAMXName( xmlAttrName );
+        String amxAttrName = getAMXAttributeName( xmlAttrName );
         if ( amxAttrName == null )
         {
             cdebug( "issueAttributeChangeForXmlAttrName: can't find AMX name for: " + xmlAttrName + ", using xmlName for now" );
@@ -1192,7 +1249,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         protected String
     attributeNameToPathNameValueName( final String amxAttrName )
     {
-        final String xmlName = NameMappingRegistry.getInstance(getJ2EEType()).getXMLName( amxAttrName );
+        final String xmlName = getXMLAttributeName( amxAttrName );
         return xmlName == null ? super.attributeNameToPathNameValueName(amxAttrName) : xmlName;
     }
 

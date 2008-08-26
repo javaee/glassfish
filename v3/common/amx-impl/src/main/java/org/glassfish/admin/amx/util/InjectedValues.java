@@ -77,14 +77,14 @@ public final class InjectedValues
     
     public InjectedValues()
     {
-        debug( "InjectedValues.InjectedValues()" );
+        //debug( "InjectedValues.InjectedValues()" );
     }
     
     public static InjectedValues getInstance() { return INSTANCE; }
     
     public void postConstruct()
     {
-        debug( "InjectedValues.postConstruct");
+        //debug( "InjectedValues.postConstruct");
         if ( INSTANCE != null && this != INSTANCE )
         {
             debug( "InjectedValues.postConstruct(): WARNING: more than one instance has been created" ); 
@@ -93,7 +93,7 @@ public final class InjectedValues
     }
 
     public void preDestroy() {
-        debug( "InjectedValues.preDestroy");
+        //debug( "InjectedValues.preDestroy");
     }
 
    // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }

@@ -38,13 +38,21 @@ package com.sun.appserv.management.config;
 import java.util.Map;
 
 /**
-    Mixin interface indicating a provider of default values.
+    Mixin interface indicating a provider of default values.  Except for oddball cases
+    (probably none), only {@link Container}s should implement DefaultValues.
  */
 public interface DefaultValues
 {
 	/**
         Return a Map of default values for the specified child type (Containee) j2eeType.
-        @since Glassfish V3 
+        The resulting Map is keyed by the XML attribute name, <em>not</em> the AMX Attribute name.
+        @since Glassfish V3.
+        @param j2eeType the J2EEType of the child
+        @param byXMLName whether to key the values by the XML attribute name vs the AMX Attribute name
 	 */
-	public Map<String,String> getDefaultValues( final String jeeType );
+	public Map<String,String> getDefaultValues( final String jeeType, final boolean useAMXAttributeName);
+    
+    /** deprecated, use getDefaultValues(j2eeType,true) */
+    @Deprecated 
+	public Map<String,String> getDefaultValues( final String jeeType);
 }

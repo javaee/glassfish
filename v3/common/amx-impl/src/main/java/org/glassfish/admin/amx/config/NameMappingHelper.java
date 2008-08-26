@@ -111,6 +111,10 @@ final class NameMappingHelper {
                     // matched, so reduce the search set size
                     xmlNames.remove(xmlName);
                 }
+                else
+                {
+                    //debug( "Could not find xmlName for: " + amxAttrName );
+                }
             }
             NameMappingRegistry.addInstance( mapping );
         }

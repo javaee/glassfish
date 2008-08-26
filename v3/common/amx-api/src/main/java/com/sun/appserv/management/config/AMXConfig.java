@@ -37,6 +37,9 @@ package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.AMX;
 
+import java.util.Map;
+
+
 /**
 	All Config MBeans must extend this interface, whether they
 	represent elements or whether they are managers. Extending
@@ -68,14 +71,24 @@ public interface AMXConfig extends AMX, AttributeResolver
 		CONFIG_REMOVED_NOTIFICATION_TYPE which yields the ObjectName
 		of the  created or removed config.
 	 */
-	public final String	CONFIG_OBJECT_NAME_KEY	=
-					"ConfigObjectName";
+	public final String	CONFIG_OBJECT_NAME_KEY	= "ConfigObjectName";
 
     /** 
         Get the default value of an Attribute.  Works only for Attributes which have default values,
-        and which are part of the configuration.
+        and which are part of the configuration.   The name passed is case-insensitive and is matched
+        ignoring "-" characters. So the following names are equivalent:
+        "JDBCConnectionPool", "JdbcConnectionPool", "jdbc-connection-pool", etc.
         
         @param name  the name of the configuration Attribute
+        @return the default value, or null if no default exists
      */
     public String getDefaultValue( final String name );
+    
+	/**
+        Return a Map of default values for the specified child type (Containee) j2eeType.
+        The resulting Map is keyed by the XML attribute name, <em>not</em> the AMX Attribute name.
+        @since Glassfish V3.
+        @param byXMLName whether to key the values by the XML attribute name vs the AMX Attribute name
+	 */
+    public Map<String,String> getDefaultValues(final boolean useAMXAttributeName);
 }

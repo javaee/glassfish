@@ -81,7 +81,7 @@ public final class AMXStartupService
     
     public AMXStartupService()
     {
-        debug( "AMXStartupService.AMXStartupService()" );
+        //debug( "AMXStartupService.AMXStartupService()" );
     }
     
     private static ObjectName getObjectName()
@@ -91,7 +91,6 @@ public final class AMXStartupService
     
     public void postConstruct()
     {
-        //debug( "AMXStartupService.postConstruct()" );
         final TimingDelta delta = new TimingDelta();
         
         SingletonEnforcer.register( this.getClass(), this );
@@ -109,9 +108,8 @@ public final class AMXStartupService
         {
             throw new Error(e);
         }
-        debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
-        
-        debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms " );
+        //debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
+        debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms, registered as " + getObjectName() );
     }
 
     public void preDestroy() {
