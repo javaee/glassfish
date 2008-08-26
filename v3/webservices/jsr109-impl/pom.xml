@@ -48,6 +48,34 @@
     <artifactId>jsr109-impl</artifactId>
     <packaging>hk2-jar</packaging>
     <name>JSR-109 implementation to deploy Metro</name>
+    <build>
+           <plugins>
+              
+               <plugin>
+                   <groupId>com.sun.enterprise</groupId>
+                   <artifactId>hk2-maven-plugin</artifactId>
+                   <version>${hk2.plugin.version}</version>
+                   <configuration>
+
+                       <configFiles>
+                           <configFile>src/main/resources/wsgen</configFile>
+
+                       </configFiles>
+                       <destDir>target/classes</destDir>
+                   
+                   </configuration>
+                   <executions>
+                       <execution>
+                           <phase>compile</phase>
+                           <goals>
+                               <goal>createscripts</goal>
+                           </goals>
+                       </execution>
+                   </executions>
+               </plugin>
+           </plugins>
+       </build>
+
 
     <developers>
         <developer>

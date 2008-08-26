@@ -1,0 +1,19 @@
+[copyright]
+text1=Copyright 1997-2007 Sun Microsystems, Inc.
+text2=All rights reserved.
+text3=Use is subject to license terms.
+[header]
+comment1=Executable script to invoke wsgen for the server
+[source]
+config-file=${script.home}/config/asenv
+[env.vars]
+AS_INSTALL=${script.home}
+AS_LIBS=#{AS_INSTALL}/modules
+# no [shell.vars]
+[jvm]
+main.class=com.sun.tools.ws.WsGen
+[classpath]
+CP1=#{AS_LIBS}/webservices.jar
+CP2=#{AS_LIBS}/jaxb.jar
+[java.system.properties]
+com.sun.aas.installRoot=#{AS_INSTALL}
