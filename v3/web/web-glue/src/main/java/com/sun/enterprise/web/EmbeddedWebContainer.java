@@ -50,14 +50,12 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.logger.FileLogger;
 
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
 
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
@@ -66,12 +64,6 @@ import com.sun.web.server.WebContainerListener;
 
 /**
  * Represents an embedded Catalina web container within the Application Server.
- *
- * This class is intended for use in versions of the application server
- * that *do not* have web-core as well as in versions that do. When used
- * with a web container that is integrated via the NSAPI j2ee-plugin, the 
- * virtual server implementation that <code>createHost</code> returns
- * is customized to "<code>com.sun.enterprise.web.NSAPIVirtualServer</code>".
  */
 public final class EmbeddedWebContainer extends Embedded {
 
@@ -142,75 +134,17 @@ public final class EmbeddedWebContainer extends Embedded {
                     String vsLogFile,
                     MimeMap vsMimeMap) {
 
-        //VirtualServer vs = webContainerFeatureFactory.getVirtualServer();
         VirtualServer vs = new VirtualServer();
-        vs.setDebug(debug);
-        vs.setAppBase(vsDocroot);
-        vs.setName(vsID);
-        vs.setID(vsID);
-        vs.setBean(vsBean);
-        vs.setMimeMap(vsMimeMap);
 
-        String defaultContextXmlLocation = Constants.DEFAULT_CONTEXT_XML;
-        String defaultWebXmlLocation = Constants.DEFAULT_WEB_XML;
-    
-        boolean allowLinking = false;
-        String state = null;
-
-        if (vsBean != null) {
-
-            state = vsBean.getState();
-
-            //Begin EE: 4920692 Make the default-web.xml be relocatable
-            Property prop = vsBean.getProperty("default-web-xml");
-            if (prop != null) {
-                defaultWebXmlLocation = prop.getValue();
-            }
-            //End EE: 4920692 Make the default-web.xml be relocatable
-
-            // allowLinking
-            prop = vsBean.getProperty("allowLinking");
-            if (prop != null) {
-                allowLinking = Boolean.parseBoolean(prop.getValue());
-            }
-
-            prop = vsBean.getProperty("contextXmlDefault");
-            if (prop != null) {
-                defaultContextXmlLocation = prop.getValue();
-            }
-
-        }
-
-        vs.setDefaultWebXmlLocation(defaultWebXmlLocation);
-       
-        vs.setDefaultContextXmlLocation(defaultContextXmlLocation);
-
-        // Set vs state
-        if (state == null) {
-            state = VirtualServer.ON;
-        }
-        if (VirtualServer.DISABLED.equalsIgnoreCase(state)) {
-            vs.setIsActive(false);
-        } else {
-            vs.setIsActive(Boolean.parseBoolean(state));
-        }
-        
-        vs.setAllowLinking(allowLinking);
-
-        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
-            /*
-             * Configure separate logger for this virtual server only if
-             * 'log-file' attribute of this <virtual-server> and 'file'
-             * attribute of <log-service> are different (See 6189219).
-             */
-            setLogFile(vs, vsLogFile);
-        }
+        vs.configure(vsID, vsBean, vsDocroot, vsLogFile, vsMimeMap,
+                     logServiceFile);
          
         ContainerListener listener = loadListener
-                ("com.sun.enterprise.web.connector.extension.CatalinaListener");
-        if ( listener != null )
+            ("com.sun.enterprise.web.connector.extension.CatalinaListener");
+        if ( listener != null ) {
             vs.addContainerListener(listener);     
-        
+        }
+
         return vs;
     }
     
@@ -312,50 +246,6 @@ public final class EmbeddedWebContainer extends Embedded {
      */
     public Connector[] getConnectors() {
         return connectors;
-    }
-
-    /*
-     * Configures the given virtual server with the specified log file.
-     *
-     * @param vs The virtual server
-     * @param logFile The value of the virtual server's log-file attribute in 
-     * the domain.xml
-     */
-    protected void setLogFile(Host vs, String logFile) {
-
-        String logPrefix = logFile;
-        String logDir = null;
-        String logSuffix = null;
-
-        if (logPrefix == null || logPrefix.equals("")) {
-            return;
-        }
-
-        int index = logPrefix.lastIndexOf(File.separatorChar);
-        if (index != -1) {
-            logDir = logPrefix.substring(0, index);
-            logPrefix = logPrefix.substring(index+1);
-        }
-        
-        index = logPrefix.indexOf('.');
-        if (index != -1) {
-            logSuffix = logPrefix.substring(index);
-            logPrefix = logPrefix.substring(0, index);
-        }
-
-        logPrefix += "_";
-
-        FileLogger contextLogger = new FileLogger();
-        if (logDir != null) {
-            contextLogger.setDirectory(logDir);
-        }
-        contextLogger.setPrefix(logPrefix);
-        if (logSuffix != null) {
-            contextLogger.setSuffix(logSuffix);
-        }
-        contextLogger.setTimestamp(true);
-
-        vs.setLogger(contextLogger);
     }
 
 

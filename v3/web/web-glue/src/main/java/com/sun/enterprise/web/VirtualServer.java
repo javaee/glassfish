@@ -61,6 +61,7 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
+import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.internal.api.Globals;
@@ -894,7 +895,81 @@ public class VirtualServer extends StandardHost {
         return pwcRequestStatsImpl;
     }
 
+
+    /**
+     * Configures this virtual server.
+     */
+    public void configure(
+                    String vsID,
+                    com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
+                    String vsDocroot,
+                    String vsLogFile,
+                    MimeMap vsMimeMap,
+                    String logServiceFile) {
     
+        setDebug(debug);
+        setAppBase(vsDocroot);
+        setName(vsID);
+        setID(vsID);
+        setBean(vsBean);
+        setMimeMap(vsMimeMap);
+
+        String defaultContextXmlLocation = Constants.DEFAULT_CONTEXT_XML;
+        String defaultWebXmlLocation = Constants.DEFAULT_WEB_XML;
+    
+        boolean allowLinking = false;
+        String state = null;
+
+        if (vsBean != null) {
+
+            state = vsBean.getState();
+
+            //Begin EE: 4920692 Make the default-web.xml be relocatable
+            Property prop = vsBean.getProperty("default-web-xml");
+            if (prop != null) {
+                defaultWebXmlLocation = prop.getValue();
+            }
+            //End EE: 4920692 Make the default-web.xml be relocatable
+
+            // allowLinking
+            prop = vsBean.getProperty("allowLinking");
+            if (prop != null) {
+                allowLinking = Boolean.parseBoolean(prop.getValue());
+            }
+
+            prop = vsBean.getProperty("contextXmlDefault");
+            if (prop != null) {
+                defaultContextXmlLocation = prop.getValue();
+            }
+
+        }
+
+        setDefaultWebXmlLocation(defaultWebXmlLocation);
+        setDefaultContextXmlLocation(defaultContextXmlLocation);
+
+        // Set vs state
+        if (state == null) {
+            state = ON;
+        }
+        if (DISABLED.equalsIgnoreCase(state)) {
+            setIsActive(false);
+        } else {
+            setIsActive(Boolean.parseBoolean(state));
+        }
+        
+        setAllowLinking(allowLinking);
+
+        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
+            /*
+             * Configure separate logger for this virtual server only if
+             * 'log-file' attribute of this <virtual-server> and 'file'
+             * attribute of <log-service> are different (See 6189219).
+             */
+            setLogFile(vsLogFile);
+        }
+    }
+
+
     /**
      * Configures the valve_ and listener_ properties of this VirtualServer.
      */
@@ -925,6 +1000,50 @@ public class VirtualServer extends StandardHost {
         }
     }
     
+
+    /*
+     * Configures this virtual server with the specified log file.
+     *
+     * @param logFile The value of the virtual server's log-file attribute in 
+     * the domain.xml
+     */
+    void setLogFile(String logFile) {
+
+        String logPrefix = logFile;
+        String logDir = null;
+        String logSuffix = null;
+
+        if (logPrefix == null || logPrefix.equals("")) {
+            return;
+        }
+
+        int index = logPrefix.lastIndexOf(File.separatorChar);
+        if (index != -1) {
+            logDir = logPrefix.substring(0, index);
+            logPrefix = logPrefix.substring(index+1);
+        }
+        
+        index = logPrefix.indexOf('.');
+        if (index != -1) {
+            logSuffix = logPrefix.substring(index);
+            logPrefix = logPrefix.substring(0, index);
+        }
+
+        logPrefix += "_";
+
+        FileLogger contextLogger = new FileLogger();
+        if (logDir != null) {
+            contextLogger.setDirectory(logDir);
+        }
+        contextLogger.setPrefix(logPrefix);
+        if (logSuffix != null) {
+            contextLogger.setSuffix(logSuffix);
+        }
+        contextLogger.setTimestamp(true);
+
+        setLogger(contextLogger);
+    }
+
 
     /**
      * Configure virtual-server alias attribute.
@@ -1350,7 +1469,7 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures this VirtualServer with its state (on | off | disabled).
      */
-    void configureVirtualServerState(){
+    void configureState(){
 
         String stateValue = ON;
         if (vsBean != null){

@@ -1456,7 +1456,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 vsBean.getLogFile(),
                 mimeMap);
 
-        vs.configureVirtualServerState();
+        vs.configureState();
         vs.configureRemoteAddressFilterValve();
         vs.configureRemoteHostFilterValve(httpProtocol);
         vs.configureSSOValve(globalSSOEnabled, webContainerFeatureFactory);
@@ -3393,9 +3393,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         virtualServer.setBean(vsBean);
 
-        _embedded.setLogFile(virtualServer,vsBean.getLogFile());
+        virtualServer.setLogFile(vsBean.getLogFile());
 
-        virtualServer.configureVirtualServerState();
+        virtualServer.configureState();
         
         virtualServer.clearAliases();
         virtualServer.configureAliases();
