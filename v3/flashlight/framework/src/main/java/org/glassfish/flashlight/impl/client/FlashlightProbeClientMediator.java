@@ -99,10 +99,10 @@ public class FlashlightProbeClientMediator
 
     public synchronized Collection<ProbeClientMethodHandle> registerListener(Object listener) {
 
+        /*
         if (!agentInitialized.get()) {
             synchronized (agentInitialized) {
                 if (!agentInitialized.get()) {
-                    /*
                     // The following heavily depends on Java 1.6 code
                     //  For now commented
                     
@@ -150,10 +150,10 @@ public class FlashlightProbeClientMediator
                     } catch (InvocationTargetException invtEx) {
                         //TODO
                     }
-                    */
                 }
             }
         }
+        */
 
         int clientID = clientIdGenerator.incrementAndGet();
         clients.put(clientID, listener);
