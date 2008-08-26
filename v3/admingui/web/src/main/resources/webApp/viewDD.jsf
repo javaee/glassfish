@@ -36,7 +36,7 @@
 <!-- webApp/webDDEdit.jsf -->
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         getRequestValue(key="appName" value=>$page{name});
         getRequestValue(key="descriptorName" value=>$page{descriptorName});
         getDeploymentDescriptor(appName="$pageSession{name}", descriptorName="$pageSession{descriptorName}", 

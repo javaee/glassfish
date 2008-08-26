@@ -36,8 +36,8 @@
 <!-- configuration/webContainerSession.jsf -->
 <sun:page>
  <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setResourceBundle(key="help" bundle="core.Helplinks");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
     getWebSessionProps(ConfigName="#{configName}", SessionTimeout=>$attribute{sessionTimeout}
         Properties=>$page{props});

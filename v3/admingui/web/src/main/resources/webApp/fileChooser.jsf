@@ -38,7 +38,7 @@
 
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     getRequestValue(key="dirPathId" value=>$page{dirPathId});
     getRequestValue(key="appNameId" value=>$page{appNameId});
     getRequestValue(key="folderOnly" value=>$page{folderOnly});

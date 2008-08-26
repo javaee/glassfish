@@ -37,7 +37,7 @@
 
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     getRequestValue(key="configName" value=>$page{configName});
     getHttpListenersList(ConfigName="$pageSession{configName}", Result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.httpListeners.TableTitle}");

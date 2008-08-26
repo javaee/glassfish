@@ -39,8 +39,8 @@
 <!-- configuration/listenersSslNew.jsf -->
 <sun:page id="page1">
   <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setResourceBundle(key="help" bundle="core.Helplinks")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getRequestValue(key="tabName", value=>$page{tabName});        
     getRequestValue(key="type", value=>$page{type});        

@@ -1,8 +1,8 @@
 <!initPage
 setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-setResourceBundle(key="i18n" bundle="core.Strings");
+setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-setResourceBundle(key="help" bundle="core.Helplinks");
+setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 setAttribute(key="helpKey" value="#{helpKey}");
 getRequestValue(key="configName" value=>$page{configName});
 />

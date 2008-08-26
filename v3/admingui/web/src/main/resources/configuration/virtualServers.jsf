@@ -39,8 +39,8 @@
 
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setResourceBundle(key="help" bundle="core.Helplinks")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getVirtualServerList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.vs.TableTitle}");
