@@ -37,6 +37,7 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     />     
    <event>
@@ -48,7 +49,7 @@
     </event>   
     #include "/shared/restart.inc"
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.security.Security}">
+        <sun:head id="propertyhead" title="$resource{i18nSecurity.security.Security}">
             <sun:script url="/resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -56,8 +57,8 @@
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.security.Security}" 
-                helpText="$resource{i18n.security.SecurityPageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18nSecurity.security.Security}" 
+                helpText="$resource{i18nSecurity.security.SecurityPageHelp}">
                     <sun:button id="loadDefaults" rendered="#{false}" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
                         <!command
                             getSecurityDefaultAttributes(
@@ -89,37 +90,37 @@
                                 getAuditModules(ConfigName="#{configName}", AuditModules=>$attribute{aModules});
                               />   
                             </event>
-                            <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.SecurityManager}">                           
+                            <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.SecurityManager}">                           
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.securityManagerStatus}" > 
                                </sun:checkbox>
                             </sun:property>                       
-                            <sun:property id="auditLoggingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.AuditLogging}" helpText="$resource{i18n.security.AuditLoggingHelp}">                           
+                            <sun:property id="auditLoggingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditLogging}" helpText="$resource{i18nSecurity.security.AuditLoggingHelp}">                           
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.audit}" /> 
                             </sun:property>                        
-                          <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.DefaultRealm}" helpText="$resource{i18n.security.DefaultRealmHelp}">
+                          <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultRealm}" helpText="$resource{i18nSecurity.security.DefaultRealmHelp}">
                                 <sun:dropDown id="DefaultRealm" labels="$attribute{realms}" selected="#{requestScope.realm}">
                                 </sun:dropDown>
                             </sun:property>
-                            <sun:property id="defaultPrincipalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.DefaultPrincipal}" helpText="$resource{i18n.security.DefaultPrincipalHelp}">
+                            <sun:property id="defaultPrincipalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultPrincipal}" helpText="$resource{i18nSecurity.security.DefaultPrincipalHelp}">
                                 <sun:textField id="DefaultPrincipal" columns="$int{55}" text="#{requestScope.principal}"/> 
                             </sun:property>    
-                            <sun:property id="defaultPrincipalPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.DefaultPrincipalPassword}" helpText="$resource{i18n.security.DefaultPrincipalPasswordHelp}">
+                            <sun:property id="defaultPrincipalPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.DefaultPrincipalPassword}" helpText="$resource{i18nSecurity.security.DefaultPrincipalPasswordHelp}">
                                 <sun:textField id="DefaultPrincipalPassword" columns="$int{55}" text="#{requestScope.password}"/> 
                             </sun:property>
                             <!--
-                          <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.Jacc}" helpText="$resource{i18n.security.JaccHelp}">
+                          <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.Jacc}" helpText="$resource{i18nSecurity.security.JaccHelp}">
                                 <sun:dropDown id="Jacc" items="$attribute{jaccs}" selected="#{requestScope.jacc}">
                                 </sun:dropDown>
                             </sun:property> 
                             -->
-                         <sun:property id="auditModulesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.AuditModules}" helpText="$resource{i18n.security.AuditModulesHelp}">
+                         <sun:property id="auditModulesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditModules}" helpText="$resource{i18nSecurity.security.AuditModulesHelp}">
                                 <sun:listbox id="AuditModules" labels="$attribute{aModules}" selected="#{requestScope.module}" rows="$int{4}">
                                 </sun:listbox>
                             </sun:property>   
-                           <sun:property id="roleMappingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.RoleMapping}" helpText="$resource{i18n.security.RoleMappingHelp}">                           
+                           <sun:property id="roleMappingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.RoleMapping}" helpText="$resource{i18nSecurity.security.RoleMappingHelp}">                           
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.roleMapping}" /> 
                             </sun:property>                        
-                            <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.MappedPrincipalClass}" helpText="$resource{i18n.security.MappedPrincipalClassHelp}">
+                            <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.MappedPrincipalClass}" helpText="$resource{i18nSecurity.security.MappedPrincipalClassHelp}">
                                 <sun:textField id="MappedPrincipalClass" columns="$int{55}" text="#{requestScope.mapped}"/> 
                             </sun:property>    
                                         

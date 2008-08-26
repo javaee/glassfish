@@ -37,13 +37,14 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
         getRequestValue(key="name" value=>$page{name});
     />       
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.manageUsers.NewPageTitle}">
+        <sun:head id="propertyhead" title="$resource{i18nSecurity.manageUsers.NewPageTitle}">
             <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
@@ -52,8 +53,8 @@
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"                
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.manageUsers.NewPageTitle}" 
-                helpText="$resource{i18n.manageUsers.NewPageTitleHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18nSecurity.manageUsers.NewPageTitle}" 
+                helpText="$resource{i18nSecurity.manageUsers.NewPageTitleHelp}">
                     <!-- Buttons  -->                    
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -81,13 +82,13 @@
                     <sun:propertySheet id="propertySheet" requiredFields="true">			 
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.realm.realmName}" >
+                            <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.realmName}" >
                                 <sun:staticText id="NameStatic" text="#{name}"/> 
                             </sun:property>
-                            <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}" helpText="$resource{i18n.manageUsers.UserIDHelp}">
+                            <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}" helpText="$resource{i18nSecurity.manageUsers.UserIDHelp}">
                                 <sun:textField id="UserId" styleClass="required" text="#{requestScope.userId}" columns="$int{55}" required="#{true}"/> 
                             </sun:property>                       
-                            <sun:property id="groupListProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18n.manageUsers.GroupListHelp}">                           
+                            <sun:property id="groupListProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" helpText="$resource{i18nSecurity.manageUsers.GroupListHelp}">                           
                                 <sun:textField id="GroupList" text="#{requestScope.groupList}" columns="$int{55}" />   
                             </sun:property>                  
                             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           

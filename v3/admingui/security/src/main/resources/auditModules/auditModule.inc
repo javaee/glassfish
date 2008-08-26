@@ -117,11 +117,11 @@
                 <sun:textField id="IdText" styleClass="required" text="#{name}" columns="$int{55}" required="#{true}" /> 
             </sun:property> 
 
-            <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.realm.Classname}">                           
+            <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.Classname}">                           
                 <sun:textField id="ClassName" styleClass="required" text="#{classname}" columns="$int{55}" required="#{true}" /> 
             </sun:property>
 
-            <sun:property id="auditOn" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.security.AuditModule.auditOn}">
+            <sun:property id="auditOn" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.security.AuditModule.auditOn}">
                 <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{auditOn}" />  
             </sun:property>
 

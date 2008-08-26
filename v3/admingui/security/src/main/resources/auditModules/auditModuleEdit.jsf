@@ -41,11 +41,12 @@
 <sun:page id="page2">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
     setPageSessionAttribute(key="name", value="$requestParameter{name}");        
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.auditModule.EditPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.auditModule.EditPageTitleHelp}");
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.EditPageTitle}");
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.EditPageTitleHelp}");
     setPageSessionAttribute(key="helpkey" value="$resource{help.auditModuleEdit}");
     />
 

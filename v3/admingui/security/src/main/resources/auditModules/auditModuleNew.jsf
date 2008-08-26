@@ -39,9 +39,10 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.auditModule.NewPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.auditModule.NewPageTitleHelp}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.NewPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.NewPageTitleHelp}");
         getRequestValue(key="configName" value=>$page{configName});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         setPageSessionAttribute(key="helpkey" value="$resource{help.auditModuleNew}");

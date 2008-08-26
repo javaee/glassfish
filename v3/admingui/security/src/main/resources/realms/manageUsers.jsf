@@ -38,6 +38,7 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getRequestValue(key="name" value=>$page{name});
@@ -45,15 +46,15 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.manageUsers.TablePageTitle}">
+        <sun:head id="propertyhead" title="$resource{i18nSecurity.manageUsers.TablePageTitle}">
             <sun:script url="/resource/js/restart.js" />
 #include "/shared/alertMsg.inc"        
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
-                <sun:title id="propertyContentPage" title="$resource{i18n.manageUsers.TablePageTitle}" 
-                helpText="$resource{i18n.manageUsers.TablePageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18nSecurity.manageUsers.TablePageTitle}" 
+                helpText="$resource{i18nSecurity.manageUsers.TablePageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{false}">
@@ -68,13 +69,13 @@
                 </sun:title>
                  <sun:propertySheet id="propertySheet">			 
                 <sun:propertySheetSection id="propertySectionTextField">
-                    <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.realm.realmName}" >
+                    <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.realmName}" >
                         <sun:staticText id="NameStatic" text="#{name}"/> 
                     </sun:property>
                 </sun:propertySheetSection>
                 </sun:propertySheet>
                 "<br /><br />
-                <sun:table id="users" title="$resource{i18n.manageUsers.TableTitle}">
+                <sun:table id="users" title="$resource{i18nSecurity.manageUsers.TableTitle}">
                     <!facet actionsTop>
                     <sun:panelGroup id="topActionsGroup1">
                         <sun:button id="newButton" text="$resource{i18n.button.New}" >
@@ -105,12 +106,12 @@
                             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
                         </sun:tableColumn>    
 
-                        <sun:tableColumn headerText="$resource{i18n.manageUsers.UserID}" rowHeader="$boolean{true}" id="col1">
+                        <sun:tableColumn headerText="$resource{i18nSecurity.manageUsers.UserID}" rowHeader="$boolean{true}" id="col1">
                             <sun:hyperlink id="link" text="#{td.value.users}" 
                             url="/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{name}&configName=#{configName}" />
                         </sun:tableColumn>
 
-                        <sun:tableColumn headerText="$resource{i18n.manageUsers.GroupList}" rowHeader="$boolean{true}" id="col11">
+                        <sun:tableColumn headerText="$resource{i18nSecurity.manageUsers.GroupList}" rowHeader="$boolean{true}" id="col11">
                             <staticText id="nameCol" value="#{td.value.groups}" />
                         </sun:tableColumn>
                     </sun:tableRowGroup>

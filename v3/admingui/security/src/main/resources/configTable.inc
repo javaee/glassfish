@@ -89,11 +89,11 @@
             url="#{editLink}?name=#{td.value.name}&configName=#{configName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18nSecurity.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
         <staticText id="classnameCol" value="#{td.value.classname}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.security.AuditModule.auditOn}" rendered="#{hasAuditColumn}" rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18nSecurity.security.AuditModule.auditOn}" rendered="#{hasAuditColumn}" rowHeader="$boolean{true}" id="col3">
         <staticText id="auditCol" value="#{td.value.auditOn}" />
     </sun:tableColumn>
     

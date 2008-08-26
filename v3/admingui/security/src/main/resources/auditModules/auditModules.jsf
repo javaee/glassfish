@@ -38,10 +38,11 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getAuditModuleList(ConfigName="$pageSession{configName}" result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.auditModule.TableTitle}");
+    setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.auditModule.TableTitle}");
     setPageSessionAttribute(key="type" value="auditModules");
     setPageSessionAttribute(key="hasAuditColumn" value="$boolean{true}");
     setPageSessionAttribute(key="listPageLink" value="auditModules.jsf");
@@ -51,7 +52,7 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18n.auditModule.PageTitle}">
+        <sun:head id="propertyhead"  title="$resource{i18nSecurity.auditModule.PageTitle}">
             <sun:script url="/resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -66,8 +67,8 @@
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc" 
-                 <sun:title id="propertyContentPage" title="$resource{i18n.auditModule.PageTitle}"
-                 helpText="$resource{i18n.auditModule.PageHelp}"/>
+                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.auditModule.PageTitle}"
+                 helpText="$resource{i18nSecurity.auditModule.PageHelp}"/>
 		 "<br /> <br />
 #include "/security/configTable.inc"    
                 <sun:hidden id="helpKey" value="$resource{help.auditModules}" />

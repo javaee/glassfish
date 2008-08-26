@@ -38,10 +38,11 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18n.realm.TableTitle}");
+    setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.realm.TableTitle}");
     setPageSessionAttribute(key="type" value="realms");
     setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
     setPageSessionAttribute(key="listPageLink" value="realms.jsf");
@@ -51,7 +52,7 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.realm.PageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18nSecurity.realm.PageTitle}" >
             <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
@@ -67,8 +68,8 @@
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n.realm.PageTitle}" 
-                 helpText="$resource{i18n.realm.PageHelp}"/>
+                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.realm.PageTitle}" 
+                 helpText="$resource{i18nSecurity.realm.PageHelp}"/>
 		 "<br /> <br />
 #include "/security/configTable.inc"    
              <sun:hidden id="helpKey" value="$resource{help.realms}" />
