@@ -91,9 +91,8 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
                         (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             } catch (NamingException ne) {
                 //Probably the pool is not yet initialized (lazy-loading), try doing a lookup
-                    Context context = _runtime.getNamingManager().getInitialContext();
                 try{
-                    context.lookup(name);
+                    checkAndLoadJdbcPool(poolName);
                     connectorConnectionPool =
                             (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
                 }catch(NamingException e){
