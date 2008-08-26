@@ -38,15 +38,16 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         setSessionAttribute(key="ucTabs" value="update");
         setAttribute(key="buttonText" value="$resource{i18n.button.Install}");
         setPageSessionAttribute(key="action" value="install");
-        setAttribute(key="pageTitle" value="$resource{i18n.updateCenter.update.pageTitle}");
-        setAttribute(key="pageTitleHelp" value="$resource{i18n.updateCenter.update.pageTitleHelp}");
-        setAttribute(key="tableTitle" value="$resource{i18n.updateCenter.update.tableTitle}");
+        setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.update.pageTitle}");
+        setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.update.pageTitleHelp}");
+        setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.update.tableTitle}");
         setPageSessionAttribute(key="fromPage" value="update.jsf");
-        setPageSessionAttribute(key="confirmMsg" value="$resource{i18n.msg.JS.confirmUpdateCenterInstall}");
+        setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
         setAttribute(key="helpKey" value="$resource{help.uc.update}");
         getInstalledPath(result=>$attribute{installedPath});
         getAuthority(result=>$attribute{authority});

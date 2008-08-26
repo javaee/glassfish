@@ -78,15 +78,15 @@
             />
     </sun:tableColumn>    
     
-    <sun:tableColumn headerText="$resource{i18n.ucTable.colPkgName}" sort="pkgName" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.colPkgName}" sort="pkgName" rowHeader="$boolean{true}" id="col1">
         <staticText id="Col" value="#{td.value.pkgName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.ucTable.colVersion}"  sort="version" rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.colVersion}"  sort="version" rowHeader="$boolean{true}" id="col2">
         <staticText id="col2" value="#{td.value.version}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18n.ucTable.colPkgDate}" sort="pkgDate" rowHeader="$boolean{true}" id="co3">
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.colPkgDate}" sort="pkgDate" rowHeader="$boolean{true}" id="co3">
         <staticText id="col3" value="#{td.value.pkgDate}" />
     </sun:tableColumn>
     

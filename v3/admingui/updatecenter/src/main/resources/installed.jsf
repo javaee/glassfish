@@ -38,15 +38,16 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         setSessionAttribute(key="ucTabs" value="installed");
         setAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
         setPageSessionAttribute(key="action" value="remove");
-        setAttribute(key="pageTitle" value="$resource{i18n.updateCenter.installed.pageTitle}");
-        setAttribute(key="pageTitleHelp" value="$resource{i18n.updateCenter.installed.pageTitleHelp}");
-        setAttribute(key="tableTitle" value="$resource{i18n.updateCenter.installed.tableTitle}");
+        setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.installed.pageTitle}");
+        setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.installed.pageTitleHelp}");
+        setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.installed.tableTitle}");
         setPageSessionAttribute(key="fromPage" value="installed.jsf");
-        setPageSessionAttribute(key="confirmMsg" value="$resource{i18n.msg.JS.confirmUpdateCenterUnInstall}");
+        setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
         setAttribute(key="helpKey" value="$resource{help.uc.installed}");
         getInstalledPath(result=>$attribute{installedPath});
         getAuthority(result=>$attribute{authority});

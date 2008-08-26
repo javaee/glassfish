@@ -56,10 +56,10 @@
          <sun:title id="propertyContentPage" title="$attribute{pageTitle}" helpText="$attribute{pageTitleHelp}"/>
          <sun:propertySheet id="propertySheet">			 
             <sun:propertySheetSection id="propertySectionTextField">
-                <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.updateCenter.installedPath}" >
+                <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
                     <staticText id="path" value="${installedPath}" />
                 </sun:property>
-                <sun:property id="auth"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.updateCenter.authority}" >
+                <sun:property id="auth"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.authority}" >
                     <staticText id="auth" value="${authority}" />
                 </sun:property>
             </sun:propertySheetSection>

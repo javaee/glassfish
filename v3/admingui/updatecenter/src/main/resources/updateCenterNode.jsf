@@ -40,7 +40,7 @@
 -->
                      
 <sun:treeNode id="updateCenterPlugIN"
-                text="$resource{i18n.updateCenter.TreeNode.text}"
+                text="$resource{i18n.tree.updateCenter}"
                 url="updateCenter/installed.jsf"
                 imageURL="resource/updateCenter/images/domain.gif"
                 target="main">
