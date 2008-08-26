@@ -40,16 +40,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>javaee-api</artifactId>
+        <artifactId>glassfish-parent</artifactId>
         <version>10.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish</groupId>
     <artifactId>javax.javaee</artifactId>
-    <!-- The packaging type is hk2-jar so that maven-bundle-plugin
+    <!-- The packaging type is jar so that maven-bundle-plugin
          does not execute.-->
-    <packaging>hk2-jar</packaging>
+    <packaging>jar</packaging>
     <name>Java(TM) EE Specification APIs Repackaged as HK2 module and OSGi bundle</name>
 
     <build>
@@ -72,7 +71,14 @@
                     <generateOSGiHeaders>true</generateOSGiHeaders>
                     <resolution>optional</resolution>
                     <visibility>reexport</visibility>
+                    <manifestFile></manifestFile>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>hk2-package</id>
+                        <goals><goal>package</goal></goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

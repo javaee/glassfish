@@ -49,54 +49,6 @@
     <packaging>hk2-jar</packaging>
     <name>JSTL implementation connector module</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>hk2-jar</supportedProjectType>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
-                    <instructions>
-<!--
-                        <Embed-Dependency>
-                            *;scope=compile;groupId=org.glassfish.web;artifactId=jstl-impl;inline=true
-                        </Embed-Dependency>
--->
-                        <Export-Package>
-                            org.glassfish.jstl.integration
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <version>${hk2.plugin.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <generateOSGiHeaders>true</generateOSGiHeaders>
-                    <archive>
-                        <manifestFile>
-                            ${project.build.outputDirectory}/META-INF/MANIFEST.MF
-                        </manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

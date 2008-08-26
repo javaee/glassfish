@@ -1,0 +1,10 @@
+-exportcontents: \
+                        com.iplanet.ias.security.auth.realm, \
+                        com.sun.appserv.security, \
+                        com.sun.enterprise.security.auth.realm, \
+                        com.sun.enterprise.security.auth.realm.certificate, \
+                        com.sun.enterprise.security.auth.realm.file, \
+                        com.sun.enterprise.security.auth.realm.jdbc, \
+                        com.sun.enterprise.security.auth.realm.ldap, \
+                        com.sun.enterprise.security.auth.realm.solaris, \
+                        com.sun.enterprise.security.util

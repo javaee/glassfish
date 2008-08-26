@@ -1,0 +1,5 @@
+-exportcontents: org.glassfish.admin.mbeanserver
+
+# Need to ass jmxremote_optional to the dependency
+# for jmxmp protocol to be recognized.
+Require-Bundle: org.glassfish.external.jmxremote_optional-repackaged

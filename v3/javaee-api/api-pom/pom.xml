@@ -53,29 +53,17 @@
     <build>
         <plugins>
             <plugin>
-                <!-- Configure maven-bundle-plugin which takes care of
-                     OSGi packaging -->
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.3</version>
                 <configuration>
+                    <!-- Enable it for jar type -->
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                    </supportedProjectTypes>
                     <instructions>
                         <Export-Package>${extension.name}.*; version=${spec.version}</Export-Package>
                     </instructions>
                 </configuration>
-                <!-- We don't use bundle goal, as we loose control over what
-                     goes inside the final jar file. So, we prefer to use 
-                     manifest goal, which generates the OSGi metadata only.
-                -->
-                <executions>
-                    <execution>
-                        <id>osgi-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

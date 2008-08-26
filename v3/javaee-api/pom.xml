@@ -93,6 +93,11 @@
                 <extensions>true</extensions>
                 -->
                 <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>hk2-jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>

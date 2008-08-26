@@ -1,0 +1,4 @@
+-exportcontents: \
+                        org.glassfish.webservices, \
+                        org.glassfish.webservices.monitoring
+

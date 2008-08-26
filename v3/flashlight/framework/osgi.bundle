@@ -1,0 +1,6 @@
+-exportcontents: \
+                            org.glassfish.flashlight.provider, \
+                            org.glassfish.flashlight.client, \
+                            org.glassfish.flashlight.provider.annotations
+
+Bundle-Activator: org.glassfish.flashlight.impl.core.FlashlightBundleActivator

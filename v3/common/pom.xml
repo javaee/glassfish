@@ -56,7 +56,6 @@
         <module>amx-impl</module>
         <module>glassfish-ee-api</module>
     	<module>internal-api</module>
-    	<module>internal-ee-api</module>
         <module>annotation-framework</module>
         <module>common-util</module>
         <module>container-common</module>

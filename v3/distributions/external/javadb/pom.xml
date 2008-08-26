@@ -54,7 +54,10 @@
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
+                        <!-- Phase has been changed to process-classes from generate-sources,
+                             because the parent pom deletes target/classes in an earlier phase.
+                        -->
+                        <phase>process-classes</phase>
                         <configuration>
                             <tasks>
                                 <!-- this is a jar that contains a zip. Insane. -->

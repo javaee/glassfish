@@ -1,0 +1,8 @@
+-exportcontents: \
+                        com.sun.enterprise.iiop.security, \
+                        com.sun.enterprise.security.auth.digest.api, \
+                        com.sun.enterprise.security.auth.digest.impl, \
+                        com.sun.enterprise.security.auth.login.common, \
+                        com.sun.enterprise.security.common, \
+                        com.sun.enterprise.security.ssl, \
+                        com.sun.enterprise.server.pluggable
