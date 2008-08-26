@@ -44,7 +44,7 @@ public interface StartupContext {
      * This can return null and the container should allocate a ClassLoader
      * while loading the application.
      *
-     * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
+     * @link {org.jvnet.glassfish.api.deployment.archive.ArchiveHandler.getClassLoader()}
      *
      * @return a class loader capable of loading classes and resources from the
      * source

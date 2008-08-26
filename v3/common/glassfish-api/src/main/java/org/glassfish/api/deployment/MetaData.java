@@ -43,7 +43,6 @@ public class MetaData {
     final static Class[] empty = new Class[0];
 
     private final boolean invalidatesCL;
-    private final ModuleDefinition[] componentAPIs;
     private final Class[] requires;
     private final Class[] provides;
 
@@ -52,13 +51,10 @@ public class MetaData {
      *
      * @param invalidatesClassLoader If true, invalidates the class loader used during
      * the deployment's prepare phase
-     * @param componentAPIs is an array of module definition that should be added to the
-     * deployable artifact list of imported modules.
      *
      */
-    public MetaData(boolean invalidatesClassLoader, ModuleDefinition[] componentAPIs, Class[] provides, Class[] requires) {
+    public MetaData(boolean invalidatesClassLoader, Class[] provides, Class[] requires) {
         this.invalidatesCL = invalidatesClassLoader;
-        this.componentAPIs = componentAPIs;
         this.provides = provides;
         this.requires = requires;
     }
@@ -72,16 +68,6 @@ public class MetaData {
      */
     public boolean invalidatesClassLoader() {
         return invalidatesCL;
-    }
-
-    /**
-     * Returns the array of module definition containing the public APIs of applications
-     * supported by this deployer.
-     *
-     * @return the public APIs fo the associated container as an array of module definitions
-     */
-    public ModuleDefinition[] getPublicAPIs() {
-        return componentAPIs;
     }
 
     /**

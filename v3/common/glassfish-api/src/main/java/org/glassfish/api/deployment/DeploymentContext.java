@@ -47,7 +47,29 @@ public interface DeploymentContext extends StartupContext, ExecutionContext {
      * @return Abstraction to the application's source archive.
      */
     public ReadableArchive getSource();
-    
+
+    /**
+     * During the prepare phase, when a deployer need to have access to the class loader
+     * that will be used to load the application in the runtime container, it can call
+     * this API during the prepare phase. Otherswise, deployers should use the
+     * getClassLoader API.
+     *
+     * If a deployers needs to have access to the classloader during the prepare phase
+     *
+     *
+     * @return the final class loader
+     */
+    public ClassLoader getFinalClassLoader();
+
+    /**
+     * Depending on the phase of deployment, returns a temporary class loader (prepare
+     * phase) or the final class loader used to run the application in the various
+     * containers.
+     *
+     * @return a class loader to load application bits with
+     */
+    public ClassLoader getClassLoader();
+
     /**
      * Returns the DeployCommand parameters 
      * @return the command parameters
@@ -116,12 +138,4 @@ public interface DeploymentContext extends StartupContext, ExecutionContext {
      * deployment or revert to a mode without the byteocode enhancement feature.
      */
     public void addTransformer(ClassFileTransformer transformer);
-
-    /**
-     * Add a new ModuleDefinition to the public APIs of this application. This can be done before
-     * the load phase or it will generate an UnsupportedOpertationException
-     *
-     * @param def module definition to be added to the list of imports for that application
-     */
-    public void addPublicAPI(ModuleDefinition def) throws UnsupportedOperationException;
 }
