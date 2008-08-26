@@ -1436,12 +1436,10 @@ public class VirtualServer extends StandardHost {
              */
             try {
                 SSOFactory ssoFactory = webContainerFeatureFactory.getSSOFactory();
-                //SingleSignOn sso = ssoFactory.createSingleSignOnValve();
-                String vsName = this.getName();
-                SingleSignOn sso = ssoFactory.createSingleSignOnValve(vsName);
+                SingleSignOn sso = ssoFactory.createSingleSignOnValve(getName());
                 
                 // set max idle time if given
-                Property idle = getPropertyByName(SSO_MAX_IDLE);
+                Property idle = vsBean.getProperty(SSO_MAX_IDLE);
                 if (idle != null && idle.getValue() != null) {
                     _logger.fine("SSO entry max idle time set to: " +
                                  idle.getValue());
@@ -1450,7 +1448,7 @@ public class VirtualServer extends StandardHost {
                 }
 
                 // set expirer thread sleep time if given
-                Property expireTime = getPropertyByName(SSO_REAP_INTERVAL);
+                Property expireTime = vsBean.getProperty(SSO_REAP_INTERVAL);
                 if (expireTime !=null && expireTime.getValue() != null) {
                     _logger.fine("SSO expire thread interval set to : " +
                                  expireTime.getValue());
@@ -1480,21 +1478,6 @@ public class VirtualServer extends StandardHost {
     }
 
 
-    /**
-     * Utility method to retrieve a virtual server property by its name
-     * @param name the property name
-     * @return the property if found
-     */
-    private Property getPropertyByName(String name) {
-        for (Property prop : vsBean.getProperty()) {
-            if (prop.getName().equals(name)) {
-                return prop;
-            }
-        }
-        return null;
-    }
-
-    
     /**
      * Configures this VirtualServer with its state (on | off | disabled).
      */
@@ -1538,8 +1521,8 @@ public class VirtualServer extends StandardHost {
             return;
         }
 
-        Property allow = getPropertyByName("allowRemoteAddress");
-        Property deny = getPropertyByName("denyRemoteAddress");
+        Property allow = vsBean.getProperty("allowRemoteAddress");
+        Property deny = vsBean.getProperty("denyRemoteAddress");
         if ((allow != null && allow.getValue() != null)
                 || (deny != null && deny.getValue() != null))  {
             remoteAddrValve = new RemoteAddrValve();
@@ -1585,8 +1568,8 @@ public class VirtualServer extends StandardHost {
             return;
         }
 
-        Property allow = getPropertyByName("allowRemoteHost");
-        Property deny = getPropertyByName("denyRemoteHost");
+        Property allow = vsBean.getProperty("allowRemoteHost");
+        Property deny = vsBean.getProperty("denyRemoteHost");
         if ((allow != null && allow.getValue() != null)
                 || (deny != null && deny.getValue() != null))  {
             remoteHostValve = new RemoteHostValve();
@@ -1769,7 +1752,12 @@ public class VirtualServer extends StandardHost {
      * @return The value of the sso-enabled property for this VirtualServer
      */
     private boolean isSSOEnabled(boolean globalSSOEnabled) {
-        Property ssoProperty = getPropertyByName(Constants.SSO_ENABLED);
+
+        if (vsBean == null) {
+            return false;
+        }
+
+        Property ssoProperty = vsBean.getProperty(Constants.SSO_ENABLED);
 
         if (ssoProperty == null || ssoProperty.getValue() == null) {
             return globalSSOEnabled;
@@ -1789,9 +1777,12 @@ public class VirtualServer extends StandardHost {
      * false otherwise.
      */
     boolean isAccessLoggingEnabled(boolean globalAccessLoggingEnabled) {
-        Property prop  =
-                vsBean.getProperty(Constants.ACCESS_LOGGING_ENABLED);
-        
+
+        if (vsBean == null) {
+            return false;
+        }
+
+        Property prop = vsBean.getProperty(Constants.ACCESS_LOGGING_ENABLED);
         if (prop == null || prop.getValue() == null) {
             return globalAccessLoggingEnabled;
         } else {
