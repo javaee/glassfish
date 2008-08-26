@@ -39,10 +39,11 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setSessionAttribute(key="resEditTabs" value="general");
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.editPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.editPageTitleHelp}");
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18njdbc.jdbcResource.editPageTitle}");
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njdbc.jdbcResource.editPageTitleHelp}");
     setPageSessionAttribute(key="generalPage" value="jdbcResourceEdit.jsf");
     setPageSessionAttribute(key="targetPage" value="jdbcResourceTargets.jsf");
      if( $session{supportCluster} ){

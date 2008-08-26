@@ -39,6 +39,7 @@
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
         getRequestValue(key="name" value=>$page{jndiName});
         getPoolAdvanceInfo(
                 jndiName = "#{jndiName}"
@@ -47,7 +48,7 @@
         />
 #include "/shared/restart.inc"        
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.advancePageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}'); ">
@@ -56,8 +57,8 @@
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.advancePageTitle}" 
-                    helpText="$resource{i18n.jdbcConnectionPool.advancePageTitleHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
+                    helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
                     <!-- Buttons  -->  
                      <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
                         <!command
@@ -94,7 +95,7 @@
                                 <sun:staticText id="Jndi" text="#{jndiName}"/> 
                             </sun:property>   
                           
-                            <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.statementTimeoutInSeconds}" helpText="$resource{i18n.jdbcPool.statementTimeoutInSecondsHelp}">
+                            <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.statementTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.statementTimeoutInSecondsHelp}">
                                 <sun:textField id="va" columns="$int{50}" text="#{advance.statementTimeoutInSeconds}" > 
                                 <!afterCreate
                                      getClientId(component="$this{component}" clientId=>$page{timeoutId});
@@ -103,7 +104,7 @@
                                 <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
                             </sun:property>   
                             
-                             <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.wrapJdbcObjects}" helpText="$resource{i18n.jdbcPool.wrapJdbcObjectsHelp}">
+                             <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.wrapJdbcObjects}" helpText="$resource{i18njdbc.jdbcPool.wrapJdbcObjectsHelp}">
                                 <sun:checkbox  selected="#{advance.wrapJDBCObjects}" label="$resource{i18n.common.Enabled}" />  
                            </sun:property>
                        

@@ -35,32 +35,32 @@
 -->
 <!-- jdbc/advancePool.inc -->
 
-<sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18n.jdbcPool.connectionSettings}">
+<sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njdbc.jdbcPool.connectionSettings}">
 
-    <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.validateAtmostOnceInSeconds}" helpText="$resource{i18n.jdbcPool.validateAtmostOnceInSecondsHelp}">
+    <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.validateAtmostOnceInSeconds}" helpText="$resource{i18njdbc.jdbcPool.validateAtmostOnceInSecondsHelp}">
         <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{advance.validateAtMostOncePeriodInSeconds}" /> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
-    <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.connectionLeakTimeoutInSeconds}" helpText="$resource{i18n.jdbcPool.connectionLeakTimeoutInSecondsHelp}">
+    <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionLeakTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.connectionLeakTimeoutInSecondsHelp}">
         <sun:textField id="p2" styleClass="integer" columns="$int{30}" text="#{advance.connectionLeakTimeoutInSeconds}"/> 
         <sun:staticText id="vasec" text="$resource{i18n.common.Seconds}"/>
    </sun:property>   
 
-    <sun:property id="p3"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.connectionLeakReclaim}" helpText="$resource{i18n.jdbcPool.connectionLeakReclaimHelp}">
+    <sun:property id="p3"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionLeakReclaim}" helpText="$resource{i18njdbc.jdbcPool.connectionLeakReclaimHelp}">
         <sun:checkbox  selected="#{advance.connectionLeakReclaim}" label=" "/>
     </sun:property> 
 
-    <sun:property id="p4"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.connectionCreationRetryAttempts}" helpText="$resource{i18n.jdbcPool.connectionCreationRetryAttemptsHelp}">
+    <sun:property id="p4"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionCreationRetryAttempts}" helpText="$resource{i18njdbc.jdbcPool.connectionCreationRetryAttemptsHelp}">
         <sun:textField id="p4" styleClass="integer" columns="$int{30}" text="#{advance.connectionCreationRetryAttempts}"/> 
    </sun:property>   
 
-    <sun:property id="p5"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.connectionCreationRetryIntervalInSeconds}" helpText="$resource{i18n.jdbcPool.connectionCreationRetryIntervalInSecondsHelp}">
+    <sun:property id="p5"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.connectionCreationRetryIntervalInSeconds}" helpText="$resource{i18njdbc.jdbcPool.connectionCreationRetryIntervalInSecondsHelp}">
         <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{advance.connectionCreationRetryIntervalInSeconds}"/> 
         <sun:staticText id="p51" text="$resource{i18n.common.Seconds}"/>
    </sun:property>
 
-    <sun:property id="p7"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.lazyConnectionAssociation}" helpText="$resource{i18n.jdbcPool.lazyConnectionAssociationHelp}">
+    <sun:property id="p7"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.lazyConnectionAssociation}" helpText="$resource{i18njdbc.jdbcPool.lazyConnectionAssociationHelp}">
         <sun:checkbox id="associate"  selected="#{advance.lazyConnectionAssociation}" label="$resource{i18n.common.Enabled}" onClick="enableDisableLazyConnection('#{associateId}');" >  
            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{associateId});
@@ -68,7 +68,7 @@
         </sun:checkbox>
    </sun:property>
 
-    <sun:property id="p6"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.lazyConnectionEnlistment}" helpText="$resource{i18n.jdbcPool.lazyConnectionEnlistmentHelp}">
+    <sun:property id="p6"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.lazyConnectionEnlistment}" helpText="$resource{i18njdbc.jdbcPool.lazyConnectionEnlistmentHelp}">
         <sun:checkbox id="enlist"  selected="#{advance.lazyConnectionEnlistment}" label="$resource{i18n.common.Enabled}">  
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{enlistId});
@@ -76,15 +76,15 @@
         </sun:checkbox>
     </sun:property>
 
-    <sun:property id="p8"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.associationWithThread}" helpText="$resource{i18n.jdbcPool.associationWithThreadHelp}">
+    <sun:property id="p8"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.associationWithThread}" helpText="$resource{i18njdbc.jdbcPool.associationWithThreadHelp}">
         <sun:checkbox  selected="#{advance.associateWithThread}" label="$resource{i18n.common.Enabled}"/>  
    </sun:property>
 
-    <sun:property id="p9"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.matchConnections}" helpText="$resource{i18n.jdbcPool.matchConnectionsHelp}">
+    <sun:property id="p9"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.matchConnections}" helpText="$resource{i18njdbc.jdbcPool.matchConnectionsHelp}">
         <sun:checkbox  selected="#{advance.matchConnections}" label="$resource{i18n.common.Enabled}"/>  
    </sun:property>
 
-    <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.maxConnectionUsageCount}" helpText="$resource{i18n.jdbcPool.maxConnectionUsageCountHelp}">
+    <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.maxConnectionUsageCount}" helpText="$resource{i18njdbc.jdbcPool.maxConnectionUsageCountHelp}">
         <sun:textField id="p5" styleClass="integer" columns="$int{30}" text="#{advance.maxConnectionUsageCount}"/> 
    </sun:property>
 

@@ -1,5 +1,5 @@
 
-<sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Other}">                    
+<sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Other}">
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.connPool}"
         toolTip="$resource{i18n.commonTasks.task.connPool.toolTip}"

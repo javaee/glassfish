@@ -38,11 +38,12 @@
 <sun:page>
     <!beforeCreate 
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     />
 #include "/shared/restart.inc"    
     <sun:html>
-        <sun:head id="resourcesHead" title="$resource{i18n.jdbc.pageTitle}">
+        <sun:head id="resourcesHead" title="$resource{i18njdbc.jdbc.pageTitle}">
             <sun:script url="resource/js/adminjsf.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -50,27 +51,27 @@
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title 
                 id="resourcesPageTitle" 
-                title="$resource{i18n.jdbc.pageTitle}" 
-                helpText="$resource{i18n.jdbc.pageTitleHelp}"
+                title="$resource{i18njdbc.jdbc.pageTitle}" 
+                helpText="$resource{i18njdbc.jdbc.pageTitleHelp}"
                 />
                 <sun:propertySheet>
                     <sun:propertySheetSection>
                         <sun:property>
                         <sun:hyperlink 
-                            toolTip="$resource{i18n.tree.jdbcResources.tooltip}"
+                            toolTip="$resource{i18njdbc.tree.jdbcResources.tooltip}"
                             url="/jdbc/jdbcResources.jsf" >
                             <sun:image url="/resource/jdbc/images/JDBC.gif" />
-                            <sun:staticText text="$resource{i18n.tree.jdbcResources}" />
+                            <sun:staticText text="$resource{i18njdbc.tree.jdbcResources}" />
                             </sun:hyperlink>
                         
                         
                         </sun:property>
                         <sun:property>
                         <sun:hyperlink 
-                            toolTip="$resource{i18n.tree.connectionPools.tooltip}"
+                            toolTip="$resource{i18njdbc.tree.connectionPools.tooltip}"
                             url="/jdbc/jdbcConnectionPools.jsf" >
                             <sun:image url="/resource/jdbc/images/JDBC.gif" />
-                            <sun:staticText text="$resource{i18n.tree.connectionPools}" />
+                            <sun:staticText text="$resource{i18njdbc.tree.connectionPools}" />
                             </sun:hyperlink>
                         
                             

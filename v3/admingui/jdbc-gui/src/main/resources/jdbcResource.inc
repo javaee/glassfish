@@ -99,7 +99,7 @@
             <sun:textField id="jnditext"  styleClass="required" rendered="#{!edit}"  text="#{jndiName}" required="#{true}"/>
         </sun:property> 
 
-        <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18n.jdbcResource.poolHelp}">
+        <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njdbc.jdbcResource.poolHelp}">
             <sun:dropDown id="PoolName" selected="#{requestScope.poolName}" labels="$attribute{jdbcConnectionPools}" required="#{true}"/>
         </sun:property>   
 

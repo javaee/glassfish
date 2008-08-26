@@ -43,9 +43,10 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.newPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.newPageTitleHelp}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18njdbc.jdbcResource.newPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njdbc.jdbcResource.newPageTitleHelp}");
         setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.OK}");
         setPageSessionAttribute(key="useString" value="$boolean{false}");
         setPageSessionAttribute(key="useCheckBox" value="$boolean{true}");

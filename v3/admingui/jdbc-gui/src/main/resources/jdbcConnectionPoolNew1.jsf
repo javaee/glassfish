@@ -39,6 +39,7 @@
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
     getRequestValue(key="cancelPage" default="jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});
     getJDBCPoolWizard(fromStep2="$attribute{fromStep2}"
                 ResTypeList=>$attribute{ResTypeList}
@@ -47,15 +48,15 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.step1PageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.step1PageTitle}"
-                    helpText="$resource{i18n.jdbcConnection.step1PageHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}"
+                    helpText="$resource{i18njdbc.jdbcConnection.step1PageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}"  
@@ -77,16 +78,16 @@
                     </facet>                     
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet" requiredFields="true">			 
-                        <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.jdbcPool.general}">
+                        <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18njdbc.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                                 <sun:textField id="name"  styleClass="required"  columns="$int{30}" text="#{wizardPoolExtra.name}" required="#{true}"/> 
                             </sun:property>   
 
-                            <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18n.jdbcPool.resTypeHelp}" >
+                            <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
                                 <sun:dropDown id="resType" selected="#{wizardPool.ResType}" labels="$attribute{ResTypeList}" />
                             </sun:property>
                             
-                            <sun:property id="dbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.dbVendor}" >
+                            <sun:property id="dbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}" >
                                 <sun:dropDown id="db" selected="#{wizardPoolExtra.DBVendor}" labels="$attribute{DBVendorList}" />
                             </sun:property>
                             

@@ -35,27 +35,27 @@
 -->
 <!-- jdbc/poolPropertyNew.inc -->
 
-    <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.initPoolSize}" helpText="$resource{i18n.jdbcPool.initPoolSizeHelp}">
+    <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.initPoolSize}" helpText="$resource{i18njdbc.jdbcPool.initPoolSizeHelp}">
         <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{wizardPool.SteadyPoolSize}" /> 
         <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/> 
     </sun:property>
 
-    <sun:property id="maxProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.maxPoolSize}" helpText="$resource{i18n.jdbcPool.maxPoolSizeHelp}">
+    <sun:property id="maxProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.maxPoolSize}" helpText="$resource{i18njdbc.jdbcPool.maxPoolSizeHelp}">
         <sun:textField id="ds2" styleClass="integer" columns="$int{10}" text="#{wizardPool.MaxPoolSize}" />
         <sun:staticText id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
     </sun:property>
 
-    <sun:property id="resizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.poolResize}" helpText="$resource{i18n.jdbcPool.poolResizeHelp}">
+    <sun:property id="resizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolResize}" helpText="$resource{i18njdbc.jdbcPool.poolResizeHelp}">
         <sun:textField id="ds3" styleClass="integer" columns="$int{10}" text="#{wizardPool.PoolResizeQuantity}" /> 
         <sun:staticText id="con3" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
     </sun:property>
 
-    <sun:property id="idleProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.idleTimeout}" helpText="$resource{i18n.jdbcPool.idleTimeoutHelp}">
+    <sun:property id="idleProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.idleTimeout}" helpText="$resource{i18njdbc.jdbcPool.idleTimeoutHelp}">
         <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{wizardPool.IdleTimeoutInSeconds}" />
         <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
     </sun:property>
 
-    <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.jdbcPool.maxWait}" helpText="$resource{i18n.jdbcPool.maxWaitHelp}">
+    <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.maxWait}" helpText="$resource{i18njdbc.jdbcPool.maxWaitHelp}">
         <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{wizardPool.MaxWaitTimeInMillis}" /> 
         <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
     </sun:property>

@@ -38,6 +38,7 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         getRequestValue(key="name" value=>$page{jndiName});
         getJdbcConnectionPoolProperty(
@@ -47,7 +48,7 @@
         />
 #include "/shared/restart.inc"        
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.propertyPageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -56,8 +57,8 @@
 #include "jdbcConnectionPoolTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.propertyPageTitle}" 
-                helpText="$resource{i18n.jdbcConnectionPool.propertyPageTitleHelp}">
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" 
+                helpText="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitleHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
 

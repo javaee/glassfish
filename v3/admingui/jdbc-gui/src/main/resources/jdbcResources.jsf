@@ -38,6 +38,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
 
@@ -58,7 +59,7 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jdbcResources.pageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcResources.pageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
@@ -66,7 +67,7 @@
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n.jdbcResources.pageTitle}" helpText="$resource{i18n.jdbcResources.pageTitleHelp}"/>
+                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResources.pageTitle}" helpText="$resource{i18njdbc.jdbcResources.pageTitleHelp}"/>
 		 "<br /> <br />
 #include "resourcesTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResources}" />
