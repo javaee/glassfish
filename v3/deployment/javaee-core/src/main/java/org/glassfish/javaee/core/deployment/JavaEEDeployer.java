@@ -124,7 +124,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, null);
+        return new MetaData(false, null, null);
     }
 
 

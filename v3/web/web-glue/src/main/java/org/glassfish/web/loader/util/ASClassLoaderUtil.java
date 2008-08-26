@@ -49,15 +49,12 @@ import java.util.logging.*;
 //import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.util.FileUtil;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 //import com.sun.enterprise.server.ApplicationServer;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.web.WebDeployer;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -110,17 +107,16 @@ public class ASClassLoaderUtil {
 
     	        }
 
-                WebDeployer webDeployer = habitat.getComponent(WebDeployer.class);
-                ModuleDefinition[] moduleDefs = webDeployer.getMetaData().getPublicAPIs();
-                if (moduleDefs != null) {
-                    for (ModuleDefinition moduleDef : moduleDefs) {
-                        URI[] uris = moduleDef.getLocations();
-                        for (URI uri : uris) {
+                ModulesRegistry mr = habitat.getComponent(ModulesRegistry.class);
+                if (mr!=null) {
+                    for (Module module : mr.getModules()) {
+                        for (URI uri : module.getModuleDefinition().getLocations()) {
                             tmpString.append(uri.getPath());
-                            tmpString.append(File.pathSeparator);
+                            tmpString.append(File.pathSeparator);                            
                         }
                     }
-                }     
+                }
+
     	        //set sharedClasspathForWebModule so that it doesn't need to be recomputed
     	        //for every other invocation
     	        sharedClasspathForWebModule = tmpString.toString();

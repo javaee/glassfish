@@ -248,7 +248,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             final ReadableArchive sourceArchive = archive; 
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     sourceArchive, parameters, env);
-            deploymentContext.setClassLoader(cloader);
+            deploymentContext.createClassLoaders(parentCL, archiveHandler);
 
             // clean up any generated files
             deleteContainerMetaInfo(deploymentContext);

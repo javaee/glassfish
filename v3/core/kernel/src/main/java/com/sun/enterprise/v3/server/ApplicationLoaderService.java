@@ -120,22 +120,21 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                     try {
                         sourceArchive = archiveFactory.openArchive(sourceFile);
                         ArchiveHandler handler = getArchiveHandler(sourceArchive);
-                        ClassLoader cloader = null;
-                        if (handler!=null) {
-                            cloader = handler.getClassLoader(null, sourceArchive);
-                        }
 
-                        Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive, cloader);
+                        Properties deploymentProperties = new Properties();
+                        deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
+                        deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
+                        DeploymentContextImpl depContext = new DeploymentContextImpl(
+                                logger,
+                                sourceArchive,
+                                deploymentProperties,
+                                env);
+                        depContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
+                        depContext.createClassLoaders(null, handler);
+
+                        Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive,
+                                depContext.getClassLoader());
                         if (appSniffers!=null) {
-                            Properties deploymentProperties = new Properties();
-                            deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
-                            deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
-                            DeploymentContextImpl depContext = new DeploymentContextImpl(
-                                    logger,
-                                    sourceArchive,
-                                    deploymentProperties,
-                                    env);
-                            depContext.setClassLoader(cloader);
 
                             ActionReport report = new HTMLActionReporter();
                             deploy(appSniffers, depContext, report);

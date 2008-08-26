@@ -159,20 +159,21 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
 
             // create the parent class loader
             ClassLoader parentCL = snifferManager.createSnifferParentCL(null, snifferManager.getSniffers());
-            // now the archive class loader, this will only be used for the sniffers.handles() method
-            final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, 
-                archive);
 
-            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
+            final DeploymentContextImpl deploymentContext =
+                new DeploymentContextImpl(logger, archive, parameters, env);
+            deploymentContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
+            deploymentContext.createClassLoaders(parentCL, archiveHandler);
+
+            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive,
+                    deploymentContext.getClassLoader());
+
             if (appSniffers.size()==0) {
                 report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
 
-            final DeploymentContextImpl deploymentContext = 
-                new DeploymentContextImpl(logger, archive, parameters, env);
-            deploymentContext.setClassLoader(cloader);
             deploymentContext.setProps(contextProps);
 
             ApplicationInfo appInfo = enable(appSniffers, deploymentContext, 

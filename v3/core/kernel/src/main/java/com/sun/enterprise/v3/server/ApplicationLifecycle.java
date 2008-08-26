@@ -193,18 +193,7 @@ public class ApplicationLifecycle {
 
         final ReadableArchive source = context.getSource();
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
-        // We no longer have to add deployer APIs to our class loader,
-        // as they will be visible via APIClassLoader which is higher
-        // up in the hierarchy.
-//        for (Deployer deployer : deployers) {
-//            final MetaData deployMetadata = deployer.getMetaData();
-//            if (deployMetadata!=null) {
-//                ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
-//                if (moduleDefs!=null) {
-//                    defs.addAll(Arrays.asList(moduleDefs));
-//                }
-//            }
-//        }
+
         // now let's see if the application is requesting any module imports
         Manifest m=null;
         try {
@@ -245,10 +234,6 @@ public class ApplicationLifecycle {
             }
         }
 
-        // Not needed, as they are visible via APIClassLoader
-//        // now maybe the deployer's have added extra APIs...
-//        defs.addAll(context.getPublicAPIs());
-//
         return modulesRegistry.getModulesClassLoader(parent, defs);
 
     }
@@ -266,6 +251,7 @@ public class ApplicationLifecycle {
             }
         };
 
+        context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         try {
             LinkedList<ContainerInfo> sortedContainerInfos =
                 setupContainerInfos(sniffers, context, report, tracker);
@@ -334,8 +320,7 @@ public class ApplicationLifecycle {
                 ClassLoader parentCL = createApplicationParentCL(applibCL, 
                     context, deployers);
                 ArchiveHandler handler = getArchiveHandler(context.getSource());
-                context.setClassLoader(handler.getClassLoader(parentCL, 
-                    context.getSource()));
+                context.createClassLoaders(parentCL, handler);
 
                 return startModules(appInfo, context, report, tracker);
             } catch (Exception e) {
@@ -529,13 +514,12 @@ public class ApplicationLifecycle {
         // which will be stored in the deployment context.
         ClassLoader parentCL = createApplicationParentCL(applibCL, context, deployers);
         ArchiveHandler handler = getArchiveHandler(context.getSource());
-        context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+        context.createClassLoaders(parentCL, handler);
 
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
             Deployer<?,?> deployer = containerInfo.getDeployer();
-
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             final MetaData metadata = deployer.getMetaData();
@@ -556,24 +540,17 @@ public class ApplicationLifecycle {
             }
         }
 
-        boolean invalidated = false;
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
             Deployer deployer = containerInfo.getDeployer();
-
-            final MetaData metadata = deployer.getMetaData();
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
                     deployer.prepare(context);
-                    if (metadata!=null) {
-                        if (metadata.invalidatesClassLoader()) {
-                            invalidated = true;
-                        }
-                    }
+                    
                     // construct an incomplete ModuleInfo which will be later
                     // filled in at loading time
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo, null);
@@ -586,31 +563,6 @@ public class ApplicationLifecycle {
                 }
             } finally {
                 Thread.currentThread().setContextClassLoader(currentCL);
-            }
-        }
-
-        if (invalidated) {
-            // we might need to flush the class loader used the load the application
-            // bits in case we ran all the prepare() methods of the invalidating
-            // deployers.
-            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
-            // add the class file transformers to the new class loader
-            try {
-                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getClassLoader());
-                for (ClassFileTransformer transformer : context.getTransformers()) {
-                    icl.addTransformer(transformer);
-                }
-            } catch (Exception e) {
-                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
-                throw e;
-
-            }
-        }
-
-        for (ModuleDefinition def : context.getPublicAPIs()) {
-            Module module = modulesRegistry.makeModuleFor(def.getName(), def.getVersion());
-            if (module!=null) {
-                logger.severe("TODO : add dependencies on the fly");
             }
         }
 
@@ -627,8 +579,21 @@ public class ApplicationLifecycle {
         ApplicationInfo appInfo, DeploymentContextImpl context,
         ActionReport report, ProgressTracker tracker) throws Exception {
 
+        context.setPhase(DeploymentContextImpl.Phase.LOAD);
         List <ModuleInfo> moduleInfos = tracker.get(ModuleInfo.class);
 
+        if (!context.getTransformers().isEmpty()) {
+            // add the class file transformers to the new class loader
+            try {
+                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getFinalClassLoader());
+                for (ClassFileTransformer transformer : context.getTransformers()) {
+                    icl.addTransformer(transformer);
+                }
+            } catch (Exception e) {
+                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
+                throw e;
+            }
+        }
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the container.
@@ -757,7 +722,7 @@ public class ApplicationLifecycle {
         return isSuccess;
     }
 
-    protected void unload(Iterable<ModuleInfo> modules, DeploymentContext context) {
+    protected void unload(Iterable<ModuleInfo> modules, DeploymentContextImpl context) {
         for (ModuleInfo module : modules) {
             try {
                 module.getContainerInfo().getDeployer().unload(module.getApplicationContainer(), context);

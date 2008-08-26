@@ -39,7 +39,6 @@ import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
 
 
-import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -198,7 +197,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, new Class[] {Application.class});
+        return new MetaData(false, null, new Class[] {Application.class});
     }
     
      

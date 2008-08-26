@@ -61,24 +61,11 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
     @Inject
     private ModulesRegistry modulesRegistry;
-
+    
 
     @Override public MetaData getMetaData() {
-        // List of modules imported for a JPA App.
-        List<ModuleDefinition> modulesImportedForJPAApp =   new ArrayList<ModuleDefinition>();
-
-        // Inherit PublicAPIs from super. This will contain javaee apis
-        modulesImportedForJPAApp.addAll(Arrays.asList(super.getMetaData().getPublicAPIs()));
-
-        // Add all modules providing service for javax.persistence.spi.PersistenceProvider.class also to list of imported modules
-        Iterable<Module> persistenceProviderModules = modulesRegistry.getModulesProvider(javax.persistence.spi.PersistenceProvider.class);
-        for (Module persistenceProviderModule : persistenceProviderModules) {
-            modulesImportedForJPAApp.add(persistenceProviderModule.getModuleDefinition());
-        }
 
         return new MetaData(true /*invalidateCL */ ,
-                /* componentAPIs to be imported */
-                modulesImportedForJPAApp.toArray(new ModuleDefinition[modulesImportedForJPAApp.size()]),
                 null /* provides */,
                 new Class[] {Application.class} /* requires Application from dol */);
     }
@@ -137,16 +124,18 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
     private static class ProviderContainerContractInfoImpl
             implements ProviderContainerContractInfo {
-        private DeploymentContext deploymentContext;
-        private ConnectorRuntime connectorRuntime;
+        private final DeploymentContext deploymentContext;
+        private final ConnectorRuntime connectorRuntime;
+        private final ClassLoader finalClassLoader;
         
         public ProviderContainerContractInfoImpl(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime) {
             this.deploymentContext = deploymentContext;
             this.connectorRuntime = connectorRuntime;
+            this.finalClassLoader=deploymentContext.getFinalClassLoader();
         }
 
         public ClassLoader getClassLoader() {
-            return deploymentContext.getClassLoader();
+            return finalClassLoader;
         }
 
         public ClassLoader getTempClassloader() {

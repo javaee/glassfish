@@ -121,7 +121,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             }
         }
 
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
+        return new MetaData(false,
                 new Class[] { Application.class }, null);
     }    
 

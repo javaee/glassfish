@@ -243,8 +243,12 @@ public class WebappClassLoader
         init();
     }
 
+     public WebappClassLoader(URL[] urls, ClassLoader parent) {
+         super(urls, parent);
+         init();
+     }
 
-    // ----------------------------------------------------- Instance Variables
+     // ----------------------------------------------------- Instance Variables
 
     // START PE 4989455
     /**

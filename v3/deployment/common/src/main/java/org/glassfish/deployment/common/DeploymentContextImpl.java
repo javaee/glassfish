@@ -25,8 +25,10 @@ package org.glassfish.deployment.common;
 
 import java.lang.instrument.ClassFileTransformer;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ParameterNames;
 
 import java.util.*;
@@ -42,6 +44,8 @@ import com.sun.enterprise.module.ModuleDefinition;
  */
 public class DeploymentContextImpl implements DeploymentContext {
 
+    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN };
+
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;
@@ -50,7 +54,10 @@ public class DeploymentContextImpl implements DeploymentContext {
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
     List<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>();
-    List<ModuleDefinition> publicAPIs = new ArrayList<ModuleDefinition>();
+    Phase phase = Phase.UNKNOWN;
+    boolean finalClassLoaderAccessedDuringPrepare = false;
+    boolean tempClassLoaderInvalidated = false;
+    ClassLoader sharableTemp = null;
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironmentImpl env) {
@@ -58,6 +65,11 @@ public class DeploymentContextImpl implements DeploymentContext {
         this.logger = logger;
         this.parameters = params;
         this.env = env;
+    }
+
+
+    public void setPhase(Phase newPhase) {
+        this.phase = newPhase;
     }
 
     public ReadableArchive getSource() {
@@ -88,19 +100,74 @@ public class DeploymentContextImpl implements DeploymentContext {
      *         source
      * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
      */
-    public ClassLoader getClassLoader() {
+    public ClassLoader getFinalClassLoader() {
+
+        // someone got hold of our final class loader, the temp is automatically invalidated.
+        tempClassLoaderInvalidated = true;
+
+        // check if we are in prepare phase and the final class loader has been accessed...
+        if (phase==Phase.PREPARE) {
+            if (finalClassLoaderAccessedDuringPrepare) {
+                Boolean force = Boolean.parseBoolean(getCommandParameters().getProperty("force"));
+                if (!force) {
+                    throw new RuntimeException("More than one deployer is trying to access the final class loader during prepare phase," +
+                            " use --force=true to force deployment");
+                }
+            } else {
+                finalClassLoaderAccessedDuringPrepare=true;
+            }
+        }
         return cloader;
     }
 
     /**
-     * Resets the application class loader associated with this deployment request.
+     * Returns the class loader associated to this deployment request.
+     * ClassLoader instances are usually obtained by the getClassLoader API on
+     * the associated ArchiveHandler for the archive type being deployed.
+     * <p/>
+     * This can return null and the container should allocate a ClassLoader
+     * while loading the application.
      *
-     * @param cloader
+     * @return a class loader capable of loading classes and resources from the
+     *         source
+     * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
      */
-    public void setClassLoader(ClassLoader cloader) {
-        this.cloader = cloader;
+    public ClassLoader getClassLoader() {
+        return getClassLoader(true);
     }
 
+    public void createClassLoaders(ClassLoader parent, ArchiveHandler handler) {
+        this.sharableTemp = handler.getClassLoader(parent, source);
+        this.cloader = handler.getClassLoader(parent, source);
+    }
+
+    public void invalidateTempClassLoader() {
+        tempClassLoaderInvalidated=true;
+
+    }
+    
+    public synchronized ClassLoader getClassLoader(boolean sharable) {
+        // if we are in prepare phase, we need to return our sharable temporary class loader
+        // otherwise, we return the final one.
+        if (phase==Phase.PREPARE) {
+            if (sharable) {
+                return sharableTemp;
+            } else {
+                InstrumentableClassLoader cl = InstrumentableClassLoader.class.cast(sharableTemp);
+                return cl.copy();
+            }
+        } else {
+            // we are out of the prepare phase, if none of our deployers have invalidated
+            // their class loader during the prepare phase, we can continue using the
+            // sharableone which will become the final class loader after all.
+            if (tempClassLoaderInvalidated) {
+                return cloader;
+            } else {
+                return sharableTemp;                
+            }
+
+        }
+    }
 
     /**
      * Returns a scratch directory that can be used to store things in.
@@ -190,25 +257,5 @@ public class DeploymentContextImpl implements DeploymentContext {
      */
     public List<ClassFileTransformer> getTransformers() {
         return transformers;
-    }
-
-    /**
-     * Add a new ModuleDefinition to the public APIs of this application. This can be done before
-     * the load phase or it will generate an UnsupportedOpertationException
-     *
-     * @param def module definition to be added to the list of imports for that application
-     * @throws UnsupportedOperationException when it is too late to add a new public API
-     */
-    public void addPublicAPI(ModuleDefinition def) throws UnsupportedOperationException {
-        publicAPIs.add(def);
-    }
-
-    /**
-     * Returns the list of public APIs to be added to the application class loader
-     *
-     * @return list of public APIs
-     */
-    public List<ModuleDefinition> getPublicAPIs() {
-        return publicAPIs;
     }
 }

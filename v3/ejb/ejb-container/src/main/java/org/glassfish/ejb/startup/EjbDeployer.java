@@ -106,7 +106,7 @@ public class EjbDeployer
             }
         }
 
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
+        return new MetaData(false,
                 new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
     }
 
