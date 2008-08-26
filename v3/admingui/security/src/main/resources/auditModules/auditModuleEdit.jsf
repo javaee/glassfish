@@ -40,8 +40,8 @@
 />
 <sun:page id="page2">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings")
-    setResourceBundle(key="help" bundle="core.Helplinks")
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
     setPageSessionAttribute(key="name", value="$requestParameter{name}");        
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.auditModule.EditPageTitle}");

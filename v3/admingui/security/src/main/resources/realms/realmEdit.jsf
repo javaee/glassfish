@@ -39,8 +39,8 @@
 
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings")
-	setResourceBundle(key="help" bundle="core.Helplinks")
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.realm.EditPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.realm.EditPageTitleHelp}");
         setPageSessionAttribute(key="helpKey" value="$resource{help.realmNew}");
