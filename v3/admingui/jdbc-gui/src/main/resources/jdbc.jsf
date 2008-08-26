@@ -37,8 +37,8 @@
 
 <sun:page>
     <!beforeCreate 
-        setResourceBundle(key="i18n" bundle="core.Strings")
-        setResourceBundle(key="help" bundle="core.Helplinks")
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     />
 #include "/shared/restart.inc"    
     <sun:html>

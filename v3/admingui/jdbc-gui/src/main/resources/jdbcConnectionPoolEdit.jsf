@@ -45,8 +45,8 @@
     </event>
                                 
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings")
-	setResourceBundle(key="help" bundle="core.Helplinks")
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setSessionAttribute(key="jdbcPoolTabs" value="general");
         getRequestValue(key="name" value=>$page{jndiName});
         getJdbcConnectionPoolInfo(
