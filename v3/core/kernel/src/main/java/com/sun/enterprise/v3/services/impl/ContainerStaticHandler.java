@@ -39,6 +39,8 @@ import com.sun.grizzly.util.http.mapper.MappingData;
  * @author Shing Wai Chan
  */
 public class ContainerStaticHandler extends StaticHandler {
+    private static Method getServletClassMethod = null;
+
     public ContainerStaticHandler() {
     }
 
@@ -64,10 +66,8 @@ public class ContainerStaticHandler extends StaticHandler {
 
                     try {
                         Object wrapper = mappingData.wrapper;
-                        Class clazz = wrapper.getClass();
-                        Method getServletClassMethod = clazz.getMethod("getServletClass");
                         String servletClass =
-                                (String)getServletClassMethod.invoke(wrapper);
+                                (String)(getServletClassMethod(wrapper).invoke(wrapper));
 
                         if ("org.apache.catalina.servlets.DefaultServlet".equals(servletClass)) {
                             return super.handle(req, handlerCode);
@@ -82,5 +82,16 @@ public class ContainerStaticHandler extends StaticHandler {
         }
 
         return Interceptor.CONTINUE;   
+    }
+
+    private static synchronized Method getServletClassMethod(Object wrapper)
+            throws NoSuchMethodException {
+
+        if (getServletClassMethod == null) {
+            Class clazz = wrapper.getClass();
+            getServletClassMethod = clazz.getMethod("getServletClass");
+        }
+
+        return getServletClassMethod;
     }
 }
