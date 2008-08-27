@@ -227,6 +227,25 @@ public final class Transactions {
                     final UnprocessedChangeEvent unp = new UnprocessedChangeEvent(evt, "no ConfigListener listening to dom element " + dom.getProxyType().getName() );
                     unprocessedEvents.add( new UnprocessedChangeEvents(unp) );
                 }
+                
+                // we notify the immediate parent.
+                // dochez : should we notify the parent chain up to the root or stop at the first parent.
+                if (dom.parent()!=null && dom.parent().getListeners()!=null) {
+                    for (ConfigListener parentListener : dom.parent().getListeners()) {
+                        if (!notifiedListeners.contains(parentListener)) {
+                            try {
+                                // create a new array each time to avoid any potential array changes?
+                                UnprocessedChangeEvents unprocessed = parentListener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
+                                if (unprocessed != null && unprocessed.size() != 0 ) {
+                                    unprocessedEvents.add(unprocessed);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            notifiedListeners.add(parentListener);
+                        }
+                    }
+                }
             }
             // all the config listeners have been notified, let's see if we have
             // some unprocessed events to notifiy the transation listeners.
