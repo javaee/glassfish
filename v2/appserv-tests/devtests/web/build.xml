@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="315"/>
+    <property name="TOTAL_EXPECTED" value="316"/>
 
     &commonSetup;
     &commonBuild;
@@ -243,6 +243,7 @@
         <ant dir="sessionIdCustomGenerator" target="all"/>
         <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
+        <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
