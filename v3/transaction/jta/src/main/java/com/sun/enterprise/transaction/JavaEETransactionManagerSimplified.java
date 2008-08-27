@@ -38,6 +38,8 @@ package com.sun.enterprise.transaction;
 import java.util.*;
 import java.util.logging.*;
 import java.rmi.RemoteException;
+import java.beans.PropertyChangeEvent;
+
 import javax.transaction.*;
 import javax.transaction.xa.*;
 import javax.resource.spi.XATerminator;
@@ -61,6 +63,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -68,6 +72,7 @@ import org.glassfish.api.invocation.InvocationException;
 import org.glassfish.api.invocation.ResourceHandler;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 
 /**
  * Implementation of javax.transaction.TransactionManager interface.
@@ -81,7 +86,7 @@ import com.sun.enterprise.config.serverbeans.TransactionService;
 @Service
 @ContractProvided(TransactionManager.class)
 public class JavaEETransactionManagerSimplified 
-        implements JavaEETransactionManager, PostConstruct {
+        implements JavaEETransactionManager, PostConstruct, ConfigListener {
 
     protected Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
@@ -1186,6 +1191,48 @@ public class JavaEETransactionManagerSimplified
                 }
             }
         }
+    }
+
+/****************************************************************************/
+/** Implementation of org.jvnet.hk2.config.ConfigListener *********************/
+/****************************************************************************/
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        for (PropertyChangeEvent event : events) {
+            System.err.println("XXX event ======== "+event.getSource()+ " "+event.getPropertyName()+" "+
+                    event.getOldValue()+" "+event.getNewValue());
+
+            if (event.getPropertyName().equals(ServerTags.TIMEOUT_IN_SECONDS)) {
+                _logger.log(Level.FINE," Transaction Timeout interval event occurred");
+                String oldTimeout = (String)event.getOldValue();
+                String newTimeout = (String)event.getNewValue();
+                if (!oldTimeout.equals(newTimeout)) {
+                    try {
+                        setDefaultTransactionTimeout(Integer.parseInt(newTimeout,10));
+                    } catch (Exception ex) {
+                        _logger.log(Level.WARNING,"transaction.reconfig_txn_timeout_failed",ex);
+                    }
+                } // timeout-in-seconds
+            }else if (event.getPropertyName().equals(ServerTags.KEYPOINT_INTERVAL)) {
+                _logger.log(Level.FINE,"Keypoint interval event occurred");
+                Object oldKeyPoint = event.getOldValue();
+                Object newKeyPoint = event.getNewValue();
+                if (!oldKeyPoint.equals(newKeyPoint)) {
+                    handlePropertyUpdate(ServerTags.KEYPOINT_INTERVAL, newKeyPoint);
+                }
+            }else if (event.getPropertyName().equals(ServerTags.RETRY_TIMEOUT_IN_SECONDS)) {
+                Object oldRetryTiemout = event.getOldValue();
+                Object newRetryTiemout = event.getNewValue();
+                _logger.log(Level.FINE,"retry_timeout_in_seconds reconfig event occurred " + newRetryTiemout);
+                if (!oldRetryTiemout.equals(newRetryTiemout)) {
+                    handlePropertyUpdate(ServerTags.RETRY_TIMEOUT_IN_SECONDS, newRetryTiemout);
+                }
+            }
+            else {
+                // Not handled dynamically. Restart is required.
+                // XXX AdminEventMulticaster.notifyFailure(event, AdminEventResult.RESTART_NEEDED);
+            }
+        }
+        return null;
     }
 
 /****************************************************************************/
