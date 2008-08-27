@@ -62,20 +62,6 @@
 
 	<!-- Change the permission on wrapper that is also to be used for uninstaller. -->
 	<chmod file="${engine.stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
-	
-	<!-- Now create the updated engine.zip directly under payload -->
-	<zip destfile="${stage.dir}/Product/Packages/Engine.zip"
-             basedir="${engine.stage.dir}" />
-
-	<!-- unzip the newly created file under stage.dir for reference to installer ,this is fun :-(.
-	Much faster instead of copying the temporary directory to parent directory. -->
-	<unzip src="${stage.dir}/Product/Packages/Engine.zip" dest="${stage.dir}"/>
-
-	<!-- Delete the temporary install stage directory used to host engine.zip contents. -->
-	<delete dir="${engine.stage.dir}"/>
-
-	<!-- Change wrapper permission on exploded directory to be used for install. -->
-         <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
 
     </target>
 
@@ -96,13 +82,13 @@
                destdir="${component.classes.dir}"               
                failonerror="true">
                <classpath>              
-                   <pathelement location="${stage.dir}/install/lib/engine.jar"/>
-                   <pathelement location="${stage.dir}/install/lib/config.jar"/>
-                   <pathelement location="${stage.dir}/install/lib/providers/providers.jar"/>
+                   <pathelement location="${engine.stage.dir}/install/lib/engine.jar"/>
+                   <pathelement location="${engine.stage.dir}/install/lib/config.jar"/>
+                   <pathelement location="${engine.stage.dir}/install/lib/providers/providers.jar"/>
                </classpath>
         </javac>
  
-        <unjar src="${stage.dir}/install/lib/providers/providers.jar"
+        <unjar src="${engine.stage.dir}/install/lib/providers/providers.jar"
             dest="${tmp.dir}" />
 
         <copy todir="${tmp.dir}" >
@@ -111,13 +97,26 @@
             </fileset>
         </copy>
 
-        <jar jarfile="${stage.dir}/install/lib/providers/providers.jar"
+        <jar jarfile="${engine.stage.dir}/install/lib/providers/providers.jar"
             basedir="${tmp.dir}"
             manifest="${tmp.dir}/META-INF/MANIFEST.MF">
         </jar>
 
         <delete dir="${tmp.dir}" />
 
+	<!-- Now create the updated engine.zip directly under payload -->
+	<zip destfile="${stage.dir}/Product/Packages/Engine.zip"
+             basedir="${engine.stage.dir}" />
+
+	<!-- unzip the newly created file under stage.dir for reference to installer ,this is fun :-(.
+	Much faster instead of copying the temporary directory to parent directory. -->
+	<unzip src="${stage.dir}/Product/Packages/Engine.zip" dest="${stage.dir}"/>
+
+	<!-- Delete the temporary install stage directory used to host engine.zip contents. -->
+	<delete dir="${engine.stage.dir}"/>
+
+	<!-- Change wrapper permission on exploded directory to be used for install. -->
+         <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
     </target>
 
     <target name="assemble"  description="Assembling installer distribution layout">
