@@ -46,8 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web-ajp</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>wev-ajp</name>
-
+    <name>web-ajp</name>
     <developers>
         <developer>
             <id>jluehe</id>
