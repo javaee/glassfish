@@ -71,8 +71,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>ejb-api-3.1-alpha</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
