@@ -190,6 +190,12 @@ public class MapperListener
      * Initialize associated mapper.
      */
     public void init() {
+        
+        // If the Mapper is null, do not fail and creates one by default. 
+        // This is the case when mod_jk is used.
+        if (mapper == null){
+            mapper = new Mapper();
+        }
 
         // START SJSAS 6313044
         myInstance = System.getProperty("com.sun.aas.instanceName");
