@@ -154,7 +154,9 @@ public class AuditModuleHandlers {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         Map newProps = (Map)handlerCtx.getInputValue("newProps");
-        boolean auditOn = (Boolean)handlerCtx.getInputValue("auditOn");
+        Boolean auditOnB = (Boolean)handlerCtx.getInputValue("auditOn");
+        boolean auditOn = (auditOnB == null) ? false : auditOnB.booleanValue();
+        
         try{
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
@@ -170,7 +172,7 @@ public class AuditModuleHandlers {
             AuditModuleConfig module = (AuditModuleConfig)modules.get((String)handlerCtx.getInputValue("Name"));
             module.setClassname((String) handlerCtx.getInputValue("Classname"));
             AMXUtil.updateProperties(module, newProps, auditSkipPropsList);
-            AMXUtil.setPropertyValue(module, "auditOn", ""+handlerCtx.getInputValue("auditOn"));
+            AMXUtil.setPropertyValue(module, "auditOn", Boolean.toString(auditOn));
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
