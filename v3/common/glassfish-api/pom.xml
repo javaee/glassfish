@@ -62,7 +62,7 @@
         </developer>
     </developers>
     <properties>
-    	<glassfish-api.version>10.0.411</glassfish-api.version>
+    	<glassfish-api.version>10.0.412</glassfish-api.version>
         <grizzly.version>1.8.5.3</grizzly.version>  
         <hk2.plugin.version>0.3.15</hk2.plugin.version>    
         <hk2.version>0.3.15</hk2.version>    
@@ -102,6 +102,7 @@
                         org.glassfish.api.event,
                         org.glassfish.api.invocation,
                         org.glassfish.api.logging,
+                        org.glassfish.api.monitoring,
                         org.glassfish.api.naming,
                         org.glassfish.api.web,
                         org.glassfish.api.branding
