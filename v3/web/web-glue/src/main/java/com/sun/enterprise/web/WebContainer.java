@@ -1597,6 +1597,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     VirtualServer vs = (VirtualServer) vsArray[i];
 
+                    /*
+                     * Let AdminConsoleAdapter handle any requests for
+                     * the root context of the '__asadmin' virtual-server, see
+                     * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
+                     */
+                    if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
+                        continue;
+                    }
+
                     WebModuleConfig wmInfo = vs.getDefaultWebModule(domain, 
                             habitat.getComponent(
                             WebDeployer.class) );
