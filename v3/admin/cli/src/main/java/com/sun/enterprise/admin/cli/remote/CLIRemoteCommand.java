@@ -377,7 +377,16 @@ public class CLIRemoteCommand {
             return true;
         }
         catch (Exception ex) {
-            return false;
+            ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
+            if (ea.getFirstInstanceOf(java.net.ConnectException.class) != null) {
+                return false; // this definitely means server is not up
+            } else if (ea.getFirstInstanceOf(java.io.IOException.class) != null) {
+                CLILogger.getInstance().printDebugMessage("It appears that server has started, but for" +
+                        " some reason the exception is thrown: " + ex.getMessage());
+                return true;
+            } else {
+                return false; //unknown error, shouldn't really happen
+            }
         }
     }
 
