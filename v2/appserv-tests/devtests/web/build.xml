@@ -55,9 +55,7 @@
         <ant dir="jspScriptlessTagBodyJspDocument" target="all"/>
         <ant dir="jspConfigJavacSource" target="build-publish-war"/>
         <ant dir="jspConfigModificationTestInterval" target="all"/>        
-        <!-- v3
         <ant dir="jspConfigUsePrecompiled" target="all"/>
-        -->
         <ant dir="jspConfigUsePrecompiled2" target="all"/>
         <ant dir="jspTagReleaseCalledWhenPoolingEnabled" target="all"/>
         <ant dir="jspTagReleaseCalledWhenPoolingDisabled" target="all"/>
@@ -83,13 +81,9 @@
         <ant dir="welcomePageSecurityConstraintExactMatch" target="all"/>
         <ant dir="jspSelfReferencingErrorPage" target="all"/>
         <ant dir="jspSelfReferencingErrorPageWithRelativePath" target="all"/>
-        <!-- v3
         <ant dir="jspPrecompileConsiderDomainLibJarFilesAndClasses" target="all"/>    
-        -->
         <ant dir="jspPrecompileIgnoreFragmentErrors" target="all"/>
-        <!-- v3
         <ant dir="jspRuntimeCompileConsiderDomainLibJarFilesAndClasses" target="all"/>  
-        -->
         <ant dir="jspCallingELFuctionFromTagfileWithinSameTaglibInfiniteRecursion" target="all"/>
         <ant dir="jspSessionInvalidated" target="all"/>
         <ant dir="jspWelcomePageWithoutAnyServletMappings" target="all"/>
@@ -155,9 +149,7 @@
         <ant dir="multiByteGETQueryParamFormHintField" target="all"/>
         <ant dir="multiByteGETQueryParamLocaleCharsetMap" target="all"/>
         <ant dir="multiBytePOSTFormHintField" target="all"/>
-        <!-- v3
         <ant dir="serializableWebModuleAndServletStats" target="all"/>
-        -->
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="requestDispatcherMaxDepth" target="all"/>
         <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
@@ -177,9 +169,7 @@
         <ant dir="servletResourceInjectionFilter" target="all"/>
         <ant dir="servletResourceInjectionHttpSessionListener" target="all"/>
         <ant dir="servletResourceInjectionHttpSessionAttributeListener" target="all"/>
-        <!-- v3
         <ant dir="cacheHelperRef" target="all"/>
-        -->
         <ant dir="malformedQueryString" target="all"/>
         <ant dir="setMultiValuedResponseHeader" target="all"/>
         <ant dir="servletContextNullPathArgument" target="all"/>
@@ -198,17 +188,13 @@
         <ant dir="sessionExpired" target="all"/>
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
-        <!-- v3
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
-        -->
     </target>
 
     <target name="web-container">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="commonsLogging" target="all"/>
-        <!-- v3
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
-        -->
         <ant dir="contextXmlConfig" target="all"/> 
         <ant dir="cookieValueWithSpaces" target="all"/>
         <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/> 
@@ -222,16 +208,12 @@
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
-        <!-- v3
         <ant dir="jrouteIdInCookieOrURL" target="all"/>
-        -->
         <ant dir="formHintField" target="all"/>
         <ant dir="formHintFieldPostWithQueryParam" target="all"/>
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
         <ant dir="formHintFieldPrecedence" target="all"/>
-        <!-- v3
         <ant dir="jsr77startstop" target="all"/>
-        -->      
         <ant dir="replaceRootContext" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="adminGui" target="all"/>
@@ -253,10 +235,8 @@
         <ant dir="virtualServerDefaultWebModule" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
-        <!-- v3
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
-        -->      
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
@@ -271,9 +251,7 @@
         <ant dir="classloaderMemoryLeak" target="all"/>
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
-        <!-- v3 
         <ant dir="extraClassPathJarUrl" target="all"/>
-        -->
         <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
         <ant dir="classloaderGetResourceJarFile" target="all"/>
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
@@ -293,9 +271,7 @@
         <ant dir="securityConstraintMapping" target="all"/>
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
-        <!-- v3 
         <ant dir="programmaticLogin" target="all"/>
-        -->
         <ant dir="traceEnabled" target="all"/>
         <ant dir="sslClientAuthUnprotectedResourceGetClientCert" target="all"/>
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
