@@ -66,7 +66,7 @@ import com.sun.appserv.management.config.SSLConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.MiscUtil;
+import org.glassfish.admingui.util.SunOptionUtil;
 import org.glassfish.admingui.common.util.AMXUtil;
 
 import com.sun.enterprise.security.ssl.SSLUtils; 
@@ -183,10 +183,10 @@ public class SSLHandlers {
             String[] supportedCiphers = getSupportedCipherSuites();
             Vector ciphers = getCiphersVector(supportedCiphers);
             
-            SelectItem[] commonCiphers = MiscUtil.getOptions(getCommonCiphers(ciphers));
-            SelectItem[] ephemeralCiphers = MiscUtil.getOptions(getEphemeralCiphers(ciphers));
-            SelectItem[] otherCiphers = MiscUtil.getOptions(getOtherCiphers(ciphers));
-            SelectItem[] eccCiphers = MiscUtil.getOptions(getEccCiphers(ciphers));
+            SelectItem[] commonCiphers = SunOptionUtil.getOptions(getCommonCiphers(ciphers));
+            SelectItem[] ephemeralCiphers = SunOptionUtil.getOptions(getEphemeralCiphers(ciphers));
+            SelectItem[] otherCiphers = SunOptionUtil.getOptions(getOtherCiphers(ciphers));
+            SelectItem[] eccCiphers = SunOptionUtil.getOptions(getEccCiphers(ciphers));
 
             handlerCtx.setOutputValue("ClientAuth", clientAuth);
             handlerCtx.setOutputValue("SSL3Prop", ssl3Prop);            
