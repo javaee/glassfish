@@ -56,6 +56,33 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>work-around</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- For whetever reason (I have to investigate further),
+                                     running mvn install subsequently adds a version attr
+                                     to all import headers. Since packages don't have matching
+                                     version, it fails. So, to simulate clean build, we clean
+                                     the outputDir. Sahoo.
+                                -->
+                                <delete dir="${project.build.outputDirectory}" quiet="true"/>
+                                <!-- Because, we inherit the plugin from parent and the parent
+                                     configures manifest task, it fails when classes dir does not
+                                     exist. So, we create one -->
+                                <mkdir dir="${project.build.outputDirectory}"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- Configure maven-bundle-plugin which takes care of
                      OSGi packaging -->
                 <!-- We need to override the plugin settings -->
@@ -68,6 +95,12 @@
                 <extensions>true</extensions>
                 -->
                 <configuration>
+                    <!-- Enable it for jar type -s parent plugin disable it for
+                         jar type.
+                    -->
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                    </supportedProjectTypes>
                     <instructions>
                         <Embed-Dependency>artifactId=dataprovider;inline=true;</Embed-Dependency>
                         <Export-Package>com.sun.data.*;</Export-Package>
