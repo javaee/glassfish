@@ -91,7 +91,6 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import org.apache.coyote.ProtocolHandlerAdapter;
 // START S1AS 6188932
 import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6188932
@@ -1500,6 +1499,13 @@ public class Connector
         }
 
         this.initialized = true;
+                
+        // If the Mapper is null, do not fail and creates one by default. 
+        // This is the case when mod_jk is used.
+        if (mapper == null){
+            mapper = new Mapper();
+        }
+        
         mapperListener = new MapperListener(mapper);
 
         
@@ -1553,8 +1559,8 @@ public class Connector
              
                 // use no-arg constructor for JkCoyoteHandler
                 if (protocolHandlerClassName.equals("org.apache.jk.server.JkCoyoteHandler")) {
-                    protocolHandler = new ProtocolHandlerAdapter(
-                            (org.apache.coyote.ProtocolHandler) clazz.newInstance());
+                    protocolHandler = 
+                            (com.sun.grizzly.tcp.ProtocolHandler) clazz.newInstance();
                     if (adapter instanceof CoyoteAdapter){
                         ((CoyoteAdapter)adapter).setCompatWithTomcat(true);
                     } else {
