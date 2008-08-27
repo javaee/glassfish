@@ -141,8 +141,9 @@ public class GrizzlyProxy implements NetworkProxy {
                 grizzlyService.getController(), isWebProfile);
         
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
-        Mapper mapper = new V3Mapper(logger);
+        V3Mapper mapper = new V3Mapper(logger);
         mapper.setPort(portNumber);
+        mapper.setId(httpListener.getId());
         geh.getContainerMapper().setMapper(mapper);
         geh.getContainerMapper().setDefaultHost(defaultVirtualServer);
         geh.getContainerMapper().configureMapper();

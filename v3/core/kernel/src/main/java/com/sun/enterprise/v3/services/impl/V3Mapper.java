@@ -39,11 +39,17 @@ import org.jvnet.hk2.annotations.Service;
 @ContractProvided(com.sun.grizzly.util.http.mapper.Mapper.class)
 public class V3Mapper extends Mapper {
 
+    private static final String ADMIN_LISTENER = "admin-listener";
+    private static final String ADMIN_VS = "__asadmin";
+
     private final Logger logger;
 
     private Adapter adapter;
 
+    // The id of the associated http-listener
+    private String id;
     
+
     public V3Mapper() {
         this(Logger.getAnonymousLogger());
     }   
@@ -74,6 +80,14 @@ public class V3Mapper extends Mapper {
     @Override
     public synchronized void addHost(String name, String[] aliases,
             Object host) {
+
+        // Prevent any admin related artifacts from being registered on a
+        // non-admin listener, and vice versa
+        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(name)) ||
+                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(name))) {
+            return;
+        }
+
         super.addHost(name, aliases, host);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Host-Host: " + name + " aliases " + aliases 
@@ -89,11 +103,17 @@ public class V3Mapper extends Mapper {
     public void addContext(String hostName, String path, Object context,
             String[] welcomeResources, javax.naming.Context resources) {
 
+        // Prevent any admin related artifacts from being registered on a
+        // non-admin listener, and vice versa
+        if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(hostName)) ||
+                (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(hostName))) {
+            return;
+        }
+
         super.addContext(hostName, path, context, welcomeResources, resources);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Context-Host: " + hostName + " path " + path + " context " + context);
         }
-
     }
 
     
@@ -118,4 +138,11 @@ public class V3Mapper extends Mapper {
         return adapter;
     }
 
+
+    /**
+     * Sets the id of the associated http-listener on this mapper.
+     */
+    void setId(String id) {
+        this.id = id;
+    }
 }
