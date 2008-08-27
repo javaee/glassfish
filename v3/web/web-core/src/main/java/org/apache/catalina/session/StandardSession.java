@@ -73,7 +73,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -339,7 +339,7 @@ public class StandardSession
      * The session version, incremented and used by in-memory-replicating
      * session managers
      */
-    protected long version = -1;
+    protected AtomicLong version = new AtomicLong(-1);
 
 
     // ----------------------------------------------------- Session Properties
@@ -1009,9 +1009,9 @@ public class StandardSession
 
     /** 
      * Increments the version number
-     */    
-    public void incrementVersion() {
-        version++;
+     */
+    public long incrementVersion() {
+        return version.incrementAndGet();
     } 
 
     
@@ -1019,7 +1019,7 @@ public class StandardSession
      * Gets the version number
      */    
     public long getVersion() {
-        return version;
+        return version.get();
     }
     
 
@@ -1027,7 +1027,7 @@ public class StandardSession
      * Sets the version number
      */    
     public void setVersion(long value) {
-        version = value;
+        version.set(value);
     }    
 
 
@@ -1784,6 +1784,8 @@ public class StandardSession
      */
     private void readRemainingObject(ObjectInputStream stream)
             throws ClassNotFoundException, IOException {
+
+        version = new AtomicLong();
 
         lastAccessedTime = ((Long) stream.readObject()).longValue();
         maxInactiveInterval = ((Integer) stream.readObject()).intValue();

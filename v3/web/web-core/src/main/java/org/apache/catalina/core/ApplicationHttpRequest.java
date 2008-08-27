@@ -1055,8 +1055,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             return;
         }
 
-        ss.incrementVersion();
-        String versionString = Long.toString(ss.getVersion());
+        String versionString = Long.toString(ss.incrementVersion());
 
         HashMap<String, String> sessionVersions = (HashMap<String, String>)
             getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
