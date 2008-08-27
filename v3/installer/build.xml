@@ -18,6 +18,9 @@
     <property name="component.lib.dir" value="${basedir}/target/lib"/>
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
     <property name="stage.dir" value="${basedir}/target/stage" />
+
+    <property name="engine.stage.dir" value="${stage.dir}/engine_tmp" />
+ 
     <property name="uc.stage.dir" value="${basedir}/target/uc" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
@@ -29,22 +32,51 @@
     </target>
 
     <target name="extract.oi"  description="Extracting openInstaller files">
-	<mkdir dir="${stage.dir}"/>
+	<mkdir dir="${engine.stage.dir}"/>
+	<mkdir dir="${stage.dir}/Product/Packages"/>
 
-	<resolveArtifact groupID="org.openinstaller" artifactId="engine" property="engine.zip"/>
+	<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip"/>
        
-	<unzip src="${engine.zip}" dest="${stage.dir}"/>
-
-		<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip"/>
-       
+	<!-- Explode the resources.zip to enable installer to refer the contents -->
 	<unzip src="${resources.zip}" dest="${stage.dir}"/>
+
+	<!-- Copy Resources.zip to payload directly as there are no changes to it -->
+	 <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
+		 file="${resources.zip}"/>
 	
 
-	<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
-  	<copy tofile="${stage.dir}/install/lib/resources/org/openinstaller/resources/ResourceMsgs.properties"
-            file="${javaresources.dir}/ResourceMsgs.properties" overwrite="true"/>
+	<resolveArtifact groupID="org.openinstaller" artifactId="engine" property="engine.zip"/>
+	<!-- Explode the engine.zip to repack -->
+	<unzip src="${engine.zip}" dest="${engine.stage.dir}"/>
 
-        <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
+	<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
+  	<copy tofile="${engine.stage.dir}/install/lib/resources/org/openinstaller/resources/ResourceMsgs.properties"
+            file="${javaresources.dir}/ResourceMsgs.properties" overwrite="true"/>
+	
+	<!-- Copy the uninstaller wrapper also into Engine.zip -->
+ 	<copy todir="${engine.stage.dir}" >
+            <fileset dir="${resources.dir}/wrappers">
+                <include name="uninstall*"/>
+            </fileset>
+        </copy>
+
+	<!-- Change the permission on wrapper that is also to be used for uninstaller. -->
+	<chmod file="${engine.stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
+	
+	<!-- Now create the updated engine.zip directly under payload -->
+	<zip destfile="${stage.dir}/Product/Packages/Engine.zip"
+             basedir="${engine.stage.dir}" />
+
+	<!-- unzip the newly created file under stage.dir for reference to installer ,this is fun :-(.
+	Much faster instead of copying the temporary directory to parent directory. -->
+	<unzip src="${stage.dir}/Product/Packages/Engine.zip" dest="${stage.dir}"/>
+
+	<!-- Delete the temporary install stage directory used to host engine.zip contents. -->
+	<delete dir="${engine.stage.dir}"/>
+
+	<!-- Change wrapper permission on exploded directory to be used for install. -->
+         <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
+
     </target>
 
     <target name="extract.uc"  description="Extracting UC bootstrap files">
@@ -90,7 +122,7 @@
 
     <target name="assemble"  description="Assembling installer distribution layout">
          <mkdir dir="${stage.dir}/metadata"/>
-         <mkdir dir="${stage.dir}/Product/Packages"/>
+         
 
          <echo message="Staging installer metadata"/>
          <copy todir="${stage.dir}/metadata/dependency">
@@ -111,6 +143,9 @@
          <copy todir="${stage.dir}/metadata"
                file="${resources.dir}/pagesequence.properties">
          </copy>
+
+         <zip destfile="${stage.dir}/Product/Packages/metadata.zip"
+             basedir="${stage.dir}" includes="metadata/**" />
 
          <echo message="Staging wrappers"/>
 
@@ -151,14 +186,6 @@
          <copy tofile="${stage.dir}/Product/Packages/glassfish.zip"
                file="${gf.zip.dir}/gfv3-prelude-ips-installer.zip" />
 
-         <echo message="Copying openInstaller zip files"/>
- 
-         <copy tofile="${stage.dir}/Product/Packages/Engine.zip"
-		 file="${engine.zip}"/>
-
-         <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
-               file="${resources.zip}"/>
-               
          <echo message="Creating icons zip file"/>
 
          <copy todir="${tmp.dir}/glassfish/icons">
