@@ -69,6 +69,20 @@
         </developer>
     </developers>
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>*</Import-Package>
+                        <Export-Package>org.apache.jk.server.*,org.apache.jk.core.*, org.apache.jk.*</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>   
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/java</directory>
