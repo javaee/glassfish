@@ -45,8 +45,8 @@ import org.jvnet.hk2.component.Singleton;
  * @author Prashanth Abbagani
  *         Date: Aug 15, 2008
  */
-@Service
-@Scoped(Singleton.class)
+//@Service
+//@Scoped(Singleton.class)
 public class BootstrapWebMonitor
     implements Startup, PostConstruct {
 

@@ -66,7 +66,7 @@ import java.io.IOException;
 /**
     Responsible for starting JMXConnectors as configured.
  */
-@Service
+//@Service
 @Async
 public final class ConnectorStartupService implements Startup, PostConstruct {
     private static void debug( final String s ) { System.out.println( "### " + s); }
