@@ -77,6 +77,8 @@
 	<module>glassfish-jdbc-gui</module>
 	<module>glassfish-ejb</module>
 	<module>glassfish-scripting</module>
+	<module>glassfish-corba-omgapi</module>	
+	<module>glassfish-jts</module>	
 	<module>javadb</module>	
 </modules>
 
