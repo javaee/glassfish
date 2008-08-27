@@ -186,6 +186,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             createProbeProviders();
             futures = new ArrayList<Future<Result<Thread>>>();
             for (HttpListener listener : httpService.getHttpListener()) {
+                
+               // Do not create listener when mod_ajp/jk is enabled. This 
+               // should never happens one the grizzly-config configuration
+               // will be used.
+               if ("jk-connector".equals(listener.getId())){
+                   continue;
+               }
+
                futures.add(createNetworkProxy(listener, httpService));
             }
             registerNetworkProxy(); 
