@@ -95,15 +95,13 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Test TransactionServiceConfigListener call
+     * Test ConfigListener call
      */
     public void testTransactionServiceConfigListener() {
         PropertyChangeEvent e1 = new PropertyChangeEvent("", ServerTags.KEYPOINT_INTERVAL, "1", "10");
         PropertyChangeEvent e2 = new PropertyChangeEvent("", ServerTags.RETRY_TIMEOUT_IN_SECONDS, "1", "10");
         try {
-            TransactionServiceConfigListener tl = new TransactionServiceConfigListener();
-            tl.setTM(t);
-            tl.changed(new PropertyChangeEvent[] {e1, e2});
+            ((JavaEETransactionManagerSimplified)t).changed(new PropertyChangeEvent[] {e1, e2});
             assert(true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -154,6 +152,40 @@ public class AppTest extends TestCase {
         } catch (IllegalStateException ex) {
             System.out.println("**Caught IllegalStateException <===");
             assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testWrongUTXAccess() {
+        System.out.println("**Testing Wrong UTX calls ===>");
+        try {
+            UserTransaction utx = createUtx();
+            try {
+                System.out.println("**Calling TWICE UTX begin ===>");
+                utx.begin();
+                utx.begin();
+                System.out.println("**WRONG: TWICE UTX begin successful <===");
+                assert (false);
+            } catch (NotSupportedException ne) {
+                System.out.println("**OK: Caught NotSupportedException **");
+            } catch (SystemException ne) {
+                System.out.println("**OK: Caught SystemException **");
+            }
+/**
+            try {
+                System.out.println("**Calling UTX setRollbackOnly ===>");
+                utx.setRollbackOnly();
+                System.out.println("**WRONG: UTX setRollbackOnly successful <===");
+                assert (false);
+            } catch (IllegalStateException ne) {
+                System.out.println("**OK: Caught NotSupportedException **");
+            } catch (SystemException ne) {
+                System.out.println("**OK: Caught SystemException **");
+            }
+**/
+
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
