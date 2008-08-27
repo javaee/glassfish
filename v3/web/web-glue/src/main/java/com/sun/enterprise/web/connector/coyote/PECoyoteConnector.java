@@ -69,7 +69,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.Constants;
 import org.apache.catalina.connector.MapperListener;
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.glassfish.security.common.CipherInfo;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 
