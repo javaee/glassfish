@@ -20,6 +20,8 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="glassfish JDBC admin GUI package creation" default="create.package" basedir=".">
+    <import file="${basedir}/../common-targets.xml"/>
+
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
 
@@ -28,6 +30,10 @@ own identifying information: Portions Copyright [yyyy]
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.war" />
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" />
+
+        <if test="${compression}">
+	       <antcall target="pack.compression" />
+	</if>
 	 
        <zip file="target/glassfish-jdbc-gui.zip" basedir="target/stage"/>
            

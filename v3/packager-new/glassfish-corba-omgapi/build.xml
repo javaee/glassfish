@@ -22,6 +22,10 @@ own identifying information: Portions Copyright [yyyy]
 <project name="glassfish-corba-omgapi package creation" default="create.package" basedir=".">
 	<target name="create.package">
 		<echo message="Staging files"/>
+
+        <if test="${compression}">
+	       <antcall target="pack.compression" />
+	</if>
            		   
        <zip file="target/glassfish-corba-omgapi.zip" basedir="target/stage">
        </zip>

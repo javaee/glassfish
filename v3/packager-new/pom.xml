@@ -80,36 +80,54 @@
 	<module>glassfish-corba-omgapi</module>	
 	<module>glassfish-jts</module>	
 	<module>javadb</module>	
-</modules>
+    </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.32</version>
-<!-- start of ant execution -->
-		<executions>
-		    <execution>
-		        <phase>package</phase>
-			<configuration>
-			    <tasks>
-			        <filter token="BUILD_ID" value="${build.id}"/>
-				<copy file="pkg_conf.py.template" tofile="pkg_conf.py" filtering="true" failonerror="false"/>
-		            </tasks>
-                        </configuration>
-                        <goals>
-                           <goal>run</goal>
-	                </goals>
-	            </execution>
-		</executions>    
-            </plugin> 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.0</version>
-            </plugin>	
-        </plugins>
-    </build>
+
+    <profiles>
+        <profile>
+            <!--
+                Activate this profile with "mvn -Drepo.url=<ips-repository> -Dpython=<python> -P ips"
+             -->
+            <id>ips</id>
+	    <activation>
+	     <activeByDefault>false</activeByDefault>  
+	    </activation>
+            <properties>
+                <!-- if profile is ips then set property to do pack200 compression -->
+                <do.compression>true</do.compression>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                        <artifactId>maven-antrun-extended-plugin</artifactId>
+                        <version>1.32</version>
+                    <!-- start of ant execution -->
+	                <executions>
+		            <execution>
+		                <phase>package</phase>
+         			<configuration>
+		                    <tasks>
+				        <filter token="BUILD_ID" value="${build.id}"/>
+					    <copy file="pkg_conf.py.template" tofile="pkg_conf.py" 
+					          filtering="true" failonerror="false"/>
+	      		            </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+	                        </goals>
+	                    </execution>
+		        </executions>    
+                    </plugin> 
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.0</version>
+                    </plugin>	
+                </plugins>
+            </build>
+        </profile>
+    </profiles>        
 </project>
 
