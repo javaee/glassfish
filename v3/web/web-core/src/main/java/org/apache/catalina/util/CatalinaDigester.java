@@ -64,7 +64,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.SAXException;
 
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 
 /**
  * This extended digester filters out ${...} tokens to replace them with

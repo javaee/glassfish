@@ -74,13 +74,13 @@ public final class SecurityConfig{
     private final static String PACKAGE_ACCESS =  "sun.,"
                                                 + "org.apache.catalina." 
                                                 + ",org.apache.jasper."
-                                                + ",org.apache.coyote."
-                                                + ",org.apache.tomcat.";
+                                                + ",com.sun.grizzly.tcp."
+                                                + ",com.sun.grizzly.";
     
     private final static String PACKAGE_DEFINITION= "java.,sun."
                                                 + ",org.apache.catalina." 
-                                                + ",org.apache.coyote."
-                                                + ",org.apache.tomcat."
+                                                + ",com.sun.grizzly.tcp."
+                                                + ",com.sun.grizzly."
                                                 + ",org.apache.jasper.";
     /**
      * List of protected package from conf/catalina.properties

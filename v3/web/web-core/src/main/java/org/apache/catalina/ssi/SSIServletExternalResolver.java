@@ -67,7 +67,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.coyote.Constants;
+import com.sun.grizzly.tcp.Constants;
 
 /**
  * An implementation of SSIExternalResolver that is used with servlets.
@@ -576,7 +576,7 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
             // if a truly empty file
             //were included, but not sure how else to tell.
             if (retVal.equals("") && !req.getMethod().equalsIgnoreCase(
-                    org.apache.coyote.http11.Constants.HEAD)) {
+                    com.sun.grizzly.tcp.http11.Constants.HEAD)) {
                 throw new IOException("Couldn't find file: " + path);
             }
             return retVal;

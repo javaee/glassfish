@@ -94,7 +94,7 @@ import static org.apache.catalina.InstanceEvent.EventType.BEFORE_DESTROY_EVENT;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.commons.modeler.Registry;
 
 // START GlassFish 1343

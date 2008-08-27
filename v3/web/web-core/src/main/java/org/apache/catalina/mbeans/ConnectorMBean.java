@@ -67,12 +67,12 @@ import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
 import com.sun.grizzly.tcp.ProtocolHandler;
 import org.apache.catalina.connector.Connector;
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 
 
 /**
  * <p>A <strong>ModelMBean</strong> implementation for the
- * <code>org.apache.coyote.tomcat4.CoyoteConnector</code> component.</p>
+ * <code>com.sun.grizzly.tcp.tomcat4.CoyoteConnector</code> component.</p>
  *
  * @author Amy Roh
  * @version $Revision: 1.3 $ $Date: 2007/05/05 05:32:09 $

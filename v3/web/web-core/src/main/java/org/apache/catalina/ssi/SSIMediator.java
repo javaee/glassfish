@@ -64,7 +64,7 @@ import java.util.TimeZone;
 import org.apache.catalina.util.DateTool;
 import org.apache.catalina.util.Strftime;
 import org.apache.catalina.util.URLEncoder;
-import org.apache.tomcat.util.http.HttpMessages;
+import com.sun.grizzly.util.http.HttpMessages;
 
 /**
  * Allows the different SSICommand implementations to share data/talk to each

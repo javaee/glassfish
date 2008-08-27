@@ -21,19 +21,6 @@
                         org.apache.commons.modeler, \
                         org.apache.commons.modeler.modules, \
                         org.apache.commons.modeler.util, \
-                        org.apache.coyote, \
-                        org.apache.coyote.http11, \
-                        org.apache.coyote.tomcat5, \
-                        org.apache.tomcat.util, \
-                        org.apache.tomcat.util.buf, \
-                        org.apache.tomcat.util.collections, \
-                        org.apache.tomcat.util.compat, \
-                        org.apache.tomcat.util.http, \
-                        org.apache.tomcat.util.http.mapper, \
-                        org.apache.tomcat.util.log, \
-                        org.apache.tomcat.util.net, \
-                        org.apache.tomcat.util.res, \
-                        org.apache.tomcat.util.threads, \
                         org.glassfish.web.valve
 
 # Normally Import-Package is not required, as the default value of *
@@ -43,5 +30,5 @@
 # In this case, org.apache.jk.server is one such package. It is used
 # when mod_jk configuration is used. Since, it is not always needed,
 # the import has been marked as optional. By Sahoo.
-Import-Package: org.apache.jk.server; resolution:=optional, *
+Import-Package: org.apache.jk.core; resolution:=optional, org.apache.jk.server; resolution:=optional, *
 

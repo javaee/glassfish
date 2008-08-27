@@ -68,7 +68,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
-import org.apache.tomcat.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.ByteChunk;
 
 /**
  * General purpose request parsing and encoding utility methods.

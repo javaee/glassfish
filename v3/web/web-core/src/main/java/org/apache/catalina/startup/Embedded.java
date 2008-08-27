@@ -90,7 +90,7 @@ import org.apache.catalina.util.StringManager;
 // START SJSAS 6340446
 import org.apache.catalina.util.ServerInfo;
 // END SJSAS 6340446
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 
 import org.glassfish.web.valve.GlassFishValve;
 

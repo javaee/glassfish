@@ -57,7 +57,7 @@ package org.apache.commons.digester;
 
 
 import java.util.logging.*;
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 
 
 /**

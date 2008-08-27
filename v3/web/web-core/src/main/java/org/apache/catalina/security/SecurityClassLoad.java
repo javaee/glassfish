@@ -147,7 +147,7 @@ public final class SecurityClassLoad {
 
     private final static void loadHttp11Package(ClassLoader loader)
         throws Exception {
-        String basePackage = "org.apache.coyote.http11.";
+        String basePackage = "com.sun.grizzly.tcp.http11.";
         loader.loadClass(basePackage + "Http11Processor$1");
         loader.loadClass(basePackage + "InternalOutputBuffer$1");
         loader.loadClass(basePackage + "InternalOutputBuffer$2");

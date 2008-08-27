@@ -59,7 +59,7 @@ package org.apache.catalina.startup;
 
 import org.xml.sax.Attributes;
 
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.commons.digester.Rule;
 
 /**

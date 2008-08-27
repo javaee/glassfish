@@ -73,7 +73,7 @@ import javax.management.MalformedObjectNameException;
 
 import org.apache.commons.modeler.Registry;
 
-import org.apache.tomcat.util.IntrospectionUtils;
+import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 import com.sun.grizzly.tcp.Adapter;
@@ -931,7 +931,7 @@ public class Connector
      */
     public String getProtocol() {
 
-        if ("org.apache.coyote.http11.Http11Protocol".equals
+        if ("com.sun.grizzly.tcp.http11.Http11Protocol".equals
             (getProtocolHandlerClassName())) {
             return "HTTP/1.1";
         } else if ("org.apache.jk.server.JkCoyoteHandler".equals
@@ -952,7 +952,7 @@ public class Connector
 
         if (protocol.equals("HTTP/1.1")) {
             setProtocolHandlerClassName
-                ("org.apache.coyote.http11.Http11Protocol");
+                ("com.sun.grizzly.tcp.http11.Http11Protocol");
         } else if (protocol.equals("AJP/1.3")) {
             setProtocolHandlerClassName
                 ("org.apache.jk.server.JkCoyoteHandler");

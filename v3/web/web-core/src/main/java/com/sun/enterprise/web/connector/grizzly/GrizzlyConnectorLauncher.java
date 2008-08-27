@@ -141,15 +141,10 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     
     public GrizzlyConnectorLauncher(boolean secure, boolean blocking, 
                                String selectorThreadImpl) {
-        super(secure,blocking,selectorThreadImpl);     
+        super(secure,blocking,selectorThreadImpl);    
+        create();
     }   
-    
-    
-    /**
-     * This method is called by the constructor of the Http11Protocol
-     * superclass.
-     */
-    @Override
+
     protected void create() {         
         if ( !secure ){
             selectorThread = new SelectorThread(); 
@@ -255,12 +250,10 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     // -------------------- Pool setup --------------------
 
 
-    @Override
     public int getMaxThreads() {
         return selectorThread.getMaxThreads();
     }
     
-    @Override
     public void setMaxThreads( int maxThreads ) {
         selectorThread.setMaxThreads(maxThreads);
         setAttribute("maxThreads", "" + maxThreads);
@@ -297,34 +290,28 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     }
     // -------------------- Tcp setup --------------------
 
-    @Override
     public int getBacklog() {
         return selectorThread.getSsBackLog();
     }
     
-    @Override
     public void setBacklog( int i ) {
         ;
     }
     
-    @Override
     public int getPort() {
         return selectorThread.getPort();
     }
     
-    @Override
     public void setPort( int port ) {
         selectorThread.setPort(port);
         setAttribute("port", "" + port);
         //this.port=port;
     }
 
-    @Override
     public InetAddress getAddress() {
         return selectorThread.getAddress();
     }
     
-    @Override
     public void setAddress(InetAddress ia) {
         selectorThread.setAddress( ia );
         setAttribute("address", "" + ia);
@@ -342,12 +329,10 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         return ("http-" + encodedAddr + selectorThread.getPort());
     }
     
-    @Override
     public boolean getTcpNoDelay() {
         return selectorThread.getTcpNoDelay();
     }
     
-    @Override
     public void setTcpNoDelay( boolean b ) {
         selectorThread.setTcpNoDelay( b );
         setAttribute("tcpNoDelay", "" + b);
@@ -425,36 +410,30 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         selectorThread.setCompressionMinSize(valueI);
     }
 
-    @Override
     public int getSoLinger() {
         return selectorThread.getLinger();
     }
     
-    @Override
     public void setSoLinger( int i ) {
         selectorThread.setLinger( i );
         setAttribute("soLinger", "" + i);
     }
 
-    @Override
     public int getSoTimeout() {
 //        return selectorThread.getSoTimeout();
         return 0;
     }
     
-    @Override
     public void setSoTimeout( int i ) {
 //        selectorThread.setSoTimeout(i);
         setAttribute("soTimeout", "" + i);
     }
     
-    @Override
     public int getServerSoTimeout() {
 //        return selectorThread.getServerSoTimeout();
         return 0;
     }
     
-    @Override
     public void setServerSoTimeout( int i ) {
 //        selectorThread.setServerSoTimeout(i);
         setAttribute("serverSoTimeout", "" + i);
