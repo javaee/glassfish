@@ -31,7 +31,7 @@ own identifying information: Portions Copyright [yyyy]
             <targetfile/>
             <srcfile/>
             <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
-                     includes="*.jar" />
+                     includes="**/*.jar" />
             <mapper type="glob" from="*.jar" to="*.pack.gz"/>
         </apply>
         <apply executable="unpack200" 
@@ -39,13 +39,13 @@ own identifying information: Portions Copyright [yyyy]
             <srcfile/>
             <targetfile/>
             <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
-                     includes="*.pack.gz" />
+                     includes="**/*.pack.gz" />
             <mapper type="glob" from="*.pack.gz" to="*.jar"/>
         </apply>
 	<!-- remove *.pack.gz files -->
         <delete>
             <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
-                     includes="*.pack.gz"/>
+                     includes="**/*.pack.gz"/>
         </delete>
     </target>
 
