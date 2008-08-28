@@ -481,7 +481,10 @@ FIXME: 7-31-08 -- FIX by importing woodstock api's.
     public static Boolean getBooleanValue(Map pMap, String name){
         if (pMap.get(name) == null)
             return Boolean.FALSE;
-        return (Boolean)pMap.get(name);
+        Object val = pMap.get(name);
+        if (val instanceof Boolean)
+            return (Boolean) val;
+        return Boolean.valueOf(""+val);
     }
     
     
