@@ -749,8 +749,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                               Mapper mapper) {
 
         if (!Boolean.valueOf(httpListener.getEnabled())) {
-            _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
-                    Boolean.valueOf(httpListener.getEnabled()));
             return null;
         }
                                  

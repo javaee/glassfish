@@ -187,14 +187,21 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             futures = new ArrayList<Future<Result<Thread>>>();
             for (HttpListener listener : httpService.getHttpListener()) {
                 
-               // Do not create listener when mod_ajp/jk is enabled. This 
-               // should never happens one the grizzly-config configuration
-               // will be used.
-               if ("jk-connector".equals(listener.getId())){
-                   continue;
-               }
+                // Do not create listener when mod_ajp/jk is enabled. This 
+                // should never happens one the grizzly-config configuration
+                // will be used.
+                if ("jk-connector".equals(listener.getId())){
+                    continue;
+                }
 
-               futures.add(createNetworkProxy(listener, httpService));
+                if (!Boolean.valueOf(listener.getEnabled())) {
+                    logger.info("Network listener " + listener.getId() +
+                                " on port " + listener.getPort() +
+                                " has been disabled");
+                    continue;
+                }
+
+                futures.add(createNetworkProxy(listener, httpService));
             }
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
