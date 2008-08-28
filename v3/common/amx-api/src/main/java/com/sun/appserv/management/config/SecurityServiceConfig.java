@@ -179,15 +179,16 @@ public interface SecurityServiceConfig extends
 	
 	
 	/**
-		Create a new &lt;audit-module>
+		Create a new &lt;audit-module>.  Note that the {@link AuditModuleConfig#AUDIT_ON_PROPERTY}
+        can be specified in the map as<br>
+        PropertiesAccess.PROPERTY_PREFIX + AuditModuleConfig.AUDIT_ON_PROPERTY .
 		
 		@param name		name of the &lt;audit-module
 		@param className	implementing class
-		@param auditOn		true if auditing is on (property)
 		@param reservedForFutureUse		reserved for future use
+        @since GlassFish V3
 	 */
-	public AuditModuleConfig	createAuditModuleConfig( String name, String className, 
-	   								 boolean auditOn, Map<String,String> reservedForFutureUse );
+	public AuditModuleConfig	createAuditModuleConfig( String name, String className, Map<String,String> reservedForFutureUse );
 
 	/**
 		Removes an &lt;audit-module&gt element.

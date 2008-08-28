@@ -44,17 +44,15 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	 Configuration for the &lt;audit-module&gt; element.
 */
+@AMXCreateInfo(paramNames={"name","classname"})
 public interface AuditModuleConfig extends NamedConfigElement, PropertiesAccess 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.AUDIT_MODULE_CONFIG;
 	
-
+    /** boolean property */
+    public static final String AUDIT_ON_PROPERTY = "auditOn";
 		
 	public String	getClassname();
 	public void	setClassname( String value );
-
-
-
-
 }

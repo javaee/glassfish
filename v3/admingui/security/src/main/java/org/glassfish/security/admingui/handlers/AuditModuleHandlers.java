@@ -42,6 +42,8 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 import com.sun.appserv.management.config.AuditModuleConfig;
 import com.sun.appserv.management.config.ConfigConfig;
+import com.sun.appserv.management.config.PropertiesAccess;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,10 +163,10 @@ public class AuditModuleHandlers {
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
                 Map convertedMap = AMXUtil.convertToPropertiesOptionMap(newProps, null);
+                convertedMap.put( PropertiesAccess.PROPERTY_PREFIX + "auditOn", "" + auditOn );
                 config.getSecurityServiceConfig().createAuditModuleConfig(
                         (String)handlerCtx.getInputValue("Name"),
                         (String)handlerCtx.getInputValue("Classname"),
-                        auditOn,
                         convertedMap);
                 return;
             }
