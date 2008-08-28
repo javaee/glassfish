@@ -405,7 +405,7 @@ public abstract class BaseContainer
     protected BaseContainer(ContainerType type, EjbDescriptor ejbDesc, ClassLoader loader)
         throws Exception
     {
-        this.containerType = containerType;
+        this.containerType = type;
         
         try {
             this.loader = loader;

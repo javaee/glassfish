@@ -30,7 +30,6 @@ public class ProviderImplGenerator {
         byte[] classData = generateClassData(provider, providerClazz, generatedClassName);
 
         ProtectionDomain pd = providerClazz.getProtectionDomain();
-        byte[] dataType = new byte[0];
 
         java.lang.reflect.Method jm = null;
         for (java.lang.reflect.Method jm2 : ClassLoader.class.getDeclaredMethods()) {

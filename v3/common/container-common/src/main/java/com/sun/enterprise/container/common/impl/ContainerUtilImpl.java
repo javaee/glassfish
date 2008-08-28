@@ -68,7 +68,11 @@ public class ContainerUtilImpl
     private static ContainerUtil _util;
 
     public ContainerUtilImpl() {
-        _util = this;
+        _initializeContainerUtilImpl(this);
+    }
+
+    private static void _initializeContainerUtilImpl(ContainerUtilImpl me) {
+        _util = me;
     }
 
     public static ContainerUtil getContainerUtil() {
