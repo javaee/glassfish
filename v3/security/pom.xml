@@ -53,7 +53,7 @@
         <module>realm</module>
         <module>webintegration</module>
         <module>common</module>
-        <module>javax.security</module>
+        <module>javax.security.jacc</module>
         <module>javax.security.auth.message</module>
    </modules>
 </project>
