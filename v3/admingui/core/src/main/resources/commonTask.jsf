@@ -65,13 +65,16 @@
 			    toolTip="#{registrationNodeText}"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=#{registrationNodePage}.html" 
                             onClick="admingui.nav.selectTreeNodeById('form:tree:#{registrationNodePage}'); 
-                                    parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;">
+                                    parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;"
+                            onKeyPress="admingui.nav.selectTreeNodeById('form:tree:#{registrationNodePage}'); 
+                                    parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;"                                    >
                             >
 			</sun:commonTask>
                         <sun:commonTask
                             text="$resource{i18n.commonTasks.task.subscriptions}"
                             toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
-                            onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">                             
+                            onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;"
+                            onKeyPress="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">                             
                         </sun:commonTask>
 		    </sun:commonTasksGroup>
                      
