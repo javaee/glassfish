@@ -44,10 +44,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
  */
 import org.glassfish.api.Startup.Lifecycle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.glassfish.api.monitoring.TelemetryProvider;
 import org.glassfish.flashlight.provider.ProbeProviderListener;
 import org.glassfish.flashlight.provider.ProbeProviderEventManager;
 import org.glassfish.flashlight.client.ProbeClientMediator;
@@ -65,7 +62,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.ConfigListener;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import org.osgi.framework.Bundle;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -74,10 +70,9 @@ import org.glassfish.internal.api.Globals;
  *
  * @author Sreenivas Munnangi
  */
-//@Service
-//@Scoped(Singleton.class)
+@Service
 public class WebMonitorStartup implements //Startup, PostConstruct, 
-        BundleActivator, BundleListener, ProbeProviderListener, ConfigListener  {
+        ProbeProviderListener, TelemetryProvider {
     private boolean requestProviderRegistered = false;
     private boolean servletProviderRegistered = false;
     private boolean jspProviderRegistered = false;
@@ -135,16 +130,18 @@ public class WebMonitorStartup implements //Startup, PostConstruct,
     
     private Level dbgLevel = Level.FINEST;
     private Level defaultLevel;
-    BundleContext myBundleContext;
-    private static String WEB_CORE_PACKAGE = "org.glassfish.web.web-core";
-    private static String GRIZZLY_PACKAGE = "org.glassfish.external.grizzly-module";
+
 
     protected static class logger {
         public void finest(String str) {
             System.out.println(str);
         }
     }
-    public void start(BundleContext bCtx) {
+
+    public void onLevelChange(String newLevel) {
+
+        // TODO : Check that new level is ON
+
         // to set log level, uncomment the following 
         // remember to comment it before checkin
         // remove this once we find a proper solution
@@ -156,83 +153,47 @@ public class WebMonitorStartup implements //Startup, PostConstruct,
          */
         logger.finest("[Monitor]In the Web Monitor startup ************");
 
-        this.myBundleContext = bCtx;
         logger.finest("[Monitor]BootstrapAdminMonitor started");
-        
+
         //Load monitoring levels
         loadMonitoringLevels();
-        
+
         //Build the top level monitoring tree
         buildTopLevelMonitoringTree();
-        
+
         //check if the monitoring level for JVM is 'on' and enable appropriately
         buildJVMMonitoringTree();
-        
+
         //check if the monitoring level for Threadpool is 'on' and 
         // if Grizzly module is loaded, then register the ProveProviderListener
-        if (threadpoolMonitoringEnabled && isGrizzlyModuleLoaded()) {
+        if (threadpoolMonitoringEnabled ) {
             registerProbeProviderListener();
         }
 
         //check if the monitoring level for web-container is 'on' and 
         // if Web Container is loaded, then register the ProveProviderListener
-        if (!probeProviderListenerRegistered && webMonitoringEnabled && 
-                isWebContainerLoaded() ) {
+        if (!probeProviderListenerRegistered && webMonitoringEnabled) {
             registerProbeProviderListener();
         }
 
-        bCtx.addBundleListener(this);
-    }
-
-    public void stop(BundleContext bCtx) {
-        logger.finest("[Monitor]BootstrapAdminMonitor stopped");
-        bCtx.removeBundleListener(this);
-    }
-
-    public void bundleChanged(BundleEvent event) {
-        if (event.getBundle().getSymbolicName().equals(WEB_CORE_PACKAGE) &&
-                (event.getType() == BundleEvent.STARTED)){
-            logger.finest("[Monitor]BundleEvent.getBundle() = " + event.getBundle().getSymbolicName());
-            logger.finest("[Monitor]BundleEvent.getType() = " + event.getType());
-            webContainerLoaded = true;
-            if (webMonitoringEnabled) {
-                if (!probeProviderListenerRegistered) {
-                    registerProbeProviderListener();
-                } else {
-                    //ProbeProviderListener already registered (as part of other container), 
-                    // see if the providers are already registered
-                    buildWebMonitoringTree();
-                    if (!isWebTreeBuilt){
-                        logger.finest("[Monitor]Web Monitoring tree is not built for some reason though the Web Container started event is fired");
-                        return;
-                    }
-                    if (sessionProviderRegistered)
-                        buildSessionTelemetry();
-                    if (jspProviderRegistered)
-                        buildJspTelemetry();
-                    if (servletProviderRegistered)
-                        buildServletTelemetry();
-                    if (requestProviderRegistered)
-                        buildWebRequestTelemetry();
-                }
-            }
+        //ProbeProviderListener already registered (as part of other container),
+        // see if the providers are already registered
+        buildWebMonitoringTree();
+        if (!isWebTreeBuilt) {
+            logger.finest("[Monitor]Web Monitoring tree is not built for some reason though the Web Container started event is fired");
+            return;
         }
-        else if (event.getBundle().getSymbolicName().equals(GRIZZLY_PACKAGE) &&
-                (event.getType() == BundleEvent.STARTED)){
-            logger.finest("[Monitor]BundleEvent.getBundle() = " + event.getBundle().getSymbolicName());
-            logger.finest("[Monitor]BundleEvent.getType() = " + event.getType());
-            grizzlyModuleLoaded = true;
-            if (threadpoolMonitoringEnabled) {
-                if (!probeProviderListenerRegistered) {
-                    registerProbeProviderListener();
-                } else {
-                    buildThreadpoolMonitoringTree();
-                }
-            }
-        }
+        if (sessionProviderRegistered)
+            buildSessionTelemetry();
+        if (jspProviderRegistered)
+            buildJspTelemetry();
+        if (servletProviderRegistered)
+            buildServletTelemetry();
+        if (requestProviderRegistered)
+            buildWebRequestTelemetry();
     }
 
-    public Lifecycle getLifecycle() {
+public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
         return Lifecycle.SERVER;
     }
@@ -707,31 +668,6 @@ public class WebMonitorStartup implements //Startup, PostConstruct,
         return true;
     }
 
-    private boolean isGrizzlyModuleLoaded() {
-        Bundle[] bundles = myBundleContext.getBundles();
-        for (Bundle bndl : bundles){
-            if (bndl.getSymbolicName().equals(GRIZZLY_PACKAGE) && 
-                    (bndl.getState() == Bundle.ACTIVE)) {
-                logger.finest("[Monitor]Bundle " + GRIZZLY_PACKAGE + " is loaded");
-                grizzlyModuleLoaded = true;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isWebContainerLoaded() {
-        Bundle[] bundles = myBundleContext.getBundles();
-        for (Bundle bndl : bundles){
-            if (bndl.getSymbolicName().equals(WEB_CORE_PACKAGE) && 
-                    (bndl.getState() == Bundle.ACTIVE)) {
-                logger.finest("[Monitor]Bundle " + WEB_CORE_PACKAGE + " is loaded");
-                webContainerLoaded = true;
-                return true;
-            }
-        }
-        return false;
-    }
 
     private void addVirtualServers(Server server, TreeNode tn, String appName) {
         // get the applications refs for the server

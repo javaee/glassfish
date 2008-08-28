@@ -49,6 +49,7 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -82,7 +83,7 @@ public class CreateSystemProperties implements AdminCommand {
     Properties properties;
 
     @Inject
-    Server[] servers;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -93,7 +94,7 @@ public class CreateSystemProperties implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server server = ResourceUtils.getTargetServer(servers, target);
+        Server server = domain.getServerNamed(target);
         String sysPropName = "";
         try {            
             for (final Object key : properties.keySet()) {

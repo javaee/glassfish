@@ -57,7 +57,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.ConfiguredBy;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import com.sun.enterprise.v3.admin.ResourceStatus;
-import com.sun.enterprise.v3.admin.ResourceUtils;
 
 /**
  *
@@ -139,8 +138,8 @@ public class JDBCResourceManager implements ResourceManager {
                 }
             }, resources);
             
-            if (!ResourceUtils.isResourceRefExists(targetServer, jndiName)) {
-                ResourceUtils.createResourceRef(targetServer, enabled, jndiName);
+            if (!targetServer.isResourceRefExists( jndiName)) {
+                targetServer.createResourceRef( enabled, jndiName);
             }
 
         } catch(TransactionFailure tfe) {
@@ -197,7 +196,7 @@ public class JDBCResourceManager implements ResourceManager {
             }
             
             // delete resource-ref
-            ResourceUtils.deleteResourceRef(targetServer, jndiName);
+            targetServer.deleteResourceRef(jndiName);
             
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 

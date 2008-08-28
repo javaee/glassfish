@@ -49,7 +49,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.v3.admin.ResourceUtils;
 
 /**
  * Delete Resource Ref Command
@@ -91,7 +90,7 @@ public class DeleteResourceRef implements AdminCommand {
         try {
             for (final Server server : servers) {
                 if (server.getName().equals(target)) {
-                    ResourceUtils.deleteResourceRef(server, refName);
+                    server.deleteResourceRef(refName);
                 }
             }
         } catch(TransactionFailure tfe) {

@@ -47,9 +47,9 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.admin.ResourceUtils;
 import com.sun.enterprise.v3.admin.ResourceStatus;
 
 
@@ -77,7 +77,7 @@ public class DeleteJdbcResource implements AdminCommand {
     JdbcResource[] jdbcResources;
     
     @Inject
-    Server[] servers;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -88,7 +88,7 @@ public class DeleteJdbcResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        Server targetServer = domain.getServerNamed(target);
         try {
             JDBCResourceManager jdbcResMgr = new JDBCResourceManager();
             ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName, targetServer);

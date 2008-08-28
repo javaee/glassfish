@@ -50,7 +50,7 @@ import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.v3.admin.ResourceUtils;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.admin.ResourceStatus;
 
 import java.util.HashMap;
@@ -164,7 +164,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     Resources resources;
     
     @Inject
-    Server[] servers;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -175,7 +175,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
        
-        Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        Server targetServer = domain.getServerNamed(target);
 
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.CONNECTION_POOL_NAME, jdbc_connection_pool_id);

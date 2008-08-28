@@ -185,9 +185,61 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     public String getReference();
 
+    @DuckTyped
+    public ResourceRef getResourceRef(String name);
+
+    @DuckTyped
+    public boolean isResourceRefExists(String refName);
+
+    @DuckTyped
+    public void deleteResourceRef(String name) throws TransactionFailure;
+
+    @DuckTyped
+    public void createResourceRef(final String enabled, String refName) throws TransactionFailure;
+
     public class Duck {
         public static String getReference(Server server) {
             return server.getConfigRef();
+        }
+
+        public static ResourceRef getResourceRef(Server server, String refName) {
+            for (ResourceRef ref : server.getResourceRef()) {
+                if (ref.getRef().equals(refName)) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+
+        public static boolean isResourceRefExists(Server server, String refName) {
+            return getResourceRef(server, refName)!=null;
+        }
+
+        public static void deleteResourceRef(Server server, String refName) throws TransactionFailure {
+            final ResourceRef ref = getResourceRef(server, refName);
+            if (ref!=null) {
+               ConfigSupport.apply(new SingleConfigCode<Server>() {
+
+                    public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+                        return param.getResourceRef().remove(ref);
+                        }
+               }, server);
+            }
+        }
+
+        public static void createResourceRef(Server server, final String enabled, final String refName)       throws TransactionFailure {
+
+            ConfigSupport.apply(new SingleConfigCode<Server>() {
+
+                    public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+
+                        ResourceRef newResourceRef = ConfigSupport.createChildOf(param, ResourceRef.class);
+                        newResourceRef.setEnabled(enabled);
+                        newResourceRef.setRef(refName);
+                        param.getResourceRef().add(newResourceRef);
+                        return newResourceRef;
+                    }
+                }, server);
         }
     }
 }

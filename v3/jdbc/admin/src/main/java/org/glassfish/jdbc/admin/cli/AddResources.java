@@ -50,8 +50,7 @@ import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
-import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.v3.admin.ResourceUtils;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.admin.ResourceStatus;
 
 import java.io.File;
@@ -79,7 +78,7 @@ public class AddResources implements AdminCommand {
     Resources resources;
     
     @Inject
-    Server[] servers;
+    Domain domain;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -90,7 +89,7 @@ public class AddResources implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         
-        Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        Server targetServer = domain.getServerNamed(target);
         
         // Check if the path xmlFileName exists
         File file = new File(xmlFileName);

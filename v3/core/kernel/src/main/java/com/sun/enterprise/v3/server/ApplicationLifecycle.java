@@ -440,6 +440,10 @@ public class ApplicationLifecycle {
                 try {
                     Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
                     Deployer deployer = getDeployer(containerInfo);
+                    if (deployer==null) {
+                        report.failure(logger, "Got a null deployer out of the " + containerInfo.getContainer().getClass() + " container");
+                        return null;
+                    }
                     containerInfosByDeployers.put(deployer, containerInfo);
                     final MetaData metadata = deployer.getMetaData();
                     Class[] requires = (metadata==null?null:metadata.requires());

@@ -60,7 +60,6 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import com.sun.enterprise.v3.admin.ResourceStatus;
-import com.sun.enterprise.v3.admin.ResourceUtils;
 
 
 /**
@@ -373,7 +372,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
             throws TransactionFailure {
         
         for (Server server : servers) {
-            ResourceUtils.deleteResourceRef(server, refName);
+           server.deleteResourceRef(refName);
         }
         
     }

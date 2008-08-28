@@ -84,9 +84,6 @@
                         org.glassfish.web.admin.monitor,
                         org.glassfish.web.admin.monitor.telemetry
                         </Export-Package>
-			<Bundle-Activator>
-                         org.glassfish.web.admin.monitor.telemetry.WebMonitorStartup
-                        </Bundle-Activator>
                     </instructions>
                 </configuration>
                 <executions>

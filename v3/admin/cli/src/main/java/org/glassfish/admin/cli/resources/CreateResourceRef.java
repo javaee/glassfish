@@ -56,7 +56,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.v3.admin.ResourceUtils;
 
 /**
  * Create Resource Ref Command
@@ -133,7 +132,7 @@ public class CreateResourceRef implements AdminCommand {
             for (Server server : servers) {
                 if (server.getName().equals(target)) {
                     // ensure we don't already have one of this name
-                    if (ResourceUtils.isResourceRefExists(server, refName)) {
+                    if (server.isResourceRefExists( refName)) {
                         report.setMessage(localStrings.getLocalString("create.resource.ref.existsAlready",
                         "Resource ref {0} already exists", refName));
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -141,7 +140,7 @@ public class CreateResourceRef implements AdminCommand {
                     }
                     
                     // create new ResourceRef as a child of Server
-                    ResourceUtils.createResourceRef(server, enabled.toString(), refName);
+                    server.createResourceRef( enabled.toString(), refName);
                 }
             }
         } catch(TransactionFailure tfe) {
