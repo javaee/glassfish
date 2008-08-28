@@ -238,7 +238,13 @@ abstract class AbstractAttributeHandler extends AbstractHandler {
                     new MethodDescriptor(MethodDescriptor.ALL_METHODS,
                     "", MethodDescriptor.EJB_LOCALHOME));
             }
-        } 
+        }
+
+        if (ejbDesc.isOptionalLocalBusinessViewSupported()) {
+            methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_OPTIONAL_LOCAL));    
+        }
 
         if (ejbDesc.hasWebServiceEndpointInterface()) {
             methodAlls.add(

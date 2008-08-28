@@ -53,13 +53,13 @@ public final class MethodDescriptor extends Descriptor {
     /** Represents the bean local home interface ejbClassSymbol.*/
     public static final String EJB_LOCALHOME = "LocalHome";
     /** Represents the bean local home interface ejbClassSymbol.*/
-    public static final String EJB_OPTIONAL_LOCALHOME = "OptionalLocalHome";        
+    public static final String EJB_OPTIONAL_LOCALHOME = "OptionalLocalHome";
     /** Represents the bean remote interface ejbClassSymbol.*/
     public static final String EJB_REMOTE = "Remote";
     /** Represents the bean local interface ejbClassSymbol.*/
     public static final String EJB_LOCAL = "Local";
     /** Represents the optional local interface */
-    public static final String EJB_OPTIONAL_LOCAL = "OptionalLocal";
+    public static final String EJB_OPTIONAL_LOCAL = "LocalBean";
     /** Represents the web service interface ejbClassSymbol.*/
     public static final String EJB_WEB_SERVICE = "ServiceEndpoint";
     /** Represents the bean class ejbClassSymbol.*/
@@ -299,7 +299,18 @@ public final class MethodDescriptor extends Descriptor {
                     }
                 }
             }
-	    else if ( ejbClassSymbol.equals(EJB_LOCAL) ) {
+        else if ( ejbClassSymbol.equals(EJB_OPTIONAL_LOCAL) ) {
+            if (ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
+                try {
+                    Class cl = classloader.loadClass(
+                            ejbDescriptor.getEjbClassName());
+                    method = TypeUtil.getMethod(cl, classloader,
+                            getName(), javaParamClassNames);
+                } catch (NoSuchMethodException nsme) {
+                }
+            }
+        }
+        else if ( ejbClassSymbol.equals(EJB_LOCAL) ) {
                 if( ejbDescriptor.isLocalInterfacesSupported() ) {
                     try {
                         Class cl = classloader.loadClass(
@@ -441,147 +452,6 @@ public final class MethodDescriptor extends Descriptor {
     public void setEjbClassSymbol(String ejbClassSymbol) {
 	this.ejbClassSymbol = ejbClassSymbol;
     }
-       
-
-    private void processEjbSymbol(Method method, EjbDescriptor ejbDescriptor, ClassLoader classloader) {
-	try {
-	    Class bean, declaringClass = null;
-	    String declaringClassname = method.getDeclaringClass().getName();
-	    
-            
-            ClassLoader cl = (classloader != null) ? classloader :
-                ejbDescriptor.getEjbBundleDescriptor().getClassLoader();
-            bean = cl.loadClass(ejbDescriptor.getEjbClassName());
-            declaringClass = classloader.loadClass(declaringClassname);
-
-            // Message-driven beans don't have a home or remote interface
-            if( ejbDescriptor.getType().equals(EjbMessageBeanDescriptor.TYPE) ) {
-                if (declaringClass.isAssignableFrom(bean)) {
-                    this.ejbClassSymbol = EJB_BEAN;
-                }
-                else {
-                    _logger.log(Level.FINE,"declaring class = " + declaringClass);
-                    _logger.log(Level.FINE,"method = " + this);
-                    _logger.log(Level.FINE,"bean class = " + bean);
-                    throw new IllegalArgumentException();
-                }
-            }
-            else {
-		boolean foundremote = ejbDescriptor.isRemoteInterfacesSupported();
-		if ( ejbDescriptor.isRemoteInterfacesSupported() ) {
-		    Class home = cl.loadClass(ejbDescriptor.getHomeClassName());
-		    Class remote = cl.loadClass(ejbDescriptor.getRemoteClassName());
-		    if (declaringClass.isAssignableFrom(home)) {
-			this.ejbClassSymbol = EJB_HOME;
-		    } else if (declaringClass.isAssignableFrom(remote)) {
-			this.ejbClassSymbol = EJB_REMOTE;
-		    } else if (declaringClass.isAssignableFrom(bean)) {
-			this.ejbClassSymbol = EJB_BEAN;
-		    }
-		    else {
-			foundremote = false;
-		    }
-		}
-
-                boolean foundremotebusiness =
-                    ejbDescriptor.isRemoteBusinessInterfacesSupported();
-                if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
-
-                    boolean match = false;
-                    for( String intfName : 
-                             ejbDescriptor.getRemoteBusinessClassNames()) {
-
-                        Class intf = cl.loadClass(intfName);
-                        
-                        if( declaringClass.isAssignableFrom(intf) ) {
-                            this.ejbClassSymbol = EJB_REMOTE;
-                            match = true;
-                            break;
-                        } else if( declaringClass.isAssignableFrom(bean) ) {
-                            this.ejbClassSymbol = EJB_BEAN;
-                            match = true;
-                            break;
-                        }
-                    }
-                    foundremotebusiness = match;
-                }
-
-
-		boolean foundlocal = ejbDescriptor.isLocalInterfacesSupported();
-		if ( !foundremote && !foundremotebusiness && 
-                     ejbDescriptor.isLocalInterfacesSupported() ) {
-		    Class localhome = cl.loadClass(ejbDescriptor.getLocalHomeClassName());
-		    Class local = cl.loadClass(ejbDescriptor.getLocalClassName());
-		    if (declaringClass.isAssignableFrom(localhome)) {
-			this.ejbClassSymbol = EJB_LOCALHOME;
-		    } else if (declaringClass.isAssignableFrom(local)) {
-			this.ejbClassSymbol = EJB_LOCAL;
-		    } else if (declaringClass.isAssignableFrom(bean)) {
-			this.ejbClassSymbol = EJB_BEAN;
-		    }
-		    else {
-			foundlocal = false;
-		    }
-                } 
-
-                boolean foundlocalbusiness =
-                    ejbDescriptor.isLocalBusinessInterfacesSupported();
-                if( ejbDescriptor.isLocalBusinessInterfacesSupported() ) {
-
-                    boolean match = false;
-                    for( String intfName : 
-                             ejbDescriptor.getLocalBusinessClassNames()) {
-
-                        Class intf = cl.loadClass(intfName);
-                        
-                        if( declaringClass.isAssignableFrom(intf) ) {
-                            this.ejbClassSymbol = EJB_LOCAL;
-                            match = true;
-                            break;
-                        } else if( declaringClass.isAssignableFrom(bean) ) {
-                            this.ejbClassSymbol = EJB_BEAN;
-                            match = true;
-                            break;
-                        }
-                    }
-                    foundlocalbusiness = match;
-                }
-
-
-                boolean foundwebservice = 
-                    ejbDescriptor.hasWebServiceEndpointInterface();
-
-                if ( !foundremote && !foundremotebusiness && !foundlocal &&
-                     !foundlocalbusiness &&
-                     ejbDescriptor.hasWebServiceEndpointInterface() ) {
-		    Class webServiceClass = classloader.loadClass
-                        (ejbDescriptor.getWebServiceEndpointInterfaceName());
-		    if (declaringClass.isAssignableFrom(webServiceClass)) {
-			this.ejbClassSymbol = EJB_WEB_SERVICE;
-		    } else if (declaringClass.isAssignableFrom(bean)) {
-			this.ejbClassSymbol = EJB_BEAN;
-		    } else {
-			foundwebservice = false;
-		    }
-                } 
-		if ( !foundlocal && !foundlocalbusiness && !foundremote &&
-                     !foundremotebusiness && !foundwebservice) {   
-                    _logger.log(Level.FINE,"method class = " + declaringClass);
-                    _logger.log(Level.FINE,"bean class = " + bean);
-                    throw new IllegalArgumentException("Method is not on any EJB interface");
-                }
-            }
-	} catch (Throwable t) {
-	    if (_logger.isLoggable(Level.SEVERE)) {
-		_logger.log(Level.SEVERE,"enterprise.deployment.backend.methodClassLoadFailure",new Object[] {method});
-	    }
-	    
-	    throw new IllegalArgumentException(localStrings.getLocalString(
-									   "enterprise.deployment.exceptionmethodnotfound",
-									   "{0} not found in {1}", new Object[] {method,ejbDescriptor}));
-	}
-        ejbName=ejbDescriptor.getName();
-     }
     
     public String getFormattedString() {
 	return this.getName() + this.getPrettyParameterString();

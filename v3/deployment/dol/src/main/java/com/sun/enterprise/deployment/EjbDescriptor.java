@@ -1771,6 +1771,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 }
             }
 
+            if (isOptionalLocalBusinessViewSupported()) {
+                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), MethodDescriptor.EJB_OPTIONAL_LOCAL);                
+            }
+
             if (hasWebServiceEndpointInterface()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getWebServiceEndpointInterfaceName()), MethodDescriptor.EJB_WEB_SERVICE);
             }
@@ -1838,6 +1842,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
             if (hasWebServiceEndpointInterface()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getWebServiceEndpointInterfaceName()), MethodDescriptor.EJB_WEB_SERVICE);
+            }
+
+            if (isOptionalLocalBusinessViewSupported()) {
+                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), MethodDescriptor.EJB_OPTIONAL_LOCAL);                    
             }
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getBusinessMethodDescriptors())"});

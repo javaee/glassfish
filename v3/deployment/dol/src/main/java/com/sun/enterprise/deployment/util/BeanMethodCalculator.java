@@ -108,6 +108,10 @@ public class BeanMethodCalculator {
             }
         }
 
+        if (ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
+            addAllInterfaceMethodsIn(methods, classLoader.loadClass(ejbDescriptor.getEjbClassName()));
+        }
+
         if (ejbDescriptor.hasWebServiceEndpointInterface()) {
             addAllInterfaceMethodsIn(methods, classLoader.loadClass(ejbDescriptor.getWebServiceEndpointInterfaceName()));
                                                                     
@@ -165,8 +169,8 @@ public class BeanMethodCalculator {
             }
 
             if( ejbDescriptor.isLocalBusinessInterfacesSupported() ) {
-                
-                for(String intfName : 
+
+                for(String intfName :
                         ejbDescriptor.getLocalBusinessClassNames() ) {
 
                     Class businessIntf = loader.loadClass(intfName);
@@ -175,6 +179,16 @@ public class BeanMethodCalculator {
                         methods.add(new MethodDescriptor
                                     (next, MethodDescriptor.EJB_LOCAL));
                     }
+                }
+            }
+
+            if( ejbDescriptor.isOptionalLocalBusinessViewSupported() ) {
+                String intfName = ejbDescriptor.getEjbClassName();
+                Class businessIntf = loader.loadClass(intfName);
+                Method[] busIntfMethods = businessIntf.getMethods();
+                for (Method next : busIntfMethods ) {
+                    methods.add(new MethodDescriptor
+                                (next, MethodDescriptor.EJB_OPTIONAL_LOCAL));
                 }
             }
 

@@ -75,8 +75,8 @@ public final class ContainerTransaction extends Descriptor {
      * Create a new transaction descriptor with the given attribute. Throws 
      * an IllegalArgumentException if the attribute is not an allowed type. 
      * The allowed types are enumeration ny this class.
-     * @param the transaction attribute.
-     * @param the description.
+     * @param transactionAttribute .
+     * @param description .
      */
     public ContainerTransaction(String transactionAttribute, 
 				String description) {
