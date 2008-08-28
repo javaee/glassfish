@@ -188,7 +188,7 @@ public class ChangeAdminPassword implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "change.admin.password.userupdatefailed",
-                    "Password change failed for user {0}", userName));
+                    "Password change failed for user named {0}", userName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        

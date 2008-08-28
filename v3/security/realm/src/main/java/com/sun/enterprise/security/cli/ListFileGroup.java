@@ -134,8 +134,7 @@ public class ListFileGroup implements AdminCommand {
                 // in the right cause of this situation
                 return;
             }
-
-            List<String> fileusers = new ArrayList<String>();
+            
             Enumeration groups = null;
             if (fileUserName != null) {
                 groups = fr.getGroupNames(fileUserName);
