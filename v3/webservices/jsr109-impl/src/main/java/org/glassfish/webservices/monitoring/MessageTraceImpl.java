@@ -84,7 +84,6 @@ public class MessageTraceImpl implements MessageTrace {
                 return soapMessage;
             }
         
-            StringBuffer sb = new StringBuffer();
             Pattern p = Pattern.compile("<env:Body>.*</env:Body>");
             Matcher m = p.matcher(soapMessage);
             if (m.find()) {
