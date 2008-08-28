@@ -710,9 +710,8 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 
 	boolean hasSlaveFactory = false;
 	boolean hasSlaveProvider = false;
-
-	try {
-	    rwLock.readLock().lock();
+        rwLock.readLock().lock();
+	try {    
 	    hasSlaveFactory = (slaveFactory != null);
             hasSlaveProvider = (slaveProvider != null);
 	}  finally {
@@ -727,8 +726,8 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 	}
 
 	if (!hasSlaveFactory) {
+            rwLock.writeLock().lock();
 	    try {
-		rwLock.writeLock().lock();
 		if (slaveFactory == null) {
 		    slaveFactory = AuthConfigFactory.getFactory();
 		}
@@ -742,8 +741,8 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 
     protected static void loadParser(AuthConfigProvider aProvider, 
             AuthConfigFactory aFactory, Object config) {
+        rwLock.writeLock().lock();
         try {
-            rwLock.writeLock().lock();
             ConfigParser nextParser;
             int next = epoch + 1;
             nextParser = (ConfigParser)createObject(parserClassName);
