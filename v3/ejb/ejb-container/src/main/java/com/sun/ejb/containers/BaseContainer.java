@@ -62,6 +62,7 @@ import com.sun.enterprise.util.Utility;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -315,7 +316,8 @@ public abstract class BaseContainer
     protected boolean isStatefulSession;
     protected boolean isMessageDriven;
     protected boolean isEntity;
-    
+    protected boolean isSingleton;
+
     protected EjbDescriptor ejbDescriptor;
     protected String componentId; // unique id for java:comp namespace lookup
     
@@ -395,6 +397,7 @@ public abstract class BaseContainer
 
     protected Set<String> publishedGlobalJndiNames = new HashSet<String>();
 
+    private String optIntfClassName;
     /**
      * This constructor is called from ContainerFactoryImpl when an
      * EJB Jar is deployed.
@@ -423,6 +426,7 @@ public abstract class BaseContainer
             IASEjbExtraDescriptors iased = ejbDesc.getIASEjbExtraDescriptors();
             cmtTimeoutInSeconds = iased.getCmtTimeoutInSeconds();
 
+
             if( ejbDescriptor.getType().equals(EjbMessageBeanDescriptor.TYPE) )
             {
                 isMessageDriven = true;
@@ -442,21 +446,23 @@ public abstract class BaseContainer
                     isEntity = true;
                 } else {
                     isSession = true;
-                    EjbSessionDescriptor sd = 
+                    EjbSessionDescriptor sd =
                         (EjbSessionDescriptor)ejbDescriptor;
-                    
-                    isStatelessSession = sd.isStateless();
-                    isStatefulSession  = !isStatelessSession;
+                    if (ejbDescriptor.getType().equals(EjbSingletonDescriptor.TYPE)) {
+                        isSingleton = true;
+                    } else {
+                        isStatelessSession = sd.isStateless();
+                        isStatefulSession  = !isStatelessSession;
 
-                    if( isStatefulSession ) {
-                        /*TODO
-                        if( !Serializable.class.isAssignableFrom(ejbClass) ) {
-                            ejbClass = EJBUtils.loadGeneratedSerializableClass
-                                (loader, ejbClass.getName());
+                        if( isStatefulSession ) {
+                            /*TODO
+                            if( !Serializable.class.isAssignableFrom(ejbClass) ) {
+                                ejbClass = EJBUtils.loadGeneratedSerializableClass
+                                    (loader, ejbClass.getName());
+                            }
+                            */
                         }
-                        */
                     }
-                    
                     if ( sd.getTransactionType().equals("Bean") ) {
                         isBeanManagedTran = true;
                     } else {
@@ -574,7 +580,7 @@ public abstract class BaseContainer
                     Class clz = loader.loadClass(ejbDescriptor.getEjbClassName());
                     addToGeneratedMonitoredMethodInfo(ejbDescriptor.getEjbClassName(), clz);
 
-                    String optIntfClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
+                    this.optIntfClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
                     optIntfClassLoader = new EjbOptionalIntfGenerator(loader);
                     ((EjbOptionalIntfGenerator) optIntfClassLoader).generateOptionalLocalInterface(ejbClass, optIntfClassName);
                     ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optIntfClassName);
@@ -2567,6 +2573,7 @@ public abstract class BaseContainer
                 }
 
                 if (hasOptionalLocalBusinessView) {
+                    
                     // Process generated Optional Local Business interface
                     String optClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
                     ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optClassName);
@@ -3610,7 +3617,9 @@ public abstract class BaseContainer
         
         EJBContextImpl context = (EJBContextImpl)inv.context;
         Transaction tx = transactionManager.getTransaction();
-        context.setTransaction(tx);
+        if (! isSingleton) {
+            context.setTransaction(tx);
+        }
         
         // This allows the TM to enlist resources used by the EJB
         // with the transaction
@@ -3694,11 +3703,15 @@ public abstract class BaseContainer
         || prevStatus == Status.STATUS_NO_TRANSACTION ) {
             // First time the bean is running in this new client Tx
             EJBContextImpl context = (EJBContextImpl)inv.context;
-            context.setTransaction(clientTx);
+
+            //Must change this for singleton
+            if (! isSingleton) {
+                context.setTransaction(clientTx);
+            }
             try {
                 transactionManager.enlistComponentResources();
                 
-                if ( !isStatelessSession && !isMessageDriven) {
+                if ( !isStatelessSession && !isMessageDriven && !isSingleton) {
                     // Create a Synchronization object.
                     
                     // Not needed for stateless beans or message-driven beans
@@ -4087,7 +4100,9 @@ public abstract class BaseContainer
             // tx.resume etc.
             EJBContextImpl sc = (EJBContextImpl)inv.context;
             Transaction tx = transactionManager.getTransaction();
-            sc.setTransaction(tx);
+            if (! isSingleton) {
+                sc.setTransaction(tx);
+            }
             
             // Register Synchronization with TM so that we can
             // dissociate the context from tx in afterCompletion
