@@ -226,7 +226,11 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
     }
 
     public ServletRequest getRequest() {
-        return httpRequest.getRequest();
+        return getRequest(false);
+    }
+
+    public ServletRequest getRequest(boolean maskDefaultContextMapping) {
+        return httpRequest.getRequest(maskDefaultContextMapping);
     }
 
     public Response getResponse() {
