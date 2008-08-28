@@ -58,6 +58,7 @@ import java.util.Enumeration;
 import java.util.logging.*; 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.internal.api.Globals;
 /**
  * This class is a wrapper around the default jdk policy file 
  * implementation. BasePolicyWrapper is installed as the JRE policy object
@@ -74,6 +75,10 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  */
 public class BasePolicyWrapper extends java.security.Policy {
 
+    private static final String FACTORY_NAME = 
+	"javax.security.jacc.PolicyConfigurationFactory.provider";
+    private static final String myFactoryName = 
+            "com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl";
     // this is the jdk policy file instance
     private java.security.Policy policy = null;
    
@@ -134,6 +139,7 @@ public class BasePolicyWrapper extends java.security.Policy {
 
     // if not available in the habitat, delegate to JDK's system-wide factory
     private PolicyConfigurationFactoryImpl pcf= null;
+    private boolean isMyPolicyFactory = true;
     
     /** Creates a new instance of BasePolicyWrapper */
     public BasePolicyWrapper() {
@@ -142,6 +148,8 @@ public class BasePolicyWrapper extends java.security.Policy {
 	refreshTime = 0L;
 	// call the following routine to compute the actual refreshTime
 	defaultContextChanged();
+        String policyFactoryName = System.getProperty(FACTORY_NAME);
+        isMyPolicyFactory = myFactoryName.equals(policyFactoryName) ? true : false;
         pcf = getPolicyFactory();
         
     }
@@ -633,24 +641,30 @@ public class BasePolicyWrapper extends java.security.Policy {
     // obtains PolicyConfigurationFactory once for class
     // if not available in the habitat, delegate to JDK's system-wide factory
     private PolicyConfigurationFactoryImpl getPolicyFactory() {
-        //using this might violate the JACC contract
-        //pcf = Globals.get(PolicyConfigurationFactory.class);
-        PolicyConfigurationFactory pcfimpl=null;
-        try {
-            pcfimpl = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-            if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
-                throw new PolicyContextException(
-                        "Wrong PolicyConfigurationFactory class, " + 
-                        pcfimpl.getClass().getName() + ", Expected " +
-                        PolicyConfigurationFactoryImpl.class.getName());
+        if (!this.isMyPolicyFactory) {
+            //using this might violate the JACC contract
+            //But this occurs when someone is trying to explicitly create our Factory
+            //to use it as a Delegate. In this case we cannot call PolicyConfigurationFactory API
+            pcf = Globals.get(PolicyConfigurationFactoryImpl.class);
+            return pcf;
+        } else {
+            PolicyConfigurationFactory pcfimpl = null;
+            try {
+                pcfimpl = PolicyConfigurationFactory.getPolicyConfigurationFactory();
+                if (!(pcfimpl instanceof PolicyConfigurationFactoryImpl)) {
+                    throw new PolicyContextException(
+                            "Wrong PolicyConfigurationFactory class, " +
+                            pcfimpl.getClass().getName() + ", Expected " +
+                            PolicyConfigurationFactoryImpl.class.getName());
+                }
+                return (PolicyConfigurationFactoryImpl) pcfimpl;
+            } catch (ClassNotFoundException cnfe) {
+                logger.severe("jaccfactory.notfound");
+                throw new RuntimeException(cnfe);
+            } catch (PolicyContextException pce) {
+                logger.severe("jaccfactory.notfound");
+                throw new RuntimeException(pce);
             }
-            return (PolicyConfigurationFactoryImpl)pcfimpl;
-        } catch (ClassNotFoundException cnfe) {
-            logger.severe("jaccfactory.notfound");
-            throw new RuntimeException(cnfe);
-        } catch (PolicyContextException pce) {
-            logger.severe("jaccfactory.notfound");
-            throw new RuntimeException(pce);
         }
     }
 }

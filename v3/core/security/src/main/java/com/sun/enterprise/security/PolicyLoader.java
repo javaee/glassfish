@@ -44,7 +44,6 @@ import com.sun.enterprise.config.serverbeans.JaccProvider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.List;
 import org.jvnet.hk2.annotations.Inject;
@@ -65,7 +64,7 @@ public class PolicyLoader{
     
     @Inject 
     private SecurityService securityService;
-
+    
     @Inject
     private JaccProvider[] jaccProviders;
      
@@ -142,8 +141,10 @@ public class PolicyLoader{
             try {
                 _logger.log(Level.INFO, "policy.loading", javaPolicy);
                 
-                Object obj = Class.forName(javaPolicy).newInstance();
-
+                //Object obj = Class.forName(javaPolicy).newInstance();
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                Class javaPolicyClass = loader.loadClass(javaPolicy);
+                Object obj = javaPolicyClass.newInstance();
                 if (j2ee13) {
                     // Use JDK 1.3 classes if j2ee13 property being used
                     if (!(obj instanceof javax.security.auth.Policy)) {
@@ -173,7 +174,6 @@ public class PolicyLoader{
                             e.getMessage());
                 throw new RuntimeException(e);
             }
-
             // Success.
             _logger.fine("Policy set to: " + javaPolicy);
             isPolicyInstalled = true;

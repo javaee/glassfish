@@ -81,8 +81,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     //@Inject 
     //private RealmConfig realmConfig;
     
-    @Inject 
-    private PolicyLoader policyLoader;
+//    @Inject 
+//    private PolicyLoader policyLoader;
     
     @Inject
     private SecurityServicesUtil secServUtil;
@@ -149,7 +149,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //registerPolicyHandlers();
             //V3:Commented PolicyLoader policyLoader = PolicyLoader.getInstance();
             //TODO:V3 check if the above singleton was a better way
-            assert(policyLoader != null);
+//            assert(policyLoader != null);
             //policyLoader.loadPolicy();
             // create realms rather than creating RemoteObject RealmManager
             // which will init ORB prematurely

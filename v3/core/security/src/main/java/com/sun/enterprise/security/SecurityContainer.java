@@ -33,6 +33,7 @@ import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.container.Container;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -45,8 +46,8 @@ import org.jvnet.hk2.component.Habitat;
 @Service(name="com.sun.enterprise.security.SecurityContainer")
 public class SecurityContainer implements Container, PostConstruct{
 
-    @Inject 
-    private PolicyLoader policyLoader;
+//    @Inject 
+//    private PolicyLoader policyLoader;
     @Inject
     private ServerContext serverContext;
 
@@ -85,7 +86,16 @@ public class SecurityContainer implements Container, PostConstruct{
     }
     private void generatePolicy(WebBundleDescriptor wbd) {
         String name = null;
+        ClassLoader oldTcc = Thread.currentThread().getContextClassLoader();
         try {
+            //TODO: workaround here. Once fixed in V3 we should be able to use
+            //Context ClassLoader instead.
+            ClassLoaderHierarchy hierarchy =
+                            habitat.getComponent(ClassLoaderHierarchy.class);
+            ClassLoader tcc = hierarchy.getCommonClassLoader();
+            Thread.currentThread().setContextClassLoader(tcc);
+            
+            PolicyLoader policyLoader = habitat.getComponent(PolicyLoader.class);
             policyLoader.loadPolicy();
             
             WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
@@ -100,6 +110,8 @@ public class SecurityContainer implements Container, PostConstruct{
         } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + name;
             throw new RuntimeException(msg, se);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldTcc);
         }
     }
     
@@ -129,4 +141,3 @@ public class SecurityContainer implements Container, PostConstruct{
         }
     }
 }
-
