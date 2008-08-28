@@ -314,12 +314,11 @@ public class SSLHandlers {
                                 serverName,
                                 options);
                         httpConfig.setEnabled( "" + GuiUtil.getBooleanValue(props, "enabled"));
-                        httpConfig.setSecurityEnabled((String)props.get( "securityEnabled"));
+                        httpConfig.setSecurityEnabled( "" + GuiUtil.getBooleanValue(props, "securityEnabled"));
+                        httpConfig.setXpoweredBy( "" + GuiUtil.getBooleanValue(props, "xpowered-by"));
+                        httpConfig.setBlockingEnabled( "" + GuiUtil.getBooleanValue(props, "blocking-enabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));
-                        httpConfig.setXpoweredBy((String)props.get( "xpowered-by"));
-                        httpConfig.setBlockingEnabled((String)props.get( "blocking-enabled"));
-                        
                         VirtualServerConfig vsConfig= config.getHTTPServiceConfig().getVirtualServerConfigMap().get(vs);
                         String listeners = vsConfig.getHTTPListeners();
                         if (GuiUtil.isEmpty(listeners))
