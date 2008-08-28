@@ -600,6 +600,10 @@ public class Request
                 facade.clear();
                 facade = null;
             }
+            if (defaultContextMaskingFacade != null) {
+                defaultContextMaskingFacade.clear();
+                defaultContextMaskingFacade = null;
+            }
             if (inputStream != null) {
                 inputStream.clear();
                 inputStream = null;
@@ -779,15 +783,46 @@ public class Request
      */
     protected RequestFacade facade = null;
 
+
+     /**
+     * Request facade that masks the fact that a request received
+     * at the root context was mapped to a default-web-module (if such a
+     * mapping exists).
+     * For example, its getContextPath() will return "/" rather than the
+     * context root of the default-web-module.
+     */
+    protected RequestFacade defaultContextMaskingFacade = null;
+
+
     /**
-     * Return the <code>ServletRequest</code> for which this object
-     * is the facade.  This method must be implemented by a subclass.
+     * Gets the <code>ServletRequest</code> for which this object
+     * is the facade. This method must be implemented by a subclass.
      */
     public HttpServletRequest getRequest() {
-        if (facade == null) {
-            facade = new RequestFacade(this);
-        } 
-        return (facade);
+        return getRequest(false);
+    }
+
+
+    /**
+     * Gets the <code>ServletRequest</code> for which this object
+     * is the facade. This method must be implemented by a subclass.
+     *
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public HttpServletRequest getRequest(boolean maskDefaultContextMapping) {
+        if (!maskDefaultContextMapping || !isDefaultContext) {
+            if (facade == null) {
+                facade = new RequestFacade(this);
+            } 
+            return facade;
+        } else {
+            if (defaultContextMaskingFacade == null) {
+                defaultContextMaskingFacade = new RequestFacade(this, true);
+            }
+            return defaultContextMaskingFacade;
+        }
     }
 
 
@@ -2102,15 +2137,23 @@ public class Request
      * @return the URL decoded request URI
      */
     public String getDecodedRequestURI() {
-        String ret = null;
+        return getDecodedRequestURI(false);
+    }
 
-        if (isDefaultContext) {
-            ret = getContextPath() + coyoteRequest.decodedURI().toString();
+
+    /**
+     * Gets the decoded request URI.
+     *
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public String getDecodedRequestURI(boolean maskDefaultContextMapping) {
+        if (maskDefaultContextMapping || !isDefaultContext) {
+            return coyoteRequest.decodedURI().toString();
         } else {
-            ret = coyoteRequest.decodedURI().toString();
+            return getContextPath() + coyoteRequest.decodedURI().toString();
         }
-
-        return ret;
     }
 
 
@@ -2181,7 +2224,24 @@ public class Request
      * of the Request.
      */
     public String getContextPath() {
-        return (mappingData.contextPath.toString());
+        return getContextPath(false);
+    }
+
+
+    /**
+     * Gets the portion of the request URI used to select the Context
+     * of the Request.
+     *
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public String getContextPath(boolean maskDefaultContextMapping) {
+        if (isDefaultContext && maskDefaultContextMapping) {
+            return "";
+        } else {
+            return mappingData.contextPath.toString();
+        }
     }
 
 
@@ -2396,21 +2456,35 @@ public class Request
      * Return the request URI for this request.
      */
     public String getRequestURI() {
+        return getRequestURI(false);
+    }
 
-        if (requestURI == null) {
-            // START GlassFish 1024
-            if (isDefaultContext) {
-                requestURI = getContextPath()
-                    + coyoteRequest.requestURI().toString();
-            } else {
-                // END GlassFish 1024
-                requestURI = coyoteRequest.requestURI().toString();
+
+    /**
+     * Gets the request URI for this request.
+     *
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public String getRequestURI(boolean maskDefaultContextMapping) {
+        if (maskDefaultContextMapping) {
+            return coyoteRequest.requestURI().toString();
+        } else {
+            if (requestURI == null) {
                 // START GlassFish 1024
+                if (isDefaultContext) {
+                    requestURI = getContextPath() +
+                        coyoteRequest.requestURI().toString();
+                } else {
+                    // END GlassFish 1024
+                    requestURI = coyoteRequest.requestURI().toString();
+                    // START GlassFish 1024
+                }
+                // END GlassFish 1024
             }
-            // END GlassFish 1024
+            return requestURI;
         }
-
-        return requestURI;
     }
 
 
@@ -2431,7 +2505,11 @@ public class Request
      *  reconstructed URL
      */
     public StringBuffer getRequestURL() {
+        return getRequestURL(false);
+    }
 
+
+    public StringBuffer getRequestURL(boolean maskDefaultContextMapping) {
         StringBuffer url = new StringBuffer();
         String scheme = getScheme();
         int port = getServerPort();
@@ -2446,7 +2524,7 @@ public class Request
             url.append(':');
             url.append(port);
         }
-        url.append(getRequestURI());
+        url.append(getRequestURI(maskDefaultContextMapping));
 
         return (url);
 

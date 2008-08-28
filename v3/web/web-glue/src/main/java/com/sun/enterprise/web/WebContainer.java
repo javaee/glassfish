@@ -2254,7 +2254,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     Mapper mapper = conn.getMapper();
                     try {
                         mapper.setDefaultContextPath(virtualServer.getName(),
-                                defaultContextPath);
+                                                     defaultContextPath);
+                        virtualServer.setDefaultContextPath(defaultContextPath);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
                     }
@@ -2263,6 +2264,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Utility Method to access the ServerContext
      */
@@ -2270,9 +2272,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return _serverContext;
     }
 
+
     ServerConfigLookup getServerConfigLookup() {
         return serverConfigLookup;
     }
+
 
     /**
      * @return The work root directory of all webapps bundled in EAR Files

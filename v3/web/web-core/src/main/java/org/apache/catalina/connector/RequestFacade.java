@@ -255,9 +255,22 @@ public class RequestFacade
      * @param request The request to be wrapped
      */
     public RequestFacade(Request request) {
+        this(request, false);
+    }
 
+
+    /**
+     * Construct a wrapper for the specified request.
+     *
+     * @param request The request to be wrapped
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public RequestFacade(Request request,
+                         boolean maskDefaultContextMapping) {
         this.request = request;
-
+        this.maskDefaultContextMapping = maskDefaultContextMapping;
     }
 
 
@@ -280,6 +293,18 @@ public class RequestFacade
      */
     protected Request request = null;
 
+
+    /*
+     * True if the fact that a request received at the root context was
+     * mapped to a default-web-module will be masked, false otherwise.
+     *
+     * For example, if set to true, this request facade's getContextPath()
+     * method will return "/", rather than the context root of the
+     * default-web-module, for requests received at the root context that
+     * were mapped to a default-web-module.
+     */
+    private boolean maskDefaultContextMapping = false;
+ 
 
     // --------------------------------------------------------- Public Methods
    
@@ -779,7 +804,7 @@ public class RequestFacade
                             sm.getString("requestFacade.nullRequest"));
         }
 
-        return request.getContextPath();
+        return request.getContextPath(maskDefaultContextMapping);
     }
 
 
@@ -845,7 +870,7 @@ public class RequestFacade
                             sm.getString("requestFacade.nullRequest"));
         }
 
-        return request.getRequestURI();
+        return request.getRequestURI(maskDefaultContextMapping);
     }
 
 
@@ -856,7 +881,7 @@ public class RequestFacade
                             sm.getString("requestFacade.nullRequest"));
         }
 
-        return request.getRequestURL();
+        return request.getRequestURL(maskDefaultContextMapping);
     }
 
 

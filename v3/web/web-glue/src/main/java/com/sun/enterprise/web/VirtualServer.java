@@ -55,6 +55,7 @@ import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -224,6 +225,9 @@ public class VirtualServer extends StandardHost {
     private String ssoCookieSecure = null;
 
 
+    private String defaultContextPath = null;
+
+
     // ------------------------------------------------------------- Properties
 
     /**
@@ -391,6 +395,21 @@ public class VirtualServer extends StandardHost {
      */
     public String getInfo() {
         return _info;
+    }
+
+
+    public void setDefaultContextPath(String defaultContextPath) {
+        this.defaultContextPath = defaultContextPath;
+    }
+
+
+    @Override
+    public Container findChild(String contextRoot) {
+        if (defaultContextPath != null && "/".equals(contextRoot)) {
+            return super.findChild(defaultContextPath);
+        } else {
+            return super.findChild(contextRoot);
+        }
     }
 
 

@@ -299,7 +299,16 @@ final class StandardWrapperValve
         StandardWrapper wrapper = (StandardWrapper) getContainer();
         HttpRequest hrequest = (HttpRequest) request;
         Servlet servlet = null;
-        HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
+        /*
+         * Create a request facade such that if the request was received
+         * at the root context, and the root context is mapped to a
+         * default-web-module, the default-web-module mapping is masked from
+         * the application code to which the request facade is being passed.
+         * For example, the request.facade's getContextPath() method will 
+         * return "/", rather than the context root of the default-web-module,
+         * in this case.
+         */
+        HttpServletRequest hreq = (HttpServletRequest) request.getRequest(true);
         HttpServletResponse hres =
             (HttpServletResponse) response.getResponse();
 

@@ -183,6 +183,10 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
         return (this);
     }
 
+    public ServletRequest getRequest(boolean maskDefaultContextMapping) {
+        return getRequest();
+    }
+
     public String getDecodedRequestURI() {
         return decodedURI;
     }

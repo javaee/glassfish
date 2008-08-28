@@ -174,6 +174,17 @@ public interface Request {
 
 
     /**
+     * Return the <code>ServletRequest</code> for which this object
+     * is the facade.
+     *
+     * @param maskDefaultContextMapping true if the fact that a request
+     * received at the root context was mapped to a default-web-module will
+     * be masked, false otherwise
+     */
+    public ServletRequest getRequest(boolean maskDefaultContextMapping);
+
+
+    /**
      * Return the Response with which this Request is associated.
      */
     public Response getResponse();
