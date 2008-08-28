@@ -356,7 +356,7 @@ public class WebServicesDeployer extends WebDeployer {
             }
         }
 
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, null );
+        return new MetaData(false, null, null );
     }
     private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
