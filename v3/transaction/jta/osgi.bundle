@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.transaction
+-exportcontents: com.sun.enterprise.transaction; password="GlassFish"; mandatory:=password

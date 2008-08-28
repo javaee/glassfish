@@ -1,19 +1,8 @@
--exportcontents: \
-                        com.sun.enterprise.transaction.jts, \
-                        com.sun.enterprise.transaction.jts.api, \
-                        com.sun.jts.codegen.jtsxa, \
-                        com.sun.jts.codegen.otsidl, \
-                        com.sun.jts.CosTransactions, \
-                        com.sun.jts.jta, \
-                        com.sun.jts.jtsxa, \
-                        com.sun.jts.pi, \
-                        com.sun.jts.trace, \
-                        com.sun.jts.utils, \
-                        com.sun.jts.utils.RecoveryHooks
-
+-exportcontents: 
 Import-Package: \
                         com.sun.corba.ee.spi.oa.rfm;resolution:=optional, \
                         com.sun.corba.ee.impl.txpoa;resolution:=optional, \
                         com.sun.corba.ee.spi.presentation.rmi;resolution:=optional, \
+                        com.sun.enterprise.transaction;password=GlassFish, \
                         *
 
