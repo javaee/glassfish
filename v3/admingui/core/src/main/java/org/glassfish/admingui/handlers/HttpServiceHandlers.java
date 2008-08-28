@@ -917,7 +917,7 @@ public class HttpServiceHandlers {
                     oneRow.put("name", name);
                     oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(name, selectedList): false);
                     HTTPListenerConfig httpConfig = (HTTPListenerConfig)configE; 
-                    String enabled = httpConfig.getEnabled();
+                    String enabled = ""+httpConfig.getEnabled();
                     String ntwkAddress = httpConfig.getAddress();
                     String listPort = httpConfig.getPort();
                     String virtualServer = httpConfig.getDefaultVirtualServer();
@@ -1026,12 +1026,14 @@ public class HttpServiceHandlers {
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", new HashMap());
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("sslProps", null);
                     //we can hard coded "server-config" here since we only want to get some default valus.
-                    Map<String, String> httpAttrMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_LISTENER_CONFIG);
-                    handlerCtx.setOutputValue("Listener", httpAttrMap.get("enabled"));
-                    handlerCtx.setOutputValue("security", httpAttrMap.get("security-enabled"));
-                    handlerCtx.setOutputValue("Acceptor", httpAttrMap.get("acceptor-threads"));
-                    handlerCtx.setOutputValue("PoweredBy", httpAttrMap.get("xpowered-by"));
-                    handlerCtx.setOutputValue("Blocking", httpAttrMap.get("blocking-enabled"));
+                    //Map<String, String> httpAttrMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_LISTENER_CONFIG, true);
+                    HTTPListenerConfig hc = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("http-listener-1");
+                    handlerCtx.setOutputValue("Listener", hc.getDefaultValue("enabled"));
+                    handlerCtx.setOutputValue("security", hc.getDefaultValue("security-enabled"));
+                    handlerCtx.setOutputValue("Acceptor", hc.getDefaultValue("acceptor-threads"));
+                    String xx = hc.getDefaultValue("AcceptorThreads");
+                    handlerCtx.setOutputValue("PoweredBy", hc.getDefaultValue("xpowered-by"));
+                    handlerCtx.setOutputValue("Blocking", hc.getDefaultValue("blocking-enabled"));
                 }else{
                     Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
                     handlerCtx.setOutputValue("Listener", props.get("enabled"));
@@ -1213,6 +1215,7 @@ public class HttpServiceHandlers {
             ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
             Iterator<String> iter = config.getHTTPServiceConfig().getVirtualServerConfigMap().keySet().iterator();
             List options = new ArrayList();
+            options.add("");
             while(iter.hasNext()){
                     options.add( iter.next());
                 }
