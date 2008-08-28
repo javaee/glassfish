@@ -123,10 +123,10 @@
 </target>
 
 <target name="initprop" >
-	<property name="db.root" value="${glassfish.home}/javadb"/>
+	<property name="db.root" value="${derby.system.home}"/>
     <echo message="JavaDB Database Location: ${db.root}" />
     <path id="db.class.path">
-        <fileset dir="${glassfish.home}/javadb/lib">
+        <fileset dir="${derby.system.home}/lib">
             <include name="*.jar"/>
         </fileset>
     </path> 
