@@ -550,26 +550,28 @@ public class CLIRemoteCommand {
     }
     
     private void initializePassword(LoginInfo li) throws CommandException {
-        String pwfile = params.get("passwordfile");
 
+        if (commandName.equalsIgnoreCase("change-admin-password")) {
+            try {
+                password = getInteractiveOptionWithConfirmation();
+                base64encode(encodedPasswords);
+                return;
+            } catch (CommandValidationException cve) {
+                throw new CommandException(cve);
+            }
+        }
+        
+        String pwfile = params.get("passwordfile");
+        
         if (ok(pwfile)) {
             encodedPasswords = CLIUtil.readPasswordFileOptions(pwfile, true);
             password = encodedPasswords.get(CLIUtil.ENV_PREFIX + "PASSWORD");
             base64encode(encodedPasswords);
         }
-        if (!ok(password) && li != null) { //not in passwordfile and in .asadminpass
+        
+        if (!ok(password) && li != null) { // not in passwordfile and in .asadminpass
             password = li.getPassword();
-        }        
-        if (!ok(password)) {
-            if (commandName.equalsIgnoreCase("change-admin-password")) {
-                try {
-                    password = getInteractiveOptionWithConfirmation();
-                    base64encode(encodedPasswords);
-                } catch (CommandValidationException cve) {
-                    throw new CommandException(cve);
-                }
-            }
-        }
+        }                
     }
     
     private String getInteractiveOptionWithConfirmation() 
