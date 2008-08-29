@@ -58,7 +58,7 @@ public class StartDomainCommand extends AbstractCommand {
             info.setDebug(getBooleanOption("debug"));
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml parsed
-            // independently of launching. This is a performance optimization.
+            // once. This is a performance optimization.
             // km@dev.java.net (Aug 2008)
             if(isServerAlive(info.getAdminPorts())) {
                 String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName()});
@@ -69,8 +69,10 @@ public class StartDomainCommand extends AbstractCommand {
             
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
             // since it already ran and is now dead!!
-            if(!verbose)
+            if(!verbose) {
                 waitForDAS(info.getAdminPorts());
+                report(info);
+            }
         }
         catch(GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
@@ -138,6 +140,25 @@ public class StartDomainCommand extends AbstractCommand {
     }
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
+    }
+    
+    private void report(GFLauncherInfo info) {
+        CLILogger lg = CLILogger.getInstance();
+        try {
+            lg.pushAndLockLevel(Level.INFO);
+            String msg = getLocalizedString("DomainLocation", new String[]{info.getDomainName(), info.getDomainRootDir().getAbsolutePath()});
+            lg.printMessage(msg);
+            Integer ap = -1;
+            try {
+                ap = info.getAdminPorts().toArray(new Integer[0])[0];
+            } catch(Exception e) {
+                //ignore
+            }
+            msg = getLocalizedString("DomainAdminPort", new String[]{"" + ap});
+            lg.printMessage(msg);
+        } finally {
+            lg.popAndUnlockLevel();
+        }
     }
     private static final long WAIT_FOR_DAS_TIME_MS = 90000;
     private GFLauncherInfo info;
