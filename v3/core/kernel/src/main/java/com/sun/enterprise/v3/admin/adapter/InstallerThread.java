@@ -217,7 +217,7 @@ System.out.println("!!!!!!!  cannot create Image");
 	String warFileName = AdminConsoleAdapter.ADMIN_APP_WAR;
         String installRoot = System.getProperty("com.sun.aas.installRoot");
         System.out.println("!!!!!!!!!  com.sun.aas.installRoot=" +  installRoot);
-	return new File(installRoot+"/lib/install/applications/" + warFileName);
+	return new File(installRoot + warFileName);
     }
     
     /**

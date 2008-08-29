@@ -148,8 +148,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     static final String ADMIN_APP_NAME           = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
     
     //ADMIN_APP_WAR is not related to ADMIN_APP_NAME at all.  This is the war file name that is installed through the IPS package.
-    //This needs to match the tofile attribute of the <copy> command in v3/packager-new/glassfish-gui/build.xml
-    static final String ADMIN_APP_WAR            = "admingui.war"; 
+    //The war file name, admingui.war,  needs to match the tofile attribute of the <copy> command in v3/packager-new/glassfish-gui/build.xml
+    static final String ADMIN_APP_WAR            = "/lib/install/applications/admingui.war"; 
     
     public AdminConsoleAdapter() throws IOException {
 	initHtml   = Utils.packageResource2String("downloadgui.html");
@@ -328,7 +328,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    state = AdapterState.APPLICATION_NOT_INSTALLED; //back to square 1
 	} else { //first-timer
 	    state = AdapterState.APPLICATION_NOT_INSTALLED; //hasn't started yet
-	    sendConsentPage(req, res);
+            // FIXME: Need to check for updated admingui.war
+            if (warFileExist()){
+                state = AdapterState.INSTALLING;
+                startThread();
+                sendStatusPage(res);
+            }else {
+                sendConsentPage(req, res);
+            }
 	}
     }
 
@@ -439,6 +446,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	// do nothing
 	statusHtml = null;
 	initHtml   = null;
+    }
+    
+    private boolean warFileExist(){
+        File warFile = new File( System.getProperty("com.sun.aas.installRoot") + ADMIN_APP_WAR);
+        return warFile.exists();
     }
 
     private void logFine(String s) {
