@@ -64,8 +64,7 @@
     	<Option name="filter" type="string" value-required="true"/>
     </Options>
     <Commands>
-	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?"
-             usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
 	    <ValidOption name="verbose"/>
             <ValidOption name="domaindir"/>
             <ValidOption name="debug"/>
