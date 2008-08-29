@@ -610,7 +610,7 @@ public class HttpServiceHandlers {
         handlerCtx.setOutputValue("DNS", hp.getDNSLookupEnabled());
         handlerCtx.setOutputValue("SSL", hp.getSSLEnabled());   
         handlerCtx.setOutputValue("Forced", hp.getForcedType());    
-        handlerCtx.setOutputValue("Default", hp.getDefaultResponseType());   
+        handlerCtx.setOutputValue("Default", hp.getDefaultType());
         
     }     
     
