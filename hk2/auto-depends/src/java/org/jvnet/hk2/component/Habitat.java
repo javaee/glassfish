@@ -181,6 +181,11 @@ public class Habitat {
             for (NamedInhabitant i : contracted) {
                 if ((i.name == null && name == null) ||
                         (i.name != null && i.name.equals(name))) {
+
+                    // remember to remove the components stored under its type
+                    if (byType.get(index).contains(i.inhabitant)) {
+                        byType.get(index).remove(i.inhabitant);
+                    }
                     return contracted.remove(i);
                 }
             }
@@ -199,6 +204,10 @@ public class Habitat {
              List<NamedInhabitant> contracted = byContract.get(index);
              for (NamedInhabitant i : contracted) {
                  if (i.inhabitant.get().equals(service)) {
+                    // remember to remove the components stored under its type
+                    if (byType.get(index).contains(i.inhabitant)) {
+                        byType.get(index).remove(i.inhabitant);
+                    }                     
                      return contracted.remove(i);
                  }
              }

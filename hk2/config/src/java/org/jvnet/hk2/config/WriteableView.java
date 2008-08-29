@@ -375,7 +375,7 @@ private class ProtectedList extends AbstractList {
                 listChanged = true;
             }
         }
-        
+
         return listChanged;
     }
 
