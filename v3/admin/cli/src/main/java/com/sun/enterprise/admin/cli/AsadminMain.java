@@ -48,10 +48,7 @@ public class AsadminMain {
         int exitCode = ERROR;
 
         if(args.length <= 0) {
-             String msg = "Usage: asadmin <command-name> [options]\n" + 
-                          "Multimode is not available.\n" +
-                          "Start the server using \"asadmin start-domain\" or \"startserv\" script\n" +
-                          "and run \"asadmin list-commands\" to get a complete list of commands.";
+             String msg = strings.get("AsadminUsageMessage");
              System.out.println(msg);
              System.exit(0);
         }
