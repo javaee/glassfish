@@ -169,6 +169,28 @@ public class AppTest extends TestCase {
             assert (false);
         }
     }
+
+    public void testWrongUTXBegin() {
+        System.out.println("**Testing Wrong UTX begin ===>");
+        try {
+            UserTransaction utx = createUtx();
+            utx.begin();
+            System.out.println("**Calling TWICE UTX begin ===>");
+            utx.begin();
+            System.out.println("**WRONG: TWICE UTX begin successful <===");
+            assert (false);
+        } catch (NotSupportedException ne) {
+            System.out.println("**Caught NotSupportedException <===");
+            assert (true);
+        } catch (SystemException ne) {
+            System.out.println("**Caught SystemException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     public void testBegin() {
         System.out.println("**Testing TM begin ===>");
         try {

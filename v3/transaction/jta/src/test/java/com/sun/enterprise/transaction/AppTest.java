@@ -158,34 +158,21 @@ public class AppTest extends TestCase {
         }
     }
 
-    public void testWrongUTXAccess() {
-        System.out.println("**Testing Wrong UTX calls ===>");
+    public void testWrongUTXBegin() {
+        System.out.println("**Testing Wrong UTX begin ===>");
         try {
             UserTransaction utx = createUtx();
-            try {
-                System.out.println("**Calling TWICE UTX begin ===>");
-                utx.begin();
-                utx.begin();
-                System.out.println("**WRONG: TWICE UTX begin successful <===");
-                assert (false);
-            } catch (NotSupportedException ne) {
-                System.out.println("**OK: Caught NotSupportedException **");
-            } catch (SystemException ne) {
-                System.out.println("**OK: Caught SystemException **");
-            }
-/**
-            try {
-                System.out.println("**Calling UTX setRollbackOnly ===>");
-                utx.setRollbackOnly();
-                System.out.println("**WRONG: UTX setRollbackOnly successful <===");
-                assert (false);
-            } catch (IllegalStateException ne) {
-                System.out.println("**OK: Caught NotSupportedException **");
-            } catch (SystemException ne) {
-                System.out.println("**OK: Caught SystemException **");
-            }
-**/
-
+            System.out.println("**Calling TWICE UTX begin ===>");
+            utx.begin();
+            utx.begin();
+            System.out.println("**WRONG: TWICE UTX begin successful <===");
+            assert (false);
+        } catch (NotSupportedException ne) {
+            System.out.println("**Caught NotSupportedException <===");
+            assert (true);
+        } catch (SystemException ne) {
+            System.out.println("**Caught SystemException <===");
+            assert (true);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
