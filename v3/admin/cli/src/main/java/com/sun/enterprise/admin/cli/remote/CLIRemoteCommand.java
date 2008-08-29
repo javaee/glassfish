@@ -49,6 +49,7 @@ import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import java.util.logging.Level;
 import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.util.net.NetUtils;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -162,6 +163,19 @@ public class CLIRemoteCommand {
             }
         } catch (CommandException e) {
             throw e;
+        } catch(SocketException se) {
+            try {
+                boolean serverAppearsSecure = 
+                        NetUtils.isSecurePort(hostName, hostPort);
+                if (serverAppearsSecure != secure) {
+                    String msg = strings.get("ServerMaybeSecure", hostName, hostPort);
+                    logger.printError(msg);
+                    throw new CommandException(se);
+                }
+            } catch(IOException io) {
+                io.printStackTrace();
+                throw new CommandException(io);
+            }
         }
         catch (Exception e) {
             logger.printExceptionStackTrace(e);
