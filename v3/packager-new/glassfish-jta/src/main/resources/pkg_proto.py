@@ -43,7 +43,7 @@ pkg = {
     "name"          : "glassfish-jta",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jta",
+                        "description" : "GlassFish Local Transaction Support",
                         "description_long" : conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },

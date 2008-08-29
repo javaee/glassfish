@@ -43,7 +43,7 @@ pkg = {
     "name"          : "glassfish-jts",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "GlassFish Java Transaction Service Package",
+                        "description" : "GlassFish XA Transaction Support",
                         "description_long" : conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
