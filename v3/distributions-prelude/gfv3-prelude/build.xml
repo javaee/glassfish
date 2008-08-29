@@ -28,23 +28,31 @@ own identifying information: Portions Copyright [yyyy]
                 <exclude name="nucleus-base*.zip"/>
             </fileset>
         </unzip>
-        <unzip dest="target/stage/glassfishv3-prelude">
+        <!-- unzip dest="target/stage/glassfishv3-prelude">
             <fileset dir="target/stage">
                 <include name="nucleus-base*.zip"/>
             </fileset>
             <patternset>
                 <include name="**/domains/**"/>
             </patternset>
-        </unzip>
+        </unzip -->
         <delete dir="target/stage" includes="*.zip"/>
 
         <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
         <chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+
+        <!-- create domain -->
+        <!-- ant antfile="../distributions.xml" target="create-domain">
+            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
+            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
+        </ant -->
+         
+        <!-- create distribution zip-->
         <exec dir="target/stage" executable="zip">
             <arg line= "-r ../gfv3-prelude.zip glassfishv3-prelude"/>
         </exec>
 
-        <!-- Deploy distribution artifact to maven repository" -->
+        <!-- deploy distribution artifact to maven repository" -->
         <attachArtifact file="target/gfv3-prelude.zip"/>
    </target>
 </project>

@@ -28,16 +28,22 @@ own identifying information: Portions Copyright [yyyy]
                 <exclude name="nucleus-base*.zip"/>
                 <exclude name="ucbootstrap*.zip"/>
                 <exclude name="pkg-java*.zip"/>
+                <exclude name="cli-optional*.zip"/>
+                <exclude name="server-mgmt*.zip"/>
+                <exclude name="admin-util*.zip"/>
+                <exclude name="realms*.zip"/>
+                <exclude name="backup*.zip"/>
+                <exclude name="amx-api*.zip"/>
             </fileset>
         </unzip>
-        <unzip dest="target/stage/glassfishv3-prelude">
+        <!-- unzip dest="target/stage/glassfishv3-prelude">
             <fileset dir="target/stage">
                 <include name="nucleus-base*.zip"/>
             </fileset>
             <patternset>
                 <include name="**/domains/**"/>
             </patternset>
-        </unzip>
+        </unzip -->
         <mkdir dir="../target"/>
         <copy todir="../target">
             <fileset dir="target/stage">
@@ -58,6 +64,24 @@ own identifying information: Portions Copyright [yyyy]
 
         <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
         <chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+
+        <!-- get modules required to create default domain --> 
+        <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
+            <property name="modules.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/modules"/>
+        </ant>
+
+        <!-- create domain -->
+        <ant antfile="../distributions.xml" target="create-domain">
+            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
+            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
+        </ant>
+
+        <!-- delete modules required to create default domain; these are not bundled as part of nucleus --> 
+        <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
+            <property name="modules.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/modules"/>
+        </ant>
+
+        <!-- create distribution zip -->
         <exec dir="target/stage" executable="zip">
             <arg line= "-r ../gfv3-nucleus.zip glassfishv3-prelude"/>
         </exec>

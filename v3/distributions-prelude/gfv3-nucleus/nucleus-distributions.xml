@@ -41,14 +41,36 @@ own identifying information: Portions Copyright [yyyy]
 
     <!-- copy domains -->
     <!-- unzip dest="${image.dir}" -->
-    <unzip dest="target/local_image/glassfish/glassfishv3-prelude">
+    <!-- unzip dest="target/local_image/glassfish/glassfishv3-prelude">
         <fileset dir="../target">
             <include name="nucleus-base*.zip"/>
         </fileset>
         <patternset>
             <include name="**/domains/**"/>
         </patternset>
-    </unzip>
+    </unzip -->
+
+
+    <!-- get modules required to create default domain -->
+    <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/modules"/>
+    </ant>
+
+    <!-- create domain -->
+    <echo message="------------------------"/>
+    <echo message="image.dir: ${image.dir}"/>
+    <echo message="user.dir: ${user.dir}"/>
+    <echo message="basedir: ${basedir}"/>
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin/asadmin"/>
+    </ant>
+
+    <!-- delete modules required to create default domain; these are not bundled as part of nucleus -->
+    <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/modules"/>
+    </ant>
+
 
     <!-- delete dir="target" includes="*.zip"/ -->
 </target>
@@ -84,6 +106,7 @@ own identifying information: Portions Copyright [yyyy]
         <property name="package.name" value="pkg-java"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
+
     <delete
         file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
 

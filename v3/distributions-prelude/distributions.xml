@@ -155,4 +155,54 @@ ssl_key = None]]>
             value="origin-for-darwin-universal = ${repo.host}/dev/mac/v3prelude/"/>
     </replace>
 </target>
+
+<!-- Create Domain -->
+<target name="create-domain"
+    description="Create default domain- domain1">
+    <echo message="Directory to run command from: ${exec.dir}"/>
+    <echo message="Command to run: ${exec.executable}"/>
+    <!-- exec dir="${exec.dir}" executable="${exec.executable}" failonerror="true" -->
+    <exec dir="${exec.dir}" executable="${exec.executable}">
+        <arg line= "create-domain --savelogin=true --checkports=false --adminport 4848 --user anonymous --instanceport 8080 domain1"/>
+    </exec>
+</target>
+
+<!-- get artifacts required to create default domain -->
+<target name="fetch-domain-creation-artifacts">
+    <resolveArtifact artifactId="cli-optional" groupId="org.glassfish.admin" property="cli-optional.jar"/>
+    <resolveArtifact artifactId="server-mgmt" groupId="org.glassfish.admin" property="server-mgmt.jar"/>
+    <resolveArtifact artifactId="admin-util" groupId="org.glassfish.admin" property="admin-util.jar"/>
+    <resolveArtifact artifactId="realms" groupId="org.glassfish.security" property="realms.jar"/>
+    <resolveArtifact artifactId="backup" groupId="org.glassfish.admin" property="backup.jar"/>
+    <resolveArtifact artifactId="amx-api" groupId="org.glassfish.common" property="amx-api.jar"/>
+
+    <echo message="cli-optional jar: ${cli-optional.jar}"/>
+    <echo message="server-mgmt jar: ${server-mgmt.jar}"/>
+    <echo message="admin-util jar: ${admin-util.jar}"/>
+    <echo message="realms jar: ${realms.jar}"/>
+    <echo message="backup jar: ${backup.jar}"/>
+    <echo message="amx-api jar: ${amx-api.jar}"/>
+
+    <copy file="${cli-optional.jar}" todir="${modules.dir}"/>
+    <copy file="${server-mgmt.jar}" todir="${modules.dir}"/>
+    <copy file="${admin-util.jar}" todir="${modules.dir}"/>
+    <copy file="${realms.jar}" todir="${modules.dir}"/>
+    <copy file="${backup.jar}" todir="${modules.dir}"/>
+    <copy file="${amx-api.jar}" todir="${modules.dir}"/>
+</target>
+
+<!-- delete artifacts required to create default domain; these are not bundled as part of nucleus -->
+<target name="delete-domain-creation-artifacts">
+    <delete>
+        <fileset dir="${modules.dir}">
+            <include name="cli-optional*.jar"/>
+            <include name="server-mgmt*.jar"/>
+            <include name="admin-util*.jar"/>
+            <include name="realms*.jar"/>
+            <include name="backup*.jar"/>
+            <include name="amx-api*.jar"/>
+        </fileset>
+    </delete>
+</target>
+
 </project>
