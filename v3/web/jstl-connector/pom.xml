@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>${jstl-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

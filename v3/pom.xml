@@ -103,7 +103,9 @@
         <security-api.version>1.2-SNAPSHOT</security-api.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jsp-api.version>2.1</jsp-api.version>
-        <jstl-api.version>1.2-rev-1</jstl-api.version>
+        <el-impl.version>1.1</el-impl.version>
+        <jstl-impl.version>1.2</jstl-impl.version>
+        <jstl-api.version>1.2</jstl-api.version>
         <jsf-api.version>1.2_09</jsf-api.version>
         <jsf-impl.version>1.2_09</jsf-impl.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
