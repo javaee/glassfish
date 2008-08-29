@@ -76,8 +76,7 @@
      <das-config dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="true" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
        <property name="adminConsoleContextRoot" value="/admin"/>
        <property name="adminConsoleDownloadLocation" value="http://wiki.glassfish.java.net/attach/GlassFishV3AdminConsole/admingui-v3-express-b13.war"/>
-       <!-- change this to reflect the correct final download location -->
-       <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/lib/install/applications"/>
+       <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/.."/> 
    </admin-service>
    <web-container>
        <session-config>
@@ -108,6 +107,8 @@
     <auth-realm name="file" classname="com.sun.enterprise.security.auth.realm.file.FileRealm">
      <property name="file" value="${com.sun.aas.instanceRoot}/config/keyfile"/>
      <property name="jaas-context" value="fileRealm"/>
+    </auth-realm>
+    <auth-realm name="certificate" classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm">
     </auth-realm>
     <jacc-provider name="default" policy-provider="com.sun.enterprise.security.provider.PolicyWrapper" policy-configuration-factory-provider="com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl">
      <property name="repository" value="${com.sun.aas.instanceRoot}/generated/policy"/>
@@ -152,7 +153,7 @@
          </provider-config>
        </message-security-config> 
    </security-service>
-   <transaction-service automatic-recovery="false" timeout-in-seconds="0" tx-log-dir="${com.sun.aas.instanceRoot}/logs" heuristic-decision="rollback" keypoint-interval="65536" retry-timeout-in-seconds="600"/>
+   <transaction-service automatic-recovery="false" timeout-in-seconds="0" tx-log-dir="${com.sun.aas.instanceRoot}/logs" heuristic-decision="rollback" keypoint-interval="2048" retry-timeout-in-seconds="600"/>
     <monitoring-service>
 	<module-monitoring-levels thread-pool="OFF" orb="OFF" ejb-container="OFF" web-container="OFF" transaction-service="OFF" http-service="OFF" jdbc-connection-pool="OFF" connector-connection-pool="OFF" connector-service="OFF" jms-service="OFF" jvm="OFF"/>
     </monitoring-service>
@@ -179,6 +180,8 @@
         <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>
 
     </thread-pools>
+    <management-rules enabled="true">
+    </management-rules>
   </config> <!-- config model with name "%%%CONFIG_MODEL_NAME%%%" ends -->
  </configs>
  <property name="administrative.domain.name" value="%%%DOMAIN_NAME%%%"/>

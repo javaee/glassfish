@@ -56,14 +56,6 @@
   <!-- ============ Built In Context Init Parameter Definitions =========== -->
 
 
-  <!-- Init parameter to specify the InjectionProvider implementation   -->
-  <!-- the JSF implemenation will use.                                  -->
-
-  <context-param>
-      <param-name>com.sun.faces.injectionProvider</param-name>
-      <param-value>org.glassfish.faces.GlassFishInjectionProvider</param-value>
-  </context-param>
-     
   <!-- Init parameter to force the XML validation of JSF configuration  --> 
   <!-- ressources.                                                      -->
 
