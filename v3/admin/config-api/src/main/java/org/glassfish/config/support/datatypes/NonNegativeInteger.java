@@ -37,7 +37,7 @@ public class NonNegativeInteger implements DataType {
     }
     /*package*/
     static boolean isTokenized(String value) {
-        if (value != null && value.startsWith("{") && value.endsWith("}"))
+        if (value != null && value.startsWith("${") && value.endsWith("}"))
             return true;
         return false;
     }
