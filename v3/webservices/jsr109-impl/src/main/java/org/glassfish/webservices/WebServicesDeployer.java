@@ -341,7 +341,7 @@ public class WebServicesDeployer extends WebDeployer {
         String[] otherExportedPackages = new String[] {
                  "org.glassfish.webservices.jsr109-impl",
                  "org.glassfish.web.web-glue",
-                 "javax.xml.ws",
+                 "com.sun.xml.ws",
                  "javax.xml.bind"
 
                  };
@@ -605,12 +605,6 @@ public class WebServicesDeployer extends WebDeployer {
                                      String appLibDirPath, String moduleDir, Application app,DeploymentContext dc) throws DeploymentException {
         // First thing in the classpath is modules' classes directory
         String classpath = classesDir.getAbsolutePath();
-        /**
-         * Hack fix me
-         * TODO BM fix this just put in momentarily so apt could find
-         * javax.jws classes 
-         */
-        classpath+=(File.pathSeparator+"javax.javaee-10.0-SNAPSHOT.jar")  ;
 
         // Next add the Jar files in WEB-INF/lib, if any
         if(webinfLibDir != null) {

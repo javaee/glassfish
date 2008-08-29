@@ -38,6 +38,8 @@ package org.glassfish.webservices;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 import java.util.ArrayList;
 import java.lang.annotation.Annotation;
@@ -47,6 +49,7 @@ import java.lang.annotation.Annotation;
  * @author Bhakti Mehta
  */
 @Service(name="webservices")
+@Scoped(Singleton.class)
 public class WebServicesSniffer extends GenericSniffer {
 
     private static final Class[]  handledAnnotations = new Class[] {javax.jws.WebService.class,
