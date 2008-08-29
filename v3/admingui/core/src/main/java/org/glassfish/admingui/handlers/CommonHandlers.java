@@ -202,21 +202,26 @@ public class CommonHandlers {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-        String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
-
-        if((timeOut != null) && (!timeOut.equals(""))) {
-                try {
-                        int time = new Integer(timeOut).intValue();
-                        if (time == 0) {
-                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
-                        } else {
-                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(time*60);
-                        }
-                } catch (NumberFormatException nfe) {
-                        //We may never get here, in case...
-                                ((HttpServletRequest)request).getSession().setMaxInactiveInterval(-1);
+        
+        /* refer to issue# 5698 and issue# 3691
+         * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.
+         * In such a case, we catch and log the exception and assume it is set to 0.
+         * Otherwise GUI's main page can't come up.
+         */
+        try {
+            String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
+            if ((timeOut != null) && (!timeOut.equals(""))) {
+                int time = new Integer(timeOut).intValue();
+                if (time == 0) {
+                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
+                } else {
+                    ((HttpServletRequest) request).getSession().setMaxInactiveInterval(time * 60);
                 }
-        } 
+            }
+        } catch (Exception nfe) {
+            ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
+            nfe.printStackTrace();
+        }
         HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
     }
     

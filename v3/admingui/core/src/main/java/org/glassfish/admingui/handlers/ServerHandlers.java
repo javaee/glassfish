@@ -165,7 +165,13 @@ public class ServerHandlers {
         String reload = dConfig.getDynamicReloadEnabled();
         String reloadInterval = dConfig.getDynamicReloadPollIntervalInSeconds();
         String autoDeploy = dConfig.getAutodeployEnabled();
-        String adminTimeout = dConfig.getAdminSessionTimeoutInMinutes();
+        //refer to issue# 5698 and issue# 3691
+        String adminTimeout = "";
+        try{
+            adminTimeout = dConfig.getAdminSessionTimeoutInMinutes();
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         String autoDeployInterval = dConfig.getAutodeployPollingIntervalInSeconds();
         String autoDeployTimeout = dConfig.getAutodeployRetryTimeout();
         String autoDeployDirectory = dConfig.getAutodeployDir();
@@ -215,7 +221,7 @@ public class ServerHandlers {
     public static void getServerDefaultAppsConfigAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
-        Map defaultMap = config.getAdminServiceConfig().getDefaultValues(XTypes.DAS_CONFIG);
+        Map defaultMap = config.getAdminServiceConfig().getDefaultValues(XTypes.DAS_CONFIG, true);
         String reload = (String) defaultMap.get("DynamicReloadEnabled");
         String reloadInterval = (String) defaultMap.get("DynamicReloadPollIntervalInSeconds");
         String autoDeploy = (String) defaultMap.get("AutodeployEnabled");
