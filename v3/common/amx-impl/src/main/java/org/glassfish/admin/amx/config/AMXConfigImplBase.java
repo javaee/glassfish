@@ -1102,7 +1102,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
             {
                 final String attrName = JMXUtil.getAttributeName(m);
                 final String xmlName = getXMLAttributeName( attrName );
-                //cdebug( "attrName: " + attrName + ", xmlName: " + xmlName );
+                cdebug( "attrName: " + attrName + ", xmlName: " + xmlName );
                 
                 final org.jvnet.hk2.config.Attribute attrAnn = m.getAnnotation( org.jvnet.hk2.config.Attribute.class );
                 if ( attrAnn != null )

@@ -266,6 +266,15 @@ public interface DomainRoot extends Container
         Execute a REST command.  Do not include a leading "/".
      */
     public String executeREST(final String command);
+    
+    /**
+        Return the base URL for use with {@link #executeREST}.  Example:
+        http://localhost:4848/__asadmin/
+        
+        Example only, the host and port are typically different.  A trailing "/" is 
+        included; simply append the command string and call {@link #executeREST}.
+     */
+    public String getRESTBaseURL();
 
 }
 

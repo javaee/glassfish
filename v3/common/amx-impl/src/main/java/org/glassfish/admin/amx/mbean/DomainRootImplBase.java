@@ -75,249 +75,250 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.InputStream;
 
-
+import com.sun.appserv.management.config.HTTPListenerConfig;
+import com.sun.appserv.management.config.ConfigConfig;
 
 /**
  */
 public class DomainRootImplBase extends AMXNonConfigImplBase
 	// implements DomainRoot
 {
-	private String	mAppserverDomainName;
-	
-		public String
-	getGroup()
-	{
-		return( AMX.GROUP_UTILITY );
-	}
-	
-		public
-	DomainRootImplBase()
-	{
+    private String	mAppserverDomainName;
+
+        public String
+    getGroup()
+    {
+        return( AMX.GROUP_UTILITY );
+    }
+
+        public
+    DomainRootImplBase()
+    {
         super( DomainRoot.J2EE_TYPE, DomainRoot.J2EE_TYPE, null, DomainRoot.class, null );
-		mAppserverDomainName	= null;
-	}
-    
+        mAppserverDomainName	= null;
+    }
+
     @Override
         protected String
     _getPathnameType()
     {
         return "root";
     }
-    
+
     @Override
         public String
     _getPathnameName()
     {
         return null;
     }
-	     
-		public ObjectName
-	preRegisterHook( final ObjectName selfObjectName )
-	    throws Exception
-	{
-		mAppserverDomainName	= BootUtil.getInstance().getAppserverDomainName();
-	
-	    return selfObjectName;
-	}
-	
-    
-	    public void
-	preRegisterDone( )
-	    throws Exception
-	{
-		super.preRegisterDone();
-	}
-	
-	private static final Set<String> NOT_SUPERFLUOUS =
-	    GSetUtil.newUnmodifiableStringSet(
-    	    "getDomainNotificationEmitterServiceObjectName" );
-	    protected final Set<String>
-	getNotSuperfluousMethods()
-	{
-	    return GSetUtil.newSet( super.getNotSuperfluousMethods(), NOT_SUPERFLUOUS );
-	}
-	
-	
-		public ObjectName
-	getDomainNotificationEmitterServiceObjectName()
-	{
-		return( getContainerSupport().getContaineeObjectName( XTypes.NOTIFICATION_EMITTER_SERVICE,
-			NotificationEmitterServiceKeys.DOMAIN_KEY ) );
-	}
-	
-		public String
-	getAppserverDomainName()
-	{
-		return( mAppserverDomainName );
-	}
-	
+         
+        public ObjectName
+    preRegisterHook( final ObjectName selfObjectName )
+        throws Exception
+    {
+        mAppserverDomainName	= BootUtil.getInstance().getAppserverDomainName();
+
+        return selfObjectName;
+    }
+
+
+        public void
+    preRegisterDone( )
+        throws Exception
+    {
+        super.preRegisterDone();
+    }
+
+    private static final Set<String> NOT_SUPERFLUOUS =
+        GSetUtil.newUnmodifiableStringSet(
+            "getDomainNotificationEmitterServiceObjectName" );
+        protected final Set<String>
+    getNotSuperfluousMethods()
+    {
+        return GSetUtil.newSet( super.getNotSuperfluousMethods(), NOT_SUPERFLUOUS );
+    }
+
+
+        public ObjectName
+    getDomainNotificationEmitterServiceObjectName()
+    {
+        return( getContainerSupport().getContaineeObjectName( XTypes.NOTIFICATION_EMITTER_SERVICE,
+            NotificationEmitterServiceKeys.DOMAIN_KEY ) );
+    }
+
+        public String
+    getAppserverDomainName()
+    {
+        return( mAppserverDomainName );
+    }
+
     @Override
-		protected final void
-	registerChildren()
-	{
-		super.registerChildren();
-		
+        protected final void
+    registerChildren()
+    {
+        super.registerChildren();
+        
         final ObjectName    self = getObjectName();
-		final ObjectNames	objectNames	= ObjectNames.getInstance( getJMXDomain() );
+        final ObjectNames	objectNames	= ObjectNames.getInstance( getJMXDomain() );
         
         ObjectName childObjectName = null;
         AMX mbean = null;
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 LoggingPropertiesMgr.J2EE_TYPE, AMX.NO_NAME, false );
-		mbean	= new LoggingPropertiesMgrImpl(self);
+        mbean	= new LoggingPropertiesMgrImpl(self);
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.SYSTEM_STATUS, AMX.NO_NAME, false );
-		mbean	= new SystemStatusImpl(self);
+        mbean	= new SystemStatusImpl(self);
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.KITCHEN_SINK, AMX.NO_NAME, false );
-		mbean	= new KitchenSinkImpl(self);
+        mbean	= new KitchenSinkImpl(self);
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_EMITTER_SERVICE, NotificationEmitterServiceKeys.DOMAIN_KEY, false );
-		mbean	= new NotificationEmitterServiceImpl(self);
+        mbean	= new NotificationEmitterServiceImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_SERVICE_MGR, AMX.NO_NAME, false );
-		mbean	= new NotificationServiceMgrImpl(self);
+        mbean	= new NotificationServiceMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.QUERY_MGR, AMX.NO_NAME, false );
-		mbean	= new QueryMgrImpl(self);
+        mbean	= new QueryMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.BULK_ACCESS, AMX.NO_NAME, false );
-		mbean	= new BulkAccessImpl(self);
+        mbean	= new BulkAccessImpl(self);
         registerChild( mbean, childObjectName );
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.UPLOAD_DOWNLOAD_MGR, AMX.NO_NAME, false );
-		mbean	= new UploadDownloadMgrImpl(self);
+        mbean	= new UploadDownloadMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.SAMPLE, AMX.NO_NAME, false );
-		mbean	= new SampleImpl(self);
+        mbean	= new SampleImpl(self);
         registerChild( mbean, childObjectName );
         
         final String j2eeDomainName = getObjectName().getDomain();
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
-		mbean	= new DASJ2EEDomainImpl( self );
+        mbean	= new DASJ2EEDomainImpl( self );
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 Pathnames.J2EE_TYPE, AMX.NO_NAME, false );
-		mbean	= new PathnamesImpl(self);
+        mbean	= new PathnamesImpl(self);
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 RealmsMgr.J2EE_TYPE, AMX.NO_NAME, false );
-		mbean	= new RealmsMgrImpl(self);
+        mbean	= new RealmsMgrImpl(self);
         registerChild( mbean, childObjectName );
         
-		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 RuntimeMgr.J2EE_TYPE, AMX.NO_NAME, false );
-		mbean	= new RuntimeMgrImpl(self);
+        mbean	= new RuntimeMgrImpl(self);
         registerChild( mbean, childObjectName );
-	}
-    
-		protected final void
-	registerNotificationMgrService()
-	{
-		final ObjectNames	objectNames	= ObjectNames.getInstance( getJMXDomain() );
-		final ObjectName	childObjectName	=
-			objectNames.buildContaineeObjectName( getObjectName(),
-				getFullType(), XTypes.NOTIFICATION_EMITTER_SERVICE,
-					NotificationEmitterServiceKeys.DOMAIN_KEY, false );
-		
-		final NotificationEmitterService	domainNES	= new NotificationEmitterServiceImpl(getObjectName());
+    }
+
+        protected final void
+    registerNotificationMgrService()
+    {
+        final ObjectNames	objectNames	= ObjectNames.getInstance( getJMXDomain() );
+        final ObjectName	childObjectName	=
+            objectNames.buildContaineeObjectName( getObjectName(),
+                getFullType(), XTypes.NOTIFICATION_EMITTER_SERVICE,
+                    NotificationEmitterServiceKeys.DOMAIN_KEY, false );
+        
+        final NotificationEmitterService	domainNES	= new NotificationEmitterServiceImpl(getObjectName());
         registerChild( domainNES, childObjectName );
-	}
-	
-			
-	    public boolean
-	getAMXReady()
-	{
+    }
+
+            
+        public boolean
+    getAMXReady()
+    {
         // just block until ready, no need to support polling
         waitAMXReady();
         return true;
-	}
-	
-	    public void
-	waitAMXReady( )
-	{
+    }
+
+        public void
+    waitAMXReady( )
+    {
         FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_READY_FEATURE, this.getClass().getName() );
-	}
-	
-	static private final Set<String>  OFFLINE_INCAPABLE_J2EE_TYPES =
+    }
+
+    static private final Set<String>  OFFLINE_INCAPABLE_J2EE_TYPES =
         GSetUtil.newUnmodifiableStringSet(
             XTypes.WEB_SERVICE_MGR
         );
-    
+
     /*
-		protected boolean
-	isOfflineCapable( final TypeInfo childInfo )
-	{
-	    final String    j2eeType    = childInfo.getJ2EEType();
-	    
-	    return (! OFFLINE_INCAPABLE_J2EE_TYPES.contains( j2eeType )) &&
-	            super.isOfflineCapable( childInfo );
-	}
-	
-	    protected void
-	registerSelfMgrChild( final TypeInfo	childInfo )
-		throws JMException, InstantiationException, IllegalAccessException
-	{
-		final String	childJ2EEType	= childInfo.getJ2EEType( );
-		
-		if ( getOffline() &&
-		        childJ2EEType.equals( XTypes.CONFIG_DOTTED_NAMES ) )
-		{
-		    final OfflineConfigDottedNamesImpl   impl   = new OfflineConfigDottedNamesImpl();
-		    
-    		final ObjectName	childObjectName	=
-    			getObjectNames().buildContaineeObjectName( getObjectName(),
-    			    getFullType(), childJ2EEType );
-    			    
-    		registerMBean( impl, childObjectName );
-		}
-		else
-		{
-		    super.registerSelfMgrChild( childInfo );
-		}
-	}
+        protected boolean
+    isOfflineCapable( final TypeInfo childInfo )
+    {
+        final String    j2eeType    = childInfo.getJ2EEType();
+        
+        return (! OFFLINE_INCAPABLE_J2EE_TYPES.contains( j2eeType )) &&
+                super.isOfflineCapable( childInfo );
+    }
+
+        protected void
+    registerSelfMgrChild( final TypeInfo	childInfo )
+        throws JMException, InstantiationException, IllegalAccessException
+    {
+        final String	childJ2EEType	= childInfo.getJ2EEType( );
+        
+        if ( getOffline() &&
+                childJ2EEType.equals( XTypes.CONFIG_DOTTED_NAMES ) )
+        {
+            final OfflineConfigDottedNamesImpl   impl   = new OfflineConfigDottedNamesImpl();
+            
+            final ObjectName	childObjectName	=
+                getObjectNames().buildContaineeObjectName( getObjectName(),
+                    getFullType(), childJ2EEType );
+                    
+            registerMBean( impl, childObjectName );
+        }
+        else
+        {
+            super.registerSelfMgrChild( childInfo );
+        }
+    }
     */
-    
+
     public String getDebugPort()
     {
         Issues.getAMXIssues().notDone( "DomainRootImpl.getDebugPort" );
         return "" + 9999;
     }
-    
-    
+
+
     public String getApplicationServerFullVersion()
     {
         return Version.getFullVersion();
     }
-    
+
 
     public String getInstanceRoot()
     {
         return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.instanceRoot")) ;
     }
-    
+
     public String getDomainDir()
     {
         return SmartFile.sanitize( BootUtil.getInstance().getInstanceRoot().toString() );
@@ -327,12 +328,12 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     {
         return getDomainDir() + "/" + "config";
     }
-    
+
     public String getInstallDir()
     {
         return SmartFile.sanitize( "" + System.getProperty("com.sun.aas.installRoot")) ;
     }
-    
+
         public Object[]
     getUptimeMillis()
     {
@@ -343,21 +344,15 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         
         return new Object[] { elapsed, duration.toString() };
     }
-    
-    public String getURLForREST()
-    {
-        Issues.getAMXIssues().notDone( "DomainRootImplBase.getRESTPort: get the port from configuration, also http/https scheme" );
-        return "http://localhost:" + 4848 + "/__asadmin/";
-    }
-    
+
     public void stopDomain()
     {
         executeREST( "stop-domain" );
     }
-    
-   static String toString(final InputStream is)
+
+    static String toString(final InputStream is)
          throws IOException
-   {
+    {
        final StringBuffer sbuf = new StringBuffer();
        final char[] chars = new char[32 * 1024];
 
@@ -373,18 +368,43 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
        while(reader.ready());
 
        return sbuf.toString();
-   }
-    
+    }
+
+    private HTTPListenerConfig getAdminHttpListener()
+    {
+        final ConfigConfig config = getSelf(DomainRoot.class).getDomainConfig().getConfigsConfig().getConfigConfigMap().get("server-config");
+        return config.getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener");
+    }
+
+    private int getRESTPort()
+    {
+        return getAdminHttpListener().resolveInteger("Port");
+    }
+
+    private String get_asadmin()
+    {
+        return getAdminHttpListener().resolveAttribute("DefaultVirtualServer");
+    }
+
+    public String getRESTBaseURL()
+    {
+        final String scheme = getAdminHttpListener().resolveBoolean("SecurityEnabled") ? "https" : "http";
+        final String host = "localhost";
+        
+        return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";
+    }
+
     public String executeREST(final String cmd)
     {
         String result = null;
         
+        HttpURLConnection conn = null;
         try {
-            final String url = getURLForREST() + cmd;
+            final String url = getRESTBaseURL() + cmd;
             
             final URL invoke = new URL(url);
             //System.out.println( "Opening connection to: " + invoke );
-            final HttpURLConnection conn = (HttpURLConnection)invoke.openConnection();
+            conn = (HttpURLConnection)invoke.openConnection();
             
             final InputStream is = conn.getInputStream();
             result = toString(is);
@@ -394,6 +414,13 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         {
             e.printStackTrace();
             result = ExceptionUtil.toString(e);
+        }
+        finally
+        {
+            if ( conn != null )
+            {
+                conn.disconnect();
+            }
         }
         return result;
     }
