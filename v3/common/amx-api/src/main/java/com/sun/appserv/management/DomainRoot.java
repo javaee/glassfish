@@ -255,6 +255,18 @@ public interface DomainRoot extends Container
      */
     public Object[]     getUptimeMillis();
     
+    /**
+        Stop the domain (command to pass to {@link #executeREST}.
+        Note that this method might or might not throw an exception, depending on
+        how quickly the server quits. Wrap the call in a try/catch always.
+     */
+    public static final String STOP_DOMAIN = "stop-domain";
+    
+    /**
+        Execute a REST command.  Do not include a leading "/".
+     */
+    public String executeREST(final String command);
+
 }
 
 

@@ -48,6 +48,7 @@ import javax.management.MBeanServer;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
+import org.jvnet.hk2.component.Habitat;
 
 /**
     Utility class that gets various useful values injected into it for use
@@ -63,16 +64,22 @@ public final class InjectedValues
     private static void debug( final String s ) { System.out.println(s); }
     
     @Inject
+    Habitat mHabitat;
+    
+    @Inject
     private MBeanServer mMBeanServer;
-    public MBeanServer getMBeanServer() { return mMBeanServer; }
     
     @Inject
     private ServerEnvironmentImpl mServerEnvironment;
-    public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
     
     @Inject
     UnprocessedConfigListener   mUnprocessedConfigListener;
     
+    public MBeanServer getMBeanServer() { return mMBeanServer; }
+    public Habitat getHabitat()         { return mHabitat; }
+    public ServerEnvironmentImpl getServerEnvironment() { return mServerEnvironment; }
+    public UnprocessedConfigListener getUnprocessedConfigListener() { return mUnprocessedConfigListener; }
+
     private static volatile InjectedValues INSTANCE = null;
     
     public InjectedValues()
@@ -95,7 +102,7 @@ public final class InjectedValues
     public void preDestroy() {
         //debug( "InjectedValues.preDestroy");
     }
-
+    
    // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
 

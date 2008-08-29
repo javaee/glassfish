@@ -46,6 +46,7 @@ import com.sun.appserv.management.ext.realm.RealmsMgr;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.server.util.Version;
 import org.glassfish.admin.amx.dotted.PathnamesImpl;
 import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
@@ -56,8 +57,11 @@ import org.glassfish.admin.amx.util.ObjectNames;
 
 import javax.management.ObjectName;
 import java.util.Set;
+import java.util.Map;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import com.sun.enterprise.universal.io.SmartFile;
 
@@ -66,6 +70,12 @@ import com.sun.enterprise.universal.Duration;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.admin.amx.util.InjectedValues;
+
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.io.InputStream;
+
+
 
 /**
  */
@@ -332,6 +342,60 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         final Duration duration = new Duration(elapsed);
         
         return new Object[] { elapsed, duration.toString() };
+    }
+    
+    public String getURLForREST()
+    {
+        Issues.getAMXIssues().notDone( "DomainRootImplBase.getRESTPort: get the port from configuration, also http/https scheme" );
+        return "http://localhost:" + 4848 + "/__asadmin/";
+    }
+    
+    public void stopDomain()
+    {
+        executeREST( "stop-domain" );
+    }
+    
+   static String toString(final InputStream is)
+         throws IOException
+   {
+       final StringBuffer sbuf = new StringBuffer();
+       final char[] chars = new char[32 * 1024];
+
+       final InputStreamReader reader = new InputStreamReader(is);
+       do
+       {
+           final int len = reader.read(chars, 0, chars.length);
+           if (len >= 1)
+           {
+               sbuf.append(chars, 0, len);
+           }
+       }
+       while(reader.ready());
+
+       return sbuf.toString();
+   }
+    
+    public String executeREST(final String cmd)
+    {
+        String result = null;
+        
+        try {
+            final String url = getURLForREST() + cmd;
+            
+            final URL invoke = new URL(url);
+            //System.out.println( "Opening connection to: " + invoke );
+            final HttpURLConnection conn = (HttpURLConnection)invoke.openConnection();
+            
+            final InputStream is = conn.getInputStream();
+            result = toString(is);
+            is.close();
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+            result = ExceptionUtil.toString(e);
+        }
+        return result;
     }
 }
 
