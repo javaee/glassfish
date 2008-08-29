@@ -215,7 +215,9 @@ System.out.println("!!!!!!!  cannot create Image");
      */
     private File getWarFile() {
 	String warFileName = AdminConsoleAdapter.ADMIN_APP_WAR;
-	return new File(toFile, "glassfish/lib/install/applications/" + warFileName);
+        String installRoot = System.getProperty("com.sun.aas.installRoot");
+        System.out.println("!!!!!!!!!  com.sun.aas.installRoot=" +  installRoot);
+	return new File(installRoot+"/lib/install/applications/" + warFileName);
     }
     
     /**
