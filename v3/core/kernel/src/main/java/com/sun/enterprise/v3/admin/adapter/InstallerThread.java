@@ -88,7 +88,10 @@ final class InstallerThread extends Thread {
     public void run() {
         try {
 	    File warFile = getWarFile();
+            System.out.println("!!!!!!!! Looking for " + warFile.getAbsolutePath());
 	    if (!warFile.exists()) {
+                System.out.println("!!!!!!! ERROR: warFile does not exist: " + warFile.getAbsolutePath());
+                System.out.println("!!!!!!! try downloading from update center");
 		// Not downloaded get it from IPS
 		download();
 	    }
@@ -198,6 +201,7 @@ System.out.println("!!!!!!!  cannot create Image");
 
     private void expand() throws Exception {
 	File warFile = getWarFile();
+        System.out.println("!!!!!! About to expand " + warFile.getAbsolutePath());
         syncMessage("Expanding the archive: " + warFile.getAbsolutePath());
         File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
         expFolder.mkdirs();
