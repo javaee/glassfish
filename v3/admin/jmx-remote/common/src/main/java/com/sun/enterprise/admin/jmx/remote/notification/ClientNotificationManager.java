@@ -70,7 +70,10 @@ public class ClientNotificationManager implements Runnable {
         String hname="null";            
         try { 
             hname = InetAddress.getLocalHost().getHostName(); 
-        } catch (Exception ex) { /*ignore*/ }        
+        } catch (Exception ex) { 
+            /*ignore*/ 
+            ex.printStackTrace();
+        }        
         mgrId = (new java.rmi.server.UID()).toString() + ":" + hname;        
 
         eventThread = new Thread(this);

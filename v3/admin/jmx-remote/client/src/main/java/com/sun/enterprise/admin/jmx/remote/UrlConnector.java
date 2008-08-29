@@ -294,6 +294,8 @@ public abstract class UrlConnector implements JMXConnector {
 			System.out.println("Attached the debugger? Provide an integer to go ahead...");
 			final int r = System.in.read();
 		}
-		catch(Exception e) {}
+		catch(Exception e) {
+                    e.printStackTrace();
+                }
 	}
 }
