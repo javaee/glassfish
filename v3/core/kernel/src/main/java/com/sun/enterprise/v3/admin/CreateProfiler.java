@@ -97,6 +97,15 @@ public class CreateProfiler implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        if (javaConfig.getProfiler() != null) {
+            System.out.println("profiler exists. Please delete it first");
+            report.setMessage(
+                localStrings.getLocalString("create.profiler.alreadyExists",
+                "profiler exists. Please delete it first"));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         try {
             ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
 
