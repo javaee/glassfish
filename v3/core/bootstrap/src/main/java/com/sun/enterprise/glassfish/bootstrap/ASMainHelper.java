@@ -342,11 +342,11 @@ public class ASMainHelper {
         }
     }
 
-    void setUpOSGiCache(File glassfishDir, File cacheDir)  {
+    void setUpOSGiCache(File glassfishDir, File fwDir, File cacheDir)  {
 
         // let's find our more recent entry, we'll need it anyway
         long lastModified = getLastModified(new File(glassfishDir, "modules"), 0);
-        long settingsLastModified = getLastModified( new File(glassfishDir, "felix/conf"), 0);
+        long settingsLastModified = getLastModified( new File(fwDir, "conf"), 0);
 
         if (settingsLastModified>lastModified) {
             lastModified = settingsLastModified;

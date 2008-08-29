@@ -47,15 +47,18 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ASMainFelix extends ASMainOSGi {
+    private static final String FELIX_HOME = "FELIX_HOME";
 
     public ASMainFelix(Logger logger, String... args) {
         super(logger, args);
     }
 
     protected void setFwDir() {
-        String fwPath = System.getenv("FELIX_HOME");
+        String fwPath = System.getenv(FELIX_HOME);
         if (fwPath == null) {
-            fwPath = new File(glassfishDir, "felix").getAbsolutePath();
+            // try system property, which comes from asenv.conf
+            fwPath = System.getProperty(FELIX_HOME,
+                    new File(glassfishDir, "../felix").getAbsolutePath());
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
@@ -64,7 +67,7 @@ public class ASMainFelix extends ASMainOSGi {
     }
 
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
-        cpb.addJar(new File(glassfishDir, "felix/bin/felix.jar"));
+        cpb.addJar(new File(fwDir, "bin/felix.jar"));
     }
 
     protected void launchOSGiFW() throws Exception {
@@ -77,12 +80,12 @@ public class ASMainFelix extends ASMainOSGi {
         String installRoot = System.getProperty("com.sun.aas.installRoot");
         URI installRootURI = new File(installRoot).toURI();
         System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
-        String sysFileURL = new File(glassfishDir, "felix/conf/system.properties").toURI().toURL().toString();
+        String sysFileURL = new File(fwDir, "conf/system.properties").toURI().toURL().toString();
         System.setProperty("felix.system.properties", sysFileURL);
-        String confFileURL = new File(glassfishDir, "felix/conf/config.properties").toURI().toURL().toString();
+        String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
         File cacheProfileDir = new File(domainDir, ".felix/gf/");
-        helper.setUpOSGiCache(glassfishDir, cacheProfileDir);
+        helper.setUpOSGiCache(glassfishDir, fwDir, cacheProfileDir);
         System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
