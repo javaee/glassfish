@@ -51,7 +51,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.v3.admin.ResourceStatus;
+import org.glassfish.resource.common.ResourceStatus;
 
 import java.util.HashMap;
 import java.util.Properties;

@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
+import org.glassfish.resource.common.ResourceStatus;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -56,7 +57,6 @@ import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.ConfiguredBy;
 import org.glassfish.admin.cli.resources.ResourceManager;
-import com.sun.enterprise.v3.admin.ResourceStatus;
 
 /**
  *

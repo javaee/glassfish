@@ -37,6 +37,8 @@
 package org.glassfish.jdbc.admin.cli;
 
 import org.glassfish.resource.common.Resource;
+import org.glassfish.resource.common.ResourceStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -45,7 +47,6 @@ import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
 import java.util.Properties;
 import org.glassfish.admin.cli.resources.ResourceManager;
-import com.sun.enterprise.v3.admin.ResourceStatus;
 
 /**
  * This class serves as the API to creating new resources when an xml file 
