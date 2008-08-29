@@ -65,7 +65,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +78l $0 > $tmp/tmp.jar
+sed -n '78,$p' $0 > $tmp/tmp.jar
 cd $tmp
 $JAVA_HOME/bin/jar xvf tmp.jar 
 rm tmp.jar
