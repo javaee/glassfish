@@ -81,6 +81,7 @@ public interface AMXConfig extends AMX, AttributeResolver
         
         @param name  the name of the configuration Attribute
         @return the default value, or null if no default exists
+        @see DefaultValues
      */
     public String getDefaultValue( final String name );
     
@@ -89,6 +90,7 @@ public interface AMXConfig extends AMX, AttributeResolver
         The resulting Map is keyed by the XML attribute name, <em>not</em> the AMX Attribute name.
         @since Glassfish V3.
         @param byXMLName whether to key the values by the XML attribute name vs the AMX Attribute name
+        @see DefaultValues
 	 */
     public Map<String,String> getDefaultValues(final boolean useAMXAttributeName);
 }

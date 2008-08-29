@@ -39,7 +39,10 @@ import java.util.Map;
 
 /**
     Mixin interface indicating a provider of default values.  Except for oddball cases
-    (probably none), only {@link Container}s should implement DefaultValues.
+    (probably none), only {@link Container}s should implement DefaultValues. The difference
+    between this interface and the getDefaultValues() methods provided by {@link AMXConfig}
+    is that this one accomodates child (containee) elements that might not yet exist, hence
+    the use of the 'j2eeType'.
  */
 public interface DefaultValues
 {
