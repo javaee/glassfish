@@ -14,7 +14,7 @@
 
   <Identity>
     <Identifier feature="true">glassfish</Identifier>
-    <Description>GlassFish V3</Description>
+    <Description>GlassFish v3</Description>
     <IdentityVersion>
       <VersionBaseline>0.5</VersionBaseline>
     </IdentityVersion>
