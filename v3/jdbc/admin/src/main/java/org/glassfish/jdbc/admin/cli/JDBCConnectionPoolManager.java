@@ -123,7 +123,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                 if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
                     String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
                             "A JDBC connection pool named {0} already exists.", jdbcconnectionpoolid);
-                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                 }
             }
         }

@@ -99,7 +99,7 @@ public class JDBCResourceManager implements ResourceManager {
                 if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
                             "A JDBC resource named {0} already exists.", jndiName);
-                    ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                    ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg, true);
                     return status;
                 }
             }

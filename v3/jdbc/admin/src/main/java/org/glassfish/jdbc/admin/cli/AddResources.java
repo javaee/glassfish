@@ -113,7 +113,7 @@ public class AddResources implements AdminCommand {
                     final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setMessage(msgToAdd);
                 }
-                if (rs.getStatus() == ResourceStatus.SUCCESS)
+                if (rs.getStatus() == ResourceStatus.SUCCESS || rs.isAlreadyExists())
                     isSuccess = true;
             }
             report.setActionExitCode(

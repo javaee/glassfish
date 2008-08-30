@@ -51,10 +51,17 @@ public class ResourceStatus {
     int status = SUCCESS;
     String message;
     Throwable exception;
+    boolean alreadyExists = false;
     
     public ResourceStatus(int status, String message) {
         this.status = status;
         this.message = message;
+    }
+    
+    public ResourceStatus(int status, String message, boolean alreadyExists) {
+        this.status = status;
+        this.message = message;
+        this.alreadyExists = alreadyExists;
     }
     
     public int getStatus() {
@@ -63,6 +70,10 @@ public class ResourceStatus {
     
     public String getMessage() {
         return message;
+    }
+    
+    public boolean isAlreadyExists() {
+        return alreadyExists;
     }
     
     public Throwable getException(){
