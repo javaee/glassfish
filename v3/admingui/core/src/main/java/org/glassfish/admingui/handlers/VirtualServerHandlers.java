@@ -202,7 +202,7 @@ public class VirtualServerHandlers {
         private static void getDefaultVirtualServerAttributes(HandlerContext handlerCtx, ConfigConfig config){
         
       
-        Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG);
+        Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG, true);
         handlerCtx.setOutputValue("Hosts", defaultMap.get("hosts"));
         handlerCtx.setOutputValue("StateOption", defaultMap.get("state"));
         handlerCtx.setOutputValue("Http", defaultMap.get("http-listeners"));
@@ -215,7 +215,7 @@ public class VirtualServerHandlers {
         if (vsMap.size() > 0){
             Object[] vsc = vsMap.values().toArray();
             VirtualServerConfig vs = (VirtualServerConfig) vsc[0];
-            handlerCtx.setOutputValue("accesslog", vs.getDefaultValues(XTypes.HTTP_ACCESS_LOG_CONFIG).get("LogDirectory"));
+            handlerCtx.setOutputValue("accesslog", vs.getDefaultValues(XTypes.HTTP_ACCESS_LOG_CONFIG, true).get("LogDirectory"));
         }else {
             //just hard code
             handlerCtx.setOutputValue("accesslog", "${com.sun.aas.instanceRoot}/logs/access" );

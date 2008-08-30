@@ -555,7 +555,7 @@ public class JdbcHandlers {
             if ((fromStep2!= null) && fromStep2){
                 //wizardPool is already in session map
             }else{
-                Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
+                Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG, true); 
                 Map attrMap = new HashMap();
                 attrMap.put("SteadyPoolSize", defaultMap.get("SteadyPoolSize"));
                 attrMap.put("MaxPoolSize", defaultMap.get("MaxPoolSize"));

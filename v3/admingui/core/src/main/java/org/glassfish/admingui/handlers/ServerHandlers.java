@@ -751,7 +751,7 @@ public class ServerHandlers {
     public static void getServerDefaultJvmAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
-        Map defaultMap = config.getDefaultValues(XTypes.JAVA_CONFIG);
+        Map defaultMap = config.getDefaultValues(XTypes.JAVA_CONFIG, true);
         String javaHome = (String) defaultMap.get("JavaHome");
         String javacOptions = (String) defaultMap.get("JavacOptions");
         String rmicOptions = (String) defaultMap.get("RmicOptions");
