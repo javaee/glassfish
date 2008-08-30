@@ -28,7 +28,7 @@ public class BaseAsadminTest {
         this.adminPassword = adminPassword;
     }
     
-    protected String invokeURLAndGetMessage(String urls) {
+    protected Manifest invokeURLAndGetManifest(String urls) {
         try {
             URL url = new URL(urls);
             HttpURLConnection uc = (HttpURLConnection)url.openConnection();
@@ -36,7 +36,7 @@ public class BaseAsadminTest {
             uc.setRequestProperty("User-Agent", "hk2-agent");
             uc.connect();
             Manifest man = new Manifest(uc.getInputStream());
-            return ( GeneralUtils.getValueForTypeFromManifest(man) );
+            return ( man );
         } catch(Exception e) {
             throw new RuntimeException(e);
         }

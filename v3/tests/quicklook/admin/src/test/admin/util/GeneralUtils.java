@@ -13,40 +13,32 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import org.testng.Reporter;
 
-/** Provides several utilities.
+/** Provides several utilities. Please see v3/core/kernel/../AdminAdapter to see
+ *  what it does when finally the command invocation returns.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish v3 Prelude
  */
 public final class GeneralUtils {
-
-    /* These can't change. They are buried in CLI code on server side! */
-    private static final String ASADMIN_EXIT_MAIN_MF_ATTRIBUTE = "exit-code";
-    private static final String ASADMIN_EXIT_SUCCESS           = "SUCCESS"; //not used
-    private static final String ASADMIN_EXIT_FAILURE           = "FAILURE";
-    private static final String ASADMIN_MSG_MAIN_MF_ATTRIBUTE  = "message";
     
     public enum AsadminManifestKeyType {
         EXIT_CODE("exit-code"),
         CHILDREN ("children"),
-        MESSAGE  ("message");
-        
+        MESSAGE  ("message"),
+        CAUSE    ("cause");
         private final String name;
         
         AsadminManifestKeyType(String name) {
             this.name = name;
         }
-    }
-    
-    public enum AsAdminManifestValueType {
-        SUCCESS("SUCCESS"),
-        FAILURE("FAILURE");
-        
-        private final String status;
-        
-        AsAdminManifestValueType(String status) {
-            this.status = status;
+        @Override
+        public String toString() {
+            return name;
         }
     }
+    
+    public static final String SUCCESS = "SUCCESS";
+    public static final String FAILURE = "FAILURE";
+    
     /* These can't change. They are buried in CLI code on server side! */
     
     /** Creates the final asadmin URL with command's bells and whistles.
@@ -87,7 +79,35 @@ public final class GeneralUtils {
         return ( buffer.toString());
     }
     
+    public static String getValueForTypeFromManifest(Manifest man, AsadminManifestKeyType key) {
+        if (man == null)
+            throw new IllegalArgumentException("null manifest received");
+        if (key == null)
+            key = AsadminManifestKeyType.EXIT_CODE;
+        Attributes ma = man.getMainAttributes();
+        Set<Object> names = ma.keySet();
+        for (Object name : names) {
+            Object value = ma.get(name);
+            if(key.toString().equals(name.toString())) { //we got the key
+                Reporter.log("Attribute exists, name: " + name + " value: " + value);
+                return ( value.toString() );
+            }
+        }
+        Reporter.log("Atrribute does not exist: " + key.toString() + " returning null");
+        return ( null );  //given key does not exist amongst manifest attributes
+    }
+
+    public static void handleManifestFailure(Manifest man) {
+        String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
+        if (ec != null && GeneralUtils.FAILURE.equalsIgnoreCase(ec.trim())) {
+            //we have a failure
+            String cause = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CAUSE);
+            Reporter.log("Cause: " + cause);
+            throw new RuntimeException("" + cause);
+        }        
+    }
     
+    ///// private methods /////
     private static String encodePair(String name, String value) {
         try {
             String en = URLEncoder.encode(name, "UTF-8");
@@ -96,39 +116,5 @@ public final class GeneralUtils {
         } catch(UnsupportedEncodingException ue) {
             throw new RuntimeException(ue);
         }
-    }
-    
-    /** asadmin operates over manifests (sadly). So, we need to analyze
-     *  the manifest. This method does that job.
-     * @param man
-     * @throws java.lang.Exception
-     */
-    public static String getValueForTypeFromManifest(Manifest man) throws Exception {
-        Object st = null;
-        Object ms = null;
-        Attributes ma = man.getMainAttributes();
-        Set<Object> keys = ma.keySet();
-        for (Object key : keys) {
-            Reporter.log("KEY: " + key);
-            Object value = ma.get(key);
-            Reporter.log("VALUE: " + value);
-            if (ASADMIN_EXIT_MAIN_MF_ATTRIBUTE.equals(key)) {
-                st = value;//we got the status
-            }
-            if (ASADMIN_MSG_MAIN_MF_ATTRIBUTE.equals(key)) {
-                ms = value; //we got the message
-            }
-        }
-        Reporter.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! St  = " + st);
-        Reporter.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Msg = " + ms);
-        if (st != null && ms != null) {
-            if (ASADMIN_EXIT_FAILURE.equals(st.toString().trim())) {
-                Reporter.log("FAIED!!!!!!!!!!!");
-                throw new RuntimeException("Manifest failed with message attribute: " + ms.toString());
-            }
-        }
-        if (ms == null)
-            return null;
-        return ( ms.toString() );
-    }
+    }    
 }
