@@ -22,7 +22,7 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
 
     private File path;
     private static final String JAVADB_POOL = "javadb_pool"; //same as in resources.xml
-    private static final String CMD         = "add-resources";
+    private static final String ADD_RES     = "add-resources";
     
     @Parameters({"resources.xml.relative.path"})
     @BeforeClass
@@ -34,8 +34,8 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
     public void createPool() {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = path.getAbsolutePath();
-        String up = GeneralUtils.ToFinalURL(adminUrl, CMD, options, operand);
+        String up = GeneralUtils.toFinalURL(adminUrl, ADD_RES, options, operand);
         Reporter.log("url: " + up);
-        invokeURL(up);
+        String msg = invokeURLAndGetMessage(up);
     }
 }

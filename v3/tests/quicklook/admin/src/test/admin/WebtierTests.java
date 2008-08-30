@@ -31,9 +31,10 @@ public class WebtierTests extends BaseAsadminTest {
         String CMD = "create-http-listener";
         Map<String, String> options = getCreateOptions();
         String operand = listenerName;
-        String up = GeneralUtils.ToFinalURL(adminUrl, CMD, options, operand);
+        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
         Reporter.log("url: " + up);
-        invokeURL(up);
+        String msg = invokeURLAndGetMessage(up);
+        Reporter.log("Command message: " + msg);
     }
     
     @Test(groups={"pulse"})
@@ -41,9 +42,21 @@ public class WebtierTests extends BaseAsadminTest {
         String CMD = "delete-http-listener";
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = listenerName;
-        String up = GeneralUtils.ToFinalURL(adminUrl, CMD, options, operand);
+        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
         Reporter.log("url: " + up);
-        invokeURL(up);        
+        String msg = invokeURLAndGetMessage(up);
+        Reporter.log("Command message: " + msg);        
+    }
+    
+    @Test(groups={"pulse"})
+    public void listListeners() { //should be run after createListener method
+        String CMD = "list-http-listeners";
+        Map<String, String> options = Collections.EMPTY_MAP;
+        String operand = null;
+        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+        Reporter.log("url: " + up);
+        String msg = invokeURLAndGetMessage(up);
+        Reporter.log("Command message: " + msg);        
     }
     
     private Map<String, String> getCreateOptions() {
