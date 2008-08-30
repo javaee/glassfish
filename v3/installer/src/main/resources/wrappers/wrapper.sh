@@ -25,7 +25,8 @@ else
 fi
 }
 
-export ARGS="" 
+ARGS=""
+export ARGS 
 while [ $# -gt 0 ]
 do
 arg="$1"
@@ -65,7 +66,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-sed -n '78,$p' $0 > $tmp/tmp.jar
+sed -n '79,$p' $0 > $tmp/tmp.jar
 cd $tmp
 $JAVA_HOME/bin/jar xvf tmp.jar 
 rm tmp.jar
