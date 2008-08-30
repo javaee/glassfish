@@ -47,7 +47,7 @@
 </target>
 
 <target name="stopDerby" depends="initprop">
-    <echo message="Stoping Derby DB servers in the Network Mode"/>
+    <echo message="Stopping Derby DB servers in the Network Mode"/>
     
     <java classname="org.apache.derby.drda.NetworkServerControl"
           classpathref="db.class.path" fork="true">
