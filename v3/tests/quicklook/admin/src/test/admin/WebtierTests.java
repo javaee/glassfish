@@ -33,7 +33,7 @@ public class WebtierTests extends BaseAsadminTest {
         Map<String, String> options = getCreateOptions();
         String operand = LISTENER_NAME;
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Reporter.log("url: " + up);
+        //Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
         GeneralUtils.handleManifestFailure(man);
@@ -56,7 +56,7 @@ public class WebtierTests extends BaseAsadminTest {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = LISTENER_NAME;
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Reporter.log("url: " + up);
+//        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         String ec = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.EXIT_CODE);
         GeneralUtils.handleManifestFailure(man);  
@@ -85,7 +85,7 @@ public class WebtierTests extends BaseAsadminTest {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = null;
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Reporter.log("url: " + up);
+//        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         return ( man );
     }

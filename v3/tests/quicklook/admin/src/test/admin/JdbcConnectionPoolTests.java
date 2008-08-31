@@ -36,7 +36,7 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = path.getAbsolutePath();
         String up = GeneralUtils.toFinalURL(adminUrl, ADD_RES, options, operand);
-        Reporter.log("url: " + up);
+//        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         GeneralUtils.handleManifestFailure(man);
     }
@@ -68,7 +68,7 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = JAVADB_POOL;
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Reporter.log("url: " + up);
+//        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         GeneralUtils.handleManifestFailure(man);        
     }
@@ -89,7 +89,7 @@ public class JdbcConnectionPoolTests extends BaseAsadminTest {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = null;
         String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Reporter.log("url: " + up);
+//        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         return ( man );
     }    
