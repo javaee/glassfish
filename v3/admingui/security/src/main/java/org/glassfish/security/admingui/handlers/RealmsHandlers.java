@@ -340,7 +340,7 @@ public class RealmsHandlers {
             if (! classname.equals(oldClassname))
                 realm.setClassname(classname);
             // we do want to remove all the special props previously
-            AMXUtil.updateProperties(realm, newProps, skipRealmPropsList);
+            AMXUtil.updateProperties(realm, newProps, null);
             
             if(classname.indexOf("FileRealm")!= -1){
                 AMXUtil.setPropertyValue(realm, "file", attrMap.get("file"));
