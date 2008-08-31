@@ -33,6 +33,7 @@ public class JVMInformation  implements JVMInformationMBean { //, MBeanRegistrat
     private final SummaryReporter sr;
     private final MemoryReporter mr;
     private final ClassReporter cr;
+    private final LogReporter lr;
     
     JVMInformation(MBeanServerConnection mbsc) {
         this.mbsc = mbsc;
@@ -40,6 +41,7 @@ public class JVMInformation  implements JVMInformationMBean { //, MBeanRegistrat
         sr = new SummaryReporter(mbsc);
         mr = new MemoryReporter(mbsc);
         cr = new ClassReporter(mbsc);
+        lr = new LogReporter();
     }
     public String getThreadDump(String processName) { //this argument is not needed now. TODO
         return ( tm.getThreadDump() );
@@ -57,6 +59,9 @@ public class JVMInformation  implements JVMInformationMBean { //, MBeanRegistrat
         return ( cr.getClassReport() );
     }
 
+    public String getLogInformation(String processName) {
+        return (lr.getLoggingReport());
+    }
     /* //TODO
     public void postRegister(Boolean registrationDone) {
     }

@@ -59,6 +59,8 @@ public class GenerateJvmReportCommand implements AdminCommand {
             return jvmi.getClassInformation(target);
         else if("memory".equals(type))
             return jvmi.getMemoryInformation(target);
+        else if ("log".equals(type))
+            return jvmi.getLogInformation(target);
         else
             throw new IllegalArgumentException("Unsupported Option: " + type);
     }

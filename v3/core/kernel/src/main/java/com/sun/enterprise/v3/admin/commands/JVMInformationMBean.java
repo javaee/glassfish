@@ -38,4 +38,6 @@ public interface JVMInformationMBean {
     public String getMemoryInformation(final String processName);
     
     public String getSummary(final String processName);
+    
+    public String getLogInformation(String processName);
 }

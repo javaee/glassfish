@@ -99,15 +99,15 @@ class ThreadMonitor {
         final StringBuilder sb = new StringBuilder(msg);
         if (ti.getLockName() != null) {
             msg = sm.getString("thread.waiting.on", ti.getLockName());
-            sb.append(msg);
+            sb.append(" " + msg);
         }
         if (ti.isSuspended()) {
             msg = sm.getString("thread.suspended");
-            sb.append(msg);
+            sb.append(" " + msg);
         }
         if (ti.isInNative()) {
             msg = sm.getString("thread.in.native");
-            sb.append(msg);
+            sb.append(" " + msg);
         }
         //sb.append(System.getProperty("line.separator"));
         sb.append(StringBuilderNewLineAppender.SEP);

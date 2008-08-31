@@ -71,6 +71,12 @@ public class JVMInformationCollector extends StandardMBean implements JVMInforma
         final String ci = title + "\n " + invokeMBean(on, "getClassInformation");
         return ( ci );
     }
+    public String getLogInformation(String processName) {
+        ObjectName on  = processTarget(processName);
+        String title   = sm.getString("log.info.title", getInstanceNameFromObjectName(on));
+        String li      = title + "\n" + invokeMBean(on, "getLogInformation");
+        return ( li );
+    }
     
     private ObjectName processTarget(final String processName) throws RuntimeException {
         try {
