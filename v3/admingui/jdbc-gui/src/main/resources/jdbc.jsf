@@ -58,10 +58,10 @@
                     <sun:propertySheetSection>
                         <sun:property>
                         <sun:hyperlink 
-                            toolTip="$resource{i18njdbc.tree.jdbcResources.tooltip}"
+                            toolTip="$resource{i18n.tree.jdbcResources.tooltip}"
                             url="/jdbc/jdbcResources.jsf" >
                             <sun:image url="/resource/jdbc/images/JDBC.gif" />
-                            <sun:staticText text="$resource{i18njdbc.tree.jdbcResources}" />
+                            <sun:staticText text="$resource{i18n.tree.jdbcResources}" />
                             </sun:hyperlink>
                         
                         
