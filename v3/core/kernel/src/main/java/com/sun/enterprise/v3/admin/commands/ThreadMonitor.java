@@ -47,7 +47,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.util.Arrays;
 import javax.management.MBeanServerConnection;
 
 /**
@@ -105,6 +107,8 @@ class ThreadMonitor {
     private String dumpThread(ThreadMXBean tmx, ThreadInfo ti) {
         String msg = "--------------------------------------------------------------------------------";
         final StringBuilder sb = new StringBuilder(msg).append(StringBuilderNewLineAppender.SEP);
+        sb.append(sm.getString("execution.info")).append(StringBuilderNewLineAppender.SEP);
+        sb.append("-----------------------").append(StringBuilderNewLineAppender.SEP);
         final long ids = ti.getThreadId();
         final String ss  = ti.getThreadState().toString();        
         msg = sm.getString("thread.title", quote(ti.getThreadName()), ids, ss);
@@ -121,18 +125,19 @@ class ThreadMonitor {
             msg = sm.getString("thread.in.native");
             sb.append(" " + msg);
         }
-        //sb.append(System.getProperty("line.separator"));
         sb.append(StringBuilderNewLineAppender.SEP);
-        if (ti.getLockOwnerName() != null) {
-            msg = sm.getString("thread.owner", ti.getLockOwnerName(), ti.getLockOwnerId());
-            sb.append(msg);
-        }
         for (final StackTraceElement ste : ti.getStackTrace()) {
             msg = sm.getString("thread.stack.element", ste.toString());
             sb.append(msg);
             sb.append(StringBuilderNewLineAppender.SEP);
         }
-        sb.append(StringBuilderNewLineAppender.SEP);
+        msg = sm.getString("sync.info");
+        sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+        sb.append("-----------------------").append(StringBuilderNewLineAppender.SEP);
+        if (ti.getLockOwnerName() != null) {
+            msg = sm.getString("lock.owner.details", ti.getLockOwnerName(), ti.getLockOwnerId());
+            sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+        }
         msg = sm.getString("thread.blocked.times", ti.getBlockedCount());
         sb.append(msg).append(StringBuilderNewLineAppender.SEP);
         long bt = ti.getBlockedTime();
@@ -140,6 +145,9 @@ class ThreadMonitor {
             msg = sm.getString("thread.blocked.totaltime", bt);
             sb.append(msg).append(StringBuilderNewLineAppender.SEP);
         }
+        long wt = ti.getWaitedCount();
+        msg = sm.getString("wait.times", wt);
+        sb.append(msg).append(StringBuilderNewLineAppender.SEP);
         boolean tcput = tmx.isThreadCpuTimeEnabled() ? true : false;
         if (tcput) {
             long cput = tmx.getThreadCpuTime(ti.getThreadId());
@@ -154,7 +162,12 @@ class ThreadMonitor {
                 msg = sm.getString("thread.cpu.user.time", times[0], times[1]);
                 sb.append(msg).append(StringBuilderNewLineAppender.SEP);
             }
-        }
+        }      
+        msg = sm.getString("lock.owner.details", ti.getLockOwnerName(), ti.getLockOwnerId());
+        msg = getMoreThreadInfo(ti, "getLockedMonitors");
+        sb.append(sm.getString("monitor.info", msg)).append(StringBuilderNewLineAppender.SEP);
+        msg = getMoreThreadInfo(ti, "getLockedSynchronizers");
+        sb.append(sm.getString("ownable.sync.info", msg));
         return ( sb.toString() );
     }
     
@@ -189,4 +202,25 @@ class ThreadMonitor {
         }
         return ( sb.toString() );
     }
+    
+    private String getMoreThreadInfo(ThreadInfo ti, String mn) {
+        String ms = "";
+        try {
+            Method glmm = ti.getClass().getDeclaredMethod(mn, (Class[])null);
+            if (glmm != null) {
+                Object monitors = glmm.invoke(ti, (Object[])null);
+                if (monitors instanceof Object[]) {
+                    return ( Arrays.toString((Object[])monitors) );
+                } else {
+                    return (NA);
+                }
+            } else {
+                return (NA);
+            }
+        } catch(Exception e) {
+            return (NA);
+        }
+    }
+    
+    public static final String NA = "NOT_AVAILABLE";
 }

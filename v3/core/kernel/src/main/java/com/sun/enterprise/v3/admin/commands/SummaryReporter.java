@@ -27,6 +27,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.management.MBeanServerConnection;
@@ -62,6 +63,7 @@ class SummaryReporter {
         sb.append(sm.getString("os.name", os.getName()));
         sb.append(sm.getString("os.arch", os.getArch(), os.getVersion()));
         sb.append(sm.getString("os.nproc", os.getAvailableProcessors()));
+        sb.append(sm.getString("os.load", getSystemLoad(os)));
         return ( sb.toString() );
     }
     private String getVMInfo(final RuntimeMXBean rt) {
@@ -84,5 +86,21 @@ class SummaryReporter {
             sb.append(n + " = " + props.get(n));
         }
         return ( sb.toString() );
+    }
+    
+    private String getSystemLoad(OperatingSystemMXBean os) {
+        //available only on 1.6
+        String info = ThreadMonitor.NA;
+        try {
+            String METHOD = "getSystemLoadAverage";
+            Method m = os.getClass().getMethod(METHOD, (Class[]) null);
+            if (m != null) {
+                Object ret = m.invoke(os, (Object[])null);
+                return ( ret.toString() );
+            }
+        } catch(Exception e) {
+            
+        }
+        return ( info );
     }
 }
