@@ -47,6 +47,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.math.BigInteger;
 import javax.management.MBeanServerConnection;
 
 /**
@@ -55,6 +56,7 @@ class ThreadMonitor {
     
     private final MBeanServerConnection mbsc;
     private final StringManager sm = StringManager.getManager(ThreadMonitor.class);
+    private static final BigInteger S2NANOS = new BigInteger("" + 1000000000);
     public ThreadMonitor(final MBeanServerConnection mbsc) {
         this.mbsc = mbsc;
     }
@@ -66,9 +68,18 @@ class ThreadMonitor {
             final ThreadMXBean tmx = ManagementFactory.newPlatformMXBeanProxy(mbsc, ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class);
             final String title = getTitle();
             td.append(title); 
-            final long[] tids = tmx.getAllThreadIds();
             td.append(sm.getString("thread.no", tmx.getThreadCount()));
-            td.append(sm.getString("daemon.threads.no", tmx.getDaemonThreadCount()));
+            td.append(sm.getString("daemon.thread.no", tmx.getDaemonThreadCount()));
+            td.append(sm.getString("peak.thread.no", tmx.getPeakThreadCount()));
+            boolean tc = (tmx.isThreadContentionMonitoringSupported()) ? true : false;
+            td.append(sm.getString("thread.contention.monitoring.supported", tc));
+            boolean tce = (tmx.isThreadContentionMonitoringEnabled()) ? true : false;
+            td.append(sm.getString("thread.contention.monitoring.enabled", tce));
+            boolean cputs = (tmx.isThreadCpuTimeSupported()) ? true : false;
+            td.append(sm.getString("thread.cputime.supported", cputs));
+            boolean cpute = (tmx.isThreadCpuTimeEnabled()) ? true : false;
+            td.append(sm.getString("thread.cputime.enabled", cpute));
+            final long[] tids = tmx.getAllThreadIds();
             final ThreadInfo[] tinfos = tmx.getThreadInfo(tids, Integer.MAX_VALUE);
             /*
             Arrays.sort(tinfos, new Comparator<ThreadInfo> () {
@@ -78,7 +89,7 @@ class ThreadMonitor {
             });
              */
             for (final ThreadInfo ti : tinfos) {
-                td.append(dumpThread(ti));
+                td.append(dumpThread(tmx, ti));
             }
             sb.append(getDeadlockInfo(tmx));
             return ( td.toString() );
@@ -91,12 +102,13 @@ class ThreadMonitor {
             //logger.info("Time in seconds to get the jvm thread dump: " + time);
         }*/
     }
-    private String dumpThread(final ThreadInfo ti) {
+    private String dumpThread(ThreadMXBean tmx, ThreadInfo ti) {
+        String msg = "--------------------------------------------------------------------------------";
+        final StringBuilder sb = new StringBuilder(msg).append(StringBuilderNewLineAppender.SEP);
         final long ids = ti.getThreadId();
-        final String ss  = ti.getThreadState().toString();
-        //following should work because of autoboxing :)
-        String msg = sm.getString("thread.title", quote(ti.getThreadName()), ids, ss);
-        final StringBuilder sb = new StringBuilder(msg);
+        final String ss  = ti.getThreadState().toString();        
+        msg = sm.getString("thread.title", quote(ti.getThreadName()), ids, ss);
+        sb.append(msg);
         if (ti.getLockName() != null) {
             msg = sm.getString("thread.waiting.on", ti.getLockName());
             sb.append(" " + msg);
@@ -121,6 +133,28 @@ class ThreadMonitor {
             sb.append(StringBuilderNewLineAppender.SEP);
         }
         sb.append(StringBuilderNewLineAppender.SEP);
+        msg = sm.getString("thread.blocked.times", ti.getBlockedCount());
+        sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+        long bt = ti.getBlockedTime();
+        if (bt != -1) { //if bt == -1 thread contention monitoring is not enabled, reported above
+            msg = sm.getString("thread.blocked.totaltime", bt);
+            sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+        }
+        boolean tcput = tmx.isThreadCpuTimeEnabled() ? true : false;
+        if (tcput) {
+            long cput = tmx.getThreadCpuTime(ti.getThreadId());
+            if (cput != -1) {
+                BigInteger[] times = new BigInteger(cput + "").divideAndRemainder(S2NANOS);
+                msg = sm.getString("thread.total.cpu.time", times[0], times[1]);
+                sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+            }
+            long user = tmx.getThreadUserTime(ti.getThreadId());
+            if (user != -1) {
+                BigInteger[] times = new BigInteger(cput + "").divideAndRemainder(S2NANOS);
+                msg = sm.getString("thread.cpu.user.time", times[0], times[1]);
+                sb.append(msg).append(StringBuilderNewLineAppender.SEP);
+            }
+        }
         return ( sb.toString() );
     }
     
@@ -150,7 +184,7 @@ class ThreadMonitor {
             sb.append(sm.getString("deadlocks.found"));
             for (final long dt : dts) {
                 final ThreadInfo ti = tmx.getThreadInfo(dt);
-                sb.append(this.dumpThread(ti));
+                sb.append(this.dumpThread(tmx, ti));
             }
         }
         return ( sb.toString() );
