@@ -928,6 +928,7 @@ function guiValidate(reqMsg,reqInt, reqPort) {
         }
         if (styleClass.match("require")) {
             if (component.value=='') {
+                component.select();
                 component.focus();
                 return showAlert(reqMsg + ' ' + getLabel(component));
             }
@@ -1133,7 +1134,7 @@ function checkRequired(componentId, reqMsg){
     var result = (value != '') && (isWhitespace(value) == false); 
     if (result == false) {
         showAlert(reqMsg + ' ' + getLabel(component));
-        component.select();
+        //component.select();
         component.focus();
     }
     return result;
