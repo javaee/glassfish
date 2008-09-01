@@ -23,7 +23,7 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.deployment.UndeployCommand;
+import org.glassfish.deployment.admin.UndeployCommand;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;

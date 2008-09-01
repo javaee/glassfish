@@ -23,7 +23,7 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import org.glassfish.deployment.admin.DeployCommand;
 import java.io.File;
 import java.util.Properties;
 import org.glassfish.api.ActionReport;

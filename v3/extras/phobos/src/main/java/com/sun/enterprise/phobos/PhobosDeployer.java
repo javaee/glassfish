@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.phobos;
 
-import com.sun.enterprise.v3.deployment.DeployCommand;
+import org.glassfish.deployment.admin.DeployCommand;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;

@@ -21,7 +21,7 @@
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.deployment;
+package org.glassfish.deployment.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;

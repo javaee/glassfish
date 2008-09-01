@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.deployment;
+package org.glassfish.deployment.admin;
 
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;

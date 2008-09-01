@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.deployment;
+package org.glassfish.deployment.admin;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.Properties;
-import com.sun.enterprise.v3.deployment.ListComponentsCommand;
+import org.glassfish.deployment.admin.ListComponentsCommand;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
 import com.sun.enterprise.config.serverbeans.Engine;
