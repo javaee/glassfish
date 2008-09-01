@@ -39,9 +39,9 @@
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
         setSessionAttribute(key="ucTabs" value="installed");
-        setAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
+        setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
         setPageSessionAttribute(key="action" value="remove");
         setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.installed.pageTitle}");
         setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.installed.pageTitleHelp}");

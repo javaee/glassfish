@@ -33,28 +33,42 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- updateCenter/udateCenterContent.inc -->
+<!--updatecenter/installed.jsf -->
 
-
-#include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$attribute{pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
-            <sun:form id="propertyForm">
-<f:verbatim>
-    <script type="text/javascript">
-        admingui.nav.selectTreeNodeById('form:tree:updateCenter');
-    </script>
-</f:verbatim>
+    
+<!initPage 
+	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+        setSessionAttribute(key="ucTabs" value="installed");
+        setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
+        setPageSessionAttribute(key="action" value="remove");
+        setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.installed.tableTitle}");
+        setPageSessionAttribute(key="fromPage" value="installed.jsf");
+        setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
+        
+        getInstalledPath(result=>$attribute{installedPath});
+        getAuthority(result=>$attribute{authority});
+        getUcList(state="installed", result=>$attribute{listOfRows} );
+/>
+<!composition template="/templates/baseTemplate.tpl" 
+    pageTitle="$resource{i18nUC.updateCenter.installed.pageTitle}" 
+    helpText="$resource{i18nUC.updateCenter.installed.pageTitleHelp}"
+    i18nBundle="org.glassfish.admingui.core.Strings"
+    helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
+    helpkey="help.uc.installed"
+    bodyOnLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');"
+    >
+    
+    <!define name="headExtra">
+        <sun:script url="/resource/js/adminjsf.js" />
+    </define>
+    
+    <!define name="formExtra">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 #include "/updateCenter/ucTabs.inc"
-        <!-- Page Title -->
-         <sun:title id="propertyContentPage" title="$attribute{pageTitle}" helpText="$attribute{pageTitleHelp}"/>
-         <sun:propertySheet id="propertySheet">			 
+    </define>
+    <!define name="content">
+        <sun:propertySheet id="propertySheet">			 
             <sun:propertySheetSection id="propertySectionTextField">
                 <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
                     <staticText id="path" value="${installedPath}" />
@@ -65,13 +79,10 @@
             </sun:propertySheetSection>
         </sun:propertySheet> 
         "<br /><br />
-        
-            
-        
 #include "/updateCenter/ucTable.jsf"
-         "<br /><br />
-	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
-            </sun:form>
-        </sun:body>
+    </define>
+    <!define name="htmlExtra">
 #include "/shared/changeButtonsJS.inc"
-    </sun:html>
+    </define>
+    
+</composition>

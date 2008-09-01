@@ -22,6 +22,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.Catalog;
+import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.Version;
 
 
@@ -57,6 +58,43 @@ public class UpdateCenterHandlers {
     }
     
     
+    @Handler(id="getPkgDetailsInfo",
+    	input={
+        @HandlerInput(name="fmri", type=String.class, required=true )},
+        output={
+        @HandlerOutput(name="details", type=java.util.Map.class)})
+    public static void getPkgDetailsInfo(HandlerContext handlerCtx) {
+        String fmriStr = (String)handlerCtx.getInputValue("fmri");
+        //Called by the intiPage and don't need to process.  When we can use beforeCreate to do this, we can remove this check.
+        if (GuiUtil.isEmpty(fmriStr)){
+            handlerCtx.setOutputValue("details", new HashMap());
+            return;
+        }
+        Map details = new HashMap();  
+        Fmri fmri = new Fmri(fmriStr);
+        Image img = getUpdateCenterImage();
+        try{
+            if (img != null){
+                Manifest manifest = img.getManifest(fmri);
+                details.put("category", manifest.getAttribute(CATEGORY));
+                details.put("bytes", "" + manifest.getPackageSize() );
+                details.put("pkgSize", getPkgSize(manifest));
+                details.put("auth", img.getPreferredAuthorityName());
+                details.put("desc", manifest.getAttribute(DESC_LONG));
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        details.put("pkgName", fmri.getName());
+        details.put("uid", fmriStr);
+        details.put("version", getPkgVersion(fmri.getVersion()));
+        details.put("date", fmri.getVersion().getPublishDate());
+        handlerCtx.setOutputValue("details", details);
+        
+    }
+    
+    
     @Handler(id="getUcList",
     	input={
         @HandlerInput(name="state", type=String.class, required=true )},
@@ -86,15 +124,16 @@ public class UpdateCenterHandlers {
             for (Fmri fmri : displayList){
                 HashMap oneRow = new HashMap();
                 try{
+                    Manifest manifest = img.getManifest(fmri);
                     oneRow.put("selected", false);
-                    oneRow.put("fmri", fmri);
+                    oneRow.put("fmri", fmri.toString());
                     oneRow.put("pkgName", fmri.getName());
-                    Version version = fmri.getVersion();
-                    oneRow.put("version", getPkgVersion(version));
-                    oneRow.put("pkgDate", getPkgDate(version));
-                    //oneRow.put("rawDate", getRawDate(version));
-                    oneRow.put("urlPath", fmri.getURLPath());
-                    //System.out.println("NAME = " + fmri.getName() + ";  \nVERSION = " + fmri.getVersion() + "\nURLPath = " + fmri.getURLPath() );
+                    oneRow.put("version", getPkgVersion(fmri.getVersion()));
+                    oneRow.put("category", manifest.getAttribute(CATEGORY));
+                    oneRow.put("pkgSize", getPkgSize(manifest));
+                    oneRow.put("size", Integer.valueOf(manifest.getPackageSize()));
+                    oneRow.put("auth", img.getPreferredAuthorityName());
+                    oneRow.put("frmi", fmri);
                     result.add(oneRow);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -181,19 +220,18 @@ public class UpdateCenterHandlers {
     private static String getPkgVersion(Version version){
         //The version format is release[,build_release]-branch:datetime, which is decomposed into three DotSequences and the datetime. 
         //eg. 2.4.4,0-8.724:20080612T135341Z
-        String verStr = version.toString();
-        String verInfo = verStr.substring(0, verStr.indexOf(":"));
-        String build = "";
-        int commaIndex = verInfo.indexOf(",");
-        int dashIndex = verInfo.indexOf("-");
-        if (commaIndex == -1){
-            build = verInfo.substring(0, dashIndex);
-        }else
-            build = verInfo.substring(0, commaIndex);
-        if (dashIndex == -1)
-            return build;
-        String branch = verInfo.substring(dashIndex, verInfo.length() );
-        return build + branch;
+        
+        String dotSequence = version.getRelease().toString();
+        String branch = version.getBranch().toString();
+        return GuiUtil.isEmpty(branch) ? dotSequence : dotSequence+"-"+branch; 
+    }
+    
+    private static String getPkgSize(Manifest manifest){
+        int size = manifest.getPackageSize();
+        String sizep = (size <= MB) ? 
+            size/1024 + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeKB") :
+            size/MB + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeMB")  ;
+        return sizep;
     }
     
     private static String getPkgDate(Version version){
@@ -282,5 +320,7 @@ public class UpdateCenterHandlers {
         }
     }
     
-
+    final private static String CATEGORY = "info.classification";
+    final private static String DESC_LONG = "description_long";
+    final private static int MB = 1024*1024;
 }
