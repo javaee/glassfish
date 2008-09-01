@@ -42,6 +42,7 @@
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
   <test name="asadmin_tests">
     <classes>
+      <class name="test.admin.JvmOptionTests"/>
       <class name="test.admin.JdbcConnectionPoolTests"/>
       <class name="test.admin.WebtierTests"/>
     </classes>

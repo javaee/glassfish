@@ -23,90 +23,69 @@
 
 package test.admin;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 import java.util.jar.Manifest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import test.admin.util.GeneralUtils;
 
-/** Supposed to have JDBC connection pool and resource tests.
+/** Test related to creating/deleting/listing JVM options as supported by GlassFish.
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish v3 Prelude
  */
-public class JdbcConnectionPoolTests extends BaseAsadminTest {
-
-    private File path;
-    private static final String JAVADB_POOL = "javadb_pool"; //same as in resources.xml
-    private static final String ADD_RES     = "add-resources";
+public class JvmOptionTests extends BaseAsadminTest {
+    private static final String TEST_JOE    = "-Dname= joe blo"; //sufficiently unique
+    private static final String CJ          = "create-jvm-options";
+    private static final String DJ          = "delete-jvm-options";
+    private static final String LJ          = "list-jvm-options";
     
-    @Parameters({"resources.xml.relative.path"})
-    @BeforeClass
-    public void setupEnvironment(String relative) {
-        String cwd = System.getProperty("user.dir");
-        path = new File(cwd, relative);
-    }
     @Test(groups={"pulse"}) // test method
-    public void createPool() {
+    public void createJoe() {
         Map<String, String> options = Collections.EMPTY_MAP;
-        String operand = path.getAbsolutePath();
-        String up = GeneralUtils.toFinalURL(adminUrl, ADD_RES, options, operand);
+        String operand = TEST_JOE;
+        String up = GeneralUtils.toFinalURL(adminUrl, CJ, options, operand);
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         GeneralUtils.handleManifestFailure(man);
     }
-    @Test(groups={"pulse"}, dependsOnMethods={"createPool"})
-    public void pingPool() {
-        String CMD = "ping-connection-pool";
-        Map<String, String> options = Collections.EMPTY_MAP;
-        String operand = JAVADB_POOL;
-        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
-        Manifest man = super.invokeURLAndGetManifest(up);
-        GeneralUtils.handleManifestFailure(man);
-        //ping succeeded!
-    }
 
-    @Test(groups={"pulse"}, dependsOnMethods={"createPool"})
-    public void ensureCreatedPoolExists() {
-        Manifest man = runListPoolsCommand();
+    @Test(groups={"pulse"}, dependsOnMethods={"createJoe"})
+    public void ensureCreatedJoeExists() {
+        Manifest man = runListJoesCommand();
         GeneralUtils.handleManifestFailure(man);
         // we are past failure, now test the contents
         String children = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CHILDREN);
-        if (!children.contains(JAVADB_POOL)) {
-            throw new RuntimeException("deleted http listener: " + JAVADB_POOL + " exists in the list: " + children);
+        if (!children.contains(TEST_JOE)) {
+            throw new RuntimeException("deleted http listener: " + TEST_JOE + " exists in the list: " + children);
         }        
     }
     
-    @Test(groups={"pulse"}, dependsOnMethods={"ensureCreatedPoolExists"})
-    public void deletePool() {
-        String CMD = "delete-jdbc-connection-pool";
+    @Test(groups={"pulse"}, dependsOnMethods={"ensureCreatedJoeExists"})
+    public void deleteJoe() {
         Map<String, String> options = Collections.EMPTY_MAP;
-        String operand = JAVADB_POOL;
-        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+        String operand = TEST_JOE;
+        String up = GeneralUtils.toFinalURL(adminUrl, DJ, options, operand);
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         GeneralUtils.handleManifestFailure(man);        
     }
 
-    @Test(groups={"pulse"}, dependsOnMethods={"deletePool"})
-    public void deletedPoolDoesNotExist() {
-        Manifest man = runListPoolsCommand();
+    @Test(groups={"pulse"}, dependsOnMethods={"deleteJoe"})
+    public void deletedJoeDoesNotExist() {
+        Manifest man = runListJoesCommand();
         GeneralUtils.handleManifestFailure(man);
         // we are past failure, now test the contents
         String children = GeneralUtils.getValueForTypeFromManifest(man, GeneralUtils.AsadminManifestKeyType.CHILDREN);
-        if (children.contains(JAVADB_POOL)) {
-            throw new RuntimeException("deleted http listener: " + JAVADB_POOL + " exists in the list: " + children);
+        if (children.contains(TEST_JOE)) {
+            throw new RuntimeException("deleted http listener: " + TEST_JOE + " exists in the list: " + children);
         }         
     }
 
-    private Manifest runListPoolsCommand() {
-        String CMD = "list-jdbc-connection-pools";
+    private Manifest runListJoesCommand() {
         Map<String, String> options = Collections.EMPTY_MAP;
         String operand = null;
-        String up = GeneralUtils.toFinalURL(adminUrl, CMD, options, operand);
+        String up = GeneralUtils.toFinalURL(adminUrl, LJ, options, operand);
 //        Reporter.log("url: " + up);
         Manifest man = super.invokeURLAndGetManifest(up);
         return ( man );
