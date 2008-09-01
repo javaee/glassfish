@@ -15,10 +15,9 @@
         <!insert name="headExtra" />
     </sun:head>
 </insert>
-    <sun:body>
-
-        <sun:form id="form"> 
-#include "/shared/treeBreadcrumbs.inc"
+    <sun:body onLoad="#{bodyOnLoad}">
+        <sun:form id="form">
+            <!insert name="formExtra" />
             <sun:title title="#{pageTitle}" helpText="#{helpText}">
                 <!insert name="titleExtra" />
 
@@ -37,5 +36,6 @@
             <!insert name="helpkey" />
         </sun:form>
     </sun:body>
+    <!insert name="htmlExtra" />
 </sun:html>
 </sun:page>

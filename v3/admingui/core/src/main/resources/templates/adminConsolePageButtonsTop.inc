@@ -7,5 +7,8 @@
             savePropertiesMap(destination="#{amxConfig}", values="#{newProps}");
         }
         updateAmxConfig(moduleConfig="#{amxConfig}", configMap="$pageSession{configMap}");
+        if (#{displayFeedback}){
+            prepareSuccessfulMsg();
+        }
     />
 </sun:button>                      

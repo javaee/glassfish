@@ -1,7 +1,11 @@
 <!initPage
 #include "/templates/adminConsoleInit.inc"
+setAttribute(key="displayFeedback" value="#{displayFeedback}");
 />
 <!composition template="/templates/propertySheetTemplate.tpl">
+    <!define name="formExtra">
+#include "/templates/adminConsoleForm.inc"
+    </define> 
     <!define name="titleExtra">
         <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >    
             <!command
