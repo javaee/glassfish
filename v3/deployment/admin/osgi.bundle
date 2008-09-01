@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.v3.deployment
+-exportcontents: org.glassfish.deployment.admin
