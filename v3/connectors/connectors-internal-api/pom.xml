@@ -65,11 +65,6 @@
             <version>${hk2.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>

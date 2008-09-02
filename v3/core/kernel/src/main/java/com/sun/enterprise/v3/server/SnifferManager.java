@@ -131,34 +131,4 @@ public class SnifferManager {
         }
         return appSniffers;
     }
-
-    /**
-     * Sets up a parent classloader that will be used to create a temporary application
-     * class loader to load classes from the archive before the Deployers are available.
-     * Sniffer.handles() method takes a class loader as a parameter and this class loader
-     * needs to be able to load any class the sniffer load themselves.
-     *
-     * @param parent parent class loader for this class loader
-     * @param sniffers sniffer instances
-     * @return a class loader with visibility on all classes loadable by classloaders.
-     */
-    public ClassLoader createSnifferParentCL(ClassLoader parent, Collection<Sniffer> sniffers) {
-        // Use the sniffers class loaders as the delegates to the parent class loader.
-        // This will allow any class loadable by the sniffer (therefore visible to the sniffer
-        // class loader) to be also loadable by the archive's class loader.
-        ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
-        for (Sniffer sniffer : sniffers) {
-            cl.addDelegate(sniffer.getClass().getClassLoader());
-        }
-        return cl;
-
-    }
-
-    /**
-     * Short for {@code createSnifferParentCL(parent,this.getSniffers())}
-     */
-    public final ClassLoader createSnifferParentCL(ClassLoader parent) {
-        return createSnifferParentCL(parent,getSniffers());
-    }
-
 }

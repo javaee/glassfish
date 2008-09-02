@@ -157,31 +157,34 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
                 return;
             }
 
-            // create the parent class loader
-            ClassLoader parentCL = snifferManager.createSnifferParentCL(null, snifferManager.getSniffers());
-
             final DeploymentContextImpl deploymentContext =
                 new DeploymentContextImpl(logger, archive, parameters, env);
             deploymentContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
-            deploymentContext.createClassLoaders(parentCL, archiveHandler);
+            deploymentContext.createClassLoaders(clh, archiveHandler);
 
-            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive,
-                    deploymentContext.getClassLoader());
+            final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(currentCL);
+                final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive,
+                        deploymentContext.getClassLoader());
 
-            if (appSniffers.size()==0) {
-                report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+                if (appSniffers.size()==0) {
+                    report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
 
-            deploymentContext.setProps(contextProps);
+                deploymentContext.setProps(contextProps);
 
-            ApplicationInfo appInfo = enable(appSniffers, deploymentContext, 
-                report);
+                ApplicationInfo appInfo = enable(appSniffers, deploymentContext,
+                    report);
 
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
-                setEnableAttributeInDomainXML(component, true);
+                if (report.getActionExitCode().equals(
+                    ActionReport.ExitCode.SUCCESS)) {
+                    setEnableAttributeInDomainXML(component, true);
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during enabling: ", e);

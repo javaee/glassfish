@@ -148,7 +148,7 @@ public class ApplicationLifecycle {
     ServerEnvironmentImpl env;
 
     @Inject
-    ClassLoaderHierarchy clh;
+    protected ClassLoaderHierarchy clh;
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -183,12 +183,11 @@ public class ApplicationLifecycle {
      * which we create and maintain.
      *
      * @param parent the parent class loader
-     * @param context deployment context 
-     * @param deployers list of elligible deployers for this deployment.
+     * @param context deployment context
      * @return class loader capable of loading public APIs identified by the deployers
      * @throws ResolveError if one of the deployer's public API module is not found.
      */
-    protected ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContextImpl context, Collection<Deployer> deployers)
+    protected ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContextImpl context)
         throws ResolveError {
 
         final ReadableArchive source = context.getSource();
@@ -315,12 +314,8 @@ public class ApplicationLifecycle {
                     Deployer deployer = getDeployer(containerInfo);
                     deployers.add(deployer);
                 }
-                ClassLoader applibCL = clh.getAppLibClassLoader(appName, 
-                    getAppLibs(context));
-                ClassLoader parentCL = createApplicationParentCL(applibCL, 
-                    context, deployers);
                 ArchiveHandler handler = getArchiveHandler(context.getSource());
-                context.createClassLoaders(parentCL, handler);
+                context.createClassLoaders(clh, handler);
 
                 return startModules(appInfo, context, report, tracker);
             } catch (Exception e) {
@@ -510,15 +505,8 @@ public class ApplicationLifecycle {
             deployers.add(deployer);
         }
 
-        final String appName = context.getCommandParameters().getProperty(
-            ParameterNames.NAME);
-        ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs(context));
-
-        // Ok we now have all we need to create the parent class loader for our application
-        // which will be stored in the deployment context.
-        ClassLoader parentCL = createApplicationParentCL(applibCL, context, deployers);
         ArchiveHandler handler = getArchiveHandler(context.getSource());
-        context.createClassLoaders(parentCL, handler);
+        context.createClassLoaders(clh, handler);
 
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
@@ -569,6 +557,9 @@ public class ApplicationLifecycle {
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
         }
+
+        final String appName = context.getCommandParameters().getProperty(
+            ParameterNames.NAME);
 
         ApplicationInfo appInfo = new ApplicationInfo(context.getSource(),
             appName, tracker.get(ModuleInfo.class).toArray(
@@ -1173,54 +1164,5 @@ public class ApplicationLifecycle {
         FileUtils.whack(generatedJspRoot);
     }
 
-    private List<URI> getAppLibs(DeploymentContext context)
-            throws URISyntaxException {
-        List<URI> libURIs = new ArrayList<URI>();
-        String libraries = context.getCommandParameters().getProperty(ParameterNames.LIBRARIES);
-        if (libraries != null) {
-            URL[] urls = convertToURL(libraries);
-            for (URL url : urls) {
-                libURIs.add(url.toURI());
-            }
-        }
-        return libURIs;
-    }
-
-    /**
-     * converts libraries specified via the --libraries deployment option to
-     * URL[].  The library JAR files are specified by either relative or
-     * absolute paths.  The relative path is relative to instance-root/lib/applibs.
-     * The libraries  are made available to the application in the order specified.
-     *
-     * @param librariesStr is a comma-separated list of library JAR files
-     * @return array of URL
-     */
-    private URL[] convertToURL(String librariesStr) {
-        if(librariesStr == null)
-            return null;
-        String [] librariesStrArray = librariesStr.split(",");
-        if(librariesStrArray == null)
-            return null;
-        final URL [] urls = new URL[librariesStrArray.length];
-        //Using the string from lib and applibs requires admin which is
-        //built after appserv-core.
-        final String appLibsDir = env.getLibPath()
-                                  + File.separator  + "applibs";
-        int i=0;
-        for(final String libraryStr:librariesStrArray){
-            try {
-                File f = new File(libraryStr);
-                if(!f.isAbsolute())
-                    f = new File(appLibsDir, libraryStr);
-                URL url = f.toURL();
-                urls[i++] = url;
-            } catch (MalformedURLException malEx) {
-                logger.log(Level.WARNING, "Cannot convert classpath to URL",
-                        libraryStr);
-                logger.log(Level.WARNING, malEx.getMessage(), malEx);
-            }
-        }
-        return urls;
-    }
 }
 

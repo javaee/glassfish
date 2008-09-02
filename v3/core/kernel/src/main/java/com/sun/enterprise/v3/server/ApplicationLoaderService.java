@@ -130,7 +130,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                                 deploymentProperties,
                                 env);
                         depContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
-                        depContext.createClassLoaders(null, handler);
+                        depContext.createClassLoaders(clh, handler);
 
                         Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive,
                                 depContext.getClassLoader());
@@ -149,7 +149,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             sourceArchive.close();
                         }
                     }
-                } catch(IOException e) {
+                } catch(Exception e) {
                     logger.log(Level.SEVERE, "IOException while opening deployed artifact", e);
 
                 }

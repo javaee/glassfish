@@ -235,52 +235,57 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
 
             // create the parent class loader
-            ClassLoader parentCL = snifferManager.createSnifferParentCL(null);
-            // now the archive class loader, this will only be used for the sniffers.handles() method
-            final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
-
-            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
-            if (appSniffers.size()==0) {
-                report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
-                return;
-            }
-
-            final ReadableArchive sourceArchive = archive; 
+            final ReadableArchive sourceArchive = archive;
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     sourceArchive, parameters, env);
-            deploymentContext.createClassLoaders(parentCL, archiveHandler);
 
-            // clean up any generated files
-            deleteContainerMetaInfo(deploymentContext);
+            // create the classloaders used for deployment and load-time
+            deploymentContext.createClassLoaders(clh, archiveHandler);
+            final ClassLoader cloader = deploymentContext.getClassLoader();
 
-            Properties moduleProps = deploymentContext.getProps();
-            moduleProps.setProperty(ServerTags.NAME, name);
-            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toURL().toString());
-            // set to default "user", deployers can override it 
-            // during processing
-            moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
-            if (contextRoot!=null) {
-                moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
-            }
-            if (libraries!=null) {
-                moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
-            }
-            moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
-            moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
-            if (virtualservers != null) {
-                moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS, 
-                    virtualservers);
-            } 
+            final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(cloader);
+                final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
+                if (appSniffers.size()==0) {
+                    report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
+                    return;
+                }
 
-            if (appConfigList != null) {
-                addApplicationConfigToProps(moduleProps, appConfigList);
-            }
+                // clean up any generated files
+                deleteContainerMetaInfo(deploymentContext);
 
-            ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
-            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
-                // register application information in domain.xml
-                registerAppInDomainXML(appInfo, deploymentContext);
+                Properties moduleProps = deploymentContext.getProps();
+                moduleProps.setProperty(ServerTags.NAME, name);
+                moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toURL().toString());
+                // set to default "user", deployers can override it
+                // during processing
+                moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
+                if (contextRoot!=null) {
+                    moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+                }
+                if (libraries!=null) {
+                    moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
+                }
+                moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
+                moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+                if (virtualservers != null) {
+                    moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS,
+                        virtualservers);
+                }
 
+                if (appConfigList != null) {
+                    addApplicationConfigToProps(moduleProps, appConfigList);
+                }
+
+                ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
+                if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
+                    // register application information in domain.xml
+                    registerAppInDomainXML(appInfo, deploymentContext);
+
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
             }
         } catch(Exception e) {
             report.failure(logger,"Error during deployment : "+e.getMessage(),e);

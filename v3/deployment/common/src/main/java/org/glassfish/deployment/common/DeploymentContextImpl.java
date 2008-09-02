@@ -30,10 +30,16 @@ import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -136,9 +142,15 @@ public class DeploymentContextImpl implements DeploymentContext {
         return getClassLoader(true);
     }
 
-    public void createClassLoaders(ClassLoader parent, ArchiveHandler handler) {
-        this.sharableTemp = handler.getClassLoader(parent, source);
-        this.cloader = handler.getClassLoader(parent, source);
+    public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
+            throws URISyntaxException, MalformedURLException {
+
+        // first we create the appLib class loader, this is non shared libraries class loader
+        final String appName = getCommandParameters().getProperty(ParameterNames.NAME);
+        ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs());
+
+        this.sharableTemp = handler.getClassLoader(applibCL, source);
+        this.cloader = handler.getClassLoader(applibCL, source);
     }
 
     public void invalidateTempClassLoader() {
@@ -258,4 +270,54 @@ public class DeploymentContextImpl implements DeploymentContext {
     public List<ClassFileTransformer> getTransformers() {
         return transformers;
     }
+
+    private List<URI> getAppLibs()
+            throws URISyntaxException {
+        List<URI> libURIs = new ArrayList<URI>();
+        String libraries = getCommandParameters().getProperty(ParameterNames.LIBRARIES);
+        if (libraries != null) {
+            URL[] urls = convertToURL(libraries);
+            for (URL url : urls) {
+                libURIs.add(url.toURI());
+            }
+        }
+        return libURIs;
+    }
+
+    /**
+     * converts libraries specified via the --libraries deployment option to
+     * URL[].  The library JAR files are specified by either relative or
+     * absolute paths.  The relative path is relative to instance-root/lib/applibs.
+     * The libraries  are made available to the application in the order specified.
+     *
+     * @param librariesStr is a comma-separated list of library JAR files
+     * @return array of URL
+     */
+    private URL[] convertToURL(String librariesStr) {
+        if(librariesStr == null)
+            return null;
+        String [] librariesStrArray = librariesStr.split(",");
+        if(librariesStrArray == null)
+            return null;
+        final URL [] urls = new URL[librariesStrArray.length];
+        //Using the string from lib and applibs requires admin which is
+        //built after appserv-core.
+        final String appLibsDir = env.getLibPath()
+                                  + File.separator  + "applibs";
+        int i=0;
+        for(final String libraryStr:librariesStrArray){
+            try {
+                File f = new File(libraryStr);
+                if(!f.isAbsolute())
+                    f = new File(appLibsDir, libraryStr);
+                URL url =f.toURI().toURL();
+                urls[i++] = url;
+            } catch (MalformedURLException malEx) {
+                logger.log(Level.WARNING, "Cannot convert classpath to URL",
+                        libraryStr);
+                logger.log(Level.WARNING, malEx.getMessage(), malEx);
+            }
+        }
+        return urls;
+    }    
 }

@@ -83,8 +83,8 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
+            <artifactId>javax.mail</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>
     </dependencies>
 </project>
