@@ -46,7 +46,6 @@ import javax.servlet.Servlet;
 import java.util.Collection;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
 
 /**
@@ -84,7 +83,6 @@ public class JspStatsTelemetry{
 
     public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
         if (isEnabled != flag) {
             for (ProbeClientMethodHandle handle : handles) {
                 if (flag == true) 
@@ -93,6 +91,10 @@ public class JspStatsTelemetry{
                     handle.disable();
             }
             jspNode.setEnabled(flag);
+            if (isEnabled) {
+                //It means you are turning from ON to OFF, reset the statistics
+                resetStats();
+            }
             isEnabled = flag;
         }
     }
@@ -103,7 +105,7 @@ public class JspStatsTelemetry{
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {
 	// handle the servlet loaded probe events
-        logger.finest("Servlet Loaded event received - jspName = " + 
+        logger.finest("JSP Loaded event received - jspName = " + 
                              jsp.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         if (!isValidEvent(appName, hostName)) {
@@ -117,58 +119,42 @@ public class JspStatsTelemetry{
             
     }
 /*
-    @ProbeListener("web:servlet::servletDestroyedEvent")
-    public void servletDestroyedEvent(
-                    @ProbeParam("servlet") Servlet servlet,
+    @ProbeListener("web:jsp::jspDestroyedEvent")
+    public void jspDestroyedEvent(
+                    @ProbeParam("servlet") Servlet jsp,
                     @ProbeParam("appName") String appName,
                     @ProbeParam("hostName") String hostName) {
-	// handle the servlet loaded probe events
-        logger.finest("Servlet Destroyed event received - servletName = " + 
-                             servlet.getServletConfig().getServletName() + 
+	// handle the jsp destroyed probe events
+        logger.finest("JSP Destroyed event received - jspName = " + 
+                             jsp.getServletConfig().getServletName() + 
                              ": appName = " + appName + ": hostName = " + hostName);
         activeJspsLoadedCount.decrement();
     }
 */
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
-        if (!webMonitoringEnabled){
-            //disable handles
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
-    }
-
-    public void enableProbeListenerHandles(boolean isEnabled) {
-        if (isEnabled != webMonitoringEnabled) {
-            webMonitoringEnabled = isEnabled;
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
     }
 
     public boolean isEnabled() {
         return isEnabled;
     }
     
-    private void tuneProbeListenerHandles(boolean shouldEnable) {
-        //disable handles
-        for (ProbeClientMethodHandle handle : handles) {
-            if (shouldEnable)
-                handle.enable();
-            else
-                handle.disable();
-        }
-        
-    }
-
     private boolean isValidEvent(String mName, String hostName) {
         //Temp fix, get the appname from the context root
         if ((moduleName == null) || (vsName == null)) {
             return true;
         }
-        String appName = WebMonitorStartup.getAppName(mName);
+        String appName = WebTelemetryBootstrap.getAppName(mName);
         if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
             return true;
         }
         
         return false;
+    }
+
+    private void resetStats() {
+        activeJspsLoadedCount.setReset(true);
+        maxJspsLoadedCount.setReset(true);
+        totalJspsLoadedCount.setReset(true);
     }
 }

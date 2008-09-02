@@ -103,7 +103,6 @@ public class SessionStatsTelemetry{
 
     public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
         if (isEnabled != flag) {
             for (ProbeClientMethodHandle handle : handles) {
                 if (flag == true) 
@@ -112,6 +111,10 @@ public class SessionStatsTelemetry{
                     handle.disable();
             }
             sessionNode.setEnabled(flag);
+            if (isEnabled) {
+                //It means you are turning from ON to OFF, reset the statistics
+                resetStats();
+            }
             isEnabled = flag;
         }
     }
@@ -284,40 +287,29 @@ public class SessionStatsTelemetry{
     
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
-        if (!webMonitoringEnabled){
-            //disable handles
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
     }
     
-    public void enableProbeListenerHandles(boolean isEnabled) {
-        if (isEnabled != webMonitoringEnabled) {
-            webMonitoringEnabled = isEnabled;
-            tuneProbeListenerHandles(webMonitoringEnabled);
-        }
-    }
-    
-    private void tuneProbeListenerHandles(boolean shouldEnable) {
-        //disable handles
-        for (ProbeClientMethodHandle handle : handles) {
-            if (shouldEnable)
-                handle.enable();
-            else
-                handle.disable();
-        }
-        
-    }
-
     private boolean isValidEvent(String mName, String hostName) {
         //Temp fix, get the appname from the context root
         if ((moduleName == null) || (vsName == null)) {
             return true;
         }
-        String appName = WebMonitorStartup.getAppName(mName);
+        String appName = WebTelemetryBootstrap.getAppName(mName);
         if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
             return true;
         }
         
         return false;
+    }
+
+    private void resetStats() {
+        activeSessionsCurrent.setReset(true);
+        activeSessionsHigh.setReset(true);
+        sessionsTotal.setReset(true);
+        expiredSessionsTotal.setReset(true);
+        rejectedSessionsTotal.setReset(true);
+        persistedSessionsTotal.setReset(true);
+        passivatedSessionsTotal.setReset(true);
+        activatedSessionsTotal.setReset(true);
     }
 }
