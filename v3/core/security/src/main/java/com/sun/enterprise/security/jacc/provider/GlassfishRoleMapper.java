@@ -38,9 +38,11 @@ package com.sun.enterprise.security.jacc.provider;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -155,8 +157,7 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
 
     public boolean isSubjectInRole(String pcid, Subject s, String roleName)
             throws SecurityException {
-        return arePrincipalsInRole(pcid, (Principal[]) s.getPrincipals().toArray(),
-                roleName);
+        return arePrincipalsInRole(pcid, toArray(s.getPrincipals()),roleName);
     }
 
     public boolean arePrincipalsInRole(String pcid, Principal[] principals,
@@ -166,7 +167,7 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
 
     public Set<String> getRolesOfSubject(String pcid, Subject s)
             throws SecurityException, UnsupportedOperationException {
-        return getRolesOfPrincipals(pcid, (Principal[]) s.getPrincipals().toArray());
+        return getRolesOfPrincipals(pcid, toArray(s.getPrincipals()));
     }
 
     public Set<String> getRolesOfPrincipals(String pcid, Principal[] principals)
@@ -183,7 +184,7 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
             return null;
         }
 
-        HashSet<String> roles = null;
+        HashSet<String> roles = new HashSet<String>();
         Iterator<String> it = roleNames.iterator();
         while (it.hasNext()) {
             String roleName = it.next();
@@ -203,9 +204,20 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
 
     public BitSet getRolesOfSubject(String pcid, String[] roles, Subject s)
             throws SecurityException, UnsupportedOperationException {
-        return getRolesOfPrincipals(pcid, roles, (Principal[]) s.getPrincipals().toArray());
+        return getRolesOfPrincipals(pcid, roles, toArray(s.getPrincipals()));
     }
 
+    private Principal[] toArray(Set principals) {
+        Iterator it = principals.iterator();
+        Principal[] list = new Principal[principals.size()];
+        int i=0;
+        for (Object obj: principals) {
+            if (obj instanceof Principal) {
+                list[i] = (Principal)obj;
+            }
+        }
+        return list;
+    }
     public BitSet getRolesOfPrincipals(String pcid, String[] roles, Principal[] principals)
             throws SecurityException, UnsupportedOperationException {
         BitSet roleSet = new BitSet(roles.length);

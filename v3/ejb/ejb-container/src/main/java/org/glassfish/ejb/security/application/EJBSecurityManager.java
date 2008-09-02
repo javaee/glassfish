@@ -998,7 +998,9 @@ public final class EJBSecurityManager
 
                 // form a new key set so that it does not share with
                 // cacheProtectionDomain and protectionDomainCache
-                accessControlContextCache.put(new HashSet(principalSet), acc);
+                if (principalSet != null) {
+                    accessControlContextCache.put(new HashSet(principalSet), acc);
+                }
 
                 _logger.fine("JACC: new AccessControlContext added to cache");
 
