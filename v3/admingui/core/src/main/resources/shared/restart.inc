@@ -33,16 +33,14 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!--
 <event>
     <!beforeEncode
         if(! $session{supportCluster}){
-            checkRestart(RestartRequired=>$attribute{restartRequired});
+            checkRestart(RestartRequired=>$attribute{restartRequired}, 
+                unprocessedChanges=>$attribute{unprocessedChanges});
         }
         if($session{supportCluster}){
             setAttribute(key="restartRequired" value="$boolean{false}");
         }
     />
 </event>
-
--->

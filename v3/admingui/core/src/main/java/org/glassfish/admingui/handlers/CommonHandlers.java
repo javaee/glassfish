@@ -51,7 +51,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import javax.el.ELContext;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AMXUtil;
@@ -63,7 +62,8 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.base.SystemStatus;
+import com.sun.appserv.management.base.UnprocessedConfigChange;
 import com.sun.appserv.management.config.PropertiesAccess;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
@@ -77,9 +77,6 @@ import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
-import java.util.HashMap;
-import javax.el.ValueExpression;
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
 import org.glassfish.admingui.common.util.MiscUtil;
@@ -526,13 +523,13 @@ public class CommonHandlers {
      */
     @Handler(id="checkRestart",
     output={
-        @HandlerOutput(name="RestartRequired", type=Boolean.class)}
+        @HandlerOutput(name="RestartRequired", type=Boolean.class),
+        @HandlerOutput(name="unprocessedChanges", type=List.class)}
     )
     public void checkRestart(HandlerContext handlerCtx) {
-        
-        //TODO-V3
-        //Boolean restartRequired = (Boolean)JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEServer,name=server,category=runtime", "restartRequired");
-        handlerCtx.setOutputValue("RestartRequired", false); 
+        List<Object[]> changes = AMXRoot.getInstance().getDomainRoot().getSystemStatus().getUnprocessedConfigChanges();
+        handlerCtx.setOutputValue("RestartRequired", changes.size() > 0); 
+        handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }
     
     /**

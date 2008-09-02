@@ -36,11 +36,14 @@
 <!-- header.jsf -->
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    getAmxRoot(amxRoot=>$attribute{amxRoot});
+    setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
 />
 <sun:page>
     <!beforeCreate
         if(! $session{supportCluster}){
-            checkRestart(RestartRequired=>$session{restartRequired});
+            checkRestart(RestartRequired=>$session{restartRequired},
+                unprocessedChanges=>$session{unprocessChanges});
         }
         if($session{supportCluster}){
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
@@ -67,8 +70,8 @@
 			<sun:helpWindow id="helpLink" windowTitle="$resource{i18n.helpWindowTitle}" text="$resource{i18n.masthead.Help}" toolTip="$resource{i18n.helpWindowTooltip}" helpFile="CONTEXT_HELP.html" onClick="doHelp(this); return false; " onKeyPress="doHelp(this); return false; " /> 
 		   </facet>
 		    <!facet logoutLink>
-			<sun:hyperlink id="logoutLink" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
-                            onClick="if (!confirm('$resource{i18n.msg.JS.confirmLogout}')) return false;" onKeyPress="javascript: return true;" > 
+			<sun:hyperlink id="logoutLink" rendered="#{!anonLogin}" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
+                            onClick="if (!confirm('$resource{i18n.msg.JS.confirmLogout}')) return false;" onKeyPress="javascript: return true;" url="/" > 
                             <!command
                                 logout();
 				redirect("#{request.contextPath}/index.jsf");
@@ -80,7 +83,7 @@
                       "<table border="0" cellpadding="0" cellspacing="0"><td valign="top">&nbsp;&nbsp;&nbsp;&nbsp;
                       <sun:image id="alertImage" rendered="$session{restartRequired}"
                         alt="restart required" height="$int{17}"  width="$int{17}" 
-                        url="/theme/com/sun/webui/jsf/suntheme/images/alerts/warning_medium.gif"/>
+                        url="/theme/woodstock4_3/suntheme/images/alerts/warning_medium.gif"/>
                         "&nbsp;&nbsp;</td><td>
                       <sun:hyperlink id="restartLink" rendered="$session{restartRequired}"
                         style="color:white;"

@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -38,7 +37,7 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getRequestValue(key="name" value=>$page{name});
@@ -48,9 +47,10 @@
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18nSecurity.manageUsers.TablePageTitle}">
             <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
 #include "/shared/alertMsg.inc"        
         </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');  reloadHeaderFrame();">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.manageUsers.TablePageTitle}" 
@@ -67,7 +67,7 @@
                     </facet>                       
                     "<br /> <br />
                 </sun:title>
-                 <sun:propertySheet id="propertySheet">			 
+                 <sun:propertySheet id="propertySheet">             
                 <sun:propertySheetSection id="propertySectionTextField">
                     <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nSecurity.realm.realmName}" >
                         <sun:staticText id="NameStatic" text="#{name}"/> 

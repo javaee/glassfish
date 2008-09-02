@@ -1567,10 +1567,13 @@ function checkForSelectedValue(fieldId) {
 }
 
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
-//    if (currentRestartStatus != oldRestartStatus) {
-//        parent.parent.frames["header"].location.reload();
-//        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '103,*', 0);
-//    }
+    if (currentRestartStatus != oldRestartStatus) {
+        reloadHeaderFrame();
+        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '103,*', 0);
+    }
     return true;
 }
 
+function reloadHeaderFrame() {
+       parent.parent.frames["header"].location.reload();
+}

@@ -11,6 +11,7 @@
 
 <sun:html>
 <!insert name="head">
+    <sun:script url="/resource/js/adminjsf.js" />
     <sun:head title="#{pageTitle}">
         <!insert name="headExtra" />
     </sun:head>

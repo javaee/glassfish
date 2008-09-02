@@ -42,14 +42,13 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-
 /**
  *
  * @author anilam
  */
-
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -65,7 +64,6 @@ import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
-import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.ext.logging.LogFileAccess;
 import com.sun.appserv.management.monitor.ServerRootMonitor;
@@ -75,12 +73,12 @@ import javax.faces.context.ExternalContext;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 public class InstanceHandler {
+
     /** Creates a new instance of InstanceHandler */
     public InstanceHandler() {
     }
-    
+
     /**
      *	<p> This handler returns the values for all the attributes in the
      *      PE Server Instance General Page.</p>
@@ -93,29 +91,30 @@ public class InstanceHandler {
      *  <p> Output value: "debugPort" -- Type: <code>java.lang.String</code></p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id="getInstanceGeneralAttributes",
-        input={
-            @HandlerInput(name="instanceName", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="hostName",     type=String.class),
-            @HandlerOutput(name="httpPorts", type=String.class),
-            @HandlerOutput(name="iiopPorts", type=String.class),
-            @HandlerOutput(name="version", type=String.class),
-            @HandlerOutput(name="configDir", type=String.class),
-            @HandlerOutput(name="debugPort", type=String.class)})
-
+    @Handler(id = "getInstanceGeneralAttributes",
+    input = {
+        @HandlerInput(name = "instanceName", type = String.class, required = true)
+    },
+    output = {
+        @HandlerOutput(name = "hostName", type = String.class),
+        @HandlerOutput(name = "httpPorts", type = String.class),
+        @HandlerOutput(name = "iiopPorts", type = String.class),
+        @HandlerOutput(name = "version", type = String.class),
+        @HandlerOutput(name = "configDir", type = String.class),
+        @HandlerOutput(name = "debugPort", type = String.class)
+    })
     public static void getInstanceGeneralAttributes(HandlerContext handlerCtx) {
-        
+
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        if(GuiUtil.isEmpty(instanceName)){
+        if (GuiUtil.isEmpty(instanceName)) {
             //TODO log:
             System.out.println("instanceName is not provided, set to \"server\"");
-            instanceName="server";
+            instanceName = "server";
         }
-        
+
         AMXRoot amxRoot = AMXRoot.getInstance();
         String configName = amxRoot.getConfigName(instanceName);
-        
+
         // get host Name (for PE only.  For EE, we just display the name of the server instance).
         //TODO: once we can test if we are running in PE or EE environment, we should do accordingly.
         //      for now, assume it is PE.
@@ -123,38 +122,38 @@ public class InstanceHandler {
         HttpServletRequest request = (HttpServletRequest) extContext.getRequest();   //we only deal with servlet, not Portlet
         String hostName = request.getServerName();
         handlerCtx.setOutputValue("hostName", hostName);
-        
 
-         //http ports
+
+        //http ports
         HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
-        Map<String,HTTPListenerConfig>listeners = service.getHTTPListenerConfigMap();
+        Map<String, HTTPListenerConfig> listeners = service.getHTTPListenerConfigMap();
         StringBuffer ports = new StringBuffer();
-        for(String key : listeners.keySet()){
+        for (String key : listeners.keySet()) {
             String port = listeners.get(key).getPort();
-            if (port.startsWith("$")){
-                port = resolveToken( (port.substring(2, port.length()-1) ), instanceName);
+            if (port.startsWith("$")) {
+                port = resolveToken((port.substring(2, port.length() - 1)), instanceName);
             }
-            ports.append(","+port);
+            ports.append("," + port);
         }
         ports.deleteCharAt(0);  //remove the first ','
         handlerCtx.setOutputValue("httpPorts", ports.toString());
-        
-        
-       //iiop ports
+
+
+        //iiop ports
         IIOPServiceConfig iiopService = amxRoot.getConfig(configName).getIIOPServiceConfig();
-        Map<String,IIOPListenerConfig> iiopListeners = iiopService.getIIOPListenerConfigMap();
+        Map<String, IIOPListenerConfig> iiopListeners = iiopService.getIIOPListenerConfigMap();
         StringBuffer iports = new StringBuffer();
-        for(String key : iiopListeners.keySet()){
+        for (String key : iiopListeners.keySet()) {
             String iport = iiopListeners.get(key).getPort();
-            if (iport.startsWith("$")){
-                iport = resolveToken( (iport.substring(2, iport.length()-1) ), instanceName);
+            if (iport.startsWith("$")) {
+                iport = resolveToken((iport.substring(2, iport.length() - 1)), instanceName);
             }
-            iports.append(","+iport);
+            iports.append("," + iport);
         }
         iports.deleteCharAt(0);  //remove the first ','
         handlerCtx.setOutputValue("iiopPorts", iports.toString());
-        
-        
+
+
         String configDir = amxRoot.getDomainRoot().getConfigDir();
         String version = amxRoot.getDomainRoot().getApplicationServerFullVersion();
         String debugPort = "";
@@ -163,117 +162,109 @@ public class InstanceHandler {
         String doption = "";
         while (tokens.hasMoreTokens()) {
             doption = tokens.nextToken().trim();
-            if (doption.startsWith("address") ){
+            if (doption.startsWith("address")) {
                 int pos = doption.indexOf("=");
-                if (pos >=0){
-                    debugPort = doption.substring(pos+1).trim();
+                if (pos >= 0) {
+                    debugPort = doption.substring(pos + 1).trim();
                     break;
                 }
             }
         }
-        
+
         String msg = GuiUtil.getMessage("inst.notEnabled");
         if (debugPort != null) {
             if (debugPort.equals("0") == false) {
                 msg = GuiUtil.getMessage("inst.debugEnabled") + debugPort;
             }
         }
-        
+
         handlerCtx.setOutputValue("debugPort", msg);
         handlerCtx.setOutputValue("configDir", configDir);
         handlerCtx.setOutputValue("version", version);
     }
-    
+
     private static String resolveToken(String pn, String serverName) {
         StandaloneServerConfig ss = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(serverName);
-        if (ss != null){
-            if (ss.getSystemPropertyConfigMap().containsKey(pn))
-            return ss.getSystemPropertyConfigMap().get(pn).getValue();
+        if (ss != null) {
+            if (ss.getSystemPropertyConfigMap().containsKey(pn)) {
+                return ss.getSystemPropertyConfigMap().get(pn).getValue();
+            }
         }
-        ClusteredServerConfig  cs = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(serverName);
-        if (cs != null){
-            if (cs.getSystemPropertyConfigMap().containsKey(pn))
-            return cs.getSystemPropertyConfigMap().get(pn).getValue();
+        ClusteredServerConfig cs = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(serverName);
+        if (cs != null) {
+            if (cs.getSystemPropertyConfigMap().containsKey(pn)) {
+                return cs.getSystemPropertyConfigMap().get(pn).getValue();
+            }
         }
         return "";
     }
-    
+
     /**
      *	<p> This handler rotate the log files of the server instance, instance should be running.
      *  <p> Input  value: "instanceName" -- Type: <code> java.lang.String</code></p>
      */
-    @Handler(id="rotateLogFile",
-        input={
-            @HandlerInput(name="instanceName", type=String.class, required=true)}
-        )
-
+    @Handler(id = "rotateLogFile",
+    input = {
+        @HandlerInput(name = "instanceName", type = String.class, required = true)
+    })
     public static void rotateLogFile(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        if(GuiUtil.isEmpty(instanceName)){
+        if (GuiUtil.isEmpty(instanceName)) {
             return;   //do nothing.
         }
         ServerRootMonitor monitor = AMXRoot.getInstance().getMonitoringRoot().getServerRootMonitorMap().get(instanceName);
-        if (monitor == null){
+        if (monitor == null) {
             //most likely, server is not running, shouldn't get here
             //TODO: log an internal error msg ?
-        }else{
+        } else {
             monitor.getLogging().rotateLogFile(LogFileAccess.SERVER_KEY);
         }
     }
-    
-    
+
     /**
      *	<p> This handler returns the configuration Name of the instance or cluster</p>
      *  <p> Input  value: "target" -- Type: <code> java.lang.String</code></p>
      *  <p> Output value: "configName" -- Type: <code>java.lang.String</code></p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id="getConfigNameOfTarget",
-        input={
-            @HandlerInput(name="target", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="configName", type=String.class)})
-
+    @Handler(id = "getConfigNameOfTarget",
+    input = {
+        @HandlerInput(name = "target", type = String.class, required = true)
+    },
+    output = {
+        @HandlerOutput(name = "configName", type = String.class)
+    })
     public static void getConfigNameOfTarget(HandlerContext handlerCtx) {
-        
+
         String target = (String) handlerCtx.getInputValue("target");
         String configName = AMXRoot.getInstance().getConfigByInstanceOrClusterName(target).getName();
         handlerCtx.setOutputValue("configName", configName);
     }
-    
-    
+
     /**
      *	<p> This handler upgrade the profile from developer profile to cluster profile</p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id="upgradeProfile")
-
+    @Handler(id = "upgradeProfile")
     public static void upgradeProfile(HandlerContext handlerCtx) {
         /* TODO-V3
         try{
-            String[] params = {"cluster"};
-            String[] signature = {"java.lang.String"};
-            JMXUtil.invoke("com.sun.appserv:type=domain,category=config", "addClusteringSupportUsingProfile", params, signature);
+        String[] params = {"cluster"};
+        String[] signature = {"java.lang.String"};
+        JMXUtil.invoke("com.sun.appserv:type=domain,category=config", "addClusteringSupportUsingProfile", params, signature);
         }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
+        GuiUtil.handleException(handlerCtx, ex);
         }
          */
     }
-    
-    
+
     /**
      *	<p> This handler stops DAS immediately.</p>
      */
-    @Handler(id="stopDAS")
+    @Handler(id = "stopDAS")
     public static void stopDAS(HandlerContext handlerCtx) {
-        /* TODO-V3
-        try{
-            JMXUtil.stopServerInstance("server");
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }            
-         */ 
-    }   
+        AMXRoot.getInstance().getDomainRoot().executeREST(DomainRoot.STOP_DOMAIN);
+    }
 }
         
  
