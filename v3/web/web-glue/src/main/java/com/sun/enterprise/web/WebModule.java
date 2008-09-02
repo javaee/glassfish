@@ -67,6 +67,7 @@ import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
@@ -88,6 +89,7 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -1179,6 +1181,40 @@ public class WebModule extends PwcWebModule {
         }
 
         setAllowLinking(allowLinking);
+    }
+
+    void configureAlternateDD(WebModuleConfig wmInfo, String altDDName,
+                              ServerEnvironment env) {
+
+        if (altDDName == null) {
+            return;
+        }
+
+        String wmName  = wmInfo.getName();
+
+        // We should load the alt dd from generated/xml directory
+        // first, then fall back to original app location.
+        // If we have alt dd, it must be an embedded web module
+        String appName =  wmName.substring(0,
+                wmName.indexOf(Constants.NAME_SEPARATOR));
+        String appLoc = env.getApplicationGeneratedXMLPath() +
+                File.separator + appName;
+        if (!FileUtils.safeIsDirectory(appLoc)) {
+            appLoc = wmInfo.getLocation() + "/..";
+        }
+
+        if (altDDName.startsWith("/")) {
+            altDDName = appLoc + altDDName.trim();
+        } else {
+            altDDName = appLoc + "/" + altDDName.trim();
+        }
+
+        if (logger.isLoggable(Level.FINE)) {
+            Object[] objs = {altDDName, wmName};
+            logger.log(Level.FINE, "webcontainer.altDDName", objs);
+        }
+
+        setAltDDName(altDDName);
     }
 
 

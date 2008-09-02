@@ -2028,35 +2028,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         ctx.setParentClassLoader(parentLoader);
 
-        // Determine if an alternate DD is set for this web-module in
-        // the application
+
         if (wbd != null) {
-            String altDDName = wbd.getModuleDescriptor().getAlternateDescriptor();
-            if (altDDName != null) {
-                // We should load the alt dd from generated/xml directory
-                // first, then fall back to original app location.
-                // If we have alt dd, it must be an embedded web module
-                String appName =  wmName.substring(0,
-                        wmName.indexOf(Constants.NAME_SEPARATOR));
-                ServerEnvironment env = habitat.getComponent(
-                    ServerEnvironment.class);
-                String appLoc = env.getApplicationGeneratedXMLPath() +
-                        File.separator + appName;
-                if (! FileUtils.safeIsDirectory(appLoc)) {
-                    appLoc = wmInfo.getLocation()+"/..";
-                }
+            // Determine if an alternate DD is set for this web-module in
+            // the application
+            ctx.configureAlternateDD(
+                    wmInfo,
+                    wbd.getModuleDescriptor().getAlternateDescriptor(),
+                    instance);
 
-                if (altDDName.startsWith("/")) {
-                    altDDName = appLoc+altDDName.trim();
-                } else {
-                    altDDName = appLoc+"/"+altDDName.trim();
-                }
-                Object[] objs = {altDDName, wmName};
-                _logger.log(Level.INFO, "webcontainer.altDDName", objs);
-                ctx.setAltDDName(altDDName);
-            }
-
-            // time to update the Web Services related information in
+            // Time to update the Web Services related information in
             // our runtime jsr77 mbeans. We publish two extra properties
             // hasWebServices and endpointAddresses for webservices
             // enable web applications.
