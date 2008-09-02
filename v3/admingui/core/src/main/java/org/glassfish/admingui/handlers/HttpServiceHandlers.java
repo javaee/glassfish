@@ -125,12 +125,12 @@ public class HttpServiceHandlers {
              suffix = al.getRotationSuffix();
              format = al.getFormat();
         }else{
-            Map defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG);
-            policy = (String) defaultMap.get("rotation-policy");
-            interval = (String)defaultMap.get("rotation-interval-in-minutes");
-            suffix = (String)defaultMap.get("rotation-suffix");
-            format = (String)defaultMap.get("format");
-            rotation = (String) defaultMap.get("rotation-enabled");
+            Map defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG, true);
+            policy = (String) defaultMap.get("RotationPolicy");
+            interval = (String)defaultMap.get("RotationIntervalInMinutes");
+            suffix = (String)defaultMap.get("RotationSuffix");
+            format = (String)defaultMap.get("Format");
+            rotation = (String) defaultMap.get("RotationEnabled");
         }
         handlerCtx.setOutputValue("Rotation", rotation);
         handlerCtx.setOutputValue("Policy", policy);
@@ -164,7 +164,7 @@ public class HttpServiceHandlers {
         public static void getAccessLogDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG, true);
         
         String rotationKey = (String) defaultMap.get(AccessLogConfigKeys.ROTATION_ENABLED_KEY);
         boolean rotation = (rotationKey == null) ? false : Boolean.valueOf(rotationKey);
@@ -278,7 +278,7 @@ public class HttpServiceHandlers {
         public static void getRequestProcessingDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.REQUEST_PROCESSING_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.REQUEST_PROCESSING_CONFIG, true);
         handlerCtx.setOutputValue("Count", defaultMap.get(RequestProcessingConfigKeys.THREAD_COUNT_KEY));
         handlerCtx.setOutputValue("Initial", defaultMap.get(RequestProcessingConfigKeys.INITIAL_THREAD_COUNT_KEY));
         handlerCtx.setOutputValue("Increment", defaultMap.get(RequestProcessingConfigKeys.THREAD_INCREMENT_KEY));
@@ -373,7 +373,7 @@ public class HttpServiceHandlers {
         public static void getKeepAliveDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.KEEP_ALIVE_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.KEEP_ALIVE_CONFIG, true);
         handlerCtx.setOutputValue("Count", defaultMap.get(KeepAliveConfigKeys.THREAD_COUNT_KEY ));
         handlerCtx.setOutputValue("Connections", defaultMap.get(KeepAliveConfigKeys.MAX_CONNECTIONS_KEY ));
         handlerCtx.setOutputValue("Timeout", defaultMap.get(KeepAliveConfigKeys.TIMEOUT_IN_SECONDS_KEY ));   
@@ -537,7 +537,7 @@ public class HttpServiceHandlers {
         public static void getConnectionPoolDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.CONNECTION_POOL_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.CONNECTION_POOL_CONFIG, true);
         
         handlerCtx.setOutputValue("Count", defaultMap.get(ConnectionPoolConfigKeys.MAX_PENDING_COUNT_KEY));
         handlerCtx.setOutputValue("Queue", defaultMap.get(ConnectionPoolConfigKeys.QUEUE_SIZE_IN_BYTES_KEY));
@@ -638,7 +638,7 @@ public class HttpServiceHandlers {
         public static void getHttpProtocolDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_PROTOCOL_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_PROTOCOL_CONFIG, true);
         
         String version = defaultMap.get(HTTPProtocolConfigKeys.VERSION_KEY);
         String dns = defaultMap.get(HTTPProtocolConfigKeys.DNS_LOOKUP_ENABLED_KEY );
@@ -792,7 +792,7 @@ public class HttpServiceHandlers {
         public static void getHttpFileCachingDefaultSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_FILE_CACHE_CONFIG);
+        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_FILE_CACHE_CONFIG, true);
         
         String globally = defaultMap.get(HTTPFileCacheConfigKeys.GLOBALLY_ENABLED_KEY);
         String fileTransmission = defaultMap.get(HTTPFileCacheConfigKeys.FILE_TRANSMISSION_ENABLED_KEY);

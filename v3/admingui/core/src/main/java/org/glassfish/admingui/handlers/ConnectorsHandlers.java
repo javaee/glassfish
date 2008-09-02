@@ -391,7 +391,7 @@ public class ConnectorsHandlers {
 @HandlerOutput(name = "transactionSupport", type = String.class)
 })
     public static void getConnectorConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
-        Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.CONNECTOR_CONNECTION_POOL_CONFIG);
+        Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.CONNECTOR_CONNECTION_POOL_CONFIG, true);
         handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("SteadyPoolSize"));
         handlerCtx.setOutputValue("maxPoolSize", defaultMap.get("MaxPoolSize"));
         handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("PoolResizeQuantity"));

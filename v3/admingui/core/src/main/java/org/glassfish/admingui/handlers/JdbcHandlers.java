@@ -375,7 +375,7 @@ public class JdbcHandlers {
                 )
         public static void getJdbcConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
         
-            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
+            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG, true); 
             handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("SteadyPoolSize"));
             handlerCtx.setOutputValue("maxPoolSize",defaultMap.get("MaxPoolSize"));
             handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("PoolResizeQuantity"));
@@ -442,7 +442,7 @@ public class JdbcHandlers {
                 return;
             }
             Map advance = new HashMap();
-            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
+            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG, true);
             advance.put("wrapJDBCObjects", StringToBoolean( defaultMap.get("WrapJdbcObjects")));
             advance.put("statementTimeoutInSeconds", defaultMap.get("StatementTimeoutInSeconds"));
             advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("ValidateAtmostOncePeriodInSeconds"));

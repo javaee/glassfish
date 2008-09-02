@@ -203,20 +203,23 @@ public class VirtualServerHandlers {
         
       
         Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG, true);
-        handlerCtx.setOutputValue("Hosts", defaultMap.get("hosts"));
-        handlerCtx.setOutputValue("StateOption", defaultMap.get("state"));
-        handlerCtx.setOutputValue("Http", defaultMap.get("http-listeners"));
-        handlerCtx.setOutputValue("Web", defaultMap.get("default-web-module"));
-        handlerCtx.setOutputValue("LogFile", defaultMap.get("log-file"));
+        Map <String,String> defaultMapFF = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG, false);
+        handlerCtx.setOutputValue("Hosts", defaultMap.get("Hosts"));
+        handlerCtx.setOutputValue("StateOption", defaultMap.get("State"));
+        handlerCtx.setOutputValue("LogFile", defaultMap.get("LogFile"));
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
-        handlerCtx.setOutputValue("docroot", defaultMap.get("docroot"));
+        handlerCtx.setOutputValue("docroot", defaultMap.get("DocRoot"));
         
+        /* commented out for now until issue# 5811 is resolved.
+         * 
         Map<String, VirtualServerConfig> vsMap = config.getHTTPServiceConfig().getVirtualServerConfigMap();
         if (vsMap.size() > 0){
             Object[] vsc = vsMap.values().toArray();
             VirtualServerConfig vs = (VirtualServerConfig) vsc[0];
             handlerCtx.setOutputValue("accesslog", vs.getDefaultValues(XTypes.HTTP_ACCESS_LOG_CONFIG, true).get("LogDirectory"));
-        }else {
+        }else 
+        */
+        {
             //just hard code
             handlerCtx.setOutputValue("accesslog", "${com.sun.aas.instanceRoot}/logs/access" );
         }
