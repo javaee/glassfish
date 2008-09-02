@@ -85,7 +85,7 @@ public final class UnprocessedConfigListener implements Startup, PostConstruct, 
         //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: " + changes.size() );
         for( int i = 0; i < changes.size(); ++i )
         {
-            debug( changes.get(i).toString() );
+            //debug( changes.get(i).toString() );
         }
         mUnprocessedChangeEvents.addAll(changes);
         //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
