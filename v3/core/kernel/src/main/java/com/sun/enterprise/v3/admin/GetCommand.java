@@ -94,6 +94,11 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         //Grab the monitoring tree root from habitat and get the attributes using pattern
         org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get("server");
+        if (tn == null) {
+            //No monitoring data, so nothing to list
+            report.setActionExitCode(ExitCode.SUCCESS);
+            return;
+        }
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
             System.out.println("[TN] node is instanceof  = " + tn1.getClass().getName());

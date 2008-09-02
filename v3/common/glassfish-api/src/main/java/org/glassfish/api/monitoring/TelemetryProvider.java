@@ -1,11 +1,14 @@
 package org.glassfish.api.monitoring;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * A TelemetryProvider provides monitoring data using the flashlight
  * framework.
  *
  * @author Jerome Dochez
  */
+@Contract
 public interface TelemetryProvider {
 
     /**

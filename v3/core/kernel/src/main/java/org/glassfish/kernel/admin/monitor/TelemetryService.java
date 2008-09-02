@@ -10,10 +10,15 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.monitoring.TelemetryProvider;
 
 import java.beans.PropertyChangeEvent;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * @author Jerome Dochez
  */
+@Service
+@Scoped(Singleton.class)
 public class TelemetryService implements Startup, PostConstruct, ConfigListener {
 
     @Inject(optional=true)
@@ -28,7 +33,8 @@ public class TelemetryService implements Startup, PostConstruct, ConfigListener 
 
     public void postConstruct() {
         if (config!=null) {
-            resetConfig();
+            if (!config.getWebContainer().equals("OFF"))
+                resetConfig();
         }
     }
 
@@ -38,9 +44,11 @@ public class TelemetryService implements Startup, PostConstruct, ConfigListener 
     }
 
     private void resetConfig() {
-
-        if (!config.getWebContainer().equals("OFF")) {
-            habitat.getInhabitant(TelemetryProvider.class, "web").get().onLevelChange(config.getWebContainer());
+        TelemetryProvider tp = habitat.getComponent(TelemetryProvider.class, "web");
+        if (tp == null) {
+            //logger.finest("Couldn't find the provider for Telemetry");
+        } else {
+            tp.onLevelChange(config.getWebContainer());
         }
     }
 }
