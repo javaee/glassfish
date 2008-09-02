@@ -205,12 +205,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             }
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
-            logger.log(Level.WARNING, "Closing initialized network proxies");
+            logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
             for(NetworkProxy proxy : proxies) {
                 try {
                     proxy.stop();
                 } catch(Exception proxyStopException) {
-                    logger.log(Level.SEVERE, "Stop network proxy error ", proxyStopException);
+                    logger.log(Level.SEVERE, "Exception closing port: " 
+                            + proxy.getPort() , proxyStopException);
                 }
             }
             
