@@ -1639,14 +1639,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Load the specified web module as a standalone module on the specified
      * virtual server.
      */
     protected void loadStandaloneWebModule(VirtualServer vs,
-            WebModuleConfig wmInfo) {
-        loadWebModule(vs, wmInfo, "null");
+                                           WebModuleConfig wmInfo) {
+        try {
+            loadWebModule(vs, wmInfo, "null");
+        } catch (Throwable t) {
+            _logger.log(Level.SEVERE,
+                        "Error loading web module " + wmInfo.getName(), t);
+        }
     }
+
 
     /**
      * Loads all the web modules that are configured for every
@@ -1655,6 +1662,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void loadAllJ2EEApplicationWebModules() {
         loadAllJ2EEApplicationWebModules(false);
     }
+
 
     /**
      * Loads all the web modules that are configured for every
@@ -1794,7 +1802,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
         boolean loadToAll = (vsList == null) || (vsList.size() == 0);
-        boolean loadAtLeastToOne = false;
 
         Engine[] engines =  _embedded.getEngines();
 
@@ -1819,17 +1826,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             || vsList.contains(vs.getID())
                             || verifyAlias(vsList,vs)){
 
-                        results.add(loadWebModule(vs, wmInfo, j2eeApplication));
-                        loadAtLeastToOne = true;
+                        WebModule ctx = null;
+                        try {
+                            ctx = loadWebModule(vs, wmInfo, j2eeApplication);
+                            results.add(new Result(ctx));
+                        } catch (Throwable t) {
+                            if (ctx != null) {
+                                ctx.setAvailable(false);
+                            }
+                            results.add(new Result(t));
+                        }
                     }
                 }
             }
         }
-        if (!loadAtLeastToOne) {
-            Object[] params = {wmInfo.getName(), vsIDs};
-            _logger.log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
-                    params);
-        }
+
         return results;
     }
 
@@ -1850,15 +1861,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Creates and configures a web module and adds it to the specified
      * virtual server.
      */
-    protected Result<WebModule> loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
-            String j2eeApplication) {
+    private WebModule loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
+                String j2eeApplication) throws Exception {
+
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
 
         if (wmContextPath.equals("") && vs.getDefaultWebModuleID() != null) {
-            _logger.log(Level.WARNING, "webcontainer.defaultWebModuleConflict",
+            String msg = rb.getString("webcontainer.defaultWebModuleConflict");
+            msg = MessageFormat.format(msg, 
                     new Object[] { wmName, wmContextPath, vs.getID() });
-            return null;
+            throw new Exception(msg);
         }
 
         /* TODO appsWorkRoot
@@ -1919,12 +1932,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * return
                  */
                 ctx.setAvailable(true);
-                return null;
+                return ctx;
             } else {
-                Object[] params = { vs.getID(), displayContextPath, wmName };
-                _logger.log(Level.WARNING, "webcontainer.duplicateContextRoot",
-                        params);
-                return null;
+                String msg = rb.getString("webcontainer.duplicateContextRoot");
+                msg = MessageFormat.format(msg,
+                    new Object[] { vs.getID(), displayContextPath, wmName });
+                throw new Exception(msg);
             }
         }
 
@@ -1943,13 +1956,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Object containing web.xml information
         WebBundleDescriptor wbd = wmInfo.getDescriptor();
 
-        Throwable exception = null;
-        String compEnvId = null;
-        try {
-            compEnvId = componentEnvManager.bindToComponentNamespace(wbd);
-        } catch(Exception ex) {
-            exception = ex;
-        }
+        String compEnvId = componentEnvManager.bindToComponentNamespace(wbd);
 
         ctx = (WebModule) _embedded.createContext(
                 wmName,
@@ -1973,13 +1980,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String j2eeServer = _serverContext.getInstanceName();
         String domain = _serverContext.getDefaultDomainName();
         String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
-//        String[] javaVMs = J2EEModuleUtil.getjavaVMs();
+        // String[] javaVMs = J2EEModuleUtil.getjavaVMs();
         ctx.setDomain(domain);
 
         ctx.setJ2EEServer(j2eeServer);
         ctx.setJ2EEApplication(j2eeApplication);
         ctx.setServer(server);
-        //       ctx.setJavaVMs(javaVMs);
+        // ctx.setJavaVMs(javaVMs);
         ctx.setCachingAllowed(false);
         ctx.setCacheControls(vs.getCacheControls());
         ctx.setBean(wmInfo.getBean());
@@ -1991,7 +1998,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ctx.addAdHocSubtrees(adHocSubtrees);
         }
         
-        //Set the context root
+        // Set the context root
         if (wmInfo.getDescriptor() != null) {
             ctx.setContextRoot(wmInfo.getDescriptor().getContextRoot());
         } else {
@@ -2003,7 +2010,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Ensure that the generated directory for JSPs in the document root
         // (i.e. those that are serviced by a system default-web-module)
         // is different for each virtual server.
-        //
         String wmInfoWorkDir = wmInfo.getWorkDir();
         if (wmInfoWorkDir != null) {
             StringBuffer workDir = new StringBuffer(wmInfo.getWorkDir());
@@ -2022,158 +2028,151 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         ctx.setParentClassLoader(parentLoader);
 
-        try{
-            // Determine if an alternate DD is set for this web-module in
-            // the application
-            if (wbd != null) {
-                String altDDName = wbd.getModuleDescriptor().
-                        getAlternateDescriptor();
-                if (altDDName != null) {
-                    // we should load the alt dd from generated/xml directory
-                    // first, then fall back to original app location.
-
-                    // if we have alt dd, it must be an embedded web module
-                    String appName =  wmName.substring(0,
-                            wmName.indexOf(Constants.NAME_SEPARATOR));
-                    ServerEnvironment env = habitat.getComponent(
-                        ServerEnvironment.class);
-                    String appLoc = env.getApplicationGeneratedXMLPath() + File.separator +
-                            appName;
-                    if (! FileUtils.safeIsDirectory(appLoc)) {
-                        appLoc = wmInfo.getLocation()+"/..";
-                    }
-
-                    if (altDDName.startsWith("/")) {
-                        altDDName = appLoc+altDDName.trim();
-                    } else {
-                        altDDName = appLoc+"/"+altDDName.trim();
-                    }
-                    Object[] objs = {altDDName, wmName};
-                    _logger.log(Level.INFO, "webcontainer.altDDName", objs);
-                    ctx.setAltDDName(altDDName);
-
+        // Determine if an alternate DD is set for this web-module in
+        // the application
+        if (wbd != null) {
+            String altDDName = wbd.getModuleDescriptor().getAlternateDescriptor();
+            if (altDDName != null) {
+                // We should load the alt dd from generated/xml directory
+                // first, then fall back to original app location.
+                // If we have alt dd, it must be an embedded web module
+                String appName =  wmName.substring(0,
+                        wmName.indexOf(Constants.NAME_SEPARATOR));
+                ServerEnvironment env = habitat.getComponent(
+                    ServerEnvironment.class);
+                String appLoc = env.getApplicationGeneratedXMLPath() +
+                        File.separator + appName;
+                if (! FileUtils.safeIsDirectory(appLoc)) {
+                    appLoc = wmInfo.getLocation()+"/..";
                 }
-                // time to update the Web Services related information in
-                // our runtime jsr77 mbeans. We publish two extra properties
-                // hasWebServices and endpointAddresses for webservices
-                // enable web applications.
-                if (wbd.hasWebServices()) {
-                    ctx.setHasWebServices(true);
 
-                    // creates the list of endpoint addresses
-                    String[] endpointAddresses;
-                    WebServicesDescriptor webService = wbd.getWebServices();
-                    Vector endpointList = new Vector();
-                    for (Iterator endpoints = webService.getEndpoints().iterator();
-                    endpoints.hasNext();) {
-                        WebServiceEndpoint wse = (WebServiceEndpoint) endpoints.next();
-                        if (wbd.getContextRoot()!=null) {
-                            endpointList.add(wbd.getContextRoot() + "/"
-                                    + wse.getEndpointAddressUri());
-                        } else {
-                            endpointList.add(wse.getEndpointAddressUri());
-                        }
-                    }
-                    endpointAddresses = new String[endpointList.size()];
-                    endpointList.copyInto(endpointAddresses);
-
-                    ctx.setEndpointAddresses(endpointAddresses);
-
+                if (altDDName.startsWith("/")) {
+                    altDDName = appLoc+altDDName.trim();
                 } else {
-                    ctx.setHasWebServices(false);
+                    altDDName = appLoc+"/"+altDDName.trim();
                 }
+                Object[] objs = {altDDName, wmName};
+                _logger.log(Level.INFO, "webcontainer.altDDName", objs);
+                ctx.setAltDDName(altDDName);
             }
 
-            // Object containing sun-web.xml information
-            SunWebApp iasBean = null;
+            // time to update the Web Services related information in
+            // our runtime jsr77 mbeans. We publish two extra properties
+            // hasWebServices and endpointAddresses for webservices
+            // enable web applications.
+            if (wbd.hasWebServices()) {
+                ctx.setHasWebServices(true);
 
-            // The default context is the only case when wbd == null
-            if (wbd != null)
-                iasBean = wbd.getSunDescriptor();
+                // creates the list of endpoint addresses
+                String[] endpointAddresses;
+                WebServicesDescriptor webService = wbd.getWebServices();
+                Vector endpointList = new Vector();
+                for (Iterator endpoints = webService.getEndpoints().iterator();
+                endpoints.hasNext();) {
+                    WebServiceEndpoint wse = (WebServiceEndpoint)
+                        endpoints.next();
+                    if (wbd.getContextRoot()!=null) {
+                        endpointList.add(wbd.getContextRoot() + "/" +
+                            wse.getEndpointAddressUri());
+                    } else {
+                        endpointList.add(wse.getEndpointAddressUri());
+                    }
+                }
+                endpointAddresses = new String[endpointList.size()];
+                endpointList.copyInto(endpointAddresses);
 
-            // set the sun-web config bean
-            ctx.setIasWebAppConfigBean(iasBean);
+                ctx.setEndpointAddresses(endpointAddresses);
+
+            } else {
+                ctx.setHasWebServices(false);
+            }
+        }
+
+        // Object containing sun-web.xml information
+        SunWebApp iasBean = null;
+
+        // The default context is the only case when wbd == null
+        if (wbd != null)
+            iasBean = wbd.getSunDescriptor();
+
+        // set the sun-web config bean
+        ctx.setIasWebAppConfigBean(iasBean);
             
-            // Configure SingleThreadedServletPools, work/tmp directory etc
-            ctx.configureMiscSettings(iasBean, vs, displayContextPath);
+        // Configure SingleThreadedServletPools, work/tmp directory etc
+        ctx.configureMiscSettings(iasBean, vs, displayContextPath);
 
-            // Configure alternate docroots if dummy web module
-            if (ctx.getID().startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
-                ctx.setAlternateDocBases(vs.getProperties());
-            } 
+        // Configure alternate docroots if dummy web module
+        if (ctx.getID().startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
+            ctx.setAlternateDocBases(vs.getProperties());
+        } 
 
-            // Configure the class loader delegation model, classpath etc
-            Loader loader = ctx.configureLoader(iasBean, wmInfo);
+        // Configure the class loader delegation model, classpath etc
+        Loader loader = ctx.configureLoader(iasBean, wmInfo);
 
-            // Set the class loader on the DOL object
-            if (wbd != null && wbd.hasWebServices())
-                wbd.addExtraAttribute("WEBLOADER", loader);
+        // Set the class loader on the DOL object
+        if (wbd != null && wbd.hasWebServices())
+            wbd.addExtraAttribute("WEBLOADER", loader);
 
-            // Enable dynamic reloading
-            if (_reloadingEnabled) {/*
-                if (_reloadManager == null) {
-                    _reloadManager = new StandaloneWebModulesManager(
+        // Enable dynamic reloading
+        /*
+        if (_reloadingEnabled) {
+            if (_reloadManager == null) {
+                _reloadManager = new StandaloneWebModulesManager(
                                                             _id,
                                                             _modulesRoot,
                                                             _pollInterval);
-                }
-                _reloadManager.addWebModule(wmInfo.getBean());
-             **/
             }
+            _reloadManager.addWebModule(wmInfo.getBean());
+        }
+        */
 
-            // Configure the session manager and other related settings
-            // HERCULES:mod - take into account if app is distributable
-            // passing in WebBundleDescriptor which has info about whether
-            // app is distributable
-            ctx.configureSessionSettings(wbd, wmInfo);
-            // END HERCULES:mod
+        // Configure the session manager and other related settings
+        // HERCULES:mod - take into account if app is distributable
+        // passing in WebBundleDescriptor which has info about whether
+        // app is distributable
+        ctx.configureSessionSettings(wbd, wmInfo);
+        // END HERCULES:mod
 
-            // set i18n info from locale-charset-info tag in sun-web.xml
-            ctx.setI18nInfo();
+        // set i18n info from locale-charset-info tag in sun-web.xml
+        ctx.setI18nInfo();
 
-            if (wbd != null) {
-                String resourceType = wmInfo.getObjectType();
-                boolean isSystem = (resourceType != null &&
-                        resourceType.startsWith("system-"));
-                // security will generate policy for system default web module
-                if (!wmName.startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
-                    // TODO : v3 : dochez Need to remove dependency on security
-                    Realm realm = habitat.getByContract(Realm.class);
-                    if ("null".equals(j2eeApplication)) {
-                        /*
-                        * Standalone webapps inherit the realm referenced by
-                        * the virtual server on which they are being deployed,
-                        * unless they specify their own
-                        */
-                    
-                        if (realm != null && realm instanceof RealmInitializer) {
-                            ((RealmInitializer)realm).initializeRealm(
-                                wbd, isSystem, vs.getAuthRealmName());
-                            ctx.setRealm(realm);
-                        }
-                    } else {
-                        if (realm != null && realm instanceof RealmInitializer) {
-                            ((RealmInitializer)realm).initializeRealm(
-                                wbd, isSystem, null);
-                            ctx.setRealm(realm);
-                        }
+        if (wbd != null) {
+            String resourceType = wmInfo.getObjectType();
+            boolean isSystem = (resourceType != null &&
+                    resourceType.startsWith("system-"));
+            // security will generate policy for system default web module
+            if (!wmName.startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
+                // TODO : v3 : dochez Need to remove dependency on security
+                Realm realm = habitat.getByContract(Realm.class);
+                if ("null".equals(j2eeApplication)) {
+                    /*
+                     * Standalone webapps inherit the realm referenced by
+                     * the virtual server on which they are being deployed,
+                     * unless they specify their own
+                     */                    
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
+                            wbd, isSystem, vs.getAuthRealmName());
+                        ctx.setRealm(realm);
+                    }
+                } else {
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
+                            wbd, isSystem, null);
+                        ctx.setRealm(realm);
                     }
                 }
-
-                // post processing DOL object for standalone web module
-                if (wbd.getApplication() != null &&
-                        wbd.getApplication().isVirtual()) {
-                    wbd.visit(new WebValidatorWithoutCL());
-                }
-                
             }
 
-            // Add virtual server mime mappings, if present
-            addMimeMappings(ctx, vs.getMimeMap());
-
-        } catch (Throwable ex){
-            exception = ex;
+            // post processing DOL object for standalone web module
+            if (wbd.getApplication() != null &&
+                    wbd.getApplication().isVirtual()) {
+                wbd.visit(new WebValidatorWithoutCL());
+            }    
         }
+
+        // Add virtual server mime mappings, if present
+        addMimeMappings(ctx, vs.getMimeMap());
 
         if (wbd != null && wbd.getApplication() != null) {
             // no dummy web module
@@ -2192,25 +2191,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ctx.setModuleName(Constants.DEFAULT_WEB_MODULE_NAME);
         }
 
-        try {
-            vs.addChild(ctx);
-        } catch (Throwable ex){
-            exception = ex;
-        }
+        vs.addChild(ctx);
 
-        Result<WebModule> result;
-        if (exception != null){
-            ctx.setAvailable(false);
-
-            _logger.log(Level.SEVERE, "webcontainer.webModuleDisabled", exception);
-            result = new Result(exception);
-        } else {
-            result = new Result(ctx);
-        }
-
-        //return exception;
-        return result;
-
+        return ctx;
     }
 
 
@@ -2502,50 +2485,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE,
                     "[WebContainer] Undeployment failed for context "
                     + contextRoot);
-        }
-    }
-
-
-    /**
-     * Creates and configures a web module for each virtual server
-     * that the web module is hosted under. If the web module has been
-     * disabled by a call to disableWebModule, enable the module
-     * instead of re-crearing new one.
-     *
-     * If no virtual servers are specified, then the web module is
-     * enabled` on EVERY virtual server.
-     */
-    public void enableWebModule(WebModuleConfig wmInfo,
-                                String j2eeApplication){
-        String vsIDs = wmInfo.getVirtualServers();
-        List vsList = StringUtils.parseStringList(vsIDs, " ,");
-        boolean enabledToAll = (vsList == null) || (vsList.size() == 0);
-
-        Engine[] engines =  _embedded.getEngines();
-
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsArray = engines[j].findChildren();
-            for (int i = 0; i < vsArray.length; i++) {
-                if (vsArray[i] instanceof VirtualServer) {
-                    VirtualServer vs = (VirtualServer) vsArray[i];
-
-                    /*
-                     * Fix for 4913636: If vsList is null and virtual server is
-                     * equal to __asadmin, continue with next iteration
-                     * because we don't want to load user apps on __asadmin
-                     */
-                    if (vs.getID().equals(VirtualServer.ADMIN_VS) && enabledToAll) {
-                        continue;
-                    }
-
-                    if ( enabledToAll
-                            || vsList.contains(vs.getID())
-                            || verifyAlias(vsList,vs)){
-
-                        loadWebModule(vs, wmInfo, j2eeApplication);
-                    }
-                }
-            }
         }
     }
 

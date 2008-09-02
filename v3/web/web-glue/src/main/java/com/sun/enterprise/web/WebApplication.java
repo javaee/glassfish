@@ -97,6 +97,18 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             return false;
         }
 
+        boolean isFailure = false;
+        for (Result result : results) {
+            if (result.isFailure()) {
+                logger.log(Level.WARNING, result.exception().getMessage(),
+                           result.exception());
+                isFailure = true;
+            }
+        }
+        if (isFailure) {
+            return false;
+        }
+     
         logger.info("Loading application " + wmInfo.getDescriptor().getName() +
                     " at " + wmInfo.getDescriptor().getContextRoot());
 
