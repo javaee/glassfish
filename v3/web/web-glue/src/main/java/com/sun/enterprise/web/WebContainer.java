@@ -92,8 +92,6 @@ import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
@@ -2036,37 +2034,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     wmInfo,
                     wbd.getModuleDescriptor().getAlternateDescriptor(),
                     instance);
-
-            // Time to update the Web Services related information in
-            // our runtime jsr77 mbeans. We publish two extra properties
-            // hasWebServices and endpointAddresses for webservices
-            // enable web applications.
-            if (wbd.hasWebServices()) {
-                ctx.setHasWebServices(true);
-
-                // creates the list of endpoint addresses
-                String[] endpointAddresses;
-                WebServicesDescriptor webService = wbd.getWebServices();
-                Vector endpointList = new Vector();
-                for (Iterator endpoints = webService.getEndpoints().iterator();
-                endpoints.hasNext();) {
-                    WebServiceEndpoint wse = (WebServiceEndpoint)
-                        endpoints.next();
-                    if (wbd.getContextRoot()!=null) {
-                        endpointList.add(wbd.getContextRoot() + "/" +
-                            wse.getEndpointAddressUri());
-                    } else {
-                        endpointList.add(wse.getEndpointAddressUri());
-                    }
-                }
-                endpointAddresses = new String[endpointList.size()];
-                endpointList.copyInto(endpointAddresses);
-
-                ctx.setEndpointAddresses(endpointAddresses);
-
-            } else {
-                ctx.setHasWebServices(false);
-            }
+            ctx.configureWebServices(wbd);
         }
 
         // Object containing sun-web.xml information

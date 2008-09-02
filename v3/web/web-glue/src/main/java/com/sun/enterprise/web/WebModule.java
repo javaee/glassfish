@@ -47,6 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
@@ -54,16 +55,18 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebServicesDescriptor;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
+import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
+import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
 import com.sun.enterprise.deployment.runtime.web.SessionConfig;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.SessionProperties;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
-import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.security.integration.RealmInitializer;
@@ -1183,6 +1186,7 @@ public class WebModule extends PwcWebModule {
         setAllowLinking(allowLinking);
     }
 
+
     void configureAlternateDD(WebModuleConfig wmInfo, String altDDName,
                               ServerEnvironment env) {
 
@@ -1190,7 +1194,7 @@ public class WebModule extends PwcWebModule {
             return;
         }
 
-        String wmName  = wmInfo.getName();
+        String wmName = wmInfo.getName();
 
         // We should load the alt dd from generated/xml directory
         // first, then fall back to original app location.
@@ -1215,6 +1219,42 @@ public class WebModule extends PwcWebModule {
         }
 
         setAltDDName(altDDName);
+    }
+
+
+    /*
+     * Configures this web module with its web services, based on its
+     * "hasWebServices" and "endpointAddresses" properties
+     */
+    void configureWebServices(WebBundleDescriptor wbd) {
+
+        if (wbd.hasWebServices()) {
+
+            setHasWebServices(true);
+
+            // creates the list of endpoint addresses
+            String[] endpointAddresses;
+            WebServicesDescriptor webService = wbd.getWebServices();
+            Vector endpointList = new Vector();
+            for (Iterator endpoints = webService.getEndpoints().iterator();
+            endpoints.hasNext();) {
+                WebServiceEndpoint wse = (WebServiceEndpoint)
+                    endpoints.next();
+                if (wbd.getContextRoot()!=null) {
+                    endpointList.add(wbd.getContextRoot() + "/" +
+                        wse.getEndpointAddressUri());
+                } else {
+                    endpointList.add(wse.getEndpointAddressUri());
+                }
+            }
+            endpointAddresses = new String[endpointList.size()];
+            endpointList.copyInto(endpointAddresses);
+
+            setEndpointAddresses(endpointAddresses);
+
+        } else {
+            setHasWebServices(false);
+        }
     }
 
 
