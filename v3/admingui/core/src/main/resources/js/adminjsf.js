@@ -1119,7 +1119,7 @@ function checkForNumericValue(value) {
 
 function checkPoolAttr(componentId, msg){
     var component = getTextElement(componentId);
-    var value = component.getProps().value;
+    var value = component.value;
     if (value == '' || value == '-1' || checkForIntValue(value))
         return true;
     showAlert(msg + ' ' + getLabel(component));
@@ -1129,12 +1129,14 @@ function checkPoolAttr(componentId, msg){
 }
 
 function checkRequired(componentId, reqMsg){
-    component = document.getElementById(componentId);
-    var value = component.getProps().value;
+    //component = document.getElementById(componentId);
+    //var value = component.getProps().value;
+    var component = getTextElement(componentId);
+    var value = component.value;
     var result = (value != '') && (isWhitespace(value) == false); 
     if (result == false) {
         showAlert(reqMsg + ' ' + getLabel(component));
-        //component.select();
+        component.select();
         component.focus();
     }
     return result;
