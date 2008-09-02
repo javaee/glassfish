@@ -633,9 +633,8 @@ public class VirtualServer extends StandardHost {
                 && (docroot != null)) {
             
             WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
- 
             wmInfo = new WebModuleConfig();
-            wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
+            wbd.setModuleID(Constants.DEFAULT_WEB_MODULE_NAME);
             wbd.setContextRoot("");
             wmInfo.setLocation(new File(docroot));
             wmInfo.setDescriptor(wbd);

@@ -486,7 +486,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         if (getModuleDescriptor().isStandalone()) {
             return moduleID;
         }
-        if (application != null) {
+        if (application != null && !application.isVirtual()) {
             if (application.getModuleID() == null) {
                 return getDisplayName();
             }

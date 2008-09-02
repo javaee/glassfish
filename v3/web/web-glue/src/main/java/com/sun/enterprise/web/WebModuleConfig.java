@@ -145,16 +145,7 @@ public class WebModuleConfig {
     public String getName() {
         String name = null;
         if (_wbd != null) {
-            StringBuffer buffer = new StringBuffer();
-            String appName = getAppName();
-            if (appName != null) {
-                // Include the application id (if this is not a 
-                // standalone web module)
-                buffer.append(appName);
-                buffer.append(Constants.NAME_SEPARATOR);
-            }
-            buffer.append(getModuleName());
-            name = buffer.toString();
+            name = _wbd.getModuleID();
         }
         return name;
     }
@@ -230,7 +221,7 @@ public class WebModuleConfig {
      *   generated/j2ee-modules/$moduleID
      */
     public String getWorkDir() {
-        return _workDir;
+        return getWebDir(_baseDir);
     }
 
 
@@ -246,15 +237,6 @@ public class WebModuleConfig {
     // END S1AS 6178005
 
     
-    /**
-     * Set the work directory for this web application.
-     *
-     * @param workDir The work directory for this web application
-     */
-    public void setWorkDir(String workDir) {
-        _workDir = workDir;
-    }
-
     /**
      * Set the base work directory for this web application.
      *
@@ -319,38 +301,6 @@ public class WebModuleConfig {
     }
     
     
-    // --------------------------------------------------------Private metthods
-
-    /**
-     * Return the name of the application that this web module belongs
-     * to or null if this is a standalone web module.
-     */
-    private String getAppName() {
-        String name = null;
-        if (_wbd != null) {
-            Application app = _wbd.getApplication();
-            if ((app != null) && !app.isVirtual()) {
-                String appName = app.getRegistrationName();
-                if ((appName != null) && (appName.length() > 0)) {
-                    name = appName.trim();
-                }
-            }
-        }
-        return name;
-    }
-
-    /**
-     * Return just the name of the web module.
-     */
-    private String getModuleName() {
-        String name = null;
-        if (_wbd != null) {
-            name = _wbd.getName();
-        }
-        return name;
-    }
-
-
     /*
      * Appends this web module's id to the given base directory path, and
      * returns it.
@@ -359,36 +309,13 @@ public class WebModuleConfig {
      */
     private String getWebDir(String baseDir) {
 
-        String workDir = null;
-
-        if (baseDir != null) {
-            StringBuffer dir = new StringBuffer();
-            dir.append(baseDir);
-
-            // Append the application id (if this is not a standalone web
-            // module)
-            String appName = getAppName();
-            if (appName != null) {
-                dir.append(File.separator);
-                dir.append(FileUtils.makeLegalNoBlankFileName(appName));
-            }
-
-            // Append the web module id
-            String name = getModuleName();
-            if (name != null) {
-                dir.append(File.separator);
-                if (appName == null) {
-                    dir.append(FileUtils.makeLegalNoBlankFileName(name));
-                } else {
-                    // for embedded web module, we convert the 
-                    // ".war" to "_war" when needed
-                    //dir.append(DeploymentUtils.getRelativeEmbeddedModulePath(
-                    //    dir.toString(), name));
-                }
-            }
-            workDir = dir.toString();
+        if (baseDir == null) {
+            return null;
         }
 
-        return workDir;
+        StringBuilder dir = new StringBuilder(baseDir);
+        dir.append(File.separator);
+        dir.append(FileUtils.makeLegalNoBlankFileName(_wbd.getModuleID()));
+        return dir.toString();
     }
 }

@@ -201,7 +201,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             wmInfo.setVirtualServers(virtualServers);
             wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
-            wmInfo.setWorkDir(dc.getScratchDir(env.kCompileJspDirName).getAbsolutePath());
         } catch (Exception ex) {
             dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
         }
