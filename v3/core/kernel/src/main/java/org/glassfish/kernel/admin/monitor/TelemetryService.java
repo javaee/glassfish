@@ -1,6 +1,8 @@
 package org.glassfish.kernel.admin.monitor;
 
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import com.sun.enterprise.config.serverbeans.*;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -22,7 +24,7 @@ import org.jvnet.hk2.component.Singleton;
 public class TelemetryService implements Startup, PostConstruct, ConfigListener {
 
     @Inject(optional=true)
-    ModuleMonitoringLevels config=null;
+    ModuleMonitoringLevels config = null;
 
     @Inject
     Habitat habitat;
@@ -33,22 +35,37 @@ public class TelemetryService implements Startup, PostConstruct, ConfigListener 
 
     public void postConstruct() {
         if (config!=null) {
-            if (!config.getWebContainer().equals("OFF"))
-                resetConfig();
+            if (!config.getWebContainer().equals("OFF")) {
+                //System.out.println("[Monitor] Monitoring level for web-container is " +
+                //                        config.getWebContainer());
+                onLevelChange("web-container", config.getWebContainer());
+            }
+            if (!config.getJvm().equals("OFF")) {
+                //System.out.println("[Monitor] Monitoring level for jvm is " +
+                //                        config.getJvm());
+                onLevelChange("jvm", config.getJvm());
+            }
         }
     }
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-        resetConfig();
+       for (PropertyChangeEvent event : propertyChangeEvents) {
+           if (event.getSource() instanceof ModuleMonitoringLevels) {
+                String propName = event.getPropertyName();
+                String enabled = event.getNewValue().toString();
+                onLevelChange(propName, enabled);
+           }
+       }
         return null;
     }
 
-    private void resetConfig() {
-        TelemetryProvider tp = habitat.getComponent(TelemetryProvider.class, "web");
+    private void onLevelChange(String propName, String enabled) {
+        TelemetryProvider tp = habitat.getComponent(TelemetryProvider.class, propName);
         if (tp == null) {
-            //logger.finest("Couldn't find the provider for Telemetry");
+            //System.out.println("[Monitor] Couldn't find the provider for " + propName);
         } else {
-            tp.onLevelChange(config.getWebContainer());
+            //System.out.println("[Monitor] Telemetry Provider is being invoked - " + tp.getClass());
+            tp.onLevelChange(enabled);
         }
     }
 }

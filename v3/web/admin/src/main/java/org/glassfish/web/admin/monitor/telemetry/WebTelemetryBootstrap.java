@@ -29,7 +29,7 @@ import org.jvnet.hk2.component.PostConstruct;
  *
  * @author PRASHANTH ABBAGANI
  */
-@Service(name="web")
+@Service(name="web-container")
 @Scoped(Singleton.class)
 public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryProvider, PostConstruct {
 
