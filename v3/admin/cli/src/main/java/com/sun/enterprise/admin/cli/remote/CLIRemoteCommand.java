@@ -486,6 +486,10 @@ public class CLIRemoteCommand {
         // not a deployment command -- get outta here!
         if(!isDeployment())
             return;
+        // if help is a paramter, then return manpage from server side
+        // no need to validate the operand
+        if (params.get("help") != null)
+            return;
 
         // it IS a deployment command.  That means we MUST have a valid path
         // with the exception of redeploy command with a directory deployment

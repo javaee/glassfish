@@ -145,7 +145,7 @@ public class CommandRunner {
             final Properties parameters, 
             final ActionReport report,
             final List<File> uploadedFiles) {
-        if (parameters.size()==1 && parameters.get("help")!=null) {
+        if (parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
             String manPage = encodeManPage(in);
 
