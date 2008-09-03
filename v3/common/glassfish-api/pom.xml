@@ -123,6 +123,7 @@
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <extensions>true</extensions>
+		<!-- do not remove the version here, as this pom does not inherit  parent glassfish-parent pom -->
                 <version>${hk2.plugin.version}</version>
                 <configuration>
                     <archive>
