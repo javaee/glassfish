@@ -393,11 +393,8 @@ public class CoyoteAdapter
         }
 
         // URI decoding
-        MessageBytes decodedURI = null;                   
-        if (v3Enabled){
-            decodedURI = req.decodedURI();
-        } else { /*mod_jk or Grizzly ARP*/            
-            decodedURI = req.decodedURI();
+        MessageBytes decodedURI = req.decodedURI();
+        if (!v3Enabled) {           
             decodedURI.duplicate(req.requestURI());
             try {
               req.getURLDecoder().convert(decodedURI, false);
