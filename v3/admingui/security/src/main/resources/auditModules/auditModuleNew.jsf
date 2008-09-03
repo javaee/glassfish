@@ -45,7 +45,7 @@
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.NewPageTitleHelp}");
         getRequestValue(key="configName" value=>$page{configName});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-        setPageSessionAttribute(key="helpkey" value="$resource{help.auditModuleNew}");
+        setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleNew}");
     />
 #include "/security/auditModules/auditModule.inc"               
 
