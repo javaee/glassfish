@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+       
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
+        </antcall>
+
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+
+    </target> 
+    
+    <!-- deploy the standalone war in AppServ without specifying any
+         contextroot argument, so that the context-root specified in
+         sun-web.xml takes effect
+    -->
+    <target name="deploy-war-no-context-root">
+        <antcall target ="deploy-war-no-context-root-pe"/>
+        <antcall target ="deploy-war-no-context-root-ee"/>
+    </target>
+
+    <target name="deploy-war-no-context-root-pe" depends="init-common" unless="ee">
+    <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="deploy"/>
+    <arg line="--user ${admin.user}"/>
+    <arg line="--passwordfile ${admin.password.file}"/>
+    <arg line="--host ${admin.host}"/>
+    <arg line="--port ${admin.port}"/>
+    <arg line="--upload=true"/>
+    <arg line="--target ${appserver.instance.name}"/>	
+    <arg line="${assemble.dir}/${appname}-web.war"/>
+    </exec>
+    </target> 
+
+    <target name="deploy-war-no-context-root-ee" if="ee">
+    <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="deploy"/>
+    <arg line="--user ${admin.user}"/>
+    <arg line="--passwordfile ${admin.password.file}"/>
+    <arg line="--host ${admin.host}"/>
+    <arg line="--port ${admin.port}"/>
+    <arg line="--type web"/>
+    <arg line="--upload=true"/>
+    <arg line="--target ${appserver.instance.name}"/>	
+    <arg line="${assemble.dir}/${appname}-web.war"/>
+    </exec>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-no-context-root"/>
+    </target>
+    
+    <target name="run" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="${contextroot}"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>
