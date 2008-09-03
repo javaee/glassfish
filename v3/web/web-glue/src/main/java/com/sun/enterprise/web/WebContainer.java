@@ -2010,7 +2010,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // is different for each virtual server.
         String wmInfoWorkDir = wmInfo.getWorkDir();
         if (wmInfoWorkDir != null) {
-            StringBuffer workDir = new StringBuffer(wmInfo.getWorkDir());
+            StringBuilder workDir = new StringBuilder(wmInfo.getWorkDir());
             if (wmName.equals(Constants.DEFAULT_WEB_MODULE_NAME)) {
                 workDir.append("-");
                 workDir.append(FileUtils.makeFriendlyFilename(vs.getID()));

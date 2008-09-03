@@ -326,8 +326,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 delegate = ConfigBeansUtilities.toBoolean(value);
             }
 
-            StringBuffer classpath = new StringBuffer();
-            classpath.append(super.getCommonClassPath());
+            StringBuilder classpath = new StringBuilder(
+                super.getCommonClassPath());
             classpath.append(File.pathSeparatorChar);
             classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
                     sc.getDefaultHabitat(),
