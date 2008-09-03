@@ -107,6 +107,7 @@ public class VirtualServer extends StandardHost {
         origPipeline = pipeline;
         vsPipeline = new VirtualServerPipeline(this);
         accessLogValve = new PEAccessLogValve();
+        accessLogValve.setContainer(this);
 
         _debug = _logger.isLoggable(Level.FINE);
     }
