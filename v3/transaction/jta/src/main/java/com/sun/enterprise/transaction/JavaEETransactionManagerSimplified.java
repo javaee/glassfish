@@ -64,6 +64,7 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -73,6 +74,7 @@ import org.glassfish.api.invocation.ResourceHandler;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Property;
 
 /**
  * Implementation of javax.transaction.TransactionManager interface.
@@ -1197,42 +1199,64 @@ public class JavaEETransactionManagerSimplified
 /** Implementation of org.jvnet.hk2.config.ConfigListener *********************/
 /****************************************************************************/
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        for (PropertyChangeEvent event : events) {
-            System.err.println("XXX event ======== "+event.getSource()+ " "+event.getPropertyName()+" "+
-                    event.getOldValue()+" "+event.getNewValue());
 
-            if (event.getPropertyName().equals(ServerTags.TIMEOUT_IN_SECONDS)) {
-                _logger.log(Level.FINE," Transaction Timeout interval event occurred");
-                String oldTimeout = (String)event.getOldValue();
-                String newTimeout = (String)event.getNewValue();
-                if (!oldTimeout.equals(newTimeout)) {
-                    try {
-                        setDefaultTransactionTimeout(Integer.parseInt(newTimeout,10));
-                    } catch (Exception ex) {
-                        _logger.log(Level.WARNING,"transaction.reconfig_txn_timeout_failed",ex);
-                    }
+        // Events that we can't process now because they require server restart.
+        List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
+
+        for (PropertyChangeEvent event : events) {
+            String eventName = event.getPropertyName();
+            Object oldValue = event.getOldValue();
+            Object newValue = event.getNewValue();
+            boolean accepted = true;
+
+            _logger.log(Level.FINE, "Got TransactionService change event ==== "
+                    /* +event.getSource()+ " " */ 
+                    + eventName + " " + oldValue + " " + newValue);
+
+            if (oldValue != null && oldValue.equals(newValue)) {
+                _logger.log(Level.FINE, "Event " + eventName 
+                        + " did not change existing value of " + oldValue);
+                continue;
+
+            } else if (eventName.equals(ServerTags.TIMEOUT_IN_SECONDS)) {
+                try {
+                    setDefaultTransactionTimeout(Integer.parseInt((String)newValue,10));
+                    _logger.log(Level.FINE," Transaction Timeout interval event processed for: " + newValue);
+                } catch (Exception ex) {
+                    _logger.log(Level.WARNING,"transaction.reconfig_txn_timeout_failed",ex);
                 } // timeout-in-seconds
-            }else if (event.getPropertyName().equals(ServerTags.KEYPOINT_INTERVAL)) {
-                _logger.log(Level.FINE,"Keypoint interval event occurred");
-                Object oldKeyPoint = event.getOldValue();
-                Object newKeyPoint = event.getNewValue();
-                if (!oldKeyPoint.equals(newKeyPoint)) {
-                    handlePropertyUpdate(ServerTags.KEYPOINT_INTERVAL, newKeyPoint);
-                }
-            }else if (event.getPropertyName().equals(ServerTags.RETRY_TIMEOUT_IN_SECONDS)) {
-                Object oldRetryTiemout = event.getOldValue();
-                Object newRetryTiemout = event.getNewValue();
-                _logger.log(Level.FINE,"retry_timeout_in_seconds reconfig event occurred " + newRetryTiemout);
-                if (!oldRetryTiemout.equals(newRetryTiemout)) {
-                    handlePropertyUpdate(ServerTags.RETRY_TIMEOUT_IN_SECONDS, newRetryTiemout);
-                }
-            }
-            else {
+
+            } else if (eventName.equals(ServerTags.KEYPOINT_INTERVAL)
+                    || eventName.equals(ServerTags.RETRY_TIMEOUT_IN_SECONDS)) {
+                handlePropertyUpdate(eventName, newValue);
+                _logger.log(Level.FINE, eventName + " reconfig event processed for new value: " + newValue);
+
+            } else if (event.getPropertyName().equals("value")) {
+                eventName = ((Property)event.getSource()).getName();
+                _logger.log(Level.FINE, "Got Property change event for " + eventName);
+
                 // Not handled dynamically. Restart is required.
-                // XXX AdminEventMulticaster.notifyFailure(event, AdminEventResult.RESTART_NEEDED);
+                accepted = false;
+
+            } else if (event.getPropertyName().equals("name")
+                    || event.getPropertyName().equals("property")) {
+                // skip - means a new property added, was processed above as "value".
+                _logger.log(Level.FINE, "...skipped");
+
+            } else {
+                // Not handled dynamically. Restart is required.
+                accepted = false;
+            }
+
+            if (!accepted) {
+                String msg = sm.getString("enterprise_distributedtx.restart_required",
+                        eventName);
+                _logger.log(Level.INFO, msg);
+                unprocessedEvents.add(new UnprocessedChangeEvent(event, msg));
             }
         }
-        return null;
+        return (unprocessedEvents.size() > 0) 
+                ? new UnprocessedChangeEvents(unprocessedEvents) : null;
     }
 
 /****************************************************************************/
