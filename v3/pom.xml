@@ -239,7 +239,7 @@
 	        <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version> 2.4 </version>
+                    <version> 2.2 </version>
                 </plugin>
 
                 <plugin>
@@ -251,7 +251,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version> 2.4.2 </version>
+                    <version> 2.4.3 </version>
                 </plugin>
              </plugins>
         </pluginManagement>
