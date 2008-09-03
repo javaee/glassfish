@@ -56,6 +56,7 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -140,6 +141,14 @@ public class CreateHttpListener implements AdminCommand {
             }
         }
         
+        // ensure that the specified default virtual server exists
+        if(!defaultVirtualServerExists(httpService)) {
+           report.setMessage(localStrings.getLocalString("create.http.listener.vs.notexists",
+               "Virtual Server, {0} doesn't exist", defaultVirtualServer));
+           report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+           return;
+        }
+  
         try {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
@@ -182,5 +191,20 @@ public class CreateHttpListener implements AdminCommand {
             report.setFailureCause(e);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private boolean defaultVirtualServerExists(HttpService httpService) {
+        if(defaultVirtualServer == null)
+            return false;
+
+        List<VirtualServer> list = httpService.getVirtualServer();
+
+        for(VirtualServer vs : list) {
+            String currId = vs.getId();
+
+            if(currId != null && currId.equals(defaultVirtualServer))
+                return true;
+        }
+        return false;
     }
 }

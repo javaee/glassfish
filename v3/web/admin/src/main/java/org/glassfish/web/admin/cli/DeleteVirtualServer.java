@@ -48,6 +48,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -88,6 +89,16 @@ public class DeleteVirtualServer implements AdminCommand {
             report.setActionExitCode(ExitCode.FAILURE);
             return;
         }
+
+        // reference check
+        String referencedBy = getReferencingListener();
+        if((referencedBy != null) && (referencedBy != "")) {
+            report.setMessage(localStrings.getLocalString("delete.virtual.server.referenced", 
+                "Virtual Server, {0} can not be deleted because it is referenced from http listener, {1}", vsid, referencedBy));
+            report.setActionExitCode(ExitCode.FAILURE);
+            return;
+        }
+
         try {
             ConfigSupport.apply(new Config(vsid), httpService);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -112,6 +123,18 @@ public class DeleteVirtualServer implements AdminCommand {
                 return true;
         }
         return false;
+    }
+
+    private String getReferencingListener() {
+        List<HttpListener> list = httpService.getHttpListener();
+        
+        for(HttpListener listener: list) {
+            String virtualServer = listener.getDefaultVirtualServer();
+         
+            if(virtualServer != null && virtualServer.equals(vsid))
+                return listener.getId();
+        }
+        return null;
     }
 
     private static class Config implements SingleConfigCode<HttpService> {
