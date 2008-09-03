@@ -97,9 +97,9 @@ class ManifestManager implements ResponseManager {
         processOneLevel("", null, response.getMainAtts(), sb);
 
         if(!response.wasSuccess()) {
-            String cause = response.getCause();
-            if( CLILogger.isDebug() && ok(cause)){
-                sb.append(EOL).append(cause);
+            final String cause = response.getCause();
+            if(ok(cause)){
+                sb.append(cause);
             }
             throw new RemoteFailureException(sb.toString());
         }        
