@@ -79,6 +79,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import com.sun.enterprise.registration.*;
+import com.sun.enterprise.registration.impl.*;
 import com.sun.enterprise.registration.RegistrationException;
 
 
