@@ -28,9 +28,6 @@ import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.UDPSelectorHandler;
 import com.sun.grizzly.filter.ReadFilter;
-import com.sun.grizzly.http.DefaultProcessorTask;
-import com.sun.grizzly.http.HttpWorkerThread;
-import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.tcp.Adapter;
 import java.io.IOException;
@@ -52,11 +49,6 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     
     
     private final static String ROOT = "/";
-
-    /**
-     * The Mapper used to find and configure the endpoint.
-     */
-    private ContainerMapper containerMapper;
     
     protected volatile ProtocolFilter httpProtocolFilterWrapper;
     
@@ -78,7 +70,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      */    
     public GrizzlyEmbeddedHttp(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
-        this.containerMapper = new ContainerMapper(this);
+        this.adapter = new ContainerMapper(this);
         this.pipelineClassName = GrizzlyProbePipeline.class.getName();
         setClassLoader(getClass().getClassLoader()); 
     }
@@ -96,8 +88,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      * Load using reflection the <code>Algorithm</code> class.
      */
     @Override
-    protected void initAlgorithm(){
-        
+    protected void initAlgorithm(){        
         if (!algorithInitialized.getAndSet(true)) {
             algorithmClass = ContainerStaticStreamAlgorithm.class;
             defaultAlgorithmInstalled = true;
@@ -141,8 +132,11 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
         controller.setProtocolChainInstanceHandler(instanceHandler);
 
         controller.setReadThreadsCount(readThreadsCount);
-        // TODO: Do we want to support UDP all the time?
-        controller.addSelectorHandler(createUDPSelectorHandler());
+        
+        // Suport UDP only when port unification is enabled.
+        if (portUnificationFilter != null) {
+            controller.addSelectorHandler(createUDPSelectorHandler());
+        }
         
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
@@ -180,30 +174,6 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     }
     
     
-    /**
-     * Adds and configures <code>ProtocolChain</code>'s filters
-     * @param <code>ProtocolChain</code> to configure
-     */
-    @Override
-    protected void configureFilters(ProtocolChain protocolChain) {
-        if (portUnificationFilter != null) {
-            protocolChain.addFilter(portUnificationFilter);
-            // ProtocolFilter are added on the fly by their respective
-            // ProtocolHandler, so here we just add a single ProtocolFilter.
-            return;
-        } else {
-            ProtocolFilter readFilter = createReadFilter();
-            protocolChain.addFilter(readFilter);
-        }
-        
-        if (rcmSupport) {
-            protocolChain.addFilter(createRaFilter());
-        }
-        
-        protocolChain.addFilter(getHttpProtocolFilter());
-    }
-    
-    
     protected Collection<ProtocolFilter> getDefaultHttpProtocolFilters() {
         if (defaultHttpFilters == null) {
             synchronized(this) {
@@ -220,36 +190,6 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
         }
         
         return defaultHttpFilters;
-    }
-    
-    /**
-     * Return a <code>ProcessorTask</code> from the pool. If the pool is empty,
-     * create a new instance.
-     */
-    @Override
-    public ProcessorTask getProcessorTask() {
-        if (asyncExecution) {        
-            HttpWorkerThread httpWorkerThread = 
-                    (HttpWorkerThread)Thread.currentThread();
-            DefaultProcessorTask contextPt = 
-                    (DefaultProcessorTask) httpWorkerThread.getProcessorTask();
-
-            if (contextPt == null){
-                return super.getProcessorTask();
-            } else {
-                DefaultProcessorTask pt = 
-                        (DefaultProcessorTask)super.getProcessorTask();
-                // With Async, we cannot re-use the Context ProcessorTask. Since
-                // The adapter has been set on it, rebind it to the current one.
-                if (contextPt != null) {
-                    pt.setAdapter(contextPt.getAdapter());
-                }
-                return pt;  
-            }
-        } else {
-            return super.getProcessorTask();
-        }
-
     }
     
     
@@ -305,6 +245,8 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
         selectorHandler.setReuseAddress(getReuseAddress());
         selectorHandler.setPipeline(processorPipeline);
     }
+    
+    
     // ---------------------------------------------- Public get/set ----- //
 
     public boolean isHttpSecured() {
@@ -318,7 +260,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      * @return context-root mapper
      */
     public ContainerMapper getContainerMapper() {
-        return containerMapper;
+        return (ContainerMapper)adapter;
     }
 
     /*
@@ -330,7 +272,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      */
     public void registerEndpoint(String contextRoot, Collection<String> vs, Adapter adapter,
                                  ApplicationContainer container) {
-        containerMapper.register(contextRoot, vs, adapter, null, null);
+        ((ContainerMapper)getAdapter()).register(contextRoot, vs, adapter, null, null);
     }   
  
     
@@ -338,6 +280,6 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      * Removes the context-root from our list of adapters.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        containerMapper.unregister(contextRoot);
+        ((ContainerMapper)getAdapter()).unregister(contextRoot);
     }
 }

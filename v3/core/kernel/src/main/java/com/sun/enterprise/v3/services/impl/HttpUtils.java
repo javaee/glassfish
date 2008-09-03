@@ -413,7 +413,7 @@ public class HttpUtils {
         sb.append("<h1>");
         sb.append(message);
         sb.append("</h1>");
-        sb.append("</h3> type Status report<br>message<br>description The requested resource () is not available</h3>");
+        sb.append("</h3> type Status report<br>message<br>description Not Found</h3>");
         sb.append("<HR size=\"1\" noshade>");
         sb.append("<h3>").append(serverName).append("</h3>");
         sb.append("</body></html>");

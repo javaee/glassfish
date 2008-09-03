@@ -75,7 +75,6 @@ import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.appserv.security.provider.ProxyHandler;
-import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,6 +119,10 @@ public class CoyoteAdapter
     private boolean compatWithTomcat = false;
     
     private String serverName = System.getProperty("product.name");
+    
+    // Make sure this value is always aligned with {@link ContainerMapper}
+    // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
+    private final static int MAPPING_DATA = 12;
     
     // ----------------------------------------------------------- Constructors
 
@@ -370,6 +373,11 @@ public class CoyoteAdapter
             request.setSecure(connector.getSecure());
         }
 
+        // IF mod_jk is enabled, swicth to the normal mode.
+        if (compatWithTomcat){
+            v3Enabled = false;
+        }
+        
         // FIXME: the code below doesnt belongs to here, 
         // this is only have sense 
         // in Http11, not in ajp13..
@@ -385,25 +393,8 @@ public class CoyoteAdapter
         }
 
         // URI decoding
-        MessageBytes decodedURI = null;   
-        
-        // Grizzly already parsed and decoded the request. Let's just re-use it.
-        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
-            WorkerThread wt = (WorkerThread) Thread.currentThread();
-            decodedURI = (MessageBytes)wt.getAttachment()
-                    .getAttribute("decodedURI");
-            
-            // May happens when Grizzly ARP is used, as the Adapter might be 
-            // called from another thread. Hence we need to re-parse/map the request.
-            if (decodedURI == null){
-                v3Enabled = false;
-            }
-        }
-        
-        
-        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
-            ByteChunk cc = decodedURI.getByteChunk(); 
-            req.decodedURI().setBytes(cc.getBytes(), cc.getStart(), cc.getEnd());
+        MessageBytes decodedURI = null;                   
+        if (v3Enabled){
             decodedURI = req.decodedURI();
         } else { /*mod_jk or Grizzly ARP*/            
             decodedURI = req.decodedURI();
@@ -475,11 +466,8 @@ public class CoyoteAdapter
         }
         
         // Grizzly already parsed and decoded the request. Let's just re-use it.
-        if (v3Enabled && Thread.currentThread() instanceof WorkerThread){
-            WorkerThread wt = (WorkerThread) Thread.currentThread();
-            MappingData md = (MappingData)wt.getAttachment()
-                    .getAttribute("mappingData");
-            request.setMappingData(md);
+        if (v3Enabled){
+            request.setMappingData((MappingData)req.getNote(MAPPING_DATA));
         } else { /*mod_jk*/
             connector.getMapper().map(req.serverName(), decodedURI, 
                                   request.getMappingData());

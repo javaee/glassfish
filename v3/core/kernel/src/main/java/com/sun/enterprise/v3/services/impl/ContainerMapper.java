@@ -26,11 +26,14 @@ import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.DefaultProcessorTask;
 import com.sun.grizzly.http.HttpWorkerThread;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.tcp.Response;
+import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.WorkerThread;
+import com.sun.grizzly.util.buf.ByteChunk;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.deployment.ApplicationContainer;
 
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -38,6 +41,7 @@ import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.grizzly.util.http.HttpRequestURIDecoder;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UDecoder;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -54,21 +58,27 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Jeanfrancois Arcand
  * @author Alexey Stashok
  */
-public class ContainerMapper {
+public class ContainerMapper extends StaticResourcesAdapter{
 
     private final static String ROOT = "/";
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
-    private Logger logger;
     private UDecoder urlDecoder = new UDecoder();
 
     private ConcurrentLinkedQueue<HttpParserState> parserStates;
+    
+    private final static int MAPPING_DATA = 12;
+    private final static int MAPPED_ADAPTER = 13;
+    
+    private static byte[] errorBody =
+            HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
     
     public ContainerMapper(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         parserStates = new ConcurrentLinkedQueue<HttpParserState>();
         logger = GrizzlyEmbeddedHttp.logger();
+        setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
     }
 
     
@@ -81,6 +91,11 @@ public class ContainerMapper {
     }
 
     
+    /**
+     * Set the {@link V3Mapper} instance used for mapping the container 
+     * and its associated {@link Adapter}.
+     * @param mapper
+     */
     protected void setMapper(Mapper mapper) {
         this.mapper = mapper;
     }
@@ -95,6 +110,99 @@ public class ContainerMapper {
         Mapper.setAllowReplacement(true);
     }
 
+    
+    /**
+     * Map the request to its associated {@link Adapter}.
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @Override
+    public void service(Request req, Response res) throws IOException{
+        MessageBytes decodedURI = req.decodedURI();
+        decodedURI.duplicate(req.requestURI());
+        MappingData mappingData = (MappingData)req.getNote(MAPPING_DATA);
+        if (mappingData == null){
+            mappingData = new MappingData();
+            req.setNote(MAPPING_DATA, mappingData);
+        }
+           
+        Adapter adapter = null;      
+        try{
+            HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
+
+            // Map the request to its Adapter/Container and also it's Servlet if 
+            // the request is targetted to the CoyoteAdapter.
+            mapper.map(req.serverName(), decodedURI, mappingData);       
+
+            ContextRootInfo contextRootInfo = null;
+            if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
+                contextRootInfo = (ContextRootInfo) mappingData.context;
+                adapter = contextRootInfo.getAdapter();
+            } else if (mappingData.context != null && mappingData.context.getClass()
+                    .getName().equals("com.sun.enterprise.web.WebModule")) {
+                adapter = ((V3Mapper) mapper).getAdapter(); 
+            }
+            
+            if (adapter == null){
+                super.service(req, res);
+            }  else {  
+                req.setNote(MAPPED_ADAPTER, adapter);
+                adapter.service(req, res);
+            }
+        } catch (Exception ex){
+            try{
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "Invalid URL: " + req.decodedURI(), ex);          
+                }                 
+                customizedErrorPage(req,res);
+            } catch (Exception ex2){
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "Unable to error page", ex2);          
+                }                 
+            }
+        }  finally{
+            mappingData.recycle();
+        }
+    }
+    
+    
+    /**
+     * Recycle the mapped {@link Adapter} and this instance.
+     * @param req
+     * @param res
+     * @throws java.lang.Exception
+     */
+    @Override
+    public void afterService(Request req, Response res) throws Exception{
+        try{
+            Adapter adapter = (Adapter)req.getNote(MAPPED_ADAPTER);
+            if (adapter != null){
+                adapter.afterService(req, res);
+
+            }
+            super.afterService(req, res);
+        } finally {
+            req.setNote(MAPPED_ADAPTER, null);
+        }
+    }
+ 
+    
+    /**
+     * Return an error page customized for GlassFish v3. 
+     * @param req
+     * @param res
+     * @throws java.lang.Exception
+     */
+    @Override
+    protected void customizedErrorPage(Request req,Response res) throws Exception {
+        ByteChunk chunk = new ByteChunk();
+        chunk.setBytes(errorBody, 0, errorBody.length);
+        res.setContentLength(errorBody.length);
+        res.sendHeaders();
+        res.doWrite(chunk);
+    }
+     
     
     public void register(String contextRoot, Collection<String> vs, Adapter adapter,
             ApplicationContainer container, List<ProtocolFilter> contextProtocolFilters) {
@@ -224,8 +332,8 @@ public class ContainerMapper {
             workerThread.getAttachment().setAttribute("decodedURI", fullDecodedUri);
 
             adapter = ((V3Mapper) mapper).getAdapter();
-        }
-        
+        }    
+                
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAP (" + this + ") contextRoot: " + new String(contextBytes) +
                     " defaultProtocolFilters: " + defaultProtocolFilters +
