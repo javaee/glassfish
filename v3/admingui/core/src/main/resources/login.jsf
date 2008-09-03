@@ -86,9 +86,9 @@
 			<td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
 </f:verbatim>
 			    <sun:image url="#{request.contextPath}/resource/#{loginProductImageURL}" 
-                                 alt="#{fullProductName}" 
-                                 width="284" 
-                                 height="42" />
+                                 alt="#{fullProductName}"
+                                  height="#{loginProductImageHeight}" width="#{loginProductImageWidth}"
+                                  />
 
 <f:verbatim>
 			    <table border="0" cellspacing="0" cellpadding="0" style="visibility: #{anonLogin ? 'hidden' : 'visible'}">
