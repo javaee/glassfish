@@ -145,6 +145,63 @@
         <attachArtifact file="build.xml" classifier="build"/>
     </target>
 
+    <!--  added new: will test the sanity of the server    -->
+    <target name="test.server">
+            <echo message="------------------------------------------"/>
+            <echo message="TESTING GFv3 SERVER FOR SANITY "/>
+            <echo message="------------------------------------------"/>
+            <echo message="unzip the file ../target/web.zip to ../target/sanitywork/ "/>
+            <unzip src="target/web.zip" dest="target/sanitywork">
+            </unzip>
+            <chmod dir="target/sanitywork/glassfish/bin" perm="ugo+rx" includes="**/*"/>
+            <echo message="Now execute the jar file....please wait for timeout"/>
+            <java jar="target/sanitywork/glassfish/modules/glassfish-10.0-SNAPSHOT.jar"
+                fork="true"
+                maxmemory="128m"
+                timeout="9100"
+                failonerror="false"
+                outputproperty="myout"
+                logError="false"
+                >
+                <arg value="-h"/>
+             </java>
+
+             <echo message="DISPLAY output=${myout}"
+                file="target/sanitywork/server.output"
+             />
+
+             <!-- now check for Start string in the server output  -->
+             <loadfile srcfile="target/sanitywork/server.output" property="sanity.test.result">
+                 <filterchain>
+                      <filterreader classname="org.apache.tools.ant.filters.LineContains">
+                          <param type="contains" value="Glassfish v3 started"/>
+                      </filterreader>
+                      <tokenfilter>
+                          <containsstring contains="started"/>
+                      </tokenfilter>
+                 </filterchain>
+             </loadfile>
+             <echo message="The server output:  ${sanity.test.result}"/>
+             <antcall target="testResult">
+             </antcall>
+    </target>
+
+    <target name="checkString"   >
+          <condition property="isPassed">
+          <contains string="${sanity.test.result}"
+                                substring="Glassfish v3 started"/>
+          </condition>
+    </target>
+
+    <target name="testResult"  if="isPassed" depends="didTestFail">
+            <echo message="Sanity Test PASSED"/>
+    </target>
+
+    <target name="didTestFail"  unless="isPassed" depends="checkString" >
+            <echo message="Sanity Test FAILED"/>
+             <echo message="The server output:  ${sanity.test.result}"/>
+    </target>
+
     <!--
       Target for building all in one jar. This takes long time,
       so separated out to its own target to avoid running this on developer's machine.

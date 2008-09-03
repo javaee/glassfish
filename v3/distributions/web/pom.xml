@@ -48,6 +48,11 @@
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Bundle</description>
 
+    <properties>
+        <create.bundle> true </create.bundle>
+        <test.server> false </test.server>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -55,12 +60,33 @@
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
                     <tasks>
-                        <ant dir="." antfile="build.xml" target="create.bundle"/>
+
+		        <if test="${create.bundle}">
+                            <ant dir="." antfile="build.xml" target="create.bundle"/>
+                        </if>
+
                         <if test="${build.all.jar}">
                             <ant dir="." antfile="build.xml" target="all.jar"/>
                         </if>
+
                     </tasks>
                 </configuration>
+		<executions>
+                    <execution>
+                        <phase> test </phase>
+                        <configuration>
+                            <tasks>
+                            <if test="${test.server}">
+                                <ant dir="." antfile="build.xml" target="test.server"/>
+                            </if>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
                 <dependencies>
                     <!-- TODO: add installer builder jars -->
                     <!-- see http://kohsuke.sfbay/hudson/job/poormans-installer/ -->
@@ -76,6 +102,21 @@
                 <build.all.jar>true</build.all.jar>
             </properties>
         </profile>
+
+        <profile><!-- activate this profile to run the sanity test  -->
+            <id>run.sanity.test</id>
+            <activation>
+               <property>
+                   <name>run</name>
+                   <value>sanity.test</value>
+               </property>
+            </activation>
+            <properties>
+                <test.server>true</test.server>
+                <create.bundle>false</create.bundle>
+            </properties>
+        </profile>
+
     </profiles>
 
     <dependencies>
