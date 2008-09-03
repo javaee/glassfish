@@ -508,6 +508,9 @@ public class GrizzlyListenerConfigurator {
         } else if ("trustMaxCertLength".equals(propName)) {
             grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;
+        } else if ("uriEncoding".equals(propName)) {
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
+            return true;
         } else {
             return false;
         }   

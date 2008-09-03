@@ -290,7 +290,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
         // Decode the request to make sure this is not an attack like
         // a directory traversal vulnerability.
         try{
-            HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
+            HttpRequestURIDecoder.decode(decodedURI,urlDecoder,
+                    (String)grizzlyEmbeddedHttp.getProperty("uriEncoding"),null);
         } catch (Exception ex){
             // We fail to decode the request, hence we don't service it.
             if (logger.isLoggable(Level.WARNING)) {
