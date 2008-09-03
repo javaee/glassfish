@@ -416,23 +416,9 @@ Variables Used:
      <env key="AS_ADMIN_INSTANCE" value="${appserver.instance.name}"/>
      <arg line="multimode --file ${asadmin.file}" />        
   </exec>
-  <antcall target="reconfig-common"/>
 </target>
  
 <!-- ================================================================ -->
-
-
-<!-- ================================================================ -->
-<!-- Target to reconfig the AppServ  -->
-<!-- ================================================================ -->
-<target name="reconfig-common" depends="init-common">
-    <echo message="Reconfiguring server ${appserver.instance.name}" 
-        level="verbose"/>
-  <antcall target="asadmin-common">
-    <param name="admin.command" value="reconfig" />
-    <param name="operand.props" value="${appserver.instance.name}"/>
-  </antcall>
-</target>
 
 <!-- ================================================================ -->
 <!-- Target to create the user in file realm the AppServ  -->
@@ -685,7 +671,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="deploy-jdbc-common" depends="init-common">
     <antcall target="create-jdbc-connpool-common" />
     <antcall target="create-jdbc-resource-common" />
-    <antcall target="reconfig-common" />
 </target>
 
 <!-- ================================================================ -->
@@ -694,7 +679,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="undeploy-jdbc-common" depends="init-common">
   <antcall target="delete-jdbc-resource-common" />
   <antcall target="delete-jdbc-connpool-common" />
-  <antcall target="reconfig-common" />
 </target>
 
 <!-- ================================================================ -->
@@ -920,13 +904,11 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="deploy-jms-common" depends="init-common">
   <antcall target="create-jms-connection-common" />
   <antcall target="create-jms-resource-common" />
-  <antcall target="reconfig-common" />
 </target>
 
 <target name="undeploy-jms-common" depends="init-common">
   <antcall target="delete-jms-connection-common" />
   <antcall target="delete-jms-resource-common" />
-  <antcall target="reconfig-common" />
 </target>
 
 
