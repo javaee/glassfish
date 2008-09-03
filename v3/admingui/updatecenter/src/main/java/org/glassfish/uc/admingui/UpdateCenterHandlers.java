@@ -122,18 +122,18 @@ public class UpdateCenterHandlers {
             
             
             for (Fmri fmri : displayList){
-                HashMap oneRow = new HashMap();
+                Map oneRow = new HashMap();
                 try{
                     Manifest manifest = img.getManifest(fmri);
                     oneRow.put("selected", false);
-                    oneRow.put("fmri", fmri.toString());
-                    oneRow.put("pkgName", fmri.getName());
-                    oneRow.put("version", getPkgVersion(fmri.getVersion()));
-                    oneRow.put("category", manifest.getAttribute(CATEGORY));
-                    oneRow.put("pkgSize", getPkgSize(manifest));
-                    oneRow.put("size", Integer.valueOf(manifest.getPackageSize()));
-                    oneRow.put("auth", img.getPreferredAuthorityName());
-                    oneRow.put("frmi", fmri);
+                    putInfo(oneRow, "fmri", fmri.toString());
+                    putInfo(oneRow, "pkgName", fmri.getName());
+                    putInfo(oneRow, "version", getPkgVersion(fmri.getVersion()));
+                    putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
+                    putInfo(oneRow, "pkgSize", getPkgSize(manifest));
+                    oneRow.put( "size", Integer.valueOf(manifest.getPackageSize()));
+                    putInfo(oneRow, "auth", img.getPreferredAuthorityName());
+                    oneRow.put( "frmi", fmri);
                     result.add(oneRow);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -145,6 +145,9 @@ public class UpdateCenterHandlers {
         handlerCtx.setOutputValue("result", result);
     }
     
+    private static void putInfo( Map oneRow, String key, String value){
+        oneRow.put( key, GuiUtil.isEmpty(value) ? "" : value);
+    }
 
     private static List<Fmri> getInstalledList(Image image){
         List<Image.FmriState> fList = image.getInventory(null, false);
@@ -205,7 +208,8 @@ public class UpdateCenterHandlers {
         List<Fmri> fList = new ArrayList();
         try {
             for (Map oneRow : selectedRows) {
-                fList.add((Fmri)oneRow.get("fmri"));
+                Fmri fmri = new Fmri( (String) oneRow.get("fmri"));
+                fList.add(fmri);
             }
             if (install){
                 image.installPackages(fList);
@@ -213,6 +217,7 @@ public class UpdateCenterHandlers {
                 image.uninstallPackages(fList);
             }
         }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
             ex.printStackTrace();
         }
     }

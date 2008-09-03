@@ -50,8 +50,8 @@
     </script>
 </f:verbatim>
 #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
 #include "/updateCenter/ucTabs.inc"
+#include "/shared/alertMsg.inc"
         <!-- Page Title -->
          <sun:title id="propertyContentPage" title="$attribute{pageTitle}" helpText="$attribute{pageTitleHelp}"/>
          <sun:propertySheet id="propertySheet">			 

@@ -49,6 +49,7 @@
         setPageSessionAttribute(key="fromPage" value="installed.jsf");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
         setAttribute(key="helpKey" value="$resource{help.uc.installed}");
+        setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.removeSuccess}")
         getInstalledPath(result=>$attribute{installedPath});
         getAuthority(result=>$attribute{authority});
         getUcList(state="installed", result=>$attribute{listOfRows} );

@@ -59,7 +59,8 @@
                 getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 updateCenterProcess(selectedRows="${selectedRows}" action="#{action}" );
-                redirect(page="#{fromPage}");
+                prepareAlertMsg(summary="#{successMsg}" type="success");
+                redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
             </sun:button>
          </sun:panelGroup>

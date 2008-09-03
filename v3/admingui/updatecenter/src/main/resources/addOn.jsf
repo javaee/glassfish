@@ -49,6 +49,7 @@
         setPageSessionAttribute(key="fromPage" value="addOn.jsf");
         setAttribute(key="helpKey" value="$resource{help.uc.addOn}");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
+        setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")
         getInstalledPath(result=>$attribute{installedPath});
         getAuthority(result=>$attribute{authority});
         getUcList(state="addOn", result=>$attribute{listOfRows} );
