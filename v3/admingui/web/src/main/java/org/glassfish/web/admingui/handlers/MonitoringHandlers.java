@@ -93,11 +93,13 @@ public class MonitoringHandlers {
         if (application.equals("All")) {
             dataList.add("All");
         } else {
-            TreeNode server = serverRoot.getNode("applications."+application);
-            Collection<TreeNode> coll = server.getChildNodes();
-            for (TreeNode tn : coll) {
-                dataList.add(tn.getName());
-            }        
+            if (serverRoot != null) {
+                TreeNode server = serverRoot.getNode("applications."+application);
+                Collection<TreeNode> coll = server.getChildNodes();
+                for (TreeNode tn : coll) {
+                    dataList.add(tn.getName());
+                }
+            }
         }
         handlerCtx.setOutputValue("virtualServers", dataList);
         if (!dataList.isEmpty()) {
@@ -130,11 +132,12 @@ public class MonitoringHandlers {
         String type = (String)handlerCtx.getInputValue("type");
         String test = (String)handlerCtx.getInputValue("test");
         TreeNode statsNode = null;
-
-        if (application == null || application.equals("All")) {
-            statsNode = serverRoot.getNode("web."+type);            
-        } else {
-            statsNode = serverRoot.getNode("applications."+application+"."+virtualServer);
+        if (serverRoot != null) { 
+            if (application == null || application.equals("All")) {
+                statsNode = serverRoot.getNode("web."+type);            
+            } else {
+                statsNode = serverRoot.getNode("applications."+application+"."+virtualServer);
+            }
         }
         
         Collection<TreeNode> coll = null;
@@ -185,21 +188,22 @@ public class MonitoringHandlers {
             node = node.replace("All", "request");
         }
         String test = (String)handlerCtx.getInputValue("test");
-        TreeNode statsNode = serverRoot.getNode(node);
-        
-        Collection<TreeNode> coll = null;
         List dataList = new ArrayList();        
-        if (statsNode != null) {
-            coll = statsNode.getChildNodes();
-            for (TreeNode tn : coll) {
-                    Map statMap = new HashMap();
-                    statMap.put("Name", tn.getName());
-                    statMap.put("Value", tn.getValue());
-                    statMap.put("ToolTip", "");
-                    if (tn instanceof Counter) {
-                        statMap.put("ToolTip", ((Counter)tn).getDescription());
-                    }
-                    dataList.add(statMap);
+        if (serverRoot != null) {
+            TreeNode statsNode = serverRoot.getNode(node);
+            Collection<TreeNode> coll = null;
+            if (statsNode != null) {
+                coll = statsNode.getChildNodes();
+                for (TreeNode tn : coll) {
+                        Map statMap = new HashMap();
+                        statMap.put("Name", tn.getName());
+                        statMap.put("Value", tn.getValue());
+                        statMap.put("ToolTip", "");
+                        if (tn instanceof Counter) {
+                            statMap.put("ToolTip", ((Counter)tn).getDescription());
+                        }
+                        dataList.add(statMap);
+                }
             }
         }
         handlerCtx.setOutputValue("stats", dataList);
@@ -221,29 +225,31 @@ public class MonitoringHandlers {
     )
     public void getJvmStats(HandlerContext handlerCtx) {
         String serverName = (String)handlerCtx.getInputValue("serverName");
-        MethodInvoker tn = (MethodInvoker) (serverRoot.getNode("jvm")).getNode("committedHeapSize");
-        MemoryUsage mu = (MemoryUsage) tn.getInstance();
         List dataList = new ArrayList();        
-        Map statMap = new HashMap();
-        statMap.put("Name", "init");
-        statMap.put("Value", mu.getInit());
-        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.init.tooltip"));
-        dataList.add(statMap);
-        statMap = new HashMap();
-        statMap.put("Name", "used");
-        statMap.put("Value", mu.getUsed());
-        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.used.tooltip"));
-        dataList.add(statMap);
-        statMap = new HashMap();
-        statMap.put("Name", "committed");
-        statMap.put("Value", mu.getCommitted());
-        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.committed.tooltip"));
-        dataList.add(statMap);
-        statMap = new HashMap();
-        statMap.put("Name", "max");
-        statMap.put("Value", mu.getMax());
-        statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.max.tooltip"));
-        dataList.add(statMap);
+        if (serverRoot != null) {
+            MethodInvoker tn = (MethodInvoker) (serverRoot.getNode("jvm")).getNode("committedHeapSize");
+            MemoryUsage mu = (MemoryUsage) tn.getInstance();
+            Map statMap = new HashMap();
+            statMap.put("Name", "init");
+            statMap.put("Value", mu.getInit());
+            statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.init.tooltip"));
+            dataList.add(statMap);
+            statMap = new HashMap();
+            statMap.put("Name", "used");
+            statMap.put("Value", mu.getUsed());
+            statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.used.tooltip"));
+            dataList.add(statMap);
+            statMap = new HashMap();
+            statMap.put("Name", "committed");
+            statMap.put("Value", mu.getCommitted());
+            statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.committed.tooltip"));
+            dataList.add(statMap);
+            statMap = new HashMap();
+            statMap.put("Name", "max");
+            statMap.put("Value", mu.getMax());
+            statMap.put("ToolTip", GuiUtil.getMessage(RESOURCE_NAME, "monitoring.jvm.max.tooltip"));
+            dataList.add(statMap);
+        }
         handlerCtx.setOutputValue("jvmStats", dataList);
     }
     
@@ -270,15 +276,19 @@ public class MonitoringHandlers {
         String firstInList = (String)handlerCtx.getInputValue("firstInList");
         List dataList = new ArrayList();
         TreeNode treeNode = null;
-        treeNode = serverRoot.getNode(node);
-        Collection<TreeNode> coll = treeNode.getChildNodes();
-        for (TreeNode tn : coll) {
-            if (category != null) {
-                if (tn.getCategory().equals(category)) {
+        if (serverRoot != null) {
+            treeNode = serverRoot.getNode(node);
+        }
+        if (treeNode != null) {
+            Collection<TreeNode> coll = treeNode.getChildNodes();
+            for (TreeNode tn : coll) {
+                if (category != null) {
+                    if (tn.getCategory().equals(category)) {
+                        dataList.add(tn.getName());
+                    }
+                } else {
                     dataList.add(tn.getName());
                 }
-            } else {
-                dataList.add(tn.getName());
             }
         }
         if (firstInList != null) {
