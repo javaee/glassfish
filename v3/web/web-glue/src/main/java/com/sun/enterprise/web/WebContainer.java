@@ -64,13 +64,14 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Realm;
+import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.connector.CoyoteAdapter;
-import org.apache.catalina.connector.Request;
 import org.apache.jasper.compiler.TldLocationsCache;
+import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.xmlparser.ParserUtils;
 
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -79,6 +80,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ConnectionPool;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -90,7 +92,10 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
@@ -98,10 +103,6 @@ import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
-//import com.sun.enterprise.instance.WebModulesManager;
-//import com.sun.enterprise.instance.AppsManager;
-//import com.sun.enterprise.management.util.J2EEModuleUtil;
-//import com.sun.enterprise.server.StandaloneWebModulesManager;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
@@ -110,7 +111,6 @@ import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.appserv.security.provider.ProxyHandler;
-//import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
@@ -138,13 +138,6 @@ import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 
-// Begin EE: 4927099 load only associated applications
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Servers;
-// End EE: 4927099 load only associated applications
-
-// V3 imports
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -160,8 +153,6 @@ import org.jvnet.hk2.config.ObservableBean;
 import javax.naming.spi.NamingManager;
 import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.*;
-import org.apache.jasper.runtime.JspFactoryImpl;
-import org.apache.catalina.Realm;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.web.valve.GlassFishValve;
@@ -260,6 +251,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     GrizzlyService grizzlyService;
     
+    @Inject
+    JavaEEObjectStreamFactory javaEEObjectStreamFactory;
+
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
@@ -673,6 +667,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE, "Unable to stop web container", le);
             return;
         }
+    }
+
+
+    JavaEEObjectStreamFactory getJavaEEObjectStreamFactory() {
+        return javaEEObjectStreamFactory;
     }
 
 

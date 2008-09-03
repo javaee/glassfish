@@ -280,29 +280,10 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     protected PropertyChangeSupport support = new PropertyChangeSupport(this);
     
     /**
-     * Utility class used to call into services from
-     * com.sun.ejb.base.io.IOUtils, which provides object input and output
-     * streams for the serialization and deserialization of EJB references
-     * stored in HTTP sessions
-     */
-    private static final IOUtilsCaller webUtilsCaller;
-
-
-    /**
      * Number of times a session was not created because the maximum number
      * of active sessions had been reached.
      */
     protected int rejectedSessions = 0;
-
-
-    /**
-     * Creates the utility class used to call into services from
-     * com.sun.ejb.base.io.IOUtils
-     */
-    static {
-        WebIOUtilsFactory factory = new WebIOUtilsFactory();
-        webUtilsCaller = factory.createWebIOUtil();            
-    }
 
 
     // ------------------------------------------------------- Security classes
@@ -1079,15 +1060,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
 
 
     // ------------------------------------------------------ Protected Methods
-
-
-    /**
-     * Gets the utility class used to call into services from
-     * com.sun.ejb.base.io.IOUtils.
-     */
-    protected static IOUtilsCaller getWebUtilsCaller() {
-        return webUtilsCaller;
-    }
 
 
     /**

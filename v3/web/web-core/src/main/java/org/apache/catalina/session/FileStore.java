@@ -81,8 +81,7 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.Session;
 import org.apache.catalina.Store;
 import org.apache.catalina.Container;
-import org.apache.catalina.util.CustomObjectInputStream;
-
+import org.apache.catalina.core.StandardContext;
 
 /**
  * Concrete implementation of the <b>Store</b> interface that utilizes
@@ -308,31 +307,17 @@ public final class FileStore
                              id, file.getAbsolutePath()));
         }
 
-        FileInputStream fis = null;
         ObjectInputStream ois = null;
         Loader loader = null;
         ClassLoader classLoader = null;
         try {
-            fis = new FileInputStream(file.getAbsolutePath());
+            FileInputStream fis = new FileInputStream(file.getAbsolutePath());
             BufferedInputStream bis = new BufferedInputStream(fis);
             Container container = manager.getContainer();
-            if (container != null)
-                loader = container.getLoader();
-            if (loader != null)
-                classLoader = loader.getClassLoader();
-            if (classLoader != null) {
-                IOUtilsCaller caller =
-                    ((ManagerBase) manager).getWebUtilsCaller();
-                if (caller != null) {
-                    try {
-                        ois = caller.createObjectInputStream(bis, true, classLoader);
-                    } catch (Exception ex) {}
-                } else {
-                    ois = new CustomObjectInputStream(bis, classLoader); 
-                }
-            }
-            if (ois == null) {
-                ois = new ObjectInputStream(bis); 
+            if (container != null) {
+                ois = ((StandardContext)container).createObjectInputStream(bis);
+            } else {
+                ois = new ObjectInputStream(bis);
             }
             //end HERCULES:mod
         } catch (FileNotFoundException e) {
@@ -420,23 +405,16 @@ public final class FileStore
             log(sm.getString(getStoreName()+".saving",
                              session.getIdInternal(), file.getAbsolutePath()));
         }
-        FileOutputStream fos = null;
         ObjectOutputStream oos = null;
         try {
-            fos = new FileOutputStream(file.getAbsolutePath());
-            IOUtilsCaller caller = ((ManagerBase) manager).getWebUtilsCaller();
-            if (caller != null) {
-                try {
-                    oos = caller.createObjectOutputStream(
-                            new BufferedOutputStream(fos), true);
-                } catch (Exception ex) {}
-            }
-            // Use normal ObjectOutputStream if there is a failure during
-            // stream creation
-            if(oos == null) {
+            FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+            Container container = manager.getContainer();
+            if (container != null) {
+                oos = ((StandardContext) container).createObjectOutputStream(
+                        new BufferedOutputStream(fos));
+            } else {
                 oos = new ObjectOutputStream(new BufferedOutputStream(fos)); 
             }
-            //end Hercules             
         } catch (IOException e) {
             if (oos != null) {
                 try {

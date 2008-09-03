@@ -65,7 +65,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -143,6 +145,7 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.CharsetMapper;
+import org.apache.catalina.util.CustomObjectInputStream;
 import org.apache.catalina.util.ExtensionValidator;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.URLEncoder;
@@ -6708,6 +6711,51 @@ public class StandardContext
         return this.javaVMs = javaVMs;
     }
     
+
+    /**
+     * Creates an ObjectInputStream that provides special deserialization
+     * logic for classes that are normally not serializable (such as
+     * javax.naming.Context).
+     */
+    public ObjectInputStream createObjectInputStream(InputStream is)
+            throws IOException {
+
+        ObjectInputStream ois = null;
+
+        Loader loader = getLoader();
+        if (loader != null) {
+            ClassLoader classLoader = loader.getClassLoader();
+            if (classLoader != null) {
+                try {
+                    ois = new CustomObjectInputStream(is, classLoader);
+                } catch (IOException ioe) {
+                    log.log(Level.SEVERE,
+                            "Unable to create custom ObjectInputStream",
+                            ioe);
+                }
+            }
+        }
+
+        if (ois == null) {
+            ois = new ObjectInputStream(is);
+        }
+
+        return ois;
+    }
+
+
+    /**
+     * Creates an ObjectOutputStream that provides special serialization
+     * logic for classes that are normally not serializable (such as
+     * javax.naming.Context).
+     */
+    public ObjectOutputStream createObjectOutputStream(OutputStream os)
+            throws IOException {
+
+        return new ObjectOutputStream(os); 
+    }
+
+
     /**
      * Gets the time this context was started.
      *

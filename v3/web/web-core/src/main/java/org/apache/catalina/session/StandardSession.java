@@ -2142,7 +2142,7 @@ public class StandardSession
      * GlassFish, instances of javax.naming.Context are replaced with
      * corresponding instances of SerializableJNDIContext during serialization
      * (this is done by the specialized object outputstream returned by
-     * the IOUtilsCaller factory mechanism).
+     * the JavaEEObjectStreamFactory mechanism).
      * 
      * @return true if the given value may be serialized, false otherwise
      */

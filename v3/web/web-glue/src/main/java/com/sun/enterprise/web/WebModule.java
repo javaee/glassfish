@@ -37,6 +37,11 @@
 package com.sun.enterprise.web;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -69,6 +74,7 @@ import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
@@ -76,8 +82,6 @@ import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
-//import com.sun.enterprise.webservice.ClientPipeCloser;
-//import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.InstanceListener;
@@ -164,6 +168,8 @@ public class WebModule extends PwcWebModule {
     private SessionProbeProvider sessionProbeProvider = null;
     private WebModuleProbeProvider webModuleProbeProvider = null;
 
+    private JavaEEObjectStreamFactory javaEEObjectStreamFactory;
+
     // The id of the parent container (i.e., virtual server) on which this
     // web module was deployed
     private String vsId;
@@ -181,6 +187,8 @@ public class WebModule extends PwcWebModule {
         this.sessionProbeProvider = webContainer.getSessionProbeProvider();
         this.webModuleProbeProvider =
             webContainer.getWebModuleProbeProvider();
+
+        this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
 
         this.adHocPaths = new HashMap<String,AdHocServletInfo>();
         this.adHocSubtrees = new HashMap<String,AdHocServletInfo>();
@@ -340,7 +348,65 @@ public class WebModule extends PwcWebModule {
         return encoding;
     }    
 
-    
+
+    /**
+     * Creates an ObjectInputStream that provides special deserialization
+     * logic for classes that are normally not serializable (such as
+     * javax.naming.Context).
+     */
+    @Override
+    public ObjectInputStream createObjectInputStream(InputStream is)
+            throws IOException {
+
+        ObjectInputStream ois = null;
+
+        Loader loader = getLoader();
+        if (loader != null) {
+            ClassLoader classLoader = loader.getClassLoader();
+            if (classLoader != null) {
+                try {
+                    ois = javaEEObjectStreamFactory.createObjectInputStream(
+                        is, true, classLoader);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE,
+                               "Unable to create custom ObjectInputStream",
+                               e);
+                }
+            }
+        }
+
+        if (ois == null) {
+            ois = new ObjectInputStream(is);
+        }
+
+        return ois;
+    }
+
+
+    /**
+     * Creates an ObjectOutputStream that provides special serialization
+     * logic for classes that are normally not serializable (such as
+     * javax.naming.Context).
+     */
+    @Override
+    public ObjectOutputStream createObjectOutputStream(OutputStream os)
+            throws IOException {
+
+        ObjectOutputStream oos = null;
+
+        try {
+            oos = javaEEObjectStreamFactory.createObjectOutputStream(os, true);
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE,
+                       "Unable to create custom ObjectOutputStream",
+                       ioe);
+            oos = new ObjectOutputStream(os);
+        }
+
+        return oos;
+    }
+
+
     /**
      * Set to <code>true</code> when the default-web.xml has been read for
      * this module.
