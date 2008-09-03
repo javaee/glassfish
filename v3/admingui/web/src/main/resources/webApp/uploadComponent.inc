@@ -60,14 +60,10 @@
             
             <sun:radioButton id="uploadRdBtn" name="uploadRdBtn"  
                 label="$resource{i18n.deploy.chooseJarLabel}" 
-                selected="#{uploadRdBtn}"  selectedValue="client" 
-                onClick="javascript:
-                    //disableDOMComponent('#{dirPathId}');
-                    disableComponent('#{dirPathId}', 'text');
-                    disableBtnComponent('#{dirSelectBtnId}');
-                    disableBtnComponent('#{filSelectBtnId}');
-                    enableComponent('#{fileuploadId}', 'file'); "
-                    >
+                selected="#{uploadRdBtn}"  
+                selectedValue="client" 
+                onClick="uploadRdBtnAction();" 
+            >
                 <!beforeCreate 
                     setPageSessionAttribute(key="uploadRdBtn", value="client");
                 />
@@ -86,14 +82,8 @@
             <sun:radioButton id="fileChooseRdBtn" name="uploadRdBtn"
                 selected="#{uploadRdBtn}"  selectedValue="serverSide" 
                 label="$resource{i18n.deploy.chooseLocal}" 
-                onClick="javascript:  
-                    enableDOMComponent('#{dirPathId}');
-                    enableBtnComponent('#{dirSelectBtnId}');
-                    enableBtnComponent('#{filSelectBtnId}');
-                    disableComponent('#{fileuploadId}', 'file'); "
-
-                    
-            /> 
+                onClick="fileChooseAction()"
+            />
             "<br />
 
             <sun:textField id="dirPath" required="#{false}" text="#{dirPath}" style="margin-left: 17pt" columns="$int{50}" 

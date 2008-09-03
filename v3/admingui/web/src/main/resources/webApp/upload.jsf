@@ -62,17 +62,7 @@
                 <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
 
-		<sun:body onLoad="javascript: 
-                     setVisible('#{appType}');
-                     disableComponent('#{dirPathId}', 'text');
-                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');
-                     if(getSelectedValue('uploadRdBtn')=='serverSide'){ 
-                        enableDOMComponent('#{dirPathId}'); 
-                        enableBtnComponent('#{dirSelectBtnId}'); 
-                        enableBtnComponent('#{filSelectBtnId}');
-                        disableComponent('#{fileuploadId}', 'file'); 
-                        }"   
-                        >
+		<sun:body onLoad="uploadInit(); " >
 	    	<sun:form id="form"> 
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
@@ -100,5 +90,6 @@
 	<sun:hidden id="helpKey" value="$pageSession{helpid}" />
 		</sun:form>           
 	</sun:body> 
+#include "uploadJS.inc"
 </sun:html>  
  </sun:page>
