@@ -46,9 +46,9 @@
 </sun:head>
 
 
-<sun:body id="body3" focus="loginform.j_username" onLoad="var button=document.getElementById('form:stopInstance'); alert(button); DynaFaces.fireAjaxTransaction(button, {execute:button.id, inputs:button.id, render: 'none'});">
+<sun:body id="body3" focus="loginform.j_username" onLoad="var button=document.getElementById('form:stopInstance'); DynaFaces.fireAjaxTransaction(button, {execute:button.id, inputs:button.id, render: 'none'});">
     <sun:form id="form">
-    <sun:button id="stopInstance" visible="true">
+    <sun:button id="stopInstance" visible="false">
         <!command
             stopDAS();
         />
