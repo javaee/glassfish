@@ -122,7 +122,7 @@
         <role-name>admin</role-name>
     </security-role>
     <error-page>
-        <error-code>500</error-code>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
     </error-page>
 </web-app>
