@@ -51,7 +51,7 @@ public class AdminAdapterTest {
 
     @Test
     public void extractParametersTest() {
-        Properties props = aa.extractParameters("uniquetablenames=false?createtables=true?target=server?libraries=foo.jar?dbvendorname=test?deploymentplan=test");
+        Properties props = aa.extractParameters("uniquetablenames=false&createtables=true&target=server&libraries=foo.jar&dbvendorname=test&deploymentplan=test");
         Properties correctProps = new Properties();
         correctProps.put("uniquetablenames", "false");
         correctProps.put("createtables", "true");
