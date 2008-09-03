@@ -75,7 +75,7 @@ function disableDOMComponent(componentName) {
 }
 
 function disableComponent(componentName, type) {
-    component = null;
+    var component = null;
     if (type != null && type == 'file') {
         component = getFileInputElement(componentName);
     }
@@ -83,13 +83,40 @@ function disableComponent(componentName, type) {
         component = getSelectElement(componentName);
     }
     else {
-        //alert('new/edit realm');
         component = getTextElement(componentName);
         component.value='';
     }
     component.disabled=true;
     component.className='TxtFldDis_sun4';
 }
+
+
+/*
+ * was trying to see if we can set the timeout in the function itself, instead of
+ * at the calling time, refer to update.jsf
+ * but just can't get this working.
+ * saving the code for now.
+ 
+function delayDisableComponent(componentName, type, timeouted) {
+    var func = disableComponent[type] || getTextElement;
+    var component = func(componentName);
+    if(component == null && !timeouted) {
+    	window.setTimeout("disableComponent('" + componentName + "','" + type + "', true)", 10);
+    }
+    if (component == null){
+        window.console.log('component is NULL' + componentName);
+        window.console.debug('component is NULL' + componentName);
+    }
+    
+    component.disabled = true;
+    component.className='TxtFldDis_sun4';
+    if(func == getTextElement) {
+    	component.value = "";
+    }
+}
+disableComponent.file = getFileInputElement;
+disableComponent.select = getSelectElement;
+*/
 
 
 function disableBtnComponent(componentName) {
