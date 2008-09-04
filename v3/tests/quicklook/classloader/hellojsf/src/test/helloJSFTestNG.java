@@ -57,8 +57,7 @@ public class helloJSFTestNG {
         "classloader-jsf";
 
     private static final String EXPECTED_RESPONSE =
-        "FAILED";
-        //"SUCCESSFUL";
+        "SUCCESSFUL";
     
     private String strContextRoot="hellojsf";
 
@@ -105,6 +104,9 @@ public class helloJSFTestNG {
         boolean result=false;
         String testLine = null;        
         while ((line = input.readLine()) != null) {
+            //System.out.println("=================================");
+            //System.out.println(line);
+            //System.out.println("=================================");
             if(line.indexOf(EXPECTED_RESPONSE)!=-1){
                 result=true;            
                 testLine = line;
