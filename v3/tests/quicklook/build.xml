@@ -94,6 +94,7 @@
         <record name="build.output" action="start"/>
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="admin" target="build"/>
+        <ant dir="adminconsole" target="build"/>
         <ant dir="web/helloworld" target="build"/>
         <ant dir="web/jsfastrologer" target="build"/>
         <ant dir="web/jsfinjection" target="build"/>

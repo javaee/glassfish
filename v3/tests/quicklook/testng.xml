@@ -39,6 +39,7 @@
   <parameter name="admin.url" value="http://localhost:4848/__asadmin"/>
   <parameter name="admin.user" value="anonymous"/>
   <parameter name="admin.password" value=""/>
+  <parameter name="admin.console.url" value="http://localhost:4848/"/>
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
   <test name="asadmin_tests">
     <classes>
@@ -46,6 +47,11 @@
       <class name="test.admin.JdbcConnectionPoolTests"/>
       <class name="test.admin.WebtierTests"/>
     </classes>
+  </test>
+  <test name="adminconsole_tests">
+	<classes>
+		<class name="test.admin.AdminConsoleTests"/>
+	</classes>
   </test>
   <test name="web_jspservlet_war">
   <!--<groups>
