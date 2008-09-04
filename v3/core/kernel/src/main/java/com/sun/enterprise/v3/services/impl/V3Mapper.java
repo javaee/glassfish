@@ -142,7 +142,7 @@ public class V3Mapper extends Mapper {
     /**
      * Sets the id of the associated http-listener on this mapper.
      */
-    void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
