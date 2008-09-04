@@ -1778,14 +1778,7 @@ public class DefaultServlet
         IOException exception = null;
         InputStream resourceInputStream = null;
 
-        // Optimization: If the binary content has already been loaded, send
-        // it directly
         if (cacheEntry.resource != null) {
-            byte buffer[] = cacheEntry.resource.getContent();
-            if (buffer != null) {
-                ostream.write(buffer, 0, buffer.length);
-                return;
-            }
             resourceInputStream = cacheEntry.resource.streamContent();
         } else {
             resourceInputStream = is;
