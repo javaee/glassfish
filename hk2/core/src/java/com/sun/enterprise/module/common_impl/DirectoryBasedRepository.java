@@ -72,7 +72,7 @@ import java.util.TimerTask;
 public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     
     protected final File repository;
-    private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
+    private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 1000);
     private Timer timer;
     private boolean isTimerThreadDaemon = false;
     private List<File> subDirectories = new ArrayList<File>();
