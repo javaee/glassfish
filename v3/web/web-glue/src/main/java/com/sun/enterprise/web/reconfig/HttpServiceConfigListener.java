@@ -87,10 +87,10 @@ public class HttpServiceConfigListener implements ConfigListener {
     @Inject(optional=true)
     public List<Property> property;
     
-    @Inject(name="accessLoggingEnabled")
+    @Inject(name="accessLoggingEnabled",optional=true)
     public Property accessLoggingEnabledProperty;
         
-    @Inject(name="docroot")
+    @Inject(name="docroot",optional=true)
     public Property docroot;
     
     @Inject(optional=true)
