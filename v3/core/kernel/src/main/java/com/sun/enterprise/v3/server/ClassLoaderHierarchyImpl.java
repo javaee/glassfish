@@ -40,11 +40,26 @@ package com.sun.enterprise.v3.server;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.jar.Manifest;
+import java.io.IOException;
+
+import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.common_impl.Tokenizer;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -58,6 +73,17 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
     @Inject ConnectorClassLoaderServiceImpl connectorCLS;
 
     @Inject AppLibClassLoaderServiceImpl applibCLS;
+
+    @Inject
+    ModulesRegistry modulesRegistry;
+
+    @Inject
+    Logger logger;
+
+    @Inject
+    Habitat habitat;
+
+
 
     public ClassLoader getAPIClassLoader() {
         return apiCLS.getAPIClassLoader();
@@ -74,4 +100,73 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
     public ClassLoader getAppLibClassLoader(String application, List<URI> libURIs) throws MalformedURLException {
         return applibCLS.getAppLibClassLoader(application, libURIs);
     }
+
+    /**
+     * Sets up the parent class loader for the application class loader.
+     * Application class loader are under the control of the ArchiveHandler since
+     * a special archive file format will require a specific class loader.
+     *
+     * However GlassFish needs to be able to add capabilities to the application
+     * like adding APIs accessibility, this is done through its parent class loader
+     * which we create and maintain.
+     *
+     * @param parent the parent class loader
+     * @param context deployment context
+     * @return class loader capable of loading public APIs identified by the deployers
+     * @throws ResolveError if one of the deployer's public API module is not found.
+     */
+    public ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContext context)
+        throws ResolveError {
+
+        final ReadableArchive source = context.getSource();
+        List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
+
+        // now let's see if the application is requesting any module imports
+        Manifest m=null;
+        try {
+            m = source.getManifest();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot load application's manifest file :", e.getMessage());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, e.getMessage(), e);
+            }
+        }
+        if (m!=null) {
+            String importedBundles = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
+            if (importedBundles!=null) {
+                for( String token : new Tokenizer(importedBundles,",")) {
+                    // will throw ResolveError if not found.
+                    Module module = modulesRegistry.makeModuleFor(token, null);
+                    if (module!=null) {
+                        defs.add(module.getModuleDefinition());
+                    }
+                }
+            }
+        }
+
+        // Applications can also request to be wired to implementors of certain services.
+        // That means that any module implementing the requested service will be accessible
+        // by the parent class loader of the application.
+        if (m!=null) {
+            String requestedWiring = m.getMainAttributes().getValue(org.glassfish.api.ManifestConstants.GLASSFISH_REQUIRE_SERVICES);
+            if (requestedWiring!=null) {
+                for (String token : new Tokenizer(requestedWiring, ",")) {
+                    for (Inhabitant<?> impl : habitat.getInhabitantsByContract(token)) {
+                        Module wiredBundle = modulesRegistry.find(impl.get().getClass());
+                        if (wiredBundle!=null) {
+                            defs.add(wiredBundle.getModuleDefinition());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (defs.isEmpty()) {
+            return parent;
+        }  else {
+            return modulesRegistry.getModulesClassLoader(parent, defs);
+        }
+
+    }
+
 }

@@ -38,11 +38,14 @@
 package org.glassfish.internal.api;
 
 import org.glassfish.internal.api.DelegatingClassLoader;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.List;
+
+import com.sun.enterprise.module.ResolveError;
 
 /**
  * This class is responsible foe creation of class loader hierarchy
@@ -103,4 +106,22 @@ public interface ClassLoaderHierarchy {
      */
     ClassLoader getAppLibClassLoader(String application, List<URI> libURIs)
             throws MalformedURLException;
+
+
+    /**
+        * Sets up the parent class loader for the application class loader.
+        * Application class loader are under the control of the ArchiveHandler since
+        * a special archive file format will require a specific class loader.
+        *
+        * However GlassFish needs to be able to add capabilities to the application
+        * like adding APIs accessibility, this is done through its parent class loader
+        * which we create and maintain.
+        *
+        * @param parent the parent class loader
+        * @param context deployment context
+        * @return class loader capable of loading public APIs identified by the deployers
+        * @throws com.sun.enterprise.module.ResolveError if one of the deployer's public API module is not found.
+        */
+       public ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContext context)
+           throws ResolveError;
 }

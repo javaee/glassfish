@@ -149,8 +149,10 @@ public class DeploymentContextImpl implements DeploymentContext {
         final String appName = getCommandParameters().getProperty(ParameterNames.NAME);
         ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs());
 
-        this.sharableTemp = handler.getClassLoader(applibCL, source);
-        this.cloader = handler.getClassLoader(applibCL, source);
+        ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
+
+        this.sharableTemp = handler.getClassLoader(parentCL, source);
+        this.cloader = handler.getClassLoader(parentCL, source);
     }
 
     public void invalidateTempClassLoader() {
