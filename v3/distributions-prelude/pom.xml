@@ -79,6 +79,7 @@
 	<module>gfv3-scripting</module>
 	<module>gfv3-web-nb</module>
 	<module>gfv3-prelude</module>
+	<module>glassfish</module>
     </modules>
 </project>
 

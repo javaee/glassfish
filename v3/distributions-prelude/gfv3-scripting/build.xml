@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish scripting distribution creation" default="create.distribution" basedir=".">
     <target name="create.distribution">
-        <echo message="Creating distribution: gfv3-scripting"/>
+        <echo message="Creating distribution: scripting"/>
         <unzip dest="target/stage">
             <fileset dir="target/stage">
                 <include name="*.zip"/>
@@ -49,10 +49,10 @@ own identifying information: Portions Copyright [yyyy]
 
         <!--  create distribution zip -->
         <exec dir="target/stage" executable="zip">
-            <arg line= "-r ../gfv3-scripting.zip glassfishv3-prelude"/>
+            <arg line= "-r ../scripting.zip glassfishv3-prelude"/>
         </exec>
 
         <!-- deploy distribution artifact to maven repository" -->
-        <attachArtifact file="target/gfv3-scripting.zip"/>
+        <attachArtifact file="target/scripting.zip"/>
    </target>
 </project>

@@ -19,15 +19,23 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="glassfish web-nb distribution creation" default="create.distribution" basedir=".">
+<project name="glassfish v3, glassfish distribution creation" default="create.distribution" basedir=".">
     <target name="create.distribution">
-        <echo message="Creating distribution: web-nb"/>
+        <echo message="Creating distribution: glassfish"/>
         <unzip dest="target/stage">
             <fileset dir="target/stage">
                 <include name="*.zip"/>
                 <exclude name="nucleus-base*.zip"/>
             </fileset>
         </unzip>
+        <!-- unzip dest="target/stage/glassfishv3-prelude">
+            <fileset dir="target/stage">
+                <include name="nucleus-base*.zip"/>
+            </fileset>
+            <patternset>
+                <include name="**/domains/**"/>
+            </patternset>
+        </unzip -->
         <delete dir="target/stage" includes="*.zip"/>
 
         <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
@@ -38,13 +46,13 @@ own identifying information: Portions Copyright [yyyy]
             <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
             <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
         </ant -->
-
+         
         <!-- create distribution zip-->
         <exec dir="target/stage" executable="zip">
-            <arg line= "-r ../web-nb.zip glassfishv3-prelude"/>
+            <arg line= "-r ../glassfish.zip glassfishv3-prelude"/>
         </exec>
 
         <!-- deploy distribution artifact to maven repository" -->
-        <attachArtifact file="target/web-nb.zip"/>
+        <attachArtifact file="target/glassfish.zip"/>
    </target>
 </project>

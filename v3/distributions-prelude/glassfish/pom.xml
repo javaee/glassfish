@@ -43,10 +43,10 @@
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gfv3-web-nb-distribution</artifactId>
-    <name>Glassfish v3 Web-NB Distribution(</name>
+    <artifactId>gfv3-glassfish-distribution</artifactId>
+    <name>Glassfish v3 GlassFish Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Web-NB Distribution</description>
+    <description>This pom describes how to assemble the GlassFish v3 GlassFish Distribution</description>
 
     <developers>
         <developer>
@@ -108,6 +108,7 @@
 
     <!--
     Activate this profile with "mvn -P ips"
+    -->
     <profiles>
         <profile>
             <id>ips</id>
@@ -122,7 +123,7 @@
                 <configuration>
                     <tasks>
                         <ant dir="." antfile="build.xml" target="create.distribution"/>
-                        <ant dir="." antfile="../distributions.xml" target="create-web-nb-distributions"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-glassfish-distributions"/>
                     </tasks>
                 </configuration>
              </plugin>
@@ -130,90 +131,42 @@
             </build>
         </profile>
    </profiles>
-   -->
+
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
-        <!-- scripting distribution -->
+        <!-- web distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>gfv3-scripting-distribution</artifactId>
+            <artifactId>gfv3-web-distribution</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
+        <!-- ejb package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-common</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-registration</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-management</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-amx</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jca</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jpa</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jta</artifactId>
+            <artifactId>glassfish-ejb</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
         </dependency>     
+
+        <!-- jts package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jsf</artifactId>
+            <artifactId>glassfish-jts</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
-        </dependency>     
+        </dependency>
+
+        <!-- corba package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-web-management</artifactId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
-        </dependency>     
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-web</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>     
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jdbc-management</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>     
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jdbc</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency> 
+        </dependency>
     </dependencies>
 </project>
+

@@ -43,10 +43,10 @@
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gfv3-prelude</artifactId>
-    <name>Glassfish v3 Prelude Distribution(</name>
+    <artifactId>gfv3-web-distribution</artifactId>
+    <name>Glassfish v3 Web Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Prelude Distribution</description>
+    <description>This pom describes how to assemble the GlassFish v3 Web Distribution</description>
 
     <developers>
         <developer>
@@ -108,7 +108,6 @@
 
     <!--
     Activate this profile with "mvn -P ips"
-    -->
     <profiles>
         <profile>
             <id>ips</id>
@@ -123,14 +122,14 @@
                 <configuration>
                     <tasks>
                         <ant dir="." antfile="build.xml" target="create.distribution"/>
-                        <ant dir="." antfile="../distributions.xml" target="create-prelude-distributions"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-distributions"/>
                     </tasks>
                 </configuration>
              </plugin>
             </plugins>
             </build>
         </profile>
-   </profiles>
+   </profiles -->
 
 
     <dependencies>
@@ -139,7 +138,7 @@
         <!-- web-nb distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>gfv3-web-nb</artifactId>
+            <artifactId>gfv3-web-nb-distribution</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
