@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.SSLConfig;
 import com.sun.grizzly.TCPSelectorHandler;
@@ -112,7 +113,28 @@ public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureS
             return new SSLDefaultProtocolFilter(algorithmClass, port, sslImplementation);
         }
     }
-
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void configureFilters(ProtocolChain protocolChain) {
+        if (portUnificationFilter != null) {
+            portUnificationFilter.setContinuousExecution(false);
+            protocolChain.addFilter(portUnificationFilter);
+        }
+        
+        protocolChain.addFilter(createReadFilter());
+        
+        if (rcmSupport){
+            protocolChain.addFilter(createRaFilter());
+        }
+        
+        protocolChain.addFilter(createHttpParserFilter());
+    }
+    
+    
     /**
      * Create and configure <code>SSLReadFilter</code>
      * @return <code>SSLReadFilter</code>
