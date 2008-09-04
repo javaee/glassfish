@@ -37,6 +37,7 @@
 
 package com.sun.appserv.security.api;
 
+import com.sun.enterprise.security.common.ProgrammaticLoginInterface;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
@@ -55,7 +56,10 @@ import com.sun.enterprise.security.auth.login.LoginContextDriver;
 
 import com.sun.enterprise.security.UsernamePasswordStore;
 import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Implement programmatic login.
@@ -79,7 +83,9 @@ import org.jvnet.hk2.component.Habitat;
  *
  * 
  */
-public class ProgrammaticLogin
+@Service
+@Scoped(PerLookup.class)
+public class ProgrammaticLogin implements ProgrammaticLoginInterface
 {
     private WebProgrammaticLogin webProgrammaticLogin;
     

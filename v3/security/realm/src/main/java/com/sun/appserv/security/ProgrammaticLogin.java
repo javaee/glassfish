@@ -33,24 +33,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.common;
 
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+package com.sun.appserv.security;
+
+import com.sun.enterprise.security.common.ProgrammaticLoginInterface;
+import com.sun.enterprise.security.common.Util;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.jvnet.hk2.component.Habitat;
 
 /**
  *
- * @author venu
- * TODO: need to change this class, it needs to be similar to SecurityServicesUtil
+ * @author kumar.jayanti
+ * This class is there mainly to support Backward Compatibility with V2
  */
-@Service
-public class Util {
-    
-    @Inject
-    static Habitat defaultHabitat;
+public class ProgrammaticLogin  {
 
-    public static Habitat getDefaultHabitat() {
-        return defaultHabitat;
+    private ProgrammaticLoginInterface pLogin = null;
+    
+    public ProgrammaticLogin() {
+        Habitat habitat = Util.getDefaultHabitat();
+        pLogin = habitat.getByContract(ProgrammaticLoginInterface.class);
+        assert(pLogin != null);
     }
+    public Boolean login(String user, String password, String realm, boolean errors) throws Exception {
+       return  pLogin.login(user, password, realm, errors);
+    }
+
+    public Boolean login(String user, String password) {
+        return pLogin.login(user, password);
+    }
+
+    public Boolean login(String user, String password, String realm, HttpServletRequest request, HttpServletResponse response, boolean errors) throws Exception {
+        return pLogin.login(user, password, realm, request, response, errors);
+    }
+
+    public Boolean login(String user, String password, HttpServletRequest request, HttpServletResponse response) {
+        return pLogin.login(user, password, request, response);
+    }
+
+    public Boolean logout() {
+        return pLogin.logout();
+    }
+
+    public Boolean logout(boolean errors) throws Exception {
+        return pLogin.logout(errors);
+    }
+
+    public Boolean logout(HttpServletRequest request, HttpServletResponse response) {
+        return pLogin.logout(request, response);
+    }
+
+    public Boolean logout(HttpServletRequest request, HttpServletResponse response, boolean errors) throws Exception {
+        return pLogin.logout(request, response, errors);
+    }
+
 }
