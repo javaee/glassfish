@@ -24,7 +24,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
 
-    private static final String TEST_NAME = "virtual-server-default-web-module--modify-http-listener-port";
+    private static final String TEST_NAME = "virtual-server-default-web-module-modify-http-listener-port";
 
     private static final String EXPECTED = "This is my personal welcome page!";
 
