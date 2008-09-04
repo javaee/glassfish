@@ -453,23 +453,4 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         if (webRequestTM != null)
             webRequestTM.enableMonitoring(isEnabled);
     }
-
-    public static String getAppName(String contextRoot) {
-        // first check in web modules
-        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
-        for (WebModule wm : lm) {
-            if (contextRoot.equals(wm.getContextRoot())) {
-                return (wm.getName());
-            }
-        }
-        // then check under applications (introduced in V3 not j2ee app)
-        List<Application> la = domain.getApplications().getModules(Application.class);
-        for (Application sapp : la) {
-            if (contextRoot.equals(sapp.getContextRoot())) {
-                return (sapp.getName());
-            }
-        }
-        return null;
-    }
-
 }

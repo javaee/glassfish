@@ -144,8 +144,7 @@ public class JspStatsTelemetry{
         if ((moduleName == null) || (vsName == null)) {
             return true;
         }
-        String appName = WebTelemetryBootstrap.getAppName(mName);
-        if ((moduleName.equals(appName)) && (vsName.equals(hostName))) {
+        if ((moduleName.equals(mName)) && (vsName.equals(hostName))) {
             return true;
         }
         
