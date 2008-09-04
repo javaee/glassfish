@@ -248,7 +248,7 @@ public final class OSGiModuleImpl implements Module {
                             logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
                                 new Object[]{name, bundle});
                         }
-                        if ((bundle.getState() & BundleEvent.RESOLVED) == 0) {
+                        if ((bundle.getState() & Bundle.RESOLVED) == 0) {
                             start();
                             logger.logp(Level.INFO, "OSGiModuleImpl",
                                     "loadClass", "Started bundle {0}", bundle);
