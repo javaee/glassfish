@@ -145,7 +145,8 @@ public class HttpServiceConfigListener implements ConfigListener {
                         return null;
                     } else if (t instanceof HttpListener) {
                         if (type==TYPE.ADD) {
-                            container.addConnector((HttpListener)t, httpService);
+                            container.addConnector((HttpListener)t,
+                                                   httpService, true);
                         } else if (type==TYPE.REMOVE) {
                             container.deleteConnector((HttpListener)t);
                         } else if (type==TYPE.CHANGE) {

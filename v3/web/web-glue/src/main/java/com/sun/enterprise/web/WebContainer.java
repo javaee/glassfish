@@ -3660,7 +3660,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
-        connector = addConnector(httpListener, httpService);
+        connector = addConnector(httpListener, httpService, false);
         
         // Update the list of ports of all associated virtual servers with
         // the listener's new port number, so that the associated virtual
@@ -3671,9 +3671,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                                httpListener.getId());
         if (virtualServers != null) {
             Mapper mapper = connector.getMapper();
-            for (Iterator<VirtualServer> it = virtualServers.iterator();
-                                                    it.hasNext(); ) {
-                VirtualServer vs = it.next();
+            for (VirtualServer vs : virtualServers) {
                 boolean found = false;
                 int[] ports = vs.getPorts();
                 for (int i=0; i<ports.length; i++) {
@@ -3706,11 +3704,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }        
         }
+
+        connector.start();
     }
   
     
     public WebConnector addConnector(HttpListener httpListener,
-                                     HttpService httpService)
+                                     HttpService httpService,
+                                     boolean start)
                 throws LifecycleException {
 
         grizzlyService.createNetworkProxy(httpListener, httpService);
@@ -3745,10 +3746,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         if (connector.getRedirectPort() == -1) {
             connector.setRedirectPort(defaultRedirectPort);
-        }       
-                
-        connector.start();
+        }
        
+        if (start) {
+            connector.start();
+        }
+
         return connector;
     }
     
