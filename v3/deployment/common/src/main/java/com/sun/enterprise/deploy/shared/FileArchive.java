@@ -429,8 +429,9 @@ public class FileArchive implements ReadableArchive, WritableArchive {
         
         File newFile = new File(archive, name);
         if (newFile.exists()) {
-            if (!deleteEntry(name))
-                throw new IOException(name + " already exists and cannot be deleted");
+            if (!deleteEntry(name)) {
+                // XXX add fine-level logging later
+            }
         }
         // if the entry name contains directory structure, we need
         // to create those directories first.

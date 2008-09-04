@@ -210,10 +210,13 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
                 if (!expansionDir.mkdirs()) {
-                    report.failure(logger,localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
-                    // we don't own it, we don't delete it.
-                    expansionDir=null;
-                    return;
+                    /*
+                     * On Windows especially a previous directory might have
+                     * remainded after an earlier undeployment, for example if
+                     * a JAR file in the earlier deployment had been locked.
+                     * Warn but do not fail in such a case.
+                     */
+                    logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
                 }
                 try {
                     archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir));
