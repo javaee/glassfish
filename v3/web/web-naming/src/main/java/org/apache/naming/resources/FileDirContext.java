@@ -1072,7 +1072,9 @@ public class FileDirContext extends BaseDirContext {
         public InputStream streamContent()
             throws IOException {
             if (binaryContent == null) {
-                inputStream = new FileInputStream(file);
+                FileInputStream fin = new FileInputStream(file);
+                inputStream = fin;
+                return fin;
             }
             return super.streamContent();
         }
