@@ -560,6 +560,9 @@ public class CommandRunner {
                 continue;
             }
             final String paramName = getParamName(param, f);
+                //do not want to display password as an option
+            if (paramName.startsWith(ASADMIN_CMD_PREFIX))
+                continue;
             final boolean optional = param.optional();
             final Class<?> ftype = f.getType();
             Object fvalue = null;
@@ -660,6 +663,9 @@ public class CommandRunner {
         if (param!=null) {
              // this is a param.
             String paramName = getParamName(param, annotated);
+            //do not want to display password in the usage
+            if (paramName.startsWith(ASADMIN_CMD_PREFIX))
+                return;
             if (param.primary()) {
                 //if primary then it's an operand
                 report.getTopMessagePart().addProperty(paramName+"_operand", getParamDescription(localStrings, i18nKey, paramName, annotated));
