@@ -162,7 +162,6 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                     Util.getLogger().severe( "ERROR starting JMX connector: " + toString(c) + ": " + t);
                     //t.printStackTrace();
                 }
-
             }
 
             // this is for JMXMP, remove soon, use the config mechanism above

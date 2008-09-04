@@ -60,12 +60,6 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
     
     /**
-        Exists only to force the MBeanServer and related infrastructure to load
-        via AppserverMBeanServerFactory.
-     */
-    //@org.jvnet.hk2.annotations.Inject
-    //javax.management.MBeanServer mMBeanServer;
-    
     /**
         Singleton: there should be only one instance and hence a private constructor.
         But the framework using this wants to instantiate things with a public constructor.
@@ -90,10 +84,12 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
     
     public void onEntered( final Inhabitant<?> inhabitant)
     {
+        // debug( "PendingConfigBeans.onEntered(): " + inhabitant);
+            
         final ConfigBean cb = asConfigBean(inhabitant);
         if ( cb != null )
         {
-            //final ConfigBean parent = asConfigBean(cb.parent());
+            final ConfigBean parent = asConfigBean(cb.parent());
             //debug( "PendingConfigBeans.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
             add( cb );
         }

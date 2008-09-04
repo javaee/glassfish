@@ -78,46 +78,48 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
     pingJDBCConnectionPool( final String poolName )
     {
         final Map<String,Object> result = new HashMap<String,Object>();
-        boolean pingable = false;
         final Habitat habitat = getHabitat();
-        ConnectorRuntime connRuntime;
+        ConnectorRuntime connRuntime = null;
 
-        // check pool name
-        final JDBCConnectionPoolConfig  cfg = 
-        getDomainRoot().getDomainConfig().getResourcesConfig().getJDBCConnectionPoolConfigMap().get( poolName );
-        if (cfg == null) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
-            result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");
+        result.put( PING_SUCCEEDED_KEY, false);
+        if (habitat == null)
+        {
+            result.put( REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
-
-        // habitat
-        if (habitat == null) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
-            result.put( REASON_FAILED_KEY, "Habitat is null");
+            
+        // check pool name
+        final JDBCConnectionPoolConfig  cfg = 
+                getDomainRoot().getDomainConfig().getResourcesConfig().getJDBCConnectionPoolConfigMap().get( poolName );
+        if (cfg == null)
+        {
+            result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");
             return result;
         }
 
         // get connector runtime
         try {
             connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
-        } catch (ComponentException e) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
+        }
+        catch ( final ComponentException e)
+        {
+            result.putAll( ExceptionUtil.toMap(e) );
             result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
             return result;
         }
         
-        // ping
+        // do the ping
         try {
-            pingable = connRuntime.pingConnectionPool(poolName);
-        } catch (ResourceException e) {
+            final boolean pingable = connRuntime.pingConnectionPool(poolName);
             result.put( PING_SUCCEEDED_KEY, pingable);
-            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        catch ( final ResourceException e)
+        {
+            result.putAll( ExceptionUtil.toMap(e) );
+            assert REASON_FAILED_KEY.equals( ExceptionUtil.MESSAGE_KEY );
             return result;
         }
         
-        // success
-        result.put( PING_SUCCEEDED_KEY, pingable);
         return result;
     }
     

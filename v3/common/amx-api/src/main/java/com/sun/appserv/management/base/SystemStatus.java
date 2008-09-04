@@ -38,6 +38,7 @@ package com.sun.appserv.management.base;
 import java.util.Map;
 import java.util.List;
 
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
 /**
 	Provides various routines for system status.
@@ -52,13 +53,16 @@ public interface SystemStatus extends AMX, Utility, Singleton
         
     /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */
     public static final String PING_SUCCEEDED_KEY = "PingSucceededKey";
-    public static final String REASON_FAILED_KEY = "ReasonFailedKey";
+    
+    /** @deprecated use ExceptionUtil.MESSAGE_KEY */
+    public static final String REASON_FAILED_KEY = ExceptionUtil.MESSAGE_KEY;
     
     /**
-        Ping the JDBCConnectionPool and return status.
+        Ping the JDBCConnectionPool and return status.  Various values can be found in the
+        resulting Map.
         @see #PING_SUCCEEDED_KEY
         @see #REASON_FAILED_KEY
-
+        @see com.sun.appserv.management.util.misc.ExceptionUtil#toMap
      */
     public Map<String,Object> pingJDBCConnectionPool( final String poolName );
     

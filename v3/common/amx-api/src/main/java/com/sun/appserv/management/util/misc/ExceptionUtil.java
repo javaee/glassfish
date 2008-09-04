@@ -33,17 +33,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/misc/ExceptionUtil.java,v 1.3 2007/05/05 05:31:05 tcfujii Exp $
- * $Revision: 1.3 $
- * $Date: 2007/05/05 05:31:05 $
- */
- 
 package com.sun.appserv.management.util.misc;
 
 import java.util.ArrayList;
-
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
 	Useful utilities for Exceptions
@@ -73,6 +68,88 @@ public final class ExceptionUtil
 	        StringUtil.quote( rootCause.getMessage() ) + SEP +
 	        getStackTrace( rootCause );
 	}
+    
+    /** String from t.getMessage() */
+    public static final String MESSAGE_KEY = "MessageKey";
+    
+    /** Classname of the exception */
+    public static final String CLASSNAME_KEY = "ClassnameKey";
+    
+    /** StackTraceElement[] */
+    public static final String STACK_TRACE_KEY = "StackTraceKey";
+    
+    /** String version of the stack trace */
+    public static final String STACK_TRACE_STRING_KEY = "StackTraceStringKey";
+    
+    /** java.lang.Throwable:  value is present iff the class is in packages found in {@link #OVER_THE_WIRE_PACKAGE_PREFIXES} */
+    public static final String EXCEPTION_KEY = "ExceptionKey";
+    
+    /**
+        Package prefixes acceptable for passing back a Throwable object so as to avoid
+        a ClassNotFoundException on a client.
+     */
+    public static final Set<String>  OVER_THE_WIRE_PACKAGE_PREFIXES = GSetUtil.newUnmodifiableStringSet(
+        "java.",
+        "javax.",
+        "org.omg."
+    );
+    public static boolean isAcceptableOverTheWire( final Throwable t)
+    {
+        boolean goodForOverTheWire = false;
+        final String classname = t.getClass().getName();
+        
+        for( final String prefix : OVER_THE_WIRE_PACKAGE_PREFIXES )
+        {
+            if ( classname.startsWith(prefix) )
+            {
+                goodForOverTheWire = true;
+                break;
+            }
+        }
+        return goodForOverTheWire;
+    }
+    
+    /**
+        Return a Map with constituent parts including:
+        <ul>
+        <li>{@link #MESSAGE_KEY}</li>
+        <li>{@link #STACK_TRACE_KEY}</li>
+        <li>{@link #STACK_TRACE_STRING_KEY}</li>
+        <li>{@link #EXCEPTION_KEY}</li>
+        </ul>
+        Caller should generally use Exceptionutil.toMap( ExceptionUtil.getRootCause(t) )
+    */
+        public static Map<String,Object>
+    toMap( final Throwable t )
+    {
+        final Map<String,Object> m = new HashMap<String,Object>();
+        
+        final Throwable rootCause = getRootCause(t);
+        
+        final String classname = rootCause.getClass().getName();
+        m.put( CLASSNAME_KEY, classname );
+        
+        // include the root cause Throwable if it's an acceptable class for over-the-wire
+        if ( isAcceptableOverTheWire(rootCause) )
+        {
+            m.put( EXCEPTION_KEY, rootCause );
+        }
+        
+        String msg = rootCause.getMessage();
+        if ( msg == null || msg.length() == 0 )
+        {
+            msg = classname;
+        }
+        
+        m.put( MESSAGE_KEY, msg );
+
+        m.put( STACK_TRACE_KEY, rootCause.getStackTrace() );
+        m.put( STACK_TRACE_STRING_KEY, getStackTrace(rootCause) );
+        
+        return m;
+    }
+
+
 		
 	/**
 		Get the chain of exceptions via getCause(). The first element is the
