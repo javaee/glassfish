@@ -152,6 +152,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
             }
         } catch (Exception ex){
             try{
+                res.setStatus(404);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, "Invalid URL: " + req.decodedURI(), ex);          
                 }                 
