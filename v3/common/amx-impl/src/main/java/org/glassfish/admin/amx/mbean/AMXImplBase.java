@@ -143,18 +143,10 @@ public class AMXImplBase extends MBeanImplBase
     private static final Map<String,Map<String,Class>>  ATTRIBUTE_CLASSES =
         Collections.synchronizedMap( new HashMap<String,Map<String,Class>>() );
 	    
-       private synchronized MBeanInfo
+       private static synchronized MBeanInfo
     getInterfaceMBeanInfo(final Class<? extends AMX> theInterface )
     {
 		final MBeanInfo info	= MBeanInfoCache.getAMXMBeanInfo( theInterface );
-        if ( getAMXDebug() )
-        {
-            debug( "Interface " + mInterface.getName() +
-                " has MBeanInfo:\n" +
-                MBeanInfoStringifier.DEFAULT.stringify( info ) );
-                
-            //info   = addDebugMBeanInfo( info );
-        }
         
         return info;
     }
@@ -230,6 +222,14 @@ public class AMXImplBase extends MBeanImplBase
 		mAttributeInfos	= null;
 		
 		mAMXMBeanInterfaceMBeanInfo	= getInterfaceMBeanInfo( mInterface );
+        if ( getAMXDebug() )
+        {
+            debug( "Interface " + mInterface.getName() +
+                " has MBeanInfo:\n" +
+                MBeanInfoStringifier.DEFAULT.stringify( mAMXMBeanInterfaceMBeanInfo ) );
+                
+            //info   = addDebugMBeanInfo( info );
+        }
 	}
 	
 		public void

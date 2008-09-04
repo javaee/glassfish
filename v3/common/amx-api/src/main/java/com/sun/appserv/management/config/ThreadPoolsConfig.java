@@ -50,7 +50,7 @@ import java.util.Map;
     @since Glassfish V3
 */
 public interface ThreadPoolsConfig
-	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement, Singleton
+	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement, Singleton, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.THREAD_POOLS_CONFIG;

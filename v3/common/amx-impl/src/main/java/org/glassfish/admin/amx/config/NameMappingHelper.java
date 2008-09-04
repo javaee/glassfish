@@ -62,6 +62,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 /**
     Encapsulate the logic for mapping AMX attribute names to XML attribute names, and a few
     related support items.
+    <p>
+    Code in here should be reconciled with ConfiguredHelper; there is overlap.
  */
 final class NameMappingHelper {
     private static void debug( final String s ) { System.out.println(s); }

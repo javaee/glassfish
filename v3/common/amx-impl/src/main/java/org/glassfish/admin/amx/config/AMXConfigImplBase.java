@@ -43,7 +43,9 @@ import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.helper.RefHelper;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.*;
+
 import org.glassfish.admin.amx.util.AttributeResolverHelper;
+import org.glassfish.admin.amx.mbean.MBeanInfoCache;
 
 import org.glassfish.admin.amx.dotted.V3Pathname;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
@@ -69,6 +71,8 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.jvnet.hk2.config.Dom;
+
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
 	<p>
@@ -93,18 +97,21 @@ public class AMXConfigImplBase extends AMXImplBase
         
 	}
     
+    private static ConfiguredHelper getConfiguredHelper(final Class<? extends ConfigBeanProxy> intf )
+    {
+        final ConfiguredHelper helper = ConfiguredHelperRegistry.getInstance(intf);
+        if ( helper != null ) { return helper; }
+        
+        return ConfiguredHelperRegistry.addInstance(new ConfiguredHelper(intf));
+    }
+    
         private String
     getTypeString()
     {
-        // use the serverbeans type for now, later extract the XML element type
-        final ConfigBean cb = getConfigBean();
-        final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
+        final Class<? extends ConfigBeanProxy> intf = getConfigBean().getProxyType();
         final Package pkg = intf.getPackage();
         String result = intf.getName().substring( pkg.getName().length() + 1, intf.getName().length() );
-        
-        // how to do this?
-        Issues.getAMXIssues().notDone( "getTypeString: how to get the XML element name from the ConfigBean" );
-
+        result = Dom.convertName(result);
         return result;
     }
     
@@ -1055,17 +1062,6 @@ cdebug( "removeConfig: by  j2eeType + name" );
 			AMXConfig.CONFIG_OBJECT_NAME_KEY, configObjectName );
 	}
     
-    
-    public String getXMLAttributeName( final String j2eeType, final String name )
-    {
-        return NameMappingRegistry.getInstance(j2eeType).getXMLName( name, true);
-    }
-
-    public String getAMXAttributeName( final String j2eeType, final String name )
-    {
-        return NameMappingRegistry.getInstance(j2eeType).getAMXName( name );
-    }
-    
     public String getDefaultValue( final String amxName )
     {
         try
@@ -1073,7 +1069,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
             final Class<? extends ConfigBeanProxy> myIntf = getConfigBean().getProxyType();
             //cdebug( "AMXConfigImplBase.getDefaultValue: " + amxName + " for " + myIntf.getName() );
             
-            final Map<String,String> defaultValues = _getDefaultValuesXMLNames( getJ2EEType(), myIntf );
+            final Map<String,String> defaultValues = getDefaultValuesXMLNames( myIntf );
             //cdebug( "defaultValues for " + myIntf.getName() + ": " + MapUtil.toString(defaultValues) );
             
             final String xmlName = getXMLAttributeName( getJ2EEType(), amxName );
@@ -1087,49 +1083,18 @@ cdebug( "removeConfig: by  j2eeType + name" );
     
     /**
         Get the default values, keyed by the XML element name.  The interface might be
-        for this MBean or one of its children.
+        for this MBean or one of its children; it doesn't matter
      */
-        final Map<String,String>
-    _getDefaultValuesXMLNames(
-        final String j2eeType,
-        final Class<? extends ConfigBeanProxy> intf )
+        private static final Map<String,String>
+    getDefaultValuesXMLNames( final Class<? extends ConfigBeanProxy> intf )
     {
-        final Map<String,String> result = new HashMap<String,String>();
-        
-        final Method[] methods = intf.getMethods();
-        for( final Method m : methods )
-        {
-            //cdebug( "Method: " + m );
-            if ( JMXUtil.isIsOrGetter(m) )
-            {
-                final String attrName = JMXUtil.getAttributeName(m);
-                final String xmlName = getXMLAttributeName( j2eeType, attrName );
-                //cdebug( "attrName: " + attrName + ", xmlName: " + xmlName );
-                
-                final org.jvnet.hk2.config.Attribute attrAnn = m.getAnnotation( org.jvnet.hk2.config.Attribute.class );
-                if ( attrAnn != null )
-                {
-                    // does it make sense to supply default values for required attributes?
-                    final String value = attrAnn.defaultValue();
-                    
-                    // don't put null values into defaults (see @Attribute annotation)
-                    final boolean emptyDefault = value.equals( "\u0000" );
-                    //cdebug( "Method " + m + " has default value of " + (emptyDefault ? "\\u0000" : value) );
-                    if ( ! emptyDefault )
-                    {
-                        result.put( xmlName, "" + attrAnn.defaultValue() );
-                    }
-                }
-            }
-        }
-        
-        return result;
+        return getConfiguredHelper(intf).getDefaultValues();
     }
     
         public final Map<String,String>
     getDefaultValues( final boolean useAMXAttributeName )
     {
-        final Map<String,String> m = _getDefaultValuesXMLNames( getJ2EEType(), getConfigBean().getProxyType() );
+        final Map<String,String> m = getDefaultValuesXMLNames( getConfigBean().getProxyType() );
         return useAMXAttributeName ? toAMXAttributeNames( getJ2EEType(), m) : m;
     }
     
@@ -1139,17 +1104,83 @@ cdebug( "removeConfig: by  j2eeType + name" );
         return getDefaultValues( j2eeTypeIn, true );
     }
     
+    public String getXMLAttributeName( final String j2eeType, final String name )
+    {
+        return getNameMapping(j2eeType, true).getXMLName( name, true);
+    }
+
+    public String getAMXAttributeName( final String j2eeType, final String name )
+    {
+        return getNameMapping(j2eeType, true).getAMXName( name );
+    }
+
+
+    private NameMapping getNameMapping( final String j2eeType, final boolean deduce )
+    {
+        NameMapping m = NameMappingRegistry.getInstance(j2eeType);
+        
+        if ( m == null && deduce )
+        {
+            //
+            // This case occurs when no AMX MBean has yet been registered.  It must
+            // be done using only the available interfaces. Use case is for when the GUI
+            // creates a new element that does not yet exist anywhere.
+            //
+            final Class<? extends ConfigBeanProxy> intf = getConfigBeanProxyClassForContainedType(j2eeType);
+            if ( intf == null )
+            {
+                throw new IllegalArgumentException( "j2eeType '" + j2eeType + "'  is not a containee of " + getJ2EEType() );
+            }
+            
+            // Now we need the AMX interface and we need to map AMX names to config names
+            final ConfiguredHelper helper = ConfiguredHelperRegistry.getInstance(intf);
+            
+            // get all the AMX attribute names
+            final Class<? extends AMXConfig> amxIntf = helper.getAMXInterface();
+            final MBeanInfo info = MBeanInfoCache.getAMXMBeanInfo(amxIntf);
+            final String[] attrNamesArrary = JMXUtil.getAttributeNames(info.getAttributes());
+            final Set<String>   attrNames = GSetUtil.newStringSet(attrNamesArrary);
+            if ( amxIntf == AMXGenericConfig.class )
+            {
+                attrNames.addAll( helper.getImpliedAMXNames() );
+            }
+            
+            m = new NameMapping(j2eeType);
+            
+            for( final String amxAttrName : attrNames )
+            {
+                final String xmlName = helper.findXMLName(amxAttrName);
+                if ( xmlName != null )
+                {
+                    m.pairNames( amxAttrName, xmlName );
+        System.out.println( "DEDUCED: " + amxAttrName + " ===> " + xmlName );
+                }
+            }
+            
+            
+            m = NameMappingRegistry.addInstance( m );
+        }
+        return m;
+    }
+    
+        private Class<? extends ConfigBeanProxy>
+    getConfigBeanProxyClassForContainedType( final String containeeJ2EEType )
+    {
+        final ContainedTypeInfo   info = new ContainedTypeInfo( getConfigBean() );
+        final Class<? extends ConfigBeanProxy>  intf = info.getConfigBeanProxyClassFor( containeeJ2EEType );
+        if ( intf == null )
+        {
+            throw new IllegalArgumentException( "Illegal containee j2eeType: " + containeeJ2EEType );
+        }
+        return intf;
+    }
+        
         public final Map<String,String>
     getDefaultValues( final String j2eeType, final boolean useAMXAttributeName )
     {
-        final ContainedTypeInfo   info = new ContainedTypeInfo( getConfigBean() );
-        final Class<? extends ConfigBeanProxy>  intf = info.getConfigBeanProxyClassFor( j2eeType );
-        if ( intf == null )
-        {
-            throw new IllegalArgumentException( "Illegal j2eeType: " + j2eeType );
-        }
+        final Class<? extends ConfigBeanProxy> intf = getConfigBeanProxyClassForContainedType( j2eeType );
         
-        final Map<String,String> m = _getDefaultValuesXMLNames(j2eeType, intf);
+        final Map<String,String> m = getDefaultValuesXMLNames(intf);
         return useAMXAttributeName ? toAMXAttributeNames( j2eeType, m) : m;
     }
     
@@ -1178,24 +1209,9 @@ cdebug( "removeConfig: by  j2eeType + name" );
         return m;
     }
     
-    private volatile boolean _namesInited = false;
-    
     /**
         Make sure the AMX to XML and vice-versa mapping is in place
      */
-        private synchronized void
-    initNames()
-    {
-        if ( ! _namesInited )
-        {
-            final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
-            final String[] attrNames = getAttributeNames();
-            
-            delegate.initNameMapping( attrNames );
-            
-            _namesInited = true;
-        }
-    }
     
     @Override
     protected synchronized void
@@ -1205,7 +1221,13 @@ cdebug( "removeConfig: by  j2eeType + name" );
 		
         if ( registrationSucceeded.booleanValue() )
         {
-            initNames();
+            if ( getNameMapping(getJ2EEType(), false) == null )
+            {
+                final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
+                final String[] attrNames = getAttributeNames();
+                
+                delegate.initNameMapping( attrNames );
+            }
         }
 	}
     

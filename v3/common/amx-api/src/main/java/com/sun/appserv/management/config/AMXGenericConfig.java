@@ -33,48 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config;
+package com.sun.appserv.management.config;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import com.sun.appserv.management.base.Container;
 
 /**
-    A registry of NameMapping
+	Marker interface indicating that no AMConfig interface has been specified.
+    <p>
+    This interface should not be extended as it represents fully generic operation. Because it
+    is generic, it must support all the potential operations, even if they might not actually
+    be available in a particular case.
  */
-final class NameMappingRegistry
+public interface AMXGenericConfig extends AMXConfig, DefaultValues, PropertiesAccess, SystemPropertiesAccess, Container
 {
-    private NameMappingRegistry() {}
-    
-    /**
-        One NameMapping for each j2eeType.
-     */
-    private static final ConcurrentMap<String,NameMapping>  INSTANCES = new ConcurrentHashMap<String,NameMapping>();
-    
-    private static void debug( final String s ) { System.out.println(s); }
-    
-    /**
-        Return null if no instance yet; createInstance() must be called to create one.
-     */
-        public static NameMapping
-    getInstance( final String j2eeType )
-    {
-        return INSTANCES.get(j2eeType);
-    }
-    
-        public static NameMapping
-    addInstance( final NameMapping mapping )
-    {
-        // last one wins
-        INSTANCES.put( mapping.getJ2EEType(), mapping);
-        
-        return getInstance(mapping.getJ2EEType());
-    }
- }
-
-
-
-
-
-
-
-
+}

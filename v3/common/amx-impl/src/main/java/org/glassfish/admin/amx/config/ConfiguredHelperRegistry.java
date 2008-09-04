@@ -38,36 +38,36 @@ package org.glassfish.admin.amx.config;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.jvnet.hk2.config.ConfigBeanProxy;
+
 /**
-    A registry of NameMapping
+    A registry of ConfiguredHelper, for efficiency in execution time and scalability
+    for large numbers of MBeans which share the same underlying type of @Configured.
  */
-final class NameMappingRegistry
+final class ConfiguredHelperRegistry
 {
-    private NameMappingRegistry() {}
+    private ConfiguredHelperRegistry() {}
     
     /**
-        One NameMapping for each j2eeType.
+        Map an interface to its helper.
      */
-    private static final ConcurrentMap<String,NameMapping>  INSTANCES = new ConcurrentHashMap<String,NameMapping>();
-    
-    private static void debug( final String s ) { System.out.println(s); }
+    private static final ConcurrentMap<Class<? extends ConfigBeanProxy>,ConfiguredHelper>  INSTANCES =
+        new ConcurrentHashMap<Class<? extends ConfigBeanProxy>,ConfiguredHelper>();
     
     /**
         Return null if no instance yet; createInstance() must be called to create one.
      */
-        public static NameMapping
-    getInstance( final String j2eeType )
+        public static ConfiguredHelper
+    getInstance( final Class<? extends ConfigBeanProxy> intf )
     {
-        return INSTANCES.get(j2eeType);
+        return INSTANCES.get(intf);
     }
     
-        public static NameMapping
-    addInstance( final NameMapping mapping )
+        public static ConfiguredHelper
+    addInstance( final ConfiguredHelper helper )
     {
-        // last one wins
-        INSTANCES.put( mapping.getJ2EEType(), mapping);
-        
-        return getInstance(mapping.getJ2EEType());
+        INSTANCES.putIfAbsent( helper.getIntf(), helper);
+        return getInstance(helper.getIntf());
     }
  }
 

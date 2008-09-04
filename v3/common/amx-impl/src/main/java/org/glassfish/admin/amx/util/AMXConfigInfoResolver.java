@@ -68,9 +68,9 @@ public final class AMXConfigInfoResolver
         {
             theClass = Class.forName( classname );
         }
-        catch( Exception e )
+        catch( final Exception e )
         {
-            debug( "Can't find class for " + classname );
+            throw new RuntimeException(e);
         }
         
         if ( theClass != null )
