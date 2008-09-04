@@ -139,12 +139,15 @@ import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.v3.services.impl.V3Mapper;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -590,12 +593,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Configure HTTP listeners
             List<HttpListener> httpListeners = httpService.getHttpListener();
             for (HttpListener httpListener : httpListeners) {
-                if ("jk-connector".equals(httpListener.getId())) {
-                    createJKConnector(httpListener, httpService);
-                } else {
-                    createHttpListener(httpListener, httpService);
-                }
+                createHttpListener(httpListener, httpService);
             }
+            createJKConnector(httpService);
+            
             setDefaultRedirectPort(defaultRedirectPort);
             
             // Configure virtual servers
@@ -831,31 +832,47 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Starts the AJP connector that will listen to call from Apache using
      * mod_jk, mod_jk2 or mod_ajp.
      */
-    private void createJKConnector(HttpListener httpListener, HttpService httpService) {
+    private void createJKConnector(HttpService httpService) {
+        String portString = System.getProperty("com.sun.enterprise.web.connector.enableJK");
+        
+        if (portString == null) {
+            // do not create JK Connector if property is not set
+            return;
+        } else {
+            int port = 8009;
+            try {
+                port = Integer.parseInt(portString);
+            } catch (NumberFormatException ex) {
+                // use default port 8009
+                port = 8009;
+            }
 
-        int port = Integer.parseInt(httpListener.getPort());
+            jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
+                                                                port, "ajp");
 
-        jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
-                                            port, "ajp");
+            jkConnector.configureJKProperties();
 
-        jkConnector.configureJKProperties();
-
-        String defaultHost = "server";
-        jkConnector.setDefaultHost(defaultHost);        
-        jkConnector.setDomain(_serverContext.getDefaultDomainName());
-        jkConnector.configureHttpProtocol(httpService.getHttpProtocol());
-        _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
+            String defaultHost = "server";
+            jkConnector.setName("httpd-listener");
+            jkConnector.setDefaultHost(defaultHost);        
+            jkConnector.setDomain(_serverContext.getDefaultDomainName());
+            jkConnector.configureHttpProtocol(httpService.getHttpProtocol());
+            _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
                                 + port);
-            
-        for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-            if (m.getPort() == port){
-                jkConnector.setMapper(m);
-                break;
-            }
-        }
+            V3Mapper mapper = new V3Mapper(_logger);
+            mapper.setPort(port);
+            mapper.setId(jkConnector.getName());
 
-        _embedded.addConnector(jkConnector);      
+            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
+            grizzlyService.getHabitat().addIndex(
+                    onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
+                    String.valueOf(port));
+        
+            jkConnector.setMapper(mapper);
+
+            _embedded.addConnector(jkConnector);
+        }
     }
 
     /**
