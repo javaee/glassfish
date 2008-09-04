@@ -38,6 +38,7 @@
         </OS>
         <InstallableUnit>Engine.zip</InstallableUnit>
         <InstallableUnit>Resources.zip</InstallableUnit>
+	<InstallableUnit>metadata.zip</InstallableUnit>
       </Realization>
 
       <Realization>
