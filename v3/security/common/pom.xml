@@ -95,5 +95,11 @@
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>            
+        </dependency>
          </dependencies>
 </project>

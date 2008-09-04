@@ -116,10 +116,17 @@
             <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope> 
+        </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
