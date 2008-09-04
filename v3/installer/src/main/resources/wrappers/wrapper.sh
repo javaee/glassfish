@@ -27,6 +27,8 @@ fi
 
 ARGS=""
 export ARGS 
+_POSIX2_VERSION=199209
+export _POSIX2_VERSION
 while [ $# -gt 0 ]
 do
 arg="$1"
@@ -54,6 +56,14 @@ fi
 		validateSilentFile $1
 	fi
 	;;
+	-R)
+		echo "Invalid Argument, -R option is not applicable to this release."
+		exit 101
+	;;
+	-r)
+		echo "Invalid Argument, -r option is not applicable to this release."
+		exit 101
+	;;
 	-s)
 	ARGS=`echo ${ARGS} -p Display-Mode=SILENT `
 	;;
@@ -66,7 +76,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +79l $0 > $tmp/tmp.jar
+tail +89l $0 > $tmp/tmp.jar
 cd $tmp
 $JAVA_HOME/bin/jar xvf tmp.jar 
 rm tmp.jar
