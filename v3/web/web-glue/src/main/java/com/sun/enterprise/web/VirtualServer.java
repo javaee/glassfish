@@ -523,34 +523,19 @@ public class VirtualServer extends StandardHost {
      *              it specifies a value for the virtual-servers attribute) or
      *              if there was an error loading its deployment descriptors.
      */
-    protected String getDefaultContextPath(Domain domain) {
+    protected String getDefaultContextPath(Domain domain, 
+            WebDeployer webDeployer) {
 
         String contextRoot = null;
-        Applications appsBean = domain.getApplications();
 
         String wmID = getDefaultWebModuleID();
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
+            Applications appsBean = domain.getApplications();
             WebModuleConfig wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);
-
-            // Look up the list of standalone web modules
             if (wmInfo == null) {
-                WebModule wm = appsBean.getModule(WebModule.class, wmID);
-                if (wm != null) {
-                    if (isActive(wm, false)) {
-                        // Create a copy as we need to change the name
-                        // and context root to indicate that this web module
-                        // is to be loaded as the 'default' web module for
-                        // the virtual server
-                        // WebModule wmCopy = (WebModule) wm.clone();
-                        contextRoot = wm.getContextRoot();
-                    } else {
-                        Object[] params = { wmID, getID() };
-                        _logger.log(Level.SEVERE, "vs.defaultWebModuleDisabled",
-                                    params);
-                    }
-                }
+                contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
             } else {
                 WebModule wm = wmInfo.getBean();
                 contextRoot = wm.getContextRoot();
@@ -564,7 +549,7 @@ public class VirtualServer extends StandardHost {
         }
 
         return contextRoot;
-    }
+    }    
     
     
     protected WebModuleConfig getDefaultWebModule(Domain domain, 
@@ -572,18 +557,16 @@ public class VirtualServer extends StandardHost {
 
         String contextRoot = null;
         WebModuleConfig wmInfo = null;
-        String location = null;
-        Applications appsBean = domain.getApplications();
 
         String wmID = getDefaultWebModuleID();
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
-            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);
-            
+            Applications appsBean = domain.getApplications();
+            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);        
             if (wmInfo == null) {
                 contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
-                location = ConfigBeansUtilities.getLocation(wmID);
+                String location = ConfigBeansUtilities.getLocation(wmID);
                 if ((contextRoot!=null) && (location != null)) {
                     File docroot = new File(location);
                     WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
@@ -595,12 +578,9 @@ public class VirtualServer extends StandardHost {
                     wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
                     wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
                 }
-            } else {
-                WebModule wm = wmInfo.getBean();
-                contextRoot = wm.getContextRoot();
             }
 
-            if (contextRoot == null) {
+            if (wmInfo == null) {
                 Object[] params = { wmID, getID() };
                 _logger.log(Level.SEVERE, "vs.defaultWebModuleNotFound",
                             params);

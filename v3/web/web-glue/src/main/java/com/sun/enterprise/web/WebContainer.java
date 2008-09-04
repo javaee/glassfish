@@ -49,8 +49,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.ArrayList;
-//end HERCULES:add
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ResourceBundle;
@@ -800,7 +800,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        _logger.info("Created HTTP listener " + httpListener.getId());
+        _logger.info("Created HTTP listener " + httpListener.getId() +
+                     " on port " + httpListener.getPort());
 
         connector.setName(httpListener.getId());
 
@@ -2637,6 +2638,42 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return null;
     }*/
 
+
+    /**
+     * Gets all the virtual servers whose http-listeners attribute value
+     * contains the given http-listener id.
+     */
+    ArrayList<VirtualServer> getVirtualServersForHttpListenerId(
+            HttpService httpService, String httpListenerId) {
+
+        if (httpListenerId == null) {
+            return null;
+        }
+
+        ArrayList result = new ArrayList();
+
+        for (com.sun.enterprise.config.serverbeans.VirtualServer vs : httpService.getVirtualServer()) {
+            List listeners = StringUtils.parseStringList(
+                vs.getHttpListeners(), ",");
+            if (listeners != null) {
+                ListIterator<String> iter = listeners.listIterator();
+                while (iter.hasNext()) {
+                    if (httpListenerId.equals(iter.next())) {
+                        VirtualServer match = (VirtualServer)
+                            getEngines()[0].findChild(vs.getId());
+                        if (match != null) {
+                            result.add(match);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+
     /**
      * Adds the given mime mappings to those of the specified context, unless
      * they're already present in the context (that is, the mime mappings of
@@ -3613,43 +3650,62 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     .equals(VirtualServer.ADMIN_VS)){
             return;
         }
-        
+
         WebConnector connector = connectorMap.get(httpListener.getId());
         if (connector != null) {
-            _embedded.removeConnector(connector);
-            connectorMap.remove(httpListener.getId());
+            deleteConnector(connector);
         }
-
         
         if (!Boolean.valueOf(httpListener.getEnabled())) {
             return;
         }
 
-        connector = createHttpListener(httpListener, httpService);
+        connector = addConnector(httpListener, httpService);
         
-        // The connector is not enabled.
-        if (connector == null) return;
-        
-        String virtualServerName = httpListener.getDefaultVirtualServer();
-        VirtualServer virtualServer = (VirtualServer)
-                     _embedded.getEngines()[0].findChild(virtualServerName);
-        
-        boolean found = false;
-        int[] ports = virtualServer.getPorts();
-        for (int i=0; i<ports.length; i++) {
-            if (ports[i] == connector.getPort()) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            int[] newPorts = new int[ports.length + 1];
-            System.arraycopy(ports, 0, newPorts, 0, ports.length);
-            newPorts[ports.length] = connector.getPort();
-            virtualServer.setPorts(newPorts);
-        }
+        // Update the list of ports of all associated virtual servers with
+        // the listener's new port number, so that the associated virtual
+        // servers will be registered with the listener's request mapper when
+        // the listener is started
+        ArrayList<VirtualServer> virtualServers =
+            getVirtualServersForHttpListenerId(httpService,
+                                               httpListener.getId());
+        if (virtualServers != null) {
+            Mapper mapper = connector.getMapper();
+            for (Iterator<VirtualServer> it = virtualServers.iterator();
+                                                    it.hasNext(); ) {
+                VirtualServer vs = it.next();
+                boolean found = false;
+                int[] ports = vs.getPorts();
+                for (int i=0; i<ports.length; i++) {
+                    if (ports[i] == connector.getPort()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    int[] newPorts = new int[ports.length + 1];
+                    System.arraycopy(ports, 0, newPorts, 0, ports.length);
+                    newPorts[ports.length] = connector.getPort();
+                    vs.setPorts(newPorts);
+                }
 
-        connector.start();
+                // Check if virtual server has default-web-module configured,
+                // and if so, configure the http listener's mapper with this
+                // information
+                String defaultWebModulePath = vs.getDefaultContextPath(
+                        habitat.getComponent(Domain.class), 
+                        habitat.getComponent(WebDeployer.class));
+                if (defaultWebModulePath != null) {
+                    try {
+                        mapper.setDefaultContextPath(vs.getName(),
+                                                     defaultWebModulePath);
+                        vs.setDefaultContextPath(defaultWebModulePath);
+                    } catch (Exception e) {
+                        throw new LifecycleException(e);
+                    }
+                }
+            }        
+        }
     }
   
     
@@ -3696,13 +3752,32 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return connector;
     }
     
+
+    /**
+     * Stops and deletes the specified http listener.
+     */
+    public void deleteConnector(WebConnector connector)
+            throws LifecycleException{
+        
+        int port = connector.getPort();
+
+        Connector[] connectors = (Connector[])_embedded.findConnectors();
+        for (int i=0; i<connectors.length; i++){
+            WebConnector conn = (WebConnector) connectors[i];
+            if (port == conn.getPort()) {
+                _embedded.removeConnector(conn);
+                grizzlyService.removeNetworkProxy(port);
+                portMap.remove(connector.getName());
+                connectorMap.remove(connector.getName());
+            }
+        }
+    }  
+
     
     /**
-     * Stop and delete the selected http-listener.
-     * @param httpService the configuration bean.
+     * Stops and deletes the specified http listener.
      */
-    public void deleteConnector(HttpListener httpListener, 
-                                HttpService httpService)
+    public void deleteConnector(HttpListener httpListener)
             throws LifecycleException{
         
         Connector[] connectors = (Connector[])_embedded.findConnectors();
@@ -3710,7 +3785,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         for (int i=0; i<connectors.length; i++){
             WebConnector conn = (WebConnector) connectors[i];
-            if ( port == conn.getPort() ) {       
+            if (port == conn.getPort()) {
                 _embedded.removeConnector(conn);
                 grizzlyService.removeNetworkProxy(port);
                 portMap.remove(httpListener.getId());
