@@ -44,7 +44,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-//import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
@@ -60,21 +60,8 @@ import org.glassfish.flashlight.statistics.factory.CounterFactory;
 public class JVMStatsTelemetry {
     
     private TreeNode jvmNode;
-    private TreeNode classLoadingSystemNode;
-    private TreeNode compilationSystemNode;
-    private TreeNode garbageCollectorsNode;
-    private TreeNode memoryNode;
-    private TreeNode operatingSystemNode;
-    private TreeNode runtimeNode;
-    private ClassLoadingMXBean clBean;
-    private CompilationMXBean compBean;
-    private List<GarbageCollectorMXBean> gcBeanList;
-    private MemoryUsage heapUsage;
-    private MemoryUsage nonheapUsage;
-    private MemoryMXBean memBean;
-    private OperatingSystemMXBean osBean;    
-    private RuntimeMXBean rtBean;
-    private Counter commitHeapSize = CounterFactory.createCount();
+    
+    //private Counter commitHeapSize = CounterFactory.createCount();
     private Logger logger;
     private boolean isEnabled = true;
     
@@ -87,48 +74,21 @@ public class JVMStatsTelemetry {
             jvmNode = TreeNodeFactory.createTreeNode("jvm", null, "jvm");
             server.addChild(jvmNode);
 
-            this.createClassLoadingSystemNode(jvmNode);
-            this.createCompilationSystemNode(jvmNode);
-            this.createGarbageCollectorsNode(jvmNode);
-            this.createMemoryNode(jvmNode);
-            
-            // heap memory usage
-            
-            //Method m = heapUsage.getClass().getMethod("getCommitted", (Class[]) null);
-            //logger.finest("heapUsage.getCommitted() = " + heapUsage.getCommitted());
-            //logger.finest("Method m.invoke() = " + m.invoke(heapUsage, (Object[]) null));
-            //TreeNode committedHeapSize = 
-            //        TreeNodeFactory.createMethodInvoker("committedHeapSize", heapUsage, "jvm", m);
-            //jvmNode.addChild(committedHeapSize);
-
-            // non-heap memory usage
-            
-            //m = nonheapUsage.getClass().getMethod("getCommitted", (Class[]) null);
-            //TreeNode nonHeapNode =
-            //    TreeNodeFactory.createMethodInvoker("non-heap-memory", nonheapUsage, "jvm", m);
-            //jvmNode.addChild(nonHeapNode);
-            
-            this.createOperatingSystemNode(jvmNode);
-            this.createRuntimeNode(jvmNode);
-
-            // v2 compatible jvm stats node
-            //V2JVMStats v2jvmStats = new V2JVMStats();
-            //m = v2jvmStats.getClass().getMethod("getUptime", (Class[]) null);
-            //TreeNode v2JVMNode = 
-            //    TreeNodeFactory.createMethodInvoker("jvm", v2jvmStats, "jvm", m);
-            //jvmNode.addChild(v2JVMNode);
-
-            //enable/disable node
-            //jvmNode.setEnabled(jvmMonitoringEnabled);
-        //} catch (IllegalAccessException ex) {
-        //    Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
+            jvmNode.addChild(createClassLoadingSystemNode());
+            jvmNode.addChild(createCompilationSystemNode());
+            jvmNode.addChild(createGarbageCollectorsNode());
+            jvmNode.addChild(createMemoryNode());
+            jvmNode.addChild(createOperatingSystemNode());
+            jvmNode.addChild(createRuntimeNode());
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
-        //} catch (InvocationTargetException ex) {
-        //    Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
+            Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
             Logger.getLogger(JVMStatsTelemetry.class.getName()).log(Level.SEVERE, null, ex);
         }
     }            
@@ -140,51 +100,51 @@ public class JVMStatsTelemetry {
         }
     }
     
-    public Counter getCommittedHeapSize() {
-        commitHeapSize.setCount(heapUsage.getCommitted());
-        return commitHeapSize;
-    }
+    //public Counter getCommittedHeapSize() {
+    //    commitHeapSize.setCount(heapUsage.getCommitted());
+    //    return commitHeapSize;
+    //}
 
     public boolean isEnabled() {
         return isEnabled;
     }
     
-    private void createClassLoadingSystemNode(TreeNode server) throws NoSuchMethodException {
-        classLoadingSystemNode = TreeNodeFactory.createTreeNode("class-loading-system", null, "jvm");
-        clBean = ManagementFactory.getClassLoadingMXBean();
+    private TreeNode createClassLoadingSystemNode() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        TreeNode classLoadingSystemNode = TreeNodeFactory.createTreeNode("class-loading-system", null, "jvm");
+        ClassLoadingMXBean clBean = ManagementFactory.getClassLoadingMXBean();
         String[] mList = {"getLoadedClassCount", "getTotalLoadedClassCount", "getUnloadedClassCount"};
         for (String methodName : mList) {
-            Method method = clBean.getClass().getMethod(methodName, (Class[]) null);
+            Method method = ClassLoadingMXBean.class.getMethod(methodName);
             String nodeName = createNodeName(methodName);
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, clBean, "jvm", method);
             classLoadingSystemNode.addChild(tn);
         }
-        server.addChild(classLoadingSystemNode);
+        return classLoadingSystemNode;
     }
     
-    private void createCompilationSystemNode(TreeNode server) throws NoSuchMethodException {
-        compilationSystemNode = TreeNodeFactory.createTreeNode("compilation-system", null, "jvm");
-        compBean = ManagementFactory.getCompilationMXBean();
+    private TreeNode createCompilationSystemNode() throws NoSuchMethodException {
+        TreeNode compilationSystemNode = TreeNodeFactory.createTreeNode("compilation-system", null, "jvm");
+        CompilationMXBean compBean = ManagementFactory.getCompilationMXBean();
         String[] mList = {"getName", "getTotalCompilationTime"};
         for (String methodName : mList) {
-            Method method = compBean.getClass().getMethod(methodName, (Class[]) null);
+            Method method = CompilationMXBean.class.getMethod(methodName);
             String nodeName = createNodeName(methodName);
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, compBean, "jvm", method);
             compilationSystemNode.addChild(tn);
         }
-        server.addChild(compilationSystemNode);
+        return compilationSystemNode;
     }
     
-    private void createGarbageCollectorsNode(TreeNode server) throws NoSuchMethodException {
-        garbageCollectorsNode = TreeNodeFactory.createTreeNode("garbage-collectors", null, "jvm");
-        gcBeanList = ManagementFactory.getGarbageCollectorMXBeans();
+    private TreeNode createGarbageCollectorsNode() throws NoSuchMethodException {
+        TreeNode garbageCollectorsNode = TreeNodeFactory.createTreeNode("garbage-collectors", null, "jvm");
+        List<GarbageCollectorMXBean> gcBeanList = ManagementFactory.getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean gcBean : gcBeanList) {
             TreeNode gcNode = TreeNodeFactory.createTreeNode(gcBean.getName(), null, "garbage-collectors");
             String[] mList = {"getCollectionCount", "getCollectionTime"};
             for (String methodName : mList) {
-                Method method = gcBean.getClass().getMethod(methodName, (Class[]) null);
+                Method method = GarbageCollectorMXBean.class.getMethod(methodName);
                 String nodeName = createNodeName(methodName);
                 TreeNode tn = 
                         TreeNodeFactory.createMethodInvoker(nodeName, gcBean, "jvm", method);
@@ -192,22 +152,22 @@ public class JVMStatsTelemetry {
             }
             garbageCollectorsNode.addChild(gcNode);
         }
-        server.addChild(garbageCollectorsNode);
+        return garbageCollectorsNode;
     }
     
-    private void createMemoryNode(TreeNode server) throws NoSuchMethodException {
-        memoryNode = TreeNodeFactory.createTreeNode("memory", null, "jvm");
-        memBean = ManagementFactory.getMemoryMXBean();
-        createMemoryUsageNodes(memBean.getHeapMemoryUsage(), "Heap");
-        createMemoryUsageNodes(memBean.getNonHeapMemoryUsage(), "NonHeap");
-        Method method = memBean.getClass().getMethod("getObjectPendingFinalizationCount", (Class[]) null);
+    private TreeNode createMemoryNode() throws NoSuchMethodException {
+        TreeNode memoryNode = TreeNodeFactory.createTreeNode("memory", null, "jvm");
+        MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+        createMemoryUsageNodes(memBean.getHeapMemoryUsage(), "Heap", memoryNode);
+        createMemoryUsageNodes(memBean.getNonHeapMemoryUsage(), "NonHeap", memoryNode);
+        Method method = MemoryMXBean.class.getMethod("getObjectPendingFinalizationCount", (Class[]) null);
         TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker("objectPendingFinalizationCount", memBean, "jvm", method);
             memoryNode.addChild(tn);
-        server.addChild(memoryNode);
+        return memoryNode;
     }
     
-    private void createMemoryUsageNodes(MemoryUsage memUsage, String type) throws NoSuchMethodException {
+    private void createMemoryUsageNodes(MemoryUsage memUsage, String type, TreeNode memoryNode) throws NoSuchMethodException {
         String[] mList = {"getCommitted", "getInit" , "getMax", "getUsed"};
         for (String methodName : mList) {
             Method method = memUsage.getClass().getMethod(methodName, (Class[]) null);
@@ -222,34 +182,36 @@ public class JVMStatsTelemetry {
         return createNodeName(methodName) + type + "Size";
     }
     
-    private void createOperatingSystemNode(TreeNode server) throws NoSuchMethodException {
-        operatingSystemNode = TreeNodeFactory.createTreeNode("operating-system", null, "jvm");
-        osBean = ManagementFactory.getOperatingSystemMXBean();
+    private TreeNode createOperatingSystemNode() throws NoSuchMethodException {
+        TreeNode operatingSystemNode = TreeNodeFactory.createTreeNode("operating-system", null, "jvm");
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         String[] mList = {"getArch", "getAvailableProcessors", "getName", "getVersion"};
         for (String methodName : mList) {
-            Method method = osBean.getClass().getMethod(methodName, (Class[]) null);
+            Method method = OperatingSystemMXBean.class.getMethod(methodName, (Class[]) null);
             String nodeName = createNodeName(methodName);
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, osBean, "jvm", method);
             operatingSystemNode.addChild(tn);
         }
-        server.addChild(operatingSystemNode);
+        return operatingSystemNode;
     }
     
-    private void createRuntimeNode(TreeNode server) throws NoSuchMethodException {
-        runtimeNode = TreeNodeFactory.createTreeNode("runtime", null, "jvm");
-        rtBean = ManagementFactory.getRuntimeMXBean();
+    private TreeNode createRuntimeNode() throws NoSuchMethodException {
+        TreeNode runtimeNode = TreeNodeFactory.createTreeNode("runtime", null, "jvm");
+        RuntimeMXBean rtBean = ManagementFactory.getRuntimeMXBean();
         String[] mList = {"getBootClassPath", "getClassPath", "getInputArguments", "getLibraryPath",
             "getManagementSpecVersion", "getName", "getSpecName", "getSpecVendor",
-            "getSpecVendor", "getUptime", "getVmName", "getVmVendor", "getVmVersion"};
+            "getSpecVersion", "getUptime", "getVmName", "getVmVendor", "getVmVersion"};
         for (String methodName : mList) {
-            Method method = rtBean.getClass().getMethod(methodName, (Class[]) null);
+            Method method = RuntimeMXBean.class.getMethod(methodName, (Class[]) null);
             String nodeName = createNodeName(methodName);
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, rtBean, "jvm", method);
             runtimeNode.addChild(tn);
         }
-        server.addChild(runtimeNode);
+
+
+        return runtimeNode;
     }
     
     private String createNodeName(String methodName) {
