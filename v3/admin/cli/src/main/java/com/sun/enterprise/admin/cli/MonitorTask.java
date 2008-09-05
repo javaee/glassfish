@@ -46,7 +46,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 public class MonitorTask extends TimerTask
 {
-    private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorCommand.class);
+    private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorTask.class);
     String type = null;
     String filter = null;
     Timer timer = null;
@@ -106,7 +106,7 @@ public class MonitorTask extends TimerTask
     void cancelMonitorTask()
     {
         timer.cancel();
-        final String msg = strings.get("monitorCommand.press_to_quit");
+        final String msg = strings.get("commands.monitor.press_to_quit");
         CLILogger.getInstance().printMessage(msg);
     }
 
@@ -121,7 +121,8 @@ public class MonitorTask extends TimerTask
             //remoteCommands = cmds.split(";");
         }
         catch(Exception e) {
-            CLILogger.getInstance().printError(strings.get("monitorCommand.errorRemote", e.getMessage()));
+            CLILogger.getInstance().printError(strings.get("listCommands.errorRemote", e.getMessage()));
+            cancelMonitorTask();
         }
         finally {
             //CLILogger.getInstance().popAndUnlockLevel();
@@ -142,7 +143,7 @@ public class MonitorTask extends TimerTask
             out.close();
         }
         catch (IOException ioe) {
-            final String unableToWriteFile = localStrings.getString("commands.monitor.unable_to_write_to_file", new Object[] {fileName.getName()});
+            final String unableToWriteFile = strings.getString("commands.monitor.unable_to_write_to_file", new Object[] {fileName.getName()});
             CLILogger.getInstance().printMessage(unableToWriteFile);
             if (verbose) {
                 ioe.printStackTrace();

@@ -52,6 +52,7 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.api.Param;
 import java.util.List;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /** 
  *
@@ -85,6 +86,9 @@ public class WebModuleVirtualServerStatsImpl
     @Inject
     private MonitoringRuntimeDataRegistry mrdr;
 
+    private final LocalStringManagerImpl localStrings = 
+        new LocalStringManagerImpl(WebModuleVirtualServerStatsImpl.class);
+
     private final String name = "webmodule";
 
     private final String displayFormat = 
@@ -98,14 +102,16 @@ public class WebModuleVirtualServerStatsImpl
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry is null"));
             return report;
         }
 
         TreeNode serverNode = mrdr.get("server");
         if (serverNode == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry server node is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry server node is null"));
             return report;
         }
 

@@ -52,6 +52,7 @@ import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /** 
  * A Stats interface to represent the statistical data exposed by an
@@ -71,6 +72,9 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
     @Inject
     Logger logger;
 
+    private final LocalStringManagerImpl localStrings = 
+        new LocalStringManagerImpl(HTTPListenerStatsImpl.class);
+
     private final String name = "httplistener";
     private final String displayFormat = "%1$-4s %2$-4s %3$-4s %4$-4s";
 
@@ -84,14 +88,16 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry is null"));
             return report;
         }
 
         TreeNode serverNode = mrdr.get("server");
         if (serverNode == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry server node is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null", 
+                "MonitoringRuntimeDataRegistry server node is null"));
             return report;
         }
 
