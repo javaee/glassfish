@@ -1,9 +1,21 @@
 Properties to be set in the file setup-jdbc-dev-tests.sh before running the devtests:
 
-1. "v3home" - installation home of glassfish v3
-2. "war2deploy" - Directory that would contain v3_jdbc_dev_tests.war after devtests are built
-3. "derbyhome" - Derby home. Usually it is $v3home/javadb
-4. "testResult" - Path in which the output html should be generated.
+1. "v3home" - installation home of glassfish v3.
+2. "war2deploy" - Directory that would contain v3_jdbc_dev_tests.war after devtests are built.
+3. "derbyhome" - Derby home. Usually it is $v3home/javadb.
+4. "testResult1", "testResult2" - Path in which the output htmls should be generated.
+5. "v3jdbcdevtestshome" - JDBC Devtests home where script files and the v3_jdbc_dev_tests project are found.
+6. "databaseshome" - Databases home where databases should be referred from.
+
+Properties to be set in setup-jdbc-reconfig-dev-tests.sh before running the devtests : 
+
+1. "v3home" - installation home of glassfish v3.
+2. "databaseshome" - Databases home where databases should be referred from.
+3. "war2deploy" - Directory that would contain v3_jdbc_dev_tests.war after devtests are built.
+4. "reconfigResult" - Path in which the output htmls should be generated.
+
+Value to be set in SetDerbyAuthentication.java before running the devtests :
+1. DATABASES_HOME - DB home where the databases should be created
 
 Description of Components:
 
@@ -28,7 +40,7 @@ Script used to run the devtests manually. The script does jobs like starting dom
 required pools for various tests, creating JDBC resources for the various tests, deploying the
 war that contains the tests and generating the output html file. 
 
-Embedded Derby is used for all the tests. This script assumes that "firefox", "javac", "java" and
+Embedded Derby is used for all the tests. This script assumes that "firefox", "javac", "java", "GET" and
 "wget" are on the system path.
 
 Before running this script, a "build" is required to be done on the project "v3_jdbc_dev_tests" to generate a war.
@@ -56,6 +68,7 @@ The JDBC devtests included in the project named "v3_jdbc_dev_tests" include the 
 - Statement Timeout Test
 - UserTx Test
 - Associate with thread connection pool test
+- Reconfig tests for JDBC Connection Pool/ JDBC Resource
 
 TestResultServlet.java is responsible for listing the test results on a html page. 
 HtmlUtil.java prints the exceptions (if any) on the result page.
