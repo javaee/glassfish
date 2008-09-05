@@ -232,13 +232,13 @@ public class ServerHandlers {
         String precompile = (String) defaultMap.get("AutodeployJspPrecompilationEnabled");
         String verifier = (String) defaultMap.get("AutodeployVerifierEnabled");
 
-        if (reload.equals("true")) {
+        if ("true".equals(reload)) {
             handlerCtx.setOutputValue("Reload", true);
         } else {
             handlerCtx.setOutputValue("Reload", false);
         }
         handlerCtx.setOutputValue("ReloadInterval", reloadInterval);
-        if (autoDeploy.equals("true")) {
+        if ("true".equals(autoDeploy)) {
             handlerCtx.setOutputValue("AutoDeploy", true);
         } else {
             handlerCtx.setOutputValue("AutoDeploy", false);
@@ -247,12 +247,12 @@ public class ServerHandlers {
         handlerCtx.setOutputValue("AutoDeployInterval", autoDeployInterval);
         handlerCtx.setOutputValue("AutoDeployTimeout", autoDeployTimeout);
         handlerCtx.setOutputValue("AutoDeployDirectory", autoDeployDirectory);
-        if (precompile.equals("true")) {
+        if ("true".equals(precompile)) {
             handlerCtx.setOutputValue("Precompile", true);
         } else {
             handlerCtx.setOutputValue("Precompile", false);
         }
-        if (verifier.equals("true")) {
+        if ("true".equals(verifier)) {
             handlerCtx.setOutputValue("Verifier", true);
         } else {
             handlerCtx.setOutputValue("Verifier", false);
