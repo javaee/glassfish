@@ -102,7 +102,12 @@ public class V3Mapper extends Mapper {
     @Override
     public void addContext(String hostName, String path, Object context,
             String[] welcomeResources, javax.naming.Context resources) {
-
+        
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Context-Host: " + hostName + " path " + path + " context " + context +
+                    " port " + getPort());
+        }
+        
         // Prevent any admin related artifacts from being registered on a
         // non-admin listener, and vice versa
         if ((ADMIN_LISTENER.equals(id) && !ADMIN_VS.equals(hostName)) ||
@@ -111,9 +116,6 @@ public class V3Mapper extends Mapper {
         }
 
         super.addContext(hostName, path, context, welcomeResources, resources);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Context-Host: " + hostName + " path " + path + " context " + context);
-        }
     }
 
     

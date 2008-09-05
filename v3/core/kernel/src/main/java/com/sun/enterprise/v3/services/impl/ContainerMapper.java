@@ -119,16 +119,17 @@ public class ContainerMapper extends StaticResourcesAdapter{
      */
     @Override
     public void service(Request req, Response res) throws IOException{
-        MessageBytes decodedURI = req.decodedURI();
-        decodedURI.duplicate(req.requestURI());
-        MappingData mappingData = (MappingData)req.getNote(MAPPING_DATA);
-        if (mappingData == null){
-            mappingData = new MappingData();
-            req.setNote(MAPPING_DATA, mappingData);
-        }
-           
-        Adapter adapter = null;      
-        try{
+        MappingData mappingData = null;
+        try{        
+            MessageBytes decodedURI = req.decodedURI();
+            decodedURI.duplicate(req.requestURI());
+            mappingData = (MappingData)req.getNote(MAPPING_DATA);
+            if (mappingData == null){
+                mappingData = new MappingData();
+                req.setNote(MAPPING_DATA, mappingData);
+            }
+
+            Adapter adapter = null;      
             HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
 
             // Map the request to its Adapter/Container and also it's Servlet if 
@@ -163,7 +164,9 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 }                 
             }
         }  finally{
-            mappingData.recycle();
+            if (mappingData != null){
+                mappingData.recycle();
+            }
         }
     }
     
@@ -211,7 +214,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
                     " adapter: " + adapter + " container: " + container +
-                    " contextProtocolFilters: " + contextProtocolFilters);
+                    " port: " + grizzlyEmbeddedHttp.getPort());
         }
 
         /*
