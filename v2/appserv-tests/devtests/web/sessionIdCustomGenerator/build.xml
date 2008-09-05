@@ -79,7 +79,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.session-config.session-manager.manager-properties.session-id-generator-classname=test.MyUuidGenerator"/>
+                   value="${appserver.instance.name}.web-container.session-config.session-manager.manager-properties.session-id-generator-classname=test.MyUuidGenerator"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
@@ -101,7 +101,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.session-config.session-manager.manager-properties.session-id-generator-classname="/>
+                   value="${appserver.instance.name}.web-container.session-config.session-manager.manager-properties.session-id-generator-classname="/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
     </target>
