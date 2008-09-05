@@ -79,7 +79,7 @@
             getApplicationInfo(name="#{name}" appType="#{appType}" 
                 location=>$page{location} description=>$attribute{description} 
                 enabled=>$attribute{enabled} enabledString=>$attribute{enabledString}
-                availEnabled=>$attribute{availEnabled} libraries=>$page{libraries} objectType=>$page{objectType}
+                availEnabled=>$attribute{availEnabled} libraries=>$page{libraries} 
                 contextRoot=>$attribute{contextRoot} javaWebStart=>$attribute{javaWebStart}
                 threadPool=>$attribute{threadPool}
                 );
@@ -143,10 +143,6 @@
 
         <sun:property id="locationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.location}">
             <sun:staticText id="location" text="#{location}"/>
-        </sun:property> 
-
-        <sun:property id="objTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ObjectType}">
-            <sun:staticText id="objectType" text="#{objectType}"/>
         </sun:property> 
 
         <sun:property id="librariesProp"  rendered="#{hasLibraries}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}">
