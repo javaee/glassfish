@@ -99,6 +99,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             report.setActionExitCode(ExitCode.SUCCESS);
             return;
         }
+        TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
             System.out.println("[TN] node is instanceof  = " + tn1.getClass().getName());
@@ -109,12 +110,17 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                 if (tn1 instanceof MethodInvoker) {
                     System.out.println("[TN] Inside: node is instanceof  = " + tn1.getClass().getName());
                 }
+                map.put(tn1.getCompletePathName(), tn1.getValue());
                 System.out.println(tn1.getCompletePathName() + " = " + tn1.getValue());
-                //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getValue());
-                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(tn1.getCompletePathName() + " = " + tn1.getValue());
             }
         }
+        Iterator it = map.keySet().iterator();
+        Object obj;
+        while (it.hasNext()) {
+          obj = it.next();
+            ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+            part.setMessage(obj + " = " + map.get(obj));
+        }        
         report.setActionExitCode(ExitCode.SUCCESS);
     }
 }
