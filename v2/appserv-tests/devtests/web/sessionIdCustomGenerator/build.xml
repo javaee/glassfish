@@ -65,17 +65,12 @@
     </target>   
 
     <target name="copy-jar" depends="init-common">
-        <copy file="uuidGeneratorImpl.jar" todir="/tmp"
+        <copy file="uuidGeneratorImpl.jar" todir="${env.S1AS_HOME}/domains/domain1/lib"
               failonerror="true"/>
     </target>
 
     <target name="config" depends="init-common">
         <antcall target="copy-jar"/>
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="${appserver.instance.name}.java-config.classpath-prefix=/tmp/uuidGeneratorImpl.jar"/>
-        </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
@@ -86,18 +81,13 @@
 
     <target name="remove-jar" depends="init-common">
         <delete failonerror="true">
-            <fileset dir="${env.S1AS_HOME}/lib"
+            <fileset dir="${env.S1AS_HOME}/domains/domain1/lib"
                      includes="uuidGeneratorImpl.jar"/>
         </delete>
     </target>
 
     <target name="restore" depends="init-common">
         <antcall target="remove-jar"/>
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="${appserver.instance.name}.java-config.classpath-prefix="/>
-        </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
