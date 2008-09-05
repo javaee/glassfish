@@ -248,7 +248,7 @@
 </f:verbatim>
 <jmaki:widget name="jmaki.blockList" id="aqua" args="{filter: 'admin.blockList.RSSFilter', count:1}" service="/xhp?key=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
 <f:verbatim>
-<br clear="all"><a href="http://blogs.sun.com/theaquarium/" target="_blank">$resource{i18n.support.moreAquarium}</a>                                                            
+<br clear="all"><a href="$resource{i18n.support.aquariumLink}" target="_blank">$resource{i18n.support.moreAquarium}</a>                                                            
     </div>
     </div>
     </div>   
@@ -269,7 +269,7 @@
 </f:verbatim>
 <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" /> 
 <f:verbatim>
-    <br clear="all"><a href="http://developers.sun.com/events/" target="_blank">$resource{i18n.support.moreDevEvents}</a> 
+    <br clear="all"><a href="$resource{i18n.support.eventsLink}" target="_blank">$resource{i18n.support.moreDevEvents}</a> 
     </div>
     </div>
     </div>   
@@ -293,7 +293,7 @@
             </f:verbatim>
             <jmaki:widget name="jmaki.blockList" service="/xhp?key=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
             <f:verbatim>
-            <br clear="all"><a href="http://java.sun.com/developer/TechTips/" target="_blank">$resource{i18n.support.moreTechTips}</a>                                                            
+            <br clear="all"><a href="$resource{i18n.support.tipsLink}" target="_blank">$resource{i18n.support.moreTechTips}</a>                                                            
             </div>
         </div>
     </div>  
@@ -311,7 +311,7 @@
             </f:verbatim>
             <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
             <f:verbatim>
-    <br clear="all"><a href="http://java.sun.com/javaee" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a> 
+    <br clear="all"><a href="$resource{i18n.support.javaeeLink}" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a> 
         </div>
     </div>
 </div> 
@@ -336,7 +336,7 @@
             </f:verbatim>
             <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
             <f:verbatim>
-            <br clear="all"><a href="http://blogs.sun.com/SDNProgramNews/" target="_blank">$resource{i18n.support.sunDevNews}</a>                                                            
+            <br clear="all"><a href="$resource{i18n.support.devNewsLink}" target="_blank">$resource{i18n.support.sunDevNews}</a>                                                            
         </div>
     </div>
 </div>
@@ -375,7 +375,7 @@
 </f:verbatim>
 <jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
 <f:verbatim>
-<br clear="all"><a href="http://blogs.sun.com/GlassFishForBusiness/" target="_blank">$resource{i18n.support.moreBusiness}</a>
+<br clear="all"><a href="$resource{i18n.support.businessLink}" target="_blank">$resource{i18n.support.moreBusiness}</a>
 		</div>
             </div>   
 	</div> 
@@ -388,19 +388,19 @@
                 <div class="innerbox">
                     <font face=arial size=-1>
                     <img src="#{request.contextPath}/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
-                         <a href="http://www.sun.com/service/applicationserversubscriptions/" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
+                         <a href="$resource{i18n.support.appServerSubscriptionLink}" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
                     $resource{i18n.support.s1} 
                     <p><br>
-                    <a href="http://java.sun.com/javaee/support/training/" target="_blank">$resource{i18n.support.training}</a><br>
+                    <a href="$resource{i18n.support.trainingLink}" target="_blank">$resource{i18n.support.training}</a><br>
                     $resource{i18n.support.t1}
                     <p>
-                    <a href="http://java.sun.com/javaee/support/" target="_blank">$resource{i18n.support.devSupportService}</a><br>
+                    <a href="$resource{i18n.support.devSupportLink}" target="_blank">$resource{i18n.support.devSupportService}</a><br>
                     $resource{i18n.support.d1}
                     <p>
-                    <a href="http://forums.java.net/jive/forum.jspa?forumID=56&start=0" target="_blank">$resource{i18n.support.forum}</a><br>
+                    <a href="$resource{i18n.support.forumLink}" target="_blank">$resource{i18n.support.forum}</a><br>
                     $resource{i18n.support.forum1}
                     <p>
-                    <a href="https://glassfish.dev.java.net/issues/query.cgi" target="_blank">$resource{i18n.support.issueTracker}</a><br>
+                    <a href="$resource{i18n.support.issueLink}" target="_blank">$resource{i18n.support.issueTracker}</a><br>
                     $resource{i18n.support.issueTracker1}</font>
                 </div>
             </div>               
@@ -416,7 +416,7 @@
 </f:verbatim>
 <jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
 <f:verbatim>
-<br clear="all"><a href="http://blogs.sun.com/stories/" target="_blank">$resource{i18n.support.moreStories}</a>
+<br clear="all"><a href="$resource{i18n.support.storyLink}" target="_blank">$resource{i18n.support.moreStories}</a>
 		</div>
             </div>   
 	</div> 
@@ -448,7 +448,7 @@
 			</f:verbatim>
 <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
 			<f:verbatim>
-                        <br clear="all"><a href="http://blogs.sun.com/glassfishpodcast/" target="_blank">$resource{i18n.support.morePodCast}</a>
+                        <br clear="all"><a href="$resource{i18n.support.podcastLink}" target="_blank">$resource{i18n.support.morePodCast}</a>
                     </div>
                 </div>
                 
