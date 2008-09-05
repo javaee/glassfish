@@ -161,6 +161,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.EntityResolver;
 
@@ -256,6 +257,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     Events events;
+
+    @Inject
+    ClassLoaderHierarchy clh;
     
     @Inject
     GrizzlyService grizzlyService;
@@ -503,7 +507,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          */
 
         Config cfg = habitat.getComponent(Config.class);
-        serverConfigLookup = new ServerConfigLookup(cfg);
+        serverConfigLookup = new ServerConfigLookup(cfg, clh);
         configureDynamicReloadingSettings();
         LogService logService = cfg.getLogService();
         initLogLevel(logService);

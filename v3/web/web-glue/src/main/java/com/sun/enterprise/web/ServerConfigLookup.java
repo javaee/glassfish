@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.web;
 
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import java.util.List;
 import java.util.logging.Level;
@@ -77,11 +78,15 @@ public class ServerConfigLookup {
 
     private Config configBean;
 
+    private ClassLoaderHierarchy clh;
+
+
     /**
      * Constructor
      */
-    public ServerConfigLookup(Config configBean) {
+    public ServerConfigLookup(Config configBean, ClassLoaderHierarchy clh) {
         this.configBean = configBean;
+        this.clh = clh;
     }
 
     /**
@@ -428,5 +433,17 @@ public class ServerConfigLookup {
         }
 
         return Boolean.FALSE;
+    }
+
+
+    /**
+     * Loads the request class using the Common Classloader
+     *
+     * @param classNmae the name of the class to load
+     *
+     * @return the loaded class
+     */
+    Class loadClass(String className) throws Exception {
+        return clh.getCommonClassLoader().loadClass(className);
     }
 }

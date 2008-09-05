@@ -54,6 +54,7 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
             ServerConfigLookup serverConfigLookup) {
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
+
         String persistenceType = "memory";        
         String ctxPath = ctx.getPath();
         if(ctxPath != null && !ctxPath.equals("")) {    
@@ -81,7 +82,8 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
         if (sessionIdGeneratorClassname != null) {
             try {
                 UuidGenerator generator = (UuidGenerator)
-                    Class.forName(sessionIdGeneratorClassname).newInstance();
+                    serverConfigLookup.loadClass(
+                        sessionIdGeneratorClassname).newInstance();
                 mgr.setUuidGenerator(generator);
             } catch (Exception ex) {
                 _logger.log(Level.SEVERE,
