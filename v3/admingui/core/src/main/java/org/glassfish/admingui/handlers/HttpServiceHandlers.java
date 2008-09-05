@@ -701,7 +701,6 @@ public class HttpServiceHandlers {
      *      HTTP File Caching Config Page </p>
      *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
      *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "FileTransmission"       -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
@@ -717,7 +716,6 @@ public class HttpServiceHandlers {
         @HandlerInput(name="ConfigName", type=String.class, required=true)},        
     output={
         @HandlerOutput(name="Globally",  type=Boolean.class),
-        @HandlerOutput(name="FileTransmission",      type=Boolean.class),
         @HandlerOutput(name="Age",          type=String.class),
         @HandlerOutput(name="FileCount",    type=String.class),        			
         @HandlerOutput(name="HashSize",     type=String.class),
@@ -732,7 +730,6 @@ public class HttpServiceHandlers {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
 	HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
         String globally = hp.getGloballyEnabled();
-        String fileTransmission = hp.getFileTransmissionEnabled();
         String age = hp.getMaxAgeInSeconds();
         String fileCount = hp.getMaxFilesCount();
         String hashSize = hp.getHashInitSize();
@@ -747,7 +744,6 @@ public class HttpServiceHandlers {
             handlerCtx.setOutputValue("FileCaching", "OFF");
         }              
         handlerCtx.setOutputValue("Globally", globally);
-        handlerCtx.setOutputValue("FileTransmission", fileTransmission);
         handlerCtx.setOutputValue("Age", age);   
         handlerCtx.setOutputValue("FileCount", fileCount);    
         handlerCtx.setOutputValue("HashSize", hashSize);   
@@ -763,7 +759,6 @@ public class HttpServiceHandlers {
      *      HTTP File Caching Config Page </p>
      *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
     *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "FileTransmission"       -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
@@ -779,7 +774,6 @@ public class HttpServiceHandlers {
         @HandlerInput(name="ConfigName", type=String.class, required=true)},        
     output={
         @HandlerOutput(name="Globally",  type=Boolean.class),
-        @HandlerOutput(name="FileTransmission",      type=Boolean.class),
         @HandlerOutput(name="Age",          type=String.class),
         @HandlerOutput(name="FileCount",    type=String.class),        			
         @HandlerOutput(name="HashSize",     type=String.class),
@@ -795,18 +789,12 @@ public class HttpServiceHandlers {
         Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_FILE_CACHE_CONFIG, true);
         
         String globally = defaultMap.get(HTTPFileCacheConfigKeys.GLOBALLY_ENABLED_KEY);
-        String fileTransmission = defaultMap.get(HTTPFileCacheConfigKeys.FILE_TRANSMISSION_ENABLED_KEY);
         String fileCaching = defaultMap.get(HTTPFileCacheConfigKeys.FILE_CACHING_ENABLED_KEY);
         if(globally.equals("true")) {
             handlerCtx.setOutputValue("Globally", true);    
         } else {
             handlerCtx.setOutputValue("Globally", false);
         }   
-        if(fileTransmission.equals("true")) {
-            handlerCtx.setOutputValue("FileTransmission", true);    
-        } else {
-            handlerCtx.setOutputValue("FileTransmission", false);
-        }        
         if(fileCaching.equals("true")) {
             handlerCtx.setOutputValue("FileCaching", "ON");    
         } else {
@@ -827,7 +815,6 @@ public class HttpServiceHandlers {
      *      HTTP File Caching Config Page </p>
      *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
      *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "FileTransmission"       -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
@@ -842,7 +829,6 @@ public class HttpServiceHandlers {
    input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),        
         @HandlerInput(name="Globally",  type=String.class),
-        @HandlerInput(name="FileTransmission",      type=String.class),
         @HandlerInput(name="Age",          type=String.class),
         @HandlerInput(name="FileCount",    type=String.class),        			
         @HandlerInput(name="HashSize",     type=String.class),
@@ -858,7 +844,6 @@ public class HttpServiceHandlers {
         try{
             HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
             hp.setGloballyEnabled((String)handlerCtx.getInputValue("Globally"));
-            hp.setFileTransmissionEnabled((String)handlerCtx.getInputValue("FileTransmission"));
             hp.setMaxAgeInSeconds(((String)handlerCtx.getInputValue("Age")));
             hp.setMaxFilesCount(((String)handlerCtx.getInputValue("FileCount")));
             hp.setHashInitSize(((String)handlerCtx.getInputValue("HashSize")));
