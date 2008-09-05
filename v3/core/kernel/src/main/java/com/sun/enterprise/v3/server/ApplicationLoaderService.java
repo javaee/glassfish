@@ -340,6 +340,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                     logger,appInfo.getSource() , props, env);
                 super.unload(appInfo.getName(), depContext, dummy);
             }
+            stopContainer(logger, containerInfo);
         }
     }
 }
