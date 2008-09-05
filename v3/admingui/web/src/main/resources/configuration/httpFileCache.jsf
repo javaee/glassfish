@@ -42,7 +42,6 @@
         getRequestValue(key="configName" value=>$page{configName});
         getHttpFileCachingSettings(ConfigName="#{configName}", 
             Globally=>$attribute{globally}, 
-            FileTransmission=>$attribute{fileTransmission}, 
             Age=>$attribute{age}, 
             FileCount=>$attribute{fileCount},
             HashSize=>$attribute{hashSize}, 
@@ -72,7 +71,6 @@
                             getHttpFileCachingDefaultSettings(
                             ConfigName="#{configName}", 
                             Globally=>$attribute{globally}, 
-                            FileTransmission=>$attribute{fileTransmission}, 
                             Age=>$attribute{age}, 
                             FileCount=>$attribute{fileCount},
                             HashSize=>$attribute{hashSize}, 
@@ -94,7 +92,6 @@
                                 saveHttpFileCachingSettings(
                                     ConfigName="#{configName}",
                                     Globally="#{globally}", 
-                                    FileTransmission="#{fileTransmission}", 
                                     Age="#{age}", 
                                     FileCount="#{fileCount}",
                                     HashSize="#{hashSize}", 
@@ -144,11 +141,7 @@
                            <sun:property id="globallyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpFileCache.Globally}" helpText="$resource{i18n.httpFileCache.GloballyHelp}">                           
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{globally}" > 
                                </sun:checkbox>
-                            </sun:property>   
-                            <sun:property id="fileTransmissionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpFileCache.FileTransmission}" helpText="$resource{i18n.httpFileCache.FileTransmissionHelp}">                           
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{fileTransmission}" > 
-                               </sun:checkbox>
-                            </sun:property>          
+                            </sun:property>
                            <sun:property id="maxAgeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpFileCache.MaxAge}" helpText="$resource{i18n.httpFileCache.MaxAgeHelp}">
                                 <sun:textField id="MaxAge" styleClass="integer" columns="$int{10}" text="#{age}" />
                                 <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
