@@ -125,7 +125,7 @@ final class InstallerThread extends Thread {
 	}
 
 	// Not downloaded get it from IPS
-// FIXME: set state to DOWNLOADING: adapter.setStateMsg(AdapterState.DOWNLOADING);
+	adapter.setStateMsg(AdapterState.DOWNLOADING);
 // FIXME: Use proxy information for UC
 	Proxy proxy = Proxy.NO_PROXY;
 	if (proxyHost != null && !"".equals(proxyHost)) {
@@ -136,7 +136,7 @@ final class InstallerThread extends Thread {
 	// Download and install files from Update Center
 	try {
 	    Image img = new Image(ipsRoot);
-System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
+//System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
 	    /*
 	    img.refreshCatalogs();
 	    Catalog catalog = img.getCatalog();
@@ -152,15 +152,16 @@ System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
 	    
 	    String pkgs[] = { "glassfish-gui" };
 	    img.installPackages(pkgs);
-
 // FIXME: Verify that getWarFile() exists, it should by this point.
-// FIXME: set state to DOWNLOADED: adapter.setStateMsg(AdapterState.DOWNLOADED);
+	    adapter.setStateMsg(AdapterState.DOWNLOADED);
+
 	    // FIXME: Adjust this if needed.
 	    //img.setAuthority("glassfish.org",  "http://eflat.sfbay.sun.com:10000",  "glassfish.org");
-System.out.println("\nAfter installation ---------");
-	} catch(Exception ex) {
+//System.out.println("\nAfter installation ---------");
+	} catch (Exception ex) {
+// FIXME: Handle properly
 	    ex.printStackTrace();
-System.out.println("!!!!!!!  cannot create Image");
+//System.out.println("!!!!!!!  cannot create Image");
 	}
     }
 
@@ -168,23 +169,27 @@ System.out.println("!!!!!!!  cannot create Image");
      *
      */
     private void expand() throws Exception {
-// FIXME: adapter.setStateMsg(AdapterState.EXPANDING_WAR_FILE);  <-- add this
 	File warFile = getWarFile();
 	if (log.isLoggable(Level.FINE)) {
 	    log.log(Level.FINE, "Expanding the archive: "
 		    + warFile.getAbsolutePath());
 	}
         File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
-	if (expFolder.exists()) {
+	if (expFolder.exists() && new File(expFolder, "WEB-INF").exists()) {
 	    // Already completed
 	    return;
 	}
+
+	// Set the adapter state
+	adapter.setStateMsg(AdapterState.EXPANDING);
 
 	// Not yet expanded, expand it...
         expFolder.mkdirs();
         ZipFile zip = new ZipFile(warFile, expFolder);
         List list = zip.explode(); //pre Java 5 code
-// FIXME: adapter.setStateMsg(AdapterState.WAR_FILE_EXANDED);  <-- add WAR_FILE_EXPLODED
+
+	// Set the adapter state
+	adapter.setStateMsg(AdapterState.EXPANDED);
 	if (log.isLoggable(Level.FINE)) {
 	    log.log(Level.FINE, "Expanded the archive with :"
 		    + list.size()
@@ -210,11 +215,12 @@ System.out.println("!!!!!!!  cannot create Image");
 	    return;
 	}
 
-// FIXME: Set state msg
-	//adapter.setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
+	// Set the adapter state
+	adapter.setStateMsg(AdapterState.INSTALLING);
 	if (log.isLoggable(Level.FINE)) {
 	    log.log(Level.FINE, "Installing the Admin Console Application...");
 	}
+
         //create the application entry in domain.xml
         ConfigCode code = new ConfigCode() {
             public Object run(ConfigBeanProxy ... proxies) throws PropertyVetoException, TransactionFailure {
@@ -230,7 +236,7 @@ System.out.println("!!!!!!!  cannot create Image");
                 File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
                 try {
                     app.setLocation(expFolder.toURI().toString());
-                } catch(Exception me) {
+                } catch (Exception me) {
 		    // can't do anything
 		    throw new RuntimeException(me);
 		}
@@ -253,9 +259,8 @@ System.out.println("!!!!!!!  cannot create Image");
         Server server = domain.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
 
-	// Set the state msg to APPLICATION_INSTALLED_BUT_NOT_LOADED
+	// Set the adapter state
 	adapter.setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
-
 	if (log.isLoggable(Level.FINE)) {
 	    log.log(Level.FINE, "Admin Console Application Installed.");
 	}
@@ -279,11 +284,17 @@ System.out.println("!!!!!!!  cannot create Image");
 	// hook for Jerome
 	Application config = adapter.getConfig();
 	if (config == null) {
-	    throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
+	    throw new IllegalStateException("Admin Console application has no system app entry!");
 	}
+	// Set adapter state
+	adapter.setStateMsg(AdapterState.APPLICATION_LOADING);
+
+	// Load the Admin Console Application
 	String sn = env.getInstanceName();
 	ApplicationRef ref = domain.getApplicationRefInServer(sn, AdminConsoleAdapter.ADMIN_APP_NAME);
 	habitat.getComponent(ApplicationLoaderService.class).processApplication(config, ref, log);
+
+	// Set adapter state
 	adapter.setStateMsg(AdapterState.APPLICATION_LOADED);
     }
 }

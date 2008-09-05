@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>GlassFish Administration Console - Install</title>
+<title>%%%install.pageTitle%%%</title>
 
 <style type="text/css">
 a:link {color:#003399;text-decoration:none;font-weight:bold;}
@@ -40,38 +40,37 @@ function checkHiddenElements(directvalue) {
     <div class="container">
 	<div id="center" class="column">
 	<!-- <div id="page_content"> -->
-	    <h1>GlassFish Administration Console</h1>
-	    <p> <span class="subtitle">GlassFish Administration Console - Installation</span><br />
-		The GlassFish Administration Console is not installed. To install the console, specify an Internet connection and click OK.
-		<a href="https://glassfish.dev.java.net/" target="_blank">>>More about the console</a></p>
+	    <h1>%%%product.title%%%</h1>
+	    <p> <span class="subtitle">%%%install.pageTitle%%%</span><br />
+		%%%install.text%%%
+		<a href="%%%console.moreInfo.url%%%" target="_blank">>>%%%console.moreInfo.linkText%%%</a></p>
 
 	    <!-- don't change the names -->
 	    <form id="form1" name="form1" method="post" action="%%%MYURL%%%">
-		<p> <h2>Internet Connection</h2></p>
-		<p> <input name="direct" type="radio" id="direct" tabindex="1"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" checked /><strong >Direct</strong><br>&nbsp;<br>
-		    <input name="direct" type="radio" id="useproxy" tabindex="2"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" /><strong >Through a Proxy</strong>
+		<p> <h2>%%%connection.title%%%</h2></p>
+		<p> <input name="direct" type="radio" id="direct" tabindex="1"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" checked /><strong >%%%connection.direct%%%</strong><br>&nbsp;<br>
+		    <input name="direct" type="radio" id="useproxy" tabindex="2"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" /><strong >%%%connection.proxy%%%</strong>
 		</p>
 		<div id="proxy" style="display:none;">
 		<div id="fields">
-		    <span class="sm"><strong>Proxy Host:</strong></span>
+		    <span class="sm"><strong>%%%connection.proxy.host%%%</strong></span>
 		    <input name="proxyHost" type="text" class="textInput" id="text" tabindex="3" />
-		    <span class="sm"><strong >Port:</strong></span>
+		    <span class="sm"><strong >%%%connection.proxy.port%%%</strong></span>
 		    <input name="pxoryPort" size="10" type="text" class="textInput" id="text2" tabindex="4" />
 		</div>
 		<div id="helptext">
-		    <h4>If your GlassFish Application Server requires a proxy to reach the Internet,
-			you will need to supply your proxy host and port information.</h4>
+		    <h4>%%%connection.helpText%%%</h4>
 		</div>
 		</div>
 		<div id="buttons">
-		    <label><input type="submit" name="ok" id="ok" value="OK" tabindex="5" /></label>
-		    <input type="submit" name="cancel" id="Cancel" value="Cancel" tabindex="6" />
+		    <label><input type="submit" name="ok" id="ok" value="%%%button.ok%%%" tabindex="5" /></label>
+		    <input type="submit" name="cancel" id="Cancel" value="%%%button.cancel%%%" tabindex="6" />
 		</div>
 	    </form>
 	</div>
     </div>
     <div id="footer-wrapper">
-	<div id="footer">Thank you for using GlassFish!</div>
+	<div id="footer">%%%thankYou%%%</div>
     </div>
 </body>
 </html>

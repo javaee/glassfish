@@ -18,9 +18,8 @@
  * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
@@ -30,33 +29,38 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.api.event.EventTypes;
 import org.glassfish.internal.api.AdminAuthenticator;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -100,7 +104,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private File ipsRoot;	// GF IPS Root
     private File warFile;	// GF Admin Console War File Location
     private String proxyHost;
-    private int proxyPort;
+    private int proxyPort = 8080;
     private AdapterState stateMsg   = AdapterState.UNINITIAZED;
     private boolean installing	    = false;
     private boolean isOK	    = false;  // FIXME: initialize this with previous user choice
@@ -141,7 +145,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String CANCEL_PARAM     = "cancel";
     private static final String VISITOR_PARAM    = "visitor";
 
-    private static final String VISITOR_TOKEN    = "%%%VISITOR%%%";
     private static final String MYURL_TOKEN      = "%%%MYURL%%%";
     private static final String STATUS_TOKEN     = "%%%STATUS%%%";
 
@@ -202,7 +205,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    // See what type of request this is...
 	    InteractionResult ir = getUserInteractionResult(req);
 	    if (ir == InteractionResult.CANCEL) {
-    // FIXME: What if they clicked Cancel?
+// FIXME: What if they clicked Cancel?
 	    }
 	    synchronized(this) {
 		if (isInstalling()) {
@@ -220,7 +223,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 			    // We have permission and now we should install
 			    // (or load) the application.
 			    setInstalling(true);
-			    setStateMsg(AdapterState.INSTALLING);
 			    startThread();  // Thread must set installing false
 			} catch (Exception ex) {
 			    // Ensure we haven't crashed with the installing
@@ -266,13 +268,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     /**
      *	<p> This method returns the current state, which will be one of the
-     *	    following values:</p>
-     *
-     *	<ul><li>AdapterSate.UNINITIAZED</li>
-     *	    <li>AdapterSate.INSTALLING</li>
-     *	    <li>AdapterSate.APPLICATION_NOT_INSTALLED</li>
-     *	    <li>AdapterSate.APPLICATION_INSTALLED_BUT_NOT_LOADED</li>
-     *	    <li>AdapterSate.APPLICATION_LOADED</li></ul>
+     *	    valid values defined by {@link AdapterState}.</p>
      */
     AdapterState getStateMsg() {
 	return stateMsg;
@@ -307,6 +303,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
 	    if (authenticator!=null && realmFile.exists()) {
 		if (!authenticator.authenticate(greq.getRequest(), realmFile)) {
+		    setStateMsg(AdapterState.AUTHENTICATING);
 		    gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
 		    gres.addHeader("WWW-Authenticate", "BASIC");
 		    gres.finishResponse();
@@ -321,11 +318,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void init() {
-        setIPSRoot(as.getProperty(ServerTags.IPS_ROOT).getValue());
-        setWarFileLocation(as.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
+	setIPSRoot(as.getProperty(ServerTags.IPS_ROOT).getValue());
+	setWarFileLocation(as.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
 	initState();
-        epd = new AdminEndpointDecider(serverConfig, log);
-        contextRoot = epd.getGuiContextRoot();
+	epd = new AdminEndpointDecider(serverConfig, log);
+	contextRoot = epd.getGuiContextRoot();
     }
 
     /**
@@ -337,7 +334,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	    isOK = true; // FIXME: I don't think this is good enough
 	    setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
 	} else if (warFile.exists()) {
-// FIXME: set state to DOWNLOADED: adapter.setStateMsg(AdapterState.DOWNLOADED);
+	    setStateMsg(AdapterState.DOWNLOADED);
 	    isOK = true;
 	} else {
 	    setStateMsg(AdapterState.APPLICATION_NOT_INSTALLED);
@@ -382,36 +379,35 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void setWarFileLocation(String value) {
-	    if ((value != null) && !("".equals(value))) {
-		warFile = new File(ipsRoot, value);
+	if ((value != null) && !("".equals(value))) {
+	    warFile = new File(ipsRoot, value);
 //System.out.println("Admin Console will be downloaded to: " + warFile);
-		if (log.isLoggable(Level.FINE)) {
-		    log.fine("Admin Console will be downloaded to: "
-			    + warFile.getAbsolutePath());
-		}
-	    } else {
-		if (log.isLoggable(Level.INFO)) {
-		    log.info("The value (" + value + ") for: "
-			    + ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION + " is invalid");
-		}
+	    if (log.isLoggable(Level.FINE)) {
+		log.fine("Admin Console will be downloaded to: "
+			+ warFile.getAbsolutePath());
 	    }
+	} else {
+	    if (log.isLoggable(Level.INFO)) {
+		log.info("The value (" + value + ") for: "
+			+ ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION
+			+ " is invalid");
+	    }
+	}
     }
 
     /**
      *
      */
     private void setIPSRoot(String value) {
-        ipsRoot  = new File(value);
-        if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "GlassFish IPS Root: "
-                    + ipsRoot.getAbsolutePath());
-        }
-        if (!ipsRoot.canWrite()) {
-            log.warning(ipsRoot.getAbsolutePath() + " can't be written to, download will fail");
-        }
+	ipsRoot  = new File(value);
+	if (log.isLoggable(Level.FINE)) {
+	    log.log(Level.FINE, "GlassFish IPS Root: "
+		    + ipsRoot.getAbsolutePath());
+	}
+	if (!ipsRoot.canWrite()) {
+	    log.warning(ipsRoot.getAbsolutePath() + " can't be written to, download will fail");
+	}
     }
-    
-    
 
 
     /**
@@ -449,20 +445,24 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
 	if (req.getParameter(OK_PARAM) != null) {
 	    proxyHost = req.getParameter(PROXY_HOST_PARAM);
-	    if (proxyHost != null) {
+	    if ((proxyHost != null) && !proxyHost.equals("")) {
 		String ps = req.getParameter(PROXY_PORT_PARAM);
 		try {
 		    proxyPort = Integer.parseInt(ps);
 		} catch (NumberFormatException nfe) {
-		    //ignore
+		    throw new IllegalArgumentException(
+			"The specified proxy port (" + ps
+			+ ") must be a valid port integer!", nfe);
 		}
 	    }
 // FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
+	    setStateMsg(AdapterState.PERMISSION_GRANTED);
 	    isOK = true;
 	    return InteractionResult.OK;
 	} else if (req.getParameter(CANCEL_PARAM) != null) {
 	    // Canceled
 // FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
+	    setStateMsg(AdapterState.CANCELED);
 	    isOK = false;
 	    return InteractionResult.CANCEL;
 	}
@@ -475,18 +475,20 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
+	setStateMsg(AdapterState.PERMISSION_NEEDED);
 	GrizzlyOutputBuffer ob = res.getOutputBuffer();
 	res.setStatus(200);
 	res.setContentType("text/html");
 	byte[] bytes;
 	try {
 	    try {
+		// Replace locale specific Strings
+		ResourceBundle bundle = getResourceBundle(res.getLocale());
+		String localHtml = replaceTokens(initHtml, bundle);
+
+		// Replace path token
 		String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
-		/*
-		String hp = (contextRoot.startsWith("/")) ? "" : "/";
-		hp += contextRoot + "/";
-		*/
-		bytes = initHtml.replace(MYURL_TOKEN, hp).getBytes();
+		bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes();
 	    } catch (Exception ex) {
 		bytes = ("Catastrophe:" + ex.getMessage()).getBytes();
 	    }
@@ -507,14 +509,98 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	res.setContentType("text/html");
 	byte[] bytes;
 	try {
-	    String status = "" + getStateMsg();
-	    bytes = statusHtml.replace(STATUS_TOKEN, status).getBytes();
+	    // Replace locale specific Strings
+	    ResourceBundle bundle = getResourceBundle(res.getLocale());
+	    String localHtml = replaceTokens(statusHtml, bundle);
+
+	    // Replace state token
+	    String status = getStateMsg().getI18NKey();
+	    try {
+		// Try to get a localized version of this key
+		status = bundle.getString(status);
+	    } catch (MissingResourceException ex) {
+		// Use the non-localized String version of the status
+		status = getStateMsg().toString();
+	    }
+	    bytes = localHtml.replace(STATUS_TOKEN, status).getBytes();
 	    res.setContentLength(bytes.length);
 	    ob.write(bytes, 0, bytes.length);
 	    ob.flush();
 	} catch (IOException ex) {
 	    throw new RuntimeException(ex);
 	}
+    }
+
+    /**
+     *	<p> This method returns the resource bundle for localized Strings used
+     *	    by the AdminConsoleAdapter.</p>
+     *
+     *	@param	locale	The Locale to be used.
+     */
+    private ResourceBundle getResourceBundle(Locale locale) {
+	return ResourceBundle.getBundle(
+	    "com.sun.enterprise.v3.admin.adapter.LocalStrings", locale);
+    }
+
+    /**
+     *	<p> This method replaces all tokens in text with values from the given
+     *	    <code>ResourceBundle</code>.  A token starts and ends with 3
+     *	    percent (%) characters.  The value between the percent characters
+     *	    will be used as the key to the given <code>ResourceBundle</code>.
+     *	    If a key does not exist in the bundle, no substitution will take
+     *	    place for that token.</p>
+     *
+     *	@param	text	The text containing tokens to be replaced.
+     *	@param	bundle	The <code>ResourceBundle</code> with keys for the value
+     *
+     *	@return The same text except with substituted tokens when available.
+     */
+    private String replaceTokens(String text, ResourceBundle bundle) {
+	int start=0, end = 0;
+	String key = null;
+	String newString = null;
+	StringBuffer buf = new StringBuffer("");
+	Enumeration<String> keys = bundle.getKeys();
+
+	while (start != -1) {
+	    // Find start of token
+	    start = text.indexOf("%%%", end);
+	    if (start != -1) {
+		// First copy the stuff before the start
+		buf.append(text.substring(end, start));
+
+		// Move past the %%%
+		start += 3;
+
+		// Find end of token
+		end = text.indexOf("%%%", start);
+		if (end != -1) {
+		    try {
+			// Copy the token value to the buffer
+			buf.append(
+				bundle.getString(text.substring(start, end)));
+		    } catch (java.util.MissingResourceException ex) {
+			// Unable to find the resource, so we don't do anything
+			buf.append("%%%" + text.substring(start, end) + "%%%");
+		    }
+
+		    // Move past the %%%
+		    end +=3;
+		} else {
+		    // Add back the %%% because we didn't find a matching end
+		    buf.append("%%%");
+
+		    // Reset end so we can copy the remainder of the text
+		    end = start;
+		}
+	    }
+	}
+
+	// Copy the remainder of the text
+	buf.append(text.substring(end));
+
+	// Return the new String
+	return buf.toString();
     }
 
     /**
@@ -528,10 +614,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
     
     public int getListenPort() {
-        return epd.getListenPort();
+	return epd.getListenPort();
     }
     
     public List<String> getVirtualServers() {
-        return epd.getGuiHosts();
+	return epd.getGuiHosts();
     }
 }

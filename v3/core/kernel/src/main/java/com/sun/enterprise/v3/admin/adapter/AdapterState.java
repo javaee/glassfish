@@ -31,16 +31,34 @@ package com.sun.enterprise.v3.admin.adapter;
  */
 enum AdapterState {
     
-    UNINITIAZED("State is uninitialized ..."),
-    INSTALLING("Installing the application in this server ..."),
-    APPLICATION_NOT_INSTALLED("Application is not yet installed ..."),
-    APPLICATION_INSTALLED_BUT_NOT_LOADED("Application is already installed, but not yet loaded. ..."),
-    APPLICATION_LOADED("Application is already loaded ...");
+    UNINITIAZED("state.uninitialized", "The Admin Console Adapter is not yet initialized."),
+    AUTHENTICATING("state.authenticating", "Authentication required before the Admin Console can be installed."),
+    PERMISSION_NEEDED("state.permissionNeeded", "The Admin Console requires your permission before it can be downloaded or installed."),
+    PERMISSION_GRANTED("state.permissionGranted", "The Admin Console has your permission to downloaded and install."),
+    CANCELED("state.canceled", "The Admin Console installation has been canceled."),
+    DOWNLOADING("state.downloading", "The Admin Console Web Application is downloading..."),
+    DOWNLOADED("state.downloaded", "The Admin Console Web Application has been downloaded."),
+    EXPANDING("state.expanding", "The Admin Console war file is expanding..."),
+    EXPANDED("state.expanded", "The Admin Console war file has been expanded."),
+    INSTALLING("state.installing", "The Admin Console is installing..."),
+    APPLICATION_INSTALLED_BUT_NOT_LOADED("state.installedNotLoaded", "The Admin Console is already installed, but not yet loaded."),
+    APPLICATION_LOADING("state.loading", "The Admin Console is loading..."),
+    APPLICATION_LOADED("state.loaded", "The Admin Console application is loaded."),
+    APPLICATION_NOT_INSTALLED("state.notInstalled", "The Admin Console Application is not yet installed.");
     
     private final String desc;
+    private final String i18nKey;
     
-    private AdapterState(String desc) {
+    private AdapterState(String i18nKey, String desc) {
+	this.i18nKey = i18nKey;
         this.desc = desc;
+    }
+
+    /**
+     *	This is the key that should be used to retrieve the localized message from a properties file.
+     */
+    public String getI18NKey() {
+	return i18nKey;
     }
     
     @Override
