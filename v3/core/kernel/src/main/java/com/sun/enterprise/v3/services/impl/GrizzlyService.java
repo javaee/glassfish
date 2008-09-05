@@ -203,7 +203,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
                 futures.add(createNetworkProxy(listener, httpService));
             }
-            registerNetworkProxy(); 
+            registerNetworkProxy(true); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
             for(NetworkProxy proxy : proxies) {
@@ -286,17 +286,25 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /*
      * Registers all proxies
      */
-    public void registerNetworkProxy(){
+    public void registerNetworkProxy(boolean start){
         // todo : this neeed some rework...
         // now register all proxies you can find out there !
         // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
+        // JFA -> JD: Yes, this cause issue: 5892 ;-)
         for (org.glassfish.api.container.Adapter subAdapter : 
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
+                
+            if (!start &&  
+                 (subAdapter instanceof AdminAdapter 
+                  ||  subAdapter instanceof AdminConsoleAdapter)) {
+                  continue;
+            }
+               
             try {
                 if (subAdapter instanceof AdminAdapter) {
                     registerAdminAdapter((AdminAdapter)subAdapter);
-                } else if (subAdapter instanceof AdminConsoleAdapter) {
+                } else if ( subAdapter instanceof AdminConsoleAdapter) {
                     registerAdminConsoleAdapter((AdminConsoleAdapter)subAdapter);
                 } else {
                     registerEndpoint(subAdapter.getContextRoot(), hosts, 

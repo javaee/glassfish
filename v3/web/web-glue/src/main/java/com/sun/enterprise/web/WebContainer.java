@@ -3765,7 +3765,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 throws LifecycleException {
 
         grizzlyService.createNetworkProxy(httpListener, httpService);
-        grizzlyService.registerNetworkProxy();
+        grizzlyService.registerNetworkProxy(start);
 
         int port = Integer.parseInt(httpListener.getPort());
 
