@@ -437,9 +437,9 @@ public class ServerConfigLookup {
 
 
     /**
-     * Loads the request class using the Common Classloader
+     * Loads the requested class using the Common Classloader
      *
-     * @param classNmae the name of the class to load
+     * @param className the name of the class to load
      *
      * @return the loaded class
      */
