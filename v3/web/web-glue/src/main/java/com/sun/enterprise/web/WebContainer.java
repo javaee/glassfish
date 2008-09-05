@@ -158,6 +158,9 @@ import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
 import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.EntityResolver;
 
@@ -170,7 +173,7 @@ import com.sun.enterprise.security.integration.RealmInitializer;
  * @author amyroh
  */
 @Service(name="com.sun.enterprise.web.WebContainer")
-public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
+public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy, EventListener {
         //MonitoringLevelListener {
 
     // -------------------------------------------------- Constants & Statics
@@ -250,6 +253,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject(optional=true)
     DasConfig dasConfig;
+
+    @Inject
+    Events events;
     
     @Inject
     GrizzlyService grizzlyService;
@@ -424,6 +430,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected WebModuleProbeProvider webModuleProbeProvider = null;
 
     protected Habitat habitat;
+
+
+    // Indicates whether we are being shut down
+    private boolean isShutdown = false;
 
 
     /**
@@ -658,9 +668,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         configListener.setContainer(this);
         configListener.setLogger(_logger);
+
+        events.register(this);
     }
 
 
+    public void event(Event event) {
+        if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
+            isShutdown = true;
+        }
+    }
+
+    
     public void preDestroy() {
         try {
             _embedded.stop();
@@ -2385,7 +2404,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     if (context != null) {
                         host.removeChild(context);
                         try {
-                            context.destroy();
+                            /*
+                             * If the webapp is being undeployed as part of a
+                             * domain shutdown, we don't want to destroy it,
+                             * as that would remove any sessions persisted to
+                             * file. Any active sessions need to survive the
+                             * domain shutdown, so that they may be resumed
+                             * after the domain has been restarted.
+                             */
+                            if (!isShutdown) {
+                                context.destroy();
+                            }
                         } catch (Exception ex) {
                             _logger.log(Level.WARNING,
                                     "[WebContainer] Context " + contextRoot
