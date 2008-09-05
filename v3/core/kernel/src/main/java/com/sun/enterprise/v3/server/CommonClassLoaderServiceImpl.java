@@ -93,12 +93,23 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
         File domainDir = env.getDomainRoot();
         // I am forced to use System.getProperty, as there is no API that makes
         // the installRoot available. Sad, but true. Check dev forum on this.
-        File installDir = new File(System.getProperty(
-                SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
-        File installLibPath = new File(installDir, "lib");
-        if (installLibPath.isDirectory()) {
-            Collections.addAll(cpElements,
-                    installLibPath.listFiles(new JarFileFilter()));
+        final String installRoot = System.getProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=5872
+        // In case of embedded GF, we may not have an installRoot.
+        if (installRoot!=null) {
+            File installDir = new File(installRoot);
+            File installLibPath = new File(installDir, "lib");
+            if (installLibPath.isDirectory()) {
+                Collections.addAll(cpElements,
+                        installLibPath.listFiles(new JarFileFilter()));
+            }
+        } else {
+            logger.logp(Level.WARNING, "CommonClassLoaderServiceImpl",
+                    "createCommonClassLoader",
+                    "System property called {0} is null, is this intended?",
+                    new Object[]{SystemPropertyConstants.INSTALL_ROOT_PROPERTY});
         }
         File domainClassesDir = new File(domainDir, "classes/"); // NOI18N
         if (domainClassesDir.exists()) {
