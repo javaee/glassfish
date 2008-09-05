@@ -122,7 +122,6 @@ public class ApplicationHandlers {
         output={
             @HandlerOutput(name="location", type=String.class),
             @HandlerOutput(name="libraries", type=String.class),
-            @HandlerOutput(name="objectType", type=String.class),
             @HandlerOutput(name="contextRoot", type=String.class),
             @HandlerOutput(name="vs", type=String.class),
             @HandlerOutput(name="description", type=String.class),
@@ -199,7 +198,6 @@ public class ApplicationHandlers {
         //TODo-V3 revisit.  was using module instead of appConfig in v2
 	handlerCtx.setOutputValue("location", appConfig.getLocation());
 	handlerCtx.setOutputValue("description", appConfig.getDescription());
-	handlerCtx.setOutputValue("objectType", appConfig.getObjectType());
 	
         if(amxRoot.isEE())
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(appConfig, true));
