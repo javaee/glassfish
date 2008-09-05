@@ -1184,6 +1184,7 @@ public abstract class BaseContainer
                 publishedGlobalJndiNames.add(qJavaGlobalName);
 
                 System.out.println("Java:Global name [no interface view] : " + javaGlobalName);
+                System.out.println("Java:Global name [no interface view] : " + qJavaGlobalName);
 
             }
             
@@ -1220,7 +1221,7 @@ public abstract class BaseContainer
         String actualMappedName = null;
 
         if (specifiedMappedName == null || specifiedMappedName.length() == 0) {
-            actualMappedName = "java:global/env/";
+            actualMappedName = "java:global/";
 
             if (appName != null) {
                 actualMappedName += appName + "/";
