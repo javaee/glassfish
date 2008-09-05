@@ -1,6 +1,8 @@
 -exportcontents: \
                         com.sun.enterprise.deployment, \
                         com.sun.enterprise.deployment.annotation.handlers, \
+                        com.sun.enterprise.deployment.types, \
+                        com.sun.enterprise.deployment.annotation.context, \
                         com.sun.enterprise.deployment.annotation.introspection, \
                         com.sun.enterprise.deployment.archivist, \
                         com.sun.enterprise.deployment.interfaces, \
