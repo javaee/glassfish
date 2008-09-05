@@ -54,7 +54,7 @@
      <request-processing header-buffer-length-in-bytes="8192" initial-thread-count="2" request-timeout-in-seconds="30" thread-count="20" thread-increment="1"/>
      <keep-alive max-connections="250" thread-count="1" timeout-in-seconds="30"/>
      <connection-pool max-pending-count="4096" queue-size-in-bytes="4096" receive-buffer-size-in-bytes="4096" send-buffer-size-in-bytes="8192"/>
-     <http-protocol default-response-type="text/plain; charset=iso-8859-1" dns-lookup-enabled="false" forced-response-type="text/plain; charset=iso-8859-1" ssl-enabled="true" version="HTTP/1.1"/>
+     <http-protocol default-response-type="AttributeDeprecated" default-type="text/html; charset=iso-8859-1" dns-lookup-enabled="false" forced-response-type="AttributeDeprecated" forced-type="text/html; charset=iso-8859-1" ssl-enabled="true" version="HTTP/1.1"/>
      <http-file-cache globally-enabled="false" file-caching-enabled="false" max-age-in-seconds="30" medium-file-size-limit-in-bytes="537600" medium-file-space-in-bytes="10485760" small-file-size-limit-in-bytes="2048" small-file-space-in-bytes="1048576" max-files-count="1024" file-transmission-enabled="false" hash-init-size="0"/>
    <property name="accessLoggingEnabled" value="false"/>
 </http-service>
