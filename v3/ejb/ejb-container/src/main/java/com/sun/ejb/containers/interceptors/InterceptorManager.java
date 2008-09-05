@@ -235,7 +235,6 @@ public class InterceptorManager {
             serializableInterceptorClasses[index] = interClass;
             instanceIndexMap.put(className, index);
             if (!Serializable.class.isAssignableFrom(interClass)) {
-                throw new UnsupportedOperationException("Interceptor class not serializable");
                 /*TODO
                 serializableInterceptorClasses[index] = 
                     EJBUtils.loadGeneratedSerializableClass(loader, className);
