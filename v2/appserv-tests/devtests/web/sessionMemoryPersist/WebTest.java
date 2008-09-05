@@ -67,7 +67,7 @@ public class WebTest {
         String get = "GET " + contextRoot + "/CreateSession" + " HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
-        os.write("\n".getBytes());
+        os.write("\r\n".getBytes());
         
         InputStream is = sock.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -111,7 +111,7 @@ public class WebTest {
         os.write(get.getBytes());
         String cookie = "Cookie: " + jsessionId + "\n";
         os.write(cookie.getBytes());
-        os.write("\n".getBytes());
+        os.write("\r\n".getBytes());
         
         InputStream is = sock.getInputStream();
         br = new BufferedReader(new InputStreamReader(is));
