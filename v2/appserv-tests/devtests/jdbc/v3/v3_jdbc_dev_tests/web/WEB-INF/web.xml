@@ -4,9 +4,17 @@
         <servlet-name>TestResultServlet</servlet-name>
         <servlet-class>org.glassfish.jdbc.devtests.v3.TestResultServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReconfigTestServlet</servlet-name>
+        <servlet-class>org.glassfish.jdbc.devtests.v3.test.reconfig.ReconfigTestServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>TestResultServlet</servlet-name>
         <url-pattern>/TestResultServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReconfigTestServlet</servlet-name>
+        <url-pattern>/ReconfigTestServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
