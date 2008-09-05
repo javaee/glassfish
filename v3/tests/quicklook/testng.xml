@@ -55,6 +55,11 @@
 	</classes>
   </test>
   -->
+  <test name="classloader_jsf">
+        <classes>
+                <class name="test.classloader.hellojsf.helloJSFTestNG"/>
+        </classes>
+  </test>
   <test name="web_jspservlet_war">
   <!--<groups>
       <run>

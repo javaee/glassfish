@@ -95,6 +95,7 @@
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="admin" target="build"/>
         <ant dir="adminconsole" target="build"/>
+        <ant dir="classloader/hellojsf" target="build"/>
         <ant dir="web/helloworld" target="build"/>
         <ant dir="web/jsfastrologer" target="build"/>
         <ant dir="web/jsfinjection" target="build"/>
@@ -111,6 +112,7 @@
     
     <target name="compile-tests">            
         <record name="compiletests.output" action="start"/>
+        <ant dir="classloader/hellojsf" target="compile-tests"/>
         <ant dir="web/helloworld" target="compile-tests"/>
         <ant dir="web/jsfastrologer" target="compile-tests"/>
         <ant dir="web/jsfinjection" target="compile-tests"/>
@@ -124,6 +126,7 @@
     
     <target name="deploy">
         <record name="deploy.output" action="start"/>
+        <ant dir="classloader/hellojsf" target="deploy"/>
         <ant dir="web/helloworld" target="deploy"/>
         <ant dir="web/jsfastrologer" target="deploy"/>
         <ant dir="web/jsfinjection" target="deploy"/>
