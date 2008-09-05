@@ -138,6 +138,14 @@ public class JspStatsTelemetry{
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+    
+    public String getVSName() {
+        return vsName;
+    }
     
     private boolean isValidEvent(String mName, String hostName) {
         //Temp fix, get the appname from the context root

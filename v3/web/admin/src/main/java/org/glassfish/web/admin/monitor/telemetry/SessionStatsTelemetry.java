@@ -278,6 +278,14 @@ public class SessionStatsTelemetry{
         return isEnabled;
     }
     
+    public String getModuleName() {
+        return moduleName;
+    }
+    
+    public String getVSName() {
+        return vsName;
+    }
+    
     private void incrementActiveSessionsCurrent() {
         activeSessionsCurrent.increment();
         if (activeSessionsCurrent.getCount() > activeSessionsHigh.getCount()){

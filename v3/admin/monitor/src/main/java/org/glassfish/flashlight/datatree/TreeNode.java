@@ -45,7 +45,7 @@ public interface TreeNode {
     
     // Children utility methods
     public TreeNode addChild (TreeNode newChild);
-    
+    public void removeChild(TreeNode oldChild);
     public void setParent (TreeNode parent);
     public TreeNode getParent ();
     

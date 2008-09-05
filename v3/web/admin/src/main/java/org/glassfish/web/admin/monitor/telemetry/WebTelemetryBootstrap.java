@@ -5,6 +5,7 @@
 
 package org.glassfish.web.admin.monitor.telemetry;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -24,14 +25,17 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.provider.ProbeProviderEventManager;
 import org.jvnet.hk2.component.PostConstruct;
-
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
 /**
  *
  * @author PRASHANTH ABBAGANI
  */
 @Service(name="web-container")
 @Scoped(Singleton.class)
-public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryProvider, PostConstruct {
+public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryProvider, 
+                                                PostConstruct, ConfigListener {
 
     @Inject
     Logger logger;
@@ -43,7 +47,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private ProbeProviderEventManager ppem;
     @Inject
     private ProbeClientMediator pcm;
-
+            
     private boolean requestProviderRegistered = false;
     private boolean servletProviderRegistered = false;
     private boolean jspProviderRegistered = false;
@@ -127,10 +131,10 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             if (providerName.equals("session")){
                 logger.finest("[Monitor]and it is Web session");
                 buildWebMonitoringTree();
+                sessionProviderRegistered = true;
                 if (!isWebTreeBuilt){
                     //The reason being either the tree already exists or the 
                     // monitoring is 'OFF'
-                    sessionProviderRegistered = true;
                     return;
                 }
                 buildSessionTelemetry();
@@ -138,10 +142,10 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             if (providerName.equals("servlet")){
                 logger.finest("[Monitor]and it is Web servlet");
                 buildWebMonitoringTree();
+                servletProviderRegistered = true;
                 if (!isWebTreeBuilt){
                     //The reason being either the tree already exists or the 
                     // monitoring is 'OFF'
-                    servletProviderRegistered = true;
                     return;
                 }
                 buildServletTelemetry();
@@ -150,10 +154,10 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             if (providerName.equals("jsp")){
                 logger.finest("[Monitor]and it is Web jsp");
                 buildWebMonitoringTree();
+                jspProviderRegistered = true;
                 if (!isWebTreeBuilt){
                     //The reason being either the tree already exists or the 
                     // monitoring is 'OFF'
-                    jspProviderRegistered = true;
                     return;
                 }
                 buildJspTelemetry();
@@ -161,10 +165,10 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             if (providerName.equals("request")){
                 logger.finest("[Monitor]and it is Web request");
                 buildWebMonitoringTree();
+                requestProviderRegistered = true;
                 if (!isWebTreeBuilt){
                     //The reason being either the tree already exists or the 
                     // monitoring is 'OFF'
-                    requestProviderRegistered = true;
                     return;
                 }
                 buildWebRequestTelemetry();
@@ -189,6 +193,29 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             return false;
         }
         return true;
+    }
+
+    // Handle the deploy/undeploy events
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+       for (PropertyChangeEvent event : events) {
+           //if (event.getSource() instanceof ApplicationRef) {
+            if (event.getPropertyName().equals("application-ref")) {
+                String propName = event.getPropertyName();
+                String appName = null;
+                if (event.getNewValue() != null) {
+                    //This means its a deployed event
+                    appName = ((ApplicationRef)(event.getNewValue())).getRef();
+                    updateApplicationSubTree(appName, true);
+                } else if (event.getOldValue() != null) {
+                    //This means its an undeployed event
+                    appName = ((ApplicationRef)(event.getOldValue())).getRef();
+                    updateApplicationSubTree(appName, false);
+                }
+                logger.finest("[Monitor] (Un)Deploy event received - name = " + propName + " : Value = " + appName);
+           }
+       }
+        
+        return null;
     }
 
     private void registerProbeProviderListener() {
@@ -275,6 +302,59 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         isWebTreeBuilt = true;
     }
     
+
+    private void updateApplicationSubTree(String appName, boolean isDeployed) {
+        logger.finest("Updating the tree for the Deployed(" + isDeployed + ") App=" + appName);
+        if (isDeployed) {
+            if (!isWebTreeBuilt) 
+                return;
+            Server srvr = null;
+            List<Server> ls = domain.getServers().getServer();
+            for (Server sr : ls) {
+                if ("server".equals(sr.getName())) {
+                    srvr = sr;
+                    break;
+                }
+            }
+            TreeNode app = TreeNodeFactory.createTreeNode(appName, null, "web");
+            applicationsNode.addChild(app);
+            addVirtualServers(srvr, app, appName);
+            TreeNode appsNode = serverNode.getNode("applications");
+            Collection<TreeNode> appNodes = appsNode.getChildNodes();
+            for (TreeNode appNode : appNodes){
+                if (!appNode.getName().equals(appName)) 
+                    continue;
+                //Get all virtual servers for the app
+                Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                for (TreeNode vsNode : vsNodes) {
+                    //Create sessionTM for each vsNode
+                    buildJSPTelemetryForVS(vsNode, appNode.getName());
+                    buildServletTelemetryForVS(vsNode, appName);
+                    buildSessionTelemetryForVS(vsNode, appName);
+                }
+            }
+            
+        } else {
+            Collection<TreeNode> appNodes = applicationsNode.getChildNodes();
+            for (TreeNode appNode : appNodes) {
+                if (appNode.getName().equals(appName)) {
+                    Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                    for (TreeNode vsNode : vsNodes) {
+                        //remove the Telemetry objects
+                        String vsName = vsNode.getName();
+                        removeJSPTelemetryForVS(appName, vsName);
+                        removeServletTelemetryForVS(appName, vsName);
+                        removeSessionTelemetryForVS(appName, vsName);
+                    }
+                    appNode.setEnabled(false);
+                    applicationsNode.removeChild(appNode);
+                    break;
+                }
+            }
+            
+        }
+    }
+
     private void addVirtualServers(Server server, TreeNode tn, String appName) {
         // get the applications refs for the server
         for (ApplicationRef ar : server.getApplicationRef()) {
@@ -313,14 +393,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                 Collection<TreeNode> vsNodes = appNode.getChildNodes();
                 for (TreeNode vsNode : vsNodes) {
                     //Create sessionTM for each vsNode
-                    JspStatsTelemetry vsJspTM = 
-                            new JspStatsTelemetry(vsNode, 
-                                appNode.getName(), vsNode.getName(), 
-                                webMonitoringEnabled, logger);
-                    Collection<ProbeClientMethodHandle> handles = 
-                                                pcm.registerListener(vsJspTM);
-                    vsJspTM.setProbeListenerHandles(handles);
-                    vsJspTMs.add(vsJspTM);
+                    buildJSPTelemetryForVS(vsNode, appNode.getName());
                 }
             }
         }else { //Make sure you turn them on
@@ -331,6 +404,32 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         }
     }
 
+    private void buildJSPTelemetryForVS(TreeNode vsNode, String appName) {
+        if (!jspProviderRegistered)
+            return;
+        //Create sessionTM for each vsNode
+        JspStatsTelemetry vsJspTM = 
+                new JspStatsTelemetry(vsNode, 
+                    appName, vsNode.getName(), 
+                    webMonitoringEnabled, logger);
+        Collection<ProbeClientMethodHandle> handles = 
+                                    pcm.registerListener(vsJspTM);
+        vsJspTM.setProbeListenerHandles(handles);
+        vsJspTMs.add(vsJspTM);
+    }
+    
+    private void removeJSPTelemetryForVS(String appName, String vsName) {
+        if (!jspProviderRegistered || !isWebTreeBuilt || (vsJspTMs == null))
+            return;
+        for (JspStatsTelemetry vsJspTM : vsJspTMs){
+            if (vsJspTM.getModuleName().equals(appName) && 
+                            vsJspTM.getVSName().equals(vsName)) {
+                vsJspTMs.remove(vsJspTM);
+                vsJspTM.enableMonitoring(false);
+            }
+        }
+    }
+    
     private void buildServletTelemetry() {
         if (webServletsTM == null) {
             webServletsTM = new ServletStatsTelemetry(webServletNode, null, 
@@ -350,14 +449,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                 Collection<TreeNode> vsNodes = appNode.getChildNodes();
                 for (TreeNode vsNode : vsNodes) {
                     //Create sessionTM for each vsNode
-                    ServletStatsTelemetry vsServletTM = 
-                            new ServletStatsTelemetry(vsNode, 
-                                appNode.getName(), vsNode.getName(), 
-                                webMonitoringEnabled, logger);
-                    Collection<ProbeClientMethodHandle> handles = 
-                                            pcm.registerListener(vsServletTM);
-                    vsServletTM.setProbeListenerHandles(handles);
-                    vsServletTMs.add(vsServletTM);
+                    buildServletTelemetryForVS(vsNode, appNode.getName());
                 }
             }
         } else { //Make sure you turn them on
@@ -368,6 +460,32 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         }
     }
 
+    private void buildServletTelemetryForVS(TreeNode vsNode, String appName) {
+        if (!servletProviderRegistered)
+            return;
+        //Create sessionTM for each vsNode
+        ServletStatsTelemetry vsServletTM = 
+                new ServletStatsTelemetry(vsNode, 
+                    appName, vsNode.getName(), 
+                    webMonitoringEnabled, logger);
+        Collection<ProbeClientMethodHandle> handles = 
+                                pcm.registerListener(vsServletTM);
+        vsServletTM.setProbeListenerHandles(handles);
+        vsServletTMs.add(vsServletTM);
+    }
+    
+    private void removeServletTelemetryForVS(String appName, String vsName) {
+        if (!servletProviderRegistered || !isWebTreeBuilt || (vsServletTMs == null))
+            return;
+        for (ServletStatsTelemetry vsServletTM : vsServletTMs){
+            if (vsServletTM.getModuleName().equals(appName) && 
+                            vsServletTM.getVSName().equals(vsName)) {
+                vsServletTM.enableMonitoring(false);
+                vsServletTMs.remove(vsServletTM);
+            }
+        }
+    }
+    
     private void buildSessionTelemetry() {
         if (webSessionsTM == null) {
             webSessionsTM = new SessionStatsTelemetry(webSessionNode, 
@@ -387,14 +505,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                 Collection<TreeNode> vsNodes = appNode.getChildNodes();
                 for (TreeNode vsNode : vsNodes) {
                     //Create sessionTM for each vsNode
-                    SessionStatsTelemetry vsSessionTM = 
-                            new SessionStatsTelemetry(vsNode, 
-                                appNode.getName(), vsNode.getName(), 
-                                webMonitoringEnabled, logger);
-                    Collection<ProbeClientMethodHandle> handles = 
-                                            pcm.registerListener(vsSessionTM);
-                    vsSessionTM.setProbeListenerHandles(handles);
-                    vsSessionTMs.add(vsSessionTM);
+                    buildSessionTelemetryForVS(vsNode, appNode.getName());
                 }
             }
         } else { //Make sure you turn them on
@@ -405,6 +516,32 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         }
     }
 
+    private void buildSessionTelemetryForVS(TreeNode vsNode, String appName) {
+        if (!sessionProviderRegistered)
+            return;
+        //Create sessionTM for each vsNode
+        SessionStatsTelemetry vsSessionTM = 
+                new SessionStatsTelemetry(vsNode, 
+                    appName, vsNode.getName(), 
+                    webMonitoringEnabled, logger);
+        Collection<ProbeClientMethodHandle> handles = 
+                                pcm.registerListener(vsSessionTM);
+        vsSessionTM.setProbeListenerHandles(handles);
+        vsSessionTMs.add(vsSessionTM);
+    }
+    
+    private void removeSessionTelemetryForVS(String appName, String vsName) {
+        if (!sessionProviderRegistered || !isWebTreeBuilt || (vsSessionTMs == null))
+            return;
+        for (SessionStatsTelemetry vsSessionTM : vsSessionTMs){
+            if (vsSessionTM.getModuleName().equals(appName) && 
+                            vsSessionTM.getVSName().equals(vsName)) {
+                vsSessionTM.enableMonitoring(false);
+                vsSessionTMs.remove(vsSessionTM);
+            }
+        }
+    }
+    
     private void buildWebRequestTelemetry() {
         if (webRequestTM == null) {
             webRequestTM = new WebRequestTelemetry(webRequestNode, webMonitoringEnabled, logger);

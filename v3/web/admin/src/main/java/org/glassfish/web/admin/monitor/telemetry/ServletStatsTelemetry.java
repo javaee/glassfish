@@ -154,6 +154,14 @@ public class ServletStatsTelemetry{
         return false;
     }
 
+    public String getModuleName() {
+        return moduleName;
+    }
+    
+    public String getVSName() {
+        return vsName;
+    }
+    
     private void resetStats() {
         activeServletsLoadedCount.setReset(true);
         maxServletsLoadedCount.setReset(true);
