@@ -199,7 +199,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT, leaktimeout);
         attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim.toString());
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
-        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL, creationretryinterval);
+        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS, creationretryinterval);
         attrList.put(ResourceConstants.STATEMENT_TIMEOUT, statementtimeout);
         attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
         attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());

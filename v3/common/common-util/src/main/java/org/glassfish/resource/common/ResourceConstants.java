@@ -97,7 +97,7 @@ public final class ResourceConstants {
 
     public static final String CONNECTION_CREATION_RETRY_ATTEMPTS = "connection-creation-retry-attempts";
 
-    public static final String CONNECTION_CREATION_RETRY_INTERVAL = "connection-creation-retry-interval";
+    public static final String CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS = "connection-creation-retry-interval-in-seconds";
 
     public static final String STATEMENT_TIMEOUT = "statement-timeout";
 

@@ -238,7 +238,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         connectionLeakTimeout = (String) attrList.get(CONNECTION_LEAK_TIMEOUT);
         connectionLeakReclaim = (String) attrList.get(CONNECTION_LEAK_RECLAIM);
         connectionCreationRetryAttempts = (String) attrList.get(CONNECTION_CREATION_RETRY_ATTEMPTS);
-        connectionCreationRetryInterval = (String) attrList.get(CONNECTION_CREATION_RETRY_INTERVAL);
+        connectionCreationRetryInterval = (String) attrList.get(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS);
         statementTimeout = (String) attrList.get(STATEMENT_TIMEOUT);
         lazyConnectionEnlistment = (String) attrList.get(LAZY_CONNECTION_ENLISTMENT);
         lazyConnectionAssociation = (String) attrList.get(LAZY_CONNECTION_ASSOCIATION);

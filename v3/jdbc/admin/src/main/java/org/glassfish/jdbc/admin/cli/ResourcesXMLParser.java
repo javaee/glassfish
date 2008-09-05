@@ -520,7 +520,7 @@ public class ResourcesXMLParser implements EntityResolver
         Node connectionCreationRetryAttemptsNode = 
                 attributes.getNamedItem(CONNECTION_CREATION_RETRY_ATTEMPTS);
         Node connectionCreationRetryIntervalNode = 
-                attributes.getNamedItem(CONNECTION_CREATION_RETRY_INTERVAL);
+                attributes.getNamedItem(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS);
         Node statementTimeoutNode = 
                 attributes.getNamedItem(STATEMENT_TIMEOUT);
         Node lazyConnectionEnlistmentNode = 
@@ -616,7 +616,7 @@ public class ResourcesXMLParser implements EntityResolver
                                         connectionCreationRetryAttemptsNode.getNodeValue());
         }
         if (connectionCreationRetryIntervalNode != null) {
-           jdbcConnPool.setAttribute(CONNECTION_CREATION_RETRY_INTERVAL, 
+           jdbcConnPool.setAttribute(CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS, 
                                         connectionCreationRetryIntervalNode.getNodeValue());
         }
         if (statementTimeoutNode != null) {
