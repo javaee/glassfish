@@ -50,15 +50,16 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
 
         boolean framesFound = false;
         int iteration = 0;
+        String result = "";
 
         while (!framesFound && (iteration <= 10)) {
             iteration++;
-            System.err.println("***** adminUrl = " + adminUrl);
-            String result = requestUrl(adminUrl);
-            framesFound = result.indexOf("frameset id=\"outerFrameset\"") > -1;
+            result = requestUrl(adminUrl);
+            framesFound = result.indexOf("name=\"loginform\"") > -1;
             if (!framesFound) {
                 try {
-                    Thread.sleep(15);
+                    System.err.println("***** Login page not found.  Sleeping to allow app to deploy....");
+                    Thread.sleep(10000);
                 } catch (InterruptedException ie) {
                     //
                 }
@@ -73,6 +74,5 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
 
     @Test(groups={"pulse"}) // test method
     public void testLogin() {
-        
     }
 }
