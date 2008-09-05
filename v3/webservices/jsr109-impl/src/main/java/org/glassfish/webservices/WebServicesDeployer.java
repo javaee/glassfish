@@ -342,7 +342,7 @@ public class WebServicesDeployer extends WebDeployer {
                  "org.glassfish.webservices.jsr109-impl",
                  "org.glassfish.web.web-glue",
                  "com.sun.xml.ws",
-                 "javax.xml.bind"
+                 "com.sun.xml.bind"
 
                  };
 

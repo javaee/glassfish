@@ -1,4 +1,8 @@
 -exportcontents: \
                         org.glassfish.webservices, \
                         org.glassfish.webservices.monitoring
+Import-Package: \
+                       com.sun.enterprise.deployment.*;resolution:=optional, \
+                       com.sun.enterprise.deployment.annotation.*;resolution:=optional, \
+                       * 
 

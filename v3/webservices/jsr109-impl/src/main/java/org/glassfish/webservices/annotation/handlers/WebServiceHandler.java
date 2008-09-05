@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.webservices.annotation.handlers;
 
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -70,6 +70,7 @@ import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import javax.xml.namespace.QName;
 
@@ -98,8 +99,8 @@ public class WebServiceHandler extends AbstractHandler {
      * annotation type.
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
-        Class dependencies[] = { javax.ejb.Stateless.class };
-        return dependencies;
+
+        return null;
     }
     
     public HandlerProcessingResult processAnnotation(AnnotationInfo annInfo) 

@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.webservices.annotation.handlers;
 
 
 import javax.jws.WebService;
@@ -78,6 +78,7 @@ import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.HandlerContext;
 import javax.enterprise.deploy.shared.ModuleType;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

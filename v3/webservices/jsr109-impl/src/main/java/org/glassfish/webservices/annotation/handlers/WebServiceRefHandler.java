@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.webservices.annotation.handlers;
 
 import javax.xml.ws.WebServiceRef;
 
@@ -71,6 +71,7 @@ import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
 import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 /**
  * This annotation handler is responsible for processing the javax.jws.WebServiceRef annotation type.
