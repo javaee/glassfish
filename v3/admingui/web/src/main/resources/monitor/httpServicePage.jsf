@@ -90,7 +90,7 @@
                         setAttribute(key="click" value="$this{component}");
                         setAttribute(key="vsVal" value="#{click.selected}");
                         setAttribute(key="instanceName" value="#{instanceName}");
-                        setAttribute(key="vsList" value="#{appList}");
+                        setAttribute(key="vsList" value="#{vsList}");
                         setAttribute(key="requestStatsNode" value="http-service.#{vsVal}.request");
                         setAttribute(key="test" value="#{test}");
                         navigate(page="monitor/httpServicePage.jsf");
