@@ -428,10 +428,6 @@ public class AppServer {
             StartupContext startupContext = new StartupContext(createTempDir(), new String[0]);
 
 
-            //Bad: someone is forcing me to set installRoot, there is no such thing as installRoot in embedded so faking it till
-            //https://glassfish.dev.java.net/issues/show_bug.cgi?id=5872 is fixed
-            System.setProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, startupContext.getRootDirectory().toURI().toURL().toExternalForm());
-
             // ANONYMOUS CLASS HERE!!
             Main main = new Main() {
                 @Override
