@@ -41,12 +41,17 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.authRealm=admin-realm"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.authRealm=file"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=true"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="${testuser}"/>
+            <param name="password" value="${testpassword}"/>
+            <param name="groups" value="${testgroup}"/>
         </antcall>
     </target>
 
@@ -60,6 +65,9 @@
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=false"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="${testuser}"/>
         </antcall>
     </target>
 
@@ -78,8 +86,8 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
-          <arg value="${admin.user}"/>
-          <arg value="${admin.password}"/>
+          <arg value="${testuser}"/>
+          <arg value="${testpassword}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
            <pathelement location="."/>
