@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -21,6 +21,14 @@
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="create-user-common">
+            <param name="user" value="${testuser}"/>
+            <param name="password" value="${testpassword}"/>
+            <param name="groups" value="${testgroup}"/>
         </antcall>
     </target>
 
@@ -49,8 +57,8 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
-          <arg value="${admin.user}"/>
-          <arg value="${admin.password}"/>
+          <arg value="${testuser}"/>
+          <arg value="${testpassword}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
            <pathelement location="."/>
@@ -61,6 +69,12 @@
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
     </target>   
+
+    <target name="restore" depends="setup">
+        <antcall target="delete-user-common">
+            <param name="user" value="${testuser}"/>
+        </antcall>
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
