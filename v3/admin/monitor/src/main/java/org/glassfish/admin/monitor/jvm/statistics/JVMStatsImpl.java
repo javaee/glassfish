@@ -53,6 +53,7 @@ import java.lang.management.MemoryUsage;
 import org.glassfish.flashlight.datatree.MethodInvoker;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /** 
  *
@@ -72,6 +73,9 @@ public class JVMStatsImpl implements MonitorContract {
     @Inject
     Logger logger;
 
+     private final LocalStringManagerImpl localStrings =
+             new LocalStringManagerImpl(JVMStatsImpl.class);
+
     private final String name = "jvm";
 
     public String getName() {
@@ -82,17 +86,20 @@ public class JVMStatsImpl implements MonitorContract {
 
         if (mrdr == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null",
+                            "MonitoringRuntimeDataRegistry is null"));
             return report;
         }
 
         TreeNode serverNode = mrdr.get("server");
         if (serverNode == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("MonitoringRuntimeDataRegistry server node is null");
+            report.setMessage(localStrings.getLocalString("mrdr.null",
+                            "MonitoringRuntimeDataRegistry server node is null"));
             return report;
         }
 
+        /*
         if ((filter != null) && (filter.length() > 0)) {
             if ("heapmemory".equals(filter)) {
                 return (heapMemory(report, serverNode));
@@ -100,6 +107,7 @@ public class JVMStatsImpl implements MonitorContract {
                 return (nonHeapMemory(report, serverNode));
             }
         }
+        */
 
         return (v2JVM(report, serverNode));
     }
@@ -147,20 +155,72 @@ public class JVMStatsImpl implements MonitorContract {
 
 
     private ActionReport v2JVM(final ActionReport report, TreeNode serverNode) {
+
+        TreeNode tn = null;
+
+        //server.jvm.runtime.uptime
         long uptime = 0;
+        tn = (serverNode.getNodes("server.jvm.runtime.uptime")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                uptime = (Long) tn.getValue();
+            }
+        }
+
+        //server.jvm.memory.initNonHeapSize
+        //server.jvm.memory.initHeapSize
         long min = 0;
+        tn = (serverNode.getNodes("server.jvm.memory.initNonHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                min = (Long) tn.getValue();
+            }
+        }
+        tn = (serverNode.getNodes("server.jvm.memory.initHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                min = min + (Long) tn.getValue();
+            }
+        }
+
+        //server.jvm.memory.maxHeapSize
+        //server.jvm.memory.maxNonHeapSize
         long max = 0;
+        tn = (serverNode.getNodes("server.jvm.memory.maxHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                max = (Long) tn.getValue();
+            }
+        }
+        tn = (serverNode.getNodes("server.jvm.memory.maxNonHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                max = max + (Long) tn.getValue();
+            }
+        }
+
         long low = 0;
         long high = 0;
-        long count = 0;
 
-        MethodInvoker tn = (MethodInvoker) (serverNode.getNode("jvm")).getNode("jvm");
-        V2JVMStats js = (V2JVMStats) tn.getInstance();
+        //server.jvm.memory.committedHeapSize
+        //server.jvm.memory.committedNonHeapSize
+        long count = 0;
+        tn = (serverNode.getNodes("server.jvm.memory.committedHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                count = (Long) tn.getValue();
+            }
+        }
+        tn = (serverNode.getNodes("server.jvm.memory.committedNonHeapSize")).get(0);
+        if (tn != null) {
+            if (tn.getValue() != null) {
+                count = count + (Long) tn.getValue();
+            }
+        }
 
         String displayFormat = "%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s";
-        report.setMessage(String.format(displayFormat, 
-            js.getUptime(), js.getMin(), js.getMax(), 
-            js.getLow(), js.getHigh(), js.getCount()));
+        report.setMessage(
+            String.format(displayFormat, uptime, min, max, low, high, count));
 
         report.setActionExitCode(ExitCode.SUCCESS);
         return report;

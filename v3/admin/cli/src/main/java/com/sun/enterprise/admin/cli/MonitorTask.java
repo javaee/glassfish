@@ -90,7 +90,7 @@ public class MonitorTask extends TimerTask
             }
             if (title == null) {
                 // default jvm stats
-                title = String.format("%1$-45s %2$-20s", "UpTime(ms)", "Heap Memory(bytes)");
+                title = String.format("%1$-35s %2$-40s", "UpTime(ms)", "Heap and NonHeap Memory(bytes)");
                 CLILogger.getInstance().printMessage(title);
                 title = String.format("%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s",
                     "current", "min", "max", "low", "high", "count");
