@@ -100,6 +100,18 @@
         </developer>
     </developers>
     <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                      <!-- See 5776 -->
+                      <exclude>com/sun/**/BackupCommands.java</exclude> 
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

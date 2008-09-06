@@ -116,21 +116,7 @@
              <ValidOption name="passwordfile"/>
              <ValidOption name="force"/>
         </Command>
-        <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.optional.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
-                <ValidOption name="domaindir"/>
-                <ValidOption name="description"/>
-                <ValidOption name="terse"/>
-                <ValidOption name="verbose"/>
-                <ValidOption name="echo"/>
-        </Command>
-        <Command name="restore-domain" classname="com.sun.enterprise.admin.cli.optional.BackupCommands" numberofoperands="?" usage-text="restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]">
-                <ValidOption name="domaindir"/>
-                <ValidOption name="filename"/>
-                <ValidOption name="description"/>
-                <ValidOption name="terse"/>
-                <ValidOption name="echo"/>
-                <ValidOption name="verbose"/>
-        </Command>
+        <!-- Removed backup/restore-domain for now. See 5776. -->
         <Command name="start-database" classname="com.sun.enterprise.admin.cli.optional.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
 	    <ValidOption name="dbhost"/>
             <ValidOption name="dbport"/>
