@@ -3696,8 +3696,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 HttpService httpService)
             throws LifecycleException {
             
-        if (httpListener.getDefaultVirtualServer()
-                                    .equals(VirtualServer.ADMIN_VS)){
+        // Disable dynamic reconfiguration of the http listener at which
+        // the admin related webapps (including the admingui) are accessible.
+        // Notice that in GlassFish v3, we support a domain.xml configuration
+        // that does not declare any admin-listener, in which case the
+        // admin-related webapps are accessible on http-listener-1.
+        if (httpListener.getDefaultVirtualServer().equals(
+                    VirtualServer.ADMIN_VS) ||
+                ("http-listener-1".equals(httpListener.getId()) &&
+                    connectorMap.get("admin-listener") == null)) {
             return;
         }
 
