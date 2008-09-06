@@ -32,8 +32,8 @@ public class WebTest {
         host = args[0];
         port = args[1];
         contextRoot = args[2];
-        adminUser = args[3];
-        adminPassword = args[4];
+        adminUser = "anonymous";
+        adminPassword = "";
         run = args[5];
     }
     
@@ -124,7 +124,7 @@ public class WebTest {
         os.write(get.getBytes());
         String cookie = "Cookie: " + jsessionId + "\n";
         os.write(cookie.getBytes());
-        os.write("\n".getBytes());
+        os.write("\r\n".getBytes());
         
         InputStream is = sock.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -159,7 +159,7 @@ public class WebTest {
         os.write(get.getBytes());
         String cookie = "Cookie: " + jsessionId + "\n";
         os.write(cookie.getBytes());
-        os.write("\n".getBytes());
+        os.write("\r\n".getBytes());
         
         InputStream is = sock.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -200,7 +200,7 @@ public class WebTest {
         os.write(get.getBytes());
         String cookie = "Cookie: " + jsessionIdSSO + "\n";
         os.write(cookie.getBytes());
-        os.write("\n".getBytes());
+        os.write("\r\n".getBytes());
         
         InputStream is = sock.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
