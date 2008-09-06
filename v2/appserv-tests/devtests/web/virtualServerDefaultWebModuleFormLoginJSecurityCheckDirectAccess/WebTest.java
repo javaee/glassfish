@@ -30,8 +30,8 @@ public class WebTest {
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
-        adminUser = "anonymous";
-        adminPassword = "";
+        adminUser = args[2];
+        adminPassword = args[3];
     }
     
     public static void main(String[] args) {

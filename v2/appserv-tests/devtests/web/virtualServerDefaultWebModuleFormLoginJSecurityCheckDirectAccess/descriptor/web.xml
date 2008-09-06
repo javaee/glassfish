@@ -22,7 +22,7 @@
 
   <login-config>
     <auth-method>FORM</auth-method>
-    <realm-name>admin-realm</realm-name>
+    <realm-name>file</realm-name>
     <form-login-config>
       <form-login-page>/login.jsp</form-login-page>
       <form-error-page>/error.jsp</form-error-page>
