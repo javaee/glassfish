@@ -96,13 +96,26 @@ public class SearchCommands
         return new SearchCommands().findCommands(pattern);
     }
 
+    public static String[] getMatchedCommands(String pattern, Map<String, String> moreCommands)
+            throws CommandException, CommandValidationException {
+        return new SearchCommands().findCommands(pattern, moreCommands);
+    }
+    
+
     private String[] allCommands()
     {
         final Set<String> set = allCommandsMap.keySet();
         return (String[])set.toArray(new String[set.size()]);
     }
-            
 
+    
+    private String[] findCommands(final String pattern, Map<String, String> moreCommands)
+        throws CommandException {
+        allCommandsMap.putAll(moreCommands);
+        return findCommands(pattern);
+    }
+    
+    
     private String[] findCommands(final String pattern)
         throws CommandException
     {

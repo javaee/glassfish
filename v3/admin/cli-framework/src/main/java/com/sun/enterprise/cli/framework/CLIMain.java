@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The <code>CLIMain</code> contains a main that calls the appropriate
@@ -205,7 +206,7 @@ public class CLIMain
         catch (Exception e)
         {
             if (commandUsageText == null) {
-                displayClosestMatch(helpCommandName);
+                displayClosestMatch(helpCommandName, null);
                 throw new InvalidCommandException(helpCommandName);
             }
             else
@@ -215,7 +216,7 @@ public class CLIMain
     }
 
 
-    public static void displayClosestMatch(final String commandName)
+    public static void displayClosestMatch(final String commandName, Map<String, String> moreCommands)
         throws InvalidCommandException
     {
         try {
@@ -228,7 +229,8 @@ public class CLIMain
                 
             //add all matches to the search String since we want
             //to search all the commands that matches the string
-            final String[] matchedCommands = SearchCommands.getMatchedCommands(".*"+trimmedCommandName+".*");
+            final String[] matchedCommands = SearchCommands.getMatchedCommands(".*"+trimmedCommandName+".*",
+                                                                               moreCommands);
                 //don't want to display more than 50 commands
             if (matchedCommands.length > 0 && matchedCommands.length<MAX_COMMANDS_TO_DISPLAY)
             {
@@ -243,7 +245,7 @@ public class CLIMain
                 final String[] allCommands = SearchCommands.getAllCommands();
                 final String nearestString = StringEditDistance.findNearest(commandName, allCommands);
                     //do not want to display the string if the edit distance is too large
-                if (StringEditDistance.editDistance(commandName, nearestString) < 3) {
+                if (StringEditDistance.editDistance(commandName, nearestString) < 5) {
                     System.out.println(getLocalizedString("ClosestMatchedCommands",null));
                     System.out.println("    "+nearestString);
                 }

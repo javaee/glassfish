@@ -82,7 +82,7 @@ public class StopDomainCommand extends AbstractCommand {
 
         // Verify that the DAS is running and reachable
         if(!isServerAlive(adminPort))
-            throw new CommandValidationException(strings.get("StopDomain.dasNotRunning"));
+            throw new CommandException(strings.get("StopDomain.dasNotRunning"));
 
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);

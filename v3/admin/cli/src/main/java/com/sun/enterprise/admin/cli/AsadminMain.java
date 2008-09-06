@@ -38,6 +38,9 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.util.Map;
+import java.util.Hashtable;
+
 
 /**
  * my v3 main, basically some throw away code
@@ -63,18 +66,41 @@ public class AsadminMain {
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandSuccessful", args[0]));
         }
-        
         if(exitCode == ERROR) {
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandUnSuccessful", args[0]));
+        }
+        if(exitCode == INVALID_COMMAND_ERROR) {
             try {
-                CLIMain.displayClosestMatch(args[0]);
+                CLIMain.displayClosestMatch(args[0], main.getRemoteCommands());
             } catch (InvalidCommandException e) {
                 // not a big deal if we cannot help
             }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", args[0]));
         }
+        if (exitCode == CONNECTION_ERROR) {
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandUnSuccessful", args[0]));
+        }
         System.exit(exitCode);
     }
+
+    private Map<String, String> getRemoteCommands() {
+        try {
+            ListCommandsCommand lcc = new ListCommandsCommand();
+            String[] remoteCommands = lcc.getRemoteCommands();
+            Map<String, String> remoteCommandsMap = new Hashtable<String, String>();
+            for (String rc : remoteCommands) {
+                remoteCommandsMap.put(rc, "remote command");
+            }
+            return remoteCommandsMap;
+        }
+        catch (CommandException ce) {
+            return null;
+        }
+    }
+    
 
     private int local(String[] args) throws InvalidCommandException{
         try {
@@ -113,10 +139,18 @@ public class AsadminMain {
         catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printMessage(ex.getMessage());
+            if (ex.getCause() instanceof java.net.ConnectException) {
+                return CONNECTION_ERROR;
+            }
+            if (ex.getCause() instanceof InvalidCommandException) {
+                return INVALID_COMMAND_ERROR;
+            }
             return ERROR;
         }
     }
     private final static int ERROR = 1;
+    private final static int CONNECTION_ERROR = 2;
+    private final static int INVALID_COMMAND_ERROR = 3;    
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
 }

@@ -310,7 +310,12 @@ public class CLIRemoteCommand {
             return;
         }
         catch (RemoteException rfe) {
-            throw new CommandException("remote failure: " + rfe.getMessage());
+            if (rfe.getMessage().indexOf("CommandNotFoundException")>0) {
+                    //CommandNotFoundException from the server, then display the closest matching
+                    //commands
+                throw new CommandException(rfe.getMessage(), new InvalidCommandException());
+            }
+            throw new CommandException("remote failure: " + rfe.getMessage(), rfe);
         }
     }
 

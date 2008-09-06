@@ -502,9 +502,12 @@ public class CommandRunner {
             
             if(!ok(commandName))
                 msg = adminStrings.getLocalString("adapter.command.nocommand", "No command was specified.");
-            else
+            else {
                 msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
-            
+                    //set cause to CommandNotFoundException so that asadmin
+                    //displays the closest matching commands
+                report.setFailureCause(new CommandNotFoundException(msg));
+            }
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             LogHelper.getDefaultLogger().info(msg);
