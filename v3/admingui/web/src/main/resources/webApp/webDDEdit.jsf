@@ -42,9 +42,9 @@
         setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
         getRequestValue(key="appName" value=>$page{name});
         getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
-        println("********");
-        println("$attribute{descriptors}");
-        println("********");
+        #println("********");
+        #println("$attribute{descriptors}");
+        #println("********");
         getWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", 
                     envList=>$attribute{listOfCtxRows}, ctxParamList=>$attribute{listOfParamRows});
     />
@@ -59,7 +59,7 @@
 #include "/web/webApp/appGeneralTabs.inc"         
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitle}" >
+            <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitleHelp}" >
                 <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
