@@ -33,9 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.web.admin.monitor.telemetry;
+package org.glassfish.admin.monitor.threadpool.telemetry;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.logging.Level;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -44,6 +46,7 @@ import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
 import org.glassfish.flashlight.provider.annotations.*;
 import java.util.logging.Logger;
+import org.glassfish.flashlight.statistics.factory.CounterFactory;
 
 /**
  * Provides the monitoring data at the Web container level
@@ -51,12 +54,18 @@ import java.util.logging.Logger;
  * @author Prashanth Abbagani
  */
 public class ThreadPoolTelemetry{
-    private TreeNode threadpoolNode;
+    private TreeNode threadPoolNode;
     private Collection<ProbeClientMethodHandle> handles;
-    private boolean threadpoolMonitoringEnabled;
     private Logger logger;
     private boolean isEnabled = true;
+    private String id;
+    private String maxTPSize;
 
+    private TreeNode maxThreadsNode;
+    
+    private Counter activeThreadsCount = CounterFactory.createCount();
+    private Counter threadsUsed = CounterFactory.createCount();
+    private Counter activeThreadsHighCount = CounterFactory.createCount();
 
     /* We would like to measure the following */
     /*
@@ -73,12 +82,33 @@ public class ThreadPoolTelemetry{
      * 
      */ 
     
-    public ThreadPoolTelemetry(TreeNode parent, boolean threadpoolMonitoringEnabled, Logger logger) {
-        this.logger = logger;
-        this.threadpoolMonitoringEnabled = threadpoolMonitoringEnabled;
-        //threadpoolNode = TreeNodeFactory.createTreeNode(threadPoolName, this, "http-service");
-        //parent.addChild(threadpoolNode);
-        //We can only add the child when there is a new thread pool
+    ThreadPoolTelemetry(TreeNode threadPoolNode, String id, String maxTPSize, Logger logger) {
+        try {
+            this.threadPoolNode = threadPoolNode;
+            this.logger = logger;
+            this.id = id;
+            this.maxTPSize = maxTPSize;
+            Method m1 = this.maxTPSize.getClass().getMethod("toString");
+            maxThreadsNode = TreeNodeFactory.createMethodInvoker("maxthreads-count", this.maxTPSize, "thread-pool", m1);
+            threadPoolNode.addChild(maxThreadsNode);
+
+            activeThreadsHighCount.setCategory("thread-pool");
+            threadPoolNode.addChild(activeThreadsHighCount);
+            activeThreadsHighCount.setName("peakqueued-count");
+
+            Method m2 = this.getClass().getMethod("getIdleCount");
+            TreeNode idleThreadsNode = TreeNodeFactory.createMethodInvoker("countthreadsidle-count", this, "thread-pool", m2);
+            threadPoolNode.addChild(idleThreadsNode);
+
+            Method m3 = this.getClass().getMethod("getActiveThreadCount");
+            TreeNode activeThreadsNode = TreeNodeFactory.createMethodInvoker("countthreads-count", this, "thread-pool", m3);
+            threadPoolNode.addChild(activeThreadsNode);
+
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(ThreadPoolTelemetry.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(ThreadPoolTelemetry.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @ProbeListener("core:threadpool::newThreadsAllocatedEvent")
@@ -90,6 +120,8 @@ public class ThreadPoolTelemetry{
         logger.finest("[TM]newThreadsAllocatedEvent received - : increment = " + 
                             increment + " :startThread = " + startThread + 
                             ": Thread pool name = " + threadPoolName);
+        if (threadPoolName.equals(id))
+            activeThreadsCount.setCount(activeThreadsCount.getCount() + increment);
     }
 
 
@@ -101,6 +133,8 @@ public class ThreadPoolTelemetry{
 
         logger.finest("[TM]maxNumberOfThreadsReachedEvent received - : maxNumberOfThreads = " + 
                             maxNumberOfThreads + ": Thread pool name = " + threadPoolName);
+        //Not sure what I can do with this event, because I could tell from 
+        // threadsCount if it reached maxThreadsCount
     }
 
 
@@ -112,6 +146,11 @@ public class ThreadPoolTelemetry{
 
         logger.finest("[TM]threadDispatchedFromPoolEvent received - : threadId = " + 
                             threadId + ": Thread pool name = " + threadPoolName);
+        if (threadPoolName.equals(id)) {
+            threadsUsed.increment();
+            if (threadsUsed.getCount() > activeThreadsHighCount.getCount())
+                activeThreadsHighCount.setCount(threadsUsed.getCount());
+        }
     }
 
 
@@ -123,6 +162,8 @@ public class ThreadPoolTelemetry{
 
         logger.finest("[TM]threadReturnedToPoolEvent received - : threadId = " + 
                             threadId + ": Thread pool name = " + threadPoolName);
+        if (threadPoolName.equals(id))
+            threadsUsed.decrement();
     }
 
     
@@ -136,14 +177,31 @@ public class ThreadPoolTelemetry{
     
     public void enableMonitoring(boolean flag) {
         //loop through the handles for this node and enable/disable the listeners
-        //delegate the request to the child nodes
+        if (isEnabled == flag)
+            return;
         for (ProbeClientMethodHandle handle : handles) {
             if (flag == true) 
                 handle.enable();
             else
                 handle.disable();
         }
-        //threadpoolNode.setEnabled(flag);
+        threadPoolNode.setEnabled(flag);
+        if (isEnabled) {
+            //It means you are turning from ON to OFF, reset the statistics
+            resetStats();
+        }
         isEnabled = flag;
+    }
+
+    private void resetStats() {
+        //activeSessionsCurrent.setReset(true);
+    }
+    
+    public long getIdleCount() {
+        return (activeThreadsCount.getCount() - threadsUsed.getCount());
+    }
+
+    public long getActiveThreadCount() {
+        return (activeThreadsCount.getCount());
     }
 }

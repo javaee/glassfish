@@ -45,6 +45,11 @@ public class TelemetryService implements Startup, PostConstruct, ConfigListener 
                 //                        config.getJvm());
                 onLevelChange("jvm", config.getJvm());
             }
+            if (!config.getThreadPool().equals("OFF")) {
+                //System.out.println("[Monitor] Monitoring level for jvm is " +
+                //                        config.getJvm());
+                onLevelChange("thread-pool", config.getThreadPool());
+            }
         }
     }
 
