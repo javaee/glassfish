@@ -29,8 +29,8 @@ public class WebTest {
         host = args[0];
         port = args[1];
         contextRoot = args[2];
-        adminUser = args[3];
-        adminPassword = args[4];
+        adminUser = "anonymous";
+        adminPassword = "";
     }
     
     public static void main(String[] args) {
