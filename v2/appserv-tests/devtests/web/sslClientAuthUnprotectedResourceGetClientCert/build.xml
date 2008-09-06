@@ -43,6 +43,11 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=true"/>
+        </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
                    value="${appserver.instance.name}.http-service.http-listener.http-listener-2.ssl.client-auth-enabled=true"/>
         </antcall>
         <antcall target="restart-server-instance-common"/>
@@ -75,6 +80,11 @@
     </target>   
 
     <target name="restore" depends="setup">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=false"/>
+        </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
