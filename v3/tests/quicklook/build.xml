@@ -140,6 +140,7 @@
     
     <target name="undeploy">
         <record name="undeploy.output" action="start"/>
+        <ant dir="classloader/hellojsf" target="undeploy"/>
         <ant dir="web/helloworld" target="undeploy"/>
         <ant dir="web/jsfastrologer" target="undeploy"/>
         <ant dir="web/jsfinjection" target="undeploy"/>
