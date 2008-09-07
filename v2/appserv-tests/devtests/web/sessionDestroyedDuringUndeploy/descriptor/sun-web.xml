@@ -5,8 +5,8 @@
 <sun-web-app>
  <security-role-mapping>
     <role-name>admin</role-name>
-    <principal-name>admin</principal-name>
-    <group-name>asadmin</group-name>
+    <principal-name>testuser</principal-name>
+    <group-name>testgroup</group-name>
  </security-role-mapping>
 
 </sun-web-app>

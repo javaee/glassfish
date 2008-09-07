@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="setup,build,deploy,runFirst,undeploy,re-deploy,runSecond,undeploy,restore"/>
+    <target name="all" depends="setup,build,deploy,runFirst,undeploy,re-deploy,runSecond,undeploy-again,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -29,6 +29,11 @@
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled="/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="${testuser}"/>
+            <param name="password" value="${testpassword}"/>
+            <param name="groups" value="${testgroup}"/>
         </antcall>
     </target>
 
@@ -61,8 +66,8 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
-          <arg value="${admin.user}"/>
-          <arg value="${admin.password}"/>
+          <arg value="${testuser}"/>
+          <arg value="${testpassword}"/>
           <arg value="firstRun"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
@@ -90,11 +95,18 @@
         <antcall target="undeploy-war-common"/>
     </target>   
 
+    <target name="undeploy-again" depends="init-common">
+        <antcall target="undeploy"/>
+    </target>   
+
     <target name="restore" depends="setup">
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=false"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="${testuser}"/>
         </antcall>
     </target>
 
