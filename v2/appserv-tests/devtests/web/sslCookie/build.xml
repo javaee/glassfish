@@ -3,6 +3,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
@@ -11,8 +12,9 @@
     &commonSetup;
     &commonBuild;
     &testproperties;
+    &run;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -38,6 +40,15 @@
 
     </target> 
 
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=true"/>
+        </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
     <target name="build-publish-war" depends="build, publish-war-common" />
     
     <target name="deploy" depends="init-common">
@@ -60,6 +71,15 @@
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
     </target>   
+
+    <target name="restore" depends="setup">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.http-listener.http-listener-2.enabled=false"/>
+        </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
