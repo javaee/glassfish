@@ -10,6 +10,7 @@
                     <sun:button id="refreshButton" 
                                 text="$resource{i18n.button.Refresh}">
                     <!command
+                        setAttribute(key="tpVal" value="#{tpVal}");
                         setAttribute(key="instanceName" value="#{instanceName}")
                         setAttribute(key="hlVal" value="#{hlVal}")
                         setAttribute(key="hlList" value="#{hlList}");
@@ -25,7 +26,7 @@
         <!define name="table">
             "<table>
             "<tr>
-            "<td width="1%"></td>
+  <!--          "<td width="1%"></td>
             "<td width="25%">
                 <sun:table id="connqueue" title="$resource{i18n_web.monitoring.ConnectionQueueStatistics}" lite="#{true}">
                     <!beforeCreate
@@ -44,14 +45,40 @@
                         <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
-            "</td>
+            "</td>-->
             "<td width="1%"></td>
             "<td width="25%">
+                "<br/>
+                <sun:dropDown id="tpDD" label="$resource{i18n_web.monitoring.ThreadPool}" selected="#{tpVal}" values="$attribute{tpList}" labels="$attribute{tpList}" submitForm="#{true}" immediate="#{true}" >
+                    <!beforeCreate
+                        getChildNodes(
+                            node='http-service.thread-pool',
+                            childNodes=>$attribute{tpList},
+                            firstItem=>$attribute{firstItem});
+                        setAttribute(key="initialData" value="http-service.thread-pool.#{firstItem}");
+                    />
+                    <!command
+                        setAttribute(key="click" value="$this{component}");
+                        setAttribute(key="tpVal" value="#{click.selected}");
+                        setAttribute(key="instanceName" value="#{instanceName}");
+                        setAttribute(key="tpList" value="#{tpList}");
+                        setAttribute(key="tpStatsNode" value="http-service.thread-pool.#{tpVal}");
+                        navigate(page="monitor/httpServicePage.jsf");
+                    />
+                </sun:dropDown>
+                "<br/>
+                "<br/>
                 <sun:table id="threadpool" title="$resource{i18n_web.monitoring.ThreadPoolStatistics}" lite="#{true}">
                     <!beforeCreate
+                        if (#{tpStatsNode}) {
+                            setAttribute(key="node" value="#{tpStatsNode}");
+                        }
+                        if (!#{tpStatsNode}) {
+                            setAttribute(key="node" value="#{initialData}");
+                        }
                         getStats(
                             serverName='#{request.serverName}',
-                            node='http-service.thread-pool'
+                            node='#{node}'
                             stats=>$attribute{tpStats});
                     />
                     <sun:tableRowGroup id="rowGroup1" data={"$attribute{tpStats}"} sourceVar="td">
@@ -65,9 +92,13 @@
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>
+        "<td width="1%"></td>
+        "<td width="25%"></td>
+        "<td width="1%"></td>
+        "<td width="25%"></td>
         "</tr>
     "</table>
- 
+<!-- 
     <sun:propertySheet id="dropDowns">
         <sun:propertySheetSection id="dropDownsSection">
             <sun:property id="filtersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
@@ -152,6 +183,6 @@
             "<td width="1%"></td>
             "<td width="25%"></td>
         "</tr>
-    "</table>
+    "</table>-->
 	</define>
 </composition>
