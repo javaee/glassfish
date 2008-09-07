@@ -24,6 +24,7 @@
 package com.sun.enterprise.deployment.deploy.shared;
 
 
+import java.net.URI;
 import org.glassfish.api.deployment.archive.Archive;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -74,10 +75,14 @@ public abstract class JarArchive implements Archive {
      * 
      */
     public String getName() {
-         String path = Util.getURIName(getURI());
-         int lastDot = path.lastIndexOf('.');
-         int endOfName = (lastDot != 1) ? lastDot : path.length();
-         String name = path.substring(0, endOfName);
-         return name;
-    }    
+         return JarArchive.getName(getURI());
+    }
+
+    static String getName(URI uri) {
+        String path = Util.getURIName(uri);
+        int lastDot = path.lastIndexOf('.');
+        int endOfName = (lastDot != -1) ? lastDot : path.length();
+        String name = path.substring(0, endOfName);
+        return name;
+    }
 }
