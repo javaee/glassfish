@@ -63,11 +63,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -100,7 +98,7 @@ public class HK2Main extends Main implements
      * e.g., GlassFish Kernel's AppServerStartup instance
      */
     private ModuleStartup moduleStartup;
-
+                                                                
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
         logger.logp(Level.FINE, "HK2Main", "run",
@@ -112,7 +110,18 @@ public class HK2Main extends Main implements
         // Create StartupContext
         contextRootDir = getContextRootDir(context);
         logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
-        StartupContext startupContext = new StartupContext(contextRootDir, new String[0]);
+
+        // get the startup context from the System properties
+        String lineformat = System.getProperty("glassfish.startup.context");
+        StartupContext startupContext;
+        if (lineformat!=null) {
+            StringReader reader = new StringReader(lineformat);
+            Properties arguments = new Properties();
+            arguments.load(reader);
+            startupContext = new StartupContext(contextRootDir, arguments);
+        } else {
+            startupContext = new StartupContext(contextRootDir, new String[0]);
+        }
 
         OSGiFactoryImpl.initialize(ctx);
 

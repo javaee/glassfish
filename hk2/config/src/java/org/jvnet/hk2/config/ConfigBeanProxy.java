@@ -53,4 +53,44 @@ package org.jvnet.hk2.config;
  * @see Attribute
  */
 public interface ConfigBeanProxy {
+
+    /**
+     * Returns the parent element of this configuration element.
+     *
+     * It is possible to return a not null parent while the parent knows nothing of this
+     * child element. This could happen when the child element was removed
+     * from the configuration tree, yet it's parent would not have been reset.
+     *
+     * @return the parent configuration node.
+     */
+    @DuckTyped
+    public ConfigBeanProxy getParent();
+
+    /**
+     * Returns the typed parent element of this configuration element.
+     *
+     * It is possible to return a not null parent while the parent knows nothing of this
+     * child element. This could happen when the child element was removed
+     * from the configuration tree, yet it's parent would not have been reset.
+     *
+     * @param type parent's type
+     * @return the parent configuration node.
+     */
+    @DuckTyped
+    public <T extends ConfigBeanProxy> T getParent(Class<T> type);
+
+    public class Duck {
+
+        public static ConfigBeanProxy getParent(ConfigBeanProxy self) {
+            Dom dom = Dom.unwrap(self);
+            return dom.parent().createProxy();
+        }
+
+        public static <T extends ConfigBeanProxy> T getParent(ConfigBeanProxy self, Class<T> c) {
+             Dom dom = Dom.unwrap(self);
+            return dom.parent().createProxy(c);
+        }
+
+    }
+
 }
