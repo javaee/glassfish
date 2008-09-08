@@ -45,7 +45,6 @@
                 <include name="lib/**"/>
                 <include name="domains/**"/>
                 <include name="COPYRIGHT"/>
-                <include name="README"/>
             </zipfileset>
         </zip>
         <attachArtifact file="target/nucleus-base.zip"/>
