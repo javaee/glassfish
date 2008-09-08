@@ -55,13 +55,13 @@ import java.util.*;
 
 public class ArgumentManager 
 {
-    public static Map<String,String> argsToMap(String[] sargs)
+    public static Properties argsToMap(String[] sargs)
     {
         ArgumentManager mgr = new ArgumentManager(sargs);
         return mgr.getArgs();
     }
  
-    public static Map<String,String> argsToMap(List<String>sargs)
+    public static Properties argsToMap(List<String>sargs)
     {
         ArgumentManager mgr = new ArgumentManager(sargs);
         return mgr.getArgs();
@@ -84,7 +84,7 @@ public class ArgumentManager
         args = sargs;
     }
 
-    private Map<String, String> getArgs()
+    private Properties getArgs()
     {
         int len = args.size();
         
@@ -112,7 +112,7 @@ public class ArgumentManager
         }
         return map;
     }
-
-    Map<String,String>  map     = new HashMap<String,String>();
+                                                                         
+    Properties  map     = new Properties();
     List<String>        args;
 }

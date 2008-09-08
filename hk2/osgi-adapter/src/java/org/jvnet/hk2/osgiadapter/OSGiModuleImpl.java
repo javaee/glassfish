@@ -263,7 +263,7 @@ public final class OSGiModuleImpl implements Module {
                             return aClass;
                         } catch(Throwable e) {
                             logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
-                            throw new ClassNotFoundException(e.getMessage());
+                            throw new ClassNotFoundException(e.getMessage(),e);
                         }
                     }
                 };

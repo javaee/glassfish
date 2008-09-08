@@ -66,7 +66,7 @@ public class TestRunner implements ModuleStartup {
     public void start() {
         File reportDir = null;
         if(context.getArguments().containsKey("-r"))
-            reportDir = new File(context.getArguments().get("-r"));
+            reportDir = new File(context.getArguments().getProperty("-r"));
 
         runTests(reportDir);
     }

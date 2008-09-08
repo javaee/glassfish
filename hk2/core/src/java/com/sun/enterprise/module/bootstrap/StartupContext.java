@@ -50,22 +50,35 @@ import org.jvnet.hk2.annotations.Service;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * This class contains important information about the startup process
- * @author dochez
+ * @author Jerome Dochez
  */
 @Service
 public class StartupContext {
     
     final File root;
-    final Map<String, String> args;
-    final long timeZero = System.currentTimeMillis();
+    final Properties args;
+    final long timeZero;
+    public final static String TIME_ZERO_NAME = "__time_zero";  //NO I18N
 
     /** Creates a new instance of StartupContext */
     public StartupContext(File root, String[] args) {
         this.root = absolutize(root);
         this.args = ArgumentManager.argsToMap(args);
+        this.timeZero = System.currentTimeMillis();
+    }
+
+    public StartupContext(File root, Properties args) {
+        this.root = root;
+        this.args = args;
+        if (args.containsKey(TIME_ZERO_NAME)) {
+            this.timeZero = Long.decode(args.getProperty(TIME_ZERO_NAME)).longValue();
+        } else {
+            this.timeZero = System.currentTimeMillis();            
+        }
     }
 
     /**
@@ -80,7 +93,7 @@ public class StartupContext {
         return root;
     }
         
-    public Map<String, String> getArguments() {
+    public Properties getArguments() {
         return args;
     }
 
