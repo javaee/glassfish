@@ -32,6 +32,7 @@ import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.CharChunk;
 import java.util.List;
 import java.util.logging.Level;
 import org.glassfish.api.container.Sniffer;
@@ -138,17 +139,34 @@ public class ContainerMapper extends StaticResourcesAdapter{
             }
 
             Adapter adapter = null;      
+                        
+            // Map the request without any trailling.
+            ByteChunk uriBB = decodedURI.getByteChunk();
+            int end = uriBB.getEnd();
+            int semicolon = uriBB.indexOf(';',0);
+            if (semicolon > 0){
+                decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), semicolon);
+            }
+            
             HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
-
             adapter = map(req, decodedURI, mappingData);
             if (adapter == null && !snifferInitialized) {
                 initializeFileURLPattern();
                 adapter = map(req, decodedURI, mappingData);
             }
-
+ 
+            // The Adapter used for servicing static pages doesn't decode the
+            // request by default, hence do not pass the undecoded request.
+            // TODO: Fix next Grizzly integration (1.8.6)
             if (adapter == null){
                 super.service(req, res);
-            }  else {  
+            }  else {                            
+                // Re-set back the position.
+                if (semicolon != 0 && end != 0){
+                    decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), end);
+                    //uriCC.setEnd(ccURIend);
+                }
+
                 req.setNote(MAPPED_ADAPTER, adapter);
                 adapter.service(req, res);
             }

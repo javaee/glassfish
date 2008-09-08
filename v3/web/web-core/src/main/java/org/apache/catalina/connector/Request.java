@@ -3313,35 +3313,35 @@ public class Request
      */
     protected void parseSessionId() {
 
-        CharChunk uriCC = coyoteRequest.decodedURI().getCharChunk();
-        int semicolon = uriCC.indexOf(match, 0, match.length(), 0);
+        ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
+        int semicolon = uriBB.indexOf(match, 0, match.length(), 0);
 
         if (semicolon > 0) {
 
             // Parse session ID, and extract it from the decoded request URI
-            int start = uriCC.getStart();
-            int end = uriCC.getEnd();
+            int start = uriBB.getStart();
+            int end = uriBB.getEnd();
 
             int sessionIdStart = start + semicolon + match.length();
-            int semicolon2 = uriCC.indexOf(';', sessionIdStart);
+            int semicolon2 = uriBB.indexOf(';', sessionIdStart);
             /* SJSAS 6346226
             if (semicolon2 >= 0) {
                 setRequestedSessionId
-                    (new String(uriCC.getBuffer(), sessionIdStart, 
+                    (new String(uriBB.getBuffer(), sessionIdStart, 
                                 semicolon2 - semicolon - match.length()));
             } else {
                 setRequestedSessionId
-                    (new String(uriCC.getBuffer(), sessionIdStart, 
+                    (new String(uriBB.getBuffer(), sessionIdStart, 
                                 end - sessionIdStart));
             }
             */
             // START SJSAS 6346226
             String sessionId = null;
             if (semicolon2 >= 0) {
-                sessionId = new String(uriCC.getBuffer(), sessionIdStart, 
+                sessionId = new String(uriBB.getBuffer(), sessionIdStart, 
                                        semicolon2 - semicolon - match.length());
             } else {
-                sessionId = new String(uriCC.getBuffer(), sessionIdStart, 
+                sessionId = new String(uriBB.getBuffer(), sessionIdStart, 
                                        end - sessionIdStart);
             }
             int jrouteIndex = sessionId.lastIndexOf(':');
@@ -3366,7 +3366,7 @@ public class Request
 
             if (semicolon > 0) {
                 sessionIdStart = start + semicolon;
-                semicolon2 = uriCC.indexOf
+                semicolon2 = uriBB.indexOf
                     (';', start + semicolon + match.length());
                 uriBC.setEnd(start + semicolon);
                 byte[] buf = uriBC.getBuffer();
@@ -3409,26 +3409,26 @@ public class Request
 
         String sessionVersionString = null;
 
-        CharChunk uriCC = coyoteRequest.decodedURI().getCharChunk();
-        int semicolon = uriCC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
+        ByteChunk uriBB = coyoteRequest.decodedURI().getByteChunk();
+        int semicolon = uriBB.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
                                       Globals.SESSION_VERSION_PARAMETER.length(),
                                       0);
         if (semicolon > 0) {
 
-            int start = uriCC.getStart();
-            int end = uriCC.getEnd();
+            int start = uriBB.getStart();
+            int end = uriBB.getEnd();
 
             int sessionVersionStart = start + semicolon
                 + Globals.SESSION_VERSION_PARAMETER.length();
-            int semicolon2 = uriCC.indexOf(';', sessionVersionStart);
+            int semicolon2 = uriBB.indexOf(';', sessionVersionStart);
             if (semicolon2 >= 0) {
                 sessionVersionString = new String(
-                    uriCC.getBuffer(),
+                    uriBB.getBuffer(),
                     sessionVersionStart, 
                     semicolon2 - semicolon - Globals.SESSION_VERSION_PARAMETER.length());
             } else {
                 sessionVersionString = new String(
-                    uriCC.getBuffer(),
+                    uriBB.getBuffer(),
                     sessionVersionStart, 
                     end - sessionVersionStart);
             }
