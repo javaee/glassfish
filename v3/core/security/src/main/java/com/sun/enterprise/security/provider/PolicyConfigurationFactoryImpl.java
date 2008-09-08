@@ -161,6 +161,9 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 	    // return the policy configuration to the open state, value of
 	    // remove will determine if statements are removed
 	    pci.initialize(true,remove,false);
+            if (remove) {
+                this.polConfTable.remove(contextId);
+            }
 	}
 	return pci;
     }
@@ -202,16 +205,28 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
     // remain in service);
 
     private  PolicyConfigurationImpl 
-	getPolicyConfigurationImplFromDirectory(String contextId, boolean open, boolean remove){
-	PolicyConfigurationImpl pci = null;
-	File f = new File(getContextDirectoryName(contextId));
-	if (f.exists()) {
-	    pci = new PolicyConfigurationImpl(f,open,remove, this);
-	    if (pci != null) {
-		putPolicyConfigurationImpl(contextId,pci);
-	    }
-	}
-	return pci;
+	getPolicyConfigurationImplFromDirectory(String contextId, boolean open, boolean remove) {
+        PolicyConfigurationImpl pci = null;
+        File f = new File(getContextDirectoryName(contextId));
+        if (f.exists()) {
+            pci = new PolicyConfigurationImpl(f, open, remove, this);
+            try {
+                if (!(PolicyConfigurationFactory.getPolicyConfigurationFactory() 
+                        instanceof PolicyConfigurationFactoryImpl)) {
+                    pci.refresh(true);
+                }
+            } catch (ClassNotFoundException ex) {
+                //ignore 
+            } catch (PolicyContextException ex) {
+               // ignore
+            }
+
+            if (pci != null) {
+                putPolicyConfigurationImpl(contextId, pci);
+            }
+
+        }
+        return pci;
     }
     
     String getContextDirectoryName(String contextId) {
