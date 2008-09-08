@@ -1105,7 +1105,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // cache control
         Property cacheProp = vsBean.getProperty("setCacheControl");
         if ( cacheProp != null ){
-            vs.configureCacheControl(cacheProp.getValue());   
+            vs.configureCacheControl(cacheProp.getValue()); 
         }        
 
         PEAccessLogValve accessLogValve = vs.getAccessLogValve();
@@ -3364,7 +3364,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
                     HttpService httpService)
                 throws LifecycleException {
-
         if (VirtualServer.ADMIN_VS.equals(vsBean.getId())) {
             return;
         }
@@ -3392,17 +3391,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                            habitat,
                                            domain,
                                            globalAccessLoggingEnabled);
-            
-        String docroot = vsBean.getPropertyValue("docroot");
-        if (docroot == null) {
-            docroot = vsBean.getDocroot();
+        
+        List<Property> props = virtualServer.getProperties();
+        for (Property prop : props) {
+            updateHostProperties(vsBean, prop.getName(), prop.getValue(),
+                                         httpService, null);
         }
-        if (docroot != null) {
-            updateDocroot(docroot, virtualServer, vsBean);
-        }
-
+        
         int[] oldPorts = virtualServer.getPorts();
-
+        
         List<String> listeners = StringUtils.parseStringList(
             vsBean.getHttpListeners(), ",");
         if (listeners != null) {
