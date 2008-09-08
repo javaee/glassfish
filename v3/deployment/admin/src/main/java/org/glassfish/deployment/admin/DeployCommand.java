@@ -140,6 +140,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(primary=true)
     File path;
 
+    @Param(optional=true)
+    String description;
+
     private List<ApplicationConfig> appConfigList; 
 
     /**
@@ -275,6 +278,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 if (virtualservers != null) {
                     moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS,
                         virtualservers);
+                }
+                if (description != null) {
+                    moduleProps.setProperty(ServerTags.DESCRIPTION, description);
                 }
 
                 if (appConfigList != null) {

@@ -878,6 +878,10 @@ public class ApplicationLifecycle {
                     app.setDirectoryDeployed(moduleProps.getProperty(
                         ServerTags.DIRECTORY_DEPLOYED));
 
+                    if (moduleProps.getProperty(ServerTags.DESCRIPTION) !=null) {
+                        app.setDescription(moduleProps.getProperty(
+                                ServerTags.DESCRIPTION));
+                    }
                     apps.getModules().add(app);
 
                     // engine element
