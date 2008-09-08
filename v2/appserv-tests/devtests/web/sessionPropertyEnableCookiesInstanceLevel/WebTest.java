@@ -83,12 +83,14 @@ public class WebTest {
             }
         }
 
+        System.out.println("cookieLine: " + cookieLine);
         if (cookieLine != null) {
             System.err.println("Unexpected Set-Cookie response header");
             fail = true;
             return;
         }
         
+        System.out.println("redirectLine: " + redirectLine);
         if (redirectLine == null) {
             System.err.println("Missing Location response header");
             fail = true;
