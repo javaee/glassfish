@@ -75,7 +75,7 @@
 	    <ValidOption name="passwordfile"/>
 	</Command>
         <Command name="create-domain" classname="com.sun.enterprise.admin.cli.optional.CreateDomainCommand"  numberofoperands="1"
-           usage-text="create-domain [--user admin] --adminport port_number | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
+           usage-text="create-domain [--user admin] --adminport admin-port | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile file_name ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
                 <ValidOption name="adminport"/>
                 <ValidOption name="adminuser"/>
                 <ValidOption name="adminpassword"/>
@@ -108,7 +108,7 @@
         <Command name="stop-domain"
               classname="com.sun.enterprise.admin.cli.StopDomainCommand"
               numberofoperands="?"
-              usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [--force true] [domain_name]">
+              usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile file_name] [--domaindir domain_directory] [--force true] [domain_name]">
              <ValidOption name="domaindir"/>
              <ValidOption name="terse"/>
              <ValidOption name="echo"/>
@@ -132,7 +132,7 @@
 	</Command>
         <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
               numberofoperands="0"
-              usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false] [--user user] [--passwordfile filename]">
+              usage-text="list-commands [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile filename]">
              <ValidOption name="terse"/>
              <ValidOption name="echo"/>
              <ValidOption name="host"/>
@@ -144,7 +144,7 @@
         </Command>
         <Command name="monitor" classname="com.sun.enterprise.admin.cli.MonitorCommand"
               numberofoperands="1"
-              usage-text="monitor [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--user user] [--passwordfile filename] --type=monitor_type [target]">
+              usage-text="monitor [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile filename] --type=monitor_type [target]">
              <RequiredOption name="type"/>
              <ValidOption name="interval"/>
              <ValidOption name="terse"/>
@@ -156,5 +156,16 @@
              <ValidOption name="filter"/>
              <ValidOption name="filename"/>
         </Command>
+        <Command name="version"
+              classname="com.sun.enterprise.admin.cli.VersionCommand"
+              numberofoperands="?"
+              usage-text="version [--verbose (default: false)] [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile file_name]">
+             <ValidOption name="domaindir"/>
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="user"/>
+             <ValidOption name="passwordfile"/>
+             <ValidOption name="force"/>
+        </Command>        
     </Commands>
 </CommandsAndOptions>
