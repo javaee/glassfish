@@ -10,7 +10,8 @@ if (#{pageSession.configName}) {
         if (!#{pageSession.amxConfigAttributes}) {
             setPageSessionAttribute(key="amxConfigAttributes" value="#{amxConfigAttributes}");
         }
-        createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
+        if (!#{configMap}) {
+            createAmxConfigMap(moduleConfig="#{amxConfig}", properties="#{amxConfigAttributes}", configMap=>$pageSession{configMap});
+        }
     }
 }
-setAttribute(key="i18nBundle", value="org.glassfish.admingui.core.Strings");

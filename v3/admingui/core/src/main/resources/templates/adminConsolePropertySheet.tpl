@@ -1,8 +1,11 @@
 <!initPage
-#include "/templates/adminConsoleInit.inc"
-setAttribute(key="displayFeedback" value="#{displayFeedback}");
+    setAttribute(key="i18nBundle", value="org.glassfish.admingui.core.Strings");
 />
 <!composition template="/templates/propertySheetTemplate.tpl">
+    <!beforeEncode
+#include "/templates/adminConsoleInit.inc"
+    setPageSessionAttribute(key="displayFeedback" value="#{displayFeedback}");
+    />
     <!define name="formExtra">
 #include "/templates/adminConsoleForm.inc"
     </define> 
