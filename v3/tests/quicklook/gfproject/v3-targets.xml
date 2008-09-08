@@ -115,7 +115,7 @@
 </target>
 
 <target name="deploy-v3-impl-windows" if="isWindows">
-   <exec executable="cmd">
+   <exec executable="cmd" failonerror="true">
     <arg value="/c"/>
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
@@ -126,7 +126,7 @@
 </target>
   
 <target name="deploy-v3-impl-unix" if="isUnix">
-  <exec executable="${glassfish.home}/bin/asadmin">
+  <exec executable="${glassfish.home}/bin/asadmin" failonerror="true">
     <arg value="deploy"/>
     <arg value="--path"/>
     <arg line="${deployed.app}"/>
