@@ -30,14 +30,6 @@
                 <!-- Generate OSGi bundle headers -->
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            org.jvnet.hk2.config;
-                        </Export-Package>
-                        <!--<Private-Package>!*</Private-Package>-->
-                    </instructions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
