@@ -48,10 +48,6 @@
     <artifactId>external</artifactId>
     <packaging>pom</packaging>
     <name>OSGi repackaging of HK2 dependencies</name>
-    <!--
-      This module is not yet uesd by GFv3, but Ludo is using this for his experiment with
-      embedding GFv3 into an OSGi container
-    -->
     <modules>
 	    <module>stax</module>
 	    <module>tiger-types</module>
