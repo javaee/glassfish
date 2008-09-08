@@ -3352,6 +3352,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     HttpService httpService)
                 throws LifecycleException {
 
+        if (VirtualServer.ADMIN_VS.equals(vsBean.getId())) {
+            return;
+        }
+
         Engine[] engines = _embedded.getEngines();
         VirtualServer virtualServer = 
             (VirtualServer)engines[0].findChild(vsBean.getId());
@@ -3772,7 +3776,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 throws LifecycleException {
 
         grizzlyService.createNetworkProxy(httpListener, httpService);
-        grizzlyService.registerNetworkProxy(start);
+        grizzlyService.registerNetworkProxy();
 
         int port = Integer.parseInt(httpListener.getPort());
 

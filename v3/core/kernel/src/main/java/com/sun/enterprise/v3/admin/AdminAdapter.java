@@ -110,6 +110,8 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     Config config;
 
     private AdminEndpointDecider epd = null;
+
+    private boolean isRegistered = false;
             
     CountDownLatch latch = new CountDownLatch(1);
 
@@ -469,5 +471,20 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
+    }
+
+    /**
+     * Checks whether this adapter has been registered as a network endpoint.
+     */
+    public boolean isRegistered() {
+	return isRegistered;
+    }
+
+    /**
+     * Marks this adapter as having been registered or unregistered as a
+     * network endpoint
+     */
+    public void setRegistered(boolean isRegistered) {
+	this.isRegistered = isRegistered;
     }
 }

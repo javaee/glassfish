@@ -203,7 +203,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
                 futures.add(createNetworkProxy(listener, httpService));
             }
-            registerNetworkProxy(true); 
+            registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
             for(NetworkProxy proxy : proxies) {
@@ -286,7 +286,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /*
      * Registers all proxies
      */
-    public void registerNetworkProxy(boolean start){
+    public void registerNetworkProxy(){
         // todo : this neeed some rework...
         // now register all proxies you can find out there !
         // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
@@ -294,18 +294,23 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         for (org.glassfish.api.container.Adapter subAdapter : 
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
-                
-            if (!start &&  
-                 (subAdapter instanceof AdminAdapter 
-                  ||  subAdapter instanceof AdminConsoleAdapter)) {
-                  continue;
-            }
-               
             try {
                 if (subAdapter instanceof AdminAdapter) {
-                    registerAdminAdapter((AdminAdapter)subAdapter);
-                } else if ( subAdapter instanceof AdminConsoleAdapter) {
-                    registerAdminConsoleAdapter((AdminConsoleAdapter)subAdapter);
+                    AdminAdapter aa = (AdminAdapter)subAdapter;
+                    // Once registered, do not register again.
+                    // See GlassFish issues 5892 and 5972
+                    if (!aa.isRegistered()) {
+                        registerAdminAdapter(aa);
+                        aa.setRegistered(true);
+                    }
+                } else if (subAdapter instanceof AdminConsoleAdapter) {
+                    AdminConsoleAdapter aca = (AdminConsoleAdapter)subAdapter;
+                    // Once registered, do not register again.
+                    // See GlassFish issues 5892 and 5972
+                    if (!aca.isRegistered()) {
+                        registerAdminConsoleAdapter(aca);
+                        aca.setRegistered(true);
+                    }
                 } else {
                     registerEndpoint(subAdapter.getContextRoot(), hosts, 
                         subAdapter, null);

@@ -137,6 +137,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private String statusHtml;
     private String initHtml;
 
+    private boolean isRegistered = false;
+
     //don't change the following without changing the html pages
 
     private static final String PROXY_HOST_PARAM = "proxyHost";
@@ -258,6 +260,23 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     void setInstalling(boolean flag) {
 	installing = flag;
     }
+
+
+    /**
+     * Checks whether this adapter has been registered as a network endpoint.
+     */
+    public boolean isRegistered() {
+	return isRegistered;
+    }
+
+    /**
+     * Marks this adapter as having been registered or unregistered as a
+     * network endpoint
+     */
+    public void setRegistered(boolean isRegistered) {
+	this.isRegistered = isRegistered;
+    }
+
 
     /**
      *	<p> This method sets the current state.</p>
