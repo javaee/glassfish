@@ -77,11 +77,10 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
     private DynamicReloader reloader;
     
     private static final String DEFAULT_POLL_INTERVAL_IN_SECONDS = "2";
-    private static final String DEFAULT_DYNAMIC_RELOAD_ENABLED = "true";
     
-    private static final List<String> configPropertyNames = Arrays.asList(new String[] {
+    private static final List<String> configPropertyNames = Arrays.asList(
             "dynamic-reload-enabled", "dynamic-reload-poll-interval-in-seconds"
-            });
+            );
 
     public DynamicReloadService() {
     }
@@ -225,7 +224,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
                     } catch (NumberFormatException ex) {
                         String reason = ex.getClass().getName() + " " + ex.getLocalizedMessage();
                         logger.log(Level.WARNING, reason);
-                        unprocessedEvents.add(new UnprocessedChangeEvent(event, reason));
                     }
                 }
             }

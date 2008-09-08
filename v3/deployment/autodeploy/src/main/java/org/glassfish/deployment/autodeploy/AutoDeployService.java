@@ -280,9 +280,6 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
                                     event.getNewValue(), 
                                     ex.getClass().getName(), 
                                     ex.getLocalizedMessage()} );
-                        unprocessedEvents.add(new UnprocessedChangeEvent(
-                                event, 
-                                ex.getLocalizedMessage()));
                     }
                 } else if (propName.equals("autodeploy-dir")) {
                     String newDir = (String) event.getNewValue();
@@ -299,7 +296,6 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
                                     event.getNewValue(), 
                                     ex.getClass().getName(), 
                                     ex.getCause().getLocalizedMessage()});
-                        unprocessedEvents.add(new UnprocessedChangeEvent(event, ex.getLocalizedMessage()));
                     }
                 } else if (propName.equals("autodeploy-verifier-enabled")) {
                     boolean newVerifierEnabled = Boolean.parseBoolean((String) event.getOldValue());
