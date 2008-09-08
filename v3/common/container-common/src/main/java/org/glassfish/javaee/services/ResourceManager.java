@@ -80,8 +80,6 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     private Resources allResources; // Needed so as to listen to config changes.
 
     private ConnectorRuntime runtime;
-    @Inject
-    private ResourcePropertiesHolder holder;
     
     public void postConstruct() {
         //TODO V3 need to get jdbc pools/resources from Resources
@@ -321,6 +319,10 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 try {
                     if(ConnectorsUtil.isValidEventType(instance)) {
                         getConnectorRuntime().redeployResource(instance);
+                    } else if(ConnectorsUtil.isValidEventType(instance.getParent())) {
+                        //Added in case of a property change
+                        //check for validity of the property's parent and redeploy
+                        getConnectorRuntime().redeployResource(instance.getParent());
                     }
                 } catch (Exception ex) {
                     final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
@@ -454,70 +456,9 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
             ConnectorResource resource = (ConnectorResource) instance;
   	    bean = (ObservableBean) ConfigSupport.getImpl(resource);
 	    bean.addListener(this);
-        } else if (instance instanceof Property) {
-            Property prop = (Property) instance;
-            bean = (ObservableBean) ConfigSupport.getImpl(prop);
-            holder.setPropertyBean(bean);
-            holder.addListener();
-        }
-        addListenerToProperties(instance);
-
+        } 
     }
 
-    /**
-     * Add listener to properties of the particular JDBC Connection Pool and its
-     * associated properties.
-     * @param pool JDBC Connection Pool
-     */
-    private void addListenerToProperties(Object instance) {
-        List<Property> properties = null;
-        if (instance instanceof JdbcConnectionPool) {
-            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
-            properties = pool.getProperty();
-            for (Property prop : properties) {
-                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
-                holder.setPropertyBean(propertyBean);
-                holder.setResource(pool);
-                holder.addListener();
-            }
-        } else if(instance instanceof ConnectorConnectionPool) {
-            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
-            properties = pool.getProperty();
-            for (Property prop : properties) {
-                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
-                holder.setPropertyBean(propertyBean);
-                holder.setResource(pool);
-                holder.addListener();
-            }
-        }
-    }
-
-     /**
-     * Remove listener from properties of the particular JDBC Connection Pool.
-     * @param pool JDBC Connection Pool
-     */
-    private void removeListenerFromProperties(Object instance) {
-        List<Property> properties = null;
-        if (instance instanceof JdbcConnectionPool) {
-            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
-            properties = pool.getProperty();
-            for (Property prop : properties) {
-                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
-                holder.setPropertyBean(propertyBean);
-                holder.setResource(pool);
-                holder.removeListener();
-            }
-        } else if (instance instanceof ConnectorConnectionPool) {
-            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
-            properties = pool.getProperty();
-            for (Property prop : properties) {
-                ObservableBean propertyBean = (ObservableBean) ConfigSupport.getImpl(prop);
-                holder.setPropertyBean(propertyBean);
-                holder.setResource(pool);
-                holder.removeListener();
-            }            
-        }
-    }
 
     /**
      * Remove listener from a generic resource (JDBC Connection Pool/Connector 
@@ -544,7 +485,6 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
   	    observableBean = (ObservableBean) ConfigSupport.getImpl(resource);
 	    observableBean.removeListener(this);
         }
-        removeListenerFromProperties(instance);
 
     }
 
