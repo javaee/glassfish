@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.enterprise</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>0.3.19-SNAPSHOT</version>
+    <version>0.3.19</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -73,7 +72,7 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:svn:https://hk2.dev.java.net/svn/hk2</connection>
+        <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-0.3.19</connection>
     </scm>
     <distributionManagement>
         <site>
@@ -160,7 +159,7 @@
                      <configuration>
                          <!-- By default, we don't export anything.
                          -->
-                         <Export-Package></Export-Package>
+                         <Export-Package />
                          <instructions>
                              <!-- Read all the configuration from osgi.bundle file, if it exists.
                                   See Felix-699 to find out why we use ${basedir}.
