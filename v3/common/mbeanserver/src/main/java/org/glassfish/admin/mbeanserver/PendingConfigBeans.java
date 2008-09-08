@@ -44,6 +44,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -132,6 +133,7 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct, Tra
        //debug( "ADD: " + cb.getProxyType().getName() );
        return addJob( new PendingConfigBeanJob( cb, latch ) );
     }
+    
         
     /**
         Removing a ConfigBean must ensure that all its children are also removed.  This will normally
@@ -159,8 +161,49 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct, Tra
             }
         }
         
+        if ( found ) 
+        {
+            removeAllDescendants(cb);
+        }
         return found;
     }
+    
+    /**
+        Remove all jobs that have this ConfigBean as an ancestor.
+     */
+    private void removeAllDescendants( final ConfigBean cb )
+    {
+        final List<PendingConfigBeanJob> jobs = new ArrayList<PendingConfigBeanJob>(mJobs);
+        
+        for( final PendingConfigBeanJob job : jobs )
+        {
+            if ( isDescendent(job.getConfigBean(), cb) )
+            {
+                //debug( "removed descendent: " + job.getConfigBean().getProxyType().getName() );
+                mJobs.remove(job);
+            }
+        }
+    }
+    
+    /** return true if the candidate is a descendent of the parent */
+    private boolean isDescendent(final ConfigBean candidate,  final ConfigBean parent )
+    {
+        boolean isParent = false;
+        Dom temp = candidate.parent();
+        while ( temp != null )
+        {
+            if ( temp == parent )
+            {
+                isParent = true;
+                break;
+            }
+            temp = temp.parent();
+        }
+        
+        return isParent;
+    }
+
+    
     
     /**
         amx-impl has its own TransactionListener which takes over once AMX is loaded.
