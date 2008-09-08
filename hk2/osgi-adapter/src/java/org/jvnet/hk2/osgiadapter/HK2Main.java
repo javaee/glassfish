@@ -60,10 +60,7 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
@@ -115,9 +112,14 @@ public class HK2Main extends Main implements
         String lineformat = System.getProperty("glassfish.startup.context");
         StartupContext startupContext;
         if (lineformat!=null) {
-            StringReader reader = new StringReader(lineformat);
             Properties arguments = new Properties();
-            arguments.load(reader);
+            /**
+             * for jdk6 switch to this
+             */
+            //StringReader reader = new StringReader(lineformat);
+            //arguments.load(reader);
+            ByteArrayInputStream is = new ByteArrayInputStream(lineformat.getBytes());
+            arguments.load(is);
             startupContext = new StartupContext(contextRootDir, arguments);
         } else {
             startupContext = new StartupContext(contextRootDir, new String[0]);
