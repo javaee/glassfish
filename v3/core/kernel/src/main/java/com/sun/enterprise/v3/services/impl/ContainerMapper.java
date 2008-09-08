@@ -164,7 +164,6 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 // Re-set back the position.
                 if (semicolon != 0 && end != 0){
                     decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), end);
-                    //uriCC.setEnd(ccURIend);
                 }
 
                 req.setNote(MAPPED_ADAPTER, adapter);
