@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * @author  kedar
  * @since Sun Java System Application Server 8.1
  */
-class RmiStubRegistryHandler {
+final class RmiStubRegistryHandler {
     private final Logger logger;
     
     /** Starts the RMI registry at the given port. If the security flag is
@@ -93,9 +93,9 @@ class RmiStubRegistryHandler {
     private void logBindings(final Registry r, final int port) {
         try {
             final String[] bs = r.list();
-            logger.fine("Initial Bindings in RmiRegistry at port: [" + port + "] :" + ((bs.length == 0 ) ? " NONE": ""));
+            logger.info("Initial Bindings in RmiRegistry at port: [" + port + "] :" + ((bs.length == 0 ) ? " NONE": ""));
             for (int i = 0 ; i < bs.length ; i++) {
-                logger.fine("JMX Connector RMI Registry binding: " + bs[i]);
+                logger.info("JMX Connector RMI Registry binding: " + bs[i]);
             }
         }
         catch(final Exception e) {

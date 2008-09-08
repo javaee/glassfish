@@ -53,7 +53,7 @@ public final class StartRMITest extends junit.framework.TestCase
     
     @Test
     public void testCreate() {
-        JmxConnectorServerDriver.testStart( 8686, "rmi_jrmp");
+        JmxConnectorServerDriver.testStart( 8686, "rmi_jrmp", false );
     }
 }
 

@@ -85,10 +85,22 @@ public class JmxConnectorServerDriver {
         }
         
         debug( "JmxConnectorServerDriver.main(): port: " + port + ", protocol: " + protocol );
-        testStart( port, protocol );
+        testStart( port, protocol, true );
     }
     
-    public static void testStart( final int port, final String protocol ) {
+    public static void dumpRegistryBindings( final String msg, final int port )
+    {
+        try
+        {
+            DumpRegistryBindings.dumpRegistryBindings(msg,port);
+        }
+        catch( final Exception e )
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void testStart( final int port, final String protocol, boolean loopForever) {
         try
         {
             final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
@@ -113,6 +125,17 @@ public class JmxConnectorServerDriver {
             final MBeanServerConnection mbsc = conn.getMBeanServerConnection();
             
             debug( "testStartRMI: connected client over RMI connector @ " + server.getAddress() );
+            
+            dumpRegistryBindings( "testStart", port);
+            if ( loopForever )
+            {
+                // wait forever
+                while( true )
+                {
+                    System.out.println( "JmxConnectorServerDriver.testStart: looping forever" );
+                    try { Thread.sleep( 5000 ); } catch( Exception e ) {}
+                }
+            }
         }
         catch( Exception e )
         {
@@ -224,7 +247,7 @@ public class JmxConnectorServerDriver {
         formJmxServiceUrl();
         createEnvironment();
         
-        logger.fine( "Starting JMXConnectorServer @ " + url );
+        logger.info( "Starting JMXConnectorServer @ " + url );
         final JMXConnectorServer cs = 
             JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
 
@@ -235,10 +258,12 @@ public class JmxConnectorServerDriver {
     
     public JMXConnectorServer startJconsoleConnectorServer() throws IOException {
         // This env is ditto with the System JMX Connector Server, except SSL ClientSocketFactory.
-        final RMIClientSocketFactory cf = new SslRMIClientSocketFactory();
         final Map jconsoleenv = new HashMap(env);
-        if (ssl) 
+        if (ssl)
+        {
+            final RMIClientSocketFactory cf = new SslRMIClientSocketFactory();
             jconsoleenv.put(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE, cf);
+        }
         final JMXConnectorServer jconsolecs = 
             JMXConnectorServerFactory.newJMXConnectorServer(jconsoleurl, jconsoleenv, mbs);
         jconsolecs.start();
@@ -279,9 +304,9 @@ public class JmxConnectorServerDriver {
     
     private void prepare() {
         if (protocol.equals( RemoteJmxProtocol.RMIJRMP) ) {
-           // debug ("prepare(): creating RmiStubRegistryHandler on port "  + port );
+            debug ("prepare(): creating RmiStubRegistryHandler on port "  + port );
             new RmiStubRegistryHandler(port, secureRegistry, logger);
-            //debug ("prepare(): created RmiStubRegistryHandler on port "  + port );
+            debug ("prepare(): created RmiStubRegistryHandler on port "  + port );
         }
         else
         {
