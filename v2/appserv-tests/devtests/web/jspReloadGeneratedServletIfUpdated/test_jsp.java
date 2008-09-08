@@ -7,9 +7,11 @@ import javax.servlet.jsp.*;
 public final class test_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
 
+  private static final JspFactory _jspxFactory = JspFactory.getDefaultFactory();
+
   private static java.util.Vector _jspx_dependants;
 
-  private org.apache.jasper.runtime.ResourceInjector _jspx_resourceInjector;
+  private org.glassfish.jsp.api.ResourceInjector _jspx_resourceInjector;
 
   public Object getDependants() {
     return _jspx_dependants;
@@ -18,7 +20,6 @@ public final class test_jsp extends org.apache.jasper.runtime.HttpJspBase
   public void _jspService(HttpServletRequest request, HttpServletResponse response)
         throws java.io.IOException, ServletException {
 
-    JspFactory _jspxFactory = null;
     PageContext pageContext = null;
     HttpSession session = null;
     ServletContext application = null;
@@ -28,9 +29,7 @@ public final class test_jsp extends org.apache.jasper.runtime.HttpJspBase
     JspWriter _jspx_out = null;
     PageContext _jspx_page_context = null;
 
-
     try {
-      _jspxFactory = JspFactory.getDefaultFactory();
       response.setContentType("text/html");
       response.setHeader("X-Powered-By", "JSP/2.1");
       pageContext = _jspxFactory.getPageContext(this, request, response,
@@ -41,9 +40,9 @@ public final class test_jsp extends org.apache.jasper.runtime.HttpJspBase
       session = pageContext.getSession();
       out = pageContext.getOut();
       _jspx_out = out;
-      _jspx_resourceInjector = (org.apache.jasper.runtime.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
+      _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
-      out.write("This is my updated output");
+      out.write("This is my UPDATED output\n");
     } catch (Throwable t) {
       if (!(t instanceof SkipPageException)){
         out = _jspx_out;
@@ -52,7 +51,7 @@ public final class test_jsp extends org.apache.jasper.runtime.HttpJspBase
         if (_jspx_page_context != null) _jspx_page_context.handlePageException(t);
       }
     } finally {
-      if (_jspxFactory != null) _jspxFactory.releasePageContext(_jspx_page_context);
+      _jspxFactory.releasePageContext(_jspx_page_context);
     }
   }
 }
