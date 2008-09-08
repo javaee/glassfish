@@ -18,7 +18,7 @@ sleep 10
 echo "\n"
 
 #create pool jdbc-dev-test-pool
-./bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --property="Password=APP:User=APP:DatabaseName=sun-appserv-samples:serverName=localhost:connectionAttributes=\;create\\=true" jdbc-dev-test-pool
+./bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --property="Password=APP:User=APP:DatabaseName=$databaseshome/sun-appserv-samples:serverName=localhost:connectionAttributes=\;create\\=true" jdbc-dev-test-pool
 
 #create resource jdbc/jdbc-dev-test-resource
 ./bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-dev-test-pool jdbc/jdbc-dev-test-resource
@@ -38,9 +38,16 @@ echo "Created jdbc-reconfig-test-pool-2 \n"
 #create resource jdbc/jdbc-reconfig-test-resource-2
 ./bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-reconfig-test-pool-2 jdbc/jdbc-reconfig-test-resource-2
 
+echo "Setting max-pool-size of jdbc-dev-test-pool to 40 to test set when pool is not activated\n"
+#asadmin set max-pool-size to 40 before running test 
+./bin/asadmin set --value=40 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-pool-size
+
+#also set max-wait-time-in-millis to a smaller value so that tests run faster
+./bin/asadmin set --value=1000 resources.jdbc-connection-pool.jdbc-dev-test-pool.max-wait-time-in-millis
+
 echo "Executing JDBC Connection Pool Attribute/Property Reconfiguration Tests\n"
 #testId=1 for attribute change
-GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=5\&throwException=false\&testId=1 > $reconfigResult 
+GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?maxPoolSize=40\&throwException=true\&testId=1 > $reconfigResult 
 echo "\n"
 
 #asadmin set max-pool-size to 10 before running test for the second time

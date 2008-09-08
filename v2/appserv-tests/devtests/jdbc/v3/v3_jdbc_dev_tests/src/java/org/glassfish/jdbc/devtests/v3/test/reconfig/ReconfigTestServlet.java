@@ -47,7 +47,7 @@ public class ReconfigTestServlet extends HttpServlet {
         Map<String, Boolean> mapReconfig = null;
         //Determine the test to be executed
         int testId = Integer.parseInt(request.getParameter("testId").trim());
-        boolean throwException = false;
+        boolean throwException = Boolean.parseBoolean(request.getParameter("throwException").trim());
         try {
             out.println("<html>");
             out.println("<head>");
@@ -59,25 +59,21 @@ public class ReconfigTestServlet extends HttpServlet {
                 case 1: //Attribute change test
 
                     int maxPoolSize = Integer.parseInt(request.getParameter("maxPoolSize").trim());
-                    throwException = Boolean.parseBoolean(request.getParameter("throwException").trim());
                     out.println("<h1>Reconfig Pool Attribute Test </h1>");
                     mapReconfig = reconfigTest.poolAttributeChangeTest(ds, out, maxPoolSize, throwException);
                     break;
                 case 2: //Property change test
 
-                    throwException = Boolean.parseBoolean(request.getParameter("throwException").trim());
                     out.println("<h1>Reconfig Pool Property Test </h1>");
                     mapReconfig = reconfigTest.poolPropertyChangeTest(ds, out, throwException);
                     break;
                 case 3: //Resource attribute change test
 
-                    throwException = Boolean.parseBoolean(request.getParameter("throwException").trim());
                     out.println("<h1>Reconfig Resource Attribute Test with DS : dsReconfig2</h1>");
                     mapReconfig = reconfigTest.resourceAttributeChangeTest(dsReconfig2, out, throwException);
                     break;
                 case 4: //Resource attribute change test with another datasource
                     
-                    throwException = Boolean.parseBoolean(request.getParameter("throwException").trim());
                     out.println("<h1>Reconfig Resource Attribute Test with DS : dsReconfig1</h1>");
                     mapReconfig = reconfigTest.resourceAttributeChangeTest(dsReconfig1, out, throwException);
                     break;
