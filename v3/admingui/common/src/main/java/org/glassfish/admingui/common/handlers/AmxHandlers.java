@@ -80,9 +80,6 @@ public class AmxHandlers {
         if (amxConfig == null) {
             throw new IllegalArgumentException("getDefaultConfigurationValue:  moduleConfig can not be null");
         }
-        System.out.println("***** The amxConfig object is " + amxConfig.toString());
-        System.out.println("***** The default value for '" + (String) handlerCtx.getInputValue("key") +
-                "' is '" + amxConfig.getDefaultValue((String) handlerCtx.getInputValue("key")) + "'");
         handlerCtx.setOutputValue("defaultValue", amxConfig.getDefaultValue((String) handlerCtx.getInputValue("key")));
     }
 
@@ -116,7 +113,6 @@ public class AmxHandlers {
         for (String prop : properties) {
             ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
                     createValueExpression(elContext, "#{amxConfigMap." + prop + "}", Object.class);
-            //ve.setValue(facesContext.getELContext(), value);
             Object value = propVE.getValue(elContext);
             map.put(prop, value);
         }
@@ -143,7 +139,6 @@ public class AmxHandlers {
 
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         final ELContext elContext = facesContext.getELContext();
-        //for (String prop : properties) {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
                     createValueExpression(elContext, "#{amxConfig." + entry.getKey() + "}", Object.class);
@@ -162,14 +157,9 @@ public class AmxHandlers {
         if (amxConfig == null) {
             throw new IllegalArgumentException("getDefaultConfigurationValue:  amxConfig can not be null");
         }
-        System.out.println("******************************** " + entries.toString());
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            System.out.println("***** amxConfig = " + amxConfig);
-            System.out.println("***** default for " + entry.getKey() + " = " + amxConfig.getDefaultValue(entry.getKey()));
-            //MiscUtil.setValueExpression("#{configMap." + prop + "}", amxConfig.getDefaultValue(prop));
             entries.put(entry.getKey(), amxConfig.getDefaultValue(entry.getKey()));
         }
-        System.out.println("******************************** " + entries.toString());
     }
 
     /**
