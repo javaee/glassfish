@@ -125,7 +125,8 @@
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
             <artifactId>web-all</artifactId>
-            <version>10.0-build-SNAPSHOT</version>
+            <version>10.0-SNAPSHOT</version>
+            <classifier>build</classifier>
             <!--
         the user of this library should choose which bundle of GFv3 to use with this API,
         hence the provided scope
