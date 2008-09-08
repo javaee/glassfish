@@ -138,7 +138,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         
         if ( changed )
         {
-            debug( "issueAttributeChange: " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
+            //debug( "issueAttributeChange: " + xmlAttrName + ": {" + oldValue + " => " + newValue + "}");
             
             final AMXConfigImplBase amx = AMXConfigImplBase.class.cast( AMXImplBase.__getObjectRef__(mMBeanServer, objectName) );
             amx.issueAttributeChangeForXmlAttrName( xmlAttrName, oldValue, newValue, whenChanged );
@@ -149,7 +149,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final List<PropertyChangeEvent> events,
         final long    whenChanged )
     {
-debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
+        //debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         final List<ConfigBean> newConfigBeans   = new ArrayList<ConfigBean>();
         final List<PropertyChangeEvent> remainingEvents = new ArrayList<PropertyChangeEvent>();
 
@@ -201,8 +201,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
                 final String propertyName = event.getPropertyName();
                 final String sourceString = (source instanceof ConfigBeanProxy) ? ConfigSupport.proxyType((ConfigBeanProxy)source).getName() : "" + source;
                 
-                debug( "AMXConfigLoader.sortAndDispatch (ATTR change): name = " + propertyName +
-                        ", oldValue = " + oldValue + ", newValue = " + newValue + ", source = " + sourceString );
+                //debug( "AMXConfigLoader.sortAndDispatch (ATTR change): name = " + propertyName +
+                //        ", oldValue = " + oldValue + ", newValue = " + newValue + ", source = " + sourceString );
                 if ( source instanceof ConfigBeanProxy )
                 {
                     // CHANGE
@@ -217,7 +217,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
                     {
                         if ( ! newConfigBeans.contains(cb) )
                         {
-                            debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean (WORKAROUND): " + proxyClass.getName() );
+                            //debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean (WORKAROUND): " + proxyClass.getName() );
                             handleConfigBean( cb, false );
                             newConfigBeans.add( cb );
                         }
@@ -256,7 +256,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         
 		if ( registrationDone.booleanValue() )
 		{
-            mTransactions.addTransactionsListener( this );
+            mPendingConfigBeans.swapTransactionListener(this);
 		}
 	}
     

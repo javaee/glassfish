@@ -45,6 +45,17 @@ import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+
+
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+
+
+import java.util.List;
+import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
 
 
 /**
@@ -53,7 +64,7 @@ import org.jvnet.hk2.config.ConfigBean;
  * @author llc
  */
 @Service(name="PendingConfigBeans")
-public final class PendingConfigBeans implements CageBuilder, PostConstruct
+public final class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
 {
     private static void debug( final String s ) { System.out.println(s); }
     
@@ -72,6 +83,7 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
     public void postConstruct()
     {
         //debug( "PendingConfigBeans.postConstruct" );
+        Transactions.get().addTransactionsListener(this);
     }
     
     /**
@@ -89,7 +101,7 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
         final ConfigBean cb = asConfigBean(inhabitant);
         if ( cb != null )
         {
-            final ConfigBean parent = asConfigBean(cb.parent());
+            //final ConfigBean parent = asConfigBean(cb.parent());
             //debug( "PendingConfigBeans.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
             add( cb );
         }
@@ -117,25 +129,91 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct
         public PendingConfigBeanJob
     add( final ConfigBean cb, final CountDownLatch latch)
     {
+       //debug( "ADD: " + cb.getProxyType().getName() );
        return addJob( new PendingConfigBeanJob( cb, latch ) );
     }
-    
+        
+    /**
+        Removing a ConfigBean must ensure that all its children are also removed.  This will normally
+        happen if AMX is loaded as a side effect of unregistering MBeans, but if AMX has not loaded
+        we must ensure it directly.
+        This is all caused by an HK2 asymmetry that does not issue REMOVE events for children of removed
+        elements.
+        <p>
+        TODO: remove all children of the ConfigBean.
+     */
         public boolean
     remove( final ConfigBean cb )
     {
+        //debug( "REMOVE: " + cb.getProxyType().getName() );
         boolean  found = false;
         
         for( final PendingConfigBeanJob job : mJobs )
         {
             if ( job.getConfigBean() == cb )
             {
+                found = true;
                 job.releaseLatch();
                 mJobs.remove(job);
-                found = true;
                 break;
             }
         }
+        
         return found;
+    }
+    
+    /**
+        amx-impl has its own TransactionListener which takes over once AMX is loaded.
+        Note that it is synchronized with transactionCommited() [sic] to avoid a race condition.
+     */
+    public synchronized void swapTransactionListener( final TransactionListener newListener )
+    {
+        //debug( "PendingConfigBeans.swapTransactionListener()" );
+        Transactions.get().addTransactionsListener(newListener);
+        Transactions.get().removeTransactionsListener(this);
+    }
+    
+    /**
+        This is a workaround for the fact that the onEntered() is not being called in all cases,
+        namely during deployment before AMX has loaded.  See disableTransactionListener() above.
+     */
+        public synchronized void
+    transactionCommited( final List<PropertyChangeEvent> events)
+    {
+        // could there be an add/remove/add/remove of the same thing?  Maintain the order just in case
+        for ( final PropertyChangeEvent event : events) 
+        {
+            final Object oldValue = event.getOldValue();
+            final Object newValue = event.getNewValue();
+            final Object source   = event.getSource();
+            final String propertyName = event.getPropertyName();
+            
+            if ( oldValue == null && newValue instanceof ConfigBeanProxy )
+            {
+                // ADD: a new ConfigBean was added
+                final ConfigBean cb = asConfigBean( ConfigBean.unwrap( (ConfigBeanProxy)newValue) );
+                add(cb);
+            }
+            else if ( newValue == null && (oldValue instanceof ConfigBeanProxy) )
+            {
+                // REMOVE
+                final ConfigBean cb = asConfigBean( ConfigBean.unwrap( (ConfigBeanProxy)oldValue) );
+                remove( cb );
+            }
+            else
+            {
+                // CHANGE can occur before ADD
+                //final ConfigBean cb = asConfigBean( ConfigBean.unwrap( (ConfigBeanProxy)source) );
+                //debug( "CHANGE: " +  cb.getProxyType().getName() + ": " + oldValue + " ===> " + newValue );
+            }
+        }
+    }
+    
+    
+        public void 
+    unprocessedTransactedEvents(List<UnprocessedChangeEvents> changes)
+    {
+        // ignore
     }
 }
 

@@ -96,6 +96,7 @@ public class AMXConfigImplBase extends AMXImplBase
         mSupplementaryInterface = supplementaryInterface;
         
 	}
+
     
     private static ConfiguredHelper getConfiguredHelper(final Class<? extends ConfigBeanProxy> intf )
     {
@@ -157,7 +158,7 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         String amxName = super.asAMXAttributeName(name);
         
-cdebug( "asAMXAttributeName: " + name );
+        //cdebug( "asAMXAttributeName: " + name );
         if ( JMXUtil.getMBeanAttributeInfo( getMBeanInfo(), amxName ) == null )
         {
             final AttrInfo info = getConfigDelegate().getAttrInfo_AMX(name);
@@ -165,11 +166,11 @@ cdebug( "asAMXAttributeName: " + name );
             if ( info != null )
             {
                 amxName = info.amxName();
-cdebug( "asAMXAttributeName: found match: " + info );
+                //cdebug( "asAMXAttributeName: found match: " + info );
             }
             else
             {
-cdebug( "asAMXAttributeName: no match: " + name );
+            //cdebug( "asAMXAttributeName: no match: " + name );
             }
         }
         return name;
