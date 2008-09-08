@@ -28,7 +28,6 @@ import org.jvnet.hk2.annotations.Contract;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
 
 import com.sun.enterprise.module.Module;
@@ -57,12 +56,12 @@ public interface Sniffer {
     public boolean handles(ReadableArchive source, ClassLoader loader);
 
     /**
-     * Returns the pattern to apply against the request URL
+     * Returns the array of patterns to apply against the request URL
      * If the pattern matches the URL, the service method of the associated
      * container will be invoked
-     * @return pattern instance
+     * @return array of patterns
      */
-    public Pattern getURLPattern();
+    public String[] getURLPatterns();
 
     /**
      * Returns the list of annotations types that this sniffer is interested in.
