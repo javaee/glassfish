@@ -73,13 +73,6 @@ public class OSGiModulesRegistryImpl
             new HashMap<ModuleChangeListener, BundleListener>();
     private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
             new HashMap<ModuleLifecycleListener, BundleListener>();
-    /**
-     * Map of module name to modules that were installed prior to
-     * ModulesRegistry came into existence. This can happen because some
-     * modules are auto-installed by OSGi framework. One such framework
-     * is our osgi-adapter module itself.
-     */
-    private final ConcurrentMap<String,Module> preInstalledModules = new ConcurrentHashMap<String,Module>();
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -102,7 +95,6 @@ public class OSGiModulesRegistryImpl
             }
             Module m = new OSGiModuleImpl(this, b, md);
             modules.put(md.getName(), m);
-            preInstalledModules.put(md.getName(), m);
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
         pa = PackageAdmin.class.cast(bctx.getService(ref));
@@ -150,12 +142,11 @@ public class OSGiModulesRegistryImpl
         for (Module m : modules.values()) {
             // Only stop modules that were started after ModulesRegistry
             // came into existence.
-            if (!preInstalledModules.containsKey(m.getName())) {
+            if (OSGiModuleImpl.class.cast(m).isTransientlyActive()) {
                  m.stop();
             }
         }
         modules.clear();
-        preInstalledModules.clear();
 
         for (Repository repo : repositories.values()) {
             try {

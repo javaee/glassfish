@@ -70,6 +70,8 @@ public final class OSGiModuleImpl implements Module {
 
     private ModuleState state;
 
+    private boolean isTransientlyActive = false;
+
     /* TODO (Sahoo): Change hk2-apt to generate an equivalent BundleActivator
        corresponding to LifecyclerPolicy class. That way, LifecyclePolicy class
        will be invoked even when underlying OSGi bundle is stopped or started
@@ -81,7 +83,25 @@ public final class OSGiModuleImpl implements Module {
         this.registry = registry;
         this.bundle = bundle;
         this.md = md;
-        this.state = ModuleState.NEW;
+        switch (bundle.getState()) {
+            case Bundle.INSTALLED:
+            case Bundle.UNINSTALLED:
+                this.state = ModuleState.NEW;
+                break;
+            case Bundle.RESOLVED:
+                this.state = ModuleState.RESOLVED;
+                break;
+            case Bundle.STARTING:
+                this.state = ModuleState.PREPARING;
+                break;
+            case Bundle.ACTIVE:
+                this.state = ModuleState.READY;
+                break;
+            default:
+                throw new RuntimeException(
+                        "Does not know how to handle bundle with state [" +
+                                bundle.getState() + "]");
+        }
     }
 
     public ModuleDefinition getModuleDefinition() {
@@ -101,15 +121,9 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public synchronized void resolve() throws ResolveError {
-        if (state==ModuleState.RESOLVED) {
-            return;
-        }
-        try {
-            bundle.start();
-            state = ModuleState.RESOLVED;
-        } catch (BundleException e) {
-            throw new ResolveError("Failed to start "+this,e);
-        }
+        // Since OSGi bundle does not have a separate resolve method,
+        // we use the same implementation as start();
+        start();
     }
 
     public synchronized void start() throws ResolveError {
@@ -117,7 +131,16 @@ public final class OSGiModuleImpl implements Module {
             return;
         }
 
-        resolve();
+        try {
+            if ((bundle.getState() & Bundle.ACTIVE) == 0) {
+                bundle.start();
+                isTransientlyActive = true;
+                logger.logp(Level.INFO, "OSGiModuleImpl",
+                        "start", "Started bundle {0}", bundle);
+            }
+        } catch (BundleException e) {
+            throw new ResolveError("Failed to start "+this,e);
+        }
 
         // TODO(Sahoo): Remove this when hk2-apt generates equivalent BundleActivator
         // if there is a LifecyclePolicy, then instantiate and invoke.
@@ -163,6 +186,7 @@ public final class OSGiModuleImpl implements Module {
 
         try {
             bundle.stop();
+            logger.logp(Level.INFO, "OSGiModuleImpl", "detach", "Stopped bundle = {0}", new Object[]{bundle});
 //            bundle.uninstall();
         } catch (BundleException e) {
             throw new RuntimeException(e);
@@ -248,11 +272,7 @@ public final class OSGiModuleImpl implements Module {
                             logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
                                 new Object[]{name, bundle});
                         }
-                        if ((bundle.getState() & Bundle.RESOLVED) == 0) {
-                            start();
-                            logger.logp(Level.INFO, "OSGiModuleImpl",
-                                    "loadClass", "Started bundle {0}", bundle);
-                        }
+                        start();
                         try {
                             final Class aClass = bundle.loadClass(name);
                             if (logger.isLoggable(Level.FINE)) {
@@ -415,6 +435,10 @@ public final class OSGiModuleImpl implements Module {
 
     public Bundle getBundle() {
         return bundle;
+    }
+
+    public boolean isTransientlyActive() {
+        return isTransientlyActive;
     }
 
     public String toString() {
