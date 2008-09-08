@@ -75,13 +75,17 @@ public class PEFileLayout
         createDirectory(getApplicationsRootDir());
         createDirectory(getAutoDeployDir());
         createDirectory(getAutoDeployStatusDir());
-        /*
-        createDirectory(getAddonRoot());
-        createDirectory(getJavaWebStartRoot());
+        
         createDirectory(getLibDir());
         createDirectory(getClassesDir());
         createDirectory(getExtLibDir());
         createDirectory(getAppLibsDir());
+        createDirectory(getTimerDatabaseDir());
+        
+        /*
+        createDirectory(getAddonRoot());
+        createDirectory(getJavaWebStartRoot());
+    
         createDirectory(getGeneratedDir());
         createDirectory(getJspRootDir());
         createDirectory(getEjbRootDir());
@@ -91,7 +95,7 @@ public class PEFileLayout
         createDirectory(getLifecycleModulesDir());
         createDirectory(getMbeansDir());
         createDirectory(getSessionStore());
-        createDirectory(getTimerDatabaseDir());
+        
          */
     }
 
