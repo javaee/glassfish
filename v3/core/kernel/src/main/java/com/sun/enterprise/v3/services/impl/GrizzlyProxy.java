@@ -131,7 +131,6 @@ public class GrizzlyProxy implements NetworkProxy {
     /**
      * Create a <code>GrizzlyServiceListener</code> based on a HttpService
      * configuration object.
-     * @param port the port on which we need to listen.
      */
     private void configureGrizzly(String defaultVirtualServer) {
         grizzlyListener = new GrizzlyServiceListener(grizzlyService);

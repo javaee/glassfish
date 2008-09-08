@@ -66,6 +66,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -33,6 +33,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
+import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
 
 import org.glassfish.internal.api.Init;
@@ -58,7 +59,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
  * Having a non-daemon thread allows us to control lifecycle of server JVM.
  * The thead is stopped when stop() is called.
  *
- * @author dochez, sahoo@sun.com
+ * @author Jerome Dochez, sahoo@sun.com
  */
 @Service
 public class AppServerStartup implements ModuleStartup {
@@ -86,6 +87,9 @@ public class AppServerStartup implements ModuleStartup {
 
     @Inject
     Events events;
+
+    @Inject
+    Branding branding;
 
     /**
      * A keep alive thread that keeps the server JVM from going down
@@ -116,11 +120,16 @@ public class AppServerStartup implements ModuleStartup {
     }
 
     public void run() {
+        
+        String platform = System.getProperty("GlassFish_Platform");
+        if (platform==null) {
+            platform = "Embedded";
+        }
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
             return;
         }
-        logger.info("Module subsystem initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        final long platformInitTime = System.currentTimeMillis();
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
@@ -140,7 +149,7 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
         if (logger.isLoggable(Level.FINE)) {
-            logger.info("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         }
 
         // run the startup services
@@ -180,8 +189,13 @@ public class AppServerStartup implements ModuleStartup {
             }
         }
 
-        logger.info("Glassfish v3 started in "
-                    + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
+        // finally let's calculate our starting times
+
+
+        logger.info(branding.getVersion()
+                + " startup time : " + platform + "(" + (platformInitTime - context.getCreationTime()) + "ms)" +
+                " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
+                " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
 
         // wait for async services
         try {

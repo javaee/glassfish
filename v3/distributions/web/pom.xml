@@ -158,12 +158,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.scripting</groupId>
-            <artifactId>jruby-all</artifactId>
-	    <version>${jruby-scripting.version}</version>
-	    <type>pom</type>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
             <version>${jdbc-ra.version}</version>

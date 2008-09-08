@@ -64,9 +64,9 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
         this.instanceRoot = env.getDomainRoot();
         this.args = new String[startupContext.getArguments().size()*2];
         int i=0;
-        for (Map.Entry<String, String> entry : startupContext.getArguments().entrySet()) {
-            args[i++] = entry.getKey();
-            args[i++] = entry.getValue();
+        for (Map.Entry<Object, Object> entry : startupContext.getArguments().entrySet()) {
+            args[i++] = entry.getKey().toString();
+            args[i++] = entry.getValue().toString();
         }
     }
     

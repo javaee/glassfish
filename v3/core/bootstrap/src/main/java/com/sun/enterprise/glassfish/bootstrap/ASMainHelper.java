@@ -183,7 +183,7 @@ public class ASMainHelper {
     /*package*/ File getDomainRoot(StartupContext context)
     {
         // first see if it is specified directly
-        Map<String,String> args = context.getArguments();
+        Properties args = context.getArguments();
 
         String domainDir = getParam(args, "domaindir");
 
@@ -273,13 +273,13 @@ public class ASMainHelper {
         return s != null && s.length() > 0;
     }
 
-    private String getParam(Map<String,String> map, String name)
+    private String getParam(Properties map, String name)
     {
         // allow both "-" and "--"
-        String val = map.get("-" + name);
+        String val = map.getProperty("-" + name);
 
         if(val == null)
-            val = map.get("--" + name);
+            val = map.getProperty("--" + name);
 
         return val;
     }

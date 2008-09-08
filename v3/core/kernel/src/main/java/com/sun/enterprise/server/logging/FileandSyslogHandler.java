@@ -500,7 +500,16 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
      */ 
     public void publish( LogRecord record ) {
 
-        pendingRecords.add(record);
+        try {
+            pendingRecords.add(record);
+        } catch(IllegalStateException e) {
+            // queue is full, start waiting.
+            try {
+                pendingRecords.put(record);
+            } catch (InterruptedException e1) {
+                // to bad, record is lost...
+            }
+        }
     }
 
     protected File getLogFileName() {

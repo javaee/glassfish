@@ -89,9 +89,9 @@ public abstract class GenericSniffer implements Sniffer {
      *
      * @return pattern instance
      */
-    public Pattern getURLPattern() {
+    public String[] getURLPatterns() {
         if (urlPattern!=null) {
-            return Pattern.compile(urlPattern);
+            return new String[] {urlPattern};
         } else {
             return null;
         }

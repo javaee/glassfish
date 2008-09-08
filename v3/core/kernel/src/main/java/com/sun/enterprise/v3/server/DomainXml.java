@@ -113,7 +113,7 @@ public class DomainXml implements Populator {
      * &lt;server> element in domain.xml.
      */
     protected String getInstanceName() {
-        String instanceName = context.getArguments().get("-instancename");
+        String instanceName = context.getArguments().getProperty("-instancename");
         if(instanceName == null || instanceName.length() == 0)
             instanceName = "server";
         return instanceName;

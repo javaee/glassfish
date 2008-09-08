@@ -70,7 +70,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
      */    
     public GrizzlyEmbeddedHttp(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
-        this.adapter = new ContainerMapper(this);
+        this.adapter = new ContainerMapper(grizzlyService, this);
         this.pipelineClassName = GrizzlyProbePipeline.class.getName();
         setClassLoader(getClass().getClassLoader()); 
     }

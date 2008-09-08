@@ -92,20 +92,20 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
             this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
 
         asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root.getAbsolutePath());
-        Map<String, String> args = startupContext.getArguments();
+        Properties args = startupContext.getArguments();
 
-        verbose = Boolean.parseBoolean(args.get("-verbose"));
-        debug = Boolean.parseBoolean(args.get("-debug"));
+        verbose = Boolean.parseBoolean(args.getProperty("-verbose"));
+        debug = Boolean.parseBoolean(args.getProperty("-debug"));
 
         // ugly code because domainName & instanceName are final...
-        String s = startupContext.getArguments().get("-domainname");
+        String s = args.getProperty("-domainname");
 
         if (!ok(s)) {
             s = root.getName();
         }
         domainName = s;
 
-        s = startupContext.getArguments().get("-instancename");
+        s = args.getProperty("-instancename");
 
         if (!ok(s)) {
             instanceName = "server";

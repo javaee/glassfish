@@ -114,6 +114,11 @@
            <artifactId>admin-cli</artifactId>
            <version>${glassfish.version}</version>
        </dependency>
+        <dependency>
+            <groupId>org.glassfish.branding</groupId>
+            <artifactId>branding</artifactId>
+	    <version>${project.version}</version>
+        </dependency>
        <dependency>
            <!-- base distribution image -->
            <groupId>org.glassfish.distributions</groupId>

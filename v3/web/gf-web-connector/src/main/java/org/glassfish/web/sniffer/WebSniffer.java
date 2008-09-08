@@ -27,6 +27,8 @@ import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.ModulesRegistry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -51,6 +53,12 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
     
     public WebSniffer() {
         super("web", "WEB-INF/web.xml", null);
+    }
+
+    @Override
+    public String[] getURLPatterns() {
+        // anything finishing with jsp or jspx
+        return new String[] { "*.jsp", "*.jspx" };
     }
 
     /**
@@ -125,5 +133,5 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
     protected List<String> getDeploymentConfigurationPaths() {
         return deploymentConfigurationPaths;
     }
-    
+
 }

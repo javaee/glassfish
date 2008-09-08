@@ -26,14 +26,14 @@ import com.sun.enterprise.v3.common.HTMLActionReporter;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ContainerInfo;
 import org.glassfish.deployment.common.DeploymentContextImpl;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
+import org.glassfish.api.event.*;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
@@ -43,7 +43,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
@@ -104,7 +103,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         }
 
         // does the user want us to run a particular application
-        String defaultParam = env.getStartupContext().getArguments().get("default");
+        String defaultParam = env.getStartupContext().getArguments().getProperty("default");
         if (defaultParam!=null) {
             File sourceFile;
             if (defaultParam.equals(".")) {
@@ -113,15 +112,56 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 sourceFile = new File(defaultParam);
             }
 
+            Properties deploymentProperties = new Properties();
+            deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
+            
             if (sourceFile.exists()) {
                 sourceFile = sourceFile.getAbsoluteFile();
+                if (!sourceFile.isDirectory()) {
+                    deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
+
+                    // ok we need to explode the directory somwhere and remember to delete it on shutdown
+                    Events events = habitat.getComponent(Events.class);
+
+                    try {
+                        final File tmpFile = File.createTempFile(sourceFile.getName(),"");
+                        final String path = tmpFile.getAbsolutePath();
+                        tmpFile.delete();
+                        File tmpDir = new File(path);
+                        tmpDir.deleteOnExit();
+                        events.register(new org.glassfish.api.event.EventListener() {
+                            public void event(Event event) {
+                                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+                                    if (tmpFile.exists()) {
+                                        FileUtils.whack(tmpFile);
+                                    }
+                                }
+                            }
+                        });
+                        if (tmpDir.mkdirs()) {
+                            ReadableArchive sourceArchive=null;
+                            sourceArchive = archiveFactory.openArchive(sourceFile);
+                            ArchiveHandler handler = getArchiveHandler(sourceArchive);
+                            final String appName = handler.getDefaultApplicationName(sourceArchive);
+                            deploymentProperties.setProperty(ParameterNames.NAME, appName);
+                            deploymentProperties.setProperty(ParameterNames.CONTEXT_ROOT, appName);
+                            handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir));
+                            sourceFile = tmpDir;
+                            logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
+                            logger.warning("Using " + appName + " as context root for application");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
+
+                }
                 try {
                     ReadableArchive sourceArchive=null;
                     try {
                         sourceArchive = archiveFactory.openArchive(sourceFile);
                         ArchiveHandler handler = getArchiveHandler(sourceArchive);
 
-                        Properties deploymentProperties = new Properties();
                         deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
                         deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
                         DeploymentContextImpl depContext = new DeploymentContextImpl(

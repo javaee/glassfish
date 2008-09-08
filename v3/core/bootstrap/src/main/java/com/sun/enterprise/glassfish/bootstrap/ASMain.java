@@ -37,7 +37,7 @@ public class ASMain {
      */
     final static Logger logger = Logger.getAnonymousLogger();
 
-    private static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
+    private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
     // We add both KnopflerFish and Knopflerfish for backward compatibility
     // between tp2 and v3 trunk.

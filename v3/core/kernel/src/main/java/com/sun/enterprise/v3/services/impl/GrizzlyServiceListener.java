@@ -77,7 +77,7 @@ public class GrizzlyServiceListener {
             }
 
             public void onReady() {
-                future.setResult(new Result<Thread>(t));
+                future.setResult(new Result<Thread>(t));   
             }
 
             public void onStopped() {

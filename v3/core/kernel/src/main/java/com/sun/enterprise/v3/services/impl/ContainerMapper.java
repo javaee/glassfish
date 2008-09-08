@@ -34,7 +34,9 @@ import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
 import java.util.List;
 import java.util.logging.Level;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.jvnet.hk2.component.Habitat;
 
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
@@ -65,6 +67,10 @@ public class ContainerMapper extends StaticResourcesAdapter{
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
     private UDecoder urlDecoder = new UDecoder();
+    private boolean snifferInitialized = false;
+
+    private final Habitat habitat;
+    private final GrizzlyService grizzlyService;
 
     private ConcurrentLinkedQueue<HttpParserState> parserStates;
     
@@ -74,8 +80,10 @@ public class ContainerMapper extends StaticResourcesAdapter{
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
     
-    public ContainerMapper(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
+    public ContainerMapper(GrizzlyService grizzlyService, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
+        this.grizzlyService = grizzlyService;
+        this.habitat = grizzlyService.habitat; 
         parserStates = new ConcurrentLinkedQueue<HttpParserState>();
         logger = GrizzlyEmbeddedHttp.logger();
         setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
@@ -132,19 +140,12 @@ public class ContainerMapper extends StaticResourcesAdapter{
             Adapter adapter = null;      
             HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
 
-            // Map the request to its Adapter/Container and also it's Servlet if 
-            // the request is targetted to the CoyoteAdapter.
-            mapper.map(req.serverName(), decodedURI, mappingData);       
-
-            ContextRootInfo contextRootInfo = null;
-            if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
-                contextRootInfo = (ContextRootInfo) mappingData.context;
-                adapter = contextRootInfo.getAdapter();
-            } else if (mappingData.context != null && mappingData.context.getClass()
-                    .getName().equals("com.sun.enterprise.web.WebModule")) {
-                adapter = ((V3Mapper) mapper).getAdapter(); 
+            adapter = map(req, decodedURI, mappingData);
+            if (adapter == null && !snifferInitialized) {
+                initializeFileURLPattern();
+                adapter = map(req, decodedURI, mappingData);
             }
-            
+
             if (adapter == null){
                 super.service(req, res);
             }  else {  
@@ -169,8 +170,40 @@ public class ContainerMapper extends StaticResourcesAdapter{
             }
         }
     }
-    
-    
+
+    public synchronized void initializeFileURLPattern() {
+        for (Sniffer sniffer : grizzlyService.habitat.getAllByContract(Sniffer.class)) {
+            if (sniffer.getURLPatterns()!=null) {
+                SnifferAdapter adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
+                adapter.initialize(sniffer, this);
+                for (String pattern : sniffer.getURLPatterns()) {
+                    this.register(pattern, grizzlyService.hosts, adapter, null, null);
+                }
+            }
+        }
+        snifferInitialized=true;
+    }
+
+    Adapter map(Request req, MessageBytes decodedURI, MappingData mappingData) throws Exception {
+
+        if (mappingData==null) {
+            mappingData = (MappingData)req.getNote(MAPPING_DATA);
+        }
+
+            // Map the request to its Adapter/Container and also it's Servlet if
+            // the request is targetted to the CoyoteAdapter.
+            mapper.map(req.serverName(), decodedURI, mappingData);
+
+            ContextRootInfo contextRootInfo = null;
+            if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
+                contextRootInfo = (ContextRootInfo) mappingData.context;
+                return contextRootInfo.getAdapter();
+            } else if (mappingData.context != null && mappingData.context.getClass()
+                    .getName().equals("com.sun.enterprise.web.WebModule")) {
+                return ((V3Mapper) mapper).getAdapter();
+            }
+        return null;
+    }
     /**
      * Recycle the mapped {@link Adapter} and this instance.
      * @param req

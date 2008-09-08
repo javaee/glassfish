@@ -93,7 +93,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     private final Controller controller  = new Controller();
     
-    private Collection<String> hosts = new ArrayList<String>();
+    Collection<String> hosts = new ArrayList<String>();
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
@@ -109,7 +109,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     /**
      * Remove the new proxy from our list of proxies.
-     * @param int port number to be removed
+     * @param port number to be removed
      */    
     public void removeNetworkProxy(int port) {
         NetworkProxy proxy = null;
@@ -259,7 +259,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public synchronized Future<Result<Thread>> createNetworkProxy(HttpListener listener, 
             HttpService httpService) {
         // create the proxy for the port.
-        NetworkProxy proxy = new GrizzlyProxy(this, listener, httpService);
+        GrizzlyProxy proxy = new GrizzlyProxy(this, listener, httpService);
         proxy.setVsMapper(new VirtualHostMapper(logger, listener));
       
         // attach all virtual servers to this port
@@ -400,7 +400,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         public Object invoke(Object proxy, Method method, Object[] args) {
             // Deliberate no-op
             return null;
-        };
+        }
     }
 
     private void registerAdminAdapter(AdminAdapter aa) throws EndpointRegistrationException {

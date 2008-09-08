@@ -38,10 +38,12 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.Which;
+import com.sun.enterprise.module.bootstrap.ArgumentManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -85,7 +87,30 @@ public abstract class ASMainOSGi {
         findBootstrapFile();
         glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
         helper = new ASMainHelper(logger);
+
         context = new StartupContext(bootstrapFile, args);
+        // we need to save the startup context as there is no easy way to pass it through felix
+        // to our bundles.
+        System.out.println("Time zero is " + System.currentTimeMillis());
+
+        Properties properties = ArgumentManager.argsToMap(args);
+        properties.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
+        String lineformat = null;
+        try {
+            // when we switch to jdk6 and up as minimum platform, use following apis.
+            //Writer writer = new StringWriter();
+            //properties.store(writer, null);
+            //lineformat = writer.toString();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            properties.store(os, null);
+            lineformat = os.toString();
+        } catch (IOException e) {
+            logger.info("Could not save startup parameters, will start with none");
+        }
+        if (lineformat!=null) {
+            System.setProperty("glassfish.startup.context", lineformat); // NO I18N                            
+        }
+
         helper.parseAsEnv(glassfishDir);
         domainDir = helper.getDomainRoot(context);
         helper.verifyDomainRoot(domainDir);

@@ -40,6 +40,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.Properties;
 import org.glassfish.deployment.admin.ListComponentsCommand;
@@ -108,8 +109,42 @@ public class ListComponentsCommandTest {
         lcc = new ListComponentsCommand();
     }
 
+    public class RandomConfig {
+
+        @DuckTyped
+        public ConfigBeanProxy getParent() {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+        @DuckTyped
+        public <T extends ConfigBeanProxy> T getParent(Class<T> type) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+        @DuckTyped
+        public Property getProperty(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public String getPropertyValue(String name, String defaultValue) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+
+
+        //hk2's Injectable class
+        public void injectedInto(Object target){}
+    }
         //mock-up Application object
-    public class ApplicationTest implements Application {
+    public class ApplicationTest extends RandomConfig implements Application {
         private List<Engine> engineList = null;
         
         public String getName() {
@@ -140,30 +175,10 @@ public class ListComponentsCommandTest {
             engineList = engines;
         }
 
-        @DuckTyped
-        public Property getProperty(String name) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
-
-        @DuckTyped
-        public String getPropertyValue(String name) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
-
-        @DuckTyped
-        public String getPropertyValue(String name, String defaultValue) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
-
-        //hk2's Injectable class
-        public void injectedInto(Object target){}
     }
 
             //mock-up Engine object
-    public class EngineTest implements Engine {
+    public class EngineTest extends RandomConfig implements Engine {
         private String sniffer = "";
         public String getSniffer() {return sniffer;}
         public void setSniffer(String value) throws PropertyVetoException {
@@ -173,31 +188,11 @@ public class ListComponentsCommandTest {
         public void setDescription(String value) {}
         public List<Property> getProperty() {return null;}
 
-        //hk2's Injectable class
-        public void injectedInto(Object target){}
-
             //config.serverbeans.Modules
         public String getName() { 
             return "hello";
         }
         public void setName(String value) throws PropertyVetoException {}
 
-        @DuckTyped
-        public Property getProperty(String name) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
-
-        @DuckTyped
-        public String getPropertyValue(String name) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
-
-        @DuckTyped
-        public String getPropertyValue(String name, String defaultValue) {
-            // TODO
-            throw new UnsupportedOperationException();
-        }
     }
 }
