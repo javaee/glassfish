@@ -71,6 +71,9 @@ public final class ExceptionUtil
 		// disallow instantiation
 	}
 	
+    /**
+        Extract the root cause Throwable and return a string with the message and stack trace.
+     */
 	    public static String
 	toString( final Throwable t )
 	{
@@ -82,6 +85,65 @@ public final class ExceptionUtil
 	        StringUtil.quote( rootCause.getMessage() ) + SEP +
 	        getStackTrace( rootCause );
 	}
+    
+    /** String from t.getMessage() */
+    public static final String MESSAGE_KEY = "MessageKey";
+    
+    /** StackTraceElement[] */
+    public static final String STACK_TRACE_KEY = "StackTraceKey";
+    
+    /** String*/
+    public static final String STACK_TRACE_STRING_KEY = "StackTraceStringKey";
+    
+    /** java.lang.Throwable:  exists only if the class is java.* or javax.*  */
+    public static final String EXCEPTION_KEY = "ExceptionKey";
+    
+    /**
+        Package prefixes acceptable for passing back a Throwable object so as to avoid
+        a ClassNotFoundException on a client.
+     */
+    public static final Set<String>  OVER_THE_WIRE_PACKAGE_PREFIXES = GSetUtil.newSet(
+        "java.",
+        "javax.",
+        "org.omg.",
+    );
+    
+    /**
+        Return a Map with constituent parts including:
+        <ul>
+        <li>{@link #MESSAGE_KEY}</li>
+        <li>{@link #STACK_TRACE_KEY}</li>
+        <li>{@link #STACK_TRACE_STRING_KEY}</li>
+        <li>{@link #EXCEPTION_KEY}</li>
+        </ul>
+        Caller should generally use Exceptionutil.toMap( ExceptionUtil.getRootCause(t) )
+    */
+        public static Map<String,Object>
+    toMap( final Throwable t )
+    {
+        final Throwable src = t.getRootCause();
+        
+        final String classname = rootCause.getClass().getName();
+        for( final String prefix : OVER_THE_WIRE_PACKAGE_PREFIXES )
+        {
+            if ( classname.startsWith(prefix) )
+            {
+                m.put( EXCEPTION_KEY, src );
+            }
+        }
+        
+        final String msg = src.getMessage();
+        if ( msg == null || msg.length() == 0 )
+        {
+            msg = classname;
+        }
+        
+        m.put( MESSAGE_KEY, msg );
+
+        m.put( STACK_TRACE_KEY, src.getStackTrace() );
+        m.put( STACK_TRACE_STRING_KEY, getStackTrace(src) );
+        
+    }
 		
 	/**
 		Get the chain of exceptions via getCause(). The first element is the
