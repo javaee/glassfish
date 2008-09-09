@@ -105,6 +105,53 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
        starter.start();
     }
     
+        private static String
+    localhost()
+    {
+        try {
+            return java.net.InetAddress.getLocalHost().getCanonicalHostName();
+        }
+        catch (java.net.UnknownHostException e) {
+        }
+        return "localhost";
+    }
+
+    private static Registry startRegistry(final int port) {
+        try {
+            return LocateRegistry.createRegistry(port);
+        }
+        catch (final Exception e) {
+            throw new RuntimeException("Port " + port + " is not available for the internal rmi registry. " + 
+                "This means that a call was made with the same port, without closing earlier " +
+                "registry instance. This has to do with the system jmx connector configuration " +
+                "in admin-service element of the configuration associated with this instance" );
+        }
+    }
+    
+    private static boolean verifyBugFix( final int port)
+    {
+        boolean jndiWorking = false;
+        
+        try
+        {
+            final javax.naming.InitialContext ctx = new javax.naming.InitialContext();
+            final Registry reg = LocateRegistry.getRegistry(port);
+            ctx.bind("rmi://" + localhost() + ":" + port + "/test", reg);
+            reg.lookup("test");
+            jndiWorking = true;
+        }
+        catch( final java.rmi.NotBoundException e )
+        {
+            jndiWorking = false;
+        }
+        catch( Exception e )
+        {
+            // some other problem
+            throw new RuntimeException(e);
+        }
+        return jndiWorking;
+    }
+    
     private static final class ConnectorsStarterThread extends Thread
     {
         private final List<JmxConnector> mConfiguredConnectors;
@@ -168,24 +215,22 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 }
                 
                 mRegistry = startRegistry(mPort);
-            }
-
-            private Registry startRegistry(final int port) {
-                try {
-                    return LocateRegistry.createRegistry(port);
-                }
-                catch (final Exception e) {
-                    throw new RuntimeException("Port " + port + " is not available for the internal rmi registry. " + 
-                        "This means that a call was made with the same port, without closing earlier " +
-                        "registry instance. This has to do with the system jmx connector configuration " +
-                        "in admin-service element of the configuration associated with this instance" );
+                if ( ! verifyBugFix(mPort) )
+                {
+                    final String msg = "JNDI provider for JNDI URLs that look like rmi://host:port/name is not working. " +
+                        "The JMX RMI connector will not be accessible to clients, even if it appears to load correctly.  See issues #6025, 5637";
+                    Util.getLogger().warning( msg );
                 }
             }
 
-            public JMXConnectorServer start( final String name) throws IOException
+            public JMXConnectorServer startRMIConnector( final String name) throws IOException
             {
                 final Map<String,Object> env = new HashMap<String,Object>();
-                env.put( "jmx.remote.jndi.rebind", "true" );
+                //env.put( "jmx.remote.jndi.rebind", "true" );
+                //env.put( "jmx.remote.credentials", null );
+                //env.put( "jmx.remote.authenticator", null );
+               // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol"); 
+                //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
                 
                 final String s = "service:jmx:rmi:///jndi/rmi://" + localhost() + ":" + mPort  + "/" + name;
                 final JMXServiceURL url = new JMXServiceURL( s );
@@ -196,17 +241,6 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 Util.getLogger().info( "RMI connector server URL = " + url );
                 
                 return cs;
-            }
-            
-                private static String
-            localhost()
-            {
-                try {
-                    return java.net.InetAddress.getLocalHost().getCanonicalHostName();
-                }
-                catch (java.net.UnknownHostException e) {
-                }
-                return "127.0.0.1";
             }
         }
 
@@ -223,7 +257,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             
             final RMIConnectorStarter starter = new RMIConnectorStarter( mMBeanServer, address, port, protocol, authRealmName, securityEnabled );
             
-            final JMXConnectorServer server = starter.start("jmxrmi");
+            final JMXConnectorServer server = starter.startRMIConnector("jmxrmi");
             final JMXServiceURL url = server.getAddress();
             final JMXConnector conn = JMXConnectorFactory.connect(url);
             MBeanServerConnection mbsc = conn.getMBeanServerConnection();
@@ -277,8 +311,8 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 }
                 catch( final Throwable t )
                 {
-                    Util.getLogger().severe( "ERROR starting JMX connector: " + toString(c) + ": " + t);
-                    t.printStackTrace();
+                    Util.getLogger().warning( "Cannot start JMX connector, most likely IssueTracker #6018 " + toString(c) + ": " + t);
+                    //t.printStackTrace();
                 }
             }
 
