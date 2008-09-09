@@ -27,6 +27,8 @@ echo deleting jdbc-resources .....
 ./bin/asadmin delete-jdbc-resource jdbc/jdbc-dev-test-resource
 ./bin/asadmin delete-jdbc-resource jdbc/jdbc-reconfig-test-resource-1
 ./bin/asadmin delete-jdbc-resource jdbc/jdbc-reconfig-test-resource-2
+./bin/asadmin delete-jdbc-resource jdbc/res1
+./bin/asadmin delete-jdbc-resource jdbc/res2
 echo "\n"
 
 echo deleting jdbc-connection-pools .....
@@ -47,6 +49,8 @@ echo deleting jdbc-connection-pools .....
 ./bin/asadmin delete-jdbc-connection-pool jdbc-dev-test-pool
 ./bin/asadmin delete-jdbc-connection-pool jdbc-reconfig-test-pool-1
 ./bin/asadmin delete-jdbc-connection-pool jdbc-reconfig-test-pool-2
+./bin/asadmin delete-jdbc-connection-pool pool1
+./bin/asadmin delete-jdbc-connection-pool pool2
 echo "\n"
 
 echo Deleting files...

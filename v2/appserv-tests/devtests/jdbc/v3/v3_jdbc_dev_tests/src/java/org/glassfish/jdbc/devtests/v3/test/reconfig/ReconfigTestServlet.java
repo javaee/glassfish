@@ -28,6 +28,9 @@ public class ReconfigTestServlet extends HttpServlet {
     @Resource(name = "jdbc/jdbc-reconfig-test-resource-2", mappedName = "jdbc/jdbc-reconfig-test-resource-2")
     DataSource dsReconfig2;
 
+    @Resource(name = "jdbc/res1", mappedName = "jdbc/res1")
+    DataSource dsRes1;
+    
     @Override
     protected void doGet(HttpServletRequest arg0, HttpServletResponse arg1) throws ServletException, IOException {
         processRequest(arg0, arg1);
@@ -74,8 +77,8 @@ public class ReconfigTestServlet extends HttpServlet {
                     break;
                 case 4: //Resource attribute change test with another datasource
                     
-                    out.println("<h1>Reconfig Resource Attribute Test with DS : dsReconfig1</h1>");
-                    mapReconfig = reconfigTest.resourceAttributeChangeTest(dsReconfig1, out, throwException);
+                    out.println("<h1>Reconfig Resource Attribute Test with DS : dsRes1</h1>");
+                    mapReconfig = reconfigTest.resourceAttributeChangeTest(dsRes1, out, throwException);
                     break;
             }
             buf.append("<table border=1><tr><th>Test Name</th><th> Pass </th></tr>");
