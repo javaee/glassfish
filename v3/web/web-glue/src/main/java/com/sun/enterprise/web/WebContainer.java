@@ -3392,6 +3392,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                            domain,
                                            globalAccessLoggingEnabled);
         
+        // support both docroot property and attribute
+        String docroot = vsBean.getPropertyValue("docroot");
+        if (docroot == null) {
+            docroot = vsBean.getDocroot();
+        }
+        if (docroot != null) {
+            updateDocroot(docroot, virtualServer, vsBean);
+        }
         List<Property> props = virtualServer.getProperties();
         for (Property prop : props) {
             updateHostProperties(vsBean, prop.getName(), prop.getValue(),
@@ -3541,9 +3549,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
-        if ("docroot".equals(name)) {
-            updateDocroot(value, vs, vsBean);
-        } else if (name.startsWith("alternatedocroot_")) {
+        if (name.startsWith("alternatedocroot_")) {
             updateAlternateDocroot(vs, vsBean);
         } else if ("setCacheControl".equals(name)){
             vs.configureCacheControl(value);
