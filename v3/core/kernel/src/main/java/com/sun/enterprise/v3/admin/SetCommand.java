@@ -130,6 +130,16 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
 
+        boolean delPropertySuccess = false;
+        boolean delProperty = false;
+        Map<String, String> attrChanges = new HashMap<String, String>();
+        if (isProperty) {
+            attrName = "value";
+            if ((value == null) || (value.length() == 0)) {
+                delProperty = true;
+            }
+            attrChanges.put(attrName, value);                    
+        }
 
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
@@ -139,12 +149,36 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
                     part.setMessage(node.getValue() + "." + name + "=" + value);
-                    Map<String, String> attrChanges = new HashMap<String, String>();
-                    if (isProperty) {
-                       attrName = "value";
+
+                    if (! isProperty) {
+                        attrChanges.put(name, value);                    
                     }
-                    attrChanges.put(name, value);                    
-                    changes.put((ConfigBean) node.getKey(), attrChanges);                    
+
+                    if (delProperty) {
+                        // delete property element
+                        String str = node.getValue();
+                        if (str.lastIndexOf('.') != -1) {
+                            str = str.substring(str.lastIndexOf('.') + 1);
+                        }
+                        try {
+                            if (str != null) {
+                                ConfigSupport.deleteChild((ConfigBean)targetNode.parent(), (ConfigBean)targetNode);
+                                delPropertySuccess = true;
+                            }
+                        } catch (IllegalArgumentException ie) {
+                            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
+                            context.getActionReport().setFailureCause(ie);
+                            context.getActionReport().setMessage("Could not delete the property : "
+                                + ie.getMessage());
+                        } catch (TransactionFailure transactionFailure) {
+                            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
+                            context.getActionReport().setFailureCause(transactionFailure);
+                            context.getActionReport().setMessage("Could not change the attributes : "
+                                    + transactionFailure.getMessage());
+                        }
+                    } else {
+                        changes.put((ConfigBean) node.getKey(), attrChanges);                    
+                    }
 
                 }
             }
@@ -161,8 +195,12 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             }
 
         } else {
-            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-            context.getActionReport().setMessage("No configuration found for " + pattern);
+            if (delPropertySuccess) {
+                context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
+            } else {
+                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
+                context.getActionReport().setMessage("No configuration found for " + pattern);
+            }
         }
 
     }
