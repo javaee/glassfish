@@ -57,7 +57,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCResourceConfig", nameHint="jndi-name")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCResourceConfig")
 @Configured
 public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
 

@@ -54,6 +54,8 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DuckTyped;
 
+import org.glassfish.api.admin.config.Named;
+
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.AMXGenericConfig;
 
@@ -89,7 +91,7 @@ final class ConfiguredHelper
         private final Attribute attr;
         public AttributeInfo( final String getterName, final Attribute a )
         {
-            super( getterName, a.value().length() != 0 ? a.value() : Dom.convertName(getterName));
+            super( getterName, a.value().length() != 0 ? a.value() : toXMLName(getterName));
             attr = a;
         }
         public Attribute getAttribute() { return attr; }
@@ -100,7 +102,7 @@ final class ConfiguredHelper
         private final Element elem;
         public ElementInfo( final String getterName, final Element e )
         {
-            super( getterName, e.value().length() != 0 ? e.value() : Dom.convertName(getterName) );
+            super( getterName, e.value().length() != 0 ? e.value() : toXMLName(getterName) );
             elem = e;
         }
         public Element getElement() { return elem; }
@@ -336,30 +338,55 @@ final class ConfiguredHelper
         }
     }
     
+    private static String toXMLName(final String name )
+    {
+        return name == null ? name : Dom.convertName(name);
+    }
+    
+    /**
+        Return the name of the XML attribute which contains the value to be used as its name.
+     */
     private String findNameHint()
     {
-        if ( mAMXConfigInfo != null && mAMXConfigInfo.nameHint().length() != 0 )
-        {
-            return mAMXConfigInfo.nameHint();
-        }
-        
         for( final AttributeInfo info : mAttributes.values() )
         {
             if ( info.getAttribute().key() )
             {
-                return info.getName();
+                // name must be the XML name
+                final String hint =  toXMLName(info.getName());
+                //debug( "KEY VALUE in " + mIntf.getName() + " = " + info.getName() + " ==> " + hint );
+                return hint;
             }
         }
+
+        if ( mAMXConfigInfo != null && mAMXConfigInfo.singleton() )
+        {
+            // singletons have no name (AMX.NO_NAME)
+            //debug( "SINGLETON: " + mIntf.getName() );
+            return null;
+        }
         
+        final String NAME = "name";
+        
+        // should not be need but see bugs 6039, 6040
+        if ( Named.class.isAssignableFrom(mIntf) )
+        {
+            return NAME;
+        }
+
+        /*
+        Unclear if elements can be used as a name; doesn't make sense
         for( final ElementInfo info : mElements.values() )
         {
             if ( info.getElement().key() )
             {
+                debug( " WARNING [ConfiguredHelper AMX]: name is an element, will it work?" );
                 return info.getName();
             }
         }
+        */
         
-        final String NAME = "name";
+        //debug( "CANT FIND KEY VALUE in " + mIntf.getName() + ", USING 'name'" );
         if ( mAttributes.get(NAME) == null && mElements.get(NAME) == null )
         {
             throw new IllegalArgumentException( "No key value found and no Attribute or Element named 'name'" );

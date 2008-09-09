@@ -64,15 +64,6 @@ import java.util.List;
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, ReferenceContainer {
 
     /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
      * Gets the value of the configRef property.
      *
      * @return possible object is

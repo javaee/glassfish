@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorResourceConfig", nameHint="jndi-name")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorResourceConfig")
 @Configured
 public interface ConnectorResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
 

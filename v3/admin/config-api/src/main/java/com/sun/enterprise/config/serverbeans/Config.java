@@ -86,15 +86,6 @@ import org.glassfish.api.admin.config.Container;
 public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named {
 
     /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
      * Gets the value of the dynamicReconfigurationEnabled property.
      *
      * @return possible object is

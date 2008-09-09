@@ -55,7 +55,7 @@ import org.jvnet.hk2.config.Element;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DeployedItemRefConfig", nameHint="ref")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DeployedItemRefConfig")
 @Configured
 public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
 

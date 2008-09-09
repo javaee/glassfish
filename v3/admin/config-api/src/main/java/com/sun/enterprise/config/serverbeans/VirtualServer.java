@@ -55,7 +55,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
     "httpAccessLog",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig", nameHint="id" )
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig")
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag  {
 

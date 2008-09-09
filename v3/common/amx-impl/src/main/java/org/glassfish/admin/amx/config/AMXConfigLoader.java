@@ -611,7 +611,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             objectName = buildObjectName( cb, resolver );
         
             objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
-            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
+            ImplUtil.getLogger().info( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
                 //" ===> USING " +  " AMXConfigInfo = " + amxConfigInfo.toString() + ", AMXMBeanMetaData = " + metadata + "\n" );
         }
         
@@ -760,15 +760,31 @@ public final class AMXConfigLoader extends MBeanImplBase
     {
         String name = null;
         
+        final ConfiguredHelper helper = ConfiguredHelperRegistry.getInstance( cb.getProxyType() );
+        final String nameHint = helper.getNameHint();
+        
         final AMXConfigInfo info = infoIn == null ? getAMXConfigInfo(cb) : infoIn;
         
         if ( info.singleton() )
         {
             name = AMX.NO_NAME;
         }
+        else if ( nameHint == null )
+        {
+            name = "MISSING_NAME__KEY_MUST_BE_SPECIFIED_IN_INTERFACE";
+        }
         else
         {
-            name = cb.rawAttribute( info.nameHint() );
+            name = cb.rawAttribute( nameHint );
+        }
+        
+        if ( name != null )
+        {
+            name = whackIllegals(name);
+        }
+        else
+        {
+            throw new IllegalStateException( "Can't find name for @Configured " + cb.getProxyType().getName() + ", nameHint = " + nameHint );
         }
         
         return name;
@@ -791,7 +807,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final AMXConfigInfoResolver info )
     {
         final String j2eeType = getJ2EEType( cb, info );
-        final String name     = whackIllegals( getName( cb, info.getAMXConfigInfo() ) );
+        final String name     = getName( cb, info.getAMXConfigInfo() ) ;
         
         String parentProps = "";
         String domain = AMX.JMX_DOMAIN;

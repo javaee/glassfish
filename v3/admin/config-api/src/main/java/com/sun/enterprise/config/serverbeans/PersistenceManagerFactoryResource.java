@@ -57,7 +57,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.PersistenceManagerFactoryResourceConfig", nameHint="jndi-name")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.PersistenceManagerFactoryResourceConfig")
 @Configured
 public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
 

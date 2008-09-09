@@ -56,7 +56,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 }) */
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig", nameHint="id")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig")
 @Configured
 public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 

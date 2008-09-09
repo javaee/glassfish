@@ -64,7 +64,7 @@ import java.lang.annotation.Target;
 //@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
     /**
-        The default behavior is to derive all attributes automatically from the ConfigBean.
+        The default behavior is/will be to derive all attributes automatically from the ConfigBean.
         Specify a sub-interface of {@link AMXConfig} if desired.  By specifying AMXConfig.class
         as the amxInterface(), the MBeanInfo will automagically include all attributes
         from the config interface.
@@ -78,6 +78,7 @@ public @interface AMXConfigInfo {
     
      
     /**
+KEEP until it's clear we won't need this
 not clear if this is needed; the interface should specify it
        <em>If a generic AMX interface is used in {@link #amxInterface},
        then the 'j2eeType' *must* be specified with j2eeType().<em>
@@ -119,25 +120,30 @@ not clear if this is needed; the interface should specify it
     */
     
     /**
+KEEP until it's clear we will never need this
         Optional hint for generating the ObjectName; could be used to indicate
         an appropriate name and/or a key or lookup value for finding the correct name.
-        The interpretation of this hint is up to the {@link ObjectNameBuilder} or any code
+        The interpretation of this hint is up to the code
         that is constructing the ObjectName.
-     */
+        <p>
+        NOTE: use of this field should be very rare since the @Attribute annotation should
+        provide the appropriate indicator.
     String nameHint() default "name";
+     */
 
     /**
        Declares that there may be at most one MBean registered with this {@link #j2eeType}
-       <em>within its parent’s scope</em>.
+       <em>within its parent's scope</em>.
        By convention, singleton MBeans should all use the same name ("na"),
-       because its j2eeType alone effectively denotes the name.
+       because its j2eeType alone effectively denotes the name.  The AMX subsystem
+       specifies this as AMX.NO_NAME.
      */
     boolean singleton() default false;
     
     /**
        Declares that the j2eeType of this MBean should not be included as an ancestor
        property in its children.  DomainConfig is the key example; including it would serve
-       no useful purpose.
+       no useful purpose; the ObjectName would just become larger and more awkward.
      */
     boolean omitAsAncestorInChildObjectName() default false;
 }

@@ -100,10 +100,7 @@ public class AMXConfigImplBase extends AMXImplBase
     
     private static ConfiguredHelper getConfiguredHelper(final Class<? extends ConfigBeanProxy> intf )
     {
-        final ConfiguredHelper helper = ConfiguredHelperRegistry.getInstance(intf);
-        if ( helper != null ) { return helper; }
-        
-        return ConfiguredHelperRegistry.addInstance(new ConfiguredHelper(intf));
+        return ConfiguredHelperRegistry.getInstance(intf);
     }
     
         private String

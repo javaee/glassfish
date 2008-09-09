@@ -94,8 +94,9 @@ final class NameMappingHelper {
             // special case: the name, look for a hint in the annotation
             if ( amxNames.contains(AMXAttributes.ATTR_NAME) )
             {
-                final AMXConfigInfoResolver info = getAMXConfigInfoResolver( mConfigBean );
-                final String hint = info.nameHint();
+                final ConfiguredHelper helper = ConfiguredHelperRegistry.getInstance(mConfigBean.getProxyType());
+                
+                final String hint = helper.getNameHint();
                 if ( hint != null && hint.length() != 0 )
                 {
                     //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 

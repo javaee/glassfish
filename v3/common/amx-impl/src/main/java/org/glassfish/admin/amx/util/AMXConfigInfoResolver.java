@@ -105,7 +105,6 @@ public final class AMXConfigInfoResolver
     }
     
     public AMXConfigInfo  getAMXConfigInfo() { return mAMXConfigInfo; }
-    public String nameHint() { return mAMXConfigInfo.nameHint(); }
     public boolean singleton() { return mAMXConfigInfo.singleton(); }
     public boolean omitAsAncestorInChildObjectName() { return mAMXConfigInfo.omitAsAncestorInChildObjectName(); }
     

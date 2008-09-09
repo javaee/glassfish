@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceRefConfig", nameHint="ref")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceRefConfig")
 @Configured
 public interface ResourceRef extends ConfigBeanProxy, Injectable  {
 

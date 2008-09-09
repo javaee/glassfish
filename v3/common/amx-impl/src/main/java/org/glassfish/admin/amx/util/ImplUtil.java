@@ -56,7 +56,7 @@ public final class ImplUtil
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    //public Logger getLogger() { return LogDomains.getLogger( LogDomains.AMX_LOGGER ); }
+    public static Logger getLogger() { return Logger.getLogger(LogDomains.ADMIN_LOGGER); }
     
     /**
         Unload this AMX MBean and all its children.
@@ -88,6 +88,7 @@ public final class ImplUtil
         public static void
     unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
     {
+        ImplUtil.getLogger().info( "Unregister MBean hierarchcy for: " + objectName );
         unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName) );
     }
     
@@ -100,7 +101,7 @@ public final class ImplUtil
         boolean success = false;
         try
         {
-            debug( "unregisterOneMBean: " + objectName );
+            getLogger().info( "UNREGISTER MBEAN: " + objectName );
             if ( mbeanServer.isRegistered(objectName) )
             {
                 mbeanServer.unregisterMBean( objectName );

@@ -60,14 +60,24 @@ final class ConfiguredHelperRegistry
         public static ConfiguredHelper
     getInstance( final Class<? extends ConfigBeanProxy> intf )
     {
-        return INSTANCES.get(intf);
+        ConfiguredHelper helper = INSTANCES.get(intf);
+        if ( helper == null )
+        {
+            helper = addInstance(intf);
+        }
+        return helper;
     }
     
-        public static ConfiguredHelper
-    addInstance( final ConfiguredHelper helper )
+        private static synchronized ConfiguredHelper
+    addInstance( final Class<? extends ConfigBeanProxy> intf )
     {
-        INSTANCES.putIfAbsent( helper.getIntf(), helper);
-        return getInstance(helper.getIntf());
+        ConfiguredHelper helper = INSTANCES.get(intf);
+        if ( helper == null )
+        {
+            helper = new ConfiguredHelper(intf);
+            INSTANCES.put( intf, helper );
+        }
+        return helper;
     }
  }
 
