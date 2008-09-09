@@ -162,7 +162,7 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 	    // remove will determine if statements are removed
 	    pci.initialize(true,remove,false);
             if (remove) {
-                this.polConfTable.remove(contextId);
+                this.removePolicyConfigurationImpl(contextId);
             }
 	}
 	return pci;
@@ -272,6 +272,16 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
             return (PolicyConfigurationImpl) polConfTable.get(contextId);
         } finally {
             rLock.unlock();
+        }
+    }
+    
+    protected  PolicyConfigurationImpl 
+        removePolicyConfigurationImpl(String contextID) {
+        wLock.lock(); 
+        try {
+            return (PolicyConfigurationImpl) polConfTable.remove(contextID);
+        } finally {
+            wLock.unlock();
         }
     }
 
