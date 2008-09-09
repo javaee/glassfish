@@ -412,6 +412,9 @@ public class WebAppHandlers {
                 List<String> hpList = GuiUtil.parseStringList(listener, ",");
                 for(String one : hpList){
                     HTTPListenerConfig oneListener = hConfig.getHTTPListenerConfigMap().get(one);
+                    if ( ! "true".equals (oneListener.getEnabled())){
+                        continue;
+                    }
                     String security = oneListener.getSecurityEnabled();
                     if ("true".equals(security)){
                         secureListener = oneListener;
