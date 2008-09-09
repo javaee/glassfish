@@ -65,9 +65,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -107,29 +109,29 @@ public class StandardManager
     implements Lifecycle, PropertyChangeListener {
 
     // ---------------------------------------------------- Security Classes
-    private class PrivilegedDoLoad
+    private class PrivilegedDoLoadFromFile
         implements PrivilegedExceptionAction {
 
-        PrivilegedDoLoad() {           
+        PrivilegedDoLoadFromFile() {
         }
 
         public Object run() throws Exception{
-           doLoad();
+           doLoadFromFile();
            return null;
         }                       
     }
         
-    private class PrivilegedDoUnload
+    private class PrivilegedDoUnloadToFile
         implements PrivilegedExceptionAction {
 
         private boolean expire;
 
-        PrivilegedDoUnload(boolean expire) {
+        PrivilegedDoUnloadToFile(boolean expire) {
             this.expire = expire;
         }
 
         public Object run() throws Exception{
-            doUnload(expire);
+            doUnloadToFile(expire);
             return null;
         }            
            
@@ -383,74 +385,113 @@ public class StandardManager
 
 
     /**
-     * Load any currently active sessions that were previously unloaded
+     * Loads any currently active sessions that were previously unloaded
      * to the appropriate persistence mechanism, if any.  If persistence is not
      * supported, this method returns without doing anything.
      *
      * @exception ClassNotFoundException if a serialized class cannot be
-     *  found during the reload
-     * @exception IOException if an input/output error occurs
+     * found during the reload
+     * @exception IOException if a read error occurs
      */
     public void load() throws ClassNotFoundException, IOException {
         if (SecurityUtil.isPackageProtectionEnabled()){   
             try{
-                AccessController.doPrivileged( new PrivilegedDoLoad() );
+                AccessController.doPrivileged(new PrivilegedDoLoadFromFile());
             } catch (PrivilegedActionException ex){
                 Exception exception = ex.getException();
                 if (exception instanceof ClassNotFoundException){
                     throw (ClassNotFoundException)exception;
-                } else if (exception instanceof IOException){
+                } else if (exception instanceof IOException) {
                     throw (IOException)exception;
                 }
-                if (log.isLoggable(Level.FINE))
+                if (log.isLoggable(Level.FINE)) {
                     log.fine("Unreported exception in load() "
-                        + exception);                
+                        + exception);
+                }    
             }
         } else {
-            doLoad();
+            doLoadFromFile();
         }       
     }
 
 
     /**
-     * Load any currently active sessions that were previously unloaded
-     * to the appropriate persistence mechanism, if any.  If persistence is not
-     * supported, this method returns without doing anything.
+     * Loads any currently active sessions that were previously unloaded
+     * to file
      *
      * @exception ClassNotFoundException if a serialized class cannot be
-     *  found during the reload
-     * @exception IOException if an input/output error occurs
+     * found during the reload
+     * @exception IOException if a read error occurs
      */
-    private void doLoad() throws ClassNotFoundException, IOException {    
-        if (log.isLoggable(Level.FINE))
+    private void doLoadFromFile() throws ClassNotFoundException, IOException {
+
+        if (log.isLoggable(Level.FINE)) {
             log.fine("Start: Loading persisted sessions");
+        }
+
+        // Open an input stream to the specified pathname, if any
+        File file = file();
+        if (file == null) {
+            return;
+        }
+        if (log.isLoggable(Level.FINE)) {
+            log.fine(sm.getString("standardManager.loading", pathname));
+        }
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(file.getAbsolutePath());
+            readSessions(fis);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Finish: Loading persisted sessions");
+            }
+        } catch (FileNotFoundException e) {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("No persisted data file found");
+            }
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException f) {
+                // ignore
+            }
+            // Delete the persistent storage file
+            if (file != null && file.exists()) {
+                file.delete();
+            }
+        }
+    }
+
+
+    /*
+     * Reads any sessions from the given input stream, and initializes the
+     * cache of active sessions with them.
+     *
+     * @param is the input stream from which to read the sessions
+     *
+     * @exception ClassNotFoundException if a serialized class cannot be
+     * found during the reload
+     * @exception IOException if a read error occurs
+     */
+    public void readSessions(InputStream is)
+            throws ClassNotFoundException, IOException {
 
         // Initialize our internal data structures
         sessions.clear();
 
-        // Open an input stream to the specified pathname, if any
-        File file = file();
-        if (file == null)
-            return;
-        if (log.isLoggable(Level.FINE))
-            log.fine(sm.getString("standardManager.loading", pathname));
         ObjectInputStream ois = null;
         try {
-            FileInputStream fis = new FileInputStream(file.getAbsolutePath());
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            BufferedInputStream bis = new BufferedInputStream(is);
             if (container != null) {
                 ois = ((StandardContext)container).createObjectInputStream(bis);
             } else {
                 ois = new ObjectInputStream(bis);
             }
-        } catch (FileNotFoundException e) {
-            if (log.isLoggable(Level.FINE))
-                log.fine("No persisted data file found");
-            return;
-        } catch (IOException e) {
+        } catch (IOException ioe) {
             log.log(Level.SEVERE, sm.getString("standardManager.loading.ioe",
-                                               e),
-                    e);
+                                               ioe),
+                    ioe);
             if (ois != null) {
                 try {
                     ois.close();
@@ -459,10 +500,9 @@ public class StandardManager
                 }
                 ois = null;
             }
-            throw e;
+            throw ioe;
         }
 
-        // Load the previously unloaded active sessions
         synchronized (sessions) {
             try {
                 Integer count = (Integer) ois.readObject();
@@ -505,20 +545,14 @@ public class StandardManager
             } finally {
                 // Close the input stream
                 try {
-                    if (ois != null)
+                    if (ois != null) {
                         ois.close();
+                    }
                 } catch (IOException f) {
-                    // ignored
+                    // ignore
                 }
-
-                // Delete the persistent storage file
-                if (file != null && file.exists() )
-                    file.delete();
             }
         }
-
-        if (log.isLoggable(Level.FINE))
-            log.fine("Finish: Loading persisted sessions");
     }
 
 
@@ -533,6 +567,19 @@ public class StandardManager
         unload(true);
     }
 
+
+    /**
+     * Writes all active sessions to the given output stream.
+     *
+     * @param os the output stream to which to write
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public void writeSession(OutputStream os) throws IOException {
+        writeSessions(os, true);
+    }
+
+
     /**
      * Save any currently active sessions in the appropriate persistence
      * mechanism, if any.  If persistence is not supported, this method
@@ -545,8 +592,9 @@ public class StandardManager
      */        
     protected void unload(boolean doExpire) throws IOException {
         if (SecurityUtil.isPackageProtectionEnabled()){       
-            try{
-                AccessController.doPrivileged( new PrivilegedDoUnload(doExpire) );
+            try {
+                AccessController.doPrivileged(
+                    new PrivilegedDoUnloadToFile(doExpire));
             } catch (PrivilegedActionException ex){
                 Exception exception = ex.getException();
                 if (exception instanceof IOException){
@@ -557,46 +605,87 @@ public class StandardManager
                         + exception);                
             }        
         } else {
-            doUnload(doExpire);
+            doUnloadToFile(doExpire);
         }       
     }
         
+
     /**
-     * Save any currently active sessions in the appropriate persistence
-     * mechanism, if any.  If persistence is not supported, this method
-     * returns without doing anything.
+     * Saves any currently active sessions to file.
      *
      * @doExpire true if the unloaded sessions are to be expired, false
      * otherwise
      *
      * @exception IOException if an input/output error occurs
      */
-    private void doUnload(boolean doExpire) throws IOException {   
+    private void doUnloadToFile(boolean doExpire) throws IOException {   
 
-        if (log.isLoggable(Level.FINE))
+        if (log.isLoggable(Level.FINE)) {
             log.fine("Unloading persisted sessions");
+        }
 
         // Open an output stream to the specified pathname, if any
         File file = file();
-        if (file == null)
+        if (file == null) {
             return;
-        
-        //HERCULES: add
-        boolean haveValidDirectory = isDirectoryValidFor(file.getAbsolutePath());
-        if(!haveValidDirectory)
+        }
+
+        boolean haveValidDirectory = isDirectoryValidFor(
+            file.getAbsolutePath());
+        if(!haveValidDirectory) {
             return;
-        //end HERCULES: add         
+        }
         
-        if (log.isLoggable(Level.FINE))
+        if (log.isLoggable(Level.FINE)) {
             log.fine(sm.getString("standardManager.unloading", pathname));
+        }
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file.getAbsolutePath());
+            writeSessions(fos, doExpire);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Unloading complete");
+            }
+        } catch (IOException ioe) {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException f) {
+                    ;
+                }
+                fos = null;
+            }
+            throw ioe;
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException f) {
+                // ignore
+            }
+        }
+    }
+    
+    
+    /*
+     * Writes all active sessions to the given output stream.
+     *
+     * @param os the output stream to which to write the sessions
+     * @param doExpire true if the sessions that were written should also be
+     * expired, false otherwise
+     */
+    private void writeSessions(OutputStream os, boolean doExpire) 
+            throws IOException {
+
         ObjectOutputStream oos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
             if (container != null) {
                 oos = ((StandardContext) container).createObjectOutputStream(
-                        new BufferedOutputStream(fos));
+                        new BufferedOutputStream(os));
             } else {
-                oos = new ObjectOutputStream(new BufferedOutputStream(fos)); 
+                oos = new ObjectOutputStream(new BufferedOutputStream(os)); 
             }
         } catch (IOException e) {
             log.log(Level.SEVERE,
@@ -659,8 +748,6 @@ public class StandardManager
         // Flush and close the output stream
         try {
             oos.flush();
-            oos.close();
-            oos = null;
         } catch (IOException e) {
             if (oos != null) {
                 try {
@@ -671,6 +758,14 @@ public class StandardManager
                 oos = null;
             }
             throw e;
+        } finally {
+            try {
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException f) {
+                // ignore
+            }
         }
 
         if (doExpire) {
@@ -687,13 +782,9 @@ public class StandardManager
                 }
             }
         }
-
-        if (log.isLoggable(Level.FINE))
-            log.fine("Unloading complete");
-
     }
-    
-    
+
+
     /**
      * Check if the directory for this full qualified file
      * exists and is valid
