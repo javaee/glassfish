@@ -80,14 +80,14 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }
 
 
-    public boolean start(StartupContext startupContext) {
+    public boolean start(StartupContext startupContext) throws Exception {
         wmInfo.setAppClassLoader(startupContext.getClassLoader());
         applyApplicationConfig(startupContext);
         return start();
     }
 
 
-    private boolean start() {
+    private boolean start() throws Exception {
         // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(wmInfo,
                                                                   "null");
@@ -98,15 +98,21 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         }
 
         boolean isFailure = false;
+        StringBuilder sb = null;
         for (Result result : results) {
             if (result.isFailure()) {
+                if (sb == null) {
+                    sb = new StringBuilder(result.exception().getMessage());
+                } else {
+                    sb.append(result.exception().getMessage());
+                }
                 logger.log(Level.WARNING, result.exception().getMessage(),
                            result.exception());
                 isFailure = true;
             }
         }
         if (isFailure) {
-            return false;
+            throw new Exception(sb.toString());
         }
      
         logger.info("Loading application " + wmInfo.getDescriptor().getName() +
@@ -146,7 +152,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     /**
      * Resumes this application on all virtual servers.
      */
-    public boolean resume() {
+    public boolean resume() throws Exception {
         // WebContainer.loadWebModule(), which is called by start(), 
         // already checks if the web module has been suspended, and if so,
         // just resumes it and returns

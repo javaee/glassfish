@@ -46,9 +46,11 @@ public interface ApplicationContainer<T> {
      * starting. Returning false from a start mean that the container failed 
      * to start
      * @param startupContext the start up context 
-     * @return true if the container startup was successful. 
+     * @return true if the container startup was successful.
+     *
+     * @throws Exception if this application container could not be started
      */
-    public boolean start(StartupContext startupContext);
+    public boolean start(StartupContext startupContext) throws Exception;
     
     /**
      * Stop the application container
@@ -66,9 +68,12 @@ public interface ApplicationContainer<T> {
     /**
      * Resumes this application container.
      *
-     * @return true if resumption was successful, false otherwise.
+     * @return true if resumption was successful, false otherwise
+     *
+     * @throws Exception if this application container could not be
+     * resumed
      */
-    public boolean resume();
+    public boolean resume() throws Exception;
 
     /**
      * Returns the class loader associated with this application
