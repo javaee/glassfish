@@ -95,9 +95,11 @@ public class MonitoringHandlers {
         } else {
             if (serverRoot != null) {
                 TreeNode server = serverRoot.getNode("applications."+application);
-                Collection<TreeNode> coll = server.getChildNodes();
-                for (TreeNode tn : coll) {
-                    dataList.add(tn.getName());
+                if (server != null && server.isEnabled()) {
+                    Collection<TreeNode> coll = server.getChildNodes();
+                    for (TreeNode tn : coll) {
+                        dataList.add(tn.getName());
+                    }
                 }
             }
         }
@@ -142,7 +144,7 @@ public class MonitoringHandlers {
         
         Collection<TreeNode> coll = null;
         List dataList = new ArrayList();        
-        if (statsNode != null) {
+        if (statsNode != null  && statsNode.isEnabled()) {
             if (application == null || application.equals("All")) {
                 coll = statsNode.getChildNodes();
             } else {
@@ -151,6 +153,7 @@ public class MonitoringHandlers {
                 String T = t.toUpperCase();
                 coll = statsNode.getNodes("*applications."+application+"."+virtualServer+"."+"*"+"["+t+T+"]"+ype+"*");
             }
+
             for (TreeNode tn : coll) {
                 Map statMap = new HashMap();
                 statMap.put("Name", tn.getName());
@@ -192,17 +195,17 @@ public class MonitoringHandlers {
         if (serverRoot != null) {
             TreeNode statsNode = serverRoot.getNode(node);
             Collection<TreeNode> coll = null;
-            if (statsNode != null) {
+            if (statsNode != null && statsNode.isEnabled()) {
                 coll = statsNode.getChildNodes();
                 for (TreeNode tn : coll) {
-                        Map statMap = new HashMap();
-                        statMap.put("Name", tn.getName());
-                        statMap.put("Value", tn.getValue());
-                        statMap.put("ToolTip", "");
-                        if (tn instanceof Counter) {
-                            statMap.put("ToolTip", ((Counter)tn).getDescription());
-                        }
-                        dataList.add(statMap);
+                    Map statMap = new HashMap();
+                    statMap.put("Name", tn.getName());
+                    statMap.put("Value", tn.getValue());
+                    statMap.put("ToolTip", "");
+                    if (tn instanceof Counter) {
+                        statMap.put("ToolTip", ((Counter)tn).getDescription());
+                    }
+                    dataList.add(statMap);
                 }
             }
         }
@@ -279,7 +282,7 @@ public class MonitoringHandlers {
         if (serverRoot != null) {
             treeNode = serverRoot.getNode(node);
         }
-        if (treeNode != null) {
+        if (treeNode != null && treeNode.isEnabled()) {
             Collection<TreeNode> coll = treeNode.getChildNodes();
             for (TreeNode tn : coll) {
                 if (category != null) {
