@@ -1794,6 +1794,11 @@ public class ApplicationHandlers {
 //    public static void getPortForApplication(HandlerContext ctx) {
 //        String appName = (String)ctx.getInputValue("AppID");
 //        String port = getPortForApplication(appName);
+////        if (port == null){
+//              ctx.setOutputValue("Port", "");
+//              ctx.setOutputValue("secure", false);
+//          }
+//              
 //        if (port.startsWith("-") ){
 //            ctx.setOutputValue("Port", port.substring(1));
 //            ctx.setOutputValue("secure", true);
