@@ -93,6 +93,11 @@ public final class GlassFishConfigBean extends ConfigBean {
             cageBuilder.onEntered( this );
         }
     }
+    
+    public String toString() {
+        //final Set<String> attrNames = getAttributeNames();
+        return "GlassFishConfigBean." + getProxyType().getName();
+    }
 }
 
 
