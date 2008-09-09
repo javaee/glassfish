@@ -94,7 +94,7 @@ public class OSGiModulesRegistryImpl
                 continue;
             }
             Module m = new OSGiModuleImpl(this, b, md);
-            modules.put(md.getName(), m);
+            add(m); // call add as it processes provider names
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
         pa = PackageAdmin.class.cast(bctx.getService(ref));

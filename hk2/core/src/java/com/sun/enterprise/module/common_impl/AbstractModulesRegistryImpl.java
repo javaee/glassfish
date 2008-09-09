@@ -294,7 +294,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * available through one of the getServiceImplementor methods.
      * @param newModule the new module
      */
-    private void add(Module newModule) {
+    protected void add(Module newModule) {
         //if (Utils.isLoggable(Level.INFO)) {
         //    Utils.getDefaultLogger().info("New module " + newModule);
         //}
