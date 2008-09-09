@@ -160,12 +160,12 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
         
         final List<Object[]> changesObjects = new ArrayList<Object[]>();
         
-        xdebug( "UnprocessedConfigChange: processing events: " + items.size() );
+        //xdebug( "SystemStatusImpl: UnprocessedConfigChange: processing events: " + items.size() );
         for( final UnprocessedChangeEvents events : items )
         {
             for( final UnprocessedChangeEvent event : events.getUnprocessed() )
             {
-        xdebug( "UnprocessedConfigChange: event: " + event );
+                //xdebug( "SystemStatusImpl: UnprocessedConfigChange: event: " + event );
                 final String reason = event.getReason();
                 final PropertyChangeEvent pce = event.getEvent();
                 final long when = event.getWhen();
@@ -184,7 +184,7 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
                         str(pce.getNewValue()),
                         objectName,
                         reason);
-                xdebug( "UnprocessedConfigChange: " + ucc );
+               //xdebug( "SystemStatusImpl: UnprocessedConfigChange: " + ucc );
                 changesObjects.add( ucc.toArray() );
             } 
         }
