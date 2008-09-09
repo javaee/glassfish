@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="317"/>
+    <property name="TOTAL_EXPECTED" value="318"/>
 
     &commonSetup;
     &commonBuild;
@@ -228,6 +228,7 @@
         <ant dir="contextRoot" target="all"/>
         <ant dir="emptyContextRoot" target="all"/>
         <ant dir="multiByteContextRoot" target="all"/>
+        <ant dir="multiByteContextRootWithCookie" target="all"/>
         <ant dir="loadClassesFromZipFile" target="all"/>
         <ant dir="serverRedirectWithQueryString" target="all"/>
         <ant dir="sessionIdCustomGenerator" target="all"/>
