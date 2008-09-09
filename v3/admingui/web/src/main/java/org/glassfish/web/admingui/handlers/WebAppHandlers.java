@@ -77,6 +77,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.management.ObjectName;
@@ -225,21 +226,27 @@ public class WebAppHandlers {
                 String contextRoot = appConfig.getContextRoot();
                 oneRow.put("contextRoot", contextRoot);
                 String port = getPortForApplication(appConfig.getName());
-                if (port.startsWith("-") ){
-                    protocol="https";
-                    port = port.substring(1);
-                }
-                oneRow.put("port", port);
-                if(AMXRoot.getInstance().isEE()){
-                    if (enable.equals(GuiUtil.getMessage("deploy.allDisabled")) ||
-                            enable.equals(GuiUtil.getMessage("deploy.noTarget")))
-                        oneRow.put("hasLaunch", false);
-                    else
-                        oneRow.put("hasLaunch", true);
+                
+                if(port == null){
+                    oneRow.put("port", "");
+                    oneRow.put("hasLaunch", false);
                 }else{
-                    oneRow.put("hasLaunch", Boolean.parseBoolean(enable) );
-                    String ctxRoot = calContextRoot(contextRoot);
-                    oneRow.put("launchLink", protocol+"://"+serverName+":"+ port + ctxRoot);
+                    if (port.startsWith("-") ){
+                        protocol="https";
+                        port = port.substring(1);
+                    }
+                    oneRow.put("port", port);
+                    if(AMXRoot.getInstance().isEE()){
+                        if (enable.equals(GuiUtil.getMessage("deploy.allDisabled")) ||
+                                enable.equals(GuiUtil.getMessage("deploy.noTarget")))
+                            oneRow.put("hasLaunch", false);
+                        else
+                            oneRow.put("hasLaunch", true);
+                    }else{
+                        oneRow.put("hasLaunch", Boolean.parseBoolean(enable) );
+                        String ctxRoot = calContextRoot(contextRoot);
+                        oneRow.put("launchLink", protocol+"://"+serverName+":"+ port + ctxRoot);
+                    }
                 }
                 oneRow.put("selected", false);
                 //List<String> targets = TargetUtil.getDeployedTargets(appConfig, true);
@@ -357,66 +364,67 @@ public class WebAppHandlers {
      * will try to get a port number that is not secured.  But if it can't find one, a
      * secured port will be returned, prepanded with '-'
      */
-    static String getPortForApplication(String appName) {
+    private static String getPortForApplication(String appName) {
         
         DeployedItemRefConfig appRef = TargetUtil.getDeployedItemRefObject(appName, "server");
-        String vsId = null;
-        if (appRef == null) { // no ref found for this application
-            vsId = getNonAdminVirtualServer();
+        HTTPListenerConfig listener = null;
+        if (appRef == null) { // no application-ref found for this application, shouldn't happen for PE. TODO: think about EE
+            listener = getListener();
         } else {
-            vsId = TargetUtil.getAssociatedVS(appName, "server");
-            if (vsId == null || vsId.length() ==0) { // no vs found for this application
-                vsId = getNonAdminVirtualServer();
+            String vsId = TargetUtil.getAssociatedVS(appName, "server");
+            if (vsId == null || vsId.length() ==0) { // no vs specified
+                listener = getListener();
             } else {
-                if (vsId.indexOf(",") > 0) {
-                    vsId = vsId.substring(0, vsId.indexOf(","));
-                }
+                listener = getListener(vsId);
+                
             }
         }
-        if (vsId == null)
-            return ""; // no vs found for this app..
-
-        String port = null;
-        Boolean secure = false;
-        try{
-            final HTTPServiceConfig httpServiceConfig = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig();
-             VirtualServerConfig vsConfig = httpServiceConfig.getVirtualServerConfigMap().get(vsId);
-             if (vsConfig != null) {
-                String listeners = vsConfig.getHTTPListeners();
-                if (!GuiUtil.isEmpty(listeners)) {
-                    StringTokenizer tok = new StringTokenizer(listeners, ",");
-                    String listener = "";
-                    while (tok.hasMoreTokens()) {
-                        listener = tok.nextToken();
-                        HTTPListenerConfig hConfig = httpServiceConfig.getHTTPListenerConfigMap().get(listener);
-                        secure = Boolean.valueOf(hConfig.getSecurityEnabled());
-                        port = hConfig.getPort();
-                        if (! secure) break;
+        if (listener == null) return null;
+        String port = listener.getPort();
+        String security = listener.getSecurityEnabled();
+        return ( "true".equals(security) ) ? "-" + port : port;
+    }
+    
+    // returns a  http-listener that is linked to a non-admin VS
+    private static HTTPListenerConfig getListener() {
+        Map<String, VirtualServerConfig> vsMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getVirtualServerConfigMap();
+        return getOneVsWithHttpListener( new ArrayList(vsMap.keySet()));
+    }
+    
+    private static HTTPListenerConfig getListener(String vsIds) {
+        return getOneVsWithHttpListener(GuiUtil.parseStringList(vsIds, ","));
+    }
+    
+    private static HTTPListenerConfig getOneVsWithHttpListener(List<String> vsList) {
+        if (vsList == null || vsList.size()== 0)
+            return null;
+        HTTPListenerConfig secureListener = null;
+        HTTPServiceConfig hConfig = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig();
+        Map<String, VirtualServerConfig> vsMap = hConfig.getVirtualServerConfigMap();
+        for(String vsName : vsList){
+            if (vsName.equals("__asadmin"))
+                continue;
+            VirtualServerConfig vs = vsMap.get(vsName);
+            String listener = vs.getHTTPListeners();
+            if (GuiUtil.isEmpty(listener)){
+                continue;
+            }else{
+                List<String> hpList = GuiUtil.parseStringList(listener, ",");
+                for(String one : hpList){
+                    HTTPListenerConfig oneListener = hConfig.getHTTPListenerConfigMap().get(one);
+                    String security = oneListener.getSecurityEnabled();
+                    if ("true".equals(security)){
+                        secureListener = oneListener;
+                        continue;
+                    }else{
+                        return oneListener;
                     }
                 }
             }
-            return (secure) ? "-" + port : port;
-        }catch(Exception ex){
-            //Maybe the vitrual server is not found, maybe there is no http listener
-            //this can be the case due to user error during deployment. refer to issue#2807.
-            //TODO: use logger
-            ex.printStackTrace();
-            return "";
         }
-        
+        return secureListener;
     }
-    
-    // returns 'first' nonadmin virtual server -
-    private static String getNonAdminVirtualServer() {
         
-        Map<String, VirtualServerConfig> vsMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getVirtualServerConfigMap();
-        for(String vsName : vsMap.keySet()){
-            if (! vsName.equals("__asadmin")){
-                return vsName;
-            }
-        }
-        return "";
-    }
   
     
     private static String calContextRoot(String contextRoot){
