@@ -176,7 +176,7 @@ public class V2DottedNameSupport {
                 } else {
                     delim = token;
                 }
-                if (dottedName.startsWith(delim)) {
+                if (matchName(dottedName, delim)) {
                     if (patternToken.hasMoreElements()) {
                         if (dottedName.length()<=delim.length()+1) {
                             if ((pattern.substring(token.length()+1)).equals("*")) {
@@ -198,6 +198,16 @@ public class V2DottedNameSupport {
         return true;
     }
 
+    protected boolean matchName(String a, String b) {
+        if (a.startsWith(b)) {
+            return true;
+        }
+        if (a.replace('_', '-').startsWith(b.replace('_', '-'))) {
+            return true;
+        }
+        return false;
+    }
+    
     final static class TreeNode {
         final Dom node;
         final String relativeName;

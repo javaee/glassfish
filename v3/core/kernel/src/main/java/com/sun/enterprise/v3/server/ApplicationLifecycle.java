@@ -211,7 +211,9 @@ public class ApplicationLifecycle {
             // we start the application
             if (Boolean.valueOf(context.getCommandParameters().getProperty(
                 ParameterNames.ENABLED))) {
-                startModules(appInfo, context, report, tracker);
+                if (startModules(appInfo, context, report, tracker)==null) {
+                    return null;
+                }
             }
 
             return appInfo;
@@ -584,8 +586,10 @@ public class ApplicationLifecycle {
         for (ModuleInfo module : appInfo.getModuleInfos()) {
 
             try {
-                module.getApplicationContainer().start(
-                    context);
+                if (!module.getApplicationContainer().start(context)) {
+                    report.failure(logger, "Cannot start the container, check server.log for more information");
+                    return null;
+                }
                 tracker.add("started", ModuleInfo.class, module);
 
                 // add the endpoint

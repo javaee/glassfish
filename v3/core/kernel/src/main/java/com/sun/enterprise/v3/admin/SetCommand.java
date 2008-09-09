@@ -130,21 +130,22 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
 
-        Map<String, String> attrChanges = new HashMap<String, String>();
-        if (isProperty) {
-           attrName = "value";   
-        }
-        attrChanges.put(attrName, value);
 
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
 
             for (String name : targetNode.getAttributeNames()) {
-                if (attrName.equals(name)) {
+                if (matchName(attrName,name)) {
                     ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
                     part.setMessage(node.getValue() + "." + name + "=" + value);
+                    Map<String, String> attrChanges = new HashMap<String, String>();
+                    if (isProperty) {
+                       attrName = "value";
+                    }
+                    attrChanges.put(name, value);                    
                     changes.put((ConfigBean) node.getKey(), attrChanges);                    
+
                 }
             }
         }

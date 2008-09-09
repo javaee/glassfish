@@ -70,9 +70,11 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             // if we get more of these special cases, we should switch to a Renderer pattern
             if (node.getKey().model.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Property")) {
                  // special display for properties...
-                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setChildrenType("DottedName");
-                part.setMessage(node.getValue() + "=" + node.getKey().attribute("value"));
+                if (matches(node.getValue(), pattern)) {
+                    ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setChildrenType("DottedName");
+                    part.setMessage(node.getValue() + "=" + node.getKey().attribute("value"));
+                }
             }   else {
                 for (Map.Entry<String, String> name : getNodeAttributes(node.getKey(), pattern).entrySet()) {
                     String finalDottedName = node.getValue()+"."+name.getKey();
