@@ -191,14 +191,15 @@ public abstract class Jar {
                     } catch(IOException e) {
                         LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading inhabitants list in " + jar.getName(), e);
                     }
-                } else
-                if (entry.getName().startsWith(SERVICE_LOCATION)) {
-                    String serviceName = entry.getName().substring(SERVICE_LOCATION.length()+1);
+                } else {
+                    if (!entry.isDirectory() && entry.getName().startsWith(SERVICE_LOCATION)) {
+                        String serviceName = entry.getName().substring(SERVICE_LOCATION.length()+1);
 
-                    try {
-                        result.load( new URL("jar:"+file.toURL()+"!/"+entry.getName()), serviceName, jar.getInputStream(entry));
-                    } catch(IOException e) {
-                        LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
+                        try {
+                            result.load( new URL("jar:"+file.toURL()+"!/"+entry.getName()), serviceName, jar.getInputStream(entry));
+                        } catch(IOException e) {
+                            LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
+                        }
                     }
                 }
             }
