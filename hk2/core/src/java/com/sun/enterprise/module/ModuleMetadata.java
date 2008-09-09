@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  * Holds information about /META-INF/services and /META-INF/inhabitants for a {@link Module}.
@@ -99,9 +100,29 @@ public final class ModuleMetadata {
         private void load(URL source, InputStream is) throws IOException {
             this.resources.add(source);
             try {
+                /*
+                 * The format of service file is specified at
+                 * http://java.sun.com/j2se/1.3/docs/guide/jar/jar.html#Service%20Provider
+                 * According to the above spec,
+                 * The file contains a list of fully-qualified binary names of
+                 * concrete provider classes, one per line.
+                 * Space and tab characters surrounding each name,
+                 * as well as blank lines, are ignored.
+                 * The comment character is '#' ('\u0023', NUMBER SIGN);
+                 * on each line all characters following the first comment
+                 * character are ignored. The file must be encoded in UTF-8.
+                 */
                 Scanner scanner = new Scanner(is);
-                while (scanner.hasNext()) {
-                    providerNames.add(scanner.next());
+                final String commentPattern = "#"; // NOI18N
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if (!line.startsWith(commentPattern)) {
+                        StringTokenizer st = new StringTokenizer(line);
+                        while (st.hasMoreTokens()) {
+                            providerNames.add(st.nextToken());
+                            break; // Only one entry per line
+                        }
+                    }
                 }
             } finally {
                 is.close();
