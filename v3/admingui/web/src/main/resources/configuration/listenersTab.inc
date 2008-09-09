@@ -37,27 +37,20 @@
 <!-- configuration/listenersTab.inc -->
 
 <sun:tabSet id="listenersTab" immediate="$boolean{true}" selected="#{sessionScope.listenersTab}">
-    <sun:tab id="listenersEdit" immediate="$boolean{true}" text="#{pageTitle}" >
+    <sun:tab id="listenersEdit" immediate="$boolean{true}" text="$resource{i18n.httpListeners.editTab}" >
         <!command
             setSessionAttribute(key="listenersTab" value="listenersEdit");
-            # setAttribute(key="configName" value="#{configName}");
-            # setAttribute(key="name" value="#{tabName}");
-	   urlencode(value="#{tabName}" value=>$page{tabName});
+	    urlencode(value="#{tabName}" value=>$page{tabName});
             redirect(page="#{editPage}?configName=#{configName}&name=#{tabName}");
         /> 
     </sun:tab>
-    <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+    <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n.httpListeners.editSSLTab}" >
         <!command
-            setSessionAttribute(key="listenersTab" value="sslTab");
-           # setAttribute(key="configName" value="#{configName}");
-           # setAttribute(key="name" value="#{tabName}");
-           # setAttribute(key="type" value="#{type}");
-           # setAttribute(key="pageTitle" value="#{pageTitle}");
-           # setAttribute(key="editPage" value="#{editPage}");
+           setSessionAttribute(key="listenersTab" value="sslTab");
 	   urlencode(value="#{pageTitle}" value=>$page{pageTitle});
 	   urlencode(value="#{tabName}" value=>$page{tabName});
 	   urlencode(value="#{configName}" value=>$page{configName});
-            redirect(page="listenersSslTab.jsf?configName=#{configName}&name=#{tabName}&type=#{type}&pageTitle=#{pageTitle}&editPage=#{editPage}&ssl2=#{ssl2}");
+           redirect(page="listenersSslTab.jsf?configName=#{configName}&name=#{tabName}&type=#{type}&pageTitle=#{pageTitle}&editPage=#{editPage}&ssl2=#{ssl2}");
         /> 
     </sun:tab>
 </sun:tabSet>
