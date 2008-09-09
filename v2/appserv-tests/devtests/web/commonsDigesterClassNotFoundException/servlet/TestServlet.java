@@ -23,7 +23,7 @@ public class TestServlet extends HttpServlet {
 
         try {
             Foo foo = (Foo) digester.parse(
-                getServletContext().getResourceAsStream("input.txt"));
+                getServletContext().getResourceAsStream("/input.txt"));
             res.getWriter().print(foo.getName());
         } catch (Exception e) {
             throw new ServletException(e);
