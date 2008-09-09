@@ -142,6 +142,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateHost((VirtualServer)t, httpService);
                         }
+                        return null;
                     } else if (t instanceof HttpListener) {
                         if (type==TYPE.ADD) {
                             container.addConnector((HttpListener)t,
@@ -151,6 +152,7 @@ public class HttpServiceConfigListener implements ConfigListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateConnector((HttpListener)t, httpService);
                         }
+                        return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof RequestProcessing) {
