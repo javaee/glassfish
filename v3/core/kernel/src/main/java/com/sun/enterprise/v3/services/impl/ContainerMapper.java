@@ -136,8 +136,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
             if (mappingData == null){
                 mappingData = new MappingData();
                 req.setNote(MAPPING_DATA, mappingData);
-            }
-
+            }        
+            
             Adapter adapter = null;      
                         
             // Map the request without any trailling.
@@ -155,6 +155,12 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 adapter = map(req, decodedURI, mappingData);
             }
  
+            
+            if (logger.isLoggable(Level.FINE)){
+                logger.info("Request: " + decodedURI.toString() 
+                        + " was mapped to Adapter: " + adapter);
+            }    
+  
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             // TODO: Fix next Grizzly integration (1.8.6)
