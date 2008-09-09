@@ -67,7 +67,7 @@ import java.util.Properties;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.XTypes;

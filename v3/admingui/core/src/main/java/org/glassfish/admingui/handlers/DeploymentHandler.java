@@ -41,13 +41,11 @@
 
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.config.ApplicationConfig;
+import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import java.io.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.Properties;
 
 //TODO-V3
@@ -58,140 +56,157 @@ import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
-import com.sun.appserv.management.config.J2EEApplicationConfig;
-import com.sun.appserv.management.config.EJBModuleConfig;
-import com.sun.appserv.management.config.WebModuleConfig;
-import com.sun.appserv.management.config.RARModuleConfig;
-import com.sun.appserv.management.config.AppClientModuleConfig;
-import com.sun.appserv.management.config.ResourceAdapterConfig;
 
-import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import java.net.URI;
-import javax.management.ObjectName;
 
-
+import com.sun.webui.jsf.model.UploadedFile;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.util.TargetUtil;
+import org.glassfish.admingui.common.util.AMXUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 /**
  *
  */
 public class DeploymentHandler {
 
-	private static final HashMap<String, String> nextPageMap=new HashMap();
-	static {
-            nextPageMap.put(WebModuleConfig.J2EE_TYPE, "/applications/webApplications.jsf");
-            nextPageMap.put(J2EEApplicationConfig.J2EE_TYPE, "/applications/enterpriseApplications.jsf");
-            nextPageMap.put(EJBModuleConfig.J2EE_TYPE, "/applications/ejbModules.jsf");
-            nextPageMap.put(AppClientModuleConfig.J2EE_TYPE, "/applications/appclientModules.jsf");
-            nextPageMap.put(RARModuleConfig.J2EE_TYPE, "/applications/connectorModulePropsTable.jsf");
-	}
+        /**
+     *	<p> This method deploys the uploaded file </p>
+     *      to a give directory</p>
+     *	<p> Input value: "file" -- Type: <code>com.sun.webui.jsf.model.UploadedFile</code></p>
+     *	<p> Input value: "appName" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "appType" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "ctxtRoot" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "VS" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "enabled" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "verifier" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "jws" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "precompileJSP" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "libraries" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "description" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "rmistubs" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "threadpool" -- Type: <code>java.lang.String</code></p>
+     *	<p> Input value: "registryType" -- Type: <code>java.lang.String</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id = "deploy", input = {
+        @HandlerInput(name = "filePath", type = String.class),
+        @HandlerInput(name = "origPath", type = String.class),
+        @HandlerInput(name = "appName", type = String.class),
+        @HandlerInput(name = "ctxtRoot", type = String.class),
+        @HandlerInput(name = "VS", type = String.class),
+        @HandlerInput(name = "enabled", type = String.class),
+        @HandlerInput(name = "precompileJSP", type = String.class),
+        @HandlerInput(name = "libraries", type = String.class),
+        @HandlerInput(name = "description", type = String.class),
+        @HandlerInput(name="targets", type=String[].class )
+        })
+    public static void deploy(HandlerContext handlerCtx) {
 
-    // using DeploymentFacility API
-     protected static void deploy(String[] targets, Properties deploymentProps, String location,  HandlerContext handlerCtx) throws Exception {
-            
-     	deploymentProps.setProperty(DFDeploymentProperties.FORCE, "false");
-        deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
-        String appType = deploymentProps.getProperty("appType");
+        Properties deploymentProps = new Properties();
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String origPath = (String) handlerCtx.getInputValue("origPath");
+        String filePath = (String) handlerCtx.getInputValue("filePath");
+        String ctxtRoot = (String) handlerCtx.getInputValue("ctxtRoot");
+        String[] vs = (String[]) handlerCtx.getInputValue("VS");
+        String enabled = (String) handlerCtx.getInputValue("enabled");
         
-        deploymentProps.remove("appType");
-        boolean status = invokeDeploymentFacility(targets, deploymentProps, location, handlerCtx);
-        if(status){
-            //String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[] {"", "deployed"});
-            //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null);
+        String libraries = (String) handlerCtx.getInputValue("libraries");
+        String precompile = (String) handlerCtx.getInputValue("precompileJSP");
+        String desc = (String) handlerCtx.getInputValue("description");
+        String[] targets = (String[]) handlerCtx.getInputValue("targets");
+        if (targets == null || targets.length == 0 || !AMXRoot.getInstance().isEE()) {
+            targets = null;
         }
-        
-        /** TODO-V3
-         * Need to figure out what is the type of the just deployed application, and then redirect to its listing page.
-         * for TP2, just hardcode a web applications.
-         */
-        /*
-        String type = AMXRoot.getInstance().getAppType(deploymentProps.getProperty(DFDeploymentProperties.NAME));
-        String nextPage=(String) handlerCtx.getInputValue("listPageLink");
-        if ( RARModuleConfig.J2EE_TYPE.equals(type)){
-                nextPage = nextPageMap.get(type);
-                Properties rarProps = new Properties();
-                setProperty(rarProps, "threadPool", (String)handlerCtx.getInputValue("threadpool"), "");
-                setProperty(rarProps, "registry", (String)handlerCtx.getInputValue("registryType"), "");
-                setProperty(rarProps, "target", (String)handlerCtx.getInputValue("target"), "");
-                setProperty(rarProps, "listPageLink", (String)handlerCtx.getInputValue("listPageLink"), "");
-                setProperty(rarProps, "cancelPage", (String)handlerCtx.getInputValue("cancelPage"), "applications/connectorModules.jsf");
-                setProperty(rarProps, "filePath", location, "");
-                setProperty(rarProps, "name", deploymentProps.getProperty(DFDeploymentProperties.NAME), "");
-                if (status)
-                    GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.deploy.connectorModule"), null);
-                handlerCtx.setOutputValue("rarProps", rarProps);
-        }else{
-            if (GuiUtil.isEmpty(nextPage)){
-                nextPage = nextPageMap.get(type);
+        if (GuiUtil.isEmpty(origPath)) {
+            String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
+            GuiUtil.handleError(handlerCtx, mesg);
+            return;
+        }
+
+        deploymentProps.setProperty(DFDeploymentProperties.NAME, appName != null ? appName : "");
+        deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ctxtRoot != null ? ctxtRoot : "");
+        deploymentProps.setProperty(DFDeploymentProperties.ENABLED, enabled != null ? enabled : "false");
+        deploymentProps.setProperty(DFDeploymentProperties.DEPLOY_OPTION_LIBRARIES, libraries != null ? libraries : "");
+        deploymentProps.setProperty(DFDeploymentProperties.DESCRIPTION, desc != null ? desc : "");
+        deploymentProps.setProperty(DFDeploymentProperties.PRECOMPILE_JSP, precompile != null ? precompile : "false");
+        //do not send VS if user didn't specify, refer to bug#6542276
+        if (vs != null && vs.length > 0) {
+            if (!GuiUtil.isEmpty(vs[0])) {
+                String vsTargets = GuiUtil.arrayToString(vs, ",");
+                deploymentProps.setProperty(DFDeploymentProperties.VIRTUAL_SERVERS, vsTargets);
             }
         }
-        handlerCtx.setOutputValue("nextPage", nextPage);
-         */
-        handlerCtx.setOutputValue("nextPage", "/applications/webApplications.jsf");
-        
-    }
-     
-     static private void setProperty(Properties rarProps, String key, String value, String defValue)
-     {
-         rarProps.setProperty(key, (value==null) ? defValue : value);
-     }
-     
-     protected static boolean invokeDeploymentFacility(String[] targets, Properties props, String archivePath, HandlerContext handlerCtx) 
-     	throws Exception {
-     	if(archivePath == null) {
-            //Localize this message.
-            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.deploy.nullArchiveError"));
-     	}
-        
-        if (targets == null){
-            String defaultTarget =  (AMXRoot.getInstance().isEE()) ? "domain" : "server";
-            targets = new String[] {defaultTarget};
+        try {
+            DeployUtil.deploy(targets, deploymentProps, filePath, handlerCtx);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
         }
-        
-        File filePath = new File(archivePath);
-        URI source = filePath.toURI();
-        DeploymentFacility df = GuiUtil.getDeploymentFacility();
-        DFProgressObject progressObject = null;
-        progressObject = df.deploy(df.createTargets(targets), source, null , props);  //null for deployment plan
-        progressObject.waitFor();
-        DFDeploymentStatus status = progressObject.getCompletedStatus();
-        boolean ret = checkDeployStatus(status, handlerCtx, true);
-     	return ret;
-     }
+    }
 
-     public static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing) 
-     {
-         //TODO-V3 get more msg to user.
-        //parse the deployment status and retrieve failure/warning msg
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(bos);
-        DFDeploymentStatus.parseDeploymentStatus(status, pw);
-        byte[] statusBytes = bos.toByteArray();
-        String statusString = new String(statusBytes);
-        
-         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.FAILURE){ 
-            if (stopProcessing) 
-                GuiUtil.handleError(handlerCtx, statusString);
-            else
-                GuiUtil.prepareAlert(handlerCtx,"error", GuiUtil.getMessage("msg.Error"), statusString);
-                
-            return false;
-         }
-         if (status!=null && status.getStatus() == DFDeploymentStatus.Status.WARNING){
-            //We may need to log this mesg.
-            GuiUtil.prepareAlert(handlerCtx, "warning", GuiUtil.getMessage("deploy.warning"),statusString);
-            return false;
-         }
-         return true;
-     }
-     
+    /**
+     *	<p> This method uploads a file temp directory</p>
+     *	<p> Input value: "file" -- Type: <code>com.sun.webui.jsf.model.UploadedFile</code></p>
+     *	<p> Output value: "uploadDir" -- Type: <code>java.lang.String</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id = "uploadFileToTempDir", 
+    input = {
+        @HandlerInput(name = "file", type = UploadedFile.class)},
+    output = {
+        @HandlerOutput(name = "origPath", type = String.class),
+        @HandlerOutput(name = "uploadedTempFile", type = String.class)
+    })
+    public static void uploadFileToTempDir(HandlerContext handlerCtx) {
+        UploadedFile uploadedFile = (UploadedFile) handlerCtx.getInputValue("file");
+        File tmpFile = null;
+        String uploadTmpFile = "";
+        if (uploadedFile != null) {
+            String name = uploadedFile.getOriginalName();
+            //see bug# 6498910, for IE, getOriginalName() returns the full path, including the drive.
+            //for any other browser, it just returns the file name.
+            int lastIndex = name.lastIndexOf("\\");
+            if (lastIndex != -1) {
+                name = name.substring(lastIndex + 1, name.length());
+            }
+            int index = name.indexOf(".");
+            if (index <= 0) {
+                String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
+                GuiUtil.handleError(handlerCtx, mesg);
+                return;
+            }
+            String suffix = name.substring(index);
+            String prefix = name.substring(0, index);
+            handlerCtx.setOutputValue("origPath", prefix);
+            try {
+                //createTempFile requires min. of 3 char for prefix.
+                if (prefix.length() <= 2) {
+                    prefix = prefix + new Random().nextInt(100000);
+                }
+                tmpFile = File.createTempFile(prefix, suffix);
+                uploadedFile.write(tmpFile);
+                uploadTmpFile = tmpFile.getCanonicalPath();
+            } catch (IOException ioex) {
+                try {
+                    uploadTmpFile = tmpFile.getAbsolutePath();
+                } catch (Exception ex) {
+                //Handle AbsolutePathException here
+                }
+            } catch (Exception ex) {
+                GuiUtil.handleException(handlerCtx, ex);
+            }
+        }
+        handlerCtx.setOutputValue("uploadedTempFile", uploadTmpFile);
+    }
+    
     /**
      *  <p> This handler redeploy any application
      */
@@ -208,16 +223,14 @@ public class DeploymentHandler {
              String appName = (String) handlerCtx.getInputValue("appName");
              Properties deploymentProps = new Properties();
              //If we are redeploying a web app, we want to preserve context root.
-             //TODO TP3:  need to preserve context root.
-//             WebModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getWebModuleConfigMap().get(appName);
-//	     if (module != null){
-//                deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ((WebModuleConfig) module).getContextRoot());
-//             }
-             //deploymentProps.setProperty(DFDeploymentProperties.ARCHIVE_NAME, origPath);
+             ApplicationConfig appConfig = AMXUtil.getApplicationConfigByName(appName);
+             if (appConfig != null){
+                 deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, appConfig.getContextRoot());
+             }
              deploymentProps.setProperty(DFDeploymentProperties.FORCE, "true");
              deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
              deploymentProps.setProperty(DFDeploymentProperties.NAME, appName);
-             invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
+             DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
                 GuiUtil.handleException(handlerCtx, ex);
         }
@@ -275,7 +288,7 @@ public class DeploymentHandler {
             //re-generate the table data because there may be some apps thats been undeployed 
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
-            if( checkDeployStatus(status, handlerCtx, false)){
+            if( DeployUtil.checkDeployStatus(status, handlerCtx, false)){
                 String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[]{appName, "undeployed"});
                 //we need to fix cases where more than 1 app is undeployed before putting this msg.                
                 //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null); 
@@ -330,77 +343,6 @@ public class DeploymentHandler {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
- 
-
-    /**
-     *	<p> This method returns the resource-adapter properties </p>
-     *
-     *  <p> input value: "adapterProperties" -- Type: <code>java.util.Map</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="createResourceAdapterConfig",
-    input={
-        @HandlerInput(name="dProps", type=Properties.class),
-        @HandlerInput(name="AddProps",    type=Map.class)},
-    output={
-        @HandlerOutput(name="nextPage", type=String.class)}
-    )
-    public static void createResourceAdapterConfig(HandlerContext handlerCtx) {
-        Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
-
-        String name = dProps.getProperty("name");
-        ResourceAdapterConfig ra = AMXRoot.getInstance().getResourcesConfig().createResourceAdapterConfig(name, null);
-
-        String threadPool = dProps.getProperty("threadPool");
-        if(!GuiUtil.isEmpty(threadPool))
-            ra.setThreadPoolIDs(threadPool);
-
-        String registry = dProps.getProperty("registry");
-        if (!GuiUtil.isEmpty(registry)){
-            ra.createPropertyConfig(registry, "true");
-        }
-        
-        Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
-        if(addProps != null ){
-             for(String key: addProps.keySet()){
-                 String value = addProps.get(key);
-                 if (!GuiUtil.isEmpty(value))
-                    ra.createPropertyConfig(key,value);
-             }  
-         }
-        handlerCtx.setOutputValue("nextPage", "applications/connectorModules.jsf");
-    }
-    
-    
-
-    /**
-     *	<p> This method returns the resource-adapter properties </p>
-     *
-     *  <p> Output value: "adapterProperties" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="getAdapterProperties",
-    input={
-        @HandlerInput(name="dProps", type=Properties.class)},
-    output={
-        @HandlerOutput(name="properties", type=java.util.Map.class),
-        @HandlerOutput(name="dProps", type=Properties.class)})
-
-        public static void getAdapterProperties(HandlerContext handlerCtx) {
-
-            Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
-            String filePath = dProps.getProperty("filePath");
-            Map props = new HashMap();
-            try{
-                //TODO-V3
-                //props = ConnectorRuntime.getRuntime().getResourceAdapterBeanProperties(filePath);
-                clearValues(props);
-            }catch(Exception ex){
-                //TODO: Log exception,  for now just ignore and return empty properties list
-            }
-            handlerCtx.setOutputValue("properties", props);
-            handlerCtx.setOutputValue("dProps", dProps);
-    }    
 
     /**
      *	<p> This method returns the deployment descriptors for a given app. </p>
@@ -435,110 +377,164 @@ public class DeploymentHandler {
             handlerCtx.setOutputValue("descriptors", list);
     }   
     
+     
+
+//    /**
+//     *	<p> This method returns the resource-adapter properties </p>
+//     *
+//     *  <p> input value: "adapterProperties" -- Type: <code>java.util.Map</code>/</p>
+//     *	@param	context	The HandlerContext.
+//     */
+//    @Handler(id="createResourceAdapterConfig",
+//    input={
+//        @HandlerInput(name="dProps", type=Properties.class),
+//        @HandlerInput(name="AddProps",    type=Map.class)},
+//    output={
+//        @HandlerOutput(name="nextPage", type=String.class)}
+//    )
+//    public static void createResourceAdapterConfig(HandlerContext handlerCtx) {
+//        Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
+//
+//        String name = dProps.getProperty("name");
+//        ResourceAdapterConfig ra = AMXRoot.getInstance().getResourcesConfig().createResourceAdapterConfig(name, null);
+//
+//        String threadPool = dProps.getProperty("threadPool");
+//        if(!GuiUtil.isEmpty(threadPool))
+//            ra.setThreadPoolIDs(threadPool);
+//
+//        String registry = dProps.getProperty("registry");
+//        if (!GuiUtil.isEmpty(registry)){
+//            ra.createPropertyConfig(registry, "true");
+//        }
+//        
+//        Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
+//        if(addProps != null ){
+//             for(String key: addProps.keySet()){
+//                 String value = addProps.get(key);
+//                 if (!GuiUtil.isEmpty(value))
+//                    ra.createPropertyConfig(key,value);
+//             }  
+//         }
+//        handlerCtx.setOutputValue("nextPage", "applications/connectorModules.jsf");
+//    }
+//    
+//    
+
+
     
-    /**
-     *	<p> This handler creates references for the given application/module name 
-     *
-     *  <p> Input value: "name" -- Type: <code>String</code>/</p>
-     *  <p> Input value: "targets" -- Type: <code>String[]</code>/</p>
-     *  <p> Output value: "name" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="createApplicationReferences",
-        input={
-        @HandlerInput(name="name", type=String.class, required=true),
-        @HandlerInput(name="targets", type=String[].class, required=true )})
-    public static void createApplicationReferences(HandlerContext handlerCtx) {
-        String name = (String)handlerCtx.getInputValue("name");
-        String[] selTargets = (String[])handlerCtx.getInputValue("targets");
-        List<String> targets = Arrays.asList(selTargets);
-        List<String> associatedTargets = TargetUtil.getDeployedTargets(name, true);
-        try{
-            List addTargets = new ArrayList();
-            for(String targetName:targets) {
-                if(!(associatedTargets.contains(targetName))) {
-                       addTargets.add(targetName);
-                }
-            }
-            handleAppRefs(name, (String[])addTargets.toArray(new String[addTargets.size()]), handlerCtx, true, null);
-            
-            //removes the old application references
-            List removeTargets = new ArrayList();
-            for(String targetName:associatedTargets) {
-                if(!(targets.contains(targetName))) {
-                    removeTargets.add(targetName);
-                }
-            }
-            handleAppRefs(name, (String[])removeTargets.toArray(new String[removeTargets.size()]), handlerCtx, false, null);
-            
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
+//    /**
+//     *	<p> This handler creates references for the given application/module name 
+//     *
+//     *  <p> Input value: "name" -- Type: <code>String</code>/</p>
+//     *  <p> Input value: "targets" -- Type: <code>String[]</code>/</p>
+//     *  <p> Output value: "name" -- Type: <code>String</code>/</p>
+//     *	@param	context	The HandlerContext.
+//     */
+//    @Handler(id="createApplicationReferences",
+//        input={
+//        @HandlerInput(name="name", type=String.class, required=true),
+//        @HandlerInput(name="targets", type=String[].class, required=true )})
+//    public static void createApplicationReferences(HandlerContext handlerCtx) {
+//        String name = (String)handlerCtx.getInputValue("name");
+//        String[] selTargets = (String[])handlerCtx.getInputValue("targets");
+//        List<String> targets = Arrays.asList(selTargets);
+//        List<String> associatedTargets = TargetUtil.getDeployedTargets(name, true);
+//        try{
+//            List addTargets = new ArrayList();
+//            for(String targetName:targets) {
+//                if(!(associatedTargets.contains(targetName))) {
+//                       addTargets.add(targetName);
+//                }
+//            }
+//            DeployUtil.handleAppRefs(name, (String[])addTargets.toArray(new String[addTargets.size()]), handlerCtx, true, null);
+//            
+//            //removes the old application references
+//            List removeTargets = new ArrayList();
+//            for(String targetName:associatedTargets) {
+//                if(!(targets.contains(targetName))) {
+//                    removeTargets.add(targetName);
+//                }
+//            }
+//            DeployUtil.handleAppRefs(name, (String[])removeTargets.toArray(new String[removeTargets.size()]), handlerCtx, false, null);
+//            
+//        }catch(Exception ex){
+//            GuiUtil.handleException(handlerCtx, ex);
+//        }
+//    }
 
     
-    //Status of app-ref created will be the same as the app itself.
-    static public void handleAppRefs(String appName, String[] targetNames, HandlerContext handlerCtx, boolean addFlag, Boolean enableFlag) {
-        if (targetNames != null && targetNames.length > 0){
-            DeploymentFacility df= GuiUtil.getDeploymentFacility();        
-            DFProgressObject progressObject = null;
-            Properties dProps = new Properties();
+//    /**
+//     *	<p> This method displays the deployment descriptors for a given app. </p>
+//     *
+//     *  <p> Output value: "descriptors" -- Type: <code>String.class</code>/</p>
+//     *	@param	context	The HandlerContext.
+//     */
+//    @Handler(id="descriptorDisplay",
+//    input={
+//        @HandlerInput(name="filePath", type=String.class),
+//        @HandlerInput(name="appName", type=String.class),
+//        @HandlerInput(name="pageName", type=String.class)},
+//    output={
+//        @HandlerOutput(name="descriptor", type=String.class),
+//        @HandlerOutput(name="appName", type=String.class),
+//        @HandlerOutput(name="pageName", type=String.class)})
+//
+//        public static void descriptorDisplay(HandlerContext handlerCtx) {
+//            String filePath = (String)handlerCtx.getInputValue("filePath");
+//            String appName = (String)handlerCtx.getInputValue("appName");
+//            String pageName = (String)handlerCtx.getInputValue("pageName");
+//            String objectName = "com.sun.appserv:type=applications,category=config";
+//            String methodName = "getDeploymentDescriptor";
+//            Object[] params = {filePath};
+//            String[] types = {"java.lang.String"};
+//
+//            //TODO-V3
+//            //String descriptor=(String)JMXUtil.invoke(objectName, methodName, params, types);
+//            String descriptor ="";
+//
+//            handlerCtx.setOutputValue("descriptor", descriptor);
+//            handlerCtx.setOutputValue("appName", appName);
+//            handlerCtx.setOutputValue("pageName", pageName);
+//        }
 
-            if (enableFlag != null)
-                dProps.setProperty(DFDeploymentProperties.ENABLED, enableFlag.toString());
-            
-            if (addFlag)
-                progressObject = df.createAppRef(df.createTargets(targetNames), appName, dProps);
-            else
-                progressObject = df.deleteAppRef(df.createTargets(targetNames), appName, dProps);
-            DFDeploymentStatus status = df.waitFor(progressObject);
-            checkDeployStatus(status, handlerCtx, true);
-        }
-    }
     
-    /**
-     *	<p> This method displays the deployment descriptors for a given app. </p>
-     *
-     *  <p> Output value: "descriptors" -- Type: <code>String.class</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="descriptorDisplay",
-    input={
-        @HandlerInput(name="filePath", type=String.class),
-        @HandlerInput(name="appName", type=String.class),
-        @HandlerInput(name="pageName", type=String.class)},
-    output={
-        @HandlerOutput(name="descriptor", type=String.class),
-        @HandlerOutput(name="appName", type=String.class),
-        @HandlerOutput(name="pageName", type=String.class)})
+//    /**
+//     *	<p> This method returns the resource-adapter properties </p>
+//     *
+//     *  <p> Output value: "adapterProperties" -- Type: <code>java.util.List</code>/</p>
+//     *	@param	context	The HandlerContext.
+//     */
+//    @Handler(id="getAdapterProperties",
+//    input={
+//        @HandlerInput(name="dProps", type=Properties.class)},
+//    output={
+//        @HandlerOutput(name="properties", type=java.util.Map.class),
+//        @HandlerOutput(name="dProps", type=Properties.class)})
+//
+//        public static void getAdapterProperties(HandlerContext handlerCtx) {
+//
+//            Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
+//            String filePath = dProps.getProperty("filePath");
+//            Map props = new HashMap();
+//            try{
+//                //TODO-V3
+//                //props = ConnectorRuntime.getRuntime().getResourceAdapterBeanProperties(filePath);
+//                clearValues(props);
+//            }catch(Exception ex){
+//                //TODO: Log exception,  for now just ignore and return empty properties list
+//            }
+//            handlerCtx.setOutputValue("properties", props);
+//            handlerCtx.setOutputValue("dProps", dProps);
+//    }    
 
-        public static void descriptorDisplay(HandlerContext handlerCtx) {
-			String filePath = (String)handlerCtx.getInputValue("filePath");
-			String appName = (String)handlerCtx.getInputValue("appName");
-			String pageName = (String)handlerCtx.getInputValue("pageName");
-			String objectName = "com.sun.appserv:type=applications,category=config";
-			String methodName = "getDeploymentDescriptor";
-			Object[] params = {filePath};
-			String[] types = {"java.lang.String"};
-	
-			//TODO-V3
-                        //String descriptor=(String)JMXUtil.invoke(objectName, methodName, params, types);
-                        String descriptor ="";
-                        
-			handlerCtx.setOutputValue("descriptor", descriptor);
-			handlerCtx.setOutputValue("appName", appName);
-			handlerCtx.setOutputValue("pageName", pageName);
-		}
-
-
-	private static void clearValues(Map map) {
-            //refer to bugid 6212118
-            //The value returned by connector runtime is the type for that property, we want to 
-            //empty it out so that user can fill in the value 
-
-            Set<String> keySet = map.keySet();
-            for(String key: keySet) {
-                    map.put(key, "");
-            }
-	}
+//	private static void clearValues(Map map) {
+//            //refer to bugid 6212118
+//            //The value returned by connector runtime is the type for that property, we want to 
+//            //empty it out so that user can fill in the value 
+//
+//            Set<String> keySet = map.keySet();
+//            for(String key: keySet) {
+//                    map.put(key, "");
+//            }
+//	}
 }

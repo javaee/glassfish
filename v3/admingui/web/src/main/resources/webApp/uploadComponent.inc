@@ -37,6 +37,7 @@
 
 <sun:propertySheet id="sheet1" requiredFields="true">			 
     <sun:propertySheetSection id="section1" >
+        <!--
         <sun:property id="type" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}"  rendered="#{chooseType}" > 
             <sun:dropDown id="appType" selected="#{appType}" 
                 labels={"$resource{i18n.deploy.war}"} 
@@ -52,6 +53,7 @@
                 />
             </sun:dropDown>
         </sun:property>
+        -->
 
         <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.location}">                           
             <!afterCreate

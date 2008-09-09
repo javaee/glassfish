@@ -373,10 +373,15 @@ function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
     component = getTextElement(appNameId);
     component.value=pfex
 
-    component = getSelectElement(typeId);
-    if (component.value == "webApp") {
-        component = getTextElement(contextRootId);
-        component.value = pfex
+    //TODO: v3 may need to adjust for other supported type.
+//    component = getSelectElement(typeId);
+//    if (component.value == "webApp") {
+//        component = getTextElement(contextRootId);
+//        component.value = pfex
+//    }
+    component = getTextElement(contextRootId);
+    if (component != null){
+        component.value = pfex;
     }
 }
 
@@ -392,14 +397,23 @@ function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxR
     if (extensionId.length > 0) {
         window.opener.getTextElement(extensionId).value=getSuffix(appName);
     }
+    
+    
+   
+    
+//    if (typeId.length > 0) {
+//        type = window.opener.getSelectElement(typeId).value;
+//        if (type == "webApp") {
+//            component = window.opener.getTextElement(ctxRootId);
+//            component.value = getPrefix(appName);
+//        }
+//    }
 
-    if (typeId.length > 0) {
-        type = window.opener.getSelectElement(typeId).value;
-        if (type == "webApp") {
-            component = window.opener.getTextElement(ctxRootId);
+    //TODO V3: may need to adjust other type.
+        component = window.opener.getTextElement(ctxRootId);
+        if (component != null){
             component.value = getPrefix(appName);
         }
-    }
     window.close();
 }
 

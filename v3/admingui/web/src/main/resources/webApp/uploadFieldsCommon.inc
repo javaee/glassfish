@@ -86,9 +86,11 @@
 <sun:property id="haProp" rendered="#{supportCluster}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Availability}" visible="#{false}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{ha}" />  
 </sun:property>
+<!--
 <sun:property id="verifierProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" visible="#{true}"  helpText="$resource{i18n.deploy.runHelp}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{verifier}" />  
 </sun:property>
+-->
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" visible="#{false}" helpText="$resource{i18n.server.PrecompileHelp}">
 	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{precompile}" />  
 </sun:property>

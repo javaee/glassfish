@@ -69,7 +69,7 @@ import java.util.List;
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 
 import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 import com.sun.appserv.management.config.JDBCResourceConfig;

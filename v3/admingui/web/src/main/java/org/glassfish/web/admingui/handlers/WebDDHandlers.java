@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.admingui.handlers;
+package org.glassfish.web.admingui.handlers;
 
 import com.sun.appserv.management.config.ApplicationConfigConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
@@ -53,7 +53,8 @@ import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.web.plugin.common.WebAppConfig;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
@@ -76,7 +77,7 @@ import org.xml.sax.InputSource;
  *
  * @author anilam
  */
-public class WebApplicationHandlers {
+public class WebDDHandlers {
 
     /**
      *	<p> This handler returns the <env-entry> and <context-param> list for display
@@ -280,7 +281,7 @@ public class WebApplicationHandlers {
         progressObject = df.disable(targets, appName);
         progressObject = df.enable(targets, appName);
         DFDeploymentStatus status = progressObject.getCompletedStatus();
-        DeploymentHandler.checkDeployStatus(status, handlerCtx, true);
+        DeployUtil.checkDeployStatus(status, handlerCtx, true);
     }
         
     private static WebAppConfig getConfigData(String data,  boolean doDecoding){

@@ -40,7 +40,7 @@
  * Created on Nov 04, 2006, 2:43 PM
  */
 
-package org.glassfish.admingui.util;
+package org.glassfish.admingui.common.util;
 
 import java.util.*;
 
@@ -56,9 +56,6 @@ import com.sun.appserv.management.config.Enabled;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.GuiUtil;
 
 
 public class TargetUtil {

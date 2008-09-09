@@ -223,6 +223,11 @@ public class AMXUtil {
         }
         return result;
     }
+    
+    public static ApplicationConfig getApplicationConfigByName(String name){
+        ApplicationConfig appConfig = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap().get(name);
+        return appConfig;
+    }
 
 }
 

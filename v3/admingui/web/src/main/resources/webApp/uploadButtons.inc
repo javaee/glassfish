@@ -36,10 +36,8 @@
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
             onClick="javascript: 
-            if (checkType(this, '#{typeId}', '#{extensionId}', '$resource{i18n.msg.JS.deploy.confirmType}')){
-                    if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                            return submitAndDisable(this, '$resource{i18n.button.Processing}');                       
-            } 
+                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                    return submitAndDisable(this, '$resource{i18n.button.Processing}');                       
               return false;            
             ">
         <!command
@@ -54,27 +52,13 @@
             deploy(filePath="$attribute{filePath}"
                     origPath="$attribute{origPath}"
                     appName="#{appName}"	
-                    appType="#{appType}"
 		    VS="#{selectedVS}"
                     ctxtRoot="#{ctxtRoot}"
-                    availability="#{ha}"
                     enabled="#{enabled}"
-                    verifier="#{verifier}"
-                    jws="#{jws}"
                     precompileJSP="#{precompile}"
                     libraries="#{library}"
                     description="#{description}"
-                    rmistubs="#{rmis}"
                     targets="#{selectedTargets}"
-
-                    #the following is specific for RAR
-                    threadpool="#{threadpool}"
-                    registryType="#{registryType}"
-                    listPageLink="$pageSession{listPageLink}"
-                    cancelPage="$pageSession{cancelPage}"
-                    target="$pageSession{target}"
-                    nextPage=>$attribute{nextPage}
-                    rarProps=>$session{rarProps}
             );
            redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />

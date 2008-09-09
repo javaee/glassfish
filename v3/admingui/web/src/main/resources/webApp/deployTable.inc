@@ -87,6 +87,7 @@
                width="$int{18}"
                />
 
+            <!--
             <sun:dropDown rendered="$session{supportCluster}" id="view" selected="$pageSession{viewValue}" label="$resource{i18n.common.viewDropDown}" submitForm="#{true}" immediate="#{true}" 
                     labels={"$resource{i18n.common.Summary}", "$resource{i18n.common.Detailed}" }
                     values={"summary", "detail"} >
@@ -96,6 +97,7 @@
                     navigate(page="#{listPageLink}");
                 />
             </sun:dropDown>
+            -->
          </sun:panelGroup>
      </facet>
 
