@@ -49,16 +49,29 @@ import org.glassfish.admingui.plugin.IntegrationPointComparator;
 
 import org.jvnet.hk2.component.Habitat;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Properties;
+
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
+import com.sun.webui.theme.ServletThemeContext;
+import com.sun.webui.theme.ThemeContext;
+
+import java.io.IOException;
+
+import org.glassfish.admingui.common.plugin.ConsoleClassLoader;
+
+import org.glassfish.admingui.theme.AdminguiThemeContext;
 
 /**
  *  <p>	This class will provide JSFTemplating <code>Handler</code>s that
@@ -254,4 +267,85 @@ public class PluginHandlers {
 	// Not found
 	return null;
     }
+    /**
+     *	<p> This method initializes the theme using the given
+     *	    <code>themeName</code> and <code>themeVersion</code>.  If these
+     *	    values are not supplied, "suntheme" and "4.2" will be used
+     *	    respectively.  This method should be invoked before the theme is
+     *	    accessed (for example on the initPage or beforeCreate of the login
+     *	    page).</p>
+     *
+     */
+    @Handler(id = "getTheme", input = {
+        @HandlerInput(name = "themeName", type = String.class),
+        @HandlerInput(name = "themeVersion", type = String.class)
+        }, 
+        output = {
+            @HandlerOutput(name = "themeContext", type = ThemeContext.class)
+        })
+    public static void getTheme(HandlerContext handlerCtx) {
+        String themeName = (String) handlerCtx.getInputValue("themeName");
+        String themeVersion = (String) handlerCtx.getInputValue("themeVersion");
+        ThemeContext themeContext = AdminguiThemeContext.getInstance(
+                handlerCtx.getFacesContext(), themeName, themeVersion);
+        handlerCtx.setOutputValue("themeContext", themeContext);
+    }
+
+    /**
+     *	<p> This method gets the <code>themeName</code> and <code>themeVersion</code>
+     *	    via <code>Integration Point</code>.  If more than one is provided
+     *	    the one with the lowest <code>priority</code> number will be used. 
+     *	    This method should be invoked before the theme is 
+     *	    accessed (for example on the initPage or beforeCreate of the login page).</p>
+     */
+    @Handler(id = "getThemeFromIntegrationPoints", output = {
+        @HandlerOutput(name = "themeContext", type = ThemeContext.class)
+    })
+    public static void getThemeFromIntegrationPoints(HandlerContext handlerCtx) {
+        FacesContext ctx = handlerCtx.getFacesContext();
+        String type = "org.glassfish.admingui:customtheme";
+        List<IntegrationPoint> ipList = getIntegrationPoints(ctx, type);
+        if (ipList != null) {
+            //if more than one integration point is provided then we
+            //need to find the lowest priority number
+            int lowest = getLowestPriorityNum(ipList);
+            for (IntegrationPoint ip : ipList) {
+                int priority = ip.getPriority();
+                if (priority == lowest) {
+                    String content = ip.getContent();
+                    if (content == null || content.equals("")) {
+                        throw new IllegalArgumentException("No Properties File Name Provided!");
+                    }
+                    ClassLoader pluginCL = ConsoleClassLoader.findModuleClassLoader(ip.getConsoleConfigId());
+                    URL propertyFileURL = pluginCL.getResource("/" + content);
+                    try {
+                        Properties propertyMap = new Properties();
+                        propertyMap.load(propertyFileURL.openStream());
+                        ThemeContext themeContext = AdminguiThemeContext.getInstance(
+                                ctx, propertyMap);
+                        handlerCtx.setOutputValue("themeContext", themeContext);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(
+                                "Unable to access properties file '" + content + "'!", ex);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private static int getLowestPriorityNum(List ipList) {
+        Iterator iter = ipList.iterator();
+            //assuming priority values can only be 1 to 100
+            int lowest = 101;
+            while (iter.hasNext()) {
+                IntegrationPoint iP = (IntegrationPoint) iter.next();
+                if (iP.getPriority() < lowest) {
+                    lowest = iP.getPriority();                    
+                }
+            }
+
+        return lowest;
+    }
+    
 }
