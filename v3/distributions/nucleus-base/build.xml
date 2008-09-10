@@ -24,12 +24,26 @@
         <!-- force resource processing as version could change behind the scene without Ant ever noticing it -->
 	<delete dir="target/resources"/>
         <mkdir dir="target/resources"/>
+
+        <resolveArtifact artifactId="jsp-impl" property="jsp.impl" />
+        <basename file="${jsp.impl}" property="jsp.impl.base" />
+        <resolveArtifact artifactId="el-impl" property="el.impl" />
+        <basename file="${el.impl}" property="el.impl.base" />
+        <resolveArtifact artifactId="jstl-impl" property="jstl.impl" />
+        <basename file="${jstl.impl}" property="jstl.impl.base" />
+        <resolveArtifact artifactId="jsf-impl" property="jsf.impl" />
+        <basename file="${jsf.impl}" property="jsf.impl.base" />
+
         <copy todir="target/resources">
             <fileset dir=".">
                 <include name="bin/*" />
             </fileset>
             <filterset>
               <filter token="VERSION" value="${version}"/>
+              <filter token="JSP_IMPL" value="${jsp.impl.base}"/>
+              <filter token="EL_IMPL" value="${el.impl.base}"/>
+              <filter token="JSTL_IMPL" value="${jstl.impl.base}"/>
+              <filter token="JSF_IMPL" value="${jsf.impl.base}"/>
             </filterset>
         </copy>
         <zip file="target/nucleus-base.zip">

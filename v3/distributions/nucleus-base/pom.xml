@@ -64,5 +64,28 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jsp-impl</artifactId>
+            <version>${jsp-impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
+            <version>${el-impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jstl-impl</artifactId>
+            <version>${jstl-impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>${jsf-impl.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
 

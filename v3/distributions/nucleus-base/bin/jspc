@@ -1,0 +1,16 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+JSP_IMPL=$AS_INSTALL_LIB/@JSP_IMPL@
+EL_IMPL=$AS_INSTALL_LIB/@EL_IMPL@
+JSTL_IMPL=$AS_INSTALL_LIB/web/@JSTL_IMPL@
+JSF_IMPL=$AS_INSTALL_LIB/web/@JSF_IMPL@
+
+java -cp "$AS_INSTALL_LIB/javax.javaee-@VERSION@.jar:$AS_INSTALL_LIB/ant-@VERSION@.jar:$EL_IMPL:$JSP_IMPL" org.apache.jasper.JspC -classpath "$JSTL_IMPL:$JSF_IMPL" "$@"
+
