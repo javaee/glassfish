@@ -53,9 +53,9 @@ import com.sun.enterprise.deployment.BundleDescriptor;
 public class LogAuthenticationListener implements AuthenticationListener {
     
     private static Logger ejbLogger
-        = LogDomains.getLogger(LogDomains.EJB_LOGGER);
+        = LogDomains.getLogger(LogAuthenticationListener.class,LogDomains.EJB_LOGGER);
     private static Logger webLogger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(LogAuthenticationListener.class,LogDomains.WEB_LOGGER);
     
     
     /** Creates a new instance of LogAuthenticationListener */

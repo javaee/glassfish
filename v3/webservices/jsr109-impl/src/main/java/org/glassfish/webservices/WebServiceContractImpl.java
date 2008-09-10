@@ -21,7 +21,7 @@ public class WebServiceContractImpl implements WebServicesContract{
 
     private  static WebServiceContractImpl wscImpl;
 
-    private Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEB_LOGGER);
     
     public ComponentEnvManager getComponentEnvManager() {
         return compEnvManager;  

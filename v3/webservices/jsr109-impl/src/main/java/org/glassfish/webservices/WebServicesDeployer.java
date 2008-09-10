@@ -71,7 +71,7 @@ import java.util.logging.Logger;
 @Service
 public class WebServicesDeployer extends WebDeployer {
 
-    protected Logger logger = Logger.getLogger(LogDomains.DPL_LOGGER);
+    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.DPL_LOGGER);
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -187,7 +187,7 @@ public class WebServicesDeployer extends WebDeployer {
                 try {
                     checkCatalog(bundle, ws, moduleDir);
                 } catch (DeploymentException e) {
-                    LogDomains.getLogger(LogDomains.WEB_LOGGER).log(Level.SEVERE,"Error in resolving the catalog");
+                    logger.log(Level.SEVERE,"Error in resolving the catalog");
                 }
                 if (ws.hasWsdlFile()) {
                     // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
@@ -605,6 +605,12 @@ public class WebServicesDeployer extends WebDeployer {
                                      String appLibDirPath, String moduleDir, Application app,DeploymentContext dc) throws DeploymentException {
         // First thing in the classpath is modules' classes directory
         String classpath = classesDir.getAbsolutePath();
+        /**
+        * Hack fix me
+         * TODO BM fix this just put in momentarily so apt could find
+         * javax.jws classes
+         */
+        //classpath+=(File.pathSeparator+"javax.javaee-10.0-SNAPSHOT.jar")  ;
 
         // Next add the Jar files in WEB-INF/lib, if any
         if(webinfLibDir != null) {

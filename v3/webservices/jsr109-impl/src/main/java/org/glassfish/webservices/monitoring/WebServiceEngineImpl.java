@@ -69,7 +69,7 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
     protected volatile GlobalMessageListener globalMessageListener = null; 
            
     static final ThreadLocal servletThreadLocal = new ThreadLocal();
-    public static final Logger sLogger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    public static final Logger sLogger = LogDomains.getLogger(WebServiceEngineImpl.class,LogDomains.DPL_LOGGER);
     
     
     /** Creates a new instance of TracingSystemHandlerFactory */
