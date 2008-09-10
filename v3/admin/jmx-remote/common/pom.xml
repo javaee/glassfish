@@ -133,7 +133,6 @@
 
             <artifactId>glassfish-api</artifactId>
 
-            <version>${glassfish-api.version}</version>
 
         </dependency>
 
@@ -143,7 +142,6 @@
 
             <artifactId>grizzly-module</artifactId>
 
-            <version>${grizzly.version}</version>
 
         </dependency>
 

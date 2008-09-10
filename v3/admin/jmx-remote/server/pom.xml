@@ -146,7 +146,6 @@
 
             <artifactId>glassfish-api</artifactId>
 
-            <version>${glassfish-api.version}</version>
 
         </dependency>
 
@@ -155,8 +154,6 @@
             <groupId>org.glassfish.external</groupId>
 
             <artifactId>grizzly-module</artifactId>
-
-            <version>${grizzly.version}</version>
 
         </dependency>
 

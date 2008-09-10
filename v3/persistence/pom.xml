@@ -48,6 +48,11 @@
     <artifactId>persistence</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish persistence related modules</name>  
+     
+    <properties>
+	<eclipse.version>1.0.1-M2</eclipse.version>
+    </properties>
+
     <modules>
         <module>jpa-connector</module>
         <module>eclipselink-wrapper</module>

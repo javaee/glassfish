@@ -145,6 +145,13 @@
         <attachArtifact file="build.xml" classifier="build"/>
     </target>
 
+    <!-- default value to conduct the test (start, stop) the server. This value
+	 vaires based on your hardware and network bandwidth. So, by default, 
+	 we assume it takes 9 seconds to finish the test. In case, you are 
+	 using a low end configuration, then use 
+	 -Dtimeout="myTimeoutValueInInteger" from command line            -->
+    <property name="timeout"  value="9000"/>
+
     <!--  added new: will test the sanity of the server    -->
     <target name="test.server">
             <echo message="------------------------------------------"/>
@@ -154,11 +161,11 @@
             <unzip src="target/web.zip" dest="target/sanitywork">
             </unzip>
             <chmod dir="target/sanitywork/glassfish/bin" perm="ugo+rx" includes="**/*"/>
-            <echo message="Now execute the jar file....please wait for timeout"/>
+            <echo message="Now execute the jar file....please wait for timeout ${timeout} msecs"/>
             <java jar="target/sanitywork/glassfish/modules/glassfish-10.0-SNAPSHOT.jar"
                 fork="true"
                 maxmemory="128m"
-                timeout="9100"
+                timeout="${timeout}"
                 failonerror="false"
                 outputproperty="myout"
                 logError="false"
@@ -174,10 +181,10 @@
              <loadfile srcfile="target/sanitywork/server.output" property="sanity.test.result">
                  <filterchain>
                       <filterreader classname="org.apache.tools.ant.filters.LineContains">
-                          <param type="contains" value="Glassfish v3 started"/>
+                          <param type="contains" value="startup time"/>
                       </filterreader>
                       <tokenfilter>
-                          <containsstring contains="started"/>
+                          <containsstring contains="startup time"/>
                       </tokenfilter>
                  </filterchain>
              </loadfile>
@@ -189,7 +196,7 @@
     <target name="checkString"   >
           <condition property="isPassed">
           <contains string="${sanity.test.result}"
-                                substring="Glassfish v3 started"/>
+                                substring="startup time"/>
           </condition>
     </target>
 

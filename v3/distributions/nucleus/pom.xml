@@ -86,7 +86,6 @@
        <dependency>
            <groupId>com.sun.enterprise</groupId>
            <artifactId>osgi-adapter</artifactId>
-           <version>${hk2.version}</version>
        </dependency>
        <!-- Since HK2 needs StAX at runtime, we need the following two -->
        <dependency>

@@ -59,6 +59,24 @@
     </scm>
 
     <properties>
-      <hk2.version>0.3.10-SNAPSHOT</hk2.version>
+      <hk2.version>0.3.21</hk2.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2</artifactId>
+                <version>${hk2.version}</version>
+            </dependency>
+	    <dependency>
+              <groupId>com.sun.enterprise</groupId>
+              <artifactId>hk2-maven</artifactId>
+              <version>${hk2.version}</version>
+        </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
 </project>

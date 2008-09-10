@@ -80,9 +80,9 @@
 -->
 
 	<dependency>
-        <groupId>org.glassfish</groupId>
+                <groupId>org.glassfish</groupId>
 		<artifactId>javax.management.j2ee</artifactId>
-		<version>10.0-SNAPSHOT</version>
+		<version>${project.version}</version>
 		<scope>provided</scope>
 	</dependency>
 

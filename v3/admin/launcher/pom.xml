@@ -74,7 +74,6 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>stax-osgi</artifactId>
-            <version>${hk2.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

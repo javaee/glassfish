@@ -15,7 +15,6 @@
         <dependency>
           <groupId>com.sun.enterprise</groupId>
           <artifactId>auto-depends</artifactId>
-          <version>${hk2.version}</version>
         </dependency>
     </dependencies>
 

@@ -41,12 +41,14 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orblib</artifactId>
-            <version>1.0</version>
+<!-- check with Mahesh
+	    <version>${glassfish-corba.version}</version>
+-->
+	    <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -108,7 +110,6 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${glassfish-api.version}</version>            
         </dependency>
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
