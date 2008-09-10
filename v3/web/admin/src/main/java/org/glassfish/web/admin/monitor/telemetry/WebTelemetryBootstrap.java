@@ -336,6 +336,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             
         } else {
             Collection<TreeNode> appNodes = applicationsNode.getChildNodes();
+            TreeNode appNodeToRemove = null;
             for (TreeNode appNode : appNodes) {
                 if (appNode.getName().equals(appName)) {
                     Collection<TreeNode> vsNodes = appNode.getChildNodes();
@@ -347,11 +348,12 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                         removeSessionTelemetryForVS(appName, vsName);
                     }
                     appNode.setEnabled(false);
-                    applicationsNode.removeChild(appNode);
+                    appNodeToRemove = appNode;
                     break;
                 }
             }
-            
+            if (appNodeToRemove != null)
+                applicationsNode.removeChild(appNodeToRemove);
         }
     }
 
@@ -421,12 +423,16 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private void removeJSPTelemetryForVS(String appName, String vsName) {
         if (!jspProviderRegistered || !isWebTreeBuilt || (vsJspTMs == null))
             return;
+        List<JspStatsTelemetry> jspTMsToRemove = new ArrayList<JspStatsTelemetry>();
         for (JspStatsTelemetry vsJspTM : vsJspTMs){
             if (vsJspTM.getModuleName().equals(appName) && 
                             vsJspTM.getVSName().equals(vsName)) {
-                vsJspTMs.remove(vsJspTM);
+                jspTMsToRemove.add(vsJspTM);
                 vsJspTM.enableMonitoring(false);
             }
+        }
+        for (JspStatsTelemetry jspTMToRemove : jspTMsToRemove) {
+            vsJspTMs.remove(jspTMToRemove);
         }
     }
     
@@ -477,12 +483,16 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private void removeServletTelemetryForVS(String appName, String vsName) {
         if (!servletProviderRegistered || !isWebTreeBuilt || (vsServletTMs == null))
             return;
+        List<ServletStatsTelemetry> servletTMsToRemove = new ArrayList<ServletStatsTelemetry>();
         for (ServletStatsTelemetry vsServletTM : vsServletTMs){
             if (vsServletTM.getModuleName().equals(appName) && 
                             vsServletTM.getVSName().equals(vsName)) {
                 vsServletTM.enableMonitoring(false);
-                vsServletTMs.remove(vsServletTM);
+                servletTMsToRemove.add(vsServletTM);
             }
+        }
+        for (ServletStatsTelemetry servletTMToRemove : servletTMsToRemove) {
+            vsServletTMs.remove(servletTMToRemove);
         }
     }
     
@@ -533,12 +543,16 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private void removeSessionTelemetryForVS(String appName, String vsName) {
         if (!sessionProviderRegistered || !isWebTreeBuilt || (vsSessionTMs == null))
             return;
+        List<SessionStatsTelemetry> sessionTMsToRemove = new ArrayList<SessionStatsTelemetry>();
         for (SessionStatsTelemetry vsSessionTM : vsSessionTMs){
             if (vsSessionTM.getModuleName().equals(appName) && 
                             vsSessionTM.getVSName().equals(vsName)) {
                 vsSessionTM.enableMonitoring(false);
-                vsSessionTMs.remove(vsSessionTM);
+                sessionTMsToRemove.add(vsSessionTM);
             }
+        }
+        for (SessionStatsTelemetry sessionTMToRemove : sessionTMsToRemove) {
+            vsSessionTMs.remove(sessionTMToRemove);
         }
     }
     
