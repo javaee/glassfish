@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="318"/>
+    <property name="TOTAL_EXPECTED" value="317"/>
 
     &commonSetup;
     &commonBuild;
@@ -224,7 +224,6 @@
         -->
         <ant dir="replaceRootContext" target="all"/>
         <ant dir="broken_webapp" target="all"/>
-        <ant dir="adminGui" target="all"/>
         <ant dir="contextRoot" target="all"/>
         <ant dir="emptyContextRoot" target="all"/>
         <ant dir="multiByteContextRoot" target="all"/>
