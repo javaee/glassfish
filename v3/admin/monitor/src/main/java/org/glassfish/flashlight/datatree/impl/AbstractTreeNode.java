@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  *
  * @author Harpreet Singh
  */
-public abstract class AbstractTreeNode implements TreeNode {
+public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
@@ -256,5 +256,9 @@ public abstract class AbstractTreeNode implements TreeNode {
         String modifiedPattern = pattern.replaceAll("\\*", ":");
         String regex = modifiedPattern.replaceAll (":", ".*");
         return regex;
+    }
+    
+    public int compareTo(Object o) {
+        return this.getName().compareTo(((TreeNode)o).getName());
     }
 }
