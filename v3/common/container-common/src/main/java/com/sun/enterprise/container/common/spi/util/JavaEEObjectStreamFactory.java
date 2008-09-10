@@ -50,6 +50,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Factory class for creating EJBObject input/output Stream
@@ -62,6 +64,9 @@ public class JavaEEObjectStreamFactory {
 
     @Inject
     Habitat habitat;
+
+    public static final Logger _logger = LogDomains.getLogger(
+            JavaEEObjectStreamFactory.class, LogDomains.UTIL_LOGGER);
 
     private static Collection<JavaEEObjectStreamHandler> _empty
             = new ArrayList<JavaEEObjectStreamHandler>();
@@ -149,5 +154,71 @@ public class JavaEEObjectStreamFactory {
 
         return ois;
     }
+
+    public final byte[] serializeObject(Object obj, boolean replaceObject)
+            throws java.io.IOException
+    {
+        byte[] data = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = this.createObjectOutputStream(
+                    bos, replaceObject);
+
+            oos.writeObject(obj);
+            oos.flush();
+            data = bos.toByteArray();
+        } catch (java.io.NotSerializableException notSerEx) {
+            throw notSerEx;
+        } catch (Exception th) {
+            IOException ioEx = new IOException(th.toString());
+            ioEx.initCause(th);
+            throw ioEx;
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (Exception ex) {
+                }
+            }
+            try {
+                bos.close();
+            } catch (Exception ex) {
+            }
+        }
+
+        return data;
+    }
+
+    public final Object deserializeObject(byte[] data, boolean resolveObject,
+                                          ClassLoader classLoader)
+            throws Exception
+    {
+        Object obj = null;
+        ByteArrayInputStream bis = null;
+        ObjectInputStream ois = null;
+        try {
+            bis = new ByteArrayInputStream(data);
+            ois = this.createObjectInputStream(bis, resolveObject,
+                    classLoader);
+            obj = ois.readObject();
+        } catch (Exception ex) {
+            _logger.log(Level.FINE, "Error during deserialization", ex);
+            throw ex;
+        } finally {
+            try {
+                ois.close();
+            } catch (Exception ex) {
+                _logger.log(Level.FINEST, "Error during ois.close()", ex);
+            }
+            try {
+                bis.close();
+            } catch (Exception ex) {
+                _logger.log(Level.FINEST, "Error during bis.close()", ex);
+            }
+        }
+        return obj;
+    }
+
 
 }
