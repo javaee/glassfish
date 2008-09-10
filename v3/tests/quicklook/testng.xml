@@ -41,13 +41,6 @@
   <parameter name="admin.password" value=""/>
   <parameter name="admin.console.url" value="http://localhost:4848/"/>
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
-  <test name="asadmin_tests">
-    <classes>
-      <class name="test.admin.JvmOptionTests"/>
-      <class name="test.admin.JdbcConnectionPoolTests"/>
-      <class name="test.admin.WebtierTests"/>
-    </classes>
-  </test>
   <!--
   <test name="adminconsole_tests">
 	<classes>
@@ -110,5 +103,12 @@
        <class name="ejb30.session.hello.test.TestClient" />
     </classes>
   </test>--> 
+  <test name="asadmin_tests">
+    <classes>
+      <class name="test.admin.JvmOptionTests"/>
+      <class name="test.admin.JdbcConnectionPoolTests"/>
+      <class name="test.admin.WebtierTests"/>
+    </classes>
+  </test>
 </suite>
 
