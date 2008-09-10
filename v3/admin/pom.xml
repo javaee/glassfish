@@ -59,8 +59,8 @@
         <module>cli-framework</module>
         <!-- not needed at the moment -->
         <!-- <module>jmx-remote</module> -->
+        <!-- <module>backup</module> -->
         <!-- not needed at the moment -->
-        <module>backup</module>
         <module>launcher</module>
         <module>javax.management.j2ee</module>
     </modules>
