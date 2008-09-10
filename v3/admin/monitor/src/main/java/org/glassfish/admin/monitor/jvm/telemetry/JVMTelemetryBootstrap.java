@@ -119,7 +119,16 @@ public class JVMTelemetryBootstrap implements TelemetryProvider, PostConstruct {
 
     private void enableJVMMonitoring(boolean isEnabled) {
         //Enable/Disable jvm telemetry
-        if (jvmTM != null)
-            jvmTM.enableMonitoring(isEnabled);
+        //Delete jvmTM if the enabled flag is turned from 'ON' to 'OFF'
+        if (!isEnabled) { //asking to disable
+            jvmTM = null;
+            if (serverNode != null) {
+                TreeNode jvmNode = serverNode.getNode("jvm");
+		if (jvmNode != null)
+                    serverNode.removeChild(serverNode.getNode("jvm"));
+            }
+        } else { // asking to enable
+            buildJVMTelemetry();
+        }
     }
 }
