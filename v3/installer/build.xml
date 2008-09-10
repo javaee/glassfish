@@ -60,6 +60,9 @@
             </fileset>
         </copy>
 
+	<!-- Copy the modified uninstaller wrapper of OI into Engine.zip -->
+ 	<copy tofile="${engine.stage.dir}/install/bin/uninstaller"  
+		file="${resources.dir}/wrappers/oiuninstaller" overwrite="true"/>
 	<!-- Change the permission on wrapper that is also to be used for uninstaller. -->
 	<chmod file="${engine.stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
 

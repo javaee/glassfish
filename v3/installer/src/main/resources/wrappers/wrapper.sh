@@ -29,6 +29,21 @@ ARGS=""
 export ARGS 
 _POSIX2_VERSION=199209
 export _POSIX2_VERSION
+
+#Check for JAVA_HOME if not set then bailout
+if [ -z "${JAVA_HOME}" ]
+then
+	echo "Environment variable JAVA_HOME is not set. Please set it to a valid directory and rerun this program."
+	exit 105
+fi
+
+#validate JAVA_HOME, leave full validation to OI.
+if [ ! -f "${JAVA_HOME}/bin/jar" ]
+then
+	echo "Please set JAVA_HOME to a valid directory and rerun this program."
+	exit 106
+fi
+
 while [ $# -gt 0 ]
 do
 arg="$1"
@@ -76,7 +91,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +89l $0 > $tmp/tmp.jar
+tail +104l $0 > $tmp/tmp.jar
 cd $tmp
 $JAVA_HOME/bin/jar xvf tmp.jar 
 rm tmp.jar

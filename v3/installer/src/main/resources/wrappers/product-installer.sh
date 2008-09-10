@@ -95,39 +95,23 @@ LOGDIR=/tmp
 
 usage() {
   ${CAT} <<EOF
-Usage: $NAME [OPTION]
 
-Options:
-  -h, --help
-   Show the help message
-  -l <dir>, --logdir=<dir>
-   Directory to store log files.
-  -q, --quiet
-   Only output related to severe or fatal problems will be sent to the console and the logfile
-  -v, --verbose
-   All output, including non-localized debug messages, will be sent to the console and to the
-   logfile.
-  -t, --text
-   Select Text mode instead of GUI mode.  Text mode is automatically selected if no suitable display can be found.
-  -n, --dry-run
-    Dry run mode. Do not install anything. Configuration answers written to <file>
-  -a <file>, --answerfile=<file>
-   Pointer to an answer file that can be used by openInstaller's silent mode installer
-  -R <path>, --altroot=<path to alternate root>
-   Path to alternate root for the installer.  All operations (install, etc) are relative
-   to this root directory.
-
-Private options:
-
-  -j <javahome>, --javahome=<javahome> :
-    use this java vm instead of searching for suitable one
-  -J <joptions>, --jvmoptions=<joptions> :
-    specify java vm options.  For example -o "-verbose -Dhttp.proxy=foo.com:3434"
-  -p <props>, --properties=<props> :
-    specify 1 or more config properties options, separated by comma,
-    to the install engine.  For example:
-    --properties=Logs-Location=/tmp,Platform-Plugin-Path=c:\\Sun\\ppp
-
+Usage: <GlassFish installation/uninstallation program.> [-options]
+where options include:
+    -a <answerfile>
+        run this program in silent mode using the answerfile provided, should be used with -s option.\n\
+    -l <Log Directory>
+        log information goes to this directory
+    -q Logging level set to WARNING
+    -v Logging level set to FINEST
+    -s run this application silent mode
+    -j <javahome>
+        JRE installation directory to be used by this program.
+    -n <savefile>
+        run the program in dry-run mode and generate savefile to be used for silent mode\n\
+    -h
+    -help
+        print this help message
 EOF
   exit $1
 }
@@ -334,14 +318,6 @@ while getopts "${OPTSTRING}" opt ; do
 	a) ANSWERFILE=${OPTARG}
   ;;
 
-	R) ALTROOT=${OPTARG}
-
-	    if [ ! -d ${ALTROOT} -o ! -r ${ALTROOT} ] ; then
-		echo  "${ALTROOT} is not a valid alternate root"
-		exit 1
-	    fi
-	;;
-
 	l) LOGDIR=${OPTARG}
 
 	    if [ ! -d ${LOGDIR} -o ! -w ${LOGDIR} ] ; then
@@ -354,8 +330,6 @@ while getopts "${OPTSTRING}" opt ; do
 	;;
 	v) LOGLEVEL=FINEST
 	;;
-        t) INSTALLPROPS="${INSTALLPROPS} -p Display-Mode=CUI"
-        ;;
     n) DRYRUN=${OPTARG}
     ;;
 	j) JAVA_HOME=${OPTARG}
