@@ -90,7 +90,7 @@ import com.sun.enterprise.config.serverbeans.Property;
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager, PostConstruct, ConfigListener {
 
-    protected Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
+    protected Logger _logger = LogDomains.getLogger(JavaEETransactionManagerSimplified.class, LogDomains.JTA_LOGGER);
 
     @Inject private Habitat habitat;
 

@@ -92,7 +92,7 @@ import java.sql.Connection;
 @Stateless
 public class TimerBean implements TimerLocal {
 
-    private static final Logger logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(TimerBean.class, LogDomains.EJB_LOGGER);
 
     private EJBContextImpl context_;
 

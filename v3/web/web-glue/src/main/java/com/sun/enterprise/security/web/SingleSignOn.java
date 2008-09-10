@@ -92,7 +92,7 @@ public class SingleSignOn
     /**
      * The log used by this class.
      */
-    Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+    Logger logger = LogDomains.getLogger(SingleSignOn.class, LogDomains.PWC_LOGGER);
 
     /**
      * The background thread.

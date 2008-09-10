@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  * @author Jagadish Ramu
  */
 public class ConnectorApplication implements ApplicationContainer {
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
     private String moduleName = "";
     private ResourceManager resourceManager ;
     private ConnectorRuntime runtime;

@@ -87,7 +87,7 @@ import java.util.logging.Logger;
 public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
     protected static final Logger logger =
-            LogDomains.getLogger(LogDomains.DPL_LOGGER);
+            LogDomains.getLogger(ApplicationFactory.class, LogDomains.DPL_LOGGER);
 
     public static final String MANIFEST_VERSION_VALUE = "1.0";
 

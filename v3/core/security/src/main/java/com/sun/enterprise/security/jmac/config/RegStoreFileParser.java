@@ -64,7 +64,7 @@ import com.sun.logging.LogDomains;
 public final class RegStoreFileParser {
 
     private static Logger logger = 
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(RegStoreFileParser.class, LogDomains.SECURITY_LOGGER);
     
     private static final String SEP = ":";
     private static final String CON_ENTRY = "con-entry";

@@ -101,7 +101,7 @@ public class GlobalTID extends Object {
 	/*
 		Logger to log transaction messages
 	*/
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(GlobalTID.class, LogDomains.TRANSACTION_LOGGER);
 
     /**Creates a new global identifier which is a copy of the parameter.
      *

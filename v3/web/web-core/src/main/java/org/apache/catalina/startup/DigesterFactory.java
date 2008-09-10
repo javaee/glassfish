@@ -194,5 +194,5 @@ public class DigesterFactory {
         }
     }
 
-    protected static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    protected static final Logger _logger = LogDomains.getLogger(DigesterFactory.class, LogDomains.WEB_LOGGER);
 }

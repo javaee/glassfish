@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 
 public class ConnectorDDTransformUtils {
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ConnectorDDTransformUtils.class, LogDomains.RSR_LOGGER);
 
     /**
      * Constructs ConnectorDescriptorInfo object from the

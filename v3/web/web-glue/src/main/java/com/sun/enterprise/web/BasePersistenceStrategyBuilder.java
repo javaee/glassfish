@@ -56,7 +56,7 @@ public abstract class BasePersistenceStrategyBuilder
         implements PersistenceStrategyBuilder {
 
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            BasePersistenceStrategyBuilder.class, LogDomains.WEB_LOGGER);
 
     protected String directory = null;
     protected String DEFAULT_SESSION_FILENAME = "SESSIONS.ser";

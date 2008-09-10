@@ -234,7 +234,7 @@ abstract class AbstractSerializableS1ASEJBReference
 
     
     protected static Logger _ejbLogger =
-       LogDomains.getLogger(LogDomains.EJB_LOGGER);
+       LogDomains.getLogger(AbstractSerializableS1ASEJBReference.class, LogDomains.EJB_LOGGER);
 
     AbstractSerializableS1ASEJBReference(long containerId) {
 	this.containerId = containerId;

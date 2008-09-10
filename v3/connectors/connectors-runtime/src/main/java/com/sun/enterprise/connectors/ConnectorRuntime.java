@@ -104,7 +104,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private volatile int environment = CLIENT;*/
     private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
-    private Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
     private ConnectorConnectionPoolAdminServiceImpl ccPoolAdmService;
     private ConnectorResourceAdminServiceImpl connectorResourceAdmService;
     private ConnectorService connectorService;
@@ -263,7 +263,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * @return PrintWriter
      */
     public PrintWriter getResourceAdapterLogWriter() {
-        Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        Logger logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
         RAWriterAdapter writerAdapter = new RAWriterAdapter(logger);
         return new PrintWriter(writerAdapter);
     }

@@ -98,7 +98,7 @@ import com.sun.logging.LogDomains;
 public class StringManagerBase {
 
     /** logger used for this class */
-    private static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    private static Logger _logger=LogDomains.getLogger(StringManagerBase.class, LogDomains.UTIL_LOGGER);
 
     /** resource bundle to be used by this manager */
     private volatile ResourceBundle _resourceBundle;

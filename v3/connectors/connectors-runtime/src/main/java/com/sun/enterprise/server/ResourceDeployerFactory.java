@@ -95,7 +95,7 @@ public class ResourceDeployerFactory {
     /**
      * logger to log core messages
      */
-    static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ResourceDeployerFactory.class, LogDomains.CORE_LOGGER);
 
     private static StringManager localStrings =
             StringManager.getManager(ResourceDeployerFactory.class);

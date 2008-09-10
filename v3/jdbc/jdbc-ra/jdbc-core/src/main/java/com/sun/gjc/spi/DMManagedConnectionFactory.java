@@ -64,7 +64,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(DMManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
     private boolean debug = false;

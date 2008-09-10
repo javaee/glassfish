@@ -67,7 +67,7 @@ import java.util.logging.Logger;
 public class JMXHTTPAdapter implements Adapter {
 
     public final static String PREFIX_URI="/web1/remotejmx";
-    public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
+    public final static Logger logger = LogDomains.getLogger(JMXHTTPAdapter.class, LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(JMXHTTPAdapter.class);
 
     @Inject
@@ -178,7 +178,7 @@ public class JMXHTTPAdapter implements Adapter {
         report.setActionDescription(commandName + " AdminCommand");
 
         final AdminCommandContext context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(JMXHTTPAdapter.class, LogDomains.ADMIN_LOGGER),
                 report, parameters);
 
         // initialize the injector.

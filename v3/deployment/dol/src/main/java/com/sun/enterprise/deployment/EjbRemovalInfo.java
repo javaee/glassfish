@@ -53,7 +53,7 @@ public class EjbRemovalInfo implements Serializable
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbRemovalInfo.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbRemovalInfo.class, LogDomains.DPL_LOGGER);
 
     private MethodDescriptor removeMethod;
     private boolean retainIfException = false;

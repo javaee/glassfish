@@ -59,7 +59,7 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbInterceptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(EjbInterceptor.class, LogDomains.DPL_LOGGER);
 
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescriptors;
     private String interceptorClassName;

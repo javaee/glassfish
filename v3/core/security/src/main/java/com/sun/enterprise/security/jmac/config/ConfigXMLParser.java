@@ -73,7 +73,7 @@ import com.sun.logging.LogDomains;
 public class ConfigXMLParser /*TODO:V3 Commented implements ConfigParser*/ { 
     private static Logger _logger=null;
     static {
-        _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger = LogDomains.getLogger(ConfigXMLParser.class, LogDomains.SECURITY_LOGGER);
     }
 
     // configuration info

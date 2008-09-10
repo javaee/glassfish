@@ -65,7 +65,7 @@ import com.sun.enterprise.web.Constants;
 public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
 
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(DefaultAccessLogFormatterImpl.class, LogDomains.WEB_LOGGER);
 
     private static final ResourceBundle _rb = _logger.getResourceBundle();
 

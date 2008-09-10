@@ -64,7 +64,7 @@ public class ApplicationFactory implements ContractProvider {
     ArchivistFactory archivistFactory;
 
     protected static final Logger logger =
-            LogDomains.getLogger(LogDomains.DPL_LOGGER);
+            LogDomains.getLogger(ApplicationFactory.class, LogDomains.DPL_LOGGER);
 
     // resources...
     private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Archivist.class);

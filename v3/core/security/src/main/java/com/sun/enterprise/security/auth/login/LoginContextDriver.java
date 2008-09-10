@@ -86,7 +86,7 @@ import org.jvnet.hk2.component.Habitat;
 public class LoginContextDriver  {
 
     private static final Logger _logger = 
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(LoginContextDriver.class, LogDomains.SECURITY_LOGGER);
 
     private static final ServerLoginCallbackHandler
         dummyCallback = new ServerLoginCallbackHandler();

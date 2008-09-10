@@ -58,7 +58,7 @@ public class InterceptorBindingDescriptor extends Descriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(InterceptorBindingDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(InterceptorBindingDescriptor.class, LogDomains.DPL_LOGGER);
 
     public enum BindingType {
         

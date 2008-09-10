@@ -150,7 +150,7 @@ public class WebappClassLoader
     implements Reloader, InstrumentableClassLoader
  {
 
-     private static Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+     private static Logger logger = LogDomains.getLogger(WebappClassLoader.class, LogDomains.WEB_LOGGER);
 
     protected class PrivilegedFindResource
         implements PrivilegedAction {

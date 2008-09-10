@@ -62,7 +62,7 @@ public class SecurityUtil{
     private static final LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(SecurityUtil.class);
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(SecurityUtil.class, LogDomains.SECURITY_LOGGER);
     public static final String VENDOR_PRESENT = 
 	"com.sun.enterprise.security.provider.jaccvendorpresent";
     private static final boolean vendorPresent = Boolean.getBoolean(VENDOR_PRESENT);

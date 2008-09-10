@@ -111,7 +111,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
 	/*
 		Logger to log transaction messages
 	*/  
-	 static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	 static Logger _logger = LogDomains.getLogger(InterceptorImpl.class, LogDomains.TRANSACTION_LOGGER);
 
     public static final ThreadLocal otsThreadLocal =
         new ThreadLocal() {

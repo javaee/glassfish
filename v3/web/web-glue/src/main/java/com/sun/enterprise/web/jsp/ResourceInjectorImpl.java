@@ -63,7 +63,7 @@ import com.sun.logging.LogDomains;
 public class ResourceInjectorImpl implements ResourceInjector {
 
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            ResourceInjectorImpl.class, LogDomains.WEB_LOGGER);
     protected static final ResourceBundle _rb = _logger.getResourceBundle(); 
 
     private InjectionManager injectionMgr;

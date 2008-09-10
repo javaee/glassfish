@@ -58,7 +58,7 @@ public class ResourcesUtil {
     static ThreadLocal<ResourcesUtil> localResourcesUtil =
             new ThreadLocal<ResourcesUtil>();
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ResourcesUtil.class,LogDomains.RSR_LOGGER);
 
     static StringManager localStrings =
             StringManager.getManager(ResourcesUtil.class);

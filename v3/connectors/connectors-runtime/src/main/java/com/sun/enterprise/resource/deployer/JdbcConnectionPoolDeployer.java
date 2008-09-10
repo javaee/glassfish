@@ -88,7 +88,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             JdbcConnectionPoolDeployer.class);
     static private String msg = sm.getString("resource.restart_needed");
 
-    static private Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static private Logger _logger = LogDomains.getLogger(JdbcConnectionPoolDeployer.class,LogDomains.RSR_LOGGER);
 
     public synchronized void deployResource(Object resource) throws Exception {
         //intentional no-op

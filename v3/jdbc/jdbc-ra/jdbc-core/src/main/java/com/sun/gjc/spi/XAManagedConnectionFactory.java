@@ -63,7 +63,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(XAManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
     /**

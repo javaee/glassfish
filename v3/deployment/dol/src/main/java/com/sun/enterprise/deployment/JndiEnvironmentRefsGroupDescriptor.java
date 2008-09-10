@@ -66,7 +66,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(JndiEnvironmentRefsGroupDescriptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(JndiEnvironmentRefsGroupDescriptor.class, LogDomains.DPL_LOGGER);
 
     protected Map<CallbackType,
                 Set<LifecycleCallbackDescriptor>> callbackDescriptors

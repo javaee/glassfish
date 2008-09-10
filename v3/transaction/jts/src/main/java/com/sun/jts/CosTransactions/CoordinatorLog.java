@@ -135,7 +135,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
 	/*
 		Logger to log transaction messages
 	*/
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(CoordinatorLog.class, LogDomains.TRANSACTION_LOGGER);
     
 	/**The local transaction identifier for the transaction this object is logging.
      */

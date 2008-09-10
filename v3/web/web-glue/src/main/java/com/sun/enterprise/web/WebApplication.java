@@ -69,7 +69,7 @@ import java.util.logging.Logger;
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
     private static final String ADMIN_VS = "__asadmin";
-    final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    final Logger logger = LogDomains.getLogger(WebApplication.class, LogDomains.WEB_LOGGER);
 
     final WebContainer container;
     final WebModuleConfig wmInfo;

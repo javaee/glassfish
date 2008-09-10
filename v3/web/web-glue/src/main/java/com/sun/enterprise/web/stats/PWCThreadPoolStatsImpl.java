@@ -59,7 +59,7 @@ import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
 public final class  PWCThreadPoolStatsImpl implements PWCThreadPoolStats {
 
     private static final Logger _logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(PWCThreadPoolStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private GenericStatsImpl baseStatsImpl;
 

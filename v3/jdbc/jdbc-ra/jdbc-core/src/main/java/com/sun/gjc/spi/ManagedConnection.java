@@ -109,7 +109,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     protected final static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
     }
 
     protected StringManager localStrings =

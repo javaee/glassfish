@@ -68,7 +68,7 @@ public class BasicPasswordAuthenticationService
     private String rarName_;
     private String poolName_;
     ConnectorRegistry connectorRegistry_ = ConnectorRegistry.getInstance();
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(BasicPasswordAuthenticationService.class,LogDomains.RSR_LOGGER);
     private Object containerContext = null;
     
     /** 

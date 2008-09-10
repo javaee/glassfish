@@ -100,7 +100,7 @@ class SenderReceiver implements Sender, Receiver {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(SenderReceiver.class, LogDomains.TRANSACTION_LOGGER);
 
     /**
      * Default constructor.

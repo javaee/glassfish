@@ -119,7 +119,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         ListJdbcResources listCommand = habitat.getComponent(ListJdbcResources.class);
 
         AdminCommandContext context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         //Call CommandRunner.doCommand(..) to execute the command
@@ -146,7 +146,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "server");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         //Call CommandRunner.doCommand(..) to execute the command
@@ -177,7 +177,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "bob");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr.doCommand("create-jdbc-resource", createCommand, parameters, context.getActionReport());
@@ -189,7 +189,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         listCommand = habitat.getComponent(ListJdbcResources.class);
         parameters.clear();
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         //Call CommandRunner.doCommand(..) to execute the command
@@ -226,7 +226,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "bob");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
@@ -238,7 +238,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         listCommand = habitat.getComponent(ListJdbcResources.class);
         parameters.clear();        
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         //Call CommandRunner.doCommand(..) to execute the command
@@ -271,7 +271,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "invalid");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         //Call CommandRunner.doCommand(..) to execute the command
@@ -296,7 +296,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         listCommand = habitat.getComponent(ListJdbcResources.class);
         parameters.setProperty("invalid", "invalid");
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      

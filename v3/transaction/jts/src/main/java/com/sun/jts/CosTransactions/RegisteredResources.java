@@ -137,7 +137,7 @@ class RegisteredResources {
 	/*
 		Logger to log transaction messages
 	*/  
-	    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	    static Logger _logger = LogDomains.getLogger(RegisteredResources.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Defines the CoordinatorLog which is to be used for recovery.
      * <p>

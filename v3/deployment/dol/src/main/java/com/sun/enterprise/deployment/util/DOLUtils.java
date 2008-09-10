@@ -58,7 +58,7 @@ public class DOLUtils {
      */
     public static Logger getDefaultLogger() {
         if (logger==null) {
-            logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+            logger = LogDomains.getLogger(DOLUtils.class, LogDomains.DPL_LOGGER);
         }
         return logger;
     }

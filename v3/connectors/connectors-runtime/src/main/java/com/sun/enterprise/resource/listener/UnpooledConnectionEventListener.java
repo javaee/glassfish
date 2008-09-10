@@ -52,7 +52,7 @@ import com.sun.logging.LogDomains;
 public class UnpooledConnectionEventListener extends com.sun.enterprise.resource.listener.ConnectionEventListener {
 
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(UnpooledConnectionEventListener.class,LogDomains.RSR_LOGGER);
 
     public void connectionClosed(ConnectionEvent evt) {
         ManagedConnection mc = (ManagedConnection) evt.getSource();

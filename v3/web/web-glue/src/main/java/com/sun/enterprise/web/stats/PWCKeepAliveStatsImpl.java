@@ -57,7 +57,7 @@ import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
 public final class PWCKeepAliveStatsImpl implements PWCKeepAliveStats {
 
     private static final Logger _logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(PWCKeepAliveStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private GenericStatsImpl baseStatsImpl;
 

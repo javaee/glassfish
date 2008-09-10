@@ -24,7 +24,10 @@ package com.sun.logging;
 
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
+import java.util.logging.FileHandler;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
+import java.util.Locale;
 
 /**
  * Class LogDomains
@@ -209,16 +212,23 @@ public class LogDomains
     /** AMX Logger */
     public static final String AMX_LOGGER = DOMAIN_ROOT +"enterprise.system.AMX";
 
+    /** core/kernel Logger */
+    public static final String SERVICES_LOGGER = DOMAIN_ROOT + "enterprise.system.core.services";
+
+
+
 
     /**
      * This is temporary and needed so that IAS can run with or without
      * the com.sun.enterprise.server.logging.ServerLogger. The subclassed 
      * addLogger() method there automatically appends the logger name.
      **/
-    private static String getLoggerResourceBundleName(String loggerName) {      
-        String result = loggerName + "." + RESOURCE_BUNDLE;        
+    private static String getLoggerResourceBundleName(String loggerName) {
+        String result = loggerName + "." + RESOURCE_BUNDLE;
+       // System.out.println("looking for bundle "+ result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT));
         return result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT);
-    } 
+    }
+
 	
     /**
      * Method getLogger
@@ -228,9 +238,13 @@ public class LogDomains
      *
      * @return
      */
-    public static Logger getLogger(String name) {
+     
+    public static Logger getLogger(final Class clazz, final String name) {
+        final ClassLoader cloader =clazz.getClassLoader();
         Logger l = LogManager.getLogManager().getLogger(name);
+        
         if (l==null) {
+            // should be pass in a resource bundle?
             l = new Logger(name, null) {
                 /**
                  * Retrieve the localization resource bundle for this
@@ -241,8 +255,40 @@ public class LogDomains
                  * @return localization bundle (may be null)
                  */
                 public ResourceBundle getResourceBundle() {
-                    return null;
+                    try {
+
+                        return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
+                    } catch (MissingResourceException e) {
+
+                            //try the parent
+                            String root = clazz.getPackage().getName();
+                            try {
+
+                                return ResourceBundle.getBundle(root + "." +RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                            } catch (MissingResourceException me) {
+                                //walk the parents to find the bundle
+
+                                String p = root;
+                                while (p != null) {
+                                    try {
+                                        int i = p.lastIndexOf(".");
+                                        if (i != -1) {
+                                            p = p.substring(0, i);
+                                            return ResourceBundle.getBundle(p + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                                        } else {
+                                            p = null;
+                                        }
+                                    } catch (MissingResourceException mre) {
+                                    }
+                                }
+                            }
+                        System.out.println("class name that failed "+clazz.getName());
+
+                        throw e;
+                    }
+
                 }
+
             };
             
             // We must not return an orphan logger (the one we just created) if
@@ -260,8 +306,10 @@ public class LogDomains
                 {
                     l = existing;
                 }
+
             }
         }
+
         return l;
     }
 }

@@ -67,7 +67,7 @@ public class SecuritySupportImpl implements SecuritySupport {
     private static final String trustStoreProp = "javax.net.ssl.trustStore";
     
     protected static final Logger _logger =
-            LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+            LogDomains.getLogger(SecuritySupportImpl.class, LogDomains.SECURITY_LOGGER);
 
     protected static boolean initialized = false;
     protected static final List<KeyStore> keyStores = new ArrayList<KeyStore>();

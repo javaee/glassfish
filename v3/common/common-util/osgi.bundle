@@ -1,3 +1,4 @@
+
 -exportcontents: \
                         com.sun.appserv, \
                         com.sun.appserv.ha.spi, \
@@ -30,5 +31,5 @@
                         com.sun.logging, \
                         org.glassfish.resource.common, \
                         org.glassfish.security.common, \
-                        org.glassfish.server
+                        com.sun.logging.enterprise.system.core, \                        org.glassfish.server
 

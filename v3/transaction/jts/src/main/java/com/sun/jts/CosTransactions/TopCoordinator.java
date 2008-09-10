@@ -140,7 +140,7 @@ public class TopCoordinator extends CoordinatorImpl {
 	/*
 		Logger to log transaction messages
 	*/ 
-	  static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	  static Logger _logger = LogDomains.getLogger(TopCoordinator.class,LogDomains.TRANSACTION_LOGGER);
     // added (Ram J) for memory Leak fix.
     Vector recoveryCoordinatorList = null;
     CoordinatorSynchronizationImpl coordSyncImpl = null;

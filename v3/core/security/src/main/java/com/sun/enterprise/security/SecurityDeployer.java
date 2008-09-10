@@ -53,7 +53,7 @@ import org.jvnet.hk2.component.Habitat;
 @Service
 public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> {
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(SecurityDeployer.class, LogDomains.SECURITY_LOGGER);
     @Inject
     private ServerContext serverContext;
     

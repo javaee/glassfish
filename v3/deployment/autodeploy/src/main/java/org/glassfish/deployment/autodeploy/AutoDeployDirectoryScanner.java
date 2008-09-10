@@ -63,7 +63,7 @@ import com.sun.logging.LogDomains;
 public class AutoDeployDirectoryScanner implements DirectoryScanner{
     
     
-    private static final Logger sLogger=LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private static final Logger sLogger=LogDomains.getLogger(AutoDeployDirectoryScanner.class, LogDomains.DPL_LOGGER);
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployDirectoryScanner.class);
     
     public AutoDeployDirectoryScanner() {

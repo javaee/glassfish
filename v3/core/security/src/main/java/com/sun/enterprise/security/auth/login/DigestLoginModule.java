@@ -56,7 +56,7 @@ public abstract class DigestLoginModule implements LoginModule {
     private CallbackHandler handler = null;
     private Map<String, ?> sharedState = null;
     private Map<String, ?> options = null;
-    protected Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    protected Logger _logger = LogDomains.getLogger(DigestLoginModule.class, LogDomains.SECURITY_LOGGER);
     protected static final StringManager sm = StringManager.getManager(DigestLoginModule.class);
     protected boolean _succeeded = false;
     protected boolean _commitSucceeded = false;

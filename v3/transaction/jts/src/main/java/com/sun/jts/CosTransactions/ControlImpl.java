@@ -122,7 +122,7 @@ public class ControlImpl extends JControlPOA implements Control {
     /**
      * Logger to log transaction messages
      */
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(Configuration.class, LogDomains.TRANSACTION_LOGGER);
     
     /**Default ControlImpl constructor.
      *

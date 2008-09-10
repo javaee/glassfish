@@ -84,7 +84,7 @@ public class ResourceHandle implements
     private boolean supportsLazyEnlistment_ = false;
     private boolean supportsLazyAssoc_ = false;
 
-    private static Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger logger = LogDomains.getLogger(ResourceHandle.class, LogDomains.RSR_LOGGER);
 
     public final Object lock = new Object();
     private long lastValidated; //holds the latest time at which the connection was validated.

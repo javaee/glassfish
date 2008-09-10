@@ -134,7 +134,7 @@ public class CacheTag extends BodyTagSupport
     public CacheTag() {
         super();
         if (_logger == null) {
-            _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+            _logger = LogDomains.getLogger(CacheTag.class, LogDomains.PWC_LOGGER);
             _rb = _logger.getResourceBundle();
             _debugLog = _logger.isLoggable(Level.FINE);
         }

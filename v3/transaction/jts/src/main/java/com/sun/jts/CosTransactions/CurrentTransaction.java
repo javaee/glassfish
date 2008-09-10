@@ -117,7 +117,7 @@ public class CurrentTransaction {
 	/*
 		Logger to log transaction messages
 	*/ 
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(CurrentTransaction.class, LogDomains.TRANSACTION_LOGGER);
    
 	private static PropagationContext emptyContext =
         new PropagationContext(0,new TransIdentity(null,null,new otid_t(-1,0,new byte[0])),

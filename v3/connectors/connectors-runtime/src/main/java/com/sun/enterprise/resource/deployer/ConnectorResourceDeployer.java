@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 
 public class ConnectorResourceDeployer implements ResourceDeployer {
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     public synchronized void deployResource(Object resource) throws Exception {
 

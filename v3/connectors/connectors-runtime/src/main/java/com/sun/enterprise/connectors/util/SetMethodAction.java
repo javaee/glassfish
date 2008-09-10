@@ -60,7 +60,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
     private Method[] methods;
 
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(SetMethodAction.class, LogDomains.RSR_LOGGER);
 
     /**
      * Accepts java bean object and properties to be set.

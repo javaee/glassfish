@@ -63,7 +63,7 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
     private String moduleName;
     private String connectionFactoryName;
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.JNDI_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorObjectFactory.class, LogDomains.JNDI_LOGGER);
 
     public ConnectorObjectFactory(String jndiName, String connectionFactoryName, String moduleName, String poolName) {
         this.jndiName = jndiName;

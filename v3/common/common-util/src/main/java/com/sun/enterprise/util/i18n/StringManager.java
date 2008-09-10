@@ -99,7 +99,7 @@ import com.sun.logging.LogDomains;
 public class StringManager extends StringManagerBase {
 
     /** logger used for this class */
-    private static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    private static Logger _logger=LogDomains.getLogger(StringManager.class, LogDomains.UTIL_LOGGER);
 
     /** name of the resource bundle property file name */
     private static final String RES_BUNDLE_NM = ".LocalStrings";

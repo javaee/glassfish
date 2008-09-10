@@ -243,7 +243,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
 
     public void preDestroy() {
         // stop the Queue consummer thread.
-        LogDomains.getLogger(LogDomains.ADMIN_LOGGER).fine("Logger handler killed");
+        LogDomains.getLogger(FileandSyslogHandler.class, LogDomains.ADMIN_LOGGER).fine("Logger handler killed");
         done.tryReleaseShared(1);
         pump.interrupt();
         

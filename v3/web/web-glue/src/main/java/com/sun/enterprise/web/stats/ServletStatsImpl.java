@@ -52,7 +52,7 @@ import com.sun.enterprise.web.monitor.PwcServletStats;
 
 public class ServletStatsImpl implements ServletStats {
     
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ServletStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private GenericStatsImpl baseStatsImpl;
     private MutableCountStatistic maxTimeMillis;

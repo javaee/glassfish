@@ -61,7 +61,7 @@ import org.apache.catalina.Manager;
 public class WebModuleStatsImpl implements WebModuleStats {
 
     private static final Logger _logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(WebModuleStatsImpl.class, LogDomains.WEB_LOGGER);
 
     protected Manager sessionManager;
     protected GenericStatsImpl baseStatsImpl;

@@ -53,7 +53,7 @@ public class J2EESecurityManager extends java.rmi.RMISecurityManager {
 // IASRI 4660742 START
     private static Logger _logger=null;
     static{
-       _logger=LogDomains.getLogger(LogDomains.ROOT_LOGGER);
+       _logger=LogDomains.getLogger(J2EESecurityManager.class, LogDomains.ROOT_LOGGER);
         }
 // IASRI 4660742 END
 

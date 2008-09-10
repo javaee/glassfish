@@ -88,7 +88,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
     private ConnectorRuntime runtime;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(PoolManagerImpl.class, LogDomains.RSR_LOGGER);
     }
 
     public PoolManagerImpl() {

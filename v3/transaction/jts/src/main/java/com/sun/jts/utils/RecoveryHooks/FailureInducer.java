@@ -112,7 +112,7 @@ public class FailureInducer {
 	/*
 		Logger to log transaction messages 
 	*/  
-	    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	    static Logger _logger = LogDomains.getLogger(FailureInducer.class, LogDomains.TRANSACTION_LOGGER);
     // static initializer
 
     static {

@@ -150,7 +150,7 @@ public class ApplicationLifecycle {
     @Inject
     protected ClassLoaderHierarchy clh;
 
-    protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    protected Logger logger = LogDomains.getLogger(ApplicationLifecycle.class, LogDomains.DPL_LOGGER);
 
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
         return containerInfo.getDeployer();

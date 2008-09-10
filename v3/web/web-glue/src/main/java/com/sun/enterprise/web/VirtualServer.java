@@ -141,7 +141,7 @@ public class VirtualServer extends StandardHost {
      * The logger to use for logging ALL web container related messages.
      */
     protected static final Logger _logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
 
     /**
      * The resource bundle containing the message strings for _logger.

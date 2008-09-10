@@ -68,7 +68,7 @@ public class ConnectionHolder40 extends ConnectionHolder {
     protected boolean jdbc30Connection;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ConnectionHolder40.class, LogDomains.RSR_LOGGER);
     }
 
     /**

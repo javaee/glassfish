@@ -64,7 +64,7 @@ import com.sun.logging.LogDomains;
 public class PermissionCache extends Object {
 
     private static Logger _logger = 
-    LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    LogDomains.getLogger(PermissionCache.class,LogDomains.SECURITY_LOGGER);
     private static Policy policy = Policy.getPolicy();
     private static AllPermission allPermission = new AllPermission();
 

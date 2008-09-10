@@ -59,7 +59,7 @@ import com.sun.enterprise.util.Print;
 public class FileUtil {
 
     // START OF IASRI 4660742
-    static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    static Logger _logger=LogDomains.getLogger(DOLUtils.class, LogDomains.UTIL_LOGGER);
     // END OF IASRI 4660742
 
     // START OF IASRI 4679641

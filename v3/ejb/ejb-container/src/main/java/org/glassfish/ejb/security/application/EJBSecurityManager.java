@@ -98,7 +98,7 @@ public final class EJBSecurityManager
     private static Logger _logger = null;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.SECURITY_LOGGER);
     }
 
     private static LocalStringManagerImpl localStrings =

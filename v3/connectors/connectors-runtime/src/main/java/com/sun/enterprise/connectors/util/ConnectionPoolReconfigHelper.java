@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 public final class ConnectionPoolReconfigHelper {
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ConnectionPoolReconfigHelper.class, LogDomains.RSR_LOGGER);
 
 
     public enum ReconfigAction {

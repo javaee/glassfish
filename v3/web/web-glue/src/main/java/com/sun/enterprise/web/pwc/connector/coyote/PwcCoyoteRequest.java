@@ -69,7 +69,7 @@ import com.sun.enterprise.web.logging.pwc.LogDomains;
  */
 public class PwcCoyoteRequest extends Request {
 
-    private static Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+    private static Logger logger = LogDomains.getLogger(PwcCoyoteRequest.class, LogDomains.PWC_LOGGER);
 
     // Have we already determined request encoding from sun-web.xml?
     private boolean sunWebXmlChecked = false;

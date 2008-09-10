@@ -85,7 +85,7 @@ public class DelegatedRecoveryManager {
         return tmoutMgr;
     }
     
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DelegatedRecoveryManager.class, LogDomains.TRANSACTION_LOGGER);
     
     static boolean addCoordinator(GlobalTID globalTID,
     Long localTID, CoordinatorImpl coord, int timeout, String logPath) {

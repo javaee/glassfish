@@ -68,7 +68,7 @@ import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
  */
 public final class HTTPListenerStatsImpl implements HTTPListenerStats {
     
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(HTTPListenerStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private GenericStatsImpl baseStatsImpl;
 

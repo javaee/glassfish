@@ -100,7 +100,7 @@ class RegisteredSyncs {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(RegisteredSyncs.class, LogDomains.TRANSACTION_LOGGER);
 
     /**
      * Default RegisteredSyncs constructor.

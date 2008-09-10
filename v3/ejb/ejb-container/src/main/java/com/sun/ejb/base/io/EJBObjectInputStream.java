@@ -61,7 +61,7 @@ class EJBObjectInputStream
 {
 
     private static final Logger _ejbLogger =
-       LogDomains.getLogger(LogDomains.EJB_LOGGER);
+       LogDomains.getLogger(EJBObjectInputStream.class, LogDomains.EJB_LOGGER);
 
     EJBObjectInputStream(InputStream in, ClassLoader cl, boolean resolve)
         throws IOException, StreamCorruptedException

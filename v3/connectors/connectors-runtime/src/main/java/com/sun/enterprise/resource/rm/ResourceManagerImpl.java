@@ -58,7 +58,7 @@ public class ResourceManagerImpl implements ResourceManager {
     
     static Logger _logger = null;
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ResourceManagerImpl.class, LogDomains.RSR_LOGGER);
     }
     
     /**

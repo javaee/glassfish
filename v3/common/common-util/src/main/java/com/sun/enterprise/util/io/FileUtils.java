@@ -60,7 +60,7 @@ import java.nio.ByteBuffer;
 
 public class FileUtils {
     final static Logger _logger = Logger.getLogger("javax.enterprise.system.util");
-    final static Logger _utillogger = com.sun.logging.LogDomains.getLogger(com.sun.logging.LogDomains.UTIL_LOGGER);
+    final static Logger _utillogger = com.sun.logging.LogDomains.getLogger(FileUtils.class,com.sun.logging.LogDomains.UTIL_LOGGER);
 
     ///////////////////////////////////////////////////////////////////////////
 

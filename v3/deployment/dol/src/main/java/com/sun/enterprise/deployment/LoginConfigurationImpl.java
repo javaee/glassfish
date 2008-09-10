@@ -61,7 +61,7 @@ public class LoginConfigurationImpl extends Descriptor implements LoginConfigura
     public static final String AUTHENTICATION_METHOD_CLIENT_CERTIFICATE = LoginConfiguration.CLIENT_CERTIFICATION_AUTHENTICATION;
 
     //START OF IASRI 4660482 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(LoginConfigurationImpl.class, LogDomains.DPL_LOGGER);
     //END OF IASRI 4660482 
 
     private String authenticationMethod;

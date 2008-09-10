@@ -97,7 +97,7 @@ public class RWLock {
   /*
  	 Logger to log transaction messages
   */ 
-  static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+  static Logger _logger = LogDomains.getLogger(RWLock.class, LogDomains.TRANSACTION_LOGGER);
  
   Queue writerQueue = new Queue();
   /**

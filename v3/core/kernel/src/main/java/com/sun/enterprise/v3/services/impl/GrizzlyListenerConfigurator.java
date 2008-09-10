@@ -61,10 +61,10 @@ public class GrizzlyListenerConfigurator {
     
     
     /**
-     * The logger to use for logging ALL web container related messages.
+     * The logger to use for logging messages.
      */
     protected static final Logger logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            GrizzlyListenerConfigurator.class,LogDomains.CORE_LOGGER);
     
     /**
      * The resource bundle containing the message strings for logger.

@@ -65,7 +65,7 @@ import com.sun.logging.LogDomains;
 public class AdHocContextValve implements GlassFishValve {
 
     private static final Logger LOGGER =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(AdHocContextValve.class,LogDomains.WEB_LOGGER);
 
     private static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 

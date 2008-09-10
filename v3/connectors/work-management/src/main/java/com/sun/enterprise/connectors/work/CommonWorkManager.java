@@ -63,7 +63,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     private ThreadPool tp;
 
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(CommonWorkManager.class, LogDomains.RSR_LOGGER);
 
     private boolean isMonitoringEnabled = false; //default = false;
 

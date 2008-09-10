@@ -76,7 +76,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     private JdbcObjectsFactory jdbcObjectsFactory = JdbcObjectsFactory.getInstance();
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
     protected javax.resource.spi.LazyEnlistableConnectionManager cm_;

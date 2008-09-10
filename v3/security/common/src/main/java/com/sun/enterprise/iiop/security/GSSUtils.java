@@ -58,7 +58,7 @@ import com.sun.logging.*;
 public class GSSUtils 
 {
     private static final java.util.logging.Logger _logger =
-       LogDomains.getLogger(LogDomains.CORBA_LOGGER);
+       LogDomains.getLogger(GSSUtils.class, LogDomains.CORBA_LOGGER);
 
     public static final ObjectIdentifier GSSUP_MECH_OID;
 

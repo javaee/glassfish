@@ -103,7 +103,7 @@ public class TransactionManagerImpl implements TransactionManager {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(TransactionManagerImpl.class, LogDomains.TRANSACTION_LOGGER);
 	
   	//START IASRI 4706150 
 

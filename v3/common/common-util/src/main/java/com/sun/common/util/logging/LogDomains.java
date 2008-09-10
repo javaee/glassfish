@@ -71,7 +71,7 @@ public class LogDomains
      *
      * @return
      */
-    public static Logger getLogger(String name) {
-        return com.sun.logging.LogDomains.getLogger(name); 
+    public static Logger getLogger(final Class clazz, String name) {
+        return com.sun.logging.LogDomains.getLogger(clazz, name); 
     }
 }

@@ -84,7 +84,7 @@ public abstract class AppservPasswordLoginModule implements LoginModule
     protected String[] _groupsList = null;
 
     protected Logger _logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(AppservPasswordLoginModule.class, LogDomains.SECURITY_LOGGER);
 
     //TODO:V3 not sure if the second argument is correct.
     protected final static StringManager sm =

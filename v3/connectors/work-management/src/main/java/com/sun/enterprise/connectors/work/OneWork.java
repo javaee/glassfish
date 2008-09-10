@@ -52,7 +52,7 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
     private final WorkCoordinator coordinator;
     private long nqTime;
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(OneWork.class, LogDomains.RSR_LOGGER);
 
     /**
      * Creates a work object that can be submitted to a workqueue.

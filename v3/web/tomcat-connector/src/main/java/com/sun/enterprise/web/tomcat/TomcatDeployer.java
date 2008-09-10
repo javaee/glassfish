@@ -275,7 +275,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
                 defaultWebXMLWbd = (WebBundleDescriptor) wddf.read(fis);
             }
         } catch (Exception e) {
-            LogDomains.getLogger(LogDomains.WEB_LOGGER).
+            LogDomains.getLogger(TomcatDeployer.class,LogDomains.WEB_LOGGER).
                 warning("Error in parsing default-web.xml");
         } finally {
             try {

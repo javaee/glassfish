@@ -58,7 +58,7 @@ import com.sun.logging.LogDomains;
 public class ServerConfigLookup {
 
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            ServerConfigLookup.class, LogDomains.WEB_LOGGER);
 
     /**
      * The property name in domain.xml to obtain

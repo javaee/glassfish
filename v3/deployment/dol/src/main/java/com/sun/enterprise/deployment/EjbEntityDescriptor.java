@@ -69,7 +69,7 @@ public class EjbEntityDescriptor extends EjbDescriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbEntityDescriptor.class);
 
-               static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+               static Logger _logger = LogDomains.getLogger(EjbEntityDescriptor.class, LogDomains.DPL_LOGGER);
  
 
     

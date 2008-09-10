@@ -63,7 +63,7 @@ import com.sun.logging.*;
 public final class ClientSecurityContext extends AbstractSecurityContext {
     
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(ClientSecurityContext.class, LogDomains.SECURITY_LOGGER);
 
     public static final String IIOP_CLIENT_PER_THREAD_FLAG =
         "com.sun.appserv.iiopclient.perthreadauth";

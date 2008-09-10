@@ -108,7 +108,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(CreateJdbcResourceTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr = new CommandRunner();

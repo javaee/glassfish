@@ -58,7 +58,7 @@ public class MethodExecutor implements java.io.Serializable {
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
     }
 
     private boolean debug = false;

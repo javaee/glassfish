@@ -127,7 +127,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
    // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static final Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static final Logger _logger = LogDomains.getLogger(ResourceReferenceDescriptor.class, LogDomains.DPL_LOGGER);
     
 
     /**

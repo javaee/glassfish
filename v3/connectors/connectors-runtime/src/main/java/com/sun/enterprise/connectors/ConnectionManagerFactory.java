@@ -72,7 +72,7 @@ public class ConnectionManagerFactory {
     }
 
     private static void logFine(String message) {
-        Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        Logger _logger = LogDomains.getLogger(ConnectionManagerFactory.class, LogDomains.RSR_LOGGER);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine(message);
         }

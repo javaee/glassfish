@@ -52,7 +52,7 @@ public class EjbInitInfo implements Serializable
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbInitInfo.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbIORConfigurationDescriptor.class, LogDomains.DPL_LOGGER);
 
     private MethodDescriptor beanMethod;
     private MethodDescriptor createMethod;

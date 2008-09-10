@@ -81,7 +81,7 @@ final class WebModuleListener
     /**
      * The logger used to log messages
      */
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(WebModuleListener.class, LogDomains.WEB_LOGGER);
 
     /**
      * This indicates whether debug logging is on or not

@@ -83,7 +83,7 @@ public class PECoyoteConnector extends Connector {
                     connector.grizzly.DummyConnectorLauncher.class.getName();
 
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            PECoyoteConnector.class, LogDomains.WEB_LOGGER);
 
     protected static final ResourceBundle _rb = _logger.getResourceBundle();
 

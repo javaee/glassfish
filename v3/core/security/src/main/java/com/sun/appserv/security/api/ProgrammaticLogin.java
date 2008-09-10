@@ -90,7 +90,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
     private WebProgrammaticLogin webProgrammaticLogin;
     
     private static Logger logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(ProgrammaticLogin.class, LogDomains.SECURITY_LOGGER);
 
     private static ProgrammaticLoginPermission plLogin =
         new ProgrammaticLoginPermission("login");

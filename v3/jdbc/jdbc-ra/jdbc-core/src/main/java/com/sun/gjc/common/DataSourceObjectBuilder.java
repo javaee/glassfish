@@ -70,7 +70,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(DataSourceObjectBuilder.class, LogDomains.RSR_LOGGER);
     }
 
     private static boolean jdbc40;

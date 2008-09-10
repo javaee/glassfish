@@ -73,7 +73,7 @@ import java.util.List;
  * @author Srikanth P
  */
 public class ConnectorService implements ConnectorConstants {
-    protected static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    protected static final Logger _logger = LogDomains.getLogger(ConnectorService.class, LogDomains.RSR_LOGGER);
 
     protected static final ConnectorRegistry _registry =
             ConnectorRegistry.getInstance();

@@ -116,7 +116,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     private Set<Role> conflictedRoles;
     /* End conflict detection objects */
     private static Logger _logger =
-            LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+            LogDomains.getLogger(RoleMapper.class, LogDomains.SECURITY_LOGGER);
 
     private SecurityService secService = null;
     

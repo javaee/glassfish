@@ -95,7 +95,7 @@ public class EJBClassLoader
         implements JasperAdapter, InstrumentableClassLoader {
 
     /** logger for this class */
-    static Logger _logger=LogDomains.getLogger(LogDomains.LOADER_LOGGER);
+    static Logger _logger=LogDomains.getLogger(EJBClassLoader.class, LogDomains.LOADER_LOGGER);
 
     /** list of url entries of this class loader */
     private List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList());

@@ -229,7 +229,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * The logger to use for logging ALL web container related messages.
      */
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            WebContainer.class, LogDomains.WEB_LOGGER);
 
     /**
      * The current <code>WebContainer</code> instance used (single).

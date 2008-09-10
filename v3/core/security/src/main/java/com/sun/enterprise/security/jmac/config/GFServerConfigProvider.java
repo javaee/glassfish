@@ -104,7 +104,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
     protected static final String MANAGES_SESSIONS_OPTION = "managessessions";
 
     private static Logger logger = 
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(GFServerConfigProvider.class, LogDomains.SECURITY_LOGGER);
     private static final String DEFAULT_HANDLER_CLASS =
         "com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler";
     private static final String DEFAULT_PARSER_CLASS =

@@ -80,7 +80,7 @@ public final class WorkCoordinator {
     private final int id;
 
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(WorkCoordinator.class, LogDomains.RSR_LOGGER);
 
     /**
      * <code>workStats</code> is responsible for holding all monitorable

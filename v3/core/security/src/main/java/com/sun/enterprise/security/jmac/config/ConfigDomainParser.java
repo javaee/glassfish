@@ -70,7 +70,7 @@ public class ConfigDomainParser implements ConfigParser {
 
     private static Logger _logger=null;
     static {
-        _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger = LogDomains.getLogger(ConfigDomainParser.class, LogDomains.SECURITY_LOGGER);
     }
 
     // configuration info

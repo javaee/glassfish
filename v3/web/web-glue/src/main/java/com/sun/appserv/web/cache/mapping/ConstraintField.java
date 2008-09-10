@@ -75,7 +75,7 @@ public class ConstraintField extends Field {
                                 throws IllegalArgumentException {
         super(name, scope);
         if (_logger == null) {
-            _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+            _logger = LogDomains.getLogger(ConstraintField.class, LogDomains.PWC_LOGGER);
             _isTraceEnabled = _logger.isLoggable(Level.FINE);
         }
     }

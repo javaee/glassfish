@@ -67,7 +67,7 @@ public  class IASEjbCMPEntityDescriptor extends EjbCMPEntityDescriptor {
     // for i18N
     private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(IASEjbCMPEntityDescriptor.class);
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(IASEjbCMPEntityDescriptor.class, LogDomains.DPL_LOGGER);
 
     // Standard String and Character variables.
     private static final char DOT                  = '.';   // NOI18N

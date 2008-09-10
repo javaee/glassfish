@@ -49,7 +49,7 @@ import com.sun.enterprise.web.logging.pwc.LogDomains;
  */
 public class PECoyoteResponse extends Response {
 
-    private static final Logger logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(PECoyoteResponse.class, LogDomains.PWC_LOGGER);
 
     /*
      * Constructor.

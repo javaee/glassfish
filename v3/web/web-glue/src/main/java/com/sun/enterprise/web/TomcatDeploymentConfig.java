@@ -101,7 +101,7 @@ import org.apache.jasper.compiler.JspConfig;
  */
 public class TomcatDeploymentConfig{
 
-    private static final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(TomcatDeploymentConfig.class, LogDomains.WEB_LOGGER);
     
     
     /**

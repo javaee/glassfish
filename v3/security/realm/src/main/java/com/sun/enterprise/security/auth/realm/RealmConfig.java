@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 public class RealmConfig {
 
     private static Logger logger =
-            LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+            LogDomains.getLogger(RealmConfig.class, LogDomains.SECURITY_LOGGER);
 
      public static void createRealms(String defaultRealm, List<AuthRealm> realms) {
         assert(realms != null);

@@ -132,7 +132,7 @@ public class XID implements Xid {
 
     static private final String hextab= "0123456789ABCDEF"/*#Frozen*/;
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(XID.class, LogDomains.TRANSACTION_LOGGER);
 
     //-----------------------------------------------------------------------//
     // XID::Constructor                                                      //

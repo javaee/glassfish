@@ -107,7 +107,7 @@ class LogFile {
 		Logger to log transaction messages
 	*/ 
 	
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(LogFile.class, LogDomains.TRANSACTION_LOGGER);
 
     /**The handle of the log file.
      */

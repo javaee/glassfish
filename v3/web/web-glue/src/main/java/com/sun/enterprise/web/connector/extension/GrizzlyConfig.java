@@ -64,7 +64,7 @@ import org.jvnet.hk2.component.Habitat;
  */ 
 public class GrizzlyConfig implements MonitoringLevelListener{
     private final static Logger logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(GrizzlyConfig.class, LogDomains.WEB_LOGGER);
     
     /**
      * The mbean server used to lookup Grizzly.

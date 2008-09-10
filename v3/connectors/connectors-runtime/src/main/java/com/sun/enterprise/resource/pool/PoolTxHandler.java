@@ -57,7 +57,7 @@ public class PoolTxHandler {
 
     private String poolName;
 
-    protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    protected final static Logger _logger = LogDomains.getLogger(PoolTxHandler.class, LogDomains.RSR_LOGGER);
 
     public PoolTxHandler(String poolName){
         this.poolName = poolName;

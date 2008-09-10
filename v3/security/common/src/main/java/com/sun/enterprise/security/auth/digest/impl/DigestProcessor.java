@@ -65,7 +65,7 @@ public abstract class DigestProcessor {
     }
     private Password passwd;
     
-    private Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    private Logger _logger = LogDomains.getLogger(DigestProcessor.class, LogDomains.SECURITY_LOGGER);
     private static final StringManager sm = StringManager.getManager(DigestProcessor.class);
     private static final char[] hexadecimal = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private final MD5Encoder md5Encoder = new MD5Encoder();

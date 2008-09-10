@@ -77,7 +77,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String poolName;
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
 
     //The RAR name
     //This is pushed into the object in the connector runtime during

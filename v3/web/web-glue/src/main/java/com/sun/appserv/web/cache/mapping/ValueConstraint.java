@@ -84,7 +84,7 @@ public class ValueConstraint {
         int match;
 
         // web container logger
-        _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+        _logger = LogDomains.getLogger(ValueConstraint.class, LogDomains.PWC_LOGGER);
         _rb = _logger.getResourceBundle();
 
         if (expr == null || expr.equals("equals")) {

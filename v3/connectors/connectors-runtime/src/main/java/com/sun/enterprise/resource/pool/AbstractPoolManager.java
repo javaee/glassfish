@@ -63,7 +63,7 @@ public abstract class AbstractPoolManager implements PoolManager {
     private static Logger _logger = null;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(AbstractPoolManager.class, LogDomains.RSR_LOGGER);
     }
 
     public void emptyResourcePool(ResourceSpec spec) {

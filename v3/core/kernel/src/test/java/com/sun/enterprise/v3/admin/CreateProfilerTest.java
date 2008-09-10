@@ -99,7 +99,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         assertTrue(command!=null);
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(CreateProfilerTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr = new CommandRunner();

@@ -51,7 +51,7 @@ import java.util.logging.*;
  */
 public class ConnectionDefinitionUtils {
 
-    static Logger _logger= LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger= LogDomains.getLogger(ConnectionDefinitionUtils.class,LogDomains.RSR_LOGGER);
 
     /**
 	 * Gets the properties of the Java bean connection definition class that

@@ -53,7 +53,7 @@ import com.sun.enterprise.admin.monitor.stats.GenericStatsImpl;
 public class PWCVirtualServerStatsImpl implements PWCVirtualServerStats {
 
     private static final Logger _logger = LogDomains.getLogger(
-                                                    LogDomains.WEB_LOGGER);
+                                          PWCVirtualServerStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private long startTime;
     private GenericStatsImpl baseStatsImpl;

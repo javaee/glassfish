@@ -60,7 +60,7 @@ import com.sun.enterprise.admin.monitor.stats.StringStatisticImpl;
 public final class PWCConnectionQueueStatsImpl implements PWCConnectionQueueStats {
 
     private static final Logger _logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(PWCConnectionQueueStatsImpl.class, LogDomains.WEB_LOGGER);
 
     private GenericStatsImpl baseStatsImpl;
 

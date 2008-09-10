@@ -61,7 +61,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
     private String threadPoolId;
 
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(BootstrapContextImpl.class, LogDomains.RSR_LOGGER);
 
     /**
      * Constructs a <code>BootstrapContext</code> with default

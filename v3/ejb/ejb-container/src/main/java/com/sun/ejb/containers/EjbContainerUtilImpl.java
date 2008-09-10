@@ -75,7 +75,7 @@ import java.lang.reflect.Method;
 public class EjbContainerUtilImpl
     implements PostConstruct, EjbContainerUtil {
 
-    private Logger _logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
+    private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
     @Inject
     private ServerContext serverContext;

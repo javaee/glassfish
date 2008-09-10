@@ -49,7 +49,7 @@ import com.sun.logging.LogDomains;
 public final class StatsUtil {
 
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(StatsUtil.class, LogDomains.WEB_LOGGER);
 
 
     /**

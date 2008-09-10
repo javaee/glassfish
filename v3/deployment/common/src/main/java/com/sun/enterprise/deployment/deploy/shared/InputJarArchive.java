@@ -54,7 +54,7 @@ import java.net.URISyntaxException;
 @Scoped(PerLookup.class)
 public class InputJarArchive extends JarArchive implements ReadableArchive {
     
-    final static Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    final static Logger logger = LogDomains.getLogger(InputJarArchive.class, LogDomains.DPL_LOGGER);
 
     // the file we are currently mapped to 
     protected JarFile jarFile=null;

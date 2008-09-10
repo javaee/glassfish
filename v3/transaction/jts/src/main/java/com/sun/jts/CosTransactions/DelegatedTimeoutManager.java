@@ -91,7 +91,7 @@ class DelegatedTimeoutManager {
         /*
                 Logger to log transaction messages
          */
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DelegatedTimeoutManager.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Initialises the static state of the TimeoutManager class.
      *
@@ -566,7 +566,7 @@ class DelegatedTimeoutThread extends Thread {
     private int TIMEOUT_INTERVAL ;
     private DelegatedTimeoutManager tmoutMgr = null;
     
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DelegatedTimeoutThread.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * TimeoutThread constructor.
      * <p>

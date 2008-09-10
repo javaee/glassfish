@@ -74,8 +74,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     // We allow the default provider to be specified using -D option.
     private static String defaultProvider;
 
-    private static Logger logger = LogDomains.getLogger(
-            LogDomains.LOADER_LOGGER);
+    private static Logger logger = LogDomains.getLogger(PersistenceUnitInfoImpl.class, LogDomains.LOADER_LOGGER);
 
     //TODO Need to move the relavent strings from the original bundle to somewhere here
     private static final StringManager localStrings = StringManager.getManager(PersistenceUnitInfoImpl.class);

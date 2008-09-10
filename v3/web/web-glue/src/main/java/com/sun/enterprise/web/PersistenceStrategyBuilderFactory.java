@@ -45,7 +45,7 @@ import org.apache.catalina.Context;
 public class PersistenceStrategyBuilderFactory {
     
     private static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
 
     // The path where ee builders reside
     private String _eeBuilderPath = null;

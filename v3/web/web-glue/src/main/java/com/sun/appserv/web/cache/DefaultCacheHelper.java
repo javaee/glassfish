@@ -104,7 +104,7 @@ public class DefaultCacheHelper implements CacheHelper {
         attrKeyGenerator = (String)props.get(PROP_KEY_GENERATOR_ATTR_NAME);
 
         // web container logger
-        _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+        _logger = LogDomains.getLogger(DefaultCacheHelper.class, LogDomains.PWC_LOGGER);
         _isTraceEnabled = _logger.isLoggable(Level.FINE);
         _rb = _logger.getResourceBundle();
     }

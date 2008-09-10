@@ -115,7 +115,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
         }
 
         if (_logger == null) {
-            _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+            _logger = LogDomains.getLogger(CachingFilter.class, LogDomains.PWC_LOGGER);
             _isTraceEnabled = _logger.isLoggable(Level.FINE);
         }
 

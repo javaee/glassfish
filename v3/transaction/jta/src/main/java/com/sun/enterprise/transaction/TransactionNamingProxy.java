@@ -68,7 +68,7 @@ public class TransactionNamingProxy
     @Inject
     private GlassfishNamingManager namingManager;
 
-    private static Logger logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
+    private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
     private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";

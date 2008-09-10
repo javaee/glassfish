@@ -90,7 +90,7 @@ public final class CacheModule {
      */
     public static CacheManager configureResponseCache(WebModule app, 
                                 SunWebApp bean) throws Exception  {
-        Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        Logger logger = LogDomains.getLogger(CacheModule.class, LogDomains.WEB_LOGGER);
 
         Cache cacheConfig = bean.getCache();
 

@@ -168,7 +168,7 @@ public class RecoveryManager {
 	/*
 		Logger to log transaction messages
 	*/  
-	    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	    static Logger _logger = LogDomains.getLogger(RecoveryManager.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Initialises the static state of the RecoveryManager class.
      *
@@ -1727,7 +1727,7 @@ class ResyncThread extends Thread  {
      *
      * @see
      */
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ResyncThread.class, LogDomains.TRANSACTION_LOGGER);
 
     ResyncThread() {
         setName("JTS Resync Thread"/*#Frozen*/);

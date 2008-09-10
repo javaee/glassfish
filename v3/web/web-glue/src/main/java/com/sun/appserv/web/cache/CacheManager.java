@@ -211,7 +211,7 @@ public class CacheManager {
             return;
 
         // web container logger
-        _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+        _logger = LogDomains.getLogger(CacheManager.class, LogDomains.PWC_LOGGER);
         _rb = _logger.getResourceBundle();
 
         // create the default cache

@@ -99,7 +99,7 @@ public final class PEAccessLogValve
     implements Lifecycle, Runnable {
 
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(PEAccessLogValve.class, LogDomains.WEB_LOGGER);
 
     // Predefined patterns
     private static final String COMMON_PATTERN = "common";

@@ -28,7 +28,7 @@ public class EventsImpl implements Events {
     @Inject
     ExecutorService executor;
     
-    final static Logger logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    final static Logger logger = LogDomains.getLogger(EventsImpl.class, LogDomains.CORE_LOGGER);
 
     List<EventListener> listeners = Collections.synchronizedList(new ArrayList<EventListener>());
 

@@ -67,7 +67,7 @@ public class SecurityServicesUtil {
     
     private static final LocalStringManagerImpl _localStrings =
             new LocalStringManagerImpl(SecurityServicesUtil.class);
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(SecurityServicesUtil.class, LogDomains.SECURITY_LOGGER);
     // SecureRandom number used for HTTPS and IIOP/SSL.
     // This number is accessed by iiop/IIOPSSLSocketFactory
     // & web/security/SSLSocketFactory classes.

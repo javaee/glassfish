@@ -55,7 +55,7 @@ public class CacheUtil {
      * The resource bundle containing the localized message strings.
      */
     private static ResourceBundle _rb =
-        LogDomains.getLogger(LogDomains.PWC_LOGGER).getResourceBundle();
+        LogDomains.getLogger(CacheUtil.class, LogDomains.PWC_LOGGER).getResourceBundle();
 
     private static final String PAGE_SCOPE = "page";   
     private static final String REQUEST_SCOPE = "request";   

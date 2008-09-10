@@ -104,7 +104,7 @@ public class CurrentImpl extends org.omg.CORBA.LocalObject
 	/*
 		Logger to log transaction messages
 	*/ 
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(CurrentImpl.class, LogDomains.TRANSACTION_LOGGER);
 
     /**Default CurrentImpl constructor.
      *

@@ -71,7 +71,7 @@ public class Field {
      */
     public Field (String name, String scope) throws IllegalArgumentException {
         // web container logger
-        _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+        _logger = LogDomains.getLogger(Field.class, LogDomains.PWC_LOGGER);
         _rb = _logger.getResourceBundle();
 
         this.name = name;

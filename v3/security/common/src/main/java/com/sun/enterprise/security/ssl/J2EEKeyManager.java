@@ -74,7 +74,7 @@ public final class J2EEKeyManager implements X509KeyManager {
 
     private static Logger _logger=null;  
     static {
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger=LogDomains.getLogger(J2EEKeyManager.class, LogDomains.SECURITY_LOGGER);
     }
 
     

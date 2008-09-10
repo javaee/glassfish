@@ -91,7 +91,7 @@ import com.sun.logging.LogDomains;
 public class WebModuleContextConfig extends ContextConfig {
 
     private static final Logger logger = LogDomains.getLogger(
-        LogDomains.WEB_LOGGER);
+        WebModuleContextConfig.class, LogDomains.WEB_LOGGER);
     
     protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 

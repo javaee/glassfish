@@ -53,7 +53,7 @@ public class EjbApplicationExceptionInfo implements Serializable
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbApplicationExceptionInfo.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbApplicationExceptionInfo.class, LogDomains.DPL_LOGGER);
 
     private String exceptionClassName;
     private boolean rollback;

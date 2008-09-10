@@ -57,7 +57,7 @@ import org.glassfish.internal.api.Globals;
 public final class GUILoginDialog implements LoginDialog  {
 
     private static final Logger _logger =
-	LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+	LogDomains.getLogger(GUILoginDialog.class, LogDomains.SECURITY_LOGGER);
 
     private String	entity;
     private PassphraseDialog passphraseDialog;

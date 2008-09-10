@@ -55,7 +55,7 @@ public class WorkManagerProxy implements WorkManager, Externalizable, Monitorabl
     private transient WorkManager wm;
     private String moduleName;
     private boolean monitorableInstance;
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
 
 
     public WorkManagerProxy(WorkManager wm, String moduleName){
@@ -122,7 +122,7 @@ public class WorkManagerProxy implements WorkManager, Externalizable, Monitorabl
         moduleName = in.readUTF();
         wm = WorkManagerFactory.retrieveWorkManager(moduleName);
         monitorableInstance = isMonitorableInstance(wm);
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(WorkManagerProxy.class, LogDomains.RSR_LOGGER);
     }
 
     public boolean equals(Object o){

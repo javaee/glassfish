@@ -68,7 +68,7 @@ public class EjbIORConfigurationDescriptor implements Serializable {
     private String callerPropagation = SUPPORTED;
     private boolean required = false;
        
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbIORConfigurationDescriptor.class, LogDomains.DPL_LOGGER);
     
     /** 
     * Default constructor. 

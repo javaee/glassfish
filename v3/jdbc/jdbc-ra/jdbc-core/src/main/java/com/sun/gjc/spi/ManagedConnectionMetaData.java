@@ -57,7 +57,7 @@ public class ManagedConnectionMetaData implements javax.resource.spi.ManagedConn
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ManagedConnectionMetaData.class, LogDomains.RSR_LOGGER);
     }
 
     private boolean debug = false;

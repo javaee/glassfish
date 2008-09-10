@@ -88,7 +88,7 @@ public final class SSLUtils implements PostConstruct {
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
 
     @Inject
     SecuritySupport secSupp;

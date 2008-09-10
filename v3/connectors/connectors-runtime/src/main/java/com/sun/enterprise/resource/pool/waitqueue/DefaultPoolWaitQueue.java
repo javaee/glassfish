@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 public class DefaultPoolWaitQueue implements PoolWaitQueue {
 
     private LinkedList list;
-    protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    protected final static Logger _logger = LogDomains.getLogger(DefaultPoolWaitQueue.class, LogDomains.RSR_LOGGER);
 
     private void initializeDefaultQueue() {
         list = new LinkedList();

@@ -72,7 +72,7 @@ public class EjbCMPEntityDescriptor extends EjbEntityDescriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbCMPEntityDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbCMPEntityDescriptor.class, LogDomains.DPL_LOGGER);
         
     
     public EjbCMPEntityDescriptor() {

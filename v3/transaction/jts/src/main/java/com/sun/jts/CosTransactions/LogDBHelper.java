@@ -72,7 +72,7 @@ class LogDBHelper {
     static final String selectStatement = 
 	         System.getProperty("com.sun.jts.dblogging.selectquery",
                  "select * from txn_log_table where servername = ? ");
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(LogDBHelper.class, LogDomains.TRANSACTION_LOGGER);
     static LogDBHelper _instance = new LogDBHelper();
 
     static LogDBHelper getInstance() {

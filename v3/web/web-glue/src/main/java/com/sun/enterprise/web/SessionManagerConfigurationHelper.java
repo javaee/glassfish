@@ -55,7 +55,7 @@ import com.sun.logging.LogDomains;
 public class SessionManagerConfigurationHelper {
 
     protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+            SessionManagerConfigurationHelper.class, LogDomains.WEB_LOGGER);
 
     protected WebModule _ctx = null;
     protected SessionManager _smBean = null; 

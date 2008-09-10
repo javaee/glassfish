@@ -70,7 +70,7 @@ import com.sun.logging.LogDomains;
 public final class JavaEETransactionImpl extends TimerTask implements 
         JavaEETransaction {
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
+    static Logger _logger = LogDomains.getLogger(JavaEETransactionImpl.class, LogDomains.JTA_LOGGER);
 
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransactionImpl.class);

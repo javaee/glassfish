@@ -65,7 +65,7 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
      * The logger to use for logging ALL web container related messages.
      */
     protected static final Logger _logger =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(PESessionLockingStandardPipeline.class, LogDomains.WEB_LOGGER);
     
     /** 
      * creates an instance of PESessionLockingStandardPipeline

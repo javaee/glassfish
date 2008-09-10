@@ -63,7 +63,7 @@ import com.sun.logging.LogDomains;
 public class GFAuthConfigFactory extends AuthConfigFactory {
 
     private static Logger logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(GFAuthConfigFactory.class, LogDomains.SECURITY_LOGGER);
 
     // locks are used to protect existence of maps 
     // not concurrent access within maps

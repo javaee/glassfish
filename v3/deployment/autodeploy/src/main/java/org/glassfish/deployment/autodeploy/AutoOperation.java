@@ -52,7 +52,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public abstract class AutoOperation {
     
-    final static Logger sLogger=LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    final static Logger sLogger=LogDomains.getLogger(AutoOperation.class, LogDomains.DPL_LOGGER);
     final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
 
     /**

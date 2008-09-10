@@ -66,7 +66,7 @@ public class UserTransactionImpl implements javax.transaction.UserTransaction,
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(UserTransactionImpl.class, LogDomains.TRANSACTION_LOGGER);
     // Constructor
 
     public UserTransactionImpl() {}

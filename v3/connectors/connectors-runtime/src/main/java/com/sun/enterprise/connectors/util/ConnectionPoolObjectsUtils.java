@@ -72,7 +72,7 @@ public final class ConnectionPoolObjectsUtils {
     private ConnectionPoolObjectsUtils() { /* disallow instantiation */ }
 
     public static final String ELEMENT_PROPERTY = "ElementProperty";
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ConnectionPoolObjectsUtils.class,LogDomains.RSR_LOGGER);
 
     private static final String VALIDATE_ATMOST_EVERY_IDLE_SECS =
             "com.sun.enterprise.connectors.ValidateAtmostEveryIdleSecs";

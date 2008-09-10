@@ -123,7 +123,7 @@ class SubCoordinator extends CoordinatorImpl {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(SubCoordinator.class,LogDomains.TRANSACTION_LOGGER);
 
 
     /**

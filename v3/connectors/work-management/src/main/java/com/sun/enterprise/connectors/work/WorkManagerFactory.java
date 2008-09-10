@@ -76,7 +76,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     private static final String WORK_MANAGER_CLASS = "workmanager.class";
 
     private static final Logger logger =
-            LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(WorkManagerFactory.class, LogDomains.RSR_LOGGER);
 
     private static final StringManager localStrings =
             StringManager.getManager(WorkManagerFactory.class);
@@ -97,7 +97,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
         //TODO V3 
     }
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(WorkManagerFactory.class, LogDomains.RSR_LOGGER);
 
     /**
      * This is called by the constructor of BootstrapContextImpl

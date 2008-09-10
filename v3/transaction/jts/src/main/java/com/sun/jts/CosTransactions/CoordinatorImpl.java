@@ -150,7 +150,7 @@ abstract class CoordinatorImpl extends JCoordinatorPOA implements JCoordinator {
 	/*
 		Logger to log transaction messages
 	*/
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(CoordinatorImpl.class, LogDomains.TRANSACTION_LOGGER);
 
     /**OMG Coordinator operation required of all subclasses.
      *

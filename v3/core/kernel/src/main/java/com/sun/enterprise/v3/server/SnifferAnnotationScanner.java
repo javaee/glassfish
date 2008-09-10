@@ -22,7 +22,7 @@ public class SnifferAnnotationScanner implements ClassVisitor {
     String className;
     String signature;
 
-    final static Logger logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    final static Logger logger = LogDomains.getLogger(SnifferAnnotationScanner.class, LogDomains.CORE_LOGGER);
 
     public void register(Sniffer sniffer, Class[] annotationClasses) {
         SnifferStatus stat = new SnifferStatus(sniffer);

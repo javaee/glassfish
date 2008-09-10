@@ -74,7 +74,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Construct an XAResource object.
      *

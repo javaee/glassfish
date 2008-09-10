@@ -62,7 +62,7 @@ public class XAResourceWrapper implements XAResource {
 
     private static Logger _logger ;
     static{
-           _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+           _logger = LogDomains.getLogger(XAResourceWrapper.class, LogDomains.RSR_LOGGER);
           }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {

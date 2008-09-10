@@ -74,7 +74,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
     public static final String WEBAUTH_PROGRAMMATIC="PROGRAMMATIC";
 
     private static Logger logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(WebProgrammaticLoginImpl.class, LogDomains.SECURITY_LOGGER);
 
 
     /** 

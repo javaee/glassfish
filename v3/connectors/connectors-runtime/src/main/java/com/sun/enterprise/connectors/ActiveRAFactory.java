@@ -51,7 +51,7 @@ import java.util.logging.Logger;
  * @author Binod P.G
  */
 public class ActiveRAFactory {
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ActiveRAFactory.class,LogDomains.RSR_LOGGER);
 
     /**
      * Creates an active resource adapter.

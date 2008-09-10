@@ -85,7 +85,7 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand {
      *  @return Logger
      */
     protected Logger getLogger() {
-        return LogDomains.getLogger(LogDomains.CORE_LOGGER);
+        return LogDomains.getLogger(BaseLifeCycleCommand.class, LogDomains.CORE_LOGGER);
     }
 
     protected DomainConfig getDomainConfig(String domainName) throws CommandException {

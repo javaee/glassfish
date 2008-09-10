@@ -225,7 +225,7 @@ public abstract class EJBLocalObjectImpl
         private transient static Logger _logger;
         
         static {
-            _logger=LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            _logger=LogDomains.getLogger(SerializableLocalObject.class, LogDomains.EJB_LOGGER);
         }
         
         SerializableLocalObject(long containerId, 

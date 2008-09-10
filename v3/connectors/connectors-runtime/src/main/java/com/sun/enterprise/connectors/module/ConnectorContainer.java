@@ -54,7 +54,7 @@ import java.util.logging.Logger;
 @Service(name = "com.sun.enterprise.connectors.module.ConnectorContainer")
 public class ConnectorContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorContainer.class, LogDomains.RSR_LOGGER);
 
     public void postConstruct() {
         logFine("postConstruct of ConnectorContainer");

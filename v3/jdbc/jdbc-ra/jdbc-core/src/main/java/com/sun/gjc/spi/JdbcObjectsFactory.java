@@ -54,7 +54,7 @@ public abstract class JdbcObjectsFactory implements Serializable {
     private static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(JdbcObjectsFactory.class, LogDomains.RSR_LOGGER);
     }
 
     /**

@@ -70,7 +70,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     protected final static StringManager localStrings =
             StringManager.getManager(ConnectionPool.class);
-    protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    protected final static Logger _logger = LogDomains.getLogger(ConnectionPool.class,LogDomains.RSR_LOGGER);
 
 
     //pool life-cycle config properties

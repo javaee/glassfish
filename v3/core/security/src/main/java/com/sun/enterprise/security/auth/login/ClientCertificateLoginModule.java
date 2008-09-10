@@ -71,7 +71,7 @@ public class ClientCertificateLoginModule implements LoginModule {
 
     private static Logger _logger=null;
     static {
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger=LogDomains.getLogger(ClientCertificateLoginModule.class, LogDomains.SECURITY_LOGGER);
     }
 
     private static LocalStringManagerImpl localStrings =

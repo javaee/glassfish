@@ -76,14 +76,14 @@ public final class DeploymentLogger
         Logger tempLogger = null;
 		try
 		{
-			tempLogger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+			tempLogger = LogDomains.getLogger(DeploymentLogger.class, LogDomains.DPL_LOGGER);
 			tempLogger.finest("Successfully created Deployment Logger");
 		}
 		catch(Throwable t)
 		{
 			try
 			{
-				tempLogger = LogDomains.getLogger(LogDomains.ROOT_LOGGER);
+				tempLogger = LogDomains.getLogger(DeploymentLogger.class, LogDomains.ROOT_LOGGER);
 				tempLogger.warning("Couldn't create Deployment Logger -- created a Root Logger instead");
 			}
 			catch(Throwable t2)

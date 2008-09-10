@@ -319,7 +319,7 @@ public final class JSPCompiler {
         localStrings.getLocalString("org.glassfish.web.start_jspc", "Beginning JSP Precompile...");
 	private static final String finishMessage =
         localStrings.getLocalString("org.glassfish.web.finish_jspc", "Finished JSP Precompile");
-	private static final Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+	private static final Logger logger = LogDomains.getLogger(JSPCompiler.class, LogDomains.WEB_LOGGER);
 
 
 	////////////////////////////////////////////////////////////////////////////

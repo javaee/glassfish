@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class EntityManagerWrapper implements EntityManager, Serializable {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    static Logger _logger=LogDomains.getLogger(EntityManagerWrapper.class, LogDomains.UTIL_LOGGER);
 
     // Serializable state
 

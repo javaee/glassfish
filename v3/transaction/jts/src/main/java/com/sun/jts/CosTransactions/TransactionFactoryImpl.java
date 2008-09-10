@@ -104,7 +104,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
     static boolean active = true;
 
 	/*Logger to log transaction messages*/  
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(TransactionFactoryImpl.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Constructor for the TransactionFactoryImpl.  Passes through
      * to the parent constructor.

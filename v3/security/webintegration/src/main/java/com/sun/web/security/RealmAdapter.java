@@ -130,7 +130,7 @@ import org.jvnet.hk2.component.PostConstruct;
 public class RealmAdapter extends RealmBase implements RealmInitializer, PostConstruct {
 
     private static final String UNCONSTRAINED = "unconstrained";
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(RealmAdapter.class, LogDomains.WEB_LOGGER);
     public static final String SECURITY_CONTEXT = "SecurityContext";
     public static final String BASIC = "BASIC";
     public static final String FORM = "FORM";

@@ -43,7 +43,7 @@ public class LogDomains {
     
     public final static String DPL_LOGGER = com.sun.logging.LogDomains.DPL_LOGGER;
     
-    public static Logger getLogger(String name) {
+    public static Logger getLogger(final Class clazz, String name) {
 	return DOLUtils.getDefaultLogger();
     }
 }

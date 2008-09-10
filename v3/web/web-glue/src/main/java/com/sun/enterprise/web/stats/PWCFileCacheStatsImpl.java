@@ -60,7 +60,7 @@ import com.sun.enterprise.admin.monitor.stats.CountStatisticImpl;
  */
 public class PWCFileCacheStatsImpl implements PWCFileCacheStats {
     private final static Logger logger
-        = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(PWCFileCacheStatsImpl.class, LogDomains.WEB_LOGGER);
     
     private GenericStatsImpl baseStatsImpl;
     private ObjectName fileCacheName;

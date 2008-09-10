@@ -62,7 +62,7 @@ public final class TextLoginDialog implements LoginDialog {
 
     private static Logger _logger=null;
     static {
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger=LogDomains.getLogger(TextLoginDialog.class, LogDomains.SECURITY_LOGGER);
     }
 
     private String username = null;

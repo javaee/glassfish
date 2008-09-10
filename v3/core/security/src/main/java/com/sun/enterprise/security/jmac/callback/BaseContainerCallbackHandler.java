@@ -119,7 +119,7 @@ abstract class BaseContainerCallbackHandler
     private static final String DEFAULT_CLIENT_SECRET_KEYSTORE_PASSWORD =
         "changeit";
 
-    protected static Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    protected static Logger _logger = LogDomains.getLogger(BaseContainerCallbackHandler.class, LogDomains.SECURITY_LOGGER);
 
     protected HandlerContext handlerContext = null;
 

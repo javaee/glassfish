@@ -48,7 +48,7 @@ import com.sun.enterprise.web.logging.pwc.LogDomains;
 
 class MonitorUtil {
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.PWC_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(MonitorUtil.class, LogDomains.PWC_LOGGER);
 
     /*
      * Convenience method for logging messages that require parametric

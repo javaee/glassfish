@@ -78,7 +78,7 @@ public final class MethodDescriptor extends Descriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(MethodDescriptor.class);    
 	    
-     final static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+     final static Logger _logger = LogDomains.getLogger(MailConfiguration.class, LogDomains.DPL_LOGGER);
 		
     private final int JAVA_FORMAT = 1;
     private final int XML_FORMAT = -1;

@@ -70,7 +70,7 @@ import org.glassfish.internal.api.Globals;
 // TODO: this should become a HK2 component
 public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFactory {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    static Logger _logger=LogDomains.getLogger(SSLSocketFactory.class, LogDomains.WEB_LOGGER);
 
     private static final boolean clientAuth = false;
 

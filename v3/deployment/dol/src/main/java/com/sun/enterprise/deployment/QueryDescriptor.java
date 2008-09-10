@@ -76,7 +76,7 @@ public final class QueryDescriptor extends Descriptor {
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(QueryDescriptor.class, LogDomains.DPL_LOGGER);
 	
     public QueryDescriptor()
     {

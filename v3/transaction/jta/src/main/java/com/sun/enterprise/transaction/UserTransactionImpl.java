@@ -74,7 +74,7 @@ import org.jvnet.hk2.component.PerLookup;
 public class UserTransactionImpl implements UserTransaction, Serializable
 {
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
+    static Logger _logger = LogDomains.getLogger(UserTransactionImpl.class, LogDomains.JTA_LOGGER);
 
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(UserTransactionImpl.class);

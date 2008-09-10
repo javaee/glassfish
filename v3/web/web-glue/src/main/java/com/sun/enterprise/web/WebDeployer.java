@@ -252,7 +252,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 defaultWebXMLWbd = wddf.read(fis);
             }
         } catch (Exception e) {
-            LogDomains.getLogger(LogDomains.WEB_LOGGER).
+            LogDomains.getLogger(WebDeployer.class, LogDomains.WEB_LOGGER).
                 warning("Error in parsing default-web.xml");
         } finally {
             try {

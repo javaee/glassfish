@@ -188,7 +188,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(EjbDescriptor.class, LogDomains.DPL_LOGGER);
 
     private IASEjbExtraDescriptors iASEjbExtraDescriptors = new IASEjbExtraDescriptors();  // Ludo 12/10/2001 extra DTD info only for iAS
 

@@ -86,7 +86,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     //private long startTime;
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
     public ConnectorDeployer() {
         //startTime = System.currentTimeMillis();

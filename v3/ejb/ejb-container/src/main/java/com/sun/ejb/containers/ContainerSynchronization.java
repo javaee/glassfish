@@ -61,7 +61,7 @@ final class ContainerSynchronization implements Synchronization
 {
 
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+        LogDomains.getLogger(ContainerSynchronization.class, LogDomains.EJB_LOGGER);
 
     private ArrayList beans = new ArrayList();
     private Vector pmSyncs = new Vector();

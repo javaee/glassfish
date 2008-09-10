@@ -51,7 +51,7 @@ import java.util.logging.Logger;
  */
 public class ResourcePoolFactoryImpl {
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ResourcePoolFactoryImpl.class,LogDomains.RSR_LOGGER);
 
     public static ResourcePool newInstance(String poolName, PoolType pt)
             throws PoolingException {

@@ -72,7 +72,7 @@ public class ActiveOutboundResourceAdapter implements ActiveResourceAdapter {
     protected ConnectionDefDescriptor[] connectionDefs_;
     protected ConnectorRuntime connectorRuntime_ = null;
 
-    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
     private StringManager localStrings =
             StringManager.getManager(ActiveOutboundResourceAdapter.class);
 

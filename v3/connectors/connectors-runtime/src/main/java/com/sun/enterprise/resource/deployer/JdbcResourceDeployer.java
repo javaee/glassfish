@@ -76,7 +76,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     /**
      * logger for this deployer
      */
-    private static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(JdbcResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     /**
      * Deploy the resource into the server's runtime naming context

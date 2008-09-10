@@ -86,7 +86,7 @@ public class TransactionImpl implements TransactionInternal {
 	/*
 		Logger to log transaction messages
 	*/  
-    static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+    static Logger _logger = LogDomains.getLogger(TransactionImpl.class, LogDomains.TRANSACTION_LOGGER);
 
     // START 4662745
     private long startTime;

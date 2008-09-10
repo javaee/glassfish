@@ -121,7 +121,7 @@ public class EJBTimerService
     private long totalTimedObjectsInitialized_ = 0;
 
     private static final Logger logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+        LogDomains.getLogger(EJBTimerService.class, LogDomains.EJB_LOGGER);
 
     // Defaults for configurable timer service properties.
 

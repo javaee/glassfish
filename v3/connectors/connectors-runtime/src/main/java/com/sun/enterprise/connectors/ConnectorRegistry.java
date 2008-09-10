@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 
 public class ConnectorRegistry {
 
-    static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static final Logger _logger = LogDomains.getLogger(ConnectorRegistry.class, LogDomains.RSR_LOGGER);
 
     protected static final ConnectorRegistry connectorRegistryInstance = new ConnectorRegistry();
 

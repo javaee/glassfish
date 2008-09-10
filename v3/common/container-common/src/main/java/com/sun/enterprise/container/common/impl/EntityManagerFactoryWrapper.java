@@ -61,7 +61,7 @@ import java.util.logging.Logger;
 public class EntityManagerFactoryWrapper
         implements EntityManagerFactory, Serializable {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    static Logger _logger=LogDomains.getLogger(EntityManagerFactoryWrapper.class, LogDomains.UTIL_LOGGER);
 
     private String unitName;
 

@@ -71,7 +71,7 @@ public class JPAApplication implements ApplicationContainer {
     /**
      * logger to log loader messages
      */
-    private static Logger logger = LogDomains.getLogger(LogDomains.LOADER_LOGGER);
+    private static Logger logger = LogDomains.getLogger(JPAApplication.class, LogDomains.LOADER_LOGGER);
 
     /**
      * Default Integration properties for various providers

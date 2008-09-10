@@ -122,7 +122,7 @@ public class TransactionState {
 		Logger to log transaction messages
 	*/  
     
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(TransactionState.class, LogDomains.TRANSACTION_LOGGER);
 
     public static boolean debug = false;
     // private static TransactionManagerImpl tm = TransactionManagerImpl.getTransactionManagerImpl();

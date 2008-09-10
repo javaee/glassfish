@@ -68,7 +68,7 @@ public class TomcatContainer implements Container, PostConstruct, PreDestroy {
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
     
     
-    final static Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    final static Logger logger = LogDomains.getLogger(TomcatContainer.class, LogDomains.WEB_LOGGER);
     
     Embedded embedded;
     Engine engine;

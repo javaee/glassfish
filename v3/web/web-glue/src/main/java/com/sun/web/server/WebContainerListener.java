@@ -65,7 +65,7 @@ public final class WebContainerListener
     implements ContainerListener {
 
     // START OF IASRI 4660742
-    static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    static Logger _logger=LogDomains.getLogger(WebContainerListener.class, LogDomains.WEB_LOGGER);
     // END OF IASRI 4660742
 
     static private HashSet beforeEvents = new HashSet();

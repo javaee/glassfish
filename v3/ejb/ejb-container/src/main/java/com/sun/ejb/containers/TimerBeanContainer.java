@@ -50,7 +50,7 @@ public class TimerBeanContainer
 
     private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(TimerBeanContainer.class, LogDomains.EJB_LOGGER);
         
     /**
      * This constructor is called when the timer service system application is

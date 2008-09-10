@@ -85,7 +85,7 @@ public class Audit extends AuditModule
     private static final String AUDIT_ON = "auditOn";
     private static boolean auditFlag = false;
     private static Logger logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(Audit.class, LogDomains.SECURITY_LOGGER);
     /*
     private static String strPrivateAudit = null;
     private static String strDenied = null;

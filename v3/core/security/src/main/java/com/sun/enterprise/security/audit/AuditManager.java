@@ -90,7 +90,7 @@ public final class AuditManager {
         "auditmgr.serverShutdown";
 
     private static final Logger _logger = 
-             LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+             LogDomains.getLogger(AuditManager.class, LogDomains.SECURITY_LOGGER);
 
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(AuditManager.class);

@@ -119,7 +119,7 @@ public class DefaultTransactionService implements TransactionService,
 	/*
 		Logger to log transaction messages
 	*/ 
-	static Logger _logger = LogDomains.getLogger(LogDomains.TRANSACTION_LOGGER);
+	static Logger _logger = LogDomains.getLogger(DefaultTransactionService.class, LogDomains.TRANSACTION_LOGGER);
     public static final String JTS_SERVER_ID = "com.sun.jts.persistentServerId"; /* FROZEN */
 
    

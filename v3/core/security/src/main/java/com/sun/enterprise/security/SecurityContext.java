@@ -82,7 +82,7 @@ public class SecurityContext extends AbstractSecurityContext  {
    
     private static Logger _logger=null;
     static {
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger=LogDomains.getLogger(SecurityContext.class, LogDomains.SECURITY_LOGGER);
     }
 
     private static InheritableThreadLocal<SecurityContext> currentSecCtx =

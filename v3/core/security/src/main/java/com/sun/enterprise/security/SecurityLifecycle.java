@@ -96,7 +96,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);
  
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(SecurityLifecycle.class, LogDomains.SECURITY_LOGGER);
 
     public SecurityLifecycle() {
 	try {

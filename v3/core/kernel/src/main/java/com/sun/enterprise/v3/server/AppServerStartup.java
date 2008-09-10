@@ -66,7 +66,7 @@ public class AppServerStartup implements ModuleStartup {
     
     StartupContext context;
 
-    final static Logger logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    final static Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
 
     @Inject
     ServerEnvironmentImpl env;

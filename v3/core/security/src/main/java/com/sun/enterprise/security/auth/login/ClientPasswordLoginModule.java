@@ -61,7 +61,7 @@ import com.sun.enterprise.security.UsernamePasswordStore;
 public class ClientPasswordLoginModule implements LoginModule {
 
     private static final Logger _logger=
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(ClientPasswordLoginModule.class, LogDomains.SECURITY_LOGGER);
 
     private static final String DEFAULT_REALMNAME = "default";
     private static final LocalStringManagerImpl localStrings =

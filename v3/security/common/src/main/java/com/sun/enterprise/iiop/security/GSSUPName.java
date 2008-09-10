@@ -50,7 +50,7 @@ import com.sun.logging.*;
 public class GSSUPName {
     private static java.util.logging.Logger _logger=null;
     static{
-       _logger=LogDomains.getLogger(LogDomains.CORBA_LOGGER);
+       _logger=LogDomains.getLogger(GSSUPName.class, LogDomains.CORBA_LOGGER);
         }
     public static final char   AT_CHAR       = '@';
     public static final String AT_STRING     = "@";

@@ -77,7 +77,7 @@ public class ConnectorXAResource implements XAResource {
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(ConnectorXAResource.class, LogDomains.RSR_LOGGER);
 
     public ConnectorXAResource(ResourceHandle handle,
                                ResourceSpec spec,

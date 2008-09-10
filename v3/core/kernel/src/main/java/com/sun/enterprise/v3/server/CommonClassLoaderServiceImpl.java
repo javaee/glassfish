@@ -79,7 +79,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
     @Inject
     ServerEnvironment env;
 
-    final static Logger logger = LogDomains.getLogger(LogDomains.LOADER_LOGGER);
+    final static Logger logger = LogDomains.getLogger(CommonClassLoaderServiceImpl.class, LogDomains.LOADER_LOGGER);
     private ClassLoader APIClassLoader;
 
     public void postConstruct() {

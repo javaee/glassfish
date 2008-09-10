@@ -56,7 +56,7 @@ import com.sun.logging.*;
 public final class UsernamePasswordStore {
     
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(UsernamePasswordStore.class, LogDomains.SECURITY_LOGGER);
 
     private static final boolean isPerThreadAuth = 
             Boolean.getBoolean(ClientSecurityContext.IIOP_CLIENT_PER_THREAD_FLAG);

@@ -68,7 +68,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     ModulesRegistry mr;
     private static final String APIExporterModuleName =
             "GlassFish-Application-Common-Module"; // NOI18N
-    final static Logger logger = LogDomains.getLogger(LogDomains.LOADER_LOGGER);
+    final static Logger logger = LogDomains.getLogger(APIClassLoaderServiceImpl.class, LogDomains.LOADER_LOGGER);
     private Module APIModule;
 
     public void postConstruct() {

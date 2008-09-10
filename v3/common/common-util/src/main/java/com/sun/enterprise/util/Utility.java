@@ -51,7 +51,7 @@ import com.sun.logging.*;
  */
 public final class Utility {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    static Logger _logger=LogDomains.getLogger(Utility.class, LogDomains.UTIL_LOGGER);
 
     private static LocalStringManagerImpl localStrings = 
     new LocalStringManagerImpl(Utility.class);

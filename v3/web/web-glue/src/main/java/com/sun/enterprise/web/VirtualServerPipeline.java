@@ -71,7 +71,7 @@ public class VirtualServerPipeline extends StandardPipeline {
         ResourceBundle.getBundle("com.sun.enterprise.web.LocalStrings");
 
     private static final Logger logger =
-        LogDomains.getLogger(LogDomains.WEB_LOGGER);
+        LogDomains.getLogger(VirtualServerPipeline.class, LogDomains.WEB_LOGGER);
 
     private VirtualServer vs;
 
