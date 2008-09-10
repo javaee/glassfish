@@ -230,6 +230,18 @@ public class V2DottedNameSupport {
             newPrefix="";
         }
 
+        // check for resources
+        if ((newPrefix != null) && (newPrefix.startsWith("resources"))) {
+            String relativeName = newPrefix;
+            if (newPrefix.indexOf('.')!=-1) {
+                String str = newPrefix.substring(0, newPrefix.indexOf('.'));
+                relativeName = newPrefix.substring(str.length() + 1);
+            }
+            TreeNode [] result = new TreeNode[1];
+            result[0] = new TreeNode(Dom.unwrap(domain.getResources()), relativeName);
+            return result;
+        }
+
         // server-config
          for (Config config : domain.getConfigs().getConfig()) {
              if (config.getName().equals(name)) {
