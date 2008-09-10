@@ -38,7 +38,9 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
     getAmxRoot(amxRoot=>$attribute{amxRoot});
-    setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
+    <!-- setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");-->
+    getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
+
 />
 
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -89,6 +91,16 @@
                                  alt="#{fullProductName}"
                                   height="#{loginProductImageHeight}" width="#{loginProductImageWidth}"
                                   />
+<!--  Commenting out until we are able to get woodstock build 7 from maven
+<event>
+    <!afterCreate        
+                getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                includeIntegrations(type="org.glassfish.admingui:loginimage" root="#{component}");                
+        
+    />
+</event>
+-->
 
 <f:verbatim>
 			    <table border="0" cellspacing="0" cellpadding="0" style="visibility: #{anonLogin ? 'hidden' : 'visible'}">
