@@ -201,8 +201,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>jspimpl</artifactId>
-            <version>${jspimpl.version}</version>
+            <artifactId>jsp-impl</artifactId>
+            <version>${jsp-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
