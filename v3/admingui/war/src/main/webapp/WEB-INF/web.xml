@@ -101,7 +101,8 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>public</web-resource-name>
-            <url-pattern>/theme/com/sun/webui/*</url-pattern>
+            <url-pattern>/theme/com/*</url-pattern>
+            <url-pattern>/theme/org/*</url-pattern>        
             <url-pattern>/theme/woodstock4_3/*</url-pattern>
             <url-pattern>/resource/js/*</url-pattern>
             <url-pattern>/resource/css/*</url-pattern>
