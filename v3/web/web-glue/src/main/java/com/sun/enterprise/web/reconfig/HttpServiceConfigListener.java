@@ -95,12 +95,6 @@ public class HttpServiceConfigListener implements ConfigListener {
     
     @Inject(optional=true)
     public RequestProcessing requestProcessing;
- 
-    @Inject(name="http-listener-1") 
-    public HttpListener httpListener;
-
-    @Inject(name="server") 
-    public VirtualServer virtualServer;
     
     private WebContainer container;
     

@@ -434,8 +434,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected WebModuleProbeProvider webModuleProbeProvider = null;
 
     protected Habitat habitat;
-
-
+    
+    protected HttpServiceConfigListener configListener = null;
+    
     // Indicates whether we are being shut down
     private boolean isShutdown = false;
 
@@ -667,7 +668,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 HttpServiceConfigListener.class, 
                 habitat, 
                 null);
-        HttpServiceConfigListener configListener = womb.get(null);
+        configListener = womb.get(null);
         
         ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
                 configListener.httpService);
@@ -815,7 +816,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         connector = (WebConnector)_embedded.createConnector(address, port,
                                                             isSecure);
-
+        
         if (mapper != null) {
             connector.setMapper(mapper);
         } else {
@@ -850,6 +851,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if ( defaultRedirectPort != -1 ){
             connector.setRedirectPort(defaultRedirectPort);
         }
+        
+        ObservableBean httpListenerBean = (ObservableBean) ConfigSupport.getImpl(httpListener);
+        httpListenerBean.addListener(configListener);  
 
         return connector;
     }
@@ -1134,6 +1138,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Add Host to Engine
         engine.addChild(vs);
+        
+        ObservableBean virtualServerBean = (ObservableBean) ConfigSupport.getImpl(vsBean);
+        virtualServerBean.addListener(configListener);  
 
         return vs;        
     }
