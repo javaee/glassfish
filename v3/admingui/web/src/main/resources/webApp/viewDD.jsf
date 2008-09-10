@@ -63,7 +63,7 @@
                 </sun:panelGroup>
                 </facet>
                 "<pre>
-                <sun:staticText id="descriptorText" text="#{descriptorText}" escape="#{true}" style="font-size: large;"/>
+                <h:outputText id="descriptorText" value="#{descriptorText}" escape="#{true}" style="font-size: large;"/>
                 "</pre>
             </sun:title>
         </sun:body>
