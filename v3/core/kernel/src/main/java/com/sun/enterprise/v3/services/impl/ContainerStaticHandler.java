@@ -53,34 +53,28 @@ public class ContainerStaticHandler extends StaticHandler {
         if (fileCache == null) {
             return Interceptor.CONTINUE;
         }
+        
+        MappingData mappingData = (MappingData)req.getNote(ContainerMapper.MAPPING_DATA);
+        if (mappingData != null) {
+            if (mappingData.wrapper != null &&
+                    mappingData.wrapper.getClass().getName().equals(
+                           "org.apache.catalina.core.StandardWrapper")) {
 
-        WorkerThread workerThread = (WorkerThread)Thread.currentThread();
-        ThreadAttachment attachment = workerThread.getAttachment();
-        if (attachment != null) {
-            Object mappingDataObj = attachment.getAttribute("mappingData");
-            if (mappingDataObj != null && mappingDataObj instanceof MappingData) {
-                MappingData mappingData = (MappingData)mappingDataObj;
-                if (mappingData.wrapper != null &&
-                        mappingData.wrapper.getClass().getName().equals(
-                               "org.apache.catalina.core.StandardWrapper")) {
+                try {
+                    Object wrapper = mappingData.wrapper;
+                    String servletClass =
+                            (String)(getServletClassMethod(wrapper).invoke(wrapper));
 
-                    try {
-                        Object wrapper = mappingData.wrapper;
-                        String servletClass =
-                                (String)(getServletClassMethod(wrapper).invoke(wrapper));
-
-                        if ("org.apache.catalina.servlets.DefaultServlet".equals(servletClass)) {
-                            return super.handle(req, handlerCode);
-                        }
-                    } catch(Exception ex) {
-                        IOException ioex = new IOException();
-                        ioex.initCause(ex);
-                        throw ioex;
+                    if ("org.apache.catalina.servlets.DefaultServlet".equals(servletClass)) {
+                        return super.handle(req, handlerCode);
                     }
+                } catch(Exception ex) {
+                    IOException ioex = new IOException();
+                    ioex.initCause(ex);
+                    throw ioex;
                 }
             }
         }
-
         return Interceptor.CONTINUE;   
     }
 

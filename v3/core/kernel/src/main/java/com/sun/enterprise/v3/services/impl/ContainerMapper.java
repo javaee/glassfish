@@ -134,7 +134,9 @@ public class ContainerMapper extends StaticResourcesAdapter{
             if (mappingData == null){
                 mappingData = new MappingData();
                 req.setNote(MAPPING_DATA, mappingData);
-            }        
+            } else {
+                mappingData.recycle();
+            }    
             
             Adapter adapter = null;      
                         
@@ -184,11 +186,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
                     logger.log(Level.WARNING, "Unable to error page", ex2);          
                 }                 
             }
-        }  finally{
-            if (mappingData != null){
-                mappingData.recycle();
-            }
-        }
+        } 
     }
 
     public synchronized void initializeFileURLPattern() {
