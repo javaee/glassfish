@@ -1339,7 +1339,12 @@ public class WebModule extends PwcWebModule {
         if (bean != null) {
             clBean = bean.getClassLoader();
         }
-        // the loader attributes and properties are configured in WarHandler
+        if (clBean != null) {
+            configureLoaderAttributes(loader, clBean);
+            configureLoaderProperties(loader, clBean);
+        } else {
+            loader.setDelegate(true);
+        }
 
         // START S1AS 6178005
         String stubPath = wmInfo.getStubPath();
@@ -1403,6 +1408,129 @@ public class WebModule extends PwcWebModule {
         configureSession(sessionPropsBean, wbd);
         configureCookieProperties(cookieBean);        
     } 
+
+    /**
+     * Configures the given classloader with its attributes specified in
+     * sun-web.xml.
+     *
+     * @param loader The classloader to configure
+     * @param clBean The class-loader info from sun-web.xml
+     */
+    private void configureLoaderAttributes(
+            Loader loader,
+            com.sun.enterprise.deployment.runtime.web.ClassLoader clBean) {
+
+        String value = clBean.getAttributeValue(
+                com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
+
+        /*
+         * The DOL will *always* return a value: If 'delegate' has not been
+         * configured in sun-web.xml, its default value will be returned,
+         * which is FALSE in the case of sun-web-app_2_2-0.dtd and
+         * sun-web-app_2_3-0.dtd, and TRUE in the case of
+         * sun-web-app_2_4-0.dtd.
+         */
+        boolean delegate = ConfigBeansUtilities.toBoolean(value);
+        loader.setDelegate(delegate);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("WebModule[" + getPath() +
+                        "]: Setting delegate to " + delegate);
+        }
+
+        // Get any extra paths to be added to the class path of this
+        // class loader
+        value = clBean.getAttributeValue(
+            com.sun.enterprise.deployment.runtime.web.ClassLoader.EXTRA_CLASS_PATH);
+        if (value != null) {
+            // Parse the extra classpath into its ':' and ';' separated
+            // components. Ignore ':' as a separator if it is preceded by
+            // '\'
+            String[] pathElements = value.split(";|((?<!\\\\):)");
+            if (pathElements != null) {
+                for (String path : pathElements) {
+                    path = path.replace("\\:", ":");
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("WebModule[" + getPath() +
+                                    "]: Adding " + path +
+                                    " to the classpath");
+                    }
+
+                    try {
+                        URL url = new URL(path);
+                        loader.addRepository(path);
+                    } catch (MalformedURLException mue1) {
+                        // Not a URL, interpret as file
+                        File file = new File(path);
+                        // START GlassFish 904
+                        if (!file.isAbsolute()) {
+                            // Resolve relative extra class path to the
+                            // context's docroot
+                            file = new File(getDocBase(), path);
+                        }
+                        // END GlassFish 904
+
+                        try {
+                            URL url = file.toURI().toURL();
+                            loader.addRepository(url.toString());
+                        } catch (MalformedURLException mue2) {
+                            String msg = rb.getString(
+                                "webcontainer.classpathError");
+                            Object[] params = { path };
+                            msg = MessageFormat.format(msg, params);
+                            logger.log(Level.SEVERE, msg, mue2);
+                        }
+                    }
+                }
+            }
+        }
+
+        value = clBean.getAttributeValue(
+            com.sun.enterprise.deployment.runtime.web.ClassLoader.DYNAMIC_RELOAD_INTERVAL);
+        if (value != null) {
+            // Log warning if dynamic-reload-interval is specified
+            // in sun-web.xml since it is not supported
+            logger.log(Level.WARNING, "webcontainer.dynamicReloadInterval");
+        }
+    }
+
+    /**
+     * Configures the given classloader with its properties specified in
+     * sun-web.xml.
+     *
+     * @param loader The classloader to configure
+     * @param clBean The class-loader info from sun-web.xml
+     */
+    private void configureLoaderProperties(
+            Loader loader,
+            com.sun.enterprise.deployment.runtime.web.ClassLoader clBean) {
+
+        String name = null;
+        String value = null;
+
+        WebProperty[] props = clBean.getWebProperty();
+        if (props == null || props.length == 0) {
+            return;
+        }
+
+        for (int i = 0; i < props.length; i++) {
+
+            name = props[i].getAttributeValue(WebProperty.NAME);
+            value = props[i].getAttributeValue(WebProperty.VALUE);
+
+            if (name == null || value == null) {
+                throw new IllegalArgumentException(
+                    rb.getString("webcontainer.nullWebProperty"));
+            }
+
+            if (name.equalsIgnoreCase("ignoreHiddenJarFiles")) {
+                loader.setIgnoreHiddenJarFiles(ConfigBeansUtilities.toBoolean(value));
+            } else {
+                Object[] params = { name, value };
+                logger.log(Level.WARNING, "webcontainer.invalidProperty",
+                           params);
+            }
+        }
+    }
 
     /**
      * Adds all libraries specified via the --libraries deployment option to
