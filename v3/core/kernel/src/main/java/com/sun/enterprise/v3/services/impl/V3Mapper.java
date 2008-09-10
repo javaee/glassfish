@@ -69,7 +69,7 @@ public class V3Mapper extends Mapper {
         super.addWrapper(hostName, contextPath, path, wrapper, jspWildCard);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Wrapper-Host: " + hostName + " contextPath " + contextPath
-                    + " wrapper " + wrapper + " jspWildcard " + jspWildCard);
+                    + " wrapper " + wrapper + " path " + path + " jspWildcard " + jspWildCard);
         }                          
     }
     

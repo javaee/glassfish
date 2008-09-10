@@ -287,10 +287,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Registers all proxies
      */
     public void registerNetworkProxy(){
-        // todo : this neeed some rework...
-        // now register all proxies you can find out there !
-        // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
-        // JFA -> JD: Yes, this cause issue: 5892 ;-)
         for (org.glassfish.api.container.Adapter subAdapter : 
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required

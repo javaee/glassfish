@@ -7,21 +7,16 @@ import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.ContainerInfo;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.enterprise.v3.server.ContainerStarter;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +28,7 @@ import java.util.logging.Logger;
  * files saved in the context root of the application server.
  *
  * @author Jerome Dochez
+ * @author Jeanfrancois Arcand
  */
 @Service
 @Scoped(PerLookup.class)
@@ -83,6 +79,7 @@ public class SnifferAdapter implements Adapter {
                 adapter.service(req, resp);
                 return;
             }
+            
             if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) != null) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.info("Container is claimed to be started...");
@@ -116,10 +113,19 @@ public class SnifferAdapter implements Adapter {
             // seems like there is some possibility that the container is not synchronously started
             // preventing the calls below to succeed...
             MessageBytes decodedURI = req.decodedURI();
-            decodedURI.duplicate(req.requestURI());
-
             try {
+                // Clear the previous mapped information.
+                MappingData mappingData = 
+                        (MappingData)req.getNote(ContainerMapper.MAPPING_DATA);
+                mappingData.recycle();
+                
                 adapter = mapper.map(req, decodedURI, null);
+                // If a SnifferAdapter doesn't do it's job, avoid recursion 
+                // and throw a Runtime exception.
+                if (adapter.equals(this)){
+                    adapter = null;
+                    throw new RuntimeException("SnifferAdapter cannot map themself.");
+                }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Exception while mapping the request", e);
                 throw e;
@@ -128,6 +134,8 @@ public class SnifferAdapter implements Adapter {
             // pass on,,,
             if (adapter != null) {
                 adapter.service(req, resp);
+            } else {
+                throw new RuntimeException("No Adapter found.");
             }
         }
     }

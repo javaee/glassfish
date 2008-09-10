@@ -32,7 +32,6 @@ import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
 import java.util.List;
 import java.util.logging.Level;
 import org.glassfish.api.container.Sniffer;
@@ -63,7 +62,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ContainerMapper extends StaticResourcesAdapter{
 
-    private final static String ROOT = "/";
+    private final static String ROOT = "";
     private Mapper mapper;
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
@@ -75,8 +74,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
 
     private ConcurrentLinkedQueue<HttpParserState> parserStates;
     
-    private final static int MAPPING_DATA = 12;
-    private final static int MAPPED_ADAPTER = 13;
+    protected final static int MAPPING_DATA = 12;
+    protected final static int MAPPED_ADAPTER = 13;
     
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
@@ -108,8 +107,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
     protected void setMapper(Mapper mapper) {
         this.mapper = mapper;
     }
-
-    
+  
     /**
      * Configure the {@link V3Mapper}. 
      */
@@ -154,10 +152,9 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 initializeFileURLPattern();
                 adapter = map(req, decodedURI, mappingData);
             }
- 
-            
+             
             if (logger.isLoggable(Level.FINE)){
-                logger.info("Request: " + decodedURI.toString() 
+                logger.fine("Request: " + decodedURI.toString() 
                         + " was mapped to Adapter: " + adapter);
             }    
   
@@ -199,8 +196,18 @@ public class ContainerMapper extends StaticResourcesAdapter{
             if (sniffer.getURLPatterns()!=null) {
                 SnifferAdapter adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                 adapter.initialize(sniffer, this);
+                
+                ContextRootInfo c= new ContextRootInfo(adapter, null, null);
+                register(ROOT,grizzlyService.hosts,adapter,null,null);
+                
                 for (String pattern : sniffer.getURLPatterns()) {
-                    this.register(pattern, grizzlyService.hosts, adapter, null, null);
+                    for (String host: grizzlyService.hosts ){   
+                         if (logger.isLoggable(Level.INFO)) {
+                            logger.info("Enabling Container Mapping for " + pattern);          
+                         }                        
+                        mapper.addWrapper(host,ROOT, pattern,c, 
+                                ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
+                    }
                 }
             }
         }
@@ -213,18 +220,18 @@ public class ContainerMapper extends StaticResourcesAdapter{
             mappingData = (MappingData)req.getNote(MAPPING_DATA);
         }
 
-            // Map the request to its Adapter/Container and also it's Servlet if
-            // the request is targetted to the CoyoteAdapter.
-            mapper.map(req.serverName(), decodedURI, mappingData);
+        // Map the request to its Adapter/Container and also it's Servlet if
+        // the request is targetted to the CoyoteAdapter.
+        mapper.map(req.serverName(), decodedURI, mappingData);
 
-            ContextRootInfo contextRootInfo = null;
-            if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
-                contextRootInfo = (ContextRootInfo) mappingData.context;
-                return contextRootInfo.getAdapter();
-            } else if (mappingData.context != null && mappingData.context.getClass()
-                    .getName().equals("com.sun.enterprise.web.WebModule")) {
-                return ((V3Mapper) mapper).getAdapter();
-            }
+        ContextRootInfo contextRootInfo = null;
+        if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
+            contextRootInfo = (ContextRootInfo) mappingData.context;
+            return contextRootInfo.getAdapter();
+        } else if (mappingData.context != null && mappingData.context.getClass()
+                .getName().equals("com.sun.enterprise.web.WebModule")) {
+            return ((V3Mapper) mapper).getAdapter();
+        }
         return null;
     }
     /**
@@ -293,7 +300,10 @@ public class ContainerMapper extends StaticResourcesAdapter{
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("MAPPER (" + this + ") UNREGISTER contextRoot: " + contextRoot);
         }
-        mapper.removeContext(defaultHostName, contextRoot);
+        
+        for (String host : grizzlyService.hosts) {
+            mapper.removeContext(host, contextRoot);
+        }
     }
 
     
@@ -475,6 +485,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
         processorTask.setAdapter(adapter);
     }
 
+    
     /**
      * Class represents context-root associated information
      */
