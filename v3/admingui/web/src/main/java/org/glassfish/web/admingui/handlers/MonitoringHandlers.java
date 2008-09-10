@@ -55,6 +55,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.lang.management.MemoryUsage;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,8 +154,11 @@ public class MonitoringHandlers {
                 String T = t.toUpperCase();
                 coll = statsNode.getNodes("*applications."+application+"."+virtualServer+"."+"*"+"["+t+T+"]"+ype+"*");
             }
-
-            for (TreeNode tn : coll) {
+            ArrayList list = new ArrayList();
+            list.addAll(coll);
+            Collections.sort(list);
+            for (Object o : list) {
+                TreeNode tn = (TreeNode)o;
                 Map statMap = new HashMap();
                 statMap.put("Name", tn.getName());
                 statMap.put("Value", tn.getValue());
@@ -197,7 +201,11 @@ public class MonitoringHandlers {
             Collection<TreeNode> coll = null;
             if (statsNode != null && statsNode.isEnabled()) {
                 coll = statsNode.getChildNodes();
-                for (TreeNode tn : coll) {
+                ArrayList list = new ArrayList();
+                list.addAll(coll);
+                Collections.sort(list);
+                for (Object o : list) {
+                    TreeNode tn = (TreeNode)o;
                     Map statMap = new HashMap();
                     statMap.put("Name", tn.getName());
                     statMap.put("Value", tn.getValue());
