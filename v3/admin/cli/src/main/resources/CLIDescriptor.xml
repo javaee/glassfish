@@ -144,7 +144,7 @@
         </Command>
         <Command name="monitor" classname="com.sun.enterprise.admin.cli.MonitorCommand"
               numberofoperands="1"
-              usage-text="monitor [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile filename] --type=monitor_type [target]">
+              usage-text="monitor [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile filename] --type=monitor_type target">
              <RequiredOption name="type"/>
              <ValidOption name="interval"/>
              <ValidOption name="terse"/>
