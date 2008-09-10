@@ -45,6 +45,7 @@ import org.apache.naming.resources.FileDirContext;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 
@@ -82,35 +83,15 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         try {
             FileDirContext r = new FileDirContext();
             File base = new File(archive.getURI());
-            int baseFileLen = base.getPath().length();
             r.setDocBase(base.getAbsolutePath());
             SunWebXmlParser sunWebXmlParser = new SunWebXmlParser(base.getAbsolutePath());
-            cloader.setDelegate(sunWebXmlParser.isDelegate());
+
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
-            File libDir = new File(base, "WEB-INF/lib");
-            if (libDir.exists()) {
-                final boolean ignoreHiddenJarFiles = sunWebXmlParser.isIgnoreHiddenJarFiles();
 
-                for (File file : libDir.listFiles(
-                        new FileFilter() {
-                            public boolean accept(File pathname) {
-                                String fileName = pathname.getName();
-                                return (fileName.endsWith("jar") &&
-                                        (!ignoreHiddenJarFiles ||
-                                        !fileName.startsWith(".")));
-                            }
-                        }))
-                {
-                    try {
-                        cloader.addJar(file.getPath().substring(baseFileLen),
-                                       new JarFile(file), file);
-                    } catch (Exception e) {
-                        // Catch and ignore any exception in case the JAR file
-                        // is empty.
-                    }
-                }
-            }
+            configureLoaderAttributes(cloader, sunWebXmlParser, base);
+            configureLoaderProperties(cloader, sunWebXmlParser, base);
+            
         } catch(XMLStreamException xse) {
             xse.printStackTrace();
         } catch(FileNotFoundException fnfe) {
@@ -124,10 +105,117 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return cloader;
     }
 
+    private void configureLoaderAttributes(WebappClassLoader cloader,
+            SunWebXmlParser sunWebXmlParser, File base) {
+
+        boolean delegate = sunWebXmlParser.isDelegate();
+        cloader.setDelegate(delegate);
+        //XXX
+        /*
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("WebModule[" + getPath() +
+                        "]: Setting delegate to " + delegate);
+        }
+        */
+
+        String extraClassPath = sunWebXmlParser.getExtraClassPath();
+        if (extraClassPath != null) {
+            // Parse the extra classpath into its ':' and ';' separated
+            // components. Ignore ':' as a separator if it is preceded by
+            // '\'
+            String[] pathElements = extraClassPath.split(";|((?<!\\\\):)");
+            if (pathElements != null) {
+                for (String path : pathElements) {
+                    path = path.replace("\\:", ":");
+                    //XXX
+                    /*
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("WarHandler[" + archive.getURI() +
+                                    "]: Adding " + path +
+                                    " to the classpath");
+                    }
+                    */
+
+                    try {
+                        URL url = new URL(path);
+                        cloader.addRepository(path);
+                    } catch (MalformedURLException mue1) {
+                        System.out.println("mue1 ~~~");
+                        mue1.printStackTrace();
+                        // Not a URL, interpret as file
+                        File file = new File(path);
+                        // START GlassFish 904
+                        if (!file.isAbsolute()) {
+                            // Resolve relative extra class path to the
+                            // context's docroot
+                            file = new File(base.getPath(), path);
+                        }
+                        // END GlassFish 904
+
+                        try {
+                            URL url = file.toURI().toURL();
+                            cloader.addRepository(url.toString());
+                        } catch (MalformedURLException mue2) {
+                            mue2.printStackTrace();
+                            //XXX
+                            /*
+                            String msg = rb.getString(
+                                "webcontainer.classpathError");
+                            Object[] params = { path };
+                            msg = MessageFormat.format(msg, params);
+                            logger.log(Level.SEVERE, msg, mue2);
+                            */
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void configureLoaderProperties(WebappClassLoader cloader,
+            SunWebXmlParser sunWebXmlParser, File base) {
+
+        File libDir = new File(base, "WEB-INF/lib");
+        if (libDir.exists()) {
+            int baseFileLen = base.getPath().length();
+            final boolean ignoreHiddenJarFiles = sunWebXmlParser.isIgnoreHiddenJarFiles();
+
+            for (File file : libDir.listFiles(
+                    new FileFilter() {
+                        public boolean accept(File pathname) {
+                            String fileName = pathname.getName();
+                            return (fileName.endsWith("jar") &&
+                                    (!ignoreHiddenJarFiles ||
+                                    !fileName.startsWith(".")));
+                        }
+                    }))
+            {
+                try {
+                    cloader.addJar(file.getPath().substring(baseFileLen),
+                                   new JarFile(file), file);
+                } catch (Exception e) {
+                    // Catch and ignore any exception in case the JAR file
+                    // is empty.
+                }
+            }
+        }
+    }
+
     private class SunWebXmlParser {
         private XMLStreamReader parser = null;
+
+        //XXX need to compute the default delegate depending on the version of dtd
+        /*
+         * The DOL will *always* return a value: If 'delegate' has not been
+         * configured in sun-web.xml, its default value will be returned,
+         * which is FALSE in the case of sun-web-app_2_2-0.dtd and
+         * sun-web-app_2_3-0.dtd, and TRUE in the case of
+         * sun-web-app_2_4-0.dtd.
+         */
         private boolean delegate = true;
+
         private boolean ignoreHiddenJarFiles = false;
+        private String extraClassPath = null;
 
         SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
             InputStream input = null;
@@ -163,8 +251,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             boolean inClassLoader = false;
             skipRoot("sun-web-app");
 
-            while (!done && (event = parser.next()) != END_DOCUMENT) {
-
+            while (!done && parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
                     String name = parser.getLocalName();
                     if ("class-loader".equals(name)) {
@@ -173,6 +260,19 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             String attrName = parser.getAttributeName(i).getLocalPart();
                             if ("delegate".equals(attrName)) {
                                 delegate = Boolean.valueOf(parser.getAttributeValue(i));
+                            } else if ("extra-class-path".equals(attrName)) {
+                                extraClassPath = parser.getAttributeValue(i);
+                            } else if ("dynamic-reload-interval".equals(attrName)) {
+                                if (parser.getAttributeValue(i) != null) {
+                                    // Log warning if dynamic-reload-interval is specified
+                                    // in sun-web.xml since it is not supported
+                                    // XXX
+                                    /*
+                                    if (logger.isLoggable(Level.WARNING)) {
+                                        logger.log(Level.WARNING, "webcontainer.dynamicReloadInterval");
+                                    }
+                                    */
+                                }
                             }
                         }
                         inClassLoader = true;
@@ -189,8 +289,25 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             }
                         }
 
+                        if (propName == null || value == null) {
+                            //XXX
+                            /*
+                            throw new IllegalArgumentException(
+                                rb.getString("webcontainer.nullWebProperty")):
+                            */
+                        }
+
                         if ("ignoreHiddenJarFiles".equals(propName)) {
                             ignoreHiddenJarFiles = Boolean.valueOf(value);
+                        } else {
+                            //XXX
+                            /*
+                            Object[] params = { propName, value };
+                            if (logger.isLoggable(Level.WARNING)) {
+                                logger.log(Level.WARNING, "webcontainer.invalidProperty",
+                                           params);
+                            }
+                            */
                         }
                     } else {
                         skipSubTree(name);
@@ -233,6 +350,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
         boolean isIgnoreHiddenJarFiles() {
             return ignoreHiddenJarFiles;
+        }
+
+        String getExtraClassPath() {
+            return extraClassPath;
         }
     }
 }

@@ -626,7 +626,7 @@ public class WebappClassLoader
 
         // Add this repository to our underlying class loader
         try {
-            addURL(new URL(repository));
+            addRepository(new URL(repository));
         } catch (MalformedURLException e) {
             IllegalArgumentException iae = new IllegalArgumentException
                 ("Invalid repository: " + repository);
