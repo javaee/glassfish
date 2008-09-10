@@ -28,7 +28,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled="/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=true"/>
         </antcall>
         <antcall target="create-user-common">
             <param name="user" value="${testuser}"/>
