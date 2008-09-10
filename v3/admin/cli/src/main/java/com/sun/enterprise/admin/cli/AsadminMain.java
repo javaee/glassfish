@@ -72,7 +72,8 @@ public class AsadminMain {
         }
         if(exitCode == INVALID_COMMAND_ERROR) {
             try {
-                CLIMain.displayClosestMatch(args[0], main.getRemoteCommands());
+                CLIMain.displayClosestMatch(args[0], main.getRemoteCommands(),
+                                            strings.get("ClosestMatchedLocalAndRemoteCommands"));
             } catch (InvalidCommandException e) {
                 // not a big deal if we cannot help
             }
@@ -80,6 +81,13 @@ public class AsadminMain {
                 strings.get("CommandUnSuccessful", args[0]));
         }
         if (exitCode == CONNECTION_ERROR) {
+            try {
+                CLIMain.displayClosestMatch(args[0], null,
+                                            strings.get("ClosestMatchedLocalCommands"));
+            } catch (InvalidCommandException e) {
+                CLILogger.getInstance().printMessage(strings.get("InvalidRemoteCommand",
+                                                                 args[0]));
+            }
             CLILogger.getInstance().printDetailMessage(
                 strings.get("CommandUnSuccessful", args[0]));
         }

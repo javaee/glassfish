@@ -206,7 +206,7 @@ public class CLIMain
         catch (Exception e)
         {
             if (commandUsageText == null) {
-                displayClosestMatch(helpCommandName, null);
+                displayClosestMatch(helpCommandName, null, null);
                 throw new InvalidCommandException(helpCommandName);
             }
             else
@@ -216,7 +216,9 @@ public class CLIMain
     }
 
 
-    public static void displayClosestMatch(final String commandName, Map<String, String> moreCommands)
+    public static void displayClosestMatch(final String commandName,
+                                           final Map<String, String> moreCommands,
+                                           final String msg)
         throws InvalidCommandException
     {
         try {
@@ -229,12 +231,13 @@ public class CLIMain
                 
             //add all matches to the search String since we want
             //to search all the commands that matches the string
-            final String[] matchedCommands = SearchCommands.getMatchedCommands(".*"+trimmedCommandName+".*",
-                                                                               moreCommands);
+            final String[] matchedCommands = SearchCommands.getMatchedCommands(".*"+trimmedCommandName+".*", moreCommands);
                 //don't want to display more than 50 commands
             if (matchedCommands.length > 0 && matchedCommands.length<MAX_COMMANDS_TO_DISPLAY)
             {
-                System.out.println(getLocalizedString("ClosestMatchedCommands",null));
+                System.out.println(msg==null?
+                                   getLocalizedString("ClosestMatchedCommands",null):
+                                   msg);
                 for (String eachCommand : matchedCommands)
                 {
                     System.out.println("    "+eachCommand);
@@ -246,7 +249,9 @@ public class CLIMain
                 final String nearestString = StringEditDistance.findNearest(commandName, allCommands);
                     //do not want to display the string if the edit distance is too large
                 if (StringEditDistance.editDistance(commandName, nearestString) < 5) {
-                    System.out.println(getLocalizedString("ClosestMatchedCommands",null));
+                    System.out.println(msg==null?
+                                       getLocalizedString("ClosestMatchedCommands",null):
+                                       msg);
                     System.out.println("    "+nearestString);
                 }
                 else

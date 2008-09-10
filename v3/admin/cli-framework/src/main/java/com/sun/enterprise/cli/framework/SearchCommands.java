@@ -111,7 +111,9 @@ public class SearchCommands
     
     private String[] findCommands(final String pattern, Map<String, String> moreCommands)
         throws CommandException {
-        allCommandsMap.putAll(moreCommands);
+        if (moreCommands != null) {
+            allCommandsMap.putAll(moreCommands);
+        }
         return findCommands(pattern);
     }
     
