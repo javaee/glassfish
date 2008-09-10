@@ -11,6 +11,7 @@
                                 text="$resource{i18n.button.Refresh}">
                     <!command
                         setAttribute(key="gcVal" value="#{gcVal}");
+                        setAttribute(key="gcStatsNode" value="#{gcStatsNode}");
                         setAttribute(key="instanceName" value="#{instanceName}")
                         navigate(page="monitor/jvmPage.jsf");
                     />              
@@ -118,6 +119,7 @@
                 "<br/>
                 <sun:table id="gc" lite="#{true}">
                     <!beforeCreate
+                        setPageSessionAttribute(key="gcStatsNode" value="#{gcStatsNode}");
                         if (#{gcStatsNode}) {
                             setAttribute(key="node" value="#{gcStatsNode}");
                         }

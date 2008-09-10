@@ -15,7 +15,7 @@
                         setAttribute(key="hlVal" value="#{hlVal}")
                         setAttribute(key="hlList" value="#{hlList}");
                         setAttribute(key="vsVal" value="#{vsVal}");
-                        setAttribute(key="requestStatsNode" value="#{requestStatsNode}");
+                        setAttribute(key="tpStatsNode" value="#{tpStatsNode}");
                         navigate(page="monitor/httpServicePage.jsf");
                     />              
                     </sun:button>
@@ -55,7 +55,9 @@
                             node='http-service.thread-pool',
                             childNodes=>$attribute{tpList},
                             firstItem=>$attribute{firstItem});
-                        setAttribute(key="initialData" value="http-service.thread-pool.#{firstItem}");
+                        if (#{firstItem}) {
+                            setAttribute(key="initialData" value="http-service.thread-pool.#{firstItem}");
+                        }
                     />
                     <!command
                         setAttribute(key="click" value="$this{component}");
@@ -70,6 +72,7 @@
                 "<br/>
                 <sun:table id="threadpool" title="$resource{i18n_web.monitoring.ThreadPoolStatistics}" lite="#{true}">
                     <!beforeCreate
+                        setPageSessionAttribute(key="tpStatsNode" value="#{tpStatsNode}");
                         if (#{tpStatsNode}) {
                             setAttribute(key="node" value="#{tpStatsNode}");
                         }
