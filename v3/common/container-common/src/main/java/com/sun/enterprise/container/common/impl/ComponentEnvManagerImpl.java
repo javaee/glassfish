@@ -238,7 +238,7 @@ public class ComponentEnvManagerImpl
         String name = JAVA_COMP_STRING + next.getName();
             Object value = null;
             if (next.isEJBContext()) {
-                //value = visitor.visitEJBContext(next);
+                value = new EjbContextProxy(next.getRefType());
             } else {
                 value = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), true);
             }
@@ -375,10 +375,36 @@ public class ComponentEnvManagerImpl
         }
     }
 
+    private class EjbContextProxy
+        implements NamingObjectProxy {
+
+        private volatile EjbNamingReferenceManager ejbRefMgr;
+        private String contextType;
+
+        EjbContextProxy(String contextType) {
+            this.contextType = contextType;
+        }
+
+        public Object create(Context ctx)
+                throws NamingException {
+            Object result = null;
+
+            if (ejbRefMgr==null) {
+                ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
+            }
+
+            if (ejbRefMgr != null) {
+                result = ejbRefMgr.getEJBContextObject(contextType);    
+            }
+
+            return result;
+        }
+
+    }
     private class EjbReferenceProxy
         implements NamingObjectProxy {
-        
-        private EjbNamingReferenceManager ejbRefMgr;
+
+        private volatile EjbNamingReferenceManager ejbRefMgr;
         private EjbReferenceDescriptor ejbRef;
         private boolean isCacheable;
         private transient Object cachedValue;

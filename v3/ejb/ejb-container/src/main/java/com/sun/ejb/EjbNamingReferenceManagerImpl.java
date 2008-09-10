@@ -36,12 +36,18 @@
 
 package com.sun.ejb;
 
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
+import com.sun.ejb.containers.EJBContextImpl;
+import com.sun.ejb.containers.EJBTimerServiceWrapper;
+import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
+import com.sun.enterprise.deployment.EjbReferenceDescriptor;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
-
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author Mahesh Kannan
@@ -51,6 +57,14 @@ import org.jvnet.hk2.annotations.Service;
 public class EjbNamingReferenceManagerImpl
     implements EjbNamingReferenceManager {
 
+    @Inject
+    InvocationManager invMgr;
+
+    @Inject
+    Habitat habitat;
+
+    private volatile EjbContainerUtil ejbContainerUtil;
+
     public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Object jndiObject)
         throws NamingException {
         return EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObject);
@@ -59,4 +73,45 @@ public class EjbNamingReferenceManagerImpl
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {
         return EJBUtils.isEjbRefCacheable(ejbRefDesc);
     }
+
+
+    public Object getEJBContextObject(String contextType) {
+
+        ComponentInvocation currentInv = invMgr.getCurrentInvocation();
+
+        if(currentInv == null) {
+            throw new IllegalStateException("no current invocation");
+        } else if (currentInv.getInvocationType() !=
+                   ComponentInvocation.ComponentInvocationType.EJB_INVOCATION) {
+            throw new IllegalStateException
+                ("Illegal invocation type for EJB Context : "
+                 + currentInv.getInvocationType());
+        }
+
+        EjbInvocation ejbInv = (EjbInvocation) currentInv;
+
+        Object returnObject = ejbInv.context;
+
+        if( contextType.equals("javax.ejb.TimerService") ) {
+            if (ejbContainerUtil == null) {
+                ejbContainerUtil = habitat.getByContract(EjbContainerUtil.class);
+            }
+
+            if (ejbContainerUtil == null ) {
+                throw new IllegalStateException("EJB Timer Service not " +
+                                                "available. And EjbContainerUtil is null");
+            }
+            if (ejbContainerUtil.getEJBTimerService() == null ) {
+                throw new IllegalStateException("EJB Timer Service not " +
+                                                "available");
+            }
+            returnObject = new EJBTimerServiceWrapper
+                (ejbContainerUtil.getEJBTimerService(), (EJBContextImpl) ejbInv.context);
+        }
+
+
+        return returnObject;
+    }
+
+
 }

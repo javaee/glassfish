@@ -49,5 +49,7 @@ public interface EjbNamingReferenceManager {
         throws NamingException;
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc);
+
+    public Object getEJBContextObject(String contextType);
     
 }
