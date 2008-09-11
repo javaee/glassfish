@@ -17,10 +17,6 @@
                         org.apache.catalina.startup, \
                         org.apache.catalina.util, \
                         org.apache.catalina.valves, \
-                        org.apache.commons.digester, \
-                        org.apache.commons.modeler, \
-                        org.apache.commons.modeler.modules, \
-                        org.apache.commons.modeler.util, \
                         org.glassfish.web.valve
 
 # Normally Import-Package is not required, as the default value of *
