@@ -337,9 +337,9 @@
     <antcall target="start-server-felix-windows"/>
     <!-- GF takes longer than usual while starting Felix. Until we fix the
          startup issue, let's introduce a delay.
-    -->
     <echo message="Sleeping for 20 seconds while the server is starting"/>
     <sleep seconds="20"/>
+    -->
 </target>
 
 <target name="start-server-felix-windows" if="isWindows">
