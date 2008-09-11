@@ -477,8 +477,7 @@ public class GrizzlyListenerConfigurator {
             grizzlyEmbeddedHttp.setRestrictedUserAgents(propValue);
             return true;             
         } else if ("rcmSupport".equals(propName)) {
-            grizzlyEmbeddedHttp.setProperty(
-                    propName,ConfigBeansUtilities.toBoolean(propValue));
+            grizzlyEmbeddedHttp.enableRcmSupport(ConfigBeansUtilities.toBoolean(propValue));
             return true;   
         } else if ("cometSupport".equals(propName)) {
             configureComet(grizzlyEmbeddedHttp);
@@ -560,6 +559,7 @@ public class GrizzlyListenerConfigurator {
             }
         }    
     }
+    
 
     /**
      * Configure connection-pool.
