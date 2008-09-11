@@ -114,7 +114,7 @@
 		
 	    <!--  ===================================== Resources ======================  -->
 
-	    <sun:treeNode  id="Resources"
+	    <sun:treeNode  id="resources"
 		text="$resource{i18n.tree.resources}"
 		url="/resourceNode/resources.jsf"
 	        target="main"

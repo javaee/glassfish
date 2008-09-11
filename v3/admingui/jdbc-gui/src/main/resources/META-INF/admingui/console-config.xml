@@ -43,7 +43,7 @@
                 id="jdbcNodes" 
                 type="org.glassfish.admingui:treeNode" 
                 priority="200" 
-                parentId="Resources" 
+                parentId="resources" 
                 content="jdbcTreeNode.jsf" 
         />
         <integration-point 
