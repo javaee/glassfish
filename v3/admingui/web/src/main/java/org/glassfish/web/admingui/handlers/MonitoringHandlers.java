@@ -301,9 +301,9 @@ public class MonitoringHandlers {
                     dataList.add(tn.getName());
                 }
             }
-        }
-        if (firstInList != null) {
-            dataList.add(0, firstInList);
+            if (firstInList != null) {
+                dataList.add(0, firstInList);
+            }
         }
         handlerCtx.setOutputValue("childNodes", dataList);
         if (!dataList.isEmpty()) {
