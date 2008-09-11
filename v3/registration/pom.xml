@@ -52,6 +52,7 @@
     <modules>
         <module>registration-api</module>
         <module>registration-impl</module>
+        <module>glassfish-registration</module>        
     </modules>
     
 </project>
