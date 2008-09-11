@@ -51,7 +51,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.main</artifactId>
-                               <version>1.0.4</version>
+                               <version>1.2.1</version>
                                <outputDirectory>${felix.outdir}/bin</outputDirectory>
                                <destFileName>felix.jar</destFileName>
                              </artifactItem>
@@ -61,14 +61,14 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell</artifactId>
-                               <version>1.0.0</version>
+                               <version>1.0.2</version>
                                <type>jar</type>
                                <outputDirectory>${felix.outdir}/bundle</outputDirectory>
                              </artifactItem>
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.tui</artifactId>
-                               <version>1.0.0</version>
+                               <version>1.0.2</version>
                                <type>jar</type>
                                <outputDirectory>${felix.outdir}/bundle</outputDirectory>
                              </artifactItem>
