@@ -150,11 +150,14 @@ public class ContainerMapper extends StaticResourcesAdapter{
             
             HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
             adapter = map(req, decodedURI, mappingData);
+           
+            /*
             if (adapter == null && !snifferInitialized) {
                 initializeFileURLPattern();
                 adapter = map(req, decodedURI, mappingData);
             }
-             
+            */
+            
             if (logger.isLoggable(Level.FINE)){
                 logger.fine("Request: " + decodedURI.toString() 
                         + " was mapped to Adapter: " + adapter);
