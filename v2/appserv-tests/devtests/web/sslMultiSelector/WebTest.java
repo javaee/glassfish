@@ -39,7 +39,7 @@ public class WebTest{
         }
 
         if (count != EXPECTED_COUNT){
-            stat.addStatus("ssl", stat.FAIL);
+            stat.addStatus("multiSelector-ssl", stat.FAIL);
         }           
 
         stat.printSummary("sslMultiSelector");
