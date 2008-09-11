@@ -65,7 +65,6 @@ import org.jvnet.hk2.config.DomDocument;
  *
  * @author Jennifer
  */
-@Ignore
 public class DeleteJdbcResourceTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);

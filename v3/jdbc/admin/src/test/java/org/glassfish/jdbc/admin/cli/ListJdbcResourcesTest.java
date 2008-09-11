@@ -67,7 +67,6 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author Jennifer
  */
-@Ignore
 public class ListJdbcResourcesTest extends ConfigApiTest {
     private Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
