@@ -20,7 +20,6 @@ public class TestServlet extends HttpServlet {
         digester.addObjectCreate("foo/bar", "mypackage.Bar");
         digester.addSetProperties("foo/bar");
         digester.addSetNext("foo/bar", "addBar", "mypackage.Bar");
-        digester.setUseContextClassLoader(true);
 
         try {
             Foo foo = (Foo) digester.parse(
