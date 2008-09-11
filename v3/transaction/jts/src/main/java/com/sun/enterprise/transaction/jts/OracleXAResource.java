@@ -58,9 +58,9 @@ import com.sun.logging.LogDomains;
 public class OracleXAResource extends XAResourceWrapper
 {
 
-    // Use superclass Sting Manager for Localization
+    // Use superclass for Sting Manager and Logger Localization
     private static final StringManager sm = StringManager.getManager(XAResourceWrapper.class);
-    private static final Logger _logger = LogDomains.getLogger(OracleXAResource.class, LogDomains.JTA_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(XAResourceWrapper.class, LogDomains.JTA_LOGGER);
 
     public XAResourceWrapper getInstance() {
         return new OracleXAResource();
