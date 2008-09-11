@@ -117,6 +117,7 @@ public class HelloJSPTestNG {
 
     }
 
+/*
     @Test(groups={"pulse"}) //test method for server
     public void testServerRunning() throws Exception{
 	    //Your server is up and running!
@@ -147,6 +148,7 @@ public class HelloJSPTestNG {
         Assert.assertEquals(result, true,"Unexpected HTML");
     }
 
+*/
 
     @Test(groups ={ "pulse"} ) // test method
     public void staticHTMLPageTest() throws Exception{
