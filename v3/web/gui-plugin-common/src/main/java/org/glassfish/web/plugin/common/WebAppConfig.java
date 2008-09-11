@@ -36,10 +36,14 @@
 
 package org.glassfish.web.plugin.common;
 
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import java.util.List;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+
 
 /**
  * Corresponds to the web-app-config element used for recording web 
@@ -47,9 +51,14 @@ import org.jvnet.hk2.config.Element;
  * 
  * @author tjquinn
  */
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebAppConfigConfig", singleton=true )
 @Configured
-public interface WebAppConfig extends ConfigBeanProxy {
+public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
 
+    @Attribute(defaultValue="web")
+    public String getType();
+    public void setType(String value);
+    
     /**
      * Returns the env-entry objects, if any.
      * @return

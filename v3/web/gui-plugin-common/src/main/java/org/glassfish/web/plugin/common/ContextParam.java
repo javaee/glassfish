@@ -46,6 +46,7 @@ import org.jvnet.hk2.config.Element;
  * 
  * @author tjquinn
  */
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ContextParamConfig" )
 @Configured
 public interface ContextParam extends ConfigBeanProxy {
     
@@ -66,7 +67,7 @@ public interface ContextParam extends ConfigBeanProxy {
      * Returns the context-param parameter name.
      * @return parameter name
      */
-    @Element
+    @Element(required=true,key=true)
     public String getParamName();
     
     /**

@@ -37,10 +37,8 @@
 package org.glassfish.admin.amx.config;
 
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
@@ -48,10 +46,10 @@ import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.annotation.AMXConfigVoid;
 import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
-import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.MBeanImplBase;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import com.sun.appserv.management.util.misc.FeatureAvailability;
+import com.sun.appserv.management.util.misc.TypeCast;
 import org.glassfish.admin.amx.util.ObjectNames;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXMBeanMetadata;
@@ -61,9 +59,7 @@ import javax.management.*;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import org.glassfish.admin.amx.util.ImplUtil;
@@ -772,6 +768,19 @@ public final class AMXConfigLoader extends MBeanImplBase
         else if ( nameHint == null )
         {
             name = "MISSING_NAME__KEY_MUST_BE_SPECIFIED_IN_INTERFACE";
+        }
+        else if ( helper.nameHintIsElement() )
+        {
+            final List<?> leaf = cb.leafElements(nameHint);
+            if ( leaf != null ) {
+                // verify that it is List<String> -- no other types are supported in this way
+                final List<String> items = TypeCast.checkList( leaf, String.class );
+                if (items.size() != 1 )
+                {
+                    throw new IllegalArgumentException("Can't find sub-element of type " + nameHint + " in " + cb.getProxyType().getName() );
+                }
+                name = items.get(0);
+            }
         }
         else
         {

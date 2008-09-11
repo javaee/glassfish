@@ -115,14 +115,21 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         Object result = null;
         final String xmlName = info.xmlName();
-        //debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
+        debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
         if ( info.isCollection() )
         {
-            final List<?> leafElementsX = mConfigBean.leafElements(xmlName);
-            if ( leafElementsX != null ) {
+            final List<?> leaf = mConfigBean.leafElements(xmlName);
+            if ( leaf != null ) {
                 // verify that it is List<String> -- no other types are supported in this way
-                final List<String> leafElements = TypeCast.checkList( leafElementsX, String.class );
-                result = CollectionUtil.toArray( leafElements, String.class);
+                final List<String> elems = TypeCast.checkList( leaf, String.class );
+                result = CollectionUtil.toArray( elems, String.class);
+            }
+        }
+        else if ( info.isLeaf() )
+        {
+            final List<?> leaf = mConfigBean.leafElements(xmlName);
+            if ( leaf != null ) {
+                result = (String)leaf.get(0);
             }
         }
         else

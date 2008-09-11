@@ -59,340 +59,324 @@ import org.glassfish.api.admin.config.Named;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.AMXGenericConfig;
 
-
 /**
-    Reads the annotations on an @Configured and sorts them out into useful groups
-    for use in mapping to AMX constructs.
+Reads the annotations on an @Configured and sorts them out into useful groups
+for use in mapping to AMX constructs.
  */
-final class ConfiguredHelper
-{
-    private static void debug( final String s ) { System.out.println(s); }
-    
-    private final  Class<? extends ConfigBeanProxy>  mIntf;
-    private final Configured    mConfigured;
+final class ConfiguredHelper {
+
+    private static void debug(final String s) {
+        System.out.println(s);
+    }
+    private final Class<? extends ConfigBeanProxy> mIntf;
+    private final Configured mConfigured;
     private final AMXConfigInfo mAMXConfigInfo;
-    
+    /** Keyed by xml name */
+    private final Map<String, AttributeInfo> mAttributes = new HashMap<String, AttributeInfo>();
+    /** Keyed by xml name  */
+    private final Map<String, ElementInfo> mElements = new HashMap<String, ElementInfo>();
+    /* Maps method name to method */
+    private final Map<String, Method> mDuckTypedMethods = new HashMap<String, Method>();
+    /** the Attribute or element name used for the name */
+    private final NameHint mNameHint;
+
     /** Record {"Foo","foo"} / {"FooBar", "foo-bar"} relationship */
-    private static class Info
-    {
+    private static class Info {
+
         private final String name;
         private final String xmlName;
-        public Info( final String name, final String xmlName)
-        {
-            this.name    = name;
+
+        public Info(final String name, final String xmlName) {
+            this.name = name;
             this.xmlName = xmlName;
         }
-        public String getXMLName() { return xmlName; }
-        public String getName()    { return name; }
+
+        public String getXMLName() {
+            return xmlName;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
-    
-    private static final class AttributeInfo extends Info
-    {
+
+    private static final class AttributeInfo extends Info {
+
         private final Attribute attr;
-        public AttributeInfo( final String getterName, final Attribute a )
-        {
-            super( getterName, a.value().length() != 0 ? a.value() : toXMLName(getterName));
+
+        public AttributeInfo(final String getterName, final Attribute a) {
+            super(getterName, a.value().length() != 0 ? a.value() : toXMLName(getterName));
             attr = a;
         }
-        public Attribute getAttribute() { return attr; }
+
+        public Attribute getAttribute() {
+            return attr;
+        }
     }
-    
-    private static final class ElementInfo extends Info
-    {
+
+    private static final class ElementInfo extends Info {
+
         private final Element elem;
-        public ElementInfo( final String getterName, final Element e )
-        {
-            super( getterName, e.value().length() != 0 ? e.value() : toXMLName(getterName) );
+
+        public ElementInfo(final String getterName, final Element e) {
+            super(getterName, e.value().length() != 0 ? e.value() : toXMLName(getterName));
             elem = e;
         }
-        public Element getElement() { return elem; }
-    }
-    
-    
-    /** Keyed by xml name */
-    private final Map<String,AttributeInfo> mAttributes = new HashMap<String,AttributeInfo>();
-    
-    /** Keyed by xml name  */
-    private final Map<String,ElementInfo>   mElements   = new HashMap<String,ElementInfo>();
-    
-    /* Maps method name to method */
-    private final Map<String,Method>    mDuckTypedMethods  = new HashMap<String,Method>();
-    
-    /** the Attribute or element name used for the name */
-    private final String mNameHint;
-       
-    public ConfiguredHelper( final Class<? extends ConfigBeanProxy> intf )
-    {
-        mIntf = intf;
-        
-        mConfigured = intf.getAnnotation( Configured.class );
-        if ( mConfigured == null )
-        {
-            throw new IllegalArgumentException( "ConfigBeanProxy is not an @Configured" );
+
+        public Element getElement() {
+            return elem;
         }
-        
-        mAMXConfigInfo = intf.getAnnotation( AMXConfigInfo.class );
-        
+    }
+
+    public ConfiguredHelper(final Class<? extends ConfigBeanProxy> intf) {
+        mIntf = intf;
+
+        mConfigured = intf.getAnnotation(Configured.class);
+        if (mConfigured == null) {
+            throw new IllegalArgumentException("ConfigBeanProxy is not an @Configured");
+        }
+
+        mAMXConfigInfo = intf.getAnnotation(AMXConfigInfo.class);
+
         findStuff();
-        
+
         mNameHint = findNameHint();
     }
-    
-    
-    public Class<? extends ConfigBeanProxy> getIntf() { return mIntf; }
-    
+
+    public Class<? extends ConfigBeanProxy> getIntf() {
+        return mIntf;
+    }
+
     /** 
-        Match the name to an XML name, returning null if no match. Not intended for
-        high-performance use; mapping should be maintained elsewhere.
+    Match the name to an XML name, returning null if no match. Not intended for
+    high-performance use; mapping should be maintained elsewhere.
      */
-        public String
-    findXMLName( final String anyName )
-    {
+    public String findXMLName(final String anyName) {
         // lowercase, no dashes
-        final String canonical = anyName.toLowerCase().replace("-","");
-        
-        for( final AttributeInfo info : mAttributes.values() )
-        {
+        final String canonical = anyName.toLowerCase().replace("-", "");
+
+        for (final AttributeInfo info : mAttributes.values()) {
             // have to check regular name and xml name for a match;
             // they could be wildly different consider<br>
             // <code>@Attribute(name="hello-there")  String getFooBar()</code>
-            if ( info.getName().equalsIgnoreCase(canonical) )
-            {
+            if (info.getName().equalsIgnoreCase(canonical)) {
                 return info.getXMLName();
             }
-            
-            final String temp = info.getXMLName().replace( "-", "");
-            if ( canonical.equalsIgnoreCase(temp) )
-            {
-                return info.getXMLName();
-            }
-        }
-        
-        for( final ElementInfo info : mElements.values() )
-        {
-            if ( info.getName().equalsIgnoreCase(canonical) )
-            {
-                return info.getXMLName();
-            }
-            
-            final String temp = info.getXMLName().replace( "-", "");
-            if ( canonical.equalsIgnoreCase(temp) )
-            {
+
+            final String temp = info.getXMLName().replace("-", "");
+            if (canonical.equalsIgnoreCase(temp)) {
                 return info.getXMLName();
             }
         }
-        
+
+        for (final ElementInfo info : mElements.values()) {
+            if (info.getName().equalsIgnoreCase(canonical)) {
+                return info.getXMLName();
+            }
+
+            final String temp = info.getXMLName().replace("-", "");
+            if (canonical.equalsIgnoreCase(temp)) {
+                return info.getXMLName();
+            }
+        }
+
         return null;
     }
 
-
     /**
-        Get the default values, keyed by the XML element name.  The interface might be
-        for this MBean or one of its children.
+    Get the default values, keyed by the XML element name.  The interface might be
+    for this MBean or one of its children.
      */
-        final Map<String,String>
-    getDefaultValues()
-    {
-        final Map<String,String> result = new HashMap<String,String>();
-        
-        for( final AttributeInfo info : mAttributes.values() ) 
-        {
+    final Map<String, String> getDefaultValues() {
+        final Map<String, String> result = new HashMap<String, String>();
+
+        for (final AttributeInfo info : mAttributes.values()) {
             // don't put null values into defaults (see @Attribute annotation)
             final String value = info.getAttribute().defaultValue();
-            final boolean isEmptyDefault = value.equals( "\u0000" );
+            final boolean isEmptyDefault = value.equals("\u0000");
             //cdebug( "Method " + m + " has default value of " + (emptyDefault ? "\\u0000" : value) );
-            if ( ! isEmptyDefault )
-            {
-                result.put( info.getXMLName(), "" + value );
+            if (!isEmptyDefault) {
+                result.put(info.getXMLName(), "" + value);
             }
         }
-        
+
         return result;
     }
 
-    
-    public String getNameHint() { return mNameHint; }
-    
+    public String getNameHint() {
+        return mNameHint.mHint;
+    }
+
+    public boolean nameHintIsElement() {
+        return mNameHint.mIsElement;
+    }
+
     /** return the @AMXConfigInfo if present */
-    public AMXConfigInfo  getAMXConfigInfo()
-    {
+    public AMXConfigInfo getAMXConfigInfo() {
         return mAMXConfigInfo;
     }
-    
+
     /** Get the AMX interface (if available and it can be loaded) */
-    public Class<? extends AMXConfig> getAMXInterface()
-    {
-        Class<? extends AMXConfig>  amxIntf = null;
-        
+    public Class<? extends AMXConfig> getAMXInterface() {
+        Class<? extends AMXConfig> amxIntf = null;
+
         final AMXConfigInfo amxConfigInfo = getAMXConfigInfo();
-        if ( amxConfigInfo != null )
-        {
+        if (amxConfigInfo != null) {
             final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver(amxConfigInfo);
-            
-            try
-            {
+
+            try {
                 amxIntf = resolver.amxInterface();
-            }
-            catch( final Exception e )
-            {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
-        
+
         // if there is no interface available, use AMXGenericConfig
         return amxIntf == null ? AMXGenericConfig.class : amxIntf;
     }
-    
+
     /**
-        Return the implied field names that AMX should use.
-        Attribute capitalization will match the @Configured getter names.  This could differ
-        from that of the AMX interface eg "HTTPListener" vs "HttpListener" vs "httplistener".
-    */
-    public Set<String> getImpliedAMXNames()
-    {
+    Return the implied field names that AMX should use.
+    Attribute capitalization will match the @Configured getter names.  This could differ
+    from that of the AMX interface eg "HTTPListener" vs "HttpListener" vs "httplistener".
+     */
+    public Set<String> getImpliedAMXNames() {
         return getNames();
     }
-    
+
     /**
-        Get all XML names.  Note that due to annotations an XML name for "FooBar" could
-        be "hello-there" instead of the default "foo-bar".
+    Get all XML names.  Note that due to annotations an XML name for "FooBar" could
+    be "hello-there" instead of the default "foo-bar".
      */
-    public Set<String> getXMLNames()
-    {
+    public Set<String> getXMLNames() {
         final Set<String> names = new HashSet<String>(mAttributes.keySet());
-        names.addAll( mElements.keySet() );        
+        names.addAll(mElements.keySet());
         return names;
     }
-    
+
     /**
-        Get all getter names eg "Foo", "Bar", "FooBar" corresponding to XML names
-        "foo", "bar", "foo-bar".
+    Get all getter names eg "Foo", "Bar", "FooBar" corresponding to XML names
+    "foo", "bar", "foo-bar".
      */
-    public Set<String> getNames()
-    {
+    public Set<String> getNames() {
         final Set<String> names = new HashSet<String>();
-        
-        for( final AttributeInfo info : mAttributes.values() )
-        {
-            names.add( info.getName() );
+
+        for (final AttributeInfo info : mAttributes.values()) {
+            names.add(info.getName());
         }
-        
-        for( final ElementInfo info : mElements.values() )
-        {
-            names.add( info.getName() );
+
+        for (final ElementInfo info : mElements.values()) {
+            names.add(info.getName());
         }
-              
+
         return names;
     }
-    
+
     /*
     public Map<String,Attribute>  getAttributes()
     {
-        return mAttributes;
+    return mAttributes;
     }
     
     public Map<String,Element>  getElements()
     {
-        return mElements;
+    return mElements;
     }
-    */
-    
-    public Map<String,Method>  getDuckTypedMethods()
-    {
+     */
+    public Map<String, Method> getDuckTypedMethods() {
         return mDuckTypedMethods;
     }
-  
-    private void findStuff()
-    {
+
+    private void findStuff() {
         final Method[] methods = mIntf.getMethods();
-        
+
         // find @Attribute, @Element and @DuckTyped stuff
-        for( final Method m : methods )
-        {
-            Element   e = null;
+        for (final Method m : methods) {
+            Element e = null;
             DuckTyped dt = null;
-            final Attribute a = m.getAnnotation( Attribute.class );
-            
-            if ( a != null )
-            {
-                if ( ! JMXUtil.isIsOrGetter(m) ) { continue; }
-                
-                final AttributeInfo info = new AttributeInfo( JMXUtil.getAttributeName(m), a );
-                mAttributes.put( info.getXMLName(), info );
-            }
-            else if ( (e = m.getAnnotation(Element.class)) != null )
-            {
-                if ( ! JMXUtil.isIsOrGetter(m) ) { continue; }
-                
-                final ElementInfo info = new ElementInfo( JMXUtil.getAttributeName(m), e );
-                mElements.put(  info.getXMLName(), info );
-            }
-            else if ( (dt = m.getAnnotation(DuckTyped.class)) != null )
-            {
-                mDuckTypedMethods.put( m.getName(), m );
-            }
-            else
-            {
+            final Attribute a = m.getAnnotation(Attribute.class);
+
+            if (a != null) {
+                if (!JMXUtil.isIsOrGetter(m)) {
+                    continue;
+                }
+
+                final AttributeInfo info = new AttributeInfo(JMXUtil.getAttributeName(m), a);
+                mAttributes.put(info.getXMLName(), info);
+            } else if ((e = m.getAnnotation(Element.class)) != null) {
+                if (!JMXUtil.isIsOrGetter(m)) {
+                    continue;
+                }
+
+                final ElementInfo info = new ElementInfo(JMXUtil.getAttributeName(m), e);
+                mElements.put(info.getXMLName(), info);
+            } else if ((dt = m.getAnnotation(DuckTyped.class)) != null) {
+                mDuckTypedMethods.put(m.getName(), m);
+            } else {
                 // ignore
             }
         }
     }
-    
-    private static String toXMLName(final String name )
-    {
+
+    private static String toXMLName(final String name) {
         return name == null ? name : Dom.convertName(name);
     }
-    
-    /**
-        Return the name of the XML attribute which contains the value to be used as its name.
-     */
-    private String findNameHint()
-    {
-        for( final AttributeInfo info : mAttributes.values() )
-        {
-            if ( info.getAttribute().key() )
-            {
-                // name must be the XML name
-                final String hint =  toXMLName(info.getName());
-                //debug( "KEY VALUE in " + mIntf.getName() + " = " + info.getName() + " ==> " + hint );
-                return hint;
-            }
+    private final static String DEFAULT_NAME_HINT = "name";
+
+    private static final class NameHint {
+        public static final NameHint NAME = new NameHint(DEFAULT_NAME_HINT);
+        public static final NameHint NONE = new NameHint(null);
+        private final String mHint;
+        private final boolean mIsElement;
+
+        public NameHint(final String hint, final boolean isElement) {
+            mHint = toXMLName(hint);
+            mIsElement = isElement;
         }
 
-        if ( mAMXConfigInfo != null && mAMXConfigInfo.singleton() )
-        {
+        public NameHint(final String hint) {
+            this(hint, false);
+        }
+    }
+
+    /**
+    Return the name of the XML attribute which contains the value to be used as its name.
+    First element is the name hint, 2nd indicates its type
+     */
+    private NameHint findNameHint() {
+        String[] result = new String[2];
+        result[0] = null;
+        result[1] = null;
+
+        if (mAMXConfigInfo != null && mAMXConfigInfo.singleton()) {
             // singletons have no name (AMX.NO_NAME)
             //debug( "SINGLETON: " + mIntf.getName() );
-            return null;
-        }
-        
-        final String NAME = "name";
-        
-        // should not be need but see bugs 6039, 6040
-        if ( Named.class.isAssignableFrom(mIntf) )
-        {
-            return NAME;
+            return NameHint.NONE;
         }
 
-        /*
-        Unclear if elements can be used as a name; doesn't make sense
-        for( final ElementInfo info : mElements.values() )
-        {
-            if ( info.getElement().key() )
-            {
-                debug( " WARNING [ConfiguredHelper AMX]: name is an element, will it work?" );
-                return info.getName();
+        for (final AttributeInfo info : mAttributes.values()) {
+            if (info.getAttribute().key()) {
+                //debug( "KEY VALUE in " + mIntf.getName() + " = " + info.getName() + " ==> " + hint );
+                return new NameHint(info.getName());
             }
         }
-        */
-        
-        //debug( "CANT FIND KEY VALUE in " + mIntf.getName() + ", USING 'name'" );
-        if ( mAttributes.get(NAME) == null && mElements.get(NAME) == null )
-        {
-            throw new IllegalArgumentException( "No key value found and no Attribute or Element named 'name'" );
+
+        // should not be need but see bugs 6039, 6040
+        if (Named.class.isAssignableFrom(mIntf)) {
+            return NameHint.NAME;
         }
-        
-        return NAME;
+
+        for (final ElementInfo info : mElements.values()) {
+            if (info.getElement().key()) {
+                return new NameHint(info.getName(), true);
+            }
+        }
+
+        if (mAttributes.get(DEFAULT_NAME_HINT) == null && mElements.get(DEFAULT_NAME_HINT) == null) {
+            throw new IllegalArgumentException("No key value found and no Attribute or Element named 'name' for " + mIntf.getName());
+        }
+
+        return NameHint.NAME;
     }
 }
 

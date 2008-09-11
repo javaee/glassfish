@@ -33,35 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.appserv.management.config;
 
-package org.glassfish.web.plugin.common;
-
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-/**
- * Represents the env-entry web application configuration customization.
- * 
- * @author tjquinn
- */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EnvEntryConfig" )
-@Configured
-public interface EnvEntry extends ConfigBeanProxy {
-
-    @Element
+public interface ContextParamConfig extends NamedConfigElement
+{
+    /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
+	public static final String	J2EE_TYPE = "X-ContextParamConfig";
+    
     public String getDescription();
     public void setDescription(String value);
     
-    @Element(required=true,key=true)
-    public String getEnvEntryName();
-    public void setEnvEntryName(String value);
+    /** same as getName */
+    public String getParamName();
     
-    @Element(required=true)
-    public String getEnvEntryType();
-    public void setEnvEntryType(String value);
-    
-    @Element(required=true)
-    public String getEnvEntryValue();
-    public void setEnvEntryValue(String value);
+    public String getParamValue();
+    public void setParamValue(String value);
 }
