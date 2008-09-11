@@ -47,11 +47,11 @@ import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
-
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
-
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 
 // jdk imports
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
@@ -63,6 +63,7 @@ import java.util.Set;
  */
 public class ListDomainsCommand extends BaseLifeCycleCommand
 {
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListDomainsCommand.class);
 
     /** Creates new CreateDomainCommand */
     public ListDomainsCommand()
@@ -104,7 +105,9 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
                 for (int i = 0; i < domainsList.length; i++) {
                     String dn = domainsList[i];
                     String status = getStatus(dn);
-                    CLILogger.getInstance().printMessage("Name: " + dn + " " + status);
+                    String name = localStrings.getLocalString("list.domains.Name",
+                                               "Name:");
+                    CLILogger.getInstance().printMessage(name + " " + dn + " " + status);
                 }
             } else {
                 CLILogger.getInstance().printDetailMessage(
@@ -129,14 +132,17 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
             launcher.setup(); //admin ports are not available otherwise
             Set<Integer> adminPorts = launcher.getInfo().getAdminPorts();
             boolean status = isServerAlive((adminPorts.toArray(new Integer[0])[0]));
-            if (status) 
-                return "Status: Running";
-            return
-                    "Status: Not Running";
+            if (status)
+                return localStrings.getLocalString("list.domains.StatusRunning",
+                                                   "Status: Running");
+            return localStrings.getLocalString("list.domains.StatusNotRunning",
+                                               "Status: Not Running");
         } catch(GFLauncherException gf) {
-            return "Status: Unknown";
+            return localStrings.getLocalString("list.domains.StatusUnknown",
+                                               "Status: Unknown");            
         } catch(MiniXmlParserException me) {
-            return "Status: Unknown";
+            return localStrings.getLocalString("list.domainsStatusUnknown",
+                                               "Status: Unknown");
         }
     }
     private boolean isServerAlive(int port) {
