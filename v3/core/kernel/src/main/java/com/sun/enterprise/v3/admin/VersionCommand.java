@@ -31,6 +31,7 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.appserv.server.util.Version;
 import org.glassfish.api.Param;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Return the version and build number
@@ -43,11 +44,14 @@ public class VersionCommand implements AdminCommand {
     
     @Param(optional=true, defaultValue="false")
     Boolean verbose;
+    
+    @Inject
+    Version version;
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-        report.setMessage(Version.getFullVersion());
+        report.setMessage(version.getFullVersion());
     }
     /* Implementation note: Currently (Aug 2008) the --verbose
      * option does not do anything special. Please see:
