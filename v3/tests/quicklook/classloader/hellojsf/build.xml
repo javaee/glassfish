@@ -36,7 +36,7 @@
 -->
 <project name="jsftemplating" default="default" basedir=".">
     
-    <property file="${ws.root}build.properties"/>
+    <property file="${ws.root}/build.properties"/>
     <property file="build.properties"/>
     <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
     
