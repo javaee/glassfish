@@ -54,7 +54,7 @@
                 helpText="$resource{i18n.resourcesPageTitleHelp}"
                 />
                 <sun:propertySheet>
-                    <sun:propertySheetSection>
+                    <sun:propertySheetSection id="propSheetSection">
                          <!afterCreate
                             getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                         />
