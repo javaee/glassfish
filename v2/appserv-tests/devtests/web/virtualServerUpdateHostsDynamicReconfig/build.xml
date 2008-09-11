@@ -109,7 +109,7 @@
         </exec>
     </target>
 
-    <target name="restore" depends="setup">
+    <target name="restore" depends="init-common">
         <antcall target="delete-virtual-server"/>
     </target>
 

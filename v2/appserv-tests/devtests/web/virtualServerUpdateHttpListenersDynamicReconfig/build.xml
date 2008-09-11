@@ -145,7 +145,7 @@
         </exec>
     </target>
 
-    <target name="restore" depends="setup">
+    <target name="restore" depends="init-common">
         <antcall target="delete-http-listener"/>
         <antcall target="delete-virtual-server-vs1"/>
         <antcall target="delete-virtual-server-vs2"/>
