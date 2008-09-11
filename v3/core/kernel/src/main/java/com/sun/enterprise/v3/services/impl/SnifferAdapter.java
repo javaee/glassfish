@@ -145,4 +145,10 @@ public class SnifferAdapter implements Adapter {
             adapter.afterService(request, response);
         }
     }
+    
+    
+    public void fireAdapterEvent(String s, Object o){
+    }
+        
+    
 }
