@@ -43,10 +43,10 @@
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gfv3-scripting-distribution</artifactId>
-    <name>Glassfish v3 Scripting Distribution(</name>
+    <artifactId>web</artifactId>
+    <name>Glassfish v3 Web Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Scripting Distribution</description>
+    <description>This pom describes how to assemble the GlassFish v3 Web Distribution</description>
 
     <developers>
         <developer>
@@ -122,35 +122,59 @@
                 <configuration>
                     <tasks>
                         <ant dir="." antfile="build.xml" target="create.distribution"/>
-                        <ant dir="." antfile="../distributions.xml" target="create-scripting-distributions"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-distributions"/>
                     </tasks>
                 </configuration>
              </plugin>
             </plugins>
             </build>
         </profile>
-   </profiles>
-   -->
+   </profiles -->
 
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
-        <!-- nucleus distribution -->
+        <!-- web-nb distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>gfv3-nucleus-distribution</artifactId>
+            <artifactId>web-nb</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
-        <!-- scripting package -->
+        <!-- admin ui package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-scripting</artifactId>
+            <artifactId>glassfish-gui</artifactId>
             <version>${glassfish.version}</version>
             <type>zip</type>
         </dependency>     
+
+        <!-- admin web container ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web-gui</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- admin jdbc ui package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-gui</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <!-- javadb package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>javadb</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+
     </dependencies>
 </project>
 

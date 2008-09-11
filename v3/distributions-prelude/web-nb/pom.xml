@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
@@ -43,10 +43,10 @@
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gfv3-nucleus-distribution</artifactId>
-    <name>Glassfish v3 Nucleus Distribution(</name>
+    <artifactId>web-nb</artifactId>
+    <name>Glassfish v3 Web-NB Distribution(</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish v3 Nucleus Distribution</description>
+    <description>This pom describes how to assemble the GlassFish v3 Web-NB Distribution</description>
 
     <developers>
         <developer>
@@ -122,7 +122,7 @@
                 <configuration>
                     <tasks>
                         <ant dir="." antfile="build.xml" target="create.distribution"/>
-                        <ant dir="." antfile="../distributions.xml" target="create-nucleus-distributions"/>
+                        <ant dir="." antfile="../distributions.xml" target="create-web-nb-distributions"/>
                     </tasks>
                 </configuration>
              </plugin>
@@ -130,97 +130,90 @@
             </build>
         </profile>
    </profiles>
-    -->
+   -->
 
     <dependencies>
         <!-- Artifacts to be included in the distribution -->
 
-        <!-- nucleus packages -->
+        <!-- scripting distribution -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus-base</artifactId>
+            <artifactId>scripting</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>felix</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>pkg-java</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-hk2</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-grizzly</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-           <groupId>com.sun.pkg.client</groupId>
-           <artifactId>ucbootstrap</artifactId>
-           <version>0.0.0.13</version>
-           <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-api</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-nucleus</artifactId>
-            <version>${glassfish.version}</version>
-            <type>zip</type>
-        </dependency>
 
-        <!-- dependencies required to create default domain -->
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-optional</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-common</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>server-mgmt</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-registration</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-util</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-management</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>realms</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-amx</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>backup</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jca</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-api</artifactId>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jpa</artifactId>
             <version>${glassfish.version}</version>
-            <type>jar</type>
+            <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jta</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jsf</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web-management</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-web</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc-management</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency>     
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jdbc</artifactId>
+            <version>${glassfish.version}</version>
+            <type>zip</type>
+        </dependency> 
     </dependencies>
 </project>

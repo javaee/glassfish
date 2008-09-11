@@ -75,10 +75,10 @@
     <name>Glassfish distributions</name>
 
     <modules>
-	<module>gfv3-nucleus</module>
-	<module>gfv3-scripting</module>
-	<module>gfv3-web-nb</module>
-	<module>gfv3-prelude</module>
+	<module>nucleus</module>
+	<module>scripting</module>
+	<module>web-nb</module>
+	<module>web</module>
 	<module>glassfish</module>
     </modules>
 </project>

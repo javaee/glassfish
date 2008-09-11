@@ -20,6 +20,15 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
+    <target name="init">
+        <condition property="windows">
+            <os family="windows" />
+        </condition>
+        <condition property="unix">
+            <os family="unix" />
+        </condition>
+    </target>
+
     <target name="create.distribution">
         <echo message="Creating distribution: nucleus"/>
         <unzip dest="target/stage">
@@ -71,10 +80,8 @@ own identifying information: Portions Copyright [yyyy]
         </ant>
 
         <!-- create domain -->
-        <ant antfile="../distributions.xml" target="create-domain">
-            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
-            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
-        </ant>
+        <antcall target="create-domain"/>
+
 
         <!-- delete modules required to create default domain; these are not bundled as part of nucleus --> 
         <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
@@ -88,5 +95,21 @@ own identifying information: Portions Copyright [yyyy]
 
         <!-- Deploy distribution artifact to maven repository" -->
         <attachArtifact file="target/nucleus.zip"/>
+   </target>
+
+   <target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>
+
+   <target name="create-domain-on-windows" depends="init" if="windows">
+       <ant antfile="../distributions.xml" target="create-domain">
+           <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin.bat"/>
+       </ant>
+   </target>
+
+   <target name="create-domain-on-unix" depends="init" if="unix">
+       <ant antfile="../distributions.xml" target="create-domain">
+           <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
+       </ant>
    </target>
 </project>

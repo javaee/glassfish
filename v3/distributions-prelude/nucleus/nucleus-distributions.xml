@@ -20,7 +20,17 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="Nucleus Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="image.name" value="gfv3-nucleus"/>
+<property name="image.name" value="nucleus"/>
+
+<target name="init">
+    <condition property="windows">
+        <os family="windows" />
+    </condition>
+    <condition property="unix">
+        <os family="unix" />
+    </condition>
+</target>
+
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/glassfishv3-prelude"/>
@@ -57,22 +67,33 @@ own identifying information: Portions Copyright [yyyy]
     </ant>
 
     <!-- create domain -->
-    <echo message="------------------------"/>
     <echo message="image.dir: ${image.dir}"/>
     <echo message="user.dir: ${user.dir}"/>
     <echo message="basedir: ${basedir}"/>
-    <ant antfile="../distributions.xml" target="create-domain">
-        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin"/>
-        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin/asadmin"/>
-    </ant>
+    <antcall target="create-domain"/>
 
     <!-- delete modules required to create default domain; these are not bundled as part of nucleus -->
     <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
         <property name="modules.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/modules"/>
     </ant>
 
-
     <!-- delete dir="target" includes="*.zip"/ -->
+</target>
+
+<target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>
+
+<target name="create-domain-on-windows" depends="init" if="windows">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin/asadmin.bat"/>
+    </ant>
+</target>
+
+<target name="create-domain-on-unix" depends="init" if="unix">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/glassfishv3-prelude/glassfish/bin/asadmin"/>
+    </ant>
 </target>
 
 <target name="create-common-image" description="Creating IPS Image">
