@@ -240,8 +240,20 @@ public final class StartDatabaseCommand extends DatabaseCommand
                                             getLocalizedString("database.info.msg",
                                             new Object[]{dbHost, dbPort}));
                     //try getting sysinfo
-	                CLILogger.getInstance().printDebugMessage("Database SysInfo");
-		            new CLIProcessExecutor().execute("sysinfoCmd", sysinfoCmd(), true);
+		        CLIProcessExecutor cpePing = new CLIProcessExecutor();
+                        cpePing.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
+                        int counter = 0;
+                        while (cpePing.exitValue() != 0 && counter < 5) {
+                            cpePing.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
+                            Thread.sleep(500);
+                            counter ++;
+                        }
+                        CLILogger.getInstance().printDebugMessage("Database SysInfo");
+                        CLIProcessExecutor cpeSysInfo = new CLIProcessExecutor();
+                        cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);
+                        if (cpeSysInfo.exitValue() != 0) {
+                            CLILogger.getInstance().printMessage(getLocalizedString("CouldNotGetSysInfo"));
+                        }
                 }
                 catch (Exception e) {
                     throw new CommandException(getLocalizedString("CommandUnSuccessful",
