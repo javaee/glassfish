@@ -200,15 +200,8 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     public void runCommand()
             throws CommandException, CommandValidationException {
         validateOptions();
-        //verify for no-spaces in domaindir option on non-windows platform
-        String domainDirValue = getOption(DOMAINDIR_OPTION);
-        getOptions();
-        if ((domainDirValue != null) && !isWindows() && isSpaceInPath(domainDirValue)) {
-            throw new CommandException(getLocalizedString("SpaceNotAllowedInPath",
-                    new Object[]{DOMAINDIR_OPTION}));
-        }
-        //domain validation upfront (i.e. before we prompt)
 
+        //domain validation upfront (i.e. before we prompt)
         try {
             domainName = (String) operands.firstElement();
             DomainsManager manager = new PEDomainsManager();
