@@ -79,7 +79,8 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
         ctx.setManager(mgr);
 
         // START CR 6275709
-        if (sessionIdGeneratorClassname != null) {
+        if (sessionIdGeneratorClassname != null &&
+                sessionIdGeneratorClassname.length() > 0) {
             try {
                 UuidGenerator generator = (UuidGenerator)
                     serverConfigLookup.loadClass(
