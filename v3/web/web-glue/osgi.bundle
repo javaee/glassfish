@@ -26,4 +26,8 @@
                         org.glassfish.web, \
                         org.glassfish.web.loader.util
 
+Import-Package: \
+                        com.sun.logging.enterprise.system.container.web, \
+                        *
+
 Bundle-Activator: org.glassfish.web.DirContextURLStreamHandlerService

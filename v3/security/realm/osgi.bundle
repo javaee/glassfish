@@ -8,4 +8,5 @@
                         com.sun.enterprise.security.auth.realm.ldap, \
                         com.sun.enterprise.security.auth.realm.solaris, \
                         com.sun.logging.enterprise.system.core.security, \
-                        com.sun.enterprise.security.util
+                        com.sun.enterprise.security.util, \
+                        com.sun.logging.enterprise.system.core.security 

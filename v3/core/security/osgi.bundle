@@ -12,3 +12,7 @@
                         com.sun.enterprise.security.web.integration, \
                         com.sun.enterprise.security.provider, \
                         com.sun.enterprise.security.jacc.provider
+
+Import-Package: \
+                        com.sun.logging.enterprise.system.core.security, \
+                        *
