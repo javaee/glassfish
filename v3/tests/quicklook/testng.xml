@@ -41,6 +41,22 @@
   <parameter name="admin.password" value=""/>
   <parameter name="admin.console.url" value="http://localhost:4848/"/>
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
+  
+<!-- AMX -->
+  <parameter name="amx.debug" value="true"/>
+<!-- AMX see EffortLevel.java:  BASIC, EXTENSIVE -->
+  <parameter name="amx.effortLevel" value="EXTENSIVE"/>
+<!-- AMX: port of the JMX connector to be used, jmxmp as of Sept 11, 2008
+ this will become port 8686 for the RMI connector when it is working -->
+  <parameter name="amx.port" value="8888"/>
+
+<!-- AMX -->
+  <test name="amx_tests">
+    <classes>
+      <class name="amxtest.BasicAMXTests"/>
+    </classes>
+  </test>
+  
   <!--
   <test name="adminconsole_tests">
 	<classes>
@@ -115,5 +131,6 @@
       <class name="test.admin.WebtierTests"/>
     </classes>
   </test>
+ 
 </suite>
 
