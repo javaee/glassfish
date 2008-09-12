@@ -38,44 +38,50 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.http.LinkedListPipeline;
+import java.util.concurrent.Callable;
+import com.sun.grizzly.Pipeline;
 import com.sun.grizzly.util.WorkerThreadImpl;
 import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 
 /**
- * Grizzly thread pool implementation that emits probe events.
+ * Grizzly worker thread implementation that emits probe events when taken 
+ * from, and returned to, its thread pool.
  *
  * @author jluehe
  */
-public class GrizzlyProbePipeline extends LinkedListPipeline {
-        
-    // The ThreadPoolProbeProvider to which to emit any probe events
-    private ThreadPoolProbeProvider threadPoolProbeProvider =
-        GrizzlyService.NO_OP_THREADPOOL_PROBE_PROVIDER;
+public class GrizzlyProbeWorkerThread extends WorkerThreadImpl {
+
+    private ThreadPoolProbeProvider threadPoolProbeProvider;
+
+    private String threadPoolName;
 
 
-    public void setThreadPoolProbeProvider(
+    /**
+     * Constructor
+     */
+    public GrizzlyProbeWorkerThread(
+            Pipeline<Callable> pipeline,
+            String name, 
+            int initialByteBufferSize,
             ThreadPoolProbeProvider threadPoolProbeProvider) {
+        super(pipeline, name, initialByteBufferSize);
         this.threadPoolProbeProvider = threadPoolProbeProvider;
+        this.threadPoolName = pipeline.getName();
     }
 
 
     @Override
-    protected void increaseWorkerThread(int increment, boolean startThread) {
-        super.increaseWorkerThread(increment, startThread);
-        threadPoolProbeProvider.newThreadsAllocatedEvent(getName(),
-                                                         increment,
-                                                         startThread);
+    protected void processTask(Callable t) throws Exception {
+        threadPoolProbeProvider.threadDispatchedFromPoolEvent(threadPoolName,
+                                                              getName());
+        super.processTask(t);
     }
 
 
     @Override
-    protected WorkerThreadImpl createWorkerThread(
-                String name,
-                int initialByteBufferSize) {
-
-        return new GrizzlyProbeWorkerThread(this, name, initialByteBufferSize,
-                                            threadPoolProbeProvider);
-    }
-
+    protected void reset() {
+        super.reset();
+        threadPoolProbeProvider.threadReturnedToPoolEvent(threadPoolName,
+                                                          getName());
+    } 
 }
