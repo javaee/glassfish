@@ -44,10 +44,11 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all" depends="setup,build,deploy,runtest,undeploy,unsetup,clean"/>
+    <target name="all" depends="build,deploy,runtest,undeploy"/>
    
     <target name="build">
          <property name="war.file.ext" value="${war.file}.war"/>
+        <antcall target="setup"/>
         <antcall target="build-impl"/>
         <antcall target="compile-tests"/>
     </target>
@@ -69,6 +70,8 @@
     
     <target name="undeploy">
         <antcall target="undeploy-${deploy.platform}-impl"/>
+        <antcall target="unsetup"/>
+        <antcall target="clean"/>
     </target>
     
     
