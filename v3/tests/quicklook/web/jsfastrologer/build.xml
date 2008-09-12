@@ -45,7 +45,8 @@
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
     <description>Builds, tests, and runs the project Hello JSP Application</description>
-    <!-- <import file="nbproject/build-impl.xml"/>-->
+
+    <target name="all" depends="build,deploy,runtest,undeploy" />    
     
     <target name="build">
          <property name="war.file.ext" value="${war.file}.war"/>
@@ -69,10 +70,5 @@
     <target name="undeploy">
         <antcall target="undeploy-${deploy.platform}-impl"/>
     </target>
-
-
-
-
-
     
 </project>
