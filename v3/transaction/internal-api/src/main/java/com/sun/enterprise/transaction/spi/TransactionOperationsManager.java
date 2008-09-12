@@ -54,5 +54,5 @@ public interface TransactionOperationsManager {
     /**
      * Called by the UserTransaction when transaction is started.
      */
-    void doAfterBegin();
+    void doAfterUtxBegin();
 }

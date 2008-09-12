@@ -164,7 +164,7 @@ public class UserTransactionImpl implements UserTransaction, Serializable
             if (inv != null) {
                 if ( inv.getInvocationType() == 
                         ComponentInvocation.ComponentInvocationType.EJB_INVOCATION )
-                    ((TransactionOperationsManager)inv).doAfterBegin();
+                    ((TransactionOperationsManager)inv).doAfterUtxBegin();
 
                 inv.setTransaction(transactionManager.getTransaction());
                 transactionManager.enlistComponentResources();
