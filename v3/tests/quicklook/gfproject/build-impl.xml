@@ -75,6 +75,7 @@
         <pathelement location="${class.output}"/>
         <pathelement location="${test.class.output}"/>
         <pathelement path="${plugin_classpath}"/>
+	<pathelement path="${amx-api.jarpath}"/>
     </path>
     
     <!-- TestNG class fileset -->
@@ -103,6 +104,7 @@
                  destdir="${test.class.output}">
 		 <classpath>
 		   <pathelement path="${plugin_classpath}"/>
+		   <pathelement path="${amx-api.jarpath}"/>
       		 </classpath>
         </javac>
     </target>
