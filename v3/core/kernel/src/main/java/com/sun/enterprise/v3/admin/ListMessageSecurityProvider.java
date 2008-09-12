@@ -35,6 +35,17 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -46,46 +57,41 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-import java.util.Iterator;
-import java.util.List;
-
 /**
- * Delete Message Security Provider Command
+ * List Message Security Providers Command
  * 
- * Usage: delete-message-security-provider --layer message_layer [--terse=false] 
- *        [--echo=false] [--interactive=true] [--host localhost] [--port 4848|4849] 
+ * Usage: list-message-security-providers [--terse=false] [--echo=false] 
+ *        [--interactive=true] [--host localhost] [--port 4848|4849] 
  *        [--secure | -s] [--user admin_user] [--passwordfile file_name] 
- *        [--target target(Defaultserver)] provider_name
+ *        [--layer message_layer] [target(Default server)] 
  *
  * @author Nandini Ektare
  */
-@Service(name="delete-message-security-provider")
+
+@Service(name="list-message-security-providers")
 @Scoped(PerLookup.class)
-@I18n("delete.message.security.provider")
-public class DeleteMessageSecurityProvider implements AdminCommand {
+@I18n("list.message.security.provider")
+public class ListMessageSecurityProvider implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(DeleteMessageSecurityProvider.class);
+        new LocalStringManagerImpl(ListMessageSecurityProvider.class);    
 
-    @Param(name="providername", primary=true)
-    String providerId;
- 
+    @Param(optional=true)
+    String target;
+
     // auth-layer can only be SOAP | HttpServlet
-    @Param(name="layer")
+    @Param(name="layer", optional=true)
     String authLayer;
     
     @Inject
-    SecurityService securityService;   
+    Configs configs;
 
-    ProviderConfig thePC = null;
-    
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -94,54 +100,33 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         
-        ActionReport report = context.getActionReport();        
-        List<MessageSecurityConfig> mscs = securityService.getMessageSecurityConfig();        
-        MessageSecurityConfig msgSecCfg = null;
-        for (MessageSecurityConfig  msc : mscs) {
-            if (msc.getAuthLayer().equals(authLayer)) {
-                msgSecCfg = msc;
-            }
-        }
-        
-        if (msgSecCfg == null) {           
-            report.setMessage(localStrings.getLocalString(
-                "delete.message.security.provider.confignotfound", 
-                "A Message security config does not exist for the layer {0}", 
-                authLayer));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;            
-        }
-        
-        List<ProviderConfig> pcs = msgSecCfg.getProviderConfig();
-        for (ProviderConfig pc : pcs) {
-            if (pc.getProviderId().equals(providerId)) { 
-                thePC = pc;
-                try {
-                    ConfigSupport.apply(
-                        new SingleConfigCode<MessageSecurityConfig>() {
-                        
-                        public Object run(MessageSecurityConfig param) 
-                        throws PropertyVetoException, TransactionFailure {
+        final ActionReport report = context.getActionReport();
 
-                            param.getProviderConfig().remove(thePC);
-                            return null;
-                        }
-                    }, msgSecCfg);
-                } catch(TransactionFailure e) {
-                    report.setMessage(localStrings.getLocalString(
-                        "delete.message.security.provider.fail", 
-                        "Deletion of message security provider named {0} failed", 
-                        providerId));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setFailureCause(e);
-                    return;
+        List <Config> configList = configs.getConfig();
+        Config config = configList.get(0);
+        SecurityService secService = config.getSecurityService();
+
+        report.getTopMessagePart().setMessage(
+            localStrings.getLocalString(
+                "list.message.security.provider.success", 
+                "list-message-security-providers successful"));
+        report.getTopMessagePart().setChildrenType("");
+        
+        for (MessageSecurityConfig msc : secService.getMessageSecurityConfig()) {
+            if (authLayer == null) {
+                for (ProviderConfig pc : msc.getProviderConfig()) {
+                    ActionReport.MessagePart part = 
+                        report.getTopMessagePart().addChild();
+                    part.setMessage(pc.getProviderId());                
                 }
-                report.setMessage(localStrings.getLocalString(
-                    "delete.message.security.provider.success", 
-                    "Deletion of message security provider {0} completed " +
-                    "successfully", providerId));
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                return;                
+            } else {
+                if (msc.getAuthLayer().equals(authLayer)) {
+                    for (ProviderConfig pc : msc.getProviderConfig()) {
+                        ActionReport.MessagePart part = 
+                            report.getTopMessagePart().addChild();
+                        part.setMessage(pc.getProviderId());                                    
+                    }
+                }
             }
         }
     }
