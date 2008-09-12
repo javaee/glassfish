@@ -98,6 +98,11 @@
        <class name="test.security.hellojsp.HelloSecurityTestNG" />
     </classes>
   </test>
+  <test name="security_hello_basicauth">
+    <classes>
+       <class name="test.security.basicauth.BasicAuthTestNG" />
+    </classes>
+  </test>
    <!--<test name="ejb30_session_hello">
     <classes>
        <class name="ejb30.session.hello.test.TestClient" />
