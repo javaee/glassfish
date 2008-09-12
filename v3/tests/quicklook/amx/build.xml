@@ -35,7 +35,7 @@
  holder.
 -->
 
-<project name="admin" default="default" basedir=".">
+<project name="amx" default="default" basedir=".">
     <property file="${ws.root}/build.properties"/>
     <property file="build.properties"/>
     <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>

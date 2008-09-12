@@ -72,7 +72,7 @@ public class AMXTestBase {
     }
     
     // might need these later: "admin.user", "admin.password"
-    @BeforeClass
+    @BeforeClass(description="get setup and connect to the MBeanServer")
     @Parameters({"amx.debug", "amx.port", "amx.effortLevel"})
     void setUpEnvironment(
     	final boolean debug,

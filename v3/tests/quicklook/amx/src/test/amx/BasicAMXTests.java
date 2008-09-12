@@ -48,12 +48,13 @@ import java.util.Map;
 	Basic AMX tests that verify connectivity and ability to
 	traverse the AMX hierarchy and fetch all attributes.
  */
+@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=3)
 public final class BasicAMXTests extends AMXTestBase {
 	public BasicAMXTests()
 	{
 	}
 	
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(timeOut=5000)
     public void bootAMX() throws Exception
     {
     	final DomainRoot domainRoot = getDomainRoot();
@@ -62,9 +63,10 @@ public final class BasicAMXTests extends AMXTestBase {
     	domainRoot.getAppserverDomainName();
     }
     
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(dependsOnMethods="bootAMX")
     public void iterateAllSanityCheck()
     {
+    debug("iterateAllSanityCheck BEGIN" );
     	final TimingDelta timing = new TimingDelta();
     	final TimingDelta overall = new TimingDelta();
     	
@@ -105,6 +107,7 @@ public final class BasicAMXTests extends AMXTestBase {
     		//debug( "BasicAMXTests: millis to get verify attributes: " + timing.elapsedMillis() );
     	}
     	debug( "BasicAMXTests.iterateAllSanityCheck() millis: " + overall.elapsedMillis() );
+    debug("iterateAllSanityCheck END" );
     }
     
     /*
@@ -114,7 +117,7 @@ public final class BasicAMXTests extends AMXTestBase {
 	}
     */
     
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(dependsOnMethods="bootAMX")
     public void iterateParentChild()
     {
     	final Set<AMX> all = getAllAMX();
@@ -138,14 +141,16 @@ public final class BasicAMXTests extends AMXTestBase {
     
     
     
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(dependsOnMethods="bootAMX")
     public void iterateContainer()
     {
+    debug("iterateContainer BEGIN" );
     	final Set<Container> all = getAll(Container.class);
     	for( final Container amx : all )
     	{
     		_checkContainer( amx );
     	}
+    debug("iterateContainer END" );
     }
     private void _checkContainer( final Container c )
     {
@@ -173,14 +178,16 @@ public final class BasicAMXTests extends AMXTestBase {
     
     
     
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(dependsOnMethods="bootAMX")
     public void iterateDefaultValues()
     {
+    debug("iterateDefaultValues BEGIN" );
     	final Set<AMXConfig> all = getAll(AMXConfig.class);
     	for( final AMXConfig amx : all )
     	{
     		_checkDefaultValues( amx );
     	}
+    debug("iterateDefaultValues END" );
     }
     
     private void _checkDefaultValues( final AMXConfig amxConfig )
@@ -217,14 +224,16 @@ public final class BasicAMXTests extends AMXTestBase {
     
     
     
-    @Test(groups={"pulse"})	// what does "pulse" mean?
+    @Test(dependsOnMethods="bootAMX")
     public void iterateAttributeResolver()
     {
+    debug("iterateAttributeResolver BEGIN" );
     	final Set<AMXConfig> all = getAll(AMXConfig.class);
     	for( final AMXConfig amx : all )
     	{
     		_checkAttributeResolver( amx );
     	}
+    debug("iterateAttributeResolver END" );
     }
     private void _checkAttributeResolver( final AMXConfig amxConfig )
     {
