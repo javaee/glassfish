@@ -265,8 +265,8 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             pwdFile = File.createTempFile("asadminTmp", null);                        
             pwdFile.deleteOnExit();            
             writer = new FileWriter(pwdFile);            
-            writer.write("AS_ADMIN_ADMINPASSWORD=anonymous\n");
-            writer.write("AS_ADMIN_PASSWORD=anonymous\n");
+            writer.write("AS_ADMIN_ADMINPASSWORD=\n");
+            writer.write("AS_ADMIN_PASSWORD=\n");
             writer.write("AS_ADMIN_MASTERPASSWORD=changeit\n");
             writer.close();
             writer = null;
@@ -368,7 +368,6 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
         
             asadminExecuteCommand.execute();
 	    LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput()); 
-            hackAdminKeyfile(installDir);
 
             productError = asadminExecuteCommand.getErrors();
        } catch (Exception e) {
@@ -376,33 +375,7 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
        }
 }
-    private void hackAdminKeyfile(String install) { //TODO
-       // Sorry to create this hack probably for the last time -- should go away soon
-       File gd = new File (install, "glassfish");
-       File ddd = new File(gd, "domains");
-       File dd  = new File(ddd, "domain1");
-       File dc  = new File(dd, "config");
-       dc.mkdirs();
-       File akf = new File(dc, "admin-keyfile");
-       BufferedOutputStream bos = null;
-       byte[] line0 = "#Default user: anonymous\n".getBytes();
-       byte[] line1 = "anonymous;{SSHA}jBnM2TF2BglcyR3RtTfEXg0U18nbjwDKCfK9wg==;asadmin".getBytes();
-       try {
-           bos = new BufferedOutputStream(new FileOutputStream(akf));
-           bos.write(line0);
-           bos.write(line1);
-       } catch(IOException ioe) {
-           LOGGER.log(Level.INFO, "Exception while overwriting user in keyfile" + ioe.getMessage());
-       } finally {
-           if (bos != null) {
-               try {
-                   bos.close();
-               } catch(IOException ioe) {
-                   //can't do anything anyway
-               }
-           }
-       }
-    }
+
 void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
     String proxyHost, String proxyPort) throws Exception {
 
