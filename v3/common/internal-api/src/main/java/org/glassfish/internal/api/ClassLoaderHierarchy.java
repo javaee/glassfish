@@ -67,8 +67,8 @@ public interface ClassLoaderHierarchy {
      * Returns a class loader that is common to all deployed applications.
      * Common Class Loader is responsible for loading classes from
      * following URLs (the order is strictly maintained):
-     * lib/*.jar:domain_dir/classes:domain_dir/lib/*.jar.
-     * Please note that domain_dir/classes comes before domain_dir/lib/*.jar,
+     * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar.
+     * Please note that domain_dir/lib/classes comes before domain_dir/lib/*.jar,
      * just like WEB-INF/classes is searched first before WEB-INF/lib/*.jar.
      * It delegates to APIClassLoader.
      * @see #getAPIClassLoader()

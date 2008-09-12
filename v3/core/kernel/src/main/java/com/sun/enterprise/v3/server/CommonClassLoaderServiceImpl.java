@@ -60,8 +60,8 @@ import java.util.logging.Logger;
  * name suggests, Common Class Loader is common to all deployed applications.
  * Common Class Loader is responsible for loading classes from
  * following URLs (the order is strictly maintained):
- * lib/*.jar:domain_dir/classes:domain_dir/lib/*.jar.
- * Please note that domain_dir/classes comes before domain_dir/lib/*.jar,
+ * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar.
+ * Please note that domain_dir/lib/classes comes before domain_dir/lib/*.jar,
  * just like WEB-INF/classes is searched first before WEB-INF/lib/*.jar.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -111,7 +111,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
                     "System property called {0} is null, is this intended?",
                     new Object[]{SystemPropertyConstants.INSTALL_ROOT_PROPERTY});
         }
-        File domainClassesDir = new File(domainDir, "classes/"); // NOI18N
+        File domainClassesDir = new File(domainDir, "lib/classes/"); // NOI18N
         if (domainClassesDir.exists()) {
             cpElements.add(domainClassesDir);
         }
