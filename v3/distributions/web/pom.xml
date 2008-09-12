@@ -198,6 +198,7 @@
            <groupId>org.glassfish.persistence</groupId>
            <artifactId>eclipselink-wrapper</artifactId>
            <version>${project.version}</version>
+           <type>pom</type>
         </dependency>
         <dependency>
            <groupId>org.glassfish.deployment</groupId>
