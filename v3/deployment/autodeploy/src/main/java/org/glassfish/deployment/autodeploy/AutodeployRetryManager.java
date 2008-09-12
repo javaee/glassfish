@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
+import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -102,7 +104,7 @@ public class AutodeployRetryManager implements PostConstruct {
     /**
      *Specifies the default value for the retry limit.
      */
-    private static final int RETRY_LIMIT_DEFAULT = 8; // 8 seconds
+    private static final int RETRY_LIMIT_DEFAULT = 4; // 4 seconds but default is really set on DasConfig in config-api
 
     /** Maps an invalid File to its corresponding Info object. */
     private HashMap<File,Info> invalidFiles = new HashMap<File,Info>();
@@ -115,7 +117,7 @@ public class AutodeployRetryManager implements PostConstruct {
     @Inject
     private DasConfig activeDasConfig;
     
-    private int timeout = RETRY_LIMIT_DEFAULT;
+    private int timeout;
 
     public void postConstruct() {
         sLogger = Logger.getLogger(getClass().getName());
@@ -174,6 +176,14 @@ public class AutodeployRetryManager implements PostConstruct {
             sLogger.log(Level.FINE, msg);
         }
         return result;
+    }
+
+    AutodeploymentStatus chooseAutodeploymentStatus(ActionReport.ExitCode exitCode, File deployablefile) {
+        if (exitCode != ActionReport.ExitCode.FAILURE) {
+            return AutodeploymentStatus.forExitCode(exitCode);
+        }
+        Info info = invalidFiles.get(deployablefile);
+        return (info == null) ? AutodeploymentStatus.FAILURE : AutodeploymentStatus.PENDING;
     }
 
     boolean recordFailedDeployment(File file) throws AutoDeploymentException {
@@ -402,6 +412,7 @@ public class AutodeployRetryManager implements PostConstruct {
 
         public JarInfo(File f) {
             super(f);
+            recordedLength = f.length();
         }
 
         @Override

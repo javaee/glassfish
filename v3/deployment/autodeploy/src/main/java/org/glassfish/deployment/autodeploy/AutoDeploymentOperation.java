@@ -146,27 +146,27 @@ public class AutoDeploymentOperation extends AutoOperation {
          * complete when the autodeployer detected a change in the top-level
          * directory file's timestamp.  Retry a failed autodeploy of a
          * directory for the prescribed retry period or until it succeeds.
+         *
+         * Similarly, a JAR file - or any legitimate application file - might
+         * be copied over a period of time, so an initial attempt to deploy it
+         * might fail because the file is incomplete but a later attempt might
+         * work.
          */
-        if (ds == AutodeploymentStatus.FAILURE) {
-            if (file.isDirectory()) {
-                try {
-                    retryManager.recordFailedDeployment(file);
-                } catch (AutoDeploymentException ex) {
-                    /*
-                     * The retry manager has concluded that this most recent
-                     * failure should be the last one. 
-                     */
-                    markDeployFailed(file);
-                }
-            } else {
-                retryManager.endMonitoring(file);
+        if (ds != AutodeploymentStatus.SUCCESS) {
+            try {
+                retryManager.recordFailedDeployment(file);
+            } catch (AutoDeploymentException ex) {
+                /*
+                 * The retry manager has concluded that this most recent
+                 * failure should be the last one.
+                 */
                 markDeployFailed(file);
+                retryManager.endMonitoring(file);
             }
         } else {
             retryManager.recordSuccessfulDeployment(file);
             if (ds.status) {
                 if (renameOnSuccess) {
-                    // XXX remove file from retry mgr
                     markDeployed(file);
                 }
             } else {
@@ -215,7 +215,8 @@ public class AutoDeploymentOperation extends AutoOperation {
         dProps.setPrecompileJSP(jspPreCompilation);
 //        dProps.setResourceAction(DeploymentProperties.RES_DEPLOYMENT);
 //        dProps.setResourceTargetList(target);
-    
+
+        dProps.setProperty(DeploymentProperties.REPORT_ERROR_OPENING, "false");
         return (Properties)dProps;
     }
 }

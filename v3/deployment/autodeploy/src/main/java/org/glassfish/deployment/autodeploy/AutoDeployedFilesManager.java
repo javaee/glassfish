@@ -61,6 +61,15 @@ public class AutoDeployedFilesManager {
     
     private static final Logger sLogger=LogDomains.getLogger(AutoDeployedFilesManager.class, LogDomains.DPL_LOGGER);
     static final String STATUS_DIR_NAME = ".autodeploystatus";
+
+    /*
+     * For example, Macs use .DS_Store in a folder to track information about
+     * changes to the contents of the folder.  If a user uses Finder to move
+     * a previously-autodeployed file to the Trash, the system creates and/or updates .DS_Store.
+     * Clearly we do not want to try deploying that file.
+     */
+    private static final List<String> FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY = Arrays.asList(".DS_Store");
+
     protected  String statDir = null;
 
 
@@ -142,9 +151,22 @@ public class AutoDeployedFilesManager {
 
         ArrayList<File> arrList = new ArrayList<File>();
         for (File deployDirFile : latestFiles) {
+            if (FILE_NAMES_TO_IGNORE_FOR_AUTODEPLOY.contains(deployDirFile.getName())) {
+                if (sLogger.isLoggable(Level.FINE)) {
+                    sLogger.fine("Skipping " + deployDirFile.getAbsolutePath() + " because its name is in the list of files to ignore");
+                }
+                continue;
+            }
             File statusFile = getStatusFile(deployDirFile);
-            if (!statusFile.exists() || deployDirFile.lastModified() != statusFile.lastModified()) {            
+            if (!statusFile.exists() || deployDirFile.lastModified() != statusFile.lastModified()) {
+                if (sLogger.isLoggable(Level.FINE)) {
+                    sLogger.fine("Including " + deployDirFile.getAbsolutePath() + " in candidate files for deployment");
+                }
                 arrList.add(deployDirFile);
+            } else {
+                if (sLogger.isLoggable(Level.FINE)) {
+                    sLogger.fine("Skipping " + deployDirFile.getAbsolutePath() + " its status file exists and the timestamps on the status file and the autodeployed file match");
+                }
             }
         }
         return arrList.toArray(new File[0]);

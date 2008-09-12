@@ -46,12 +46,11 @@ package org.glassfish.deployment.autodeploy;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.File;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import com.sun.logging.LogDomains;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 /**
  * Handles the logic of deploying the module/app to the required destination.</br>
@@ -389,20 +388,20 @@ public class AutoDeployer {
         files= directoryScanner.getAllDeployableModules(autoDeployDir, includeSubDir);
         
         /*
-         *To support slowly-copied files, the deployApplication (and deployWarmodule, and
-         *deployRarModule and deployEjbModule) methods return 
+         *To support slowly-copied files, the deploy method returns
          *    DEPLOY_SUCCESS  if the file was successfully autodeployed
          *    DEPLOY_FAILURE  if the file failed to be autodeployed
          *    DEPLOY_PENDING  if the file needs to be tried again later
          *
          *The marker files should be updated only if the result is success or
-         *failure.  So for each file of each type, make a separate decision
+         *failure.  So for each file make a separate decision
          *about whether to record the result or not based on the result of
          *the deploy method.  Note that the boolean is initialized to true
          *so that if an exception is thrown, the file's marker files will be
          *updated.
          */
-        if(files != null) {
+        if(files != null && files.length > 0) {
+            sLogger.fine("Deployable files: " + Arrays.toString(files));
             for (int i=0; ((i < files.length) && !cancelDeployment);i++) {
                 boolean okToRecordResult = true;
                 try {
@@ -410,8 +409,10 @@ public class AutoDeployer {
                 } catch (AutoDeploymentException ae) {
                     //ignore and move to next file
                 } finally {
-                    if(renameOnSuccess && okToRecordResult)
+                    if(renameOnSuccess && okToRecordResult) {
+                        sLogger.fine("Reporting deployed entity " + files[i].getAbsolutePath());
                         directoryScanner.deployedEntity(autoDeployDir, files[i]);
+                    }
                 }
             }
         } 
@@ -442,7 +443,7 @@ public class AutoDeployer {
             for (int i=0; i< apps.length && !cancelDeployment;i++) {
                 try {
                     
-                    boolean stat = this.undeploy(apps[i], autoDeployDir, 
+                    this.undeploy(apps[i], autoDeployDir, 
                         getNameFromFilePath(autoDeployDir, apps[i]));
                     
                     
@@ -457,9 +458,8 @@ public class AutoDeployer {
         /////////end for apps
     }
     
-    private boolean undeploy(File applicationFile, File autodeployDir,
+    private AutodeploymentStatus undeploy(File applicationFile, File autodeployDir,
     String name) throws AutoDeploymentException {
-        boolean status = false;
         
         AutoUndeploymentOperation au = AutoUndeploymentOperation.newInstance(
                 habitat,
@@ -467,11 +467,7 @@ public class AutoDeployer {
                 name, 
                 target);
         sLogger.log(Level.INFO, "Autoundeploying application :" + name);
-        status = au.run();
-        if (status) {
-        } else {
-        }
-        return status;
+        return au.run();
         
     }
 
@@ -523,12 +519,9 @@ public class AutoDeployer {
                 verify,
                 jspPreCompilation,
                 target);
-        if (ad.run()) {
-            status = AutodeploymentStatus.SUCCESS;
-        } else {
-            status = AutodeploymentStatus.FAILURE;
-        }
-        return status;    }
+        AutodeploymentStatus adStatus = ad.run();
+        return adStatus;
+    }
    
 //    private String  getDefaultVirtualServer(String instanceName) {
 //        String virtualServer=null;

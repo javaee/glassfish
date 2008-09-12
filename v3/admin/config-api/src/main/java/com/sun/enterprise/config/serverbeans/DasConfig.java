@@ -185,7 +185,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30")
+    @Attribute (defaultValue="4")
     public String getAutodeployRetryTimeout();
 
     /**

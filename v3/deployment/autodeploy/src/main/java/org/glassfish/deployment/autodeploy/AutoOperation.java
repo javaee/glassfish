@@ -73,6 +73,9 @@ public abstract class AutoOperation {
     
     @Inject
     private CommandRunner commandRunner;
+
+    @Inject
+    private AutodeployRetryManager retryManager;
     
     /**
      * Initializes the AutoOperation.
@@ -112,7 +115,7 @@ public abstract class AutoOperation {
      * @return true/false depending on the outcome of the operation
      * @throws org.glassfish.deployment.autodeploy.AutoDeploymentException
      */
-    final boolean run() throws AutoDeploymentException {
+    final AutodeploymentStatus run() throws AutoDeploymentException {
         try {
             ActionReport report = new PropsFileActionReporter();
             commandRunner.doCommand(commandName, command, props, report);
@@ -120,13 +123,18 @@ public abstract class AutoOperation {
             Level messageLevel = (ds.status ? Level.INFO : Level.WARNING);
             sLogger.log(messageLevel, getMessageString(ds, file));
             markFiles(ds, file);
-            return ds.status;
+            /*
+             * Choose the final status to report, based on the outcome of the
+             * deployment as well as whether we are now monitoring this file.
+             */
+            ds = retryManager.chooseAutodeploymentStatus(report.getActionExitCode(), file);
+            return ds;
         } catch (Exception ex) {
             /*
              * Log and continue.
              */
             ex.printStackTrace();
-            return false;
+            return AutodeploymentStatus.FAILURE;
         }
     }
     

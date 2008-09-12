@@ -523,6 +523,9 @@ public class DeploymentProperties extends Properties {
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";
 
+    // internal use - from autodeployer
+    public static final String LOG_REPORTED_ERRORS = "logReportedErrors";
+
     static Map keyMap;
 
     static {

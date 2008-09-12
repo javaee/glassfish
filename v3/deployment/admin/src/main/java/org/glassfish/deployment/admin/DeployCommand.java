@@ -134,6 +134,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(optional=true, defaultValue="false")
     Boolean keepreposdir;
 
+    @Param(optional=true, defaultValue="true")
+    Boolean logReportedErrors;
+
     @Inject
     Domain domain;
 
@@ -175,7 +178,12 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         try {
             archive = archiveFactory.openArchive(file);
         } catch (IOException e) {
-            report.failure(logger,"Error opening deployable artifact : " + file.getAbsolutePath(),e);
+            if (logReportedErrors) {
+                report.failure(logger,"Error opening deployable artifact : " + file.getAbsolutePath(),e);
+            } else {
+                report.setMessage("Error opening deployable artifact : " + file.getAbsolutePath() + e.toString());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            }
             return;
         }
         File expansionDir=null;
