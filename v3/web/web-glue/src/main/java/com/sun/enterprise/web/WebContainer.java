@@ -3379,6 +3379,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         VirtualServer virtualServer = 
             (VirtualServer)engines[0].findChild(vsBean.getId());
 
+        if (virtualServer==null) {
+            _logger.log(Level.WARNING, "Virtual server " + vsBean.getId() +
+                    " cannot be updated, because it does not exist");
+            return;
+        }
+        
         // Must retrieve the old default-web-module before updating the
         // virtual server with the new vsBean, because default-web-module is
         // read from vsBean
