@@ -216,7 +216,7 @@ public class AutoDeploymentOperation extends AutoOperation {
 //        dProps.setResourceAction(DeploymentProperties.RES_DEPLOYMENT);
 //        dProps.setResourceTargetList(target);
 
-        dProps.setProperty(DeploymentProperties.REPORT_ERROR_OPENING, "false");
+        dProps.setProperty(DeploymentProperties.LOG_REPORTED_ERRORS, "false");
         return (Properties)dProps;
     }
 }
