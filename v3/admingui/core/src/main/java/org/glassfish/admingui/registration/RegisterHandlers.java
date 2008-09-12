@@ -205,11 +205,15 @@ public class RegisterHandlers {
     
     private static RegistrationService getRegistrationService(String proxyHost, int proxyPort) {
         try {
+            
             File registryFile = RegistrationUtil.getServiceTagRegistry();
+            return new SysnetRegistrationService(registryFile, proxyHost, proxyPort); 
+            /*
             Object params[] = new Object[] { registryFile, proxyHost, proxyPort }; 
             RegistrationServiceConfig config = new RegistrationServiceConfig("com.sun.enterprise.registration.SysnetRegistrationService", params);
 	    RegistrationService registrationService = RegistrationServiceFactory.getInstance().getRegistrationService(config);
             return registrationService;
+            */
 	} catch (Exception ex) {
 	    // FIXME: Log trace instead
 	    ex.printStackTrace();
