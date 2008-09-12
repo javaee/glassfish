@@ -143,7 +143,8 @@ public class CreateAuditModule implements AdminCommand {
             report.setMessage(localStrings.getLocalString("create.audit.module.fail", 
                     "Creation of AuditModule {0} failed", auditModuleName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);        
+            report.setFailureCause(e);
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString("create.audit.module.success",
