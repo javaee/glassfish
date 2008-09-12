@@ -44,7 +44,7 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all"/>
+    <target name="all" depends="build,runtest"/>
     <target name="build">
       <antcall target="compile-tests">
       </antcall>
@@ -53,6 +53,7 @@
     <target  name="runtest"> 
         <antcall target="runtest-impl">
           <param name="testng.test.name" value="${testng.test.name}"/>
+          <param name="testng.testclient" value="BasicAMXTests"/>
         </antcall>
     </target>
 
