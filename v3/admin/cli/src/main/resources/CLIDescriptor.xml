@@ -40,6 +40,7 @@
         <Option name="instanceport" type="string" value-required="true"/>
         <Option name="portbase" type="string" value-required="true"/>
         <Option name="domainproperties" type="string" value-required="true"/>
+    	<Option name="keytooloptions" type="string" value-required="true"/>
         <Option name="path" type="string" value-required="true"/>
         <Option name="passwordfile" type="string" value-required="true"/>
         <Option name="checkports" type="boolean" value-required="true" default="true"/>
@@ -75,7 +76,7 @@
 	    <ValidOption name="passwordfile"/>
 	</Command>
         <Command name="create-domain" classname="com.sun.enterprise.admin.cli.optional.CreateDomainCommand"  numberofoperands="1"
-           usage-text="create-domain [--user admin] --adminport admin-port | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile file_name ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
+           usage-text="create-domain [--user admin] --adminport admin-port | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile file_name ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--keytooloptions (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
                 <ValidOption name="adminport"/>
                 <ValidOption name="adminuser"/>
                 <ValidOption name="adminpassword"/>
@@ -91,6 +92,7 @@
                 <ValidOption name="domaindir" deprecatedoption="path"/>
                 <ValidOption name="passwordfile"/>
                 <ValidOption name="checkports"/>
+                <ValidOption name="keytooloptions"/>
                 <ValidOption name="masterpassword"/>
                 <ValidOption name="savemasterpassword"/>
                 <ValidOption name="savelogin"/>

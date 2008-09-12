@@ -89,7 +89,7 @@ public class DomainConfig extends RepositoryConfig
     public static final String K_EXTRA_PASSWORDS = "domain.extraPasswords";
     
     public static final int K_FLAG_START_DOMAIN_NEEDS_ADMIN_USER = 0x1;    
-    
+    public static final String KEYTOOLOPTIONS = "keytooloptions";
     /**
      * The DomainConfig always contains the K_DOMAINS_ROOT and K_HOST_NAME
      * attributes.

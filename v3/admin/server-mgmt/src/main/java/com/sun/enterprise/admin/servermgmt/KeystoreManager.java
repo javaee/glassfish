@@ -42,15 +42,12 @@
 
 package com.sun.enterprise.admin.servermgmt;
 
-import com.sun.enterprise.security.store.PasswordAdapter;
-//import com.sun.enterprise.admin.jmx.remote.https.AsadminTruststore;
 
 import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
 
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.ExecException;
 import com.sun.enterprise.util.net.NetUtils;
@@ -60,6 +57,8 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /** 
@@ -74,10 +73,8 @@ public class KeystoreManager {
     private static String CERTIFICATE_DN_PREFIX = "CN=";
     
     private static String CERTIFICATE_DN_SUFFIX = 
-        ",OU=Sun Java System Application Server,O=Sun Microsystems,L=Santa Clara,ST=California,C=US";
-    
-    private static String _certificateDN = null;          
-    
+        ",OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US";
+        
     public static final String CERTIFICATE_ALIAS = "s1as";
     public static final String DEFAULT_MASTER_PASSWORD = "changeit";
     
@@ -140,18 +137,19 @@ public class KeystoreManager {
     public KeystoreManager() {
     }
    
-    protected String getCertificateDN(String domainName)
+    protected String getCertificateDN(RepositoryConfig cfg)
     {
-        if (_certificateDN == null) {
-            String hostName = null;
+        String cn = getCNFromCfg(cfg);
+        if (cn == null) {
             try {
-                hostName = NetUtils.getCanonicalHostName();                       
-            } catch (Exception ex) {
-                hostName = "localhost";
+                cn = NetUtils.getCanonicalHostName();
+            } catch(Exception e) {
+                cn = "localhost";
             }
-            _certificateDN = CERTIFICATE_DN_PREFIX + hostName + CERTIFICATE_DN_SUFFIX;
-        } 
-        return _certificateDN;
+        }
+        String x509DistinguishedName = CERTIFICATE_DN_PREFIX + cn + CERTIFICATE_DN_SUFFIX;
+        System.out.println(_strMgr.getString("CertificateDN", x509DistinguishedName));
+        return x509DistinguishedName;  //must be of form "CN=..., OU=..."
     }
      
     protected PEFileLayout getFileLayout(RepositoryConfig config)
@@ -195,7 +193,7 @@ public class KeystoreManager {
             "-keyalg", "RSA",
             "-keystore", keystore.getAbsolutePath(),
             "-alias", CERTIFICATE_ALIAS,
-            "-dname", getCertificateDN(config.getDisplayName()),
+            "-dname", getCertificateDN(config),
             "-validity", "3650",                 
             "-keypass", masterPassword,
             "-storepass", masterPassword,
@@ -463,5 +461,44 @@ public class KeystoreManager {
             cmdList.add(file.getAbsolutePath());
             new ProcessBuilder(cmdList).start();
         }
+    }
+    
+    private String getCNFromCfg(RepositoryConfig cfg) {
+        String option = (String)cfg.get(DomainConfig.KEYTOOLOPTIONS);
+        if (option == null || option.length() == 0)
+            return null;
+        String value = getCNFromOption(option);
+        if (value == null || value.length() == 0) {
+            return null;
+        } else {
+            return value;
+        }
+    }
+    
+    /** Returns CN if valid and non-blank. Returns null otherwise.
+     * 
+     * @param option
+     * @param name String representing name of the keytooloption
+     * @param ignoreNameCase flag indicating if the comparison should be case insensitive
+     * @return
+     */
+    private String getValueFromOptionForName(String option, String name, boolean ignoreNameCase) {
+        //option is not null at this point
+        Pattern p = Pattern.compile(":");
+        String[] pairs = p.split(option);
+        for (String pair : pairs) {
+            p = Pattern.compile("=");
+            String[] nv = p.split(pair);
+            String n = nv[0].trim();
+            String v = nv[1].trim();
+            boolean found = (ignoreNameCase == true) ? n.equalsIgnoreCase(name) : n.equals(name) ;
+            if (found)
+                return v;
+        }
+        return null;
+    }
+    
+    private String getCNFromOption(String option) {
+        return getValueFromOptionForName(option, "CN", true);
     }
 }

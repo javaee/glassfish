@@ -84,6 +84,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
     public static final String DOMAINDIR_OPTION = "domaindir";
     public static final String PROFILE_OPTION = "profile";
     private static final String SAVELOGIN_OPTION = "savelogin";
+    private static final String KEYTOOLOPTIONS = "keytooloptions";
     private String domainName = null;
     private String adminUser = null;
     private String adminPassword = null;
@@ -457,7 +458,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
                 Boolean.valueOf(getBooleanOption(CHECKPORTS_OPTION)));
         /* comment out for V3 until profiles decision is taken */
         // setUsageProfile(domainConfig);
-
+        domainConfig.put(DomainConfig.KEYTOOLOPTIONS, getOption(KEYTOOLOPTIONS));
         DomainsManager manager = new PEDomainsManager();
 
         manager.createDomain(domainConfig);
