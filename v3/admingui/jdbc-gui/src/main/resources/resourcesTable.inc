@@ -146,6 +146,7 @@
         <staticText id="typeCol" rendered="#{hasResType}" value="#{td.value.resType}" />
     </sun:tableColumn>
 
+    <!-- TODO enable when we enable cluster support
     <sun:tableColumn rendered="$pageSession{showDetail}"
             headerText="$resource{i18n.common.TargetTab}"  
             rowHeader="$boolean{true}" id="colTarget">
@@ -160,6 +161,7 @@
                 "<br />
             </foreach>
         </sun:tableColumn> 
+    -->
      
     
     <sun:tableColumn headerText="$resource{i18n.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
