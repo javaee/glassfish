@@ -139,6 +139,10 @@ public class ComponentInvocation {
         this.transaction = t;
     }
     
+    public <T> T getTransactionOperationsManager() {
+        return null;
+    }
+
     /** 
      * Sets the security context of the call coming in
      */
