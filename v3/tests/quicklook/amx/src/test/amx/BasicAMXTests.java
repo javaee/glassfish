@@ -30,16 +30,22 @@ import javax.management.Attribute;
 import javax.management.AttributeList;
 
 import com.sun.appserv.management.DomainRoot;
+
 import com.sun.appserv.management.base.QueryMgr;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.base.SystemStatus;
+
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 import com.sun.appserv.management.util.jmx.JMXUtil;
+
+
+import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 
 import java.util.Set;
 import java.util.Map;
@@ -48,7 +54,7 @@ import java.util.Map;
 	Basic AMX tests that verify connectivity and ability to
 	traverse the AMX hierarchy and fetch all attributes.
  */
-@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=3)
+@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=5)
 public final class BasicAMXTests extends AMXTestBase {
 	public BasicAMXTests()
 	{
@@ -66,7 +72,6 @@ public final class BasicAMXTests extends AMXTestBase {
     @Test(dependsOnMethods="bootAMX")
     public void iterateAllSanityCheck()
     {
-    debug("iterateAllSanityCheck BEGIN" );
     	final TimingDelta timing = new TimingDelta();
     	final TimingDelta overall = new TimingDelta();
     	
@@ -107,7 +112,6 @@ public final class BasicAMXTests extends AMXTestBase {
     		//debug( "BasicAMXTests: millis to get verify attributes: " + timing.elapsedMillis() );
     	}
     	debug( "BasicAMXTests.iterateAllSanityCheck() millis: " + overall.elapsedMillis() );
-    debug("iterateAllSanityCheck END" );
     }
     
     /*
@@ -144,13 +148,11 @@ public final class BasicAMXTests extends AMXTestBase {
     @Test(dependsOnMethods="bootAMX")
     public void iterateContainer()
     {
-    debug("iterateContainer BEGIN" );
     	final Set<Container> all = getAll(Container.class);
     	for( final Container amx : all )
     	{
     		_checkContainer( amx );
     	}
-    debug("iterateContainer END" );
     }
     private void _checkContainer( final Container c )
     {
@@ -181,13 +183,11 @@ public final class BasicAMXTests extends AMXTestBase {
     @Test(dependsOnMethods="bootAMX")
     public void iterateDefaultValues()
     {
-    debug("iterateDefaultValues BEGIN" );
     	final Set<AMXConfig> all = getAll(AMXConfig.class);
     	for( final AMXConfig amx : all )
     	{
     		_checkDefaultValues( amx );
     	}
-    debug("iterateDefaultValues END" );
     }
     
     private void _checkDefaultValues( final AMXConfig amxConfig )
@@ -227,13 +227,11 @@ public final class BasicAMXTests extends AMXTestBase {
     @Test(dependsOnMethods="bootAMX")
     public void iterateAttributeResolver()
     {
-    debug("iterateAttributeResolver BEGIN" );
     	final Set<AMXConfig> all = getAll(AMXConfig.class);
     	for( final AMXConfig amx : all )
     	{
     		_checkAttributeResolver( amx );
     	}
-    debug("iterateAttributeResolver END" );
     }
     private void _checkAttributeResolver( final AMXConfig amxConfig )
     {
@@ -267,9 +265,26 @@ public final class BasicAMXTests extends AMXTestBase {
     	}
     }
     
-    
-    
+    @Test(dependsOnMethods="bootAMX")
+    public void testSystemStatus()
+    {
+    	final SystemStatus ss = getDomainRoot().getSystemStatus();
+    	
+    	ss.getUnprocessedConfigChanges();
+    	
+    	final Set<JDBCConnectionPoolConfig> pools = getQueryMgr().queryJ2EETypeSet(JDBCConnectionPoolConfig.J2EE_TYPE);
+    	
+    	for( final JDBCConnectionPoolConfig pool : pools )
+    	{
+    		final Map<String,Object> result = ss.pingJDBCConnectionPool( pool.getName() );
+    	}
+    }
 }
+
+
+
+
+
 
 
 
