@@ -43,13 +43,13 @@ echo create pool pool1
 ./bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --property="Password=APP:User=APP:DatabaseName=$databaseshome/sample-db:serverName=localhost:connectionAttributes=\;create\\=true" pool1
 
 echo create resource jdbc/res1
-./bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-dev-test-pool jdbc/res1
+./bin/asadmin create-jdbc-resource --connectionpoolid=pool1 jdbc/res1
 
 echo create pool pool2
 ./bin/asadmin create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource --restype=javax.sql.ConnectionPoolDataSource --property="Password=rpassword:User=ruser:DatabaseName=$databaseshome/reconfig-db:serverName=localhost" pool2
 
 echo create resource jdbc/res2
-./bin/asadmin create-jdbc-resource --connectionpoolid=jdbc-reconfig-test-pool-1 jdbc/res2
+./bin/asadmin create-jdbc-resource --connectionpoolid=pool2 jdbc/res2
 
 echo "\n\n****************************************************************************************************************\n"
 
@@ -141,7 +141,7 @@ echo "\nTEST3 executed successfully\n\n"
 echo "\n******************************************************************************************************************\n"
 
 echo "\nExecuting TEST4 : JDBC Resource reconfiguration\n"
-echo "\n Testing if First resource undergoes change in the pool-name with an asadmin set\n"
+echo "\nTesting if First resource undergoes change in the pool-name with an asadmin set\n"
 echo "\nasadmin set --value=pool2 resources.jdbc-resource.jdbc/res1.pool-name\n"
 ./bin/asadmin set --value=pool2 resources.jdbc-resource.jdbc/res1.pool-name
 
@@ -151,12 +151,10 @@ sleep 5
 ./bin/asadmin start-domain
 sleep 10
 
-echo "\nGET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?throwException=true\&testId=3\n"
+echo "\nGET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?throwException=false\&testId=4\n"
 #Test should fail when table is sample-db and pass when table is reconfig-db
 GET http://localhost:8080/v3_jdbc_dev_tests/ReconfigTestServlet?throwException=false\&testId=4 >> $reconfigResult
 
-sleep 5
-./bin/asadmin stop-domain
 echo "\nTEST4 executed successfully\n\n"
 echo "\n******************************************************************************************************************\n"
 

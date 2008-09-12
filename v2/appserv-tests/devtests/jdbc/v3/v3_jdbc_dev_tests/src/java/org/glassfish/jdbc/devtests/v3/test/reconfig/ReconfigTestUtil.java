@@ -80,7 +80,7 @@ public class ReconfigTestUtil {
     private boolean testJDBCResourceChange(DataSource ds, PrintWriter out, 
             boolean throwException) throws SystemException {
         HtmlUtil.printHR(out);
-        out.println("<h4> Reconfig test : tablename : reconfigTestTable (jdbc-reconfig-test-pool-2)</h4>");
+        out.println("<h4> Reconfig test : tablename : reconfigTestTable (reconfig-db)</h4>");
         boolean passed = true;
 
         Connection con = null;
@@ -112,7 +112,7 @@ public class ReconfigTestUtil {
     private boolean testJDBCResourceChangeCorrectTable(DataSource ds, PrintWriter out, 
             boolean throwException) throws SystemException {
         HtmlUtil.printHR(out);
-        out.println("<h4> Reconfig test : tableName : sampleTable (jdbc-reconfig-test-pool-1) </h4>");
+        out.println("<h4> Reconfig test : tableName : sampleTable (sample-db) </h4>");
         boolean passed = true;
 
         Connection con = null;
