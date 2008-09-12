@@ -1070,7 +1070,13 @@ cdebug( "removeConfig: by  j2eeType + name" );
             final Map<String,String> defaultValues = getDefaultValuesXMLNames( myIntf );
             //cdebug( "defaultValues for " + myIntf.getName() + ": " + MapUtil.toString(defaultValues) );
             
-            final String xmlName = getXMLAttributeName( getJ2EEType(), amxName );
+            String xmlName = getXMLAttributeName( getJ2EEType(), amxName );
+            if ( xmlName == null )
+            {
+                cdebug( "AMXConfigImplBase.getDefaultValue(): no xml name found for: " + amxName );
+                // could be a deprecated value we choose not to have in AMX
+                xmlName = amxName;
+            }
             return defaultValues.get( xmlName );
         }
         catch( Throwable t ) {
