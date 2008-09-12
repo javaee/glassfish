@@ -148,7 +148,7 @@ public class CLIRemoteCommand {
             } catch(ConnectException ce) {
                 //this really means nobody was listening on the remote server end
                 //implementation note: ConnectException extends IOException and tells us more!
-                String msg = strings.get("ConnectException", hostName, hostPort);
+                String msg = strings.get("ConnectException", hostName, hostPort + "");
                 throw new CommandException(msg, ce);
             } catch (IOException e) {
                 String msg = null;
