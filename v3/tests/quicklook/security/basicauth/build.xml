@@ -71,7 +71,6 @@
     <target name="undeploy">
         <antcall target="undeploy-${deploy.platform}-impl"/>
         <antcall target="unsetup"/>
-        <antcall target="clean"/>
     </target>
     
     
