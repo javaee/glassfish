@@ -127,6 +127,26 @@ public class CLIManFileFinder
 		final String[] locales = getLocaleLocations(locale);
 		int i = 0;
 		int j = 0;
+        private String HELPDIR = getHelpDir(commandName);
+
+        private String getHelpDir(String commandName) {
+              //The manpage are assumed to be packaged with the command class.
+              //If not, then take the default location.
+            try {
+                CLIDescriptorsReader cdr = CLIDescriptorsReader.getInstance();
+                String className =  cdr.getCommand(commandName).getClassName();
+                Class  commandClass = Class.forName(className);
+                Package pkg = commandClass.getPackage();
+                return pkg.getName().replace('.', '/');
+            }
+            catch (Exception e) {
+                    //if unable to get the command or class then set it
+                    //to the default location.
+                return "com/sun/enterprise/admin/cli";                
+            }
+        }
+            
+            
 		public boolean hasNext() {
 		  return i < locales.length && j < sections.length;
 		}
@@ -135,6 +155,7 @@ public class CLIManFileFinder
 			throw new NoSuchElementException();
 		  }
 		  final String result = HELPDIR + locales[i] + "/" + commandName+"." + sections[j++];
+
 		  if (j == sections.length) {
 			i++;
 			if (i < locales.length ){
@@ -173,6 +194,5 @@ public class CLIManFileFinder
   private static final String[] sections = {
       "1", "1m", "2", "2m", "3", "3m", "4", "4m", "5", "5m", "6", "6m", "7", "7m", "8", "8m", "9", "9m", "5asc"};
 
-  private static final String HELPDIR = "com/sun/enterprise/admin/cli";
   
 }
