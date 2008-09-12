@@ -107,7 +107,8 @@ public class CreateMessageSecurityProvider implements AdminCommand {
     private static final String CLIENT_SERVER = "client-server";
     
     // auth-layer can only be SOAP | HttpServlet
-    @Param(name="layer", optional=true, defaultValue="SOAP")
+    @Param(name="layer", acceptableValues="SOAP,HttpServlet", 
+           optional=true, defaultValue="SOAP")
     String authLayer;
     
     // provider-type can only be - client | server | 'client-server' 

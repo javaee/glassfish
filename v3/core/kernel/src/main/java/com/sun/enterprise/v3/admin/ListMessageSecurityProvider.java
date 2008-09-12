@@ -86,7 +86,7 @@ public class ListMessageSecurityProvider implements AdminCommand {
     String target;
 
     // auth-layer can only be SOAP | HttpServlet
-    @Param(name="layer", optional=true)
+    @Param(name="layer", acceptableValues="SOAP,HttpServlet", optional=true)
     String authLayer;
     
     @Inject
