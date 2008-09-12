@@ -57,11 +57,12 @@ public class StartDomainCommand extends AbstractCommand {
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
             launcher.setup();
-            // CLI calls this method only to ensure that domain.xml parsed
+            // CLI calls this method only to ensure that domain.xml is parsed
             // once. This is a performance optimization.
             // km@dev.java.net (Aug 2008)
             if(isServerAlive(info.getAdminPorts())) {
-                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName()});
+                String port = info.getAdminPorts().toArray(new Integer[0])[0] + "";
+                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), port});
                 throw new CommandException(msg);
             }
             
