@@ -33,6 +33,7 @@ import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
@@ -384,7 +385,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             /*
              * Try to extract zip entries from the payload.
              */
-            ZipInputStream zis = new ZipInputStream(is);
+            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
             ZipEntry entry = null;
             OutputStream os = null;
 

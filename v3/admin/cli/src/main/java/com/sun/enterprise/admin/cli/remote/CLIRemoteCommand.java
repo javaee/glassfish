@@ -135,6 +135,9 @@ public class CLIRemoteCommand {
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
                 urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
                 urlConnection.setRequestMethod(chooseRequestMethod());
+                if (doUpload) {
+                    urlConnection.setChunkedStreamingMode(0); // use default value
+                }
                 urlConnection.connect();
                 if (doUpload) {
                     upload(urlConnection);
@@ -245,7 +248,7 @@ public class CLIRemoteCommand {
         /*
          * Each file to be uploaded is added to the HTTP request payload as a ZipEntry.
          */
-        ZipOutputStream zos = new ZipOutputStream(conn.getOutputStream());
+        ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(conn.getOutputStream()));
         if (fileParameter != null) {
             upload(zos, fileParameter);
         }
