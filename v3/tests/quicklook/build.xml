@@ -122,6 +122,7 @@
     <target name="build">  
         <record name="build.output" action="start"/>
         <echo message="ANT PROJECT ${ant.project.name}"/>
+        <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
         <ant dir="adminconsole" target="build"/>
         <ant dir="classloader/hellojsf" target="build"/>

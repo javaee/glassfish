@@ -75,6 +75,25 @@
                   </execution>
                 </executions>
 	        <dependencies>
+			
+			<dependency>
+				<!--
+					AMX tests: once the RMI connector works, we can remove
+				-->
+				<groupId>org.glassfish.external</groupId>
+				<artifactId>jmxremote_optional-repackaged</artifactId>
+				<version>10.0-SNAPSHOT</version>
+			</dependency>
+        
+			<dependency>
+				<!--
+					AMX tests required the amx-api jar
+				-->
+				<groupId>org.glassfish.common</groupId>
+				<artifactId>amx-api</artifactId>
+				<version>10.0-SNAPSHOT</version>
+			</dependency>
+			
 		     <dependency>
     			<groupId>commons-codec</groupId>
     			<artifactId>commons-codec</artifactId>
