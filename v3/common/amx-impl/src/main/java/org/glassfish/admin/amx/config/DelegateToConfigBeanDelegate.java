@@ -125,6 +125,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 result = CollectionUtil.toArray( elems, String.class);
             }
         }
+        /*
         else if ( info.isLeaf() )
         {
             final List<?> leaf = mConfigBean.leafElements(xmlName);
@@ -132,6 +133,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 result = (String)leaf.get(0);
             }
         }
+        */
         else
         {
             // all plain attributes are 'String'
