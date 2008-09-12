@@ -51,6 +51,7 @@ public class ThreadPoolTelemetryBootstrap implements ProbeProviderListener,
     private boolean threadPoolProviderRegistered = false;
     private boolean isThreadPoolTreeBuilt = false;
     private boolean probeProviderListenerRegistered = false;;
+    private TreeNode threadPoolNode =  null;
     private List<ThreadPoolTelemetry> threadPoolTMs = null;
     
     public ThreadPoolTelemetryBootstrap() {
@@ -182,7 +183,7 @@ public class ThreadPoolTelemetryBootstrap implements ProbeProviderListener,
         TreeNode httpServiceNode = TreeNodeFactory.createTreeNode("http-service", null, "http-service");
         serverNode.addChild(httpServiceNode);
         //thread-pool
-        TreeNode threadPoolNode = TreeNodeFactory.createTreeNode("thread-pool", null, "http-service");
+        threadPoolNode = TreeNodeFactory.createTreeNode("thread-pool", null, "http-service");
         httpServiceNode.addChild(threadPoolNode);
         threadPoolTMs = new ArrayList<ThreadPoolTelemetry>();
         for (Config config : domain.getConfigs().getConfig()) {
@@ -213,7 +214,8 @@ public class ThreadPoolTelemetryBootstrap implements ProbeProviderListener,
     }
 
     private void enableThreadPoolMonitoring(boolean isEnabled) {
-        //Enable/Disable jvm telemetry
+        //Enable/Disable thread-pool telemetry
+        threadPoolNode.setEnabled(isEnabled);
         if (threadPoolTMs != null) {
             for (ThreadPoolTelemetry threadPoolTM : threadPoolTMs)
                 threadPoolTM.enableMonitoring(isEnabled);
