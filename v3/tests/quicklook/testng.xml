@@ -95,7 +95,7 @@
   </test>
   <test name="security_hello_jsp">
     <classes>
-       <class name="test.security.hellojsp.HelloJSPTestNG" />
+       <class name="test.security.hellojsp.HelloSecurityTestNG" />
     </classes>
   </test>
    <!--<test name="ejb30_session_hello">

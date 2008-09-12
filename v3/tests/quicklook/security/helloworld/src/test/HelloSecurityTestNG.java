@@ -49,7 +49,7 @@ import java.util.*;
  *HTML resource.Each resources (HTML,JSP,Servlet) is invoked as a separate test.
  *
  */
-public class HelloJSPTestNG {
+public class HelloSecurityTestNG {
 
     private static final String TEST_NAME =
         "simple-webapp-jspservlet-noresource";
