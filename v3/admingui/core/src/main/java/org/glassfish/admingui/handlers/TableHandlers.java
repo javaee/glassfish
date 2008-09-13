@@ -436,6 +436,11 @@ public class TableHandlers {
             Map props = (Map)li.next();
                String name = (String)props.get("name");
                 if (name != null && (! name.trim().equals(""))) {
+                    if (addProps.containsKey(name)){
+                        //duplicate property name, give error
+                        GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey"));
+                        return;
+                    }
                     addProps.put(name, (String)props.get("value"));
                 }
         }
