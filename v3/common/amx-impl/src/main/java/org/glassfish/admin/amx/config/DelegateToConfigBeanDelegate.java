@@ -68,6 +68,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 {
 	private final ConfigBean        mConfigBean;
     private final NameMappingHelper mNameMappingHelper;
+    private final ConfiguredHelper  mConfiguredHelper;
     
     private static void debug( final String s ) { System.out.println(s); }
     
@@ -80,6 +81,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 		mConfigBean	= configBean;
         
         mNameMappingHelper = new NameMappingHelper( configBean );
+        mConfiguredHelper = ConfiguredHelperRegistry.getInstance( configBean.getProxyType() );
 	}
     
 		void
@@ -106,44 +108,56 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     }
 	
     public ConfigBean getConfigBean() { return mConfigBean; }
-                   
+
+    /**
+        Get an Attribute.  This is a bit tricky, because the target can be an XML attribute,
+        an XML string element, or an XML list of elements.
+        Performance isn't necessarily very good here because of the brute-force lookup by
+        ConfiguredHelper of the amx to xml mapping.
+     */
 		public final Object
 	getAttribute( final String amxName )
 	{
-        final AttrInfo info = mNameMappingHelper.getAttrInfo_AMX( amxName );
-        if ( info == null ) throw new IllegalArgumentException(amxName);
-        
         Object result = null;
-        final String xmlName = info.xmlName();
-        debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
-        if ( info.isCollection() )
+        
+        final ConfiguredHelper.Info info = mConfiguredHelper.getInfo(amxName);
+        if ( info == null )
         {
-            final List<?> leaf = mConfigBean.leafElements(xmlName);
-            if ( leaf != null ) {
-                // verify that it is List<String> -- no other types are supported in this way
-                final List<String> elems = TypeCast.checkList( leaf, String.class );
-                result = CollectionUtil.toArray( elems, String.class);
-            }
+            throw new IllegalArgumentException(amxName);
         }
-        /*
-        else if ( info.isLeaf() )
+        
+        final String xmlName = info.getXMLName();
+        
+        //debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + amxName + " => " + xmlName );
+        if ( info instanceof ConfiguredHelper.AttributeInfo )
         {
-            final List<?> leaf = mConfigBean.leafElements(xmlName);
-            if ( leaf != null ) {
-                result = (String)leaf.get(0);
-            }
-        }
-        */
-        else
-        {
-            // all plain attributes are 'String'
             result = mConfigBean.rawAttribute( xmlName );
         }
-        
+        else
+        {
+            if ( info.isString() )
+            {
+                final List<?> leaf = mConfigBean.leafElements(xmlName);
+                if ( leaf != null ) {
+                    result = (String)leaf.get(0);
+                }
+            }
+            else if ( info.getReturnType() == List.class )
+            {
+                final List<?> leaf = mConfigBean.leafElements(xmlName);
+                if ( leaf != null ) {
+                    // verify that it is List<String> -- no other types are supported in this way
+                    final List<String> elems = TypeCast.checkList( leaf, String.class );
+                    result = CollectionUtil.toArray( elems, String.class);
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Unsupported return type: " + info.getReturnType().getName() );
+            }
+        }
        // debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
-
     
     private static final class MyTransactionListener implements TransactionListener
     {

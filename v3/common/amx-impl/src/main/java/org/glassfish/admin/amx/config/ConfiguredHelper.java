@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import java.lang.reflect.Method;
 
@@ -79,16 +81,25 @@ final class ConfiguredHelper {
     private final Map<String, Method> mDuckTypedMethods = new HashMap<String, Method>();
     /** the Attribute or element name used for the name */
     private final NameHint mNameHint;
+    
+    /** cache mapping external names to xml names, for performance */
+    private final  ConcurrentMap<String,String> mNameCache = new ConcurrentHashMap<String,String>();
 
     /** Record {"Foo","foo"} / {"FooBar", "foo-bar"} relationship */
-    private static class Info {
+    public static class Info {
 
         private final String name;
         private final String xmlName;
+        private final Class<?> returnType;
 
         public Info(final String name, final String xmlName) {
+            this(name, xmlName, String.class);
+        }
+
+        public Info(final String name, final String xmlName, final Class<?> returnType) {
             this.name = name;
             this.xmlName = xmlName;
+            this.returnType = returnType;
         }
 
         public String getXMLName() {
@@ -98,10 +109,15 @@ final class ConfiguredHelper {
         public String getName() {
             return name;
         }
+
+        public Class<?> getReturnType() {
+            return returnType;
+        }
+        
+        public boolean isString() { return String.class == returnType; }
     }
 
-    private static final class AttributeInfo extends Info {
-
+    public static final class AttributeInfo extends Info {
         private final Attribute attr;
 
         public AttributeInfo(final String getterName, final Attribute a) {
@@ -114,12 +130,11 @@ final class ConfiguredHelper {
         }
     }
 
-    private static final class ElementInfo extends Info {
-
+    public static final class ElementInfo extends Info {
         private final Element elem;
 
-        public ElementInfo(final String getterName, final Element e) {
-            super(getterName, e.value().length() != 0 ? e.value() : toXMLName(getterName));
+        public ElementInfo(final String getterName, final Element e, final Class<?> returnType ) {
+            super(getterName, e.value().length() != 0 ? e.value() : toXMLName(getterName), returnType);
             elem = e;
         }
 
@@ -142,16 +157,34 @@ final class ConfiguredHelper {
 
         mNameHint = findNameHint();
     }
+    
+    public Info getInfo( final String anyName ) {
+        Info info = null;
+        final String xmlName = findXMLName(anyName);
+        if ( xmlName != null ) {
+            info = mAttributes.get(xmlName);
+            if ( info == null ) {
+                info = mElements.get(xmlName);
+            }
+        }
+        return info;
+    }
 
     public Class<? extends ConfigBeanProxy> getIntf() {
         return mIntf;
     }
 
     /** 
-    Match the name to an XML name, returning null if no match. Not intended for
-    high-performance use; mapping should be maintained elsewhere.
+        Match the name to an XML name, returning null if no match. Not intended for
+        high-performance use; mapping should be maintained elsewhere.
      */
     public String findXMLName(final String anyName) {
+        String xmlName = mNameCache.get(anyName);
+        if ( xmlName != null )
+        {
+            return xmlName;
+        }
+        
         // lowercase, no dashes
         final String canonical = anyName.toLowerCase().replace("-", "");
 
@@ -160,27 +193,37 @@ final class ConfiguredHelper {
             // they could be wildly different consider<br>
             // <code>@Attribute(name="hello-there")  String getFooBar()</code>
             if (info.getName().equalsIgnoreCase(canonical)) {
-                return info.getXMLName();
+                xmlName = info.getXMLName();
+                break;
             }
 
             final String temp = info.getXMLName().replace("-", "");
             if (canonical.equalsIgnoreCase(temp)) {
-                return info.getXMLName();
+                xmlName = info.getXMLName();
+                break;
             }
         }
+        
+        if ( xmlName == null )
+        {
+            for (final ElementInfo info : mElements.values()) {
+                if (info.getName().equalsIgnoreCase(canonical)) {
+                    xmlName = info.getXMLName();
+                    break;
+                }
 
-        for (final ElementInfo info : mElements.values()) {
-            if (info.getName().equalsIgnoreCase(canonical)) {
-                return info.getXMLName();
-            }
-
-            final String temp = info.getXMLName().replace("-", "");
-            if (canonical.equalsIgnoreCase(temp)) {
-                return info.getXMLName();
+                final String temp = info.getXMLName().replace("-", "");
+                if (canonical.equalsIgnoreCase(temp)) {
+                    xmlName = info.getXMLName();
+                    break;
+                }
             }
         }
+        
+        mNameCache.put( anyName, xmlName );
+        //debug( "Cached " + anyName + " as " + xmlName );
 
-        return null;
+        return xmlName;
     }
 
     /**
@@ -307,8 +350,7 @@ final class ConfiguredHelper {
                 if (!JMXUtil.isIsOrGetter(m)) {
                     continue;
                 }
-
-                final ElementInfo info = new ElementInfo(JMXUtil.getAttributeName(m), e);
+                final ElementInfo info = new ElementInfo(JMXUtil.getAttributeName(m), e, m.getReturnType());
                 mElements.put(info.getXMLName(), info);
             } else if ((dt = m.getAnnotation(DuckTyped.class)) != null) {
                 mDuckTypedMethods.put(m.getName(), m);
