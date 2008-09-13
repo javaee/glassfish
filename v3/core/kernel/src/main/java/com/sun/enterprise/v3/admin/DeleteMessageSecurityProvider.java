@@ -85,6 +85,7 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
     SecurityService securityService;   
 
     ProviderConfig thePC = null;
+    MessageSecurityConfig msgSecCfg = null;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -96,7 +97,7 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
         
         ActionReport report = context.getActionReport();        
         List<MessageSecurityConfig> mscs = securityService.getMessageSecurityConfig();        
-        MessageSecurityConfig msgSecCfg = null;
+        
         for (MessageSecurityConfig  msc : mscs) {
             if (msc.getAuthLayer().equals(authLayer)) {
                 msgSecCfg = msc;
@@ -123,11 +124,24 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
                         public Object run(MessageSecurityConfig param) 
                         throws PropertyVetoException, TransactionFailure {
 
-                            param.getProviderConfig().remove(thePC);
+                            if ((param.getDefaultProvider() != null) &&
+                                param.getDefaultProvider().equals(
+                                    thePC.getProviderId())) {
+                                param.setDefaultProvider(null);
+                            }
+                                
+                            if ((param.getDefaultClientProvider() != null) &&
+                                 param.getDefaultClientProvider().equals(
+                                    thePC.getProviderId())) {
+                                param.setDefaultClientProvider(null);
+                            }
+                            
+                            param.getProviderConfig().remove(thePC);                                                                                       
                             return null;
                         }
                     }, msgSecCfg);
                 } catch(TransactionFailure e) {
+                    e.printStackTrace();
                     report.setMessage(localStrings.getLocalString(
                         "delete.message.security.provider.fail", 
                         "Deletion of message security provider named {0} failed", 
