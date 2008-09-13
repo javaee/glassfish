@@ -45,9 +45,6 @@ import com.sun.appserv.management.config.EngineConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.PropertyConfig;
 
-import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AMXRoot;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
