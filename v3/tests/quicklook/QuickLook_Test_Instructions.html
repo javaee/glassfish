@@ -1,13 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
-	<TITLE></TITLE>
-	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Win32)">
-	<META NAME="AUTHOR" CONTENT="d s">
-	<META NAME="CREATED" CONTENT="20080319;10465059">
-	<META NAME="CHANGED" CONTENT="20080325;17282512">
-	<STYLE>
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=windows-1252">
+  <title></title>
+  <meta name="GENERATOR" content="StarOffice 8  (Win32)">
+  <meta name="AUTHOR" content="d s">
+  <meta name="CREATED" content="20080319;10465059">
+  <meta name="CHANGED" content="20080325;17282512">
+  <style>
 	<!--
 		@page { size: 8.5in 11in; margin: 0.79in }
 		P { margin-bottom: 0.08in }
@@ -15,163 +16,213 @@
 	color: #F00;
 }
 	-->
-	</STYLE>
-</HEAD>
-<BODY LANG="en-US" DIR="LTR">
-<P ALIGN=LEFT STYLE="margin-bottom: 0in"><FONT SIZE=4 STYLE="font-size: 16pt"><B><FONT FACE="Trebuchet MS, sans-serif">Instructions
-for running QuickLook test on GlassFish V3</FONT></B></FONT></P>
-<P STYLE="margin-bottom: 0in"><span class="red"><strong>These instructions seem to be stale for V3. Please see: <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3BuildTests#ql" target="_blank">http://wiki.glassfish.java.net/Wiki.jsp?page=V3BuildTests#ql</a></strong></span><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Complete
-paths are required for some of the properties as each testsuite can
-be imported as an independent Netbeans project. </FONT>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">There
-is no need to setup an environment variable.</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Setting
-Up.</B></FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">JDK
-5.0 or above is required.</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Unzip
-	in working directory &lt;ws_root&gt;</FONT></P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Edit
-	&lt;ws_root&gt;/build.properties and mention deploy.platform=&rdquo;v3&rdquo;
-	and </FONT>
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">deploy.platform=v3</FONT></P>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">glassfish.http.host=localhost</FONT></P>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">glassfish.http.port=8080</FONT></P>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Since
-	this is a v3 build, v3-config.properties file needs to be further
-	edited.</FONT></P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">glassfish.home=complete
-		path</FONT></P>
-	</UL>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Starting
-GlassFish and Derby</B></FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">&lt;ws_root&gt;/ant
-	-f run.xml startDerby. (This should start derby in spawn mode).For
-	port information, &lt;ws_root&gt;/gfproject/derby.properties.Default
-	port is </FONT>
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">If
-	you want to start in non-spawn mode, then please edit file
-	&lt;ws_root&gt;/gfproject/db-targets.xml and in startDerby and
-	stopDerby targets remove &ldquo;spawn=true&rdquo;</FONT></P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">To
-	start glassfish v3, go to ${glassfish.home}/bin/asadmin
-	start-domain. (usual instructions)</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Run
-and Reporting Tests</B></FONT></P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">&lt;ws_root&gt;/ant
-	build deploy runtest report | tee run.log</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Test
-Report should be available at &lt;ws_root&gt;/test-output/index.html</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Trebuchet MS, sans-serif">If
-tests are imported inside Netbeans for editing, please make sure that
-Netbeans ANT version is 1.7 or higher.</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P ALIGN=LEFT STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Instructions
-for running test on GlassFish V2</B></FONT></FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Complete
-paths are required for some of the properties as each testsuite can
-be imported as an independent Netbeans project. </FONT>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">There
-is no need to setup an environment variable.</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Setting
-Up.</B></FONT></P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">JDK
-5.0 or above is required</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Unzip
-	in working directory &lt;ws_root&gt;</FONT></P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Edit
-	&lt;ws_root&gt;/build.properties and mention deploy.platform=&rdquo;v2&rdquo;
-	and </FONT>
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">deploy.platform=v2</FONT></P>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">glassfish.http.host=localhost</FONT></P>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">glassfish.http.port=8080</FONT></P>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Since
-	this is a v2 build, v2-config.properties file needs to be further
-	edited.</FONT></P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Glassfish.home=complete
-		path</FONT></P>
-		<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">admin.password.file=complete
-		path for &lt;ws_root&gt;/gfproject/admin.password.file</FONT></P>
-	</UL>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Starting
-GlassFish and Derby</B></FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">&lt;ws_root&gt;/ant
-	-f run.xml startDerby. (This should start derby in spawn mode).For
-	port information, &lt;ws_root&gt;/gfproject/derby.properties.</FONT></P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">If
-	you want to start in non-spawn mode, then please edit file
-	&lt;ws_root&gt;/gfproject/db-targets.xml and in startDerby and
-	stopDerby targets remove &ldquo;spawn=true&rdquo;</FONT></P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">To
-	start glassfish v2, go to ${glassfish.home}/bin/asadmin
-	start-domain. (usual instructions</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif"><B>Run
-and Reporting Tests</B></FONT></P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">&lt;ws_root&gt;/ant
-	build deploy runtest report | tee run.log</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">Test
-Report should be available at </FONT>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Trebuchet MS, sans-serif">&lt;ws_root&gt;/test-output/index.html</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-</BODY>
-</HTML>
+	</style>
+</head>
+<body dir="ltr" lang="en-US">
+<h1 style="margin-left: 80px;"><big><font style="font-size: 16pt;"
+ size="4"><big><b><font face="Trebuchet MS, sans-serif">Instructions
+for QuickLook tests</font></b></big></font></big></h1>
+<br>
+<p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
+Running QuickLook tests:</b></big></font></big></p>
+<br>
+Change directory to v3/tests/quicklook. All italic text indicate a
+command.<br>
+<span style="font-weight: bold;">1. To Run All Tests from Top Level:</span><br>
+<ul>
+  <li>For <span style="font-weight: bold;">web.zip</span> bundle of
+V3: <br>
+  </li>
+  <ul style="font-style: italic;">
+    <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
+  </ul>
+  <li>For <span style="font-weight: bold;">web-ips.zip</span> bundle
+of V3, the javadb is at the same level of glassfish and property <i
+ style="font-style: italic;">derby.system.home </i>need to be set: <br>
+  </li>
+  <ul>
+    <li><i style="font-style: italic;">mvn -Dglassfish.home=</i><span
+ style="font-style: italic;">{V3 Installation Dir}/glassfish</span><i
+ style="font-style: italic;">
+-Dderby.system.home=</i><span style="font-style: italic;">{V3
+Installation Dir}</span><i>/javadb&nbsp; test
+      </i></li>
+  </ul>
+</ul>
+<span style="font-weight: bold;">2. To Run Individual Test Suite from
+Directory Level:</span><br>
+<br>
+After the first run with maven from top level, the depency jars will be
+downloaded to local maven repostory. Now it's possible to run
+individual test suite from directory level. Change directory to the
+test directory. For example, to run quicklook/web/helloworld test suite
+for <span style="font-weight: bold;">web.zip</span> bundle:<br>
+<ul>
+  <ul>
+    <li><i>ant -Dglassfish.home=</i><span style="font-style: italic;">{V3
+Installation Dir}</span><i>&nbsp; startDerby</i></li>
+    <li><i>ant -Dglassfish.home=</i><span style="font-style: italic;">{V3
+Installation Dir}</span><i>&nbsp; start-server-felix</i></li>
+    <li style="font-style: italic;">cd web/helloworld</li>
+    <li><span style="font-style: italic;">ant -Dglassfish.home={V3
+Installation Dir} all</span><br>
+    </li>
+  </ul>
+</ul>
+For <span style="font-weight: bold;">web-ips.zip</span> bundle,
+property <i style="font-style: italic;">derby.system.home </i>need to
+be set as shown in section 1.<br>
+<br>
+<span style="font-weight: bold;">3. Using Local Maven Repository in
+Non-Default Directory:</span><br>
+Section 1 and 2 assume the use of default local maven repostory
+directory, ${user.home}/.m2/repository. If you local maven repostory is
+in another directory, say directory {Local_Maven}, you can use one of
+the following ways to point to your specific maven repostory:<br>
+<ul>
+  <ul>
+    <li>Add option on command line: <span style="font-style: italic;">-Dmaven.repo.local={Local_Maven}</span></li>
+    <li>Set MVN_OPTS environment varialable: <span
+ style="font-style: italic;">MVN_OPTS="-D-Xmx512M -Dmaven.repo.local={Local_Maven}"</span></li>
+    <li>Make a symbolic link from&nbsp;${user.home}/.m2/repository to
+the actuall maven repository.</li>
+    <li>Another option is to use ${user.home}/.m2/settings.xml which
+points to the repository location<br>
+      <div style="margin-left: 40px; font-style: italic;">&lt;settings&gt;
+      <br>
+&lt;localRepository&gt;<span class="moz-txt-slash"><span
+ class="moz-txt-tag">/</span>abc<span class="moz-txt-tag">/</span></span>.m2/repository&lt;/localRepository&gt;
+      <br>
+&lt;/settings&gt; <br>
+      </div>
+    </li>
+  </ul>
+</ul>
+The finial report will be available under directory
+quicklook/test-output-felix.<br>
+<p style="margin-bottom: 0in;"><big><big style="font-weight: bold;">II.
+Adding Tests to QuickLook</big></big><br>
+</p>
+<p style="margin-bottom: 0in;">The test framework of QuickLook is <a
+ href="http://testng.org/doc/">TestNG</a>. TestNG allows us to
+add/remove tests from harness easily and simplifies the client side
+programming. Below is an example of how to add a test suite to QL:<br>
+</p>
+<p style="margin-bottom: 0in;">An easy way to do is to copy an existing
+test suite, such as quicklook/web/helloworld, to your test directory.
+Then add your java or xml files (or your logic to the existing files)
+to the test directory. The build.xml and properties files are
+inherited. <br>
+<br>
+For examples on the client side java code, please look at the following
+files for reference <br>
+quicklook/web/helloworld/src/test/HelloJSPTestNG.java<br>
+quicklook/web/jsfastrologer/src/test/JSFWebTestNG.java<br>
+<br>
+Here is an example of adding a test suite hellouniverse. All italic
+text indicate a command. Unix OS is used for the commands<br>
+<br>
+<span style="font-style: italic;">% cp -r helloworld hellouniverse</span><br>
+<span style="font-style: italic;">% cd hellouniverse</span><br>
+<br>
+Please make the following changes to build.properties<br>
+&nbsp;<br>
+war.file=hellouniverse<br>
+testsuite.name=basicweb<br>
+testng.test.name=web_jsp_hello_universe<br>
+contextroot=hellouniverse<br>
+deploy.platform=v3<br>
+<br>
+Please make&nbsp; following changes to build.xml.&nbsp; Change Project
+name<br>
+&lt;project name="hello-universe" default="default" basedir="."&gt;<br>
+Under runtest target<br>
+&lt;param name="contextroot" value="hellouniverse"/&gt;<br>
+<br>
+<span style="font-style: italic;">% cd metadata</span><br>
+<br>
+Edit web.xml to reflect the new application as universe .<br>
+<br>
+Edit src/java/SimpleServlet.java, change the name of servlet to
+SimpleServlet1, change the package directory from myapp to
+hellouniverse and rename to src/java/SimpleServlet1.java<br>
+<br>
+Edit src/test/HelloJSPTestNG.java, change the classname, testurl&nbsp;
+and rename to src/test/HelloUniverseTestNG.java<br>
+<br>
+Now all editing is complete, lets try to build/deploy/run from leaf
+level (hellouniverse level)<br>
+<br>
+Assume we are using web.zip for glassfish. Make sure javadb and server
+are started&nbsp; (please use ant 1.6.5)<br>
+<span style="font-style: italic;">% cd v3/test/quicklook</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">% ant -Dglassfish.home={V3
+Installation Dir} startDerby</span><br>
+<span style="font-style: italic;">% ant </span><span
+ style="font-style: italic;">-Dglassfish.home={V3 Installation Dir} </span><span
+ style="font-style: italic;">start-server</span><br>
+<br>
+Once the server and derby are started, go to <br>
+<span style="font-style: italic;">% cd web/hellouniverse</span><br>
+<span style="font-style: italic;">% ant&nbsp; -Dglassfish.home={V3
+Installation Dir} build </span><br>
+<br>
+Make sure no errorss on consol<br>
+<span style="font-style: italic;">% ant&nbsp; -Dglassfish.home={V3
+Installation Dir} deploy </span><br>
+<br>
+make sure no errors in server.log (while loading application)<br>
+<span style="font-style: italic;">% ant&nbsp; -Dglassfish.home={V3
+Installation Dir}&nbsp; runtest</span><br>
+</p>
+<p style="margin-bottom: 0in;">Now you should see 4 tests run and
+passed <br>
+Please add "all" target to include "build deploy runtest"<br>
+</p>
+<p style="margin-bottom: 0in;"><big><big><span
+ style="font-weight: bold;">III. Reference:</span></big></big><br>
+</p>
+<p style="margin-bottom: 0in;"><a
+ href="http://appserver.sfbay.sun.com/attach/GlassFishV3Internal%2FHowToAddTests.odt">Add
+tests to QuickLook.</a><br>
+</p>
+<p style="margin-bottom: 0in;"><br style="font-weight: bold;">
+<span style="font-weight: bold;">Revision history:<br>
+</span></p>
+<p style="margin-bottom: 0in;"><span style="font-weight: bold;"></span></p>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">Version<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Author<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Date<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">0.1<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Ming Zhang
+(ming.zhang@sun.com)<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">09/12/2008<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p style="margin-bottom: 0in;"><span style="font-weight: bold;"><br>
+</span></p>
+<p style="margin-bottom: 0in;"></p>
+</body>
+</html>
