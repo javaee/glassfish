@@ -577,9 +577,11 @@ public class CLIRemoteCommand {
     
     private void initializePassword(LoginInfo li) throws CommandException {
 
+        encodedPasswords = new HashMap<String, String>();
+        
         if (commandName.equalsIgnoreCase("change-admin-password")) {
             try {
-                password = getInteractiveOptionWithConfirmation();
+                password = getInteractiveOptionWithConfirmation(encodedPasswords);
                 base64encode(encodedPasswords);
                 return;
             } catch (CommandValidationException cve) {
@@ -587,6 +589,15 @@ public class CLIRemoteCommand {
             }
         }
         
+        if (commandName.equalsIgnoreCase("create-password-alias")) {
+            try {
+                password = confirmInteractivelyAliasPassword(encodedPasswords);
+                base64encode(encodedPasswords);                
+            } catch (CommandValidationException cve) {
+                throw new CommandException(cve);
+            }
+        }
+
         String pwfile = params.get("passwordfile");
         
         if (ok(pwfile)) {
@@ -600,10 +611,28 @@ public class CLIRemoteCommand {
         }                
     }
     
-    private String getInteractiveOptionWithConfirmation() 
+    private String confirmInteractivelyAliasPassword(
+        Map<String, String> encodedPasswords) 
     throws CommandValidationException {
+        final String prompt = getLocalizedString("AliasPasswordPrompt");
+        final String confirmationPrompt = 
+            getLocalizedString("AliasPasswordConfirmationPrompt");
 
-        encodedPasswords = new HashMap<String, String>();
+        String aliasPassword = getInteractiveOption(prompt);
+        encodedPasswords.put(CLIUtil.ENV_PREFIX+"ALIASPASSWORD",aliasPassword);
+        
+        String aliasPasswordAgain = getInteractiveOption(confirmationPrompt);
+        
+        if (!aliasPassword.equals(aliasPasswordAgain)) {
+            throw new CommandValidationException(getLocalizedString(
+                "OptionsDoNotMatch", new Object[]{"Admin Password"}));
+        }
+        return aliasPassword;        
+    }
+    
+    private String getInteractiveOptionWithConfirmation(
+        Map<String, String> encodedPasswords) 
+    throws CommandValidationException {        
         
         final String prompt = getLocalizedString("AdminPasswordPrompt");
         final String newprompt = getLocalizedString("AdminNewPasswordPrompt");
