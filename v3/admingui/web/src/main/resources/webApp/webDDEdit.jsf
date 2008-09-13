@@ -45,8 +45,10 @@
         #println("********");
         #println("$attribute{descriptors}");
         #println("********");
+        <!--
         getWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", 
                     envList=>$attribute{listOfCtxRows}, ctxParamList=>$attribute{listOfParamRows});
+        -->
     />
    #include "/shared/restart.inc"    
     <sun:html id="html2">
@@ -60,7 +62,7 @@
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitleHelp}" >
-                <!facet pageButtonsTop>
+                <!-- <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
                             <!command
@@ -90,6 +92,7 @@
                         </sun:button>
                     </sun:panelGroup>
                 </facet> 
+                -->
             </sun:title>
             <!-- PropertySheet .... -->
             <sun:propertySheet id="propertySheet">			 
@@ -107,7 +110,7 @@
             </sun:propertySheet> 
             "<br />
             "<br />
-#include "/web/webApp/editWebDDTable.inc"
+    #include "/web/webApp/editWebDDTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
             </sun:form>
         </sun:body>
