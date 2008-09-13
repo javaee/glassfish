@@ -47,4 +47,22 @@ public interface WebAppConfigConfig extends ApplicationConfigConfig
     public Map<String, EnvEntryConfig> getEnvEntryConfigMap();
     
     public Map<String, ContextParamConfig> getContextParamConfigMap();
+    
+    /**
+        @param name
+        @param value
+        @param type
+        @param description may be null
+     */
+    public EnvEntryConfig createEnvEntryConfig( String name, String value, String type, String description);
+    public void removeEnvEntryConfig( String name );
+    
+    /**
+        @param name
+        @param value
+        @param description may be null
+     */
+    public ContextParamConfig createContextParamConfig( String name, String value, String type, String description);
+    public void removeContextParamConfig( String name );
+
 }

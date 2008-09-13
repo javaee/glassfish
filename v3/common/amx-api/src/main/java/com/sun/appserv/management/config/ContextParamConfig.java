@@ -35,6 +35,7 @@
  */
 package com.sun.appserv.management.config;
 
+@AMXCreateInfo(paramNames={"param-name", "param-value", "description"})
 public interface ContextParamConfig extends NamedConfigElement
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
