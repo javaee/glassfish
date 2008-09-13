@@ -62,7 +62,7 @@ public interface WebAppConfigConfig extends ApplicationConfigConfig
         @param value
         @param description may be null
      */
-    public ContextParamConfig createContextParamConfig( String name, String value, String type, String description);
+    public ContextParamConfig createContextParamConfig( String name, String value, String description);
     public void removeContextParamConfig( String name );
 
 }
