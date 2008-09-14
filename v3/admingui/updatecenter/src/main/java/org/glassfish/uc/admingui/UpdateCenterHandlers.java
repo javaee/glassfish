@@ -177,10 +177,27 @@ public class UpdateCenterHandlers {
         List<Fmri> result = new ArrayList();
         for(String eachAddOn : allFmriName){
             result.add(catalog.getMatchingFmri(eachAddOn));
-        }
+             }
         return result;
     }
     
+//    To be used when integrate UC version 1175
+//    private static List<Fmri> getAddOnList-new(Image image){
+//            List<String> installed = new ArrayList<String>();
+//                    for (Image.FmriState each : image.getInventory(null, false)) {
+//            installed.add(each.fmri.getName());
+//        }
+//        List<Fmri> result = new ArrayList();
+//        for (Image.FmriState each : image.getInventory(null, true)) {
+//            if (!each.updateable && !each.installed &&
+//                    !installed.contains(each.fs.fmri.getName())) {
+//                result.add(each.fmri);
+//            }
+//        }
+//        return result;
+//    }
+
+   
     private static List<Fmri> getUpdateList(Image image){
         List<Image.FmriState> fList = image.getInventory(null, false);
         ArrayList<Fmri> result = new ArrayList();
