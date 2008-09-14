@@ -32,15 +32,12 @@ import java.util.logging.Logger;
 import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.impl.SysnetRegistrationService;
 
-/**
- * The Network Service is responsible for starting grizzly and register the
- * top level proxy. It is also providing a runtime service where other
- * services (like admin for instance) can register endpoints proxy to
- * particular context root.
- *
- * @author Jerome Dochez
- */
-@Service(name="TransferService")
+/* Service to attempt transfer of tags to the central stclient servicetag
+ * repository
+ * 
+*/
+
+@Service(name="SysnetTransferService")
 @Async
 public class TransferService implements Startup, PostConstruct {
     
@@ -54,20 +51,22 @@ public class TransferService implements Startup, PostConstruct {
      * @return the life expectency.
      */
     public Lifecycle getLifecycle() {
-        return Lifecycle.START;
+        return Lifecycle.SERVER;
     }
+    
+    public int priority() {
+        return Thread.MIN_PRIORITY;
+    }    
     
     public void postConstruct() {
         SysnetRegistrationService srs = 
                 new SysnetRegistrationService(
                 RegistrationUtil.getServiceTagRegistry());
         if (srs.isRegistrationEnabled()) {
-            logger.severe("Reg is enabled.");
             try {
-                logger.severe("trying transfer..");
                 srs.transferEligibleServiceTagsToSysNet();
             } catch (RegistrationException re) {
-                logger.warning(re.getMessage());
+                logger.info(re.getMessage());
             }
         }
     }

@@ -40,10 +40,10 @@ import com.sun.enterprise.registration.RegistrationService;
 import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.RegistrationAccount;
 import com.sun.enterprise.registration.RegistrationServiceConfig;
+import com.sun.enterprise.registration.RegistrationDescriptor;
 
 import com.sun.scn.servicetags.EnvironmentInformation;
 import com.sun.scn.servicetags.SvcTag;
-import com.sun.scn.client.comm.SvcTagException;
 import com.sun.scn.servicetags.SunOnlineAccount;
 import com.sun.scn.client.comm.RegistrationWrapper;
 import com.sun.scn.client.comm.SvcTagException;
@@ -147,13 +147,13 @@ public class SysnetRegistrationService implements RegistrationService {
     /*  Registers the generated ServiceTags to SunConnection backend */
     public void register(RegistrationAccount account) 
         throws RegistrationException, ConnectException, UnknownHostException {    
-        
-        
         try {
-            List<ServiceTag> serviceTags = getRegistrationDescriptors();
-            if (serviceTags.size() == 0)
+            List<ServiceTag> serviceTags = 
+                    getRegistrationDescriptors(RegistrationDescriptor.RegistrationStatus.NOT_REGISTERED);
+            if (serviceTags.size() == 0) {
+                logger.log(Level.WARNING, "No unregistered tags found");
                 return;
-            
+            }
             String hostName = "";    
             try {
                 hostName = InetAddress.getLocalHost().getHostName();
@@ -200,13 +200,35 @@ public class SysnetRegistrationService implements RegistrationService {
     }
     
     public List getRegistrationDescriptors() throws RegistrationException {
-        RepositoryManager rm = 
-                new RepositoryManager(localRepositoryFile);
+        RepositoryManager rm = getRepositoryManager();
         // make sure runtime values are generated in RepositoryManager
         rm.updateRuntimeValues();
         return rm.getServiceTags();
     }
+
+    public List getRegistrationDescriptors(String productURN) throws RegistrationException {
+        List<ServiceTag> st1 = getRegistrationDescriptors();
+        List<ServiceTag> st2 = new ArrayList();
+        for (int i = 0; i < st1.size(); i++) {
+            ServiceTag st = st1.get(i);
+            if (st.getProductURN().equals(productURN))
+                st2.add(st);
+        }
+        return st2;
+    }
     
+    public List getRegistrationDescriptors(RegistrationDescriptor.RegistrationStatus status) throws RegistrationException {
+        List<ServiceTag> st1 = getRegistrationDescriptors();
+        List<ServiceTag> st2 = new ArrayList();
+        RepositoryManager rm = getRepositoryManager();
+        for (int i = 0; i < st1.size(); i++) {
+            ServiceTag st = st1.get(i);
+            if (rm.getRegistrationStatus(st).equals(status))
+                st2.add(st);
+        }
+        return st2;
+    }
+
     public List<String> getAvailableCountries() {
         return regWrapper.getAvailableCountries();
     }
@@ -245,30 +267,22 @@ public class SysnetRegistrationService implements RegistrationService {
     
     /* read the registration reminder from local persistent store */
     public RegistrationReminder getRegistrationReminder() throws RegistrationException {
-        RepositoryManager repository = new 
-                RepositoryManager(localRepositoryFile);
-        return repository.getRegistrationReminder();
+        return getRepositoryManager().getRegistrationReminder();
     }
     
     /* set the registration reminder to local persistent store */
     public void setRegistrationReminder(RegistrationReminder reminder) throws RegistrationException {        
-        RepositoryManager repository = 
-                new RepositoryManager(localRepositoryFile);
-        repository.setRegistrationReminder(reminder);
+        getRepositoryManager().setRegistrationReminder(reminder);
     }
 
     /* read the registration status from local persistent store */
     public RegistrationStatus getRegistrationStatus() throws RegistrationException {
-        RepositoryManager repository = new 
-                RepositoryManager(localRepositoryFile);
-        return repository.getRegistrationStatus();
+        return getRepositoryManager().getRegistrationStatus();
     }
 
     /* set the registration status to local persistent store */
     public void setRegistrationStatus(RegistrationStatus status) throws RegistrationException {        
-        RepositoryManager repository = 
-                new RepositoryManager(localRepositoryFile);
-        repository.setRegistrationStatus(status);
+        getRepositoryManager().setRegistrationStatus(status);
     }
    
     public String getPasswordHelpURL() {
@@ -303,6 +317,10 @@ public class SysnetRegistrationService implements RegistrationService {
         transferManager.transferServiceTags();
     }
 
+    private RepositoryManager getRepositoryManager() throws RegistrationException {
+        return new RepositoryManager(localRepositoryFile);
+    }
+    
     private final RegistrationWrapper regWrapper;
     private final File localRepositoryFile;
     private static final String REGISTRATION_ID = "glassfish";

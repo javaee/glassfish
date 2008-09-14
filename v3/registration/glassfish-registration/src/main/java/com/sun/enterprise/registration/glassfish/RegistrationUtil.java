@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.registration.glassfish;
 
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
@@ -41,6 +40,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+
+import com.sun.enterprise.registration.impl.SysnetRegistrationService;
+import com.sun.enterprise.registration.impl.ServiceTag;
+import com.sun.enterprise.registration.RegistrationException;
 
 public class RegistrationUtil {
 
@@ -79,10 +83,10 @@ public class RegistrationUtil {
      * @return Service tag file relative to an installRoot. Please note that it is possible that the file may not actually exist
      */
     public static File getServiceTagRegistry(String installRoot) {
-        File serviceTagRegistry = new File(getRegistrationHome(installRoot), SERVICE_TAG_REGISTRY_NAME);        
+        File serviceTagRegistry = new File(getRegistrationHome(installRoot), SERVICE_TAG_REGISTRY_NAME);
         return getServiceTagRegistry(serviceTagRegistry);
     }
-    
+
     private static File getServiceTagRegistry(File serviceTagRegistry) {
         if (!serviceTagRegistry.exists()) {
             // It is possible that we are embedded inside other product check for a link to registration file
@@ -93,7 +97,7 @@ public class RegistrationUtil {
                     //The first line in the link file is expected to contain fully qualified path to actual service tag repository
                     String indirectedServiceTagRegistryName = in.readLine();
                     File indirectedServiceTagRegisitryFile = new File(indirectedServiceTagRegistryName);
-                    if(indirectedServiceTagRegisitryFile.exists()) {
+                    if (indirectedServiceTagRegisitryFile.exists()) {
                         //Return indirectedServiceTagRegisitryFile as the serviceTagRegistry only if it exists
                         serviceTagRegistry = indirectedServiceTagRegisitryFile;
                     }
@@ -108,4 +112,22 @@ public class RegistrationUtil {
         }
         return serviceTagRegistry;
     }
+
+    public static String getGFProductURN() {
+        //FIXME: This should come from an installer/packager generated file.
+        return "urn:uuid:05617256-0677-11dd-8282-080020a9ed93";
+    }
+
+    public static String getGFInstanceURN() throws RegistrationException {
+        SysnetRegistrationService srs = new SysnetRegistrationService(getServiceTagRegistry());
+
+        List<ServiceTag> st = srs.getRegistrationDescriptors(getGFProductURN());
+        if (st.isEmpty()) {
+            throw new RegistrationException("Instance URN for " +
+                    getGFProductURN() + " not found"); // i18n
+        }
+        return st.get(0).getInstanceURN();
+    }
 }
+
+
