@@ -935,20 +935,11 @@ public class ApplicationLifecycle {
                     appRef.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
 
-                    // application-config element
-                    for (Iterator itr = moduleProps.keySet().iterator();
-                        itr.hasNext();) {
-                        String propName = (String) itr.next();
-                        if (propName.startsWith(
-                            DeploymentProperties.APP_CONFIG)) {
-                            ApplicationConfig appConfig = 
-                                ConfigSupport.createChildOf(appRef,
-                                    ApplicationConfig.class);
-                            appRef.getApplicationConfig().add(appConfig);
-                            appConfig.setType(propName.substring(
-                                propName.indexOf(".") + 1));
-                            appConfig.setConfig(moduleProps.getProperty(
-                                propName));
+                    List<ApplicationConfig> savedAppConfigs =
+                            (List<ApplicationConfig>) moduleProps.get(DeploymentProperties.APP_CONFIG);
+                    if (savedAppConfigs != null) {
+                        for (ApplicationConfig ac : savedAppConfigs) {
+                            appRef.getApplicationConfig().add(ac);
                         }
                     }
 
@@ -1059,10 +1050,17 @@ public class ApplicationLifecycle {
     protected void addApplicationConfigToProps (Properties props,
         List<ApplicationConfig> appConfigList) {
         for (ApplicationConfig appConfig : appConfigList) {
+            /*
+             * Each individual ApplicationContainer implementation will retrieve
+             * its particular application config, getting APP_CONFIG.<container-type>
+             * from the startup context parameters, and (typically) casting it
+             * to the corresponding sub-interface of ApplicationConfig for that
+             * container type.  See WebApplication in the web/web-glue module
+             * for an example.
+             */
             String appConfigName = DeploymentProperties.APP_CONFIG + "." +
                 appConfig.getType();
-            String appConfigValue = appConfig.getConfig();
-            props.setProperty(appConfigName, appConfigValue);
+            props.put(appConfigName, appConfig);
         }
     }
 

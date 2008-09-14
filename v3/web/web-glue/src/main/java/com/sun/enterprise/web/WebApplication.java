@@ -36,21 +36,14 @@
 
 package com.sun.enterprise.web;
 
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.Container;
-import org.apache.catalina.connector.CoyoteAdapter;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.ContextParameter;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.Result;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
-import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.container.RequestDispatcher;
+import java.util.Collection;
+import java.util.HashSet;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.deployment.common.DeploymentProperties;
@@ -60,11 +53,11 @@ import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
 
 import java.util.List;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.config.ConfigSupport;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
@@ -184,37 +177,158 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         return wmInfo.getDescriptor();
     }
 
-
+    /**
+     * Applies application config customization (stored temporarily in the
+     * start-up context's start-up parameters) to the web app's descriptor.
+     * @param startupContext
+     */
     private void applyApplicationConfig(StartupContext startupContext) {
-        Properties startupParams = startupContext.getStartupParameters(); 
-        String config = startupParams.getProperty(
+        Properties startupParams = startupContext.getStartupParameters();
+        /*
+         * Fetch the WebAppConfig object, if any was stored in the startup parameters
+         * so we could retrieve it here.
+         */
+        Object config = startupParams.get(
             DeploymentProperties.APP_CONFIG + ".web");
         if (config != null) {
-            // parse the appConfigData and set in the descriptor
-            WebAppConfig c = ApplicationConfig.Util.decodeConfigData(
-                container._serverContext.getDefaultHabitat(), config);
+            if ( ! (config instanceof WebAppConfig)) {
+                logger.warning("Expected WebAppConfig instance in startup context but found " + config.getClass().getName() + "; ignoring and continuing");
+            }
+            
+            WebAppConfig c = (WebAppConfig) config;
 
             WebBundleDescriptor descriptor = wmInfo.getDescriptor();
 
-            for (EnvEntry env : c.getEnvEntry()) {
-                for (EnvironmentEntry envEntry : 
-                    descriptor.getEnvironmentEntrySet()) {
+            applyEnvEntryCustomizations(descriptor, c.getEnvEntry());
+            applyContextParamCustomizations(descriptor, c.getContextParam());
+        }
+    }
+
+    /**
+     * Applies customizations of context-parameters to the context-parameters
+     * specified in the descriptor.
+     * <p>
+     * Any customization to a context-param name
+     * that is also present in the descriptor overrides the value from the descriptor.
+     * Any customization that specifies a context-param name that does not appear
+     * in the descriptor is added to the runtime data structure.  Any
+     * context-param that is present in the descriptor but not in the
+     * customizations is removed from the run-time data structure.
+     *
+     * @param descriptor web app descriptor possibly containing context-param settings
+     * @param contextParams customizations of context-params
+     */
+    private void applyContextParamCustomizations(WebBundleDescriptor descriptor, Collection<ContextParam> contextParams ) {
+        boolean isFiner = logger.isLoggable(Level.FINER);
+
+        Set<ContextParameter> uncustomizedContextParameters =
+                new HashSet<ContextParameter>(descriptor.getContextParametersSet());
+        
+        Set<ContextParam> unappliedCustomizationContextParams =
+                new HashSet<ContextParam>(contextParams);
+
+        for (ContextParam cParam: contextParams) {
+            for (ContextParameter contextParam :
+                descriptor.getContextParametersSet()) {
+                if (contextParam.getName().equals(cParam.getParamName())) {
+                    contextParam.setValue(cParam.getParamValue());
+                    if (isFiner) {
+                        logger.finer("Overriding descriptor context param " + contextParam.getName() + "=" +
+                                contextParam.getValue() + " with customized value " + cParam.getParamValue());
+                    }
+                    uncustomizedContextParameters.remove(contextParam);
+                    unappliedCustomizationContextParams.remove(cParam);
+                    break;
+                }
+            }
+        }
+
+        for (ContextParameter cp : uncustomizedContextParameters) {
+            if (isFiner) {
+                logger.finer("App config customization is present and does not include contextParameter " +
+                        cp.getName() + " so this contextParam is being removed from the app's configuration");
+            }
+            descriptor.removeContextParameter(cp);
+        }
+
+        for (ContextParam addedCP : unappliedCustomizationContextParams) {
+            if (isFiner) {
+                logger.finer("App config customization included context parameter " +
+                        addedCP.getParamName() + " not present in the descriptor so it has been added to the app's configuration");
+            }
+            ContextParameter newCP = new EnvironmentProperty(
+                    addedCP.getParamName(),
+                    addedCP.getParamValue(),
+                    addedCP.getDescription());
+            descriptor.addContextParameter(newCP);
+        }
+    }
+
+    /**
+    /**
+     * Applies customizations of env-entries to the env-entries
+     * specified in the descriptor.
+     * <p>
+     * Any customization to an env-entry
+     * that is also present in the descriptor overrides the value from the descriptor.
+     * Any customization that specifies an env-entry name that does not appear
+     * in the descriptor is added to the runtime data structure.  Any
+     * env-entry that is present in the descriptor but not in the
+     * customizations is removed from the run-time data structure.
+     * @param descriptor deployment descriptor for the web app
+     * @param envEntries customized env entry settings
+     */
+    private void applyEnvEntryCustomizations(WebBundleDescriptor descriptor, Collection<EnvEntry> envEntries) {
+        Set<EnvironmentEntry> uncustomizedDescriptorEnvironmentEntries =
+                new HashSet<EnvironmentEntry>(descriptor.getEnvironmentEntrySet());
+
+        Set<EnvEntry> unappliedCustomizationEnvEntries =
+                new HashSet<EnvEntry>(envEntries);
+
+        for (EnvEntry env : envEntries) {
+            try {
+                /*
+                 * Make sure the env-entry value can be parsed given the
+                 * data type.
+                 */
+                env.validateValue();
+
+                for (EnvironmentEntry envEntry :
+                  descriptor.getEnvironmentEntrySet()) {
                     if (envEntry.getName().equals(env.getEnvEntryName())) {
                         envEntry.setValue(env.getEnvEntryValue());
+                        uncustomizedDescriptorEnvironmentEntries.remove(envEntry);
+                        unappliedCustomizationEnvEntries.remove(env);
                         break;
                     }
                  }
+            } catch (Exception ex) {
+                logger.warning("Validation failed for customized application config <env-entry> named " +
+                        env.getEnvEntryName() + ": " + ex.getLocalizedMessage());
             }
+        }
 
-            for (ContextParam cParam: c.getContextParam()) {
-                for (ContextParameter contextParam : 
-                    descriptor.getContextParametersSet()) {
-                    if (contextParam.getName().equals(cParam.getParamName())) {
-                        contextParam.setValue(cParam.getParamValue());
-                        break;
-                    }
-                }
-            }
+        /*
+         * If there are descriptor env entries that did not appear in the
+         * customized set then the user removed them during customization so
+         * we should remove them from the in-memory descriptor.
+         */
+        for (EnvironmentEntry e : uncustomizedDescriptorEnvironmentEntries) {
+            descriptor.getEnvironmentEntrySet().remove(e);
+        }
+
+        /*
+         * If there are any customized env entries that did not appear in
+         * the original descriptor, then the user has added them during
+         * customization so we add them to the in-memory descriptor.
+         */
+        for (EnvEntry e : unappliedCustomizationEnvEntries) {
+            EnvironmentEntry newE = new EnvironmentProperty(
+                    e.getEnvEntryName(),
+                    e.getEnvEntryValue(),
+                    e.getDescription(),
+                    e.getEnvEntryType());
+            descriptor.addEnvironmentEntry(newE);
         }
     }
 }

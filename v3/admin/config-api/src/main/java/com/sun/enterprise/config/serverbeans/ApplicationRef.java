@@ -165,7 +165,7 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      * Objects of the following type(s) are allowed in the list
      * {@link ApplicationConfig }
      */
-    @Element
+    @Element("*")
     public List<ApplicationConfig> getApplicationConfig();
     
     /**

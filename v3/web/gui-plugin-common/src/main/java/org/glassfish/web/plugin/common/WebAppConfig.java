@@ -55,6 +55,12 @@ import org.jvnet.hk2.config.Element;
 @Configured
 public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
 
+    /**
+     * The type attribute duplicates what is declared in ApplicationConfig except
+     * that here we add the defaultValue to specify the container type of
+     * these customizations.
+     * @return
+     */
     @Attribute(defaultValue="web")
     public String getType();
     public void setType(String value);

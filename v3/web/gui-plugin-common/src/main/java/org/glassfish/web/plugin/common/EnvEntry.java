@@ -38,6 +38,7 @@ package org.glassfish.web.plugin.common;
 
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
 /**
@@ -64,4 +65,72 @@ public interface EnvEntry extends ConfigBeanProxy {
     @Element(required=true)
     public String getEnvEntryValue();
     public void setEnvEntryValue(String value);
+
+    /**
+     * Validates the value in the env-entry-value subelement against the
+     * type stored in the env-entry-type subelement.
+     * <p>
+     * @throws IllegalArgumentException if the type does not match one of the legal ones
+     * @throws NumberFormatException if the value cannot be parsed according to the type
+     */
+    @DuckTyped
+    public void validateValue();
+
+    public class Duck {
+        public static void validateValue(final EnvEntry me) {
+            String type = me.getEnvEntryType();
+            String value = me.getEnvEntryValue();
+            Util.validateValue(type, value);
+        }
+    }
+
+    /**
+     * Utility class.
+     */
+    public class Util {
+
+        /**
+         * Validates the specified value string against the indicated type.  The
+         * recognized types are (from the spec):
+         * <ul>
+         * <li>java.lang.Boolean
+         * <li>java.lang.Byte
+         * <li>java.lang.Character
+         * <li>java.lang.Double
+         * <li>java.lang.Float
+         * <li>java.lang.Integer
+         * <li>java.lang.Long
+         * <li>java.lang.Short
+         * <li>java.lang.String
+         * </ul>
+         *
+         * @param type valid type for env-entry-type (from the spec)
+         * @param value value to be checked
+         * @throws IllegalArgumentException if the type does not match one of the legal ones
+         * @throws NumberFormatException if the value cannot be parsed according to the type
+         */
+        public static void validateValue(final String type, final String value) {
+            if (type.equals("java.lang.Boolean")) {
+                Boolean.parseBoolean(value);
+            } else if (type.equals("java.lang.Byte")) {
+                Byte.parseByte(value);
+            } else if (type.equals("java.lang.Character")) {
+                // no-op
+            } else if (type.equals("java.lang.Double")) {
+                Double.parseDouble(value);
+            } else if (type.equals("java.lang.Float")) {
+                Float.parseFloat(value);
+            } else if (type.equals("java.lang.Integer")) {
+                Integer.parseInt(value);
+            } else if (type.equals("java.lang.Long")) {
+                Long.parseLong(value);
+            } else if (type.equals("java.lang.Short")) {
+                Short.parseShort(value);
+            } else if (type.equals("java.lang.String")) {
+                // no-op
+            } else {
+                throw new IllegalArgumentException(type);
+            }
+        }
+    }
 }
