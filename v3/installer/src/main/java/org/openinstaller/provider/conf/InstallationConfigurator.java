@@ -89,12 +89,12 @@ public InstallationConfigurator(final String aProductName, final String aAltRoot
 
 public ResultReport configure (final PropertySheet aSheet, final boolean aValidateFlag) throws EnhancedException {
 
-
+     boolean configSuccessful = true;
     
      try {
         if (productName.equals(GLASSFISH_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Configuring GlassFish");
-            configureGlassfish(
+            configSuccessful = configureGlassfish(
                 installDir,
                 "4848",
                 aSheet.getProperty("Administration.A_HTTP_PORT"));
@@ -103,7 +103,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Configuring Updatetool");
             LOGGER.log(Level.INFO, "Installation directory: " + installDir);
-            configureUpdatetool(
+            configSuccessful = configureUpdatetool(
                 installDir,
                 aSheet.getProperty("Configuration.BOOTSTRAP_UPDATETOOL"),
                 aSheet.getProperty("Configuration.ALLOW_UPDATE_CHECK"),
@@ -112,10 +112,16 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
 	    }
      }
      catch (Exception e) {
-         
+         configSuccessful = false;
+     }
+
+
+     ResultReport.ResultStatus status = ResultReport.ResultStatus.SUCCESS;
+     if (!configSuccessful) {
+         status = ResultReport.ResultStatus.FAIL;
      }
   
-     return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
+     return new ResultReport(status, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
          
 }
 
@@ -155,8 +161,10 @@ public void handleNotification (final Notification aNotification,
     }
 }
 
+/* Returns true if configuration is successful, else false */
+boolean configureGlassfish(String installDir, String adminPort, String httpPort) throws Exception {
 
-void configureGlassfish(String installDir, String adminPort, String httpPort) throws Exception {
+    boolean success = true;
 
     // set executable permissions on asadmin, stopserv, startserv 
 
@@ -254,6 +262,7 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 	}
     } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+            success = false;
     }
       
     
@@ -370,16 +379,24 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 	    LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput()); 
 
             productError = asadminExecuteCommand.getErrors();
+            if (productError != null && productError.trim().length() > 0) {
+                success = false;
+            }
        } catch (Exception e) {
             LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput()); 
-            LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
+            LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
+            success = false;
        }
+
+       return success;
 }
 
-void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
+/* Returns true if configuration is successful, else false */
+boolean configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
     String proxyHost, String proxyPort) throws Exception {
 
-    
+    boolean success = true;
+
     boolean isWindows = false;
     if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
         isWindows=true;
@@ -401,8 +418,11 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
 
     FileWriter wrapperWriter = null;
     File startWrapperFile = null; 
+    File updateToolLibDir = null;
     try {
         if (isWindows) {
+            updateToolLibDir = new File(installDir + "/updatetool/lib");
+            updateToolLibDir.mkdirs();
             startWrapperFile = new File(installDir + "\\updatetool\\lib\\updatetool-start.bat");
 	    wrapperWriter = new FileWriter(startWrapperFile);
 	    wrapperWriter.write ("@echo off\n");
@@ -420,6 +440,8 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
             wrapperWriter = null;
 	}
 	else {
+            updateToolLibDir = new File(installDir + "/updatetool/lib");
+            updateToolLibDir.mkdirs();
 	    startWrapperFile = new File(installDir + "/updatetool/lib/updatetool-start");
 	    wrapperWriter = new FileWriter(startWrapperFile);
 	    wrapperWriter.write ("#!/bin/sh\n");
@@ -439,13 +461,14 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
 	}
     } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+            success = false;
     }
 
     // check whether to bootstrap at all
 
     if (bootstrap.equalsIgnoreCase("false")) {
         LOGGER.log(Level.INFO, "Skipping updatetool bootstrap");
-        return;
+        return success;
     }
 
     String proxyURL = null;
@@ -539,12 +562,13 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
        } catch (Exception e) {
 
             LOGGER.log(Level.INFO, "Exception while boostrapping updatetool: " + e.getMessage()); 
+            success = false;
        }
 
     //notifier is now being registered as part of bootstrap, so explicit
     //call to updatetoolconfig is being removed
     
-
+       return success;
 }
 
 void unconfigureUpdatetool(String installDir) throws Exception {
