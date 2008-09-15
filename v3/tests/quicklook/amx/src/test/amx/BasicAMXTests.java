@@ -60,7 +60,7 @@ public final class BasicAMXTests extends AMXTestBase {
 	{
 	}
 	
-    @Test(timeOut=5000)
+    @Test(timeOut=15000)
     public void bootAMX() throws Exception
     {
     	final DomainRoot domainRoot = getDomainRoot();
