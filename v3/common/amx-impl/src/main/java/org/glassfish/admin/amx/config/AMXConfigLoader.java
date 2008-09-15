@@ -79,7 +79,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     private volatile AMXConfigLoaderThread mLoaderThread;
     
     private final Transactions  mTransactions = Transactions.get();
-    private final Logger mLogger = AMXMBeanRootLogger.getInstance();
+    private final Logger mLogger = ImplUtil.getLogger();
 
     private final PendingConfigBeans    mPendingConfigBeans;
     
@@ -607,7 +607,7 @@ public final class AMXConfigLoader extends MBeanImplBase
             objectName = buildObjectName( cb, resolver );
         
             objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
-            ImplUtil.getLogger().info( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
+            ImplUtil.getLogger().fine( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
                 //" ===> USING " +  " AMXConfigInfo = " + amxConfigInfo.toString() + ", AMXMBeanMetaData = " + metadata + "\n" );
         }
         

@@ -88,7 +88,7 @@ public final class ImplUtil
         public static void
     unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
     {
-        ImplUtil.getLogger().info( "Unregister MBean hierarchcy for: " + objectName );
+        ImplUtil.getLogger().info( "Unregister MBean hierarchy for: " + objectName );
         unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName) );
     }
     
@@ -101,7 +101,7 @@ public final class ImplUtil
         boolean success = false;
         try
         {
-            getLogger().info( "UNREGISTER MBEAN: " + objectName );
+            getLogger().fine( "UNREGISTER MBEAN: " + objectName );
             if ( mbeanServer.isRegistered(objectName) )
             {
                 mbeanServer.unregisterMBean( objectName );
