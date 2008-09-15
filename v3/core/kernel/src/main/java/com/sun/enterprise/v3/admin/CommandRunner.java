@@ -194,7 +194,7 @@ public class CommandRunner {
                     boolean ok = false;
                     
                     for(String s : ss) {
-                        if(paramValueStr.equals(s)) {
+                        if(paramValueStr.equals(s.trim())) {
                             ok = true;
                             break;
                         }
