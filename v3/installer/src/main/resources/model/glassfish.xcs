@@ -25,17 +25,24 @@
            </info>
        </prop> 
 -->
-       <prop oor:name="A_HTTP_PORT" oor:type="xs:int">
+       <prop oor:name="A_HTTP_PORT" oor:type="xs:string">
            <value>8080</value>
            <info>
              <desc xml:lang="en-US">HTTP Port</desc>
            </info>
+	<actions>
+	<onSet><![CDATA[
+		validatePortValues(thisProperty);
+	]]></onSet>
+	</actions>
         </prop>       
          <prop oor:name="A_INSTALL_HOME" oor:type="xs:string" oor:transient="true">
            <value if:eval=":[InstallHome.directory:INSTALL_HOME]"></value>
            <info>
              <desc xml:lang="en-US">Reference to InstallHome selected from InstallHome page</desc>
            </info>
+	<actions>
+	</actions>
         </prop>
      </group>
  </component>
