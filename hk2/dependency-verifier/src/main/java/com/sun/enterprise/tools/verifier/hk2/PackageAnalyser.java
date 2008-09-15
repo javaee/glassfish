@@ -325,7 +325,7 @@ public class PackageAnalyser {
             if (md != null) {
                 requiredBundles.add(new Bundle(md));
             } else {
-                System.out.println("WARNING: Missing dependency: [" + dep + "] for module [" + md + "]");
+                System.out.println("WARNING: Missing dependency: [" + dep + "] for module [" + bundle.getName() + "]");
             }
         }
         return requiredBundles;
