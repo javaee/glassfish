@@ -73,6 +73,7 @@ import org.glassfish.deployment.client.DeploymentFacilityFactory;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 import org.jvnet.hk2.component.Habitat;
 
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -120,15 +121,16 @@ public class GuiUtil {
         
         
         public static DeploymentFacility getDeploymentFacility(){
-            DeploymentFacility df = (DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
+            DeploymentFacility df = null; //(DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
+            boolean enable=false;
             if (df == null){
                 df= DeploymentFacilityFactory.getDeploymentFacility();
                 ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
                         (String)getSessionValue("serverName"),
                         ((Integer)getSessionValue("severPort")).intValue(),
-                        "",         //user name
-                        "",         //password
-                        false       //security enabled
+                        (String)getSessionValue("userName"),         //user name
+                        "",         //password    FIXME: how to get password ?
+                        (Boolean)getSessionValue("requestIsSecured")       //security enabled
                         );
                 df.connect(sci);
                 setSessionValue("_DEPLOYMENT_FACILITY", df);

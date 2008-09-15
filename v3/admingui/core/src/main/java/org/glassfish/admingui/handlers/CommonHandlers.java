@@ -62,8 +62,6 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.SystemStatus;
-import com.sun.appserv.management.base.UnprocessedConfigChange;
 import com.sun.appserv.management.config.PropertiesAccess;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
@@ -77,6 +75,7 @@ import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
 import org.glassfish.admingui.common.util.MiscUtil;
@@ -180,11 +179,13 @@ public class CommonHandlers {
         
         Object request = handlerCtx.getFacesContext().getExternalContext().getRequest();
         if (request instanceof javax.servlet.ServletRequest){
-            String serverName = ((javax.servlet.ServletRequest)request).getServerName();
+            ServletRequest srequest = (ServletRequest) request;
+            String serverName = srequest.getServerName();
             String serverPortStr = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener").getPort();
             int serverPort = Integer.parseInt(serverPortStr);
             sessionMap.put("serverName", serverName);
             sessionMap.put("severPort", serverPort);
+            sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
         }else{
             //should never get here.
             sessionMap.put("serverName", "");
