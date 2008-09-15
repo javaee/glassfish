@@ -311,7 +311,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 }
                 catch( final Throwable t )
                 {
-                    Util.getLogger().warning( "Cannot start JMX connector, most likely IssueTracker #6018 " + toString(c) + ": " + t);
+                    Util.getLogger().warning( "Cannot start JMX connector: " + toString(c) + ": " + t);
                     //t.printStackTrace();
                 }
             }
