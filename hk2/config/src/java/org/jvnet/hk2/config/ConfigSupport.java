@@ -87,7 +87,7 @@ import org.jvnet.tiger_types.Types;
 public class ConfigSupport {
  
     /**
-     * Execute§ some logic on one config bean of type T protected by a transaction
+     * Executeï¿½ some logic on one config bean of type T protected by a transaction
      *
      * @param code code to execute
      * @param param config object participating in the transaction
@@ -293,14 +293,23 @@ public class ConfigSupport {
                     continue;
                 }
                 if (event.getNewValue()==null) {
-                    final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getOldValue());
-                    final NotProcessed nc = target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
-                    if ( nc != null ) {
-                        unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
+                    ConfigBeanProxy proxy =  null;
+                    try {
+                        // getOldValue() can be null, we will notify a CHANGE event
+                        proxy = ConfigBeanProxy.class.cast(event.getOldValue());
+                    } catch (ClassCastException e) {
+                        // this is ok, the old value was probably a string or something like this...
+                        // we will notify the event.getSource() that it changed.
                     }
-                } else {
+                    if (proxy!=null) {
+                        final NotProcessed nc = target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
+                        if ( nc != null ) {
+                            unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
+                        }
+                        continue;
+                    }
                     if (!changed.contains(eventSource)) {
-                        final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getSource());
+                        proxy =  ConfigBeanProxy.class.cast(event.getSource());
                         changed.add(eventSource);
                         final NotProcessed nc = target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
                         if ( nc != null ) {
