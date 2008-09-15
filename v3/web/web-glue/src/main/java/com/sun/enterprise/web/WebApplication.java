@@ -45,6 +45,7 @@ import com.sun.logging.LogDomains;
 import java.util.Collection;
 import java.util.HashSet;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.loader.WebappClassLoader;
@@ -64,12 +65,15 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     private static final String ADMIN_VS = "__asadmin";
     final Logger logger = LogDomains.getLogger(WebApplication.class, LogDomains.WEB_LOGGER);
 
-    final WebContainer container;
-    final WebModuleConfig wmInfo;
-
-    public WebApplication(WebContainer container, WebModuleConfig config) {
+    private final WebContainer container;
+    private final WebModuleConfig wmInfo;
+    private final DeploymentContext deploymentContext;
+ 
+    public WebApplication(WebContainer container, WebModuleConfig config,
+                          DeploymentContext dc) {
         this.container = container;
         this.wmInfo = config;
+        this.deploymentContext = dc;
     }
 
 
