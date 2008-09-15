@@ -126,7 +126,7 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jsftemplating</groupId>
+            <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
             <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
@@ -159,12 +159,12 @@
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf-suntheme</artifactId>
-            <version>4.3-SNAPSHOT</version>
+            <version>4.3.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf</artifactId>
-            <version>4.3-SNAPSHOT</version>
+            <version>4.3.0.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sun.faces.extensions</groupId>
@@ -225,7 +225,7 @@
 	    We are defining these values here so we can support a range
 	    of versions.  Anything after these version numbers is supported.
 	-->
-	<jsftemplating.version>1.2.3</jsftemplating.version>
+	<jsftemplating.version>1.2.4</jsftemplating.version>
 	<glassfish.version>${project.version}</glassfish.version>
 	<amx-api.version>${project.version}</amx-api.version>
         <!-- raih:During release first official release change the versions of the following to the current level and then release the comments
