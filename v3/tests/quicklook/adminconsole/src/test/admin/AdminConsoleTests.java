@@ -23,14 +23,8 @@
 
 package test.admin;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-import java.util.jar.Manifest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Parameters;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import test.admin.util.GeneralUtils;
 
 /** Supposed to have JDBC connection pool and resource tests.
  *
@@ -39,40 +33,48 @@ import test.admin.util.GeneralUtils;
  */
 public class AdminConsoleTests extends BaseAdminConsoleTest {
 
-    private File path;
-    private static final String JAVADB_POOL = "javadb_pool"; //same as in resources.xml
-    private static final String ADD_RES     = "add-resources";
-    
-    @Test(groups={"pulse"}) // test method
-    @Parameters({"admin.console.url"})
-    void testApplicationAvailability( String url) {
-        this.adminUrl = url;
-
-        boolean framesFound = false;
-        int iteration = 0;
-        String result = "";
-
-        while (!framesFound && (iteration <= 10)) {
-            iteration++;
-            result = requestUrl(adminUrl);
-            framesFound = result.indexOf("name=\"loginform\"") > -1;
-            if (!framesFound) {
-                try {
-                    System.err.println("***** Login page not found.  Sleeping to allow app to deploy....");
-                    Thread.sleep(10000);
-                } catch (InterruptedException ie) {
-                    //
-                }
-            }
-        }
-
-        if (!framesFound) {
-            throw new RuntimeException("The Admin Console has not been successfully deployed.");
-        }
+    /**
+     * Request / and verify that the frameset was rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testFrameSet() throws Exception {
+        Assert.assertTrue(getUrlAndTestForString(this.adminUrl, "frameset id=\"outerFrameset\""));
     }
 
+    /**
+     * Request /preTree.jsf and verify that the tree was rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testNavTree() throws Exception {
+        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "peTree.jsf", "div id=\"form:tree\""));
+    }
 
-    @Test(groups={"pulse"}) // test method
-    public void testLogin() {
+    /**
+     * Request /header.jsf and verify that the form was rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testHeader() throws Exception {
+        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "header.jsf", "form id=\"propertyForm\""));
+    }
+
+    /**
+     * Request /commonTask.jsf and verify that the common task page was rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testCommonTasks() throws Exception {
+        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "commonTask.jsf", "Common Task"));
+    }
+
+    /**
+     * Request /web/webApp/webApplications.jsf and verify that the common task page was rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testDeployedWebAppPage() throws Exception {
+        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "web/webApp/webApplications.jsf", "Deployed Web Applications ("));
     }
 }
