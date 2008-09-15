@@ -33,14 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.ejb.PostActivate;
+import javax.ejb.PrePassivate;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbInterceptor;
@@ -52,23 +52,24 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling javax.ejb.PostActivate 
+ * This handler is responsible for handling javax.ejb.PrePassivate 
  *
  */
 @Service
-public class PostActivateHandler extends AbstractAttributeHandler {
+public class PrePassivateHandler extends AbstractAttributeHandler {
     
-    public PostActivateHandler() {
+    public PrePassivateHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return PostActivate.class;
+        return PrePassivate.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -79,33 +80,33 @@ public class PostActivateHandler extends AbstractAttributeHandler {
             EjbSessionDescriptor ejbSessionDescriptor = 
                 (EjbSessionDescriptor) next.getDescriptor();
 
-            ejbSessionDescriptor.addPostActivateDescriptor(
-                getPostActivateDescriptor(ainfo));
+            ejbSessionDescriptor.addPrePassivateDescriptor(
+                getPrePassivateDescriptor(ainfo));
             
         }
-
-        return getDefaultProcessedResult();        
+        
+        return getDefaultProcessedResult();
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbInterceptorContext ejbInterceptorContext)
             throws AnnotationProcessorException {
-
         EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
-        ejbInterceptor.addPostActivateDescriptor(
-            getPostActivateDescriptor(ainfo));
-        return getDefaultProcessedResult();        
+        ejbInterceptor.addPrePassivateDescriptor(
+            getPrePassivateDescriptor(ainfo));
+        return getDefaultProcessedResult();
     }
 
-    private LifecycleCallbackDescriptor getPostActivateDescriptor(
+    private LifecycleCallbackDescriptor getPrePassivateDescriptor(
             AnnotationInfo ainfo) {
         Method annotatedMethod = (Method) ainfo.getAnnotatedElement();
-        LifecycleCallbackDescriptor postActivate = 
+        LifecycleCallbackDescriptor prePassivate = 
                 new LifecycleCallbackDescriptor();
-        postActivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
-        postActivate.setLifecycleCallbackMethod(annotatedMethod.getName());
-        return postActivate;
+        prePassivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
+        prePassivate.setLifecycleCallbackMethod(annotatedMethod.getName());
+        return prePassivate;
     }
+
 
     /**
      * @return an array of annotation types this annotation handler would 

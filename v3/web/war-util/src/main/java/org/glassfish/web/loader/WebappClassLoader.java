@@ -101,6 +101,7 @@ import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
 import org.apache.naming.resources.FileDirContext;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
 
@@ -147,7 +148,7 @@ import com.sun.logging.LogDomains;
  */
 public class WebappClassLoader
     extends URLClassLoader
-    implements Reloader, InstrumentableClassLoader
+    implements Reloader, InstrumentableClassLoader, PreDestroy
  {
 
      private static Logger logger = LogDomains.getLogger(WebappClassLoader.class, LogDomains.WEB_LOGGER);
@@ -1654,6 +1655,13 @@ public class WebappClassLoader
         started = true;
     }
 
+    public void preDestroy() {
+        try {
+            stop();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Stop the class loader.

@@ -65,7 +65,7 @@ import com.sun.enterprise.deployment.annotation.context.WebComponentsContext;
  *
  * @author Shing Wai Chan
  */
-abstract class AbstractResourceHandler extends AbstractHandler {
+public abstract class AbstractResourceHandler extends AbstractHandler {
     /**
      * Process Annotation with given ResourceContainerContexts.
      * @param ainfo

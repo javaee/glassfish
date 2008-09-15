@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -60,6 +60,8 @@ import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
+import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -70,7 +72,7 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class TransactionAttributeHandler extends AbstractAttributeHandler
         implements PostProcessor {
-    
+
     public TransactionAttributeHandler() {
     }
     
@@ -150,6 +152,7 @@ public class TransactionAttributeHandler extends AbstractAttributeHandler
      * annotation type.
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
+        
         return new Class[] {
             MessageDriven.class, Stateful.class, Stateless.class, 
                 Timeout.class, TransactionManagement.class};

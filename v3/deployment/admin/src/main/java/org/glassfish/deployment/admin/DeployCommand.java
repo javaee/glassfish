@@ -207,7 +207,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 parameters.put(ParameterNames.DEPLOYMENT_PLAN, deploymentplan.getAbsolutePath());
             }
             
-            handleRedeploy(name, report, parameters);
+            Properties undeployProps = handleRedeploy(name, report, parameters);
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
@@ -252,6 +252,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             final ReadableArchive sourceArchive = archive;
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     sourceArchive, parameters, env);
+
+            // reset the properties (might be null) set by the deployers when undeploying.
+            deploymentContext.setProps(undeployProps);
 
             // create the classloaders used for deployment and load-time
             deploymentContext.createClassLoaders(clh, archiveHandler);
@@ -352,9 +355,11 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
      *
      *  @param name application name
      *  @param report ActionReport, report object to send back to client.
+     * @return context properties that might have been set by the deployers
+     * while undeploying the application
      *
      */
-    private void handleRedeploy(final String name, final ActionReport report,
+    private Properties handleRedeploy(final String name, final ActionReport report,
                                 Properties parameters) 
         throws Exception {
         boolean isRegistered = isRegistered(name);
@@ -376,7 +381,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     keepreposdir.toString());
             ActionReport subReport = report.addSubActionsReport();
             commandRunner.doCommand("undeploy", undeployParam, subReport);
+            return subReport.getExtraProperties();
         }
+        return null;
     }
 
     

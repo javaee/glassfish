@@ -76,10 +76,5 @@
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2</artifactId>
     </dependency>
-    <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.javaee</artifactId>
-        <version>${project.version}</version>
-    </dependency>
 	</dependencies>
 </project>

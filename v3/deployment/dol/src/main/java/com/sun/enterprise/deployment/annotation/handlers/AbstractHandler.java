@@ -36,17 +36,10 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.ejb.MessageDriven;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
 
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationHandler;
@@ -56,8 +49,10 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.ResultType;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
+import org.jvnet.hk2.annotations.Inject;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deployment.AnnotationTypesProvider;
 
 /**
  * This is an abstract base class for Handlers.
@@ -72,6 +67,9 @@ public abstract class AbstractHandler implements AnnotationHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
     protected Logger logger = AnnotationUtils.getLogger();
+
+    @Inject(name="EJB", optional=true)
+    AnnotationTypesProvider ejbProvider;
 
     /**
      * @return an array of annotation types this annotation handler would
@@ -206,7 +204,10 @@ public abstract class AbstractHandler implements AnnotationHandler {
      * @return an array of all ejb annotation types 
      */
     protected Class<? extends Annotation>[] getEjbAnnotationTypes() {
-        return new Class[] {
-                MessageDriven.class, Stateful.class, Stateless.class };
+        if (ejbProvider!=null) {
+            return ejbProvider.getAnnotationTypes();
+        } else {
+            return new Class[0];
+        }
     }
 }

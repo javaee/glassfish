@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -65,6 +65,7 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.ProcessingContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.glassfish.apf.impl.ComponentDefinition;
 import org.jvnet.hk2.annotations.Service;
 

@@ -33,79 +33,81 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.ejb.PrePassivate;
+import javax.ejb.Remove;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbRemovalInfo;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling javax.ejb.PrePassivate 
+ * This handler is responsible for handling the javax.ejb.Remove attribute
  *
  */
 @Service
-public class PrePassivateHandler extends AbstractAttributeHandler {
+public class RemoveHandler extends AbstractAttributeHandler {
     
-    public PrePassivateHandler() {
+    public RemoveHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return PrePassivate.class;
+        return Remove.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
+        Remove remove = (Remove) ainfo.getAnnotation();
+
         for(EjbContext next : ejbContexts) {
             
-            EjbSessionDescriptor ejbSessionDescriptor = 
+            EjbSessionDescriptor sessionDescriptor = 
                 (EjbSessionDescriptor) next.getDescriptor();
 
-            ejbSessionDescriptor.addPrePassivateDescriptor(
-                getPrePassivateDescriptor(ainfo));
-            
+            Method m = (Method) ainfo.getAnnotatedElement();
+            MethodDescriptor removeMethod = 
+                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
+
+            EjbRemovalInfo removalInfo = 
+                sessionDescriptor.getRemovalInfo(removeMethod);
+
+            if (removalInfo == null) {
+                // if this element is not defined in xml 
+                // use all information from annotation
+                removalInfo = new EjbRemovalInfo();
+                removalInfo.setRemoveMethod(removeMethod);
+                removalInfo.setRetainIfException(remove.retainIfException());
+                sessionDescriptor.addRemoveMethod(removalInfo);
+            } else {
+                // if this element is already defined in xml
+                // set the retainIfException only if this subelement 
+                // is not defined in xml
+                if (! removalInfo.isRetainIfExceptionSet()) {
+                    removalInfo.setRetainIfException(
+                        remove.retainIfException());
+                }
+            } 
         }
         
         return getDefaultProcessedResult();
     }
-
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbInterceptorContext ejbInterceptorContext)
-            throws AnnotationProcessorException {
-        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
-        ejbInterceptor.addPrePassivateDescriptor(
-            getPrePassivateDescriptor(ainfo));
-        return getDefaultProcessedResult();
-    }
-
-    private LifecycleCallbackDescriptor getPrePassivateDescriptor(
-            AnnotationInfo ainfo) {
-        Method annotatedMethod = (Method) ainfo.getAnnotatedElement();
-        LifecycleCallbackDescriptor prePassivate = 
-                new LifecycleCallbackDescriptor();
-        prePassivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
-        prePassivate.setLifecycleCallbackMethod(annotatedMethod.getName());
-        return prePassivate;
-    }
-
 
     /**
      * @return an array of annotation types this annotation handler would 
@@ -114,9 +116,5 @@ public class PrePassivateHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
-    }
-
-    protected boolean isDelegatee() {
-        return true;
     }
 }

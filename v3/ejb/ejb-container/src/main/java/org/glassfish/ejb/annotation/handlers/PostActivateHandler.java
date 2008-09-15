@@ -33,17 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.AroundInvoke;
+import javax.ejb.PostActivate;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
@@ -51,23 +52,24 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.AroundInvoke attribute
+ * This handler is responsible for handling javax.ejb.PostActivate 
  *
  */
 @Service
-public class AroundInvokeHandler extends AbstractAttributeHandler {
+public class PostActivateHandler extends AbstractAttributeHandler {
     
-    public AroundInvokeHandler() {
+    public PostActivateHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return AroundInvoke.class;
+        return PostActivate.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -75,14 +77,15 @@ public class AroundInvokeHandler extends AbstractAttributeHandler {
 
         for(EjbContext next : ejbContexts) {
             
-            EjbDescriptor ejbDescriptor = 
-                (EjbDescriptor) next.getDescriptor();
+            EjbSessionDescriptor ejbSessionDescriptor = 
+                (EjbSessionDescriptor) next.getDescriptor();
 
-            ejbDescriptor.addAroundInvokeDescriptor(
-                getAroundInvokeDescriptor(ainfo));
+            ejbSessionDescriptor.addPostActivateDescriptor(
+                getPostActivateDescriptor(ainfo));
+            
         }
 
-        return getDefaultProcessedResult();
+        return getDefaultProcessedResult();        
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -90,22 +93,19 @@ public class AroundInvokeHandler extends AbstractAttributeHandler {
             throws AnnotationProcessorException {
 
         EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
-
-        ejbInterceptor.addAroundInvokeDescriptor(
-            getAroundInvokeDescriptor(ainfo));
-            
-        return getDefaultProcessedResult();
+        ejbInterceptor.addPostActivateDescriptor(
+            getPostActivateDescriptor(ainfo));
+        return getDefaultProcessedResult();        
     }
 
-    private LifecycleCallbackDescriptor getAroundInvokeDescriptor(
+    private LifecycleCallbackDescriptor getPostActivateDescriptor(
             AnnotationInfo ainfo) {
-        
-        Method m = (Method) ainfo.getAnnotatedElement();
-        LifecycleCallbackDescriptor lccDesc =
+        Method annotatedMethod = (Method) ainfo.getAnnotatedElement();
+        LifecycleCallbackDescriptor postActivate = 
                 new LifecycleCallbackDescriptor();
-        lccDesc.setLifecycleCallbackClass(m.getDeclaringClass().getName());
-        lccDesc.setLifecycleCallbackMethod(m.getName());
-        return lccDesc;
+        postActivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
+        postActivate.setLifecycleCallbackMethod(annotatedMethod.getName());
+        return postActivate;
     }
 
     /**

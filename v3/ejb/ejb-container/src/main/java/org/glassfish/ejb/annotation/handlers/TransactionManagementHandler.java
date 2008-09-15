@@ -33,72 +33,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import javax.ejb.ApplicationException;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
 
-import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
+import org.glassfish.apf.HandlerProcessingResult;
+import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Handles @javax.ejb.ApplicationException 
+ * This handler is responsible for handling the javax.ejb.TransactionManagement.
+ *
+ * @author Shing Wai Chan
  */
 @Service
-public class ApplicationExceptionHandler extends AbstractHandler {
+public class TransactionManagementHandler extends AbstractAttributeHandler {
     
-    public ApplicationExceptionHandler() {
+    public TransactionManagementHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ApplicationException.class;
+        return TransactionManagement.class;
     }    
 
-     public HandlerProcessingResult processAnnotation
-         (AnnotationInfo ainfo) throws AnnotationProcessorException {
-
-        AnnotatedElement ae = ainfo.getAnnotatedElement();
-        Annotation annotation = ainfo.getAnnotation();
-
-        AnnotatedElementHandler aeHandler = 
-            ainfo.getProcessingContext().getHandler();
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbContext[] ejbContexts) throws AnnotationProcessorException {
         
+        TransactionManagement tmAn = (TransactionManagement)ainfo.getAnnotation();
 
-        if (aeHandler instanceof EjbBundleContext) {
-            EjbBundleContext ejbBundleContext = (EjbBundleContext)aeHandler;
-            
-            EjbBundleDescriptor ejbBundle = ejbBundleContext.getDescriptor();
+        String tmType =
+                TransactionManagementType.CONTAINER.equals(tmAn.value())?
+                EjbDescriptor.CONTAINER_TRANSACTION_TYPE :
+                EjbDescriptor.BEAN_TRANSACTION_TYPE;
 
-            ApplicationException appExcAnn = (ApplicationException) annotation;
-
-            EjbApplicationExceptionInfo appExcInfo = new 
-                EjbApplicationExceptionInfo();
-            Class annotatedClass = (Class) ae;
-            appExcInfo.setExceptionClassName(annotatedClass.getName());
-            appExcInfo.setRollback(appExcAnn.rollback());
-
-            ejbBundle.addApplicationException(appExcInfo);
-
+        for (EjbContext ejbContext : ejbContexts) {
+            EjbDescriptor ejbDesc = ejbContext.getDescriptor();
+            // override by xml
+            if (ejbDesc.getTransactionType() == null) {
+                ejbDesc.setTransactionType(tmType);
+            }
         }
 
         return getDefaultProcessedResult();
+    }   
 
-     }
-
-    protected boolean supportTypeInheritance() {
-        return true;
+    /**
+     * @return an array of annotation types this annotation handler would 
+     * require to be processed (if present) before it processes it's own 
+     * annotation type.
+     */
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return getEjbAnnotationTypes();
     }
 }

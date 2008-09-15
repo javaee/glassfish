@@ -33,72 +33,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.ExcludeClassInterceptors;
+import javax.ejb.Timeout;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the 
- * javax.ejb.ExcludeClassInterceptors annotation.
+ * This handler is responsible for handling the javax.ejb.Timeout attribute
  *
  */
 @Service
-public class ExcludeClassInterceptorsHandler 
-    extends AbstractAttributeHandler {
+public class TimeoutHandler extends AbstractAttributeHandler {
     
-    public ExcludeClassInterceptorsHandler() {
+    public TimeoutHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ExcludeClassInterceptors.class;
+        return Timeout.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-         EjbBundleDescriptor ejbBundle = 
-             ((EjbDescriptor)ejbContexts[0].getDescriptor()).
-                 getEjbBundleDescriptor();
+        // No-op.  @Timeout processing is performed during initial EJB 3.0
+        // bean processing in AbstractEjbHandler.
         
-         for(EjbContext next : ejbContexts) {
-
-            EjbDescriptor ejbDescriptor = (EjbDescriptor) next.getDescriptor();
-
-            // Create binding information.  
-            InterceptorBindingDescriptor binding = 
-                new InterceptorBindingDescriptor();
-
-            binding.setEjbName(ejbDescriptor.getName());
-            binding.setExcludeClassInterceptors(true);
-
-            // Annotation can only be defined at the method level.
-            Method m = (Method) ainfo.getAnnotatedElement();
-            MethodDescriptor md = 
-                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
-            binding.setBusinessMethod(md);
-
-            ejbBundle.prependInterceptorBinding(binding);
-        }
-
         return getDefaultProcessedResult();
     }
 

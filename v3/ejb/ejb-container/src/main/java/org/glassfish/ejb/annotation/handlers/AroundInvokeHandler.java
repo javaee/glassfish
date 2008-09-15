@@ -33,48 +33,80 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.ejb.Timeout;
+import javax.interceptor.AroundInvoke;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Timeout attribute
+ * This handler is responsible for handling the javax.ejb.AroundInvoke attribute
  *
  */
 @Service
-public class TimeoutHandler extends AbstractAttributeHandler {
+public class AroundInvokeHandler extends AbstractAttributeHandler {
     
-    public TimeoutHandler() {
+    public AroundInvokeHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Timeout.class;
+        return AroundInvoke.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        // No-op.  @Timeout processing is performed during initial EJB 3.0
-        // bean processing in AbstractEjbHandler.
-        
+        for(EjbContext next : ejbContexts) {
+            
+            EjbDescriptor ejbDescriptor = 
+                (EjbDescriptor) next.getDescriptor();
+
+            ejbDescriptor.addAroundInvokeDescriptor(
+                getAroundInvokeDescriptor(ainfo));
+        }
+
         return getDefaultProcessedResult();
+    }
+
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbInterceptorContext ejbInterceptorContext)
+            throws AnnotationProcessorException {
+
+        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
+
+        ejbInterceptor.addAroundInvokeDescriptor(
+            getAroundInvokeDescriptor(ainfo));
+            
+        return getDefaultProcessedResult();
+    }
+
+    private LifecycleCallbackDescriptor getAroundInvokeDescriptor(
+            AnnotationInfo ainfo) {
+        
+        Method m = (Method) ainfo.getAnnotatedElement();
+        LifecycleCallbackDescriptor lccDesc =
+                new LifecycleCallbackDescriptor();
+        lccDesc.setLifecycleCallbackClass(m.getDeclaringClass().getName());
+        lccDesc.setLifecycleCallbackMethod(m.getName());
+        return lccDesc;
     }
 
     /**
@@ -84,5 +116,9 @@ public class TimeoutHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
+    }
+
+    protected boolean isDelegatee() {
+        return true;
     }
 }

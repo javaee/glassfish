@@ -85,7 +85,7 @@ import com.sun.enterprise.deployment.util.TypeUtil;
  *
  * @author Shing Wai Chan
  */
-abstract class AbstractAttributeHandler extends AbstractHandler {
+public abstract class AbstractAttributeHandler extends AbstractHandler {
     /**
      * Process Annotation with given EjbContexts.
      * @param ainfo

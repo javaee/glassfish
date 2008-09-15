@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.File;
-//import javax.enterprise.deploy.shared.ModuleType
 
 /**
  * This properties are used to transfer information between
@@ -522,6 +521,8 @@ public class DeploymentProperties extends Properties {
     
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";
+    // internal user - for redeploy support
+    public static final String REDEPLOY_CONTEXT_PROPERTIES = "commandcontextprops";
 
     // internal use - from autodeployer
     public static final String LOG_REPORTED_ERRORS = "logReportedErrors";

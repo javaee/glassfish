@@ -33,67 +33,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
 
-import com.sun.enterprise.deployment.EjbDescriptor;
-
+import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
-import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.TransactionManagement.
+ * This handler is responsible for handling the javax.ejb.EJBs attribute
  *
- * @author Shing Wai Chan
  */
 @Service
-public class TransactionManagementHandler extends AbstractAttributeHandler {
+public class EJBsHandler extends EJBHandler {
     
-    public TransactionManagementHandler() {
+    public EJBsHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return TransactionManagement.class;
+        return EJBs.class;
     }    
+        
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
+            ResourceContainerContext[] rcContexts)
+            throws AnnotationProcessorException {
+
+        EJBs ejbsAnnotation = (EJBs) ainfo.getAnnotation();
         
-        TransactionManagement tmAn = (TransactionManagement)ainfo.getAnnotation();
+        EJB[] ejbAnnotations = ejbsAnnotation.value();
+        List<HandlerProcessingResult> results = new ArrayList<HandlerProcessingResult>();
 
-        String tmType =
-                TransactionManagementType.CONTAINER.equals(tmAn.value())?
-                EjbDescriptor.CONTAINER_TRANSACTION_TYPE :
-                EjbDescriptor.BEAN_TRANSACTION_TYPE;
-
-        for (EjbContext ejbContext : ejbContexts) {
-            EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-            // override by xml
-            if (ejbDesc.getTransactionType() == null) {
-                ejbDesc.setTransactionType(tmType);
-            }
+        for(EJB ejb : ejbAnnotations) {
+            results.add(processEJB(ainfo, rcContexts, ejb));
         }
 
-        return getDefaultProcessedResult();
-    }   
-
-    /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
-     * annotation type.
-     */
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAnnotationTypes();
+        return getOverallProcessingResult(results);
     }
+
 }

@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import javax.ejb.TimedObject;
 import javax.jms.Session;
 import java.lang.reflect.Method;     
 import com.sun.enterprise.util.LocalStringManagerImpl;

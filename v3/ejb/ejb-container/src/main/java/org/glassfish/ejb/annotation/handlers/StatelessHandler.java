@@ -33,87 +33,100 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 
-import javax.ejb.Remove;
+import javax.ejb.Stateless;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.EjbRemovalInfo;
+import org.glassfish.ejb.annotation.handlers.AbstractEjbHandler;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Remove attribute
+ * This handler is responsible for handling the javax.ejb.Stateless
  *
+ * @author Shing Wai Chan
  */
 @Service
-public class RemoveHandler extends AbstractAttributeHandler {
+public class StatelessHandler extends AbstractEjbHandler {
     
-    public RemoveHandler() {
+    /** Creates a new instance of StatelessHandler */
+    public StatelessHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Remove.class;
-    }    
-        
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
-
-        Remove remove = (Remove) ainfo.getAnnotation();
-
-        for(EjbContext next : ejbContexts) {
-            
-            EjbSessionDescriptor sessionDescriptor = 
-                (EjbSessionDescriptor) next.getDescriptor();
-
-            Method m = (Method) ainfo.getAnnotatedElement();
-            MethodDescriptor removeMethod = 
-                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
-
-            EjbRemovalInfo removalInfo = 
-                sessionDescriptor.getRemovalInfo(removeMethod);
-
-            if (removalInfo == null) {
-                // if this element is not defined in xml 
-                // use all information from annotation
-                removalInfo = new EjbRemovalInfo();
-                removalInfo.setRemoveMethod(removeMethod);
-                removalInfo.setRetainIfException(remove.retainIfException());
-                sessionDescriptor.addRemoveMethod(removalInfo);
-            } else {
-                // if this element is already defined in xml
-                // set the retainIfException only if this subelement 
-                // is not defined in xml
-                if (! removalInfo.isRetainIfExceptionSet()) {
-                    removalInfo.setRetainIfException(
-                        remove.retainIfException());
-                }
-            } 
-        }
-        
-        return getDefaultProcessedResult();
+        return Stateless.class;
     }
 
     /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
-     * annotation type.
+     * Return the name attribute of given annotation.
+     * @param annotation
+     * @return name
      */
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAnnotationTypes();
+    protected String getAnnotatedName(Annotation annotation) {
+        Stateless slAn = (Stateless)annotation;
+        return slAn.name();
+    }
+
+    /**
+     * Check if the given EjbDescriptor matches the given Annotation.
+     * @param ejbDesc
+     * @param annotation
+     * @return boolean check for validity of EjbDescriptor
+     */
+    protected boolean isValidEjbDescriptor(EjbDescriptor ejbDesc,
+            Annotation annotation) {
+        return EjbSessionDescriptor.TYPE.equals(ejbDesc.getType());
+    }
+
+    /**
+     * Create a new EjbDescriptor for a given elementName and AnnotationInfo.
+     * @param elementName
+     * @param ainfo
+     * @return a new EjbDescriptor
+     */
+    protected EjbDescriptor createEjbDescriptor(String elementName,
+            AnnotationInfo ainfo) throws AnnotationProcessorException {
+
+        AnnotatedElement ae = ainfo.getAnnotatedElement();
+        Class ejbClass = (Class)ae;
+        EjbSessionDescriptor newDescriptor = new EjbSessionDescriptor();
+        newDescriptor.setName(elementName);
+        newDescriptor.setEjbClassName(ejbClass.getName());
+        newDescriptor.setSessionType(EjbSessionDescriptor.STATELESS);
+        return newDescriptor;
+    }
+
+    /**
+     * Set Annotation information to Descriptor.
+     * This method will also be invoked for an existing descriptor with
+     * annotation as user may not specific a complete xml.
+     * @param ejbDesc
+     * @param ainfo
+     * @return HandlerProcessingResult
+     */
+    protected HandlerProcessingResult setEjbDescriptorInfo(
+            EjbDescriptor ejbDesc, AnnotationInfo ainfo)
+            throws AnnotationProcessorException {
+
+        EjbSessionDescriptor ejbSessionDesc = (EjbSessionDescriptor)ejbDesc;
+        ejbSessionDesc.setStateless(true);
+
+        Stateless sless = (Stateless) ainfo.getAnnotation();
+
+        doDescriptionProcessing(sless.description(), ejbDesc);
+        doMappedNameProcessing(sless.mappedName(), ejbDesc);
+
+        return setBusinessAndHomeInterfaces(ejbDesc, ainfo);
     }
 }

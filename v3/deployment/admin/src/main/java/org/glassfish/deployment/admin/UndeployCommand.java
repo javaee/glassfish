@@ -24,6 +24,7 @@
 package org.glassfish.deployment.admin;
 
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -147,6 +148,11 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
                     FileUtils.whack(new File(info.getSource().getURI()));
                 }
             }
+
+            // save the context properties saved by the deployers during undeploy as they
+            // might be useful if there is in fact a redeploy action.
+            report.setExtraProperties(deploymentContext.getProps());
+
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } // else a message should have been provided.
 

@@ -69,6 +69,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -613,7 +614,13 @@ public class ApplicationLifecycle {
 
         for (ModuleInfo module : modules) {
             try {
+                ClassLoader cloader = module.getApplicationContainer().getClassLoader();
                 module.getApplicationContainer().stop();
+                try {
+                    PreDestroy.class.cast(cloader).preDestroy();
+                } catch (Exception e) {
+                    // ignore, the class loader does not need to be explicitely stopped.
+                }
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "Cannot stop module " +
                         module.getContainerInfo().getSniffer().getModuleType(),e );

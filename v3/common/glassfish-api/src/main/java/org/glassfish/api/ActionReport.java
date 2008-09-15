@@ -133,4 +133,14 @@ public abstract class ActionReport {
             return children;
         }        
     }
+
+    Properties extraProperties;
+
+    public final Properties getExtraProperties() {
+        return extraProperties;
+    }
+
+    public void setExtraProperties(Properties properties) {
+        extraProperties = properties;
+    }
 }

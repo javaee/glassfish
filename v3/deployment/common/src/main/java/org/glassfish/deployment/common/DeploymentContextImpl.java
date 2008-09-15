@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.PreDestroy;
 import com.sun.enterprise.module.ModuleDefinition;
 
 /**
@@ -175,6 +176,14 @@ public class DeploymentContextImpl implements DeploymentContext {
             // their class loader during the prepare phase, we can continue using the
             // sharableone which will become the final class loader after all.
             if (tempClassLoaderInvalidated) {
+                if (sharableTemp!=null) {
+                    try {
+                        PreDestroy.class.cast(sharableTemp).preDestroy();
+                    } catch (Exception e) {
+                        // ignore, the classloader does not need to be destroyed
+                    }
+                    sharableTemp=null;
+                }
                 return cloader;
             } else {
                 return sharableTemp;                

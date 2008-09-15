@@ -33,57 +33,82 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
+import javax.interceptor.ExcludeClassInterceptors;
 
-import org.glassfish.apf.HandlerProcessingResult;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
+
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
+import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.EJBs attribute
+ * This handler is responsible for handling the 
+ * javax.ejb.ExcludeClassInterceptors annotation.
  *
  */
 @Service
-public class EJBsHandler extends EJBHandler {
+public class ExcludeClassInterceptorsHandler 
+    extends AbstractAttributeHandler {
     
-    public EJBsHandler() {
+    public ExcludeClassInterceptorsHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return EJBs.class;
+        return ExcludeClassInterceptors.class;
     }    
         
-
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            ResourceContainerContext[] rcContexts)
-            throws AnnotationProcessorException {
+            EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        EJBs ejbsAnnotation = (EJBs) ainfo.getAnnotation();
+         EjbBundleDescriptor ejbBundle = 
+             ((EjbDescriptor)ejbContexts[0].getDescriptor()).
+                 getEjbBundleDescriptor();
         
-        EJB[] ejbAnnotations = ejbsAnnotation.value();
-        List<HandlerProcessingResult> results = new ArrayList<HandlerProcessingResult>();
+         for(EjbContext next : ejbContexts) {
 
-        for(EJB ejb : ejbAnnotations) {
-            results.add(processEJB(ainfo, rcContexts, ejb));
+            EjbDescriptor ejbDescriptor = (EjbDescriptor) next.getDescriptor();
+
+            // Create binding information.  
+            InterceptorBindingDescriptor binding = 
+                new InterceptorBindingDescriptor();
+
+            binding.setEjbName(ejbDescriptor.getName());
+            binding.setExcludeClassInterceptors(true);
+
+            // Annotation can only be defined at the method level.
+            Method m = (Method) ainfo.getAnnotatedElement();
+            MethodDescriptor md = 
+                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
+            binding.setBusinessMethod(md);
+
+            ejbBundle.prependInterceptorBinding(binding);
         }
 
-        return getOverallProcessingResult(results);
+        return getDefaultProcessedResult();
     }
 
+    /**
+     * @return an array of annotation types this annotation handler would 
+     * require to be processed (if present) before it processes it's own 
+     * annotation type.
+     */
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return getEjbAnnotationTypes();
+    }
 }
