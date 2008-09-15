@@ -658,7 +658,7 @@ public class AMXConfigImplBase extends AMXImplBase
         final Class<? extends ConfigBeanProxy>  newItemClass = subInfo.getConfigBeanProxyClassFor(j2eeType);
         if ( newItemClass == null )
         {
-            throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
+            throw new IllegalArgumentException( "Can't find ConfigBean @Configured class for AMX j2eeType " + j2eeType );
         }
         
         final AMXConfigInfoResolver resolver = subInfo.getAMXConfigInfoResolverFor( j2eeType );
