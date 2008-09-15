@@ -32,8 +32,6 @@ import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DummyApplication;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.security.util.IASSecurityException;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
@@ -185,18 +183,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         return null;
     }
 
-    //TODO: check if this is correct returning the Security Module def in getMetaData
     public MetaData getMetaData() {
-        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
-        if (module != null) {
-            apis.add(module.getModuleDefinition());
-        }
-        
-        module = modulesRegistry.makeModuleFor("org.glassfish.core.security", null);
-        if (module != null) {
-            apis.add(module.getModuleDefinition());
-        }
         return new MetaData(false, null, new Class[] {Application.class});
     }
     

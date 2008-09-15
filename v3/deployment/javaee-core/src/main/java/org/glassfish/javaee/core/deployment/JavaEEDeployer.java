@@ -53,17 +53,13 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.DeploymentException;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
@@ -94,9 +90,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     protected ApplicationArchivist applicationArchivist;
 
     @Inject
-    protected ModulesRegistry modulesRegistry;
-
-    @Inject
     protected ApplicationRegistry appRegistry;
 
     @Inject(name="application_deploy", optional=true)
@@ -119,11 +112,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      * @return the meta data for this Deployer
      */
     public MetaData getMetaData() {
-        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
         return new MetaData(false, null, null);
     }
 

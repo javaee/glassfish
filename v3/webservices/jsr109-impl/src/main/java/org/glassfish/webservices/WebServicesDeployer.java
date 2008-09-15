@@ -27,8 +27,6 @@ package org.glassfish.webservices;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.web.WebDeployer;
 import com.sun.logging.LogDomains;
@@ -331,31 +329,6 @@ public class WebServicesDeployer extends WebDeployer {
      */
     @Override
     public MetaData getMetaData() {
-
-        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();       
-        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null)   ;
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
-
-        String[] otherExportedPackages = new String[] {
-                 "org.glassfish.webservices.jsr109-impl",
-                 "org.glassfish.web.web-glue",
-                 "com.sun.xml.ws",
-                 "com.sun.xml.bind"
-
-                 };
-
-        for (String otherExportedPackage : otherExportedPackages) {
-            module = modulesRegistry.makeModuleFor(otherExportedPackage, null);
-            if (module != null) {
-                apis.add(module.getModuleDefinition());
-            } else {
-                //module is null
-                logger.log(Level.WARNING,localStrings.getLocalString("module.load.error","Error loading the module {0}",otherExportedPackage));
-            }
-        }
-
         return new MetaData(false, null, null );
     }
     private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {

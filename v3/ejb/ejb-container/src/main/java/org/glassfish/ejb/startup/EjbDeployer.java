@@ -32,8 +32,6 @@ import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.EjbInWarArchivist;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -90,22 +88,6 @@ public class EjbDeployer
 
     @Override
     public MetaData getMetaData() {
-        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
-
-        String[] otherExportedPackages = new String[] {
-                "org.glassfish.ejb:ejb-container", "org.objectweb.asm:asm-all"};
-
-        for (String otherExportedPackage : otherExportedPackages) {
-            module = modulesRegistry.makeModuleFor(otherExportedPackage, null);
-            if (module != null) {
-                apis.add(module.getModuleDefinition());
-            }
-        }
-
         return new MetaData(false,
                 new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
     }

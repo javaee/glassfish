@@ -108,12 +108,6 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
             mr.setParentClassLoader(cl);
         }
 
-        // now install the java-ee APIs. this has to be at a very high level in the hierarchy
-        Module parentModule = mr.makeModuleFor("org.glassfish:javax.javaee", null);
-        if(parentModule!=null) {
-            cl = parentModule.getClassLoader();
-        }
-
         helper.parseAsEnv(context.getRootDirectory().getParentFile());
         File domainRoot = helper.getDomainRoot(context);
         helper.verifyDomainRoot(domainRoot);

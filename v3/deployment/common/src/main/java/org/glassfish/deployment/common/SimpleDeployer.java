@@ -29,14 +29,6 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.deployment.common.DeploymentException;
-import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
-
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Convenient superclass for Deployers which only do prepare and 
@@ -45,9 +37,6 @@ import java.util.ArrayList;
  */
 public abstract class SimpleDeployer <T extends Container, 
         U extends ApplicationContainer> implements Deployer<T, U> {
-
-    @Inject
-    protected ModulesRegistry modulesRegistry;
 
     /**
      * Loads the meta date associated with the application.
@@ -117,11 +106,6 @@ public abstract class SimpleDeployer <T extends Container,
      * @return the meta data for this Deployer
      */
     public MetaData getMetaData() {
-        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish.javax.javaee",null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
         return new MetaData(false, null, null);
     }
 
