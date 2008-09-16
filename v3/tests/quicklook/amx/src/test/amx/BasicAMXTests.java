@@ -68,7 +68,8 @@ import java.util.Map;
 	Basic AMX tests that verify connectivity and ability to
 	traverse the AMX hierarchy and fetch all attributes.
  */
-@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=5)
+//@Test(groups={"amx"}, description="AMX tests", sequential=false, threadPoolSize=5)
+@Test(groups={"amx"}, description="AMX tests")
 public final class BasicAMXTests extends AMXTestBase {
 	public BasicAMXTests()
 	{
