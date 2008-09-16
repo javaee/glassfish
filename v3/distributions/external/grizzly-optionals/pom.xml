@@ -51,7 +51,11 @@
     <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly Optionals Module for GlassFish</description>
     <properties>
-        <grizzly.original-version>1.8.6-RC2</grizzly.original-version>    
+        <!-- When you change the following property, please change grizzly.package-version as well -->
+        <grizzly.original-version>1.8.6-RC2</grizzly.original-version>
+        <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
+             we map it manually -->
+        <grizzly.package-version>1.8.6</grizzly.package-version>
     </properties>    
     <build>
         <plugins>
@@ -65,7 +69,7 @@
                         <Embed-Dependency>
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
-                        <Export-Package>com.sun.grizzly.comet*;split-package:=error</Export-Package>
+                        <Export-Package>com.sun.grizzly.comet*; version=${grizzly.package-version};split-package:=error</Export-Package>
                         <Import-Package>*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>
