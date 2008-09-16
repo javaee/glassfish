@@ -22,6 +22,8 @@
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
+            <!-- Scope must be provided avoid adding all dependent jars into its WEB-INF/lib dir. -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
