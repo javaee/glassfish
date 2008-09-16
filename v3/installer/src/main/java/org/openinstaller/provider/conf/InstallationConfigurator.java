@@ -474,7 +474,7 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
     String proxyURL = null;
 
     if ((proxyHost.length()>0) && (proxyPort.length()>0)) {
-        proxyURL = proxyHost + ":" + proxyPort;
+        proxyURL = "http://" + proxyHost + ":" + proxyPort;
     }
 
     //adjust Windows path for use in properties file
