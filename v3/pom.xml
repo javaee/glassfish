@@ -110,7 +110,7 @@
         <jsf-impl.version>1.2_09</jsf-impl.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.8.5.4</grizzly.version>
+        <grizzly.version>${project.version}</grizzly.version>        
         <grizzly.original-version>1.8.5.4</grizzly.original-version>        
         <jsp-impl.version>2.1-SNAPSHOT</jsp-impl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
@@ -406,10 +406,16 @@
 	        <version>${glassfish-api.version}</version>
             </dependency>
 
-	    <dependency>
+            <dependency>
                <groupId>org.glassfish.external</groupId>
                <artifactId>grizzly-module</artifactId>
                <version>${grizzly.version}</version>
+            </dependency>
+
+	    <dependency>
+               <groupId>javax.faces</groupId>
+               <artifactId>jsf-api</artifactId>
+               <version>${jsf-api.version}</version>
             </dependency>
 
         </dependencies>

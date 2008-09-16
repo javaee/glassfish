@@ -59,6 +59,13 @@
             <artifactId>jstl-impl</artifactId>
             <version>${jstl-impl.version}</version>
         </dependency>
+        <!-- We need this as jstl-impl does not depend on
+             OSGied version of JSTL API -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet.jsp.jstl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>

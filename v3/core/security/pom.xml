@@ -114,17 +114,15 @@
             <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
+            <artifactId>javax.security.auth.message</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope> 
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
+            <artifactId>javax.security.jacc</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

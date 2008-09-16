@@ -103,11 +103,6 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.parent.version}</version>

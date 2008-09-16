@@ -87,7 +87,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
+            <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -64,6 +64,8 @@
         <module>commons-codec</module>
         <module>ldapbp</module>
         <module>asm-all</module>
+        <module>grizzly-http</module>
+        <module>grizzly-optionals</module>
     </modules>
     <build>
         <plugins>

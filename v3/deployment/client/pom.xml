@@ -90,7 +90,7 @@
         </dependency>   
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
+            <artifactId>javax.enterprise.deploy</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
