@@ -62,12 +62,15 @@ public class BaseAdminConsoleTest {
         int iterations = 0;
 
         while (!formFound && iterations < 10) {
+            iterations++;
             formFound = getUrlAndTestForString(url+"login.jsf", "name=\"loginform\"");
             if (!formFound) {
                 System.err.println("***** Login page not found.  Sleeping to allow app to deploy....");
                 Thread.sleep(AC_TEST_DELAY);
             }
         }
+
+        Assert.assertTrue(formFound);
         
         PostMethod post = new PostMethod(url+"j_security_check");
         post.setRequestBody(new NameValuePair[] {
