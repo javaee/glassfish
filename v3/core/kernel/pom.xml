@@ -134,7 +134,6 @@
 	    <artifactId>pkg-client</artifactId>
 <!-- FIXME: use variable for version -->
 	    <version>1.0.7-14.1120</version>
-	    <scope>provided</scope>
 	</dependency>
 	<dependency>
             <groupId>org.glassfish.flashlight</groupId>

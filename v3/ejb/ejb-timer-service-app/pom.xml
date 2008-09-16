@@ -22,7 +22,6 @@
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

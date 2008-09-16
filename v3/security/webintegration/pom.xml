@@ -117,7 +117,7 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>            
+            <!-- Don't set scope as provided. See issue #5992-->
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
@@ -128,7 +128,6 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>            
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
