@@ -376,6 +376,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>dist-fragment</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
         <!-- 
              deployment/dol depends on javax.xml.ws which in turn requires
              javax.xml.bind and javax.xml.soap. So, we need these two. Sahoo.
