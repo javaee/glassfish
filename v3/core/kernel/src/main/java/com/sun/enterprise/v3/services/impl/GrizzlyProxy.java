@@ -95,6 +95,7 @@ public class GrizzlyProxy implements NetworkProxy {
     static{
         nvVsMapper.add("org.apache.catalina.connector.CoyoteAdapter");
         nvVsMapper.add(com.sun.enterprise.v3.admin.AdminAdapter.class.getName());
+        nvVsMapper.add(com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter.class.getName());
     }
 
 

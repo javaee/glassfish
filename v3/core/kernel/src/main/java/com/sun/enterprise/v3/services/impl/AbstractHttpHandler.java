@@ -77,14 +77,15 @@ public abstract class AbstractHttpHandler {
                         
             boolean wasMap = true;
             try{
-                wasMap = grizzlyEmbeddedHttp.getContainerMapper().map(selectionKey
-                        ,byteBuffer,(GlassfishProtocolChain) context.getProtocolChain(),
+                wasMap = grizzlyEmbeddedHttp.getContainerMapper().map(
+                        selectionKey, byteBuffer,
+                        (GlassfishProtocolChain) context.getProtocolChain(),
                         null,fallbackContextRootInfo);
             } catch (Exception ex){
                 GrizzlyEmbeddedHttp.logger().log(Level.WARNING, "Mapper exception", ex);
                 wasMap = false;
             }
-            
+
             if (!wasMap) {
                 //TODO: Some Application might not have Adapter. Might want to
                 //add a dummy one instead of sending a 404.
