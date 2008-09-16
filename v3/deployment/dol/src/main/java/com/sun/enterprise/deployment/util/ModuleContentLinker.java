@@ -38,9 +38,11 @@ package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebService;
+import com.sun.enterprise.deployment.WSDolSupport;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.internal.api.Globals;
 
-import javax.xml.ws.WebServiceClient;
+//import javax.xml.ws.WebServiceClient;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
@@ -119,13 +121,10 @@ public class ModuleContentLinker extends DefaultDOLVisitor {
             //Incase wsdl file is missing we can obtain it from the @WebServiceClient annotation
                   ClassLoader classloader = Thread.currentThread().getContextClassLoader();
                   Class serviceInterfaceClass = classloader.loadClass(serviceRef.getServiceInterface());
-                  WebServiceClient wsc = (WebServiceClient)serviceInterfaceClass.getAnnotation(javax.xml.ws.WebServiceClient.class);
-                  if (wsc != null) {
-                      serviceRef.setWsdlFileUri(wsc.wsdlLocation());
-                      //we set the service QName too from the @WebServiceClient annotation
-                      serviceRef.setServiceName(new QName(wsc.targetNamespace(),wsc.name()) );
-                  }
-
+                  WSDolSupport dolSupport = Globals.getDefaultHabitat().getComponent(WSDolSupport.class);
+                if (dolSupport!=null) {
+                    dolSupport.setServiceRef(serviceInterfaceClass, serviceRef);
+                }
             }
             if( serviceRef.hasMappingFile() ) {
                 String mappingFileUri = serviceRef.getMappingFileUri();

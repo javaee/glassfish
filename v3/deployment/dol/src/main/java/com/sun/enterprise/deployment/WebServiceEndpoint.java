@@ -58,9 +58,8 @@ import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.http.HTTPBinding;
 import com.sun.enterprise.deployment.types.HandlerChainContainer;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -274,16 +273,9 @@ public class WebServiceEndpoint extends Descriptor
     }
 
     public void setProtocolBinding(String value) {
-        if(SOAP11_TOKEN.equals(value)) {
-            protocolBinding = SOAPBinding.SOAP11HTTP_BINDING;
-        } else if(SOAP11_MTOM_TOKEN.equals(value)) {
-            protocolBinding = SOAPBinding.SOAP11HTTP_MTOM_BINDING;
-        } else if(SOAP12_TOKEN.equals(value)) {
-            protocolBinding = SOAPBinding.SOAP12HTTP_BINDING;
-        } else if(SOAP12_MTOM_TOKEN.equals(value)) {
-            protocolBinding = SOAPBinding.SOAP12HTTP_MTOM_BINDING;
-        } else if(XML_TOKEN.equals(value)) {
-            protocolBinding = HTTPBinding.HTTP_BINDING;
+        WSDolSupport dolSupport = Globals.getDefaultHabitat().getComponent(WSDolSupport.class);
+        if (dolSupport!=null) {
+            protocolBinding = dolSupport.getProtocolBinding(value);
         } else {
             protocolBinding = value;
         }
@@ -942,14 +934,12 @@ public class WebServiceEndpoint extends Descriptor
     }    
 
     public String getSoapAddressPrefix() {
-        if((SOAPBinding.SOAP12HTTP_BINDING.equals(protocolBinding)) ||
-            (SOAPBinding.SOAP12HTTP_MTOM_BINDING.equals(protocolBinding)) ||
-            (SOAP12_TOKEN.equals(protocolBinding)) ||
-            (SOAP12_MTOM_TOKEN.equals(protocolBinding))) {
-            return "soap12";
+        WSDolSupport dolSupport = Globals.getDefaultHabitat().getComponent(WSDolSupport.class);
+        if (dolSupport!=null) {
+            return dolSupport.getSoapAddressPrefix(protocolBinding);
         }
         // anything else should be soap11
-        return "soap";
+        return "so`ap";
     }
    
     public void print(StringBuffer toStringBuffer) {
