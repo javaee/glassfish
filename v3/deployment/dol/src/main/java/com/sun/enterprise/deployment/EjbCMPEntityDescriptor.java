@@ -39,14 +39,12 @@ package com.sun.enterprise.deployment;
 import java.util.*;
 import java.lang.reflect.*;
 import java.util.logging.*;
-import com.sun.logging.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.TypeUtil;
 
-import com.sun.enterprise.deployment.util.EjbVisitor;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.util.LogDomains;
-import com.sun.enterprise.deployment.util.BeanMethodCalculator;
+import org.glassfish.internal.api.Globals;
 
 /** 
  * This class contains information about EJB1.1 and EJB2.0 CMP EntityBeans.
@@ -126,8 +124,13 @@ public class EjbCMPEntityDescriptor extends EjbEntityDescriptor {
         if( isEJB20() ) {
             try {
                 ClassLoader cl = getEjbBundleDescriptor().getClassLoader();
-                fieldDescriptors = BeanMethodCalculator.getPossibleCmpCmrFields
-                    (cl, this.getEjbClassName());
+                BeanMethodCalculator bmc = Globals.getDefaultHabitat().getComponent(BeanMethodCalculator.class);
+                if (bmc!=null) {
+                    fieldDescriptors = bmc.getPossibleCmpCmrFields
+                        (cl, this.getEjbClassName());
+                } else {
+                    _logger.log(Level.FINE, "enterprise.deploymnet.ejbcontainernotinstalled");
+                }
             } catch(Throwable t) {
                 String errorMsg = localStrings.getLocalString
                     ("enterprise.deployment.errorloadingejbclass",

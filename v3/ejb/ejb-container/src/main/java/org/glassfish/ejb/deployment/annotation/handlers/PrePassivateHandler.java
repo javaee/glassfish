@@ -33,75 +33,80 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.ExcludeClassInterceptors;
+import javax.ejb.PrePassivate;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the 
- * javax.ejb.ExcludeClassInterceptors annotation.
+ * This handler is responsible for handling javax.ejb.PrePassivate 
  *
  */
 @Service
-public class ExcludeClassInterceptorsHandler 
-    extends AbstractAttributeHandler {
+public class PrePassivateHandler extends AbstractAttributeHandler {
     
-    public ExcludeClassInterceptorsHandler() {
+    public PrePassivateHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ExcludeClassInterceptors.class;
+        return PrePassivate.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-         EjbBundleDescriptor ejbBundle = 
-             ((EjbDescriptor)ejbContexts[0].getDescriptor()).
-                 getEjbBundleDescriptor();
-        
-         for(EjbContext next : ejbContexts) {
+        for(EjbContext next : ejbContexts) {
+            
+            EjbSessionDescriptor ejbSessionDescriptor = 
+                (EjbSessionDescriptor) next.getDescriptor();
 
-            EjbDescriptor ejbDescriptor = (EjbDescriptor) next.getDescriptor();
-
-            // Create binding information.  
-            InterceptorBindingDescriptor binding = 
-                new InterceptorBindingDescriptor();
-
-            binding.setEjbName(ejbDescriptor.getName());
-            binding.setExcludeClassInterceptors(true);
-
-            // Annotation can only be defined at the method level.
-            Method m = (Method) ainfo.getAnnotatedElement();
-            MethodDescriptor md = 
-                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
-            binding.setBusinessMethod(md);
-
-            ejbBundle.prependInterceptorBinding(binding);
+            ejbSessionDescriptor.addPrePassivateDescriptor(
+                getPrePassivateDescriptor(ainfo));
+            
         }
-
+        
         return getDefaultProcessedResult();
     }
+
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbInterceptorContext ejbInterceptorContext)
+            throws AnnotationProcessorException {
+        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
+        ejbInterceptor.addPrePassivateDescriptor(
+            getPrePassivateDescriptor(ainfo));
+        return getDefaultProcessedResult();
+    }
+
+    private LifecycleCallbackDescriptor getPrePassivateDescriptor(
+            AnnotationInfo ainfo) {
+        Method annotatedMethod = (Method) ainfo.getAnnotatedElement();
+        LifecycleCallbackDescriptor prePassivate = 
+                new LifecycleCallbackDescriptor();
+        prePassivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
+        prePassivate.setLifecycleCallbackMethod(annotatedMethod.getName());
+        return prePassivate;
+    }
+
 
     /**
      * @return an array of annotation types this annotation handler would 
@@ -110,5 +115,9 @@ public class ExcludeClassInterceptorsHandler
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
+    }
+
+    protected boolean isDelegatee() {
+        return true;
     }
 }

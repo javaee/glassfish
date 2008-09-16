@@ -41,7 +41,7 @@ package org.glassfish.deployment.common;
  * @author  bnevins
  * @version 
  */
-public class DeploymentException extends Exception 
+public class DeploymentException extends RuntimeException 
 {   
 
         // declare SUID for class versioning compatibility

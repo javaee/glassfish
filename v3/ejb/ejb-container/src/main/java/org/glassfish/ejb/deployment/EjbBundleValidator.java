@@ -43,11 +43,26 @@ import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
-
-import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.DummyEjbDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbEntityDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.InjectionCapable;
+import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.MessageDestinationDescriptor;
+import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebService;
+import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.internal.api.Globals;
 
 /**
  * This class validates a EJB Bundle descriptor once loaded from an .jar file
@@ -215,16 +230,13 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             // hasn't already been identified as a timed object.  
             if( !ejb.isTimedObject() ) {
 
-                AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
-                if (provider!=null) {
-                    if( provider.getType("javax.ejb.TimedObject").isAssignableFrom(ejbClass) ) {
-                        MethodDescriptor timedObjectMethod =
-                            new MethodDescriptor("ejbTimeout",
-                                                 "TimedObject timeout method",
-                                                 new String[] {"javax.ejb.Timer"},
-                                                 MethodDescriptor.EJB_BEAN);
-                        ejb.setEjbTimeoutMethod(timedObjectMethod);
-                    }
+                if( javax.ejb.TimedObject.class.isAssignableFrom(ejbClass) ) {
+                    MethodDescriptor timedObjectMethod = 
+                        new MethodDescriptor("ejbTimeout", 
+                                             "TimedObject timeout method",
+                                             new String[] {"javax.ejb.Timer"},
+                                             MethodDescriptor.EJB_BEAN);
+                    ejb.setEjbTimeoutMethod(timedObjectMethod);
                 }
             } else {
                 // If timeout-method was only processed from the descriptor,
@@ -241,16 +253,12 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     for(Method m : methods) {
                         if( (m.getName().equals(timeoutMethodName)) ) {
                             Class[] params = m.getParameterTypes();
-                            AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
-                            if (provider!=null) {
-                                Class timerClass = provider.getType("javax.ejb.Timer");
-                                if( (params.length == 1) &&
-                                    (params[0] == timerClass) ) {
-                                    timeoutMethodDesc = new MethodDescriptor
-                                        (m, MethodDescriptor.EJB_BEAN);
-                                    ejb.setEjbTimeoutMethod(timeoutMethodDesc);
-                                    break;
-                                }
+                            if( (params.length == 1) &&
+                                (params[0] == javax.ejb.Timer.class) ) {
+                                timeoutMethodDesc = new MethodDescriptor
+                                    (m, MethodDescriptor.EJB_BEAN);
+                                ejb.setEjbTimeoutMethod(timeoutMethodDesc);
+                                break;
                             }
                         }
                     }

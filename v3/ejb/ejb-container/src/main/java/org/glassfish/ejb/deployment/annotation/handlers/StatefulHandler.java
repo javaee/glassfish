@@ -33,16 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import org.glassfish.ejb.annotation.handlers.AbstractEjbHandler;
+import org.glassfish.ejb.deployment.annotation.handlers.AbstractEjbHandler;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -50,32 +50,33 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Stateless
+ * This handler is responsible for handling the javax.ejb.Stateful
  *
  * @author Shing Wai Chan
  */
 @Service
-public class StatelessHandler extends AbstractEjbHandler {
+public class StatefulHandler extends AbstractEjbHandler {
     
-    /** Creates a new instance of StatelessHandler */
-    public StatelessHandler() {
+    /** Creates a new instance of StatefulHandler */
+    public StatefulHandler() {
     }
     
+                                                                                
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Stateless.class;
-    }
-
+        return Stateful.class;
+    }    
+        
     /**
      * Return the name attribute of given annotation.
      * @param annotation
      * @return name
      */
     protected String getAnnotatedName(Annotation annotation) {
-        Stateless slAn = (Stateless)annotation;
-        return slAn.name();
+        Stateful sfAn = (Stateful)annotation;
+        return sfAn.name();
     }
 
     /**
@@ -103,7 +104,7 @@ public class StatelessHandler extends AbstractEjbHandler {
         EjbSessionDescriptor newDescriptor = new EjbSessionDescriptor();
         newDescriptor.setName(elementName);
         newDescriptor.setEjbClassName(ejbClass.getName());
-        newDescriptor.setSessionType(EjbSessionDescriptor.STATELESS);
+        newDescriptor.setSessionType(EjbSessionDescriptor.STATEFUL);
         return newDescriptor;
     }
 
@@ -120,12 +121,11 @@ public class StatelessHandler extends AbstractEjbHandler {
             throws AnnotationProcessorException {
 
         EjbSessionDescriptor ejbSessionDesc = (EjbSessionDescriptor)ejbDesc;
-        ejbSessionDesc.setStateless(true);
+        ejbSessionDesc.setStateless(false);
 
-        Stateless sless = (Stateless) ainfo.getAnnotation();
-
-        doDescriptionProcessing(sless.description(), ejbDesc);
-        doMappedNameProcessing(sless.mappedName(), ejbDesc);
+        Stateful sful = (Stateful) ainfo.getAnnotation();
+        doDescriptionProcessing(sful.description(), ejbDesc);
+        doMappedNameProcessing(sful.mappedName(), ejbDesc);
 
         return setBusinessAndHomeInterfaces(ejbDesc, ainfo);
     }

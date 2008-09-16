@@ -41,7 +41,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.annotation.handlers.AbstractEjbHandler;
+import org.glassfish.ejb.deployment.annotation.handlers.AbstractEjbHandler;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 

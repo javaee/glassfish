@@ -33,76 +33,79 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.ExcludeDefaultInterceptors;
+import javax.ejb.PostActivate;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the 
- * javax.ejb.ExcludeDefaultInterceptors annotation.
+ * This handler is responsible for handling javax.ejb.PostActivate 
  *
  */
 @Service
-public class ExcludeDefaultInterceptorsHandler 
-    extends AbstractAttributeHandler {
+public class PostActivateHandler extends AbstractAttributeHandler {
     
-    public ExcludeDefaultInterceptorsHandler() {
+    public PostActivateHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ExcludeDefaultInterceptors.class;
+        return PostActivate.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-         EjbBundleDescriptor ejbBundle = 
-             ((EjbDescriptor)ejbContexts[0].getDescriptor()).
-                 getEjbBundleDescriptor();
-        
-         for(EjbContext next : ejbContexts) {
-
-            EjbDescriptor ejbDescriptor = (EjbDescriptor) next.getDescriptor();
-
-            // Create binding information.  
-            InterceptorBindingDescriptor binding = 
-                new InterceptorBindingDescriptor();
-
-            binding.setEjbName(ejbDescriptor.getName());
-
-            binding.setExcludeDefaultInterceptors(true);
+        for(EjbContext next : ejbContexts) {
             
-            if(ElementType.METHOD.equals(ainfo.getElementType())) {
-                Method m = (Method) ainfo.getAnnotatedElement();
-                MethodDescriptor md = 
-                    new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
-                binding.setBusinessMethod(md);
-            }
+            EjbSessionDescriptor ejbSessionDescriptor = 
+                (EjbSessionDescriptor) next.getDescriptor();
 
-            ejbBundle.prependInterceptorBinding(binding);
+            ejbSessionDescriptor.addPostActivateDescriptor(
+                getPostActivateDescriptor(ainfo));
+            
         }
 
-        return getDefaultProcessedResult();
+        return getDefaultProcessedResult();        
+    }
+
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbInterceptorContext ejbInterceptorContext)
+            throws AnnotationProcessorException {
+
+        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
+        ejbInterceptor.addPostActivateDescriptor(
+            getPostActivateDescriptor(ainfo));
+        return getDefaultProcessedResult();        
+    }
+
+    private LifecycleCallbackDescriptor getPostActivateDescriptor(
+            AnnotationInfo ainfo) {
+        Method annotatedMethod = (Method) ainfo.getAnnotatedElement();
+        LifecycleCallbackDescriptor postActivate = 
+                new LifecycleCallbackDescriptor();
+        postActivate.setLifecycleCallbackClass(annotatedMethod.getDeclaringClass().getName());
+        postActivate.setLifecycleCallbackMethod(annotatedMethod.getName());
+        return postActivate;
     }
 
     /**
@@ -112,5 +115,9 @@ public class ExcludeDefaultInterceptorsHandler
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
+    }
+
+    protected boolean isDelegatee() {
+        return true;
     }
 }

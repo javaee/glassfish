@@ -18,4 +18,8 @@ public class EjbAnnotationTypesProvider implements AnnotationTypesProvider {
     public Class<? extends Annotation>[] getAnnotationTypes() {
         return new Class[] {
                 MessageDriven.class, Stateful.class, Stateless.class };    }
+
+    public Class getType(String typename) throws ClassNotFoundException {
+        return getClass().getClassLoader().loadClass(typename);
+    }
 }

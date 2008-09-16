@@ -37,8 +37,10 @@ package com.sun.enterprise.deployment;
  
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.*;
-    
-    /**
+
+import org.glassfish.internal.api.Globals;
+
+/**
     * Objects of this kind represent the deployment information describing a single 
     * Session Ejb, either stateful or stateless.
     *@author Danny Coward
@@ -328,16 +330,19 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 
                 ClassLoader classLoader = ejbBundle.getClassLoader();
                 Class ejbClass = classLoader.loadClass(getEjbClassName());
-                Class sessionSynchClass = 
-                    javax.ejb.SessionSynchronization.class;
-                if( sessionSynchClass.isAssignableFrom(ejbClass) ) {
-                    txAttributes = new Vector();
-                    txAttributes.add(new ContainerTransaction
-                        (ContainerTransaction.REQUIRED, ""));
-                    txAttributes.add(new ContainerTransaction
-                        (ContainerTransaction.REQUIRES_NEW, ""));
-                    txAttributes.add(new ContainerTransaction
-                        (ContainerTransaction.MANDATORY, ""));
+
+                AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
+                if (provider!=null) {
+                    Class sessionSynchClass = provider.getType("javax.ejb.SessionSynchronization");
+                    if( sessionSynchClass.isAssignableFrom(ejbClass) ) {
+                        txAttributes = new Vector();
+                        txAttributes.add(new ContainerTransaction
+                            (ContainerTransaction.REQUIRED, ""));
+                        txAttributes.add(new ContainerTransaction
+                            (ContainerTransaction.REQUIRES_NEW, ""));
+                        txAttributes.add(new ContainerTransaction
+                            (ContainerTransaction.MANDATORY, ""));
+                    }
                 }
             } catch(Exception e) {
                 // Don't treat this as a fatal error.  Just return full

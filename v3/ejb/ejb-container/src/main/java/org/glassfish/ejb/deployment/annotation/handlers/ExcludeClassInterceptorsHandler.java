@@ -33,19 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.ejb.Remove;
+import javax.interceptor.ExcludeClassInterceptors;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.EjbRemovalInfo;
+import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -55,57 +55,51 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandle
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Remove attribute
+ * This handler is responsible for handling the 
+ * javax.ejb.ExcludeClassInterceptors annotation.
  *
  */
 @Service
-public class RemoveHandler extends AbstractAttributeHandler {
+public class ExcludeClassInterceptorsHandler 
+    extends AbstractAttributeHandler {
     
-    public RemoveHandler() {
+    public ExcludeClassInterceptorsHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Remove.class;
+        return ExcludeClassInterceptors.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        Remove remove = (Remove) ainfo.getAnnotation();
-
-        for(EjbContext next : ejbContexts) {
-            
-            EjbSessionDescriptor sessionDescriptor = 
-                (EjbSessionDescriptor) next.getDescriptor();
-
-            Method m = (Method) ainfo.getAnnotatedElement();
-            MethodDescriptor removeMethod = 
-                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
-
-            EjbRemovalInfo removalInfo = 
-                sessionDescriptor.getRemovalInfo(removeMethod);
-
-            if (removalInfo == null) {
-                // if this element is not defined in xml 
-                // use all information from annotation
-                removalInfo = new EjbRemovalInfo();
-                removalInfo.setRemoveMethod(removeMethod);
-                removalInfo.setRetainIfException(remove.retainIfException());
-                sessionDescriptor.addRemoveMethod(removalInfo);
-            } else {
-                // if this element is already defined in xml
-                // set the retainIfException only if this subelement 
-                // is not defined in xml
-                if (! removalInfo.isRetainIfExceptionSet()) {
-                    removalInfo.setRetainIfException(
-                        remove.retainIfException());
-                }
-            } 
-        }
+         EjbBundleDescriptor ejbBundle = 
+             ((EjbDescriptor)ejbContexts[0].getDescriptor()).
+                 getEjbBundleDescriptor();
         
+         for(EjbContext next : ejbContexts) {
+
+            EjbDescriptor ejbDescriptor = (EjbDescriptor) next.getDescriptor();
+
+            // Create binding information.  
+            InterceptorBindingDescriptor binding = 
+                new InterceptorBindingDescriptor();
+
+            binding.setEjbName(ejbDescriptor.getName());
+            binding.setExcludeClassInterceptors(true);
+
+            // Annotation can only be defined at the method level.
+            Method m = (Method) ainfo.getAnnotatedElement();
+            MethodDescriptor md = 
+                new MethodDescriptor(m, MethodDescriptor.EJB_BEAN);
+            binding.setBusinessMethod(md);
+
+            ejbBundle.prependInterceptorBinding(binding);
+        }
+
         return getDefaultProcessedResult();
     }
 

@@ -33,53 +33,92 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
+import javax.interceptor.AroundInvoke;
 
-import org.glassfish.apf.HandlerProcessingResult;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
+import org.glassfish.apf.HandlerProcessingResult;
+import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.EJBs attribute
+ * This handler is responsible for handling the javax.ejb.AroundInvoke attribute
  *
  */
 @Service
-public class EJBsHandler extends EJBHandler {
+public class AroundInvokeHandler extends AbstractAttributeHandler {
     
-    public EJBsHandler() {
+    public AroundInvokeHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return EJBs.class;
+        return AroundInvoke.class;
     }    
         
-
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            ResourceContainerContext[] rcContexts)
-            throws AnnotationProcessorException {
+            EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        EJBs ejbsAnnotation = (EJBs) ainfo.getAnnotation();
-        
-        EJB[] ejbAnnotations = ejbsAnnotation.value();
-        List<HandlerProcessingResult> results = new ArrayList<HandlerProcessingResult>();
+        for(EjbContext next : ejbContexts) {
+            
+            EjbDescriptor ejbDescriptor = 
+                (EjbDescriptor) next.getDescriptor();
 
-        for(EJB ejb : ejbAnnotations) {
-            results.add(processEJB(ainfo, rcContexts, ejb));
+            ejbDescriptor.addAroundInvokeDescriptor(
+                getAroundInvokeDescriptor(ainfo));
         }
 
-        return getOverallProcessingResult(results);
+        return getDefaultProcessedResult();
     }
 
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            EjbInterceptorContext ejbInterceptorContext)
+            throws AnnotationProcessorException {
+
+        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
+
+        ejbInterceptor.addAroundInvokeDescriptor(
+            getAroundInvokeDescriptor(ainfo));
+            
+        return getDefaultProcessedResult();
+    }
+
+    private LifecycleCallbackDescriptor getAroundInvokeDescriptor(
+            AnnotationInfo ainfo) {
+        
+        Method m = (Method) ainfo.getAnnotatedElement();
+        LifecycleCallbackDescriptor lccDesc =
+                new LifecycleCallbackDescriptor();
+        lccDesc.setLifecycleCallbackClass(m.getDeclaringClass().getName());
+        lccDesc.setLifecycleCallbackMethod(m.getName());
+        return lccDesc;
+    }
+
+    /**
+     * @return an array of annotation types this annotation handler would 
+     * require to be processed (if present) before it processes it's own 
+     * annotation type.
+     */
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return getEjbAnnotationTypes();
+    }
+
+    protected boolean isDelegatee() {
+        return true;
+    }
 }

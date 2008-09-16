@@ -38,11 +38,11 @@ package com.sun.enterprise.deployment;
 
 import java.util.*;
 import java.lang.reflect.*;
-import javax.ejb.EJBException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.Level;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.TypeUtil;
+import org.glassfish.deployment.common.DeploymentException;
 
 /** 
  * This class contains information about the persistent state
@@ -334,7 +334,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    } catch ( Exception ex ) {
                 DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                     new Object[] {ex.toString()});
-		throw new EJBException(ex);
+		throw new DeploymentException(ex);
 	    }
 	}
 	return cmrFieldInfo;
@@ -350,7 +350,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    if ( cmrf[i].name.equals(fieldName) )
 		return cmrf[i];
 	}
-	throw new EJBException("CMRFieldInfo not found for field "+fieldName);
+	throw new DeploymentException("CMRFieldInfo not found for field "+fieldName);
     }
 
     /**
@@ -646,7 +646,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	catch ( Exception ex ) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure", 
                 new Object[] {ex.toString()});
-            throw new EJBException(ex);
+            throw new DeploymentException(ex);
 	}
     }
 
@@ -715,7 +715,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    stateClass = getPersistentClass();
 	    if ( parentDesc.isEJB20() ) {
 		if( !Modifier.isAbstract(stateClass.getModifiers()) ) {
-	            throw new EJBException("2.x CMP bean class " 
+	            throw new DeploymentException("2.x CMP bean class "
                         + stateClass.getName() + " must be decleared abstract "
                         + "or cmp-version for the corresponding bean must be set to 1.x.");
                 }
@@ -734,7 +734,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    return getEjbBundleDescriptor().getClassLoader().loadClass(className);
 	} catch ( Exception ex ) {
 	    //if ( debug ) ex.printStackTrace();
-	    throw new EJBException(ex);
+	    throw new DeploymentException(ex);
 	}
     }
 
@@ -785,7 +785,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    if ( persFieldInfo[i].name.equals(fieldName) )
 		return persFieldInfo[i];
 	}
-	throw new EJBException("PersistentFieldInfo not found for field "+fieldName);
+	throw new DeploymentException("PersistentFieldInfo not found for field "+fieldName);
     }
 
 
@@ -822,7 +822,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	    if ( pkeyFieldInfo[i].name.equals(fieldName) )
 		return pkeyFieldInfo[i];
 	}
-	throw new EJBException("PersistentFieldInfo not found for pkey field "+fieldName);
+	throw new DeploymentException("PersistentFieldInfo not found for pkey field "+fieldName);
     }
 
 
@@ -848,7 +848,7 @@ public final class PersistenceDescriptor extends Descriptor {
 
 	int cmpFieldCount = cmpFields.size();
         if (cmpFieldCount==0) {
-            throw new EJBException("No cmp field defined for CMP EJB " + parentDesc.getName());
+            throw new DeploymentException("No cmp field defined for CMP EJB " + parentDesc.getName());
         }
 
 	int fkeyCount = 0;
@@ -909,7 +909,7 @@ public final class PersistenceDescriptor extends Descriptor {
                 }
             }
             if ( nonPersFieldsInPK.length() != 0 ) {
-                throw new EJBException(localStrings.getLocalString(
+                throw new DeploymentException(localStrings.getLocalString(
                 "enterprise.deployment.pkhasnopersistentfields",
                 "CMP bean [{0}], primary key class [{1}] has " + 
                 "public non-persistent field(s) [{2}].",
@@ -982,7 +982,7 @@ public final class PersistenceDescriptor extends Descriptor {
             if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {            
                 DOLUtils.getDefaultLogger().log(Level.FINE, ex.toString(), ex);
             }
-	    throw new EJBException(ex);
+	    throw new DeploymentException(ex);
 	}
 
         fieldInfoInitialized = true;
@@ -1055,7 +1055,7 @@ public final class PersistenceDescriptor extends Descriptor {
 	// EJB2.0 proposed final draft says that CMP/CMR field names
 	// must begin with a lower case letter.
 	if ( Character.isUpperCase(name.charAt(0)) ) {
-	    throw new javax.ejb.EJBException("CMP/CMR field "+name+" must start with a lower case character.");
+	    throw new DeploymentException("CMP/CMR field "+name+" must start with a lower case character.");
 	}
 	else {
 	    char chars[] = name.toCharArray();

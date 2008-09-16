@@ -41,32 +41,26 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.logging.*;
 
-import com.sun.logging.*;
-
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
 import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
 import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
 
-import com.sun.enterprise.deployment.util.BeanMethodCalculator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.LogDomains;
 
 // Ludo 12/10/2001: IAS specific info needed here because we cannot have multi-inheritance in Java and that iAS specific
 // info is needed in some/all of the sub-classes of EjBDescriptor:
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 
 
-import com.sun.enterprise.deployment.util.EjbVisitor;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
-import com.sun.enterprise.deployment.util.InterceptorBindingTranslator;
+import com.sun.enterprise.deployment.util.*;
+import com.sun.enterprise.deployment.util.LogDomains;
 import com.sun.enterprise.deployment.util.InterceptorBindingTranslator.TranslationResults;
+import org.glassfish.internal.api.Globals;
 
 /**
  * This abstract class encapsulates the meta-information describing
@@ -1878,7 +1872,14 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     protected Collection getTransactionMethods(ClassLoader classLoader) {
 
         try {
-            return BeanMethodCalculator.getTransactionalMethodsFor(this, classLoader);
+            ClassLoader cl = getEjbBundleDescriptor().getClassLoader();
+            BeanMethodCalculator bmc = Globals.getDefaultHabitat().getComponent(BeanMethodCalculator.class);
+            if (bmc!=null) {
+                return bmc.getTransactionalMethodsFor(this, classLoader);
+            } else {
+                _logger.log(Level.FINE, "enterprise.deploymnet.ejbcontainernotinstalled");
+                return null;
+            }
         } catch (Throwable t) {
 
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getMethods())"});
@@ -1901,7 +1902,14 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      */
     public Vector getMethods(ClassLoader classLoader) {
         try {
-            return BeanMethodCalculator.getMethodsFor(this, classLoader);
+            ClassLoader cl = getEjbBundleDescriptor().getClassLoader();
+            BeanMethodCalculator bmc = Globals.getDefaultHabitat().getComponent(BeanMethodCalculator.class);
+            if (bmc!=null) {
+                return bmc.getMethodsFor(this, classLoader);
+            } else {
+                _logger.log(Level.FINE, "enterprise.deploymnet.ejbcontainernotinstalled");
+                return new Vector();
+            }
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getMethods())"});
             throw new RuntimeException(t);

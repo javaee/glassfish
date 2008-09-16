@@ -33,80 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.AroundInvoke;
+import javax.ejb.Timeout;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbInterceptorContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.AroundInvoke attribute
+ * This handler is responsible for handling the javax.ejb.Timeout attribute
  *
  */
 @Service
-public class AroundInvokeHandler extends AbstractAttributeHandler {
+public class TimeoutHandler extends AbstractAttributeHandler {
     
-    public AroundInvokeHandler() {
+    public TimeoutHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return AroundInvoke.class;
+        return Timeout.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        for(EjbContext next : ejbContexts) {
-            
-            EjbDescriptor ejbDescriptor = 
-                (EjbDescriptor) next.getDescriptor();
-
-            ejbDescriptor.addAroundInvokeDescriptor(
-                getAroundInvokeDescriptor(ainfo));
-        }
-
-        return getDefaultProcessedResult();
-    }
-
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbInterceptorContext ejbInterceptorContext)
-            throws AnnotationProcessorException {
-
-        EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
-
-        ejbInterceptor.addAroundInvokeDescriptor(
-            getAroundInvokeDescriptor(ainfo));
-            
-        return getDefaultProcessedResult();
-    }
-
-    private LifecycleCallbackDescriptor getAroundInvokeDescriptor(
-            AnnotationInfo ainfo) {
+        // No-op.  @Timeout processing is performed during initial EJB 3.0
+        // bean processing in AbstractEjbHandler.
         
-        Method m = (Method) ainfo.getAnnotatedElement();
-        LifecycleCallbackDescriptor lccDesc =
-                new LifecycleCallbackDescriptor();
-        lccDesc.setLifecycleCallbackClass(m.getDeclaringClass().getName());
-        lccDesc.setLifecycleCallbackMethod(m.getName());
-        return lccDesc;
+        return getDefaultProcessedResult();
     }
 
     /**
@@ -116,9 +85,5 @@ public class AroundInvokeHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
-    }
-
-    protected boolean isDelegatee() {
-        return true;
     }
 }

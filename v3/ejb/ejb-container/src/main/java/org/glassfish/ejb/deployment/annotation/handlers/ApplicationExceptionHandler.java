@@ -33,57 +33,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 
-import javax.ejb.Timeout;
+import javax.ejb.ApplicationException;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
 
-import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
+import org.glassfish.apf.AnnotationInfo;
+import org.glassfish.apf.AnnotatedElementHandler;
+import org.glassfish.apf.AnnotationProcessorException;
+import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Timeout attribute
- *
+ * Handles @javax.ejb.ApplicationException 
  */
 @Service
-public class TimeoutHandler extends AbstractAttributeHandler {
+public class ApplicationExceptionHandler extends AbstractHandler {
     
-    public TimeoutHandler() {
+    public ApplicationExceptionHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Timeout.class;
+        return ApplicationException.class;
     }    
-        
-    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        // No-op.  @Timeout processing is performed during initial EJB 3.0
-        // bean processing in AbstractEjbHandler.
+     public HandlerProcessingResult processAnnotation
+         (AnnotationInfo ainfo) throws AnnotationProcessorException {
+
+        AnnotatedElement ae = ainfo.getAnnotatedElement();
+        Annotation annotation = ainfo.getAnnotation();
+
+        AnnotatedElementHandler aeHandler = 
+            ainfo.getProcessingContext().getHandler();
         
+
+        if (aeHandler instanceof EjbBundleContext) {
+            EjbBundleContext ejbBundleContext = (EjbBundleContext)aeHandler;
+            
+            EjbBundleDescriptor ejbBundle = ejbBundleContext.getDescriptor();
+
+            ApplicationException appExcAnn = (ApplicationException) annotation;
+
+            EjbApplicationExceptionInfo appExcInfo = new 
+                EjbApplicationExceptionInfo();
+            Class annotatedClass = (Class) ae;
+            appExcInfo.setExceptionClassName(annotatedClass.getName());
+            appExcInfo.setRollback(appExcAnn.rollback());
+
+            ejbBundle.addApplicationException(appExcInfo);
+
+        }
+
         return getDefaultProcessedResult();
-    }
 
-    /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
-     * annotation type.
-     */
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAnnotationTypes();
+     }
+
+    protected boolean supportTypeInheritance() {
+        return true;
     }
 }

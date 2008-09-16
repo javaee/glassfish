@@ -33,73 +33,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ejb.ApplicationException;
-
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
 
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
-import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Handles @javax.ejb.ApplicationException 
+ * This handler is responsible for handling the javax.ejb.EJBs attribute
+ *
  */
 @Service
-public class ApplicationExceptionHandler extends AbstractHandler {
+public class EJBsHandler extends EJBHandler {
     
-    public ApplicationExceptionHandler() {
+    public EJBsHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ApplicationException.class;
+        return EJBs.class;
     }    
-
-     public HandlerProcessingResult processAnnotation
-         (AnnotationInfo ainfo) throws AnnotationProcessorException {
-
-        AnnotatedElement ae = ainfo.getAnnotatedElement();
-        Annotation annotation = ainfo.getAnnotation();
-
-        AnnotatedElementHandler aeHandler = 
-            ainfo.getProcessingContext().getHandler();
         
 
-        if (aeHandler instanceof EjbBundleContext) {
-            EjbBundleContext ejbBundleContext = (EjbBundleContext)aeHandler;
-            
-            EjbBundleDescriptor ejbBundle = ejbBundleContext.getDescriptor();
+    protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
+            ResourceContainerContext[] rcContexts)
+            throws AnnotationProcessorException {
 
-            ApplicationException appExcAnn = (ApplicationException) annotation;
+        EJBs ejbsAnnotation = (EJBs) ainfo.getAnnotation();
+        
+        EJB[] ejbAnnotations = ejbsAnnotation.value();
+        List<HandlerProcessingResult> results = new ArrayList<HandlerProcessingResult>();
 
-            EjbApplicationExceptionInfo appExcInfo = new 
-                EjbApplicationExceptionInfo();
-            Class annotatedClass = (Class) ae;
-            appExcInfo.setExceptionClassName(annotatedClass.getName());
-            appExcInfo.setRollback(appExcAnn.rollback());
-
-            ejbBundle.addApplicationException(appExcInfo);
-
+        for(EJB ejb : ejbAnnotations) {
+            results.add(processEJB(ainfo, rcContexts, ejb));
         }
 
-        return getDefaultProcessedResult();
-
-     }
-
-    protected boolean supportTypeInheritance() {
-        return true;
+        return getOverallProcessingResult(results);
     }
+
 }
