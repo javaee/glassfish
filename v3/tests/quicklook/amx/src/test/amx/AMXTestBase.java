@@ -101,7 +101,12 @@ public class AMXTestBase {
         mEffortLevel = EffortLevel.valueOf(effortLevel);
         debug( "AMXTestBase: EffortLevel = " + mEffortLevel);
         
-        setup();
+        try {
+            setup();
+        } catch (Exception ex) {
+            debug( "AMXTestBase: Exception in setting up env. = " + ex);
+	    ex.printStackTrace();
+        }
     }
     
     /**
