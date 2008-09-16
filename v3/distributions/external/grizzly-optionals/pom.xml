@@ -51,7 +51,7 @@
     <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly Optionals Module for GlassFish</description>
     <properties>
-        <grizzly.original-version>1.8.5.4</grizzly.original-version>    
+        <grizzly.original-version>1.8.6-RC2</grizzly.original-version>    
     </properties>    
     <build>
         <plugins>
