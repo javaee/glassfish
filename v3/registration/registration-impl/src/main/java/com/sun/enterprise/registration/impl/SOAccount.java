@@ -125,7 +125,7 @@ public class SOAccount implements RegistrationAccount {
     }
     
     public String getCompany() {        
-        return account.getCity();        
+        return account.getCompany();   
     }
     
     public String getPassword() {
