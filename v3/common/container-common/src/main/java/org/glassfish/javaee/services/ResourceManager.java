@@ -362,11 +362,24 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
 
             private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(final T instance) {
                 ArrayList instancesToDestroy = new ArrayList();
-                instancesToDestroy.add(instance);
-                //Remove listener from the removed instance
-                ResourceManager.this.removeListenerFromResource(instance);
-                destroyResourcesAndPools(instancesToDestroy);
-                return null;
+                NotProcessed np = null;
+                try {
+                    if(ConnectorsUtil.isValidEventType(instance)) {
+                        instancesToDestroy.add(instance);
+                        //Remove listener from the removed instance
+                        ResourceManager.this.removeListenerFromResource(instance);
+                        destroyResourcesAndPools(instancesToDestroy);
+                    } else if(ConnectorsUtil.isValidEventType(instance.getParent())) {
+                        //Added in case of a property remove
+                        //check for validity of the property's parent and redeploy
+                        getConnectorRuntime().redeployResource(instance.getParent());
+                    }
+                } catch (Exception ex) {
+                    final String msg = ResourceManager.class.getName() + " : Error while handling remove Event";
+                    logger.severe(msg);
+                    np = new NotProcessed(msg);
+                }
+                return np;
             }
         }, logger);
         return unprocessed;
