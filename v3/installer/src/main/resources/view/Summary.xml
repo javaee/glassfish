@@ -85,7 +85,7 @@ void run ()  {
       } else {
         theContent.append("<center><h3>" + Msg.get("OVERALL_STATUS", new String[] {}) + ": <font color=\"green\">" + Msg.get("COMPLETE", new String[] {}) + "</font></h3></center>");
       }
-      if (theSummaryFile != null) {
+      if (theSummaryFile != null && !theMode.equals("REMOVE")) {
         theContent.append("<em>" + Msg.get("DETAILED_REPORT", new String[] {"<a href=\"" + theSumURL+"\">", "</a>", "<a href=\"" + theNextStepsURL + "\">", "</a>"}) + "</em>");
       }
       if (logsLocation != null) {
