@@ -233,8 +233,12 @@ public class DFDeploymentStatus implements java.io.Serializable {
 	 * @param throwable
 	 */
 	public void setStageException(Throwable throwable) {
+        if (throwable != null) {
             stageException = new Throwable(throwable.toString());
             stageException.setStackTrace(throwable.getStackTrace());
+        } else {
+            stageException = null;
+        }
 	}
 
 	/**
@@ -357,6 +361,7 @@ public class DFDeploymentStatus implements java.io.Serializable {
         /**
          * @return a meaningful string about mysefl
          */
+        @Override
         public String toString() {
             return "Status " + stageStatus + " message " + stageStatusMessage 
                 + " \nException " + stageException;

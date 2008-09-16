@@ -37,31 +37,16 @@
 package org.glassfish.deployment.client;
 
 /**
- * This factory is for getting the implementation instance of DeploymentFacilityImpl
+ * This factory is for retrieving an implementation instance of DeploymentFacility.
+ * <p>
+ * Currently is returns only a remote implementation.  The local implementation
+ * cannot/should not be referenced from here due to module dependencies.  The
+ * local implementation refers to classes that are loaded into the DAS, classes
+ * which are not present in a remote deployment client and therefore should not
+ * be referenced from remote clients.
  */
 public class DeploymentFacilityFactory {
 
-//    private static final String LOCAL_DF = 
-//        "com.sun.enterprise.deployment.client.local.LocalDeploymentFacilityImpl";
-//
-//    public static DeploymentFacility getDeploymentFacility() {
-//        return new DeploymentFacilityImpl();
-//    }
-//    
-//    public static DeploymentFacility getLocalDeploymentFacility() {
-//        DeploymentFacility df = null;
-//        try {
-//            df = (DeploymentFacility) Class.forName(LOCAL_DF).newInstance();
-//        } catch (Exception ex) {
-//            //@@@ log this
-//            ex.printStackTrace();
-//            return null;
-//        }
-//        ServerConnectionIdentifier sid = new ServerConnectionIdentifier();
-//        sid.setHostName("localhost");
-//        df.connect(sid);
-//        return df;
-//    }
     
     public static DeploymentFacility getDeploymentFacility() {
         return new RemoteDeploymentFacility();
