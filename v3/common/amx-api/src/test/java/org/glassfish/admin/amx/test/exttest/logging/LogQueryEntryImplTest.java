@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.exttest.logging;
+package org.glassfish.admin.amx.test.exttest.logging;
 
 import com.sun.appserv.management.ext.logging.LogQueryEntry;
 import com.sun.appserv.management.ext.logging.LogQueryEntryImpl;

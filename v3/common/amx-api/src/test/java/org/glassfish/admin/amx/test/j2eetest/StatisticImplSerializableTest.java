@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.exttest.logging;
+package org.glassfish.admin.amx.test.j2eetest.logging;
 
 import com.sun.appserv.management.j2ee.statistics.BoundaryStatisticImpl;
 import com.sun.appserv.management.j2ee.statistics.BoundedRangeStatisticImpl;
