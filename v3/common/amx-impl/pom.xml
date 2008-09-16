@@ -63,7 +63,6 @@
     </developers>
 
    <build>
-  	<testSourceDirectory>src/test</testSourceDirectory>
   	
 	   <plugins>
 	     <plugin>
