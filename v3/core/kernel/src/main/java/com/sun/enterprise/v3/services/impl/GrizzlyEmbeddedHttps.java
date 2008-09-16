@@ -126,11 +126,6 @@ public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureS
         }
         
         protocolChain.addFilter(createReadFilter());
-        
-        if (rcmSupport){
-            protocolChain.addFilter(createRaFilter());
-        }
-        
         protocolChain.addFilter(createHttpParserFilter());
     }
     

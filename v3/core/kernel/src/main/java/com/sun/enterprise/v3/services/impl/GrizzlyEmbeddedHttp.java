@@ -116,6 +116,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
                 ProtocolChain protocolChain = chains.poll();
                 if (protocolChain == null) {
                     protocolChain = new GlassfishProtocolChain();
+                    ((GlassfishProtocolChain)protocolChain).enableRCM(rcmSupport);
                     configureFilters(protocolChain);
                 }
                 return protocolChain;

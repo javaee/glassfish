@@ -25,7 +25,8 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Context;
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.DefaultProtocolChain;
+import com.sun.grizzly.DefaultProtocolChain.Phase;
+import com.sun.grizzly.http.HttpProtocolChain;
 import com.sun.grizzly.ProtocolFilter;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ import java.util.logging.Level;
  * 
  * @author Jeanfrancois Arcand
  */
-public class GlassfishProtocolChain extends DefaultProtocolChain {
+public class GlassfishProtocolChain extends HttpProtocolChain {
     
     // Allow disabling the continuous execution optimization from Grizzly.
     protected final static boolean CONTINUOUS_EXECUTION = 
