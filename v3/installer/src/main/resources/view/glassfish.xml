@@ -134,7 +134,6 @@ isPortFree(int intportNumber) {
 // Get the current hostname needed to attempt to establish a socket connection.
 // Can use "localhost" instead??
 getHostName() {
-        System.out.println("getHostName");
         String hostname = null;
         try
           {
@@ -148,7 +147,6 @@ getHostName() {
 
 //Use client socket
 isPortFreeClient(String hostName, int port) {
-        System.out.println("isportfreeclient");
         try {
             Socket socket = new Socket(hostName, port);
             OutputStream os = socket.getOutputStream();
@@ -168,7 +166,6 @@ isPortFreeClient(String hostName, int port) {
 //Use server socket
 isPortFreeServer(InetAddress addr, int port) {
 
-        System.out.println("isportfreeserver");
         boolean isPortFree = true;
         ServerSocket ss = null;
         try {
