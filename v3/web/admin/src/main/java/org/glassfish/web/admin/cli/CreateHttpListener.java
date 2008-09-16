@@ -130,7 +130,6 @@ public class CreateHttpListener implements AdminCommand {
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
         HttpService httpService = config.getHttpService();
-        
         // ensure we don't already have one of this name
         for (HttpListener listener : httpService.getHttpListener()) {
             if (listener.getId().equals(listenerId)) {
@@ -140,7 +139,18 @@ public class CreateHttpListener implements AdminCommand {
                 return;                    
             }
         }
-        
+        //check port uniqueness, only for same address
+        for (HttpListener listener : httpService.getHttpListener()) {
+            if(listener.getPort().trim().equals(listenerPort) &&
+               listener.getAddress().trim().equals(listenerAddress)) {
+                String def = "Port is already taken by another listener, choose another port.";
+                String msg = localStrings.getLocalString("port.occupied", def, listenerPort, listener.getId(), listenerAddress);
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
+        //no need to check the other things (e.g. id) for uniqueness
         // ensure that the specified default virtual server exists
         if(!defaultVirtualServerExists(httpService)) {
            report.setMessage(localStrings.getLocalString("create.http.listener.vs.notexists",
@@ -148,7 +158,9 @@ public class CreateHttpListener implements AdminCommand {
            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
            return;
         }
-  
+        
+        VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+
         try {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
@@ -184,6 +196,22 @@ public class CreateHttpListener implements AdminCommand {
                     return newListener;
                 }
             }, httpService);
+            
+            //now change the associated virtual server
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                public Object run(VirtualServer avs) throws PropertyVetoException, TransactionFailure {
+                    String DELIM = ",";
+                    String lss = avs.getHttpListeners();
+                    if (!lss.contains(listenerId)) {
+                        if(!lss.endsWith(DELIM)) {
+                            lss += DELIM;
+                        }
+                        lss += listenerId;
+                        avs.setHttpListeners(lss);
+                    }
+                    return ( avs );
+                }
+            }, vs);
 
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("create.http.listener.fail", "{0} create failed ", listenerId));
