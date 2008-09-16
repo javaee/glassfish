@@ -284,9 +284,7 @@
         <ant dir="securityConstraintMapping" target="all"/>
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
-        <!-- com.sun.appserv.security.ProgrammaticLogin is missing now
         <ant dir="programmaticLogin" target="all"/>
-        -->
         <ant dir="traceEnabled" target="all"/>
         <ant dir="sslClientAuthUnprotectedResourceGetClientCert" target="all"/>
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
