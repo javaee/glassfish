@@ -336,7 +336,7 @@ public class SSLHandlers {
                     }else{
                         sslConfig.setCertNickname(certNickname);
                     }
-                    sslConfig.setClientAuthEnabled((String)handlerCtx.getInputValue("ClientAuth"));
+                    sslConfig.setClientAuthEnabled(""+(Boolean)handlerCtx.getInputValue("ClientAuth"));
                     Boolean ssl3Prop = (Boolean)handlerCtx.getInputValue("SSL3Prop");
                     sslConfig.setSSL3Enabled( ssl3Prop.toString());                   
                     if(!type.equals("iiop")) {
