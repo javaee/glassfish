@@ -66,7 +66,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             // last element from the pattern.
             matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
         }
-        for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
+        List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
+        for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             // if we get more of these special cases, we should switch to a Renderer pattern
             if (node.getKey().model.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Property")) {
                  // special display for properties...
@@ -76,7 +77,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                     part.setMessage(node.getValue() + "=" + node.getKey().attribute("value"));
                 }
             }   else {
-                for (Map.Entry<String, String> name : getNodeAttributes(node.getKey(), pattern).entrySet()) {
+                Map<String, String> attributes = getNodeAttributes(node.getKey(), pattern);
+                TreeMap<String, String> attributesSorted = new TreeMap(attributes);
+                for (Map.Entry<String, String> name : attributesSorted.entrySet()) {
                     String finalDottedName = node.getValue()+"."+name.getKey();
                     if (matches(finalDottedName, pattern)) {
                         ActionReport.MessagePart part = report.getTopMessagePart().addChild();

@@ -68,10 +68,11 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
             // last element from the pattern.
             matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
         }
-        for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
+        List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
+        for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setChildrenType("DottedName");
-            part.setMessage(node.getValue());
+            part.setMessage((String)node.getValue());
         }
     }
     
@@ -88,7 +89,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
             report.setActionExitCode(ExitCode.SUCCESS);
             return;
         }
-        List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
+        List<org.glassfish.flashlight.datatree.TreeNode> ltn = sortTreeNodesByCompletePathName(tn.getNodes(pattern));
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
             if (!( (tn1 instanceof Statistic ) || (tn1 instanceof MethodInvoker))) {//tn1.hasChildNodes() ) 
                 System.out.println(tn1.getCompletePathName());

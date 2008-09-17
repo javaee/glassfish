@@ -62,7 +62,7 @@ public final class ListJvmOptions implements AdminCommand {
         //validate the target first
         logfh("Injected JavaConfig: " + jc);
         List<String> opts = new ArrayList<String>(jc.getJvmOptions());
-        //Collections.sort(opts);/ no need to sort, ActionReport messes it up anyway
+        Collections.sort(opts);
         final ActionReport report = context.getActionReport();
 
         try {

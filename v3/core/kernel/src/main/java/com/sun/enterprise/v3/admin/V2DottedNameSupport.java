@@ -294,4 +294,24 @@ public class V2DottedNameSupport {
         }
         return null;
     }
+    
+    public List<Map.Entry> sortNodesByDottedName(Map<Dom, String> nodes) {
+        List<Map.Entry> mapEntries = new ArrayList(nodes.entrySet());
+        Collections.sort(mapEntries, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return (((String)(((Map.Entry) (o1)).getValue())).compareTo((String)(((Map.Entry) (o2)).getValue())));
+            }
+        });
+        return mapEntries;
+    }
+    
+    public List<org.glassfish.flashlight.datatree.TreeNode> sortTreeNodesByCompletePathName(List<org.glassfish.flashlight.datatree.TreeNode> nodes) {
+        Collections.sort(nodes, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return (((String)(((org.glassfish.flashlight.datatree.TreeNode) (o1)).getCompletePathName())).compareTo(
+                        (String)(((org.glassfish.flashlight.datatree.TreeNode) (o2)).getCompletePathName())));
+            }
+        });
+        return nodes;
+    }
 }
