@@ -601,6 +601,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // TODO : revisit later
         //ejbWebServiceRegistryListener.register(habitat);
 
+        ConstructorWomb<HttpServiceConfigListener> womb = 
+                new ConstructorWomb<HttpServiceConfigListener>(
+                HttpServiceConfigListener.class, 
+                habitat, 
+                null);
+        configListener = womb.get(null);
+        
+        ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
+                configListener.httpService);
+        httpServiceBean.addListener(configListener);    
+        
+        configListener.setContainer(this);
+        configListener.setLogger(_logger);
+
+        events.register(this);
+        
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
 
@@ -664,21 +680,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         */
 
-        ConstructorWomb<HttpServiceConfigListener> womb = 
-                new ConstructorWomb<HttpServiceConfigListener>(
-                HttpServiceConfigListener.class, 
-                habitat, 
-                null);
-        configListener = womb.get(null);
-        
-        ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
-                configListener.httpService);
-        httpServiceBean.addListener(configListener);    
-        
-        configListener.setContainer(this);
-        configListener.setLogger(_logger);
-
-        events.register(this);
     }
 
 
