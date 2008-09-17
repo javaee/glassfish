@@ -489,6 +489,7 @@ public class SysnetTransferManager {
             addRequired("-A", tag.getPlatformArch());
             addRequired("-z", tag.getContainer());
             addRequired("-S", tag.getSource());
+            addOptional("-i", tag.getInstanceURN());
         }
         
         /**
