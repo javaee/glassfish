@@ -39,8 +39,6 @@ package com.sun.enterprise.web;
 import java.io.File;
 import java.util.HashMap;
 
-import org.apache.catalina.util.StringManager;
-
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 //import com.sun.enterprise.deployment.backend.DeploymentUtils;
@@ -104,12 +102,6 @@ public class WebModuleConfig {
     // END S1AS 6178005
 
     private ClassLoader _appClassLoader = null;
-
-   /**
-     * The string manager for this package.
-     */
-    private static StringManager _sm =
-        StringManager.getManager(Constants.Package);
 
     // ------------------------------------------------------------- Properties
 
