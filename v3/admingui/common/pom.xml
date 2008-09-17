@@ -117,6 +117,12 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+	    <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
             <version>${jsftemplating.version}</version>
@@ -141,6 +147,7 @@
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
+	    <version>${jsf-api.version}</version>
         </dependency>
     </dependencies>
 </project>

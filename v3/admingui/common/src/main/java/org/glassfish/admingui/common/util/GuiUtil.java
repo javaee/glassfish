@@ -119,12 +119,12 @@ public class GuiUtil {
             return sessionMap.get(key);
         }
         
-        
         public static DeploymentFacility getDeploymentFacility(){
             DeploymentFacility df = null; //(DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
             boolean enable=false;
             if (df == null){
-                df= DeploymentFacilityFactory.getDeploymentFacility();
+                //df= DeploymentFacilityFactory.getDeploymentFacility();
+                df = new LocalDeploymentFacility();
                 ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
                         (String)getSessionValue("serverName"),
                         ((Integer)getSessionValue("severPort")).intValue(),
@@ -132,13 +132,12 @@ public class GuiUtil {
                         "",         //password    FIXME: how to get password ?
                         (Boolean)getSessionValue("requestIsSecured")       //security enabled
                         );
-                df.connect(sci);
+                df.connect(sci);   //although we pass in sci, it is ignored. refer to issue#6100
                 setSessionValue("_DEPLOYMENT_FACILITY", df);
             }
             return df;
         }
         
-
 	/**
 	 * <p> This method encodes the given String with the specified type.
 	 * <p> If type is not specified then it defaults to UTF-8.
