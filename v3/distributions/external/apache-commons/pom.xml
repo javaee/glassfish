@@ -80,7 +80,7 @@
                 <configuration>
                     <instructions>
                         <!-- embed all compile and runtime scope dependencies -->
-                        <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*</Embed-Dependency>
+                        <Embed-Dependency>*;groupId=commons-beanutils;inline=true,*;groupId=commons-collections;inline=true,*;groupId=commons-digester;inline=true,*;groupId=commons-modeler;inline=true</Embed-Dependency>
                         <!-- We set a mandatory attribute for these packages, because we don't
                              want them to be visible to just anyone. An importer must specify
                              the mandatory attribute for it to be able to import. See 
@@ -132,5 +132,23 @@
             <version>${commons.beanutils.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${commons.collections.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>${commons.digester.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+        <groupId>commons-modeler</groupId>
+        <artifactId>commons-modeler</artifactId>
+        <version>${commons.modeler.version}</version>
+        <optional>true</optional>
+        </dependency> 
     </dependencies>
 </project>
