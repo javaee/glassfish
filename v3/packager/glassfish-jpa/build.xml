@@ -142,7 +142,8 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />  
+        <delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" /> 	
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

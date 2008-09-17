@@ -70,11 +70,20 @@
         <!--
           modules to be included in this bundle
 	  -->          
-	<dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javaee-api</artifactId>
-	    <version>${project.version}</version>
-	    <type>pom</type>
+            <artifactId>javax.xml.bind</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.soap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

@@ -78,7 +78,8 @@
         <dependency>
            <groupId>org.glassfish.persistence</groupId>
            <artifactId>eclipselink-wrapper</artifactId>
-           <version>${project.version}</version>
+	   <version>${project.version}</version>
+	   <type>pom</type>
    </dependency>
    <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
