@@ -142,6 +142,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
                         
             // Map the request without any trailling.
             ByteChunk uriBB = decodedURI.getByteChunk();
+            int start = uriBB.getStart();
             int end = uriBB.getEnd();
             int semicolon = uriBB.indexOf(';',0);
             if (semicolon > 0){
@@ -171,7 +172,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
             }  else {                            
                 // Re-set back the position.
                 if (semicolon != 0 && end != 0){
-                    decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), end);
+                    decodedURI.setBytes(uriBB.getBuffer(), start, end);
                 }
 
                 req.setNote(MAPPED_ADAPTER, adapter);
