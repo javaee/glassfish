@@ -1,4 +1,4 @@
-#!C:/Sun/v3/jruby-src-1.0.2/jruby-1.0.2/bin/jruby.bat
+#!/files/hudson/tools/jruby-1.1.4/bin/jruby
 
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
 

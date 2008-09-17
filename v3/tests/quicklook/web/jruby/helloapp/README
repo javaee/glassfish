@@ -1,14 +1,14 @@
 == Welcome to Rails
 
-Rails is a web-application and persistence framework that includes everything
-needed to create database-backed web-applications according to the
-Model-View-Control pattern of separation. This pattern splits the view (also
-called the presentation) into "dumb" templates that are primarily responsible
-for inserting pre-built data in between HTML tags. The model contains the
-"smart" domain objects (such as Account, Product, Person, Post) that holds all
-the business logic and knows how to persist themselves to a database. The
-controller handles the incoming requests (such as Save New Account, Update
-Product, Show Post) by manipulating the model and directing data to the view.
+Rails is a web-application framework that includes everything needed to create 
+database-backed web applications according to the Model-View-Control pattern. 
+
+This pattern splits the view (also called the presentation) into "dumb" templates
+that are primarily responsible for inserting pre-built data in between HTML tags.
+The model contains the "smart" domain objects (such as Account, Product, Person,
+Post) that holds all the business logic and knows how to persist themselves to
+a database. The controller handles the incoming requests (such as Save New Account,
+Update Product, Show Post) by manipulating the model and directing data to the view.
 
 In Rails, the model is handled by what's called an object-relational mapping
 layer entitled Active Record. This layer allows you to present the data from
@@ -25,24 +25,23 @@ Rails.  You can read more about Action Pack in
 link:files/vendor/rails/actionpack/README.html.
 
 
-== Getting started
+== Getting Started
 
-1. At the command prompt, start a new rails application using the rails command
+1. At the command prompt, start a new Rails application using the <tt>rails</tt> command
    and your application name. Ex: rails myapp
-   (If you've downloaded rails in a complete tgz or zip, this step is already done)
 2. Change directory into myapp and start the web server: <tt>script/server</tt> (run with --help for options)
-3. Go to http://localhost:3000/ and get "Welcome aboard: You’re riding the Rails!"
+3. Go to http://localhost:3000/ and get "Welcome aboard: You're riding the Rails!"
 4. Follow the guidelines to start developing your application
 
 
 == Web Servers
 
 By default, Rails will try to use Mongrel and lighttpd if they are installed, otherwise
-Rails will use the WEBrick, the webserver that ships with Ruby. When you run script/server,
+Rails will use WEBrick, the webserver that ships with Ruby. When you run script/server,
 Rails will check if Mongrel exists, then lighttpd and finally fall back to WEBrick. This ensures
 that you can always get up and running quickly.
 
-Mongrel is a Ruby-based webserver with a C-component (which requires compilation) that is
+Mongrel is a Ruby-based webserver with a C component (which requires compilation) that is
 suitable for development and deployment of Rails applications. If you have Ruby Gems installed,
 getting up and running with mongrel is as easy as: <tt>gem install mongrel</tt>.
 More info at: http://mongrel.rubyforge.org
@@ -60,6 +59,50 @@ for production.
 But of course its also possible to run Rails on any platform that supports FCGI.
 Apache, LiteSpeed, IIS are just a few. For more information on FCGI,
 please visit: http://wiki.rubyonrails.com/rails/pages/FastCGI
+
+
+== Apache .htaccess example
+
+# General Apache options
+AddHandler fastcgi-script .fcgi
+AddHandler cgi-script .cgi
+Options +FollowSymLinks +ExecCGI
+
+# If you don't want Rails to look in certain directories,
+# use the following rewrite rules so that Apache won't rewrite certain requests
+# 
+# Example:
+#   RewriteCond %{REQUEST_URI} ^/notrails.*
+#   RewriteRule .* - [L]
+
+# Redirect all requests not available on the filesystem to Rails
+# By default the cgi dispatcher is used which is very slow
+# 
+# For better performance replace the dispatcher with the fastcgi one
+#
+# Example:
+#   RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
+RewriteEngine On
+
+# If your Rails application is accessed via an Alias directive,
+# then you MUST also set the RewriteBase in this htaccess file.
+#
+# Example:
+#   Alias /myrailsapp /path/to/myrailsapp/public
+#   RewriteBase /myrailsapp
+
+RewriteRule ^$ index.html [QSA]
+RewriteRule ^([^.]+)$ $1.html [QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ dispatch.cgi [QSA,L]
+
+# In case Rails experiences terminal errors
+# Instead of displaying this message you can supply a file here which will be rendered instead
+# 
+# Example:
+#   ErrorDocument 500 /500.html
+
+ErrorDocument 500 "<h2>Application error</h2>Rails application failed to start properly"
 
 
 == Debugging Rails
@@ -98,29 +141,29 @@ These two online (and free) books will bring you up to speed on the Ruby languag
 and also on programming in general.
 
 
-== Breakpoints
+== Debugger
 
-Breakpoint support is available through the script/breakpointer client. This
-means that you can break out of execution at any point in the code, investigate
-and change the model, AND then resume execution! Example:
+Debugger support is available through the debugger command when you start your Mongrel or
+Webrick server with --debugger. This means that you can break out of execution at any point
+in the code, investigate and change the model, AND then resume execution! 
+You need to install ruby-debug to run the server in debugging mode. With gems, use 'gem install ruby-debug'
+Example:
 
   class WeblogController < ActionController::Base
     def index
       @posts = Post.find(:all)
-      breakpoint "Breaking out from the list"
+      debugger
     end
   end
 
 So the controller will accept the action, run the first line, then present you
-with a IRB prompt in the breakpointer window. Here you can do things like:
-
-Executing breakpoint "Breaking out from the list" at .../webrick_server.rb:16 in 'breakpoint'
+with a IRB prompt in the server window. Here you can do things like:
 
   >> @posts.inspect
   => "[#<Post:0x14a6be8 @attributes={\"title\"=>nil, \"body\"=>nil, \"id\"=>\"1\"}>,
        #<Post:0x14a6620 @attributes={\"title\"=>\"Rails you know!\", \"body\"=>\"Only ten..\", \"id\"=>\"2\"}>]"
-  >> @posts.first.title = "hello from a breakpoint"
-  => "hello from a breakpoint"
+  >> @posts.first.title = "hello from a debugger"
+  => "hello from a debugger"
 
 ...and even better is that you can examine how your runtime objects actually work:
 
@@ -129,7 +172,7 @@ Executing breakpoint "Breaking out from the list" at .../webrick_server.rb:16 in
   >> f.
   Display all 152 possibilities? (y or n)
 
-Finally, when you're ready to resume execution, you press CTRL-D
+Finally, when you're ready to resume execution, you enter "cont"
 
 
 == Console
@@ -142,11 +185,15 @@ Passing an argument will specify a different environment, like <tt>script/consol
 
 To reload your controllers and models after launching the console run <tt>reload!</tt>
 
-To reload your controllers and models after launching the console run <tt>reload!</tt>
+== dbconsole
 
+You can go to the command line of your database directly through <tt>script/dbconsole</tt>.
+You would be connected to the database with the credentials defined in database.yml.
+Starting the script without arguments will connect you to the development database. Passing an
+argument will connect you to a different database, like <tt>script/dbconsole production</tt>.
+Currently works for mysql, postgresql and sqlite.
 
-
-== Description of contents
+== Description of Contents
 
 app
   Holds all the code that's specific to this particular application.
@@ -162,13 +209,13 @@ app/models
 
 app/views
   Holds the template files for the view that should be named like
-  weblogs/index.rhtml for the WeblogsController#index action. All views use eRuby
+  weblogs/index.html.erb for the WeblogsController#index action. All views use eRuby
   syntax.
 
 app/views/layouts
   Holds the template files for layouts to be used with views. This models the common
   header/footer method of wrapping views. In your views, define a layout using the
-  <tt>layout :default</tt> and create a file named default.rhtml. Inside default.rhtml,
+  <tt>layout :default</tt> and create a file named default.html.erb. Inside default.html.erb,
   call <% yield %> to render the view using this layout.
 
 app/helpers
@@ -178,9 +225,6 @@ app/helpers
 
 config
   Configuration files for the Rails environment, the routing map, the database, and other dependencies.
-
-components
-  Self-contained mini-applications that can bundle together controllers, models, and views.
 
 db
   Contains the database schema in schema.rb.  db/migrate contains all
@@ -208,4 +252,5 @@ test
 
 vendor
   External libraries that the application depends on. Also includes the plugins subdirectory.
+  If the app has frozen rails, those gems also go here, under vendor/rails/.
   This directory is in the load path.
