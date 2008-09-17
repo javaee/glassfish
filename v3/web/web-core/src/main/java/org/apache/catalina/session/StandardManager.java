@@ -575,7 +575,7 @@ public class StandardManager
      *
      * @exception IOException if an input/output error occurs
      */
-    public void writeSession(OutputStream os) throws IOException {
+    public void writeSessions(OutputStream os) throws IOException {
         writeSessions(os, true);
     }
 

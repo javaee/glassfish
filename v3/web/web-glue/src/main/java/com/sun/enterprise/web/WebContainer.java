@@ -158,6 +158,7 @@ import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
@@ -1707,7 +1708,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void loadStandaloneWebModule(VirtualServer vs,
                                            WebModuleConfig wmInfo) {
         try {
-            loadWebModule(vs, wmInfo, "null");
+            loadWebModule(vs, wmInfo, "null", null);
         } catch (Throwable t) {
             _logger.log(Level.SEVERE,
                         "Error loading web module " + wmInfo.getName(), t);
@@ -1857,7 +1858,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * loaded on EVERY virtual server.
      */
     public List<Result<WebModule>> loadWebModule(
-            WebModuleConfig wmInfo, String j2eeApplication) {
+            WebModuleConfig wmInfo, String j2eeApplication,
+            DeploymentContext dc) {
 
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
@@ -1888,7 +1890,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                         WebModule ctx = null;
                         try {
-                            ctx = loadWebModule(vs, wmInfo, j2eeApplication);
+                            ctx = loadWebModule(vs, wmInfo, j2eeApplication, dc);
                             results.add(new Result(ctx));
                         } catch (Throwable t) {
                             if (ctx != null) {
@@ -1921,8 +1923,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Creates and configures a web module and adds it to the specified
      * virtual server.
      */
-    private WebModule loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
-                String j2eeApplication) throws Exception {
+    private WebModule loadWebModule(
+                VirtualServer vs,
+                WebModuleConfig wmInfo,
+                String j2eeApplication,
+                DeploymentContext dc)
+            throws Exception {
+
+        // XXX Initialize from deployment command line option
+        boolean preserveSessionsDuringRedeploy = false;
 
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
@@ -1981,9 +1990,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * loaded
                  */
                 unloadWebModule(wmContextPath,
-                        ctx.getJ2EEApplication(),
-                        vs.getName(),
-                        true);
+                                ctx.getJ2EEApplication(),
+                                vs.getName(),
+                                true,
+                                dc);
             } else if (!ctx.getAvailable()){
                 /*
                  * Context has been marked unavailable by a previous
@@ -2203,6 +2213,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.addChild(ctx);
 
+        if (preserveSessionsDuringRedeploy) {
+            ctx.loadSessions(dc);
+        }
+
         return ctx;
     }
 
@@ -2362,8 +2376,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public void unloadWebModule(String contextRoot,
             String appName,
-            String virtualServers) {
-        unloadWebModule(contextRoot, appName, virtualServers, false);
+            String virtualServers,
+            DeploymentContext dc) {
+        unloadWebModule(contextRoot, appName, virtualServers, false, dc);
     }
 
     /**
@@ -2381,7 +2396,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void unloadWebModule(String contextRoot,
             String appName,
             String virtualServers,
-            boolean dummy) {
+            boolean dummy,
+            DeploymentContext dc) {
+
+        // XXX Initialize from deployment command line option
+        boolean preserveSessionsDuringRedeploy = false;
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("WebContainer.unloadWebModule(): contextRoot: "
@@ -2426,6 +2445,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     context = (WebModule) host.findChild(contextRoot);
                     if (context != null) {
+                        if (preserveSessionsDuringRedeploy) {
+                            context.saveSessions(dc);
+                        }
                         host.removeChild(context);
                         try {
                             /*
@@ -3266,7 +3288,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 && Constants.DEFAULT_WEB_MODULE_NAME.equals(
                 ctx.getModuleName())) {
             unloadWebModule("", ctx.getJ2EEApplication(),
-                    vs.getName(), true);
+                    vs.getName(), true, null);
         }
     }
 
@@ -3347,7 +3369,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 for (int j=0; j < webModules.length; j++){
                     unloadWebModule(webModules[j].getName(),
                                     webModules[j].getName(), 
-                                    virtualServer.getID());
+                                    virtualServer.getID(),
+                                    null);
                 }
                 try {                
                     virtualServer.destroy();

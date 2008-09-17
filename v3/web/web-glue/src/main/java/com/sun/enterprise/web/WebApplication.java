@@ -86,8 +86,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private boolean start() throws Exception {
         // TODO : dochez : add action report here...
-        List<Result<WebModule>> results = container.loadWebModule(wmInfo,
-                                                                  "null");
+        List<Result<WebModule>> results = container.loadWebModule(
+            wmInfo, "null", deploymentContext);
         if (results == null) {
             logger.log(Level.SEVERE,
                 "Unknown error, loadWebModule returned null, file a bug");
@@ -99,11 +99,11 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         for (Result result : results) {
             if (result.isFailure()) {
                 if (sb == null) {
-                    sb = new StringBuilder(result.exception().getMessage());
+                    sb = new StringBuilder(result.exception().toString());
                 } else {
-                    sb.append(result.exception().getMessage());
+                    sb.append(result.exception().toString());
                 }
-                logger.log(Level.WARNING, result.exception().getMessage(),
+                logger.log(Level.WARNING, result.exception().toString(),
                            result.exception());
                 isFailure = true;
             }
@@ -122,7 +122,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     public boolean stop() {
 
         container.unloadWebModule(getDescriptor().getContextRoot(), null,
-                                  null);
+                                  null, deploymentContext);
 
         if (getClassLoader() instanceof WebappClassLoader) {
             try {

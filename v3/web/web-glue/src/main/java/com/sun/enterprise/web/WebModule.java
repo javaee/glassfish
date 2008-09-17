@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.web;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
@@ -76,6 +78,8 @@ import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.BASE64Decoder;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pwc.PwcWebModule;
@@ -96,7 +100,9 @@ import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.session.StandardManager;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -117,6 +123,9 @@ public class WebModule extends PwcWebModule {
 
     private static final String ALTERNATE_FROM = "from=";
     private static final String ALTERNATE_DOCBASE = "dir=";
+
+    private static final BASE64Encoder gfEncoder = new BASE64Encoder();
+    private static final BASE64Decoder gfDecoder = new BASE64Decoder();
 
     // ----------------------------------------------------- Instance Variables
 
@@ -173,7 +182,6 @@ public class WebModule extends PwcWebModule {
     // The id of the parent container (i.e., virtual server) on which this
     // web module was deployed
     private String vsId;
-
 
     /**
      * Constructor.
@@ -1376,6 +1384,65 @@ public class WebModule extends PwcWebModule {
         setLoader(loader);
 
         return loader;
+    }
+
+
+    /**
+     * Saves all active sessions to the given deployment context, so they
+     * can be restored following a redeployment.
+     *
+     * @param dc the deployment context to which to save the sessions
+     */
+    void saveSessions(DeploymentContext dc) {
+        if (dc == null || dc.getProps() == null) {
+            return;
+        }
+
+        StandardManager manager = (StandardManager) getManager();
+        if (manager == null) {
+            return;
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            manager.writeSessions(baos);
+            dc.getProps().setProperty(getObjectName(),
+                                      gfEncoder.encode(baos.toByteArray()));
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Unable to save sessions for " +
+                       getName(), ex);
+        }
+    }
+
+
+    /**
+     * Loads any sessions that were stored in the given deployment context
+     * prior to a redeployment of this web module.
+     *
+     * @param dc the deployment context from which to load the sessions
+     */
+    void loadSessions(DeploymentContext dc) {
+        if (dc == null || dc.getProps() == null) {
+            return;
+        }    
+
+        StandardManager manager = (StandardManager) getManager();
+        if (manager == null) {
+            return;
+        }
+
+        String sessions = dc.getProps().getProperty(getObjectName());
+        if (sessions != null) {
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(
+                    gfDecoder.decodeBuffer(sessions));
+                manager.readSessions(bais);
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, "Unable to restore sessions for " +
+                           getName(), ex);
+
+            }
+        }
     }
 
 
