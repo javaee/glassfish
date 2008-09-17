@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -61,7 +62,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.api.admin.ServerEnvironment;
 
@@ -100,6 +100,8 @@ public final class PEAccessLogValve
 
     private static final Logger _logger =
         LogDomains.getLogger(PEAccessLogValve.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle _rb = _logger.getResourceBundle();
 
     // Predefined patterns
     private static final String COMMON_PATTERN = "common";
@@ -151,13 +153,6 @@ public final class PEAccessLogValve
      * Should we rotate our log file?
      */
     private boolean rotatable;
-
-
-    /**
-     * The string manager for this package.
-     */
-    private StringManager sm =
-        StringManager.getManager(Constants.Package);
 
 
     /**
@@ -1042,7 +1037,7 @@ public final class PEAccessLogValve
         // Validate and update our current component state
         if (started) {
             throw new LifecycleException
-                (sm.getString("accessLogValve.alreadyStarted"));
+                (_rb.getString("accessLogValve.alreadyStarted"));
         }
 
         lifecycle.fireLifecycleEvent(START_EVENT, null);
@@ -1108,7 +1103,7 @@ public final class PEAccessLogValve
         // Validate and update our current component state
         if (!started)
             throw new LifecycleException
-                (sm.getString("accessLogValve.notStarted"));
+                (_rb.getString("accessLogValve.notStarted"));
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
         started = false;
         
