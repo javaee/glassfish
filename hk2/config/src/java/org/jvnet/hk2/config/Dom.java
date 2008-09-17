@@ -975,13 +975,15 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
         w.writeStartElement(tagName);
 
-        for (Map.Entry<String, String> a : attributes.entrySet()) {
+        Map<String, String> localAttr = new HashMap<String, String>(attributes);
+        for (Map.Entry<String, String> a : localAttr.entrySet()) {
             ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
             // TODO: compare with the default value and don't write back if it's the same.
             w.writeAttribute(a.getKey(),a.getValue());
         }
 
-        for (Child c : children)
+        List<Child> localChildren = new ArrayList<Child>(children);
+        for (Child c : localChildren)
             c.writeTo(w);
 
         w.writeEndElement();
@@ -1006,6 +1008,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     Set<ConfigListener> listeners = new HashSet<ConfigListener>();
 
     public void addListener(ConfigListener listener) {
+        if (listener==null) {
+            throw new IllegalArgumentException("Listener cannot be null");
+        }
         listeners.add(listener);
     }
 

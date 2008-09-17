@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.logging.Logger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -208,7 +209,12 @@ public final class Transactions {
             for (final PropertyChangeEvent evt : mEvents) {
                 final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
                 if (dom.getListeners() != null && dom.getListeners().size() != 0 ) {
-                    for (final ConfigListener listener : dom.getListeners()) {
+                    List<ConfigListener> listeners = new ArrayList<ConfigListener>(dom.getListeners());
+                    for (final ConfigListener listener :listeners) {                       
+                        if (listener==null) {
+                            Logger.getAnonymousLogger().warning("Null config listener is registered to " + dom);
+                            continue;
+                        }
                         if (!notifiedListeners.contains(listener)) {
                             try {
                                 // create a new array each time to avoid any potential array changes?
@@ -231,7 +237,12 @@ public final class Transactions {
                 // we notify the immediate parent.
                 // dochez : should we notify the parent chain up to the root or stop at the first parent.
                 if (dom.parent()!=null && dom.parent().getListeners()!=null) {
-                    for (ConfigListener parentListener : dom.parent().getListeners()) {
+                    List<ConfigListener> parentListeners = new ArrayList<ConfigListener>(dom.parent().getListeners());
+                    for (ConfigListener parentListener : parentListeners) {
+                        if (parentListener==null) {
+                            Logger.getAnonymousLogger().warning("Null config listener is registered to " + dom);
+                            continue;
+                        }
                         if (!notifiedListeners.contains(parentListener)) {
                             try {
                                 // create a new array each time to avoid any potential array changes?
