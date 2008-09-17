@@ -5,6 +5,8 @@ import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.server.ServerEnvironmentImpl;
+import com.sun.enterprise.module.ModulesRegistry;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +21,14 @@ public class WebServiceContractImpl implements WebServicesContract{
     @Inject
     private ComponentEnvManager compEnvManager;
 
+    @Inject
+    private ServerEnvironmentImpl env;
+
+    @Inject
+    private ModulesRegistry modulesRegistry;
+
+
+
     private  static WebServiceContractImpl wscImpl;
 
     private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEB_LOGGER);
@@ -26,6 +36,15 @@ public class WebServiceContractImpl implements WebServicesContract{
     public ComponentEnvManager getComponentEnvManager() {
         return compEnvManager;  
     }
+
+
+    public ServerEnvironmentImpl getServerEnvironmentImpl (){
+        return env;
+    }
+
+    public ModulesRegistry getModulesRegistry (){
+            return modulesRegistry;
+        }
 
     public static WebServiceContractImpl getInstance() {
         // Create the instance first to access the logger.

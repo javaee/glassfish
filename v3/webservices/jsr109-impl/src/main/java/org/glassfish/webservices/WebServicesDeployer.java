@@ -25,6 +25,7 @@ package org.glassfish.webservices;
 
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -37,6 +38,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -53,6 +55,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -579,11 +582,29 @@ public class WebServicesDeployer extends WebDeployer {
         // First thing in the classpath is modules' classes directory
         String classpath = classesDir.getAbsolutePath();
         /**
-        * Hack fix me
-         * TODO BM fix this just put in momentarily so apt could find
-         * javax.jws classes
+         * JAXWS uses the System.getProperty(java.class.path) to pass on to apt during wsgen
+         * In V2 this would have
+         * tools.jar, webservices-rt and webservices-api.jar and webservices-tools.jar so there was no issue
+         * In V3 the apt cannot see JSR 250, JAXB api and JAXWS apis so I have to pass them
+         * explicitly to apt using the classpath option
+         * This will be changed after prelude once I move to asm as it is not thoroughly tested right now
          */
-        //classpath+=(File.pathSeparator+"javax.javaee-10.0-SNAPSHOT.jar")  ;
+
+        WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+        ModulesRegistry modulesRegistry = wscImpl.getModulesRegistry();
+        Collection<Module> modules1 = modulesRegistry.getModules();
+        Iterator it= modules1.iterator();
+
+        while(it.hasNext()){
+            Module m = (Module) it.next();
+            String name = m.getName();
+            if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") ){
+                ModuleDefinition modDef= m.getModuleDefinition();
+                java.net.URI[] location = modDef.getLocations();
+                classpath+=(File.pathSeparator + new File(location[0]).getAbsolutePath())  ;
+
+            }
+        }
 
         // Next add the Jar files in WEB-INF/lib, if any
         if(webinfLibDir != null) {

@@ -144,6 +144,11 @@
             <version>2.1.9-SNAPSHOT</version>
             <classifier>osgi</classifier>
         </dependency>
+        <dependency>
+           <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
     </dependencies>
 </project>

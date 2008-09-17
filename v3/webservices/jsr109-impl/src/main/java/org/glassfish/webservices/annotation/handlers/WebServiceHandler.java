@@ -57,19 +57,13 @@ import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 
 import org.glassfish.apf.context.AnnotationContext;
+import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
-import com.sun.enterprise.deployment.WebService;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import javax.xml.namespace.QName;
@@ -84,6 +78,8 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class WebServiceHandler extends AbstractHandler {
+
+    private AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
     
     /** Creates a new instance of WebServiceHandler */
     public WebServiceHandler() {
@@ -131,56 +127,60 @@ public class WebServiceHandler extends AbstractHandler {
         BundleDescriptor bundleDesc;
         
         // Ensure that an EJB endpoint is packaged in EJBJAR and a servlet endpoint is packaged in a WAR
-        if(annCtx instanceof EjbContext && 
-                (annElem.getAnnotation(javax.ejb.Stateless.class) == null)) {
-            AnnotationProcessorException ape = new AnnotationProcessorException(
-                    localStrings.getLocalString("enterprise.deployment.annotation.handlers.webeppkgwrong",
-                        "Class {0} is annotated with @WebService and without @Stateless but is packaged in a JAR." +
-                        " If it is supposed to be a servlet endpoint, it should be packaged in a WAR; Deployment will continue assuming  this " +
-                        "class to be just a POJO used by other classes in the JAR being deployed", 
-                        new Object[] {((Class)annElem).getName()}),annInfo);
-            ape.setFatal(false);
-            throw ape;
-        }
-        if(annCtx instanceof EjbBundleContext && 
-                (annElem.getAnnotation(javax.ejb.Stateless.class) == null)) {
-            AnnotationProcessorException ape = new AnnotationProcessorException(
-                    localStrings.getLocalString("enterprise.deployment.annotation.handlers.webeppkgwrong",
-                        "Class {0} is annotated with @WebService and without @Stateless but is packaged in a JAR." +
-                        " If it is supposed to be a servlet endpoint, it should be packaged in a WAR; Deployment will continue assuming this " +
-                        "class to be just a POJO used by other classes in the JAR being deployed", 
-                        new Object[] {((Class)annElem).getName()}),annInfo);
-            ape.setFatal(false);
-            throw ape;
-        }
-        if(annCtx instanceof WebBundleContext && 
-                (annElem.getAnnotation(javax.ejb.Stateless.class) != null)) {
-            AnnotationProcessorException ape = new AnnotationProcessorException(
-                    localStrings.getLocalString("enterprise.deployment.annotation.handlers.ejbeppkgwrong",
-                        "Class {0} is annotated with @WebService and @Stateless but is packaged in a WAR." +
-                        " If it is supposed to be an EJB endpoint, it should be packaged in a JAR; Deployment will continue assuming this " +
-                        " class to be just a POJO used by other classes in the WAR being deployed",
-                        new Object[] {((Class)annElem).getName()}),annInfo);
-            ape.setFatal(false);
-            throw ape;
-        }
-        
-        // let's see the type of web service we are dealing with...
-        if (annElem.getAnnotation(javax.ejb.Stateless.class)!=null) {
-            // this is an ejb !
-            EjbContext ctx = (EjbContext) annCtx;
-            bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
-            bundleDesc.setSpecVersion("3.0");
-        } else {
-            // this has to be a servlet since there is no @Servlet annotation yet
-            if(annCtx instanceof WebComponentContext) {
-                bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
-            } else {
-                bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
+        try {
+            if(annCtx instanceof EjbContext &&   (provider !=null) &&
+                    (provider.getType("javax.ejb.Stateless") == null)) {
+                AnnotationProcessorException ape = new AnnotationProcessorException(
+                        localStrings.getLocalString("enterprise.deployment.annotation.handlers.webeppkgwrong",
+                                "Class {0} is annotated with @WebService and without @Stateless but is packaged in a JAR." +
+                                        " If it is supposed to be a servlet endpoint, it should be packaged in a WAR; Deployment will continue assuming  this " +
+                                        "class to be just a POJO used by other classes in the JAR being deployed",
+                                new Object[] {((Class)annElem).getName()}),annInfo);
+                ape.setFatal(false);
+                throw ape;
             }
-            bundleDesc.setSpecVersion("2.5");            
-        }        
-        
+
+            if(annCtx instanceof EjbBundleContext && (provider !=null) &&
+                    (provider.getType("javax.ejb.Stateless") == null)) {
+                AnnotationProcessorException ape = new AnnotationProcessorException(
+                        localStrings.getLocalString("enterprise.deployment.annotation.handlers.webeppkgwrong",
+                                "Class {0} is annotated with @WebService and without @Stateless but is packaged in a JAR." +
+                                        " If it is supposed to be a servlet endpoint, it should be packaged in a WAR; Deployment will continue assuming this " +
+                                        "class to be just a POJO used by other classes in the JAR being deployed",
+                                new Object[] {((Class)annElem).getName()}),annInfo);
+                ape.setFatal(false);
+                throw ape;
+            }
+            if(annCtx instanceof WebBundleContext && (provider !=null) &&
+                    (provider.getType("javax.ejb.Stateless") != null)) {
+                AnnotationProcessorException ape = new AnnotationProcessorException(
+                        localStrings.getLocalString("enterprise.deployment.annotation.handlers.ejbeppkgwrong",
+                                "Class {0} is annotated with @WebService and @Stateless but is packaged in a WAR." +
+                                        " If it is supposed to be an EJB endpoint, it should be packaged in a JAR; Deployment will continue assuming this " +
+                                        " class to be just a POJO used by other classes in the WAR being deployed",
+                                new Object[] {((Class)annElem).getName()}),annInfo);
+                ape.setFatal(false);
+                throw ape;
+            }
+
+            // let's see the type of web service we are dealing with...
+            if ((provider!= null) && provider.getType("javax.ejb.Stateless")!=null) {
+                // this is an ejb !
+                EjbContext ctx = (EjbContext) annCtx;
+                bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
+                bundleDesc.setSpecVersion("3.0");
+            } else {
+                // this has to be a servlet since there is no @Servlet annotation yet
+                if(annCtx instanceof WebComponentContext) {
+                    bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
+                } else {
+                    bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
+                }
+                bundleDesc.setSpecVersion("2.5");
+            }
+        }catch (Exception e) {
+            throw new AnnotationProcessorException("Exception in processing @Stateless");
+        }
         //WebService.name in the impl class identifies port-component-name
         // If this is specified in impl class, then that takes precedence
         String portComponentName = ann.name();
