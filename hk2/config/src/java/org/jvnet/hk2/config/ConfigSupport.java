@@ -805,4 +805,30 @@ public class ConfigSupport {
             return values;
         }
     }
+
+    public static Class<? extends ConfigBeanProxy> getElementTypeByName(ConfigBeanProxy parent, String elementName)
+        throws ClassNotFoundException {
+
+        final Dom parentDom = Dom.unwrap(parent);
+        DomDocument document = parentDom.document;
+
+
+        ConfigModel.Property a = parentDom.model.elements.get(elementName);
+        if (a!=null) {
+            if (a.isLeaf()) {
+                // dochez : I am not too sure, but that should be a String @Element
+                return null;
+            } else {
+                ConfigModel childModel = ((ConfigModel.Node) a).model;
+                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            }
+        }
+        // global lookup
+        ConfigModel model = document.getModelByElementName(elementName);
+        if (model!=null) {
+            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+        }
+
+        return null;
+    }
  }
