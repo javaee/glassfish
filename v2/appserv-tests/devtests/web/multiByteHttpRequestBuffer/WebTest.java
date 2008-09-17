@@ -54,7 +54,7 @@ public class WebTest {
             invokeSetup();
 
             String[] uris = new String[] {
-                    "/readLine.jsp", "/read.jsp", "/readCharB.jsp" };
+                    "/readLine.jsp", "/read.jsp", "/readCharB.jsp" , "/readInputStream.jsp"};
             boolean status = true;
             for (String uri : uris) {
                 boolean temp = invoke(uri);

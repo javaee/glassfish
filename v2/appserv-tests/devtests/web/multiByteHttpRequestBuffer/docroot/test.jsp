@@ -57,6 +57,11 @@ request#getReader()#read(char[1]) test<BR>
 <input type="text" name="<%= formName %>" value="<%= sb.toString() %>" />
 <input type="submit" value="send" /></FORM>
 
+<FORM method="POST" action="<%= response.encodeURL("readInputStream.jsp") %>" enctype="multipart/form-data" >
+request#getInputStream()#read(bytes[]) test<BR>
+<input type="text" name="<%= formName %>" value="<%= sb.toString() %>" />
+<input type="submit" value="send" /></FORM>
+
 <%
             session.setAttribute("expected", sb.toString());
             session.setAttribute("formName", formName);
