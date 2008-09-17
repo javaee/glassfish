@@ -292,8 +292,8 @@ public class ConfigSupport {
                     // we don't really send the changed events for new comers.
                     continue;
                 }
+                ConfigBeanProxy proxy =  null;
                 if (event.getNewValue()==null) {
-                    ConfigBeanProxy proxy =  null;
                     try {
                         // getOldValue() can be null, we will notify a CHANGE event
                         proxy = ConfigBeanProxy.class.cast(event.getOldValue());
@@ -301,6 +301,7 @@ public class ConfigSupport {
                         // this is ok, the old value was probably a string or something like this...
                         // we will notify the event.getSource() that it changed.
                     }
+                    // new value is null, but not old value, we removed something
                     if (proxy!=null) {
                         final NotProcessed nc = target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
                         if ( nc != null ) {
@@ -308,13 +309,17 @@ public class ConfigSupport {
                         }
                         continue;
                     }
-                    if (!changed.contains(eventSource)) {
-                        proxy =  ConfigBeanProxy.class.cast(event.getSource());
-                        changed.add(eventSource);
-                        final NotProcessed nc = target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
-                        if ( nc != null ) {
-                            unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
-                        }
+                }
+                // we fall back in this case, the newValue was nullm the old value was also null  or was not a ConfigBean,
+                // we revert to just notify of the change.
+                // when the new value is not null, we also send the CHANGE  on the source all the time, unless this was
+                // and added config bean.
+                if (!changed.contains(eventSource)) {
+                    proxy =  ConfigBeanProxy.class.cast(event.getSource());
+                    changed.add(eventSource);
+                    final NotProcessed nc = target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
+                    if ( nc != null ) {
+                        unprocessed.add( new UnprocessedChangeEvent(event, nc.getReason() ) );
                     }
                 }
             } catch (Exception e) {
