@@ -283,8 +283,13 @@ public class WebServiceEndpoint extends Descriptor
     }
     
     public String getProtocolBinding() {
-        return ((protocolBinding==null) ? 
-            javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING : protocolBinding);
+       WSDolSupport dolSupport = Globals.getDefaultHabitat().getComponent(WSDolSupport.class);
+        if (protocolBinding==null) {
+            if (dolSupport!=null) {
+                protocolBinding =  dolSupport.getProtocolBinding(null);
+            }
+        }
+        return protocolBinding;
     }
     
     public boolean hasUserSpecifiedProtocolBinding() {

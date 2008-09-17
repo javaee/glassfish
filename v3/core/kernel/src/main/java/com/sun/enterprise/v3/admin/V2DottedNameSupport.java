@@ -189,7 +189,19 @@ public class V2DottedNameSupport {
                         String remaining = dottedName.substring(delim.length()+1);
                         return matches(remaining, pattern.substring(token.length()+1));
                     } else {
-                        return true;
+                        if (dottedName.length()>delim.length()) {
+                            String remaining = dottedName.substring(delim.length()+1);
+                            // if we have more dotted names (with grandchildren elements)
+                            // we don't match
+                            if (remaining.indexOf('.')!=-1) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        } else {
+                           // no more pattern, no more dotted name, this is matching.
+                           return true;
+                        }
                     }
                 }
             }

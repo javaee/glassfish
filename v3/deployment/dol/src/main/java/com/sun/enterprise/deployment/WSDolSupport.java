@@ -53,4 +53,6 @@ public interface WSDolSupport {
 
     public void setServiceRef(Class annotatedClass, ServiceReferenceDescriptor ref);
 
+    public  Class getType(String className) throws ClassNotFoundException;
+
 }

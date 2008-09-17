@@ -37,9 +37,15 @@
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- dochez : these 2 dependencies need to be removed at some point -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.soap</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.ws</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

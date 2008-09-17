@@ -52,18 +52,14 @@ import javax.annotation.Resource;
 import javax.jms.Queue;
 import javax.jms.Topic;
 
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.*;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -281,6 +277,16 @@ public class ResourceHandler extends AbstractResourceHandler {
         descriptorInfo.dependencyType = DependencyType.RESOURCE_REF;
         descriptorInfo.resourceType = resourceType;
 
+        Class webServiceContext = null;
+        try {
+
+            WSDolSupport support  = Globals.getDefaultHabitat().getComponent(WSDolSupport.class);
+            if (support!=null) {
+                webServiceContext = support.getType("javax.xml.ws.WebServiceContext");
+            }
+        }   catch(Exception e) {
+            // we don't care, either we don't have the class, ot the bundled is not installed
+        }
         if( (resourceType == javax.jms.Queue.class) ||
             (resourceType == javax.jms.Topic.class) ) {
             descriptorInfo.descriptors = 
@@ -292,7 +298,7 @@ public class ResourceHandler extends AbstractResourceHandler {
                     resourceType == javax.jms.ConnectionFactory.class || 
                     resourceType == javax.jms.QueueConnectionFactory.class ||
                     resourceType == javax.jms.TopicConnectionFactory.class || 
-                    resourceType == javax.xml.ws.WebServiceContext.class || 
+                    resourceType == webServiceContext || 
                     resourceType == javax.mail.Session.class || 
                     resourceType == java.net.URL.class || 
                     resourceType == javax.resource.cci.ConnectionFactory.class 

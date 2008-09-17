@@ -60,7 +60,9 @@ public class WSDolSupportImpl implements WSDolSupport {
     public static final String XML_TOKEN = "##XML_HTTP";
     
     public String getProtocolBinding(String value) {
-        if(SOAP11_TOKEN.equals(value)) {
+        if (value==null) {
+            return SOAPBinding.SOAP11HTTP_BINDING ;
+        } else if(SOAP11_TOKEN.equals(value)) {
             return SOAPBinding.SOAP11HTTP_BINDING;
         } else if(SOAP11_MTOM_TOKEN.equals(value)) {
             return SOAPBinding.SOAP11HTTP_MTOM_BINDING;
@@ -95,4 +97,7 @@ public class WSDolSupportImpl implements WSDolSupport {
         }    
     }
 
+    public Class getType(String className) throws ClassNotFoundException {
+        return this.getClass().getClassLoader().loadClass(className);
+    }
 }

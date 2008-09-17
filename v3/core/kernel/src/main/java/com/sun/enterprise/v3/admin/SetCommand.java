@@ -144,42 +144,47 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
 
+
+
             for (String name : targetNode.getAttributeNames()) {
-                if (matchName(attrName,name)) {
-                    ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
-                    part.setChildrenType("DottedName");
-                    part.setMessage(node.getValue() + "." + name + "=" + value);
+                String finalDottedName = node.getValue()+"."  + name;
+                if (matches(finalDottedName, pattern)) {
+                    if (matchName(attrName,name)) {
+                        ActionReport.MessagePart part = context.getActionReport().getTopMessagePart().addChild();
+                        part.setChildrenType("DottedName");
+                        part.setMessage(node.getValue() + "." + name + "=" + value);
 
-                    if (! isProperty) {
-                        attrChanges.put(name, value);                    
-                    }
-
-                    if (delProperty) {
-                        // delete property element
-                        String str = node.getValue();
-                        if (str.lastIndexOf('.') != -1) {
-                            str = str.substring(str.lastIndexOf('.') + 1);
+                        if (! isProperty) {
+                            attrChanges.put(name, value);
                         }
-                        try {
-                            if (str != null) {
-                                ConfigSupport.deleteChild((ConfigBean)targetNode.parent(), (ConfigBean)targetNode);
-                                delPropertySuccess = true;
+
+                        if (delProperty) {
+                            // delete property element
+                            String str = node.getValue();
+                            if (str.lastIndexOf('.') != -1) {
+                                str = str.substring(str.lastIndexOf('.') + 1);
                             }
-                        } catch (IllegalArgumentException ie) {
-                            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                            context.getActionReport().setFailureCause(ie);
-                            context.getActionReport().setMessage("Could not delete the property : "
-                                + ie.getMessage());
-                        } catch (TransactionFailure transactionFailure) {
-                            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-                            context.getActionReport().setFailureCause(transactionFailure);
-                            context.getActionReport().setMessage("Could not change the attributes : "
-                                    + transactionFailure.getMessage());
+                            try {
+                                if (str != null) {
+                                    ConfigSupport.deleteChild((ConfigBean)targetNode.parent(), (ConfigBean)targetNode);
+                                    delPropertySuccess = true;
+                                }
+                            } catch (IllegalArgumentException ie) {
+                                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
+                                context.getActionReport().setFailureCause(ie);
+                                context.getActionReport().setMessage("Could not delete the property : "
+                                    + ie.getMessage());
+                            } catch (TransactionFailure transactionFailure) {
+                                context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
+                                context.getActionReport().setFailureCause(transactionFailure);
+                                context.getActionReport().setMessage("Could not change the attributes : "
+                                        + transactionFailure.getMessage());
+                            }
+                        } else {
+                            changes.put((ConfigBean) node.getKey(), attrChanges);
                         }
-                    } else {
-                        changes.put((ConfigBean) node.getKey(), attrChanges);                    
-                    }
 
+                    }
                 }
             }
         }

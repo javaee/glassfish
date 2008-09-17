@@ -65,7 +65,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Utility class used by both {@link ASMainHK2} and {@link ASMainOSGi}
+ * Utility class used by {@link ASMainOSGi}
  * Most of the code is moved from {@link ASMain} to this class to keep ASMain
  * as small as possible.
  *

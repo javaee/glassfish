@@ -31,9 +31,8 @@ import java.util.logging.Logger;
 public class ASMain {
 
     /*
-     * Most of the code in this file has been moved to ASMainHelper and
-     * ASMainHK2. The code in ASMainHelper is used by both ASMainOSGi
-     * and ASMainHK2.
+     * Most of the code in this file has been moved to ASMainHelper
+     *and  ASMainOSGi
      */
     final static Logger logger = Logger.getAnonymousLogger();
 
@@ -75,9 +74,7 @@ public class ASMain {
                 new ASMainKnopflerFish(logger, args).run();
                 break;
             case HK2:
-                logger.info("Launching GlassFish on HK2 platform");
-                (new ASMainHK2(logger)).run(args);
-                break;
+                throw new RuntimeException("GlassFish does not run on the HK2 platform anynmore");
             default:
                 throw new RuntimeException("Platform not yet supported");
         }
