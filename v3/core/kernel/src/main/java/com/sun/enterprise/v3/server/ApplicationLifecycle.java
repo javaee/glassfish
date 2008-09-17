@@ -370,45 +370,39 @@ public class ApplicationLifecycle {
         for (Sniffer sniffer : sniffers) {
             for (String containerName : sniffer.getContainersNames()) {
                 ContainerInfo<?, ?> containerInfo = containerRegistry.getContainer(containerName);
-                ClassLoader original = Thread.currentThread().getContextClassLoader();
-                try {
-                    Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
-                    Deployer deployer = getDeployer(containerInfo);
-                    if (deployer==null) {
-                        report.failure(logger, "Got a null deployer out of the " + containerInfo.getContainer().getClass() + " container");
-                        return null;
-                    }
-                    containerInfosByDeployers.put(deployer, containerInfo);
-                    final MetaData metadata = deployer.getMetaData();
-                    Class[] requires = (metadata==null?null:metadata.requires());
-                    Class[] provides = (metadata==null?null:metadata.provides());
-                    if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
-                        // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
-                        // they would effectively end up being in the middle of the list (see the sorting below)
-                        sortedContainerInfos.add(containerInfo);
-                    } else {
-                        for (Class metadataType : metadata.requires()) {
-                            List<Deployer> requesters = metaDataRequired.get(metadataType);
-                            if (requesters == null) {
-                                //first requester deployer of this metadataType. Initialize the list
-                                requesters = new LinkedList<Deployer>();
-                                metaDataRequired.put(metadataType, requesters);
-                            }
-                            requesters.add(deployer);
+                Deployer deployer = getDeployer(containerInfo);
+                if (deployer==null) {
+                    report.failure(logger, "Got a null deployer out of the " + containerInfo.getContainer().getClass() + " container");
+                    return null;
+                }
+                containerInfosByDeployers.put(deployer, containerInfo);
+                final MetaData metadata = deployer.getMetaData();
+                Class[] requires = (metadata==null?null:metadata.requires());
+                Class[] provides = (metadata==null?null:metadata.provides());
+                if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
+                    // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
+                    // they would effectively end up being in the middle of the list (see the sorting below)
+                    sortedContainerInfos.add(containerInfo);
+                } else {
+                    for (Class metadataType : metadata.requires()) {
+                        List<Deployer> requesters = metaDataRequired.get(metadataType);
+                        if (requesters == null) {
+                            //first requester deployer of this metadataType. Initialize the list
+                            requesters = new LinkedList<Deployer>();
+                            metaDataRequired.put(metadataType, requesters);
                         }
+                        requesters.add(deployer);
                     }
-                    if (metadata!=null) {
-                        for (Class metadataType : metadata.provides()) {
-                            Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
-                            if (currentProvidindDeployer != null) {
-                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
-                                        + "] provide same metadata : " + metadataType, null);
-                            }
-                            metaDataProvided.put(metadataType, deployer);
+                }
+                if (metadata!=null) {
+                    for (Class metadataType : metadata.provides()) {
+                        Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
+                        if (currentProvidindDeployer != null) {
+                            report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
+                                    + "] provide same metadata : " + metadataType, null);
                         }
+                        metaDataProvided.put(metadataType, deployer);
                     }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(original);
                 }
             }
         }
@@ -455,19 +449,14 @@ public class ApplicationLifecycle {
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             final MetaData metadata = deployer.getMetaData();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
-                try {
-                    if (metadata!=null) {
-                        for (Class<?> provide : metadata.provides()) {
-                            context.addModuleMetaData(deployer.loadMetaData(provide, context));
-                        }
+                if (metadata!=null) {
+                    for (Class<?> provide : metadata.provides()) {
+                        context.addModuleMetaData(deployer.loadMetaData(provide, context));
                     }
-                } catch(Exception e) {
-                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
-                    throw e;
                 }
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
+            } catch(Exception e) {
+                report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
+                throw e;
             }
         }
 
@@ -476,24 +465,18 @@ public class ApplicationLifecycle {
             // get the deployer
             Deployer deployer = containerInfo.getDeployer();
 
-            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
-                try {
-                    deployer.prepare(context);
-                    
-                    // construct an incomplete ModuleInfo which will be later
-                    // filled in at loading time
-                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo, null);
-                    tracker.add(ModuleInfo.class, moduleInfo);
+                deployer.prepare(context);
 
-                    tracker.add(Deployer.class, deployer);
-                } catch(Exception e) {
-                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
-                    throw e;
-                }
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
+                // construct an incomplete ModuleInfo which will be later
+                // filled in at loading time
+                ModuleInfo moduleInfo = new ModuleInfo(containerInfo, null);
+                tracker.add(ModuleInfo.class, moduleInfo);
+
+                tracker.add(Deployer.class, deployer);
+            } catch(Exception e) {
+                report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
+                throw e;
             }
         }
 
@@ -533,38 +516,32 @@ public class ApplicationLifecycle {
             // get the container.
             Deployer deployer = containerInfo.getDeployer();
 
-            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
-                try {
-                    ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
-                    if (appCtr==null) {
-                        String msg = "Cannot load application in " + containerInfo.getContainer().getName() + " container";
-                        report.failure(logger, msg, null);
-                        throw new Exception(msg);
-                    }
+                ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
+                if (appCtr==null) {
+                    String msg = "Cannot load application in " + containerInfo.getContainer().getName() + " container";
+                    report.failure(logger, msg, null);
+                    throw new Exception(msg);
+                }
 
-                    if (moduleInfos.isEmpty())  {
-                        // if ModuleInfos have not been partially
-                        // populated before
-                        ModuleInfo moduleInfo = new ModuleInfo(containerInfo,
-                            appCtr);
-                        tracker.add(ModuleInfo.class, moduleInfo);
-                    } else {
-                        // fill in the previously partial populated ModuleInfo
-                        for (ModuleInfo moduleInfo : moduleInfos) {
-                            if (moduleInfo.getContainerInfo().getContainer().getName().equals(containerInfo.getContainer().getName())) {
-                                moduleInfo.setApplicationContainer(appCtr);
-                                break;
-                            }
+                if (moduleInfos.isEmpty())  {
+                    // if ModuleInfos have not been partially
+                    // populated before
+                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo,
+                        appCtr);
+                    tracker.add(ModuleInfo.class, moduleInfo);
+                } else {
+                    // fill in the previously partial populated ModuleInfo
+                    for (ModuleInfo moduleInfo : moduleInfos) {
+                        if (moduleInfo.getContainerInfo().getContainer().getName().equals(containerInfo.getContainer().getName())) {
+                            moduleInfo.setApplicationContainer(appCtr);
+                            break;
                         }
                     }
-                } catch(Exception e) {
-                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
-                    throw e;
                 }
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
+            } catch(Exception e) {
+                report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
+                throw e;
             }
         }
 
@@ -697,35 +674,28 @@ public class ApplicationLifecycle {
 
     protected boolean startContainers(Collection<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
         for (ContainerInfo containerInfo : containersInfo) {
-            ClassLoader original = Thread.currentThread().getContextClassLoader();
+            Container container;
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
-                Container container;
-                try {
-                    container = containerInfo.getContainer();
-                } catch(Exception e) {
-                    logger.log(Level.SEVERE, "Cannot start container  " +  containerInfo.getSniffer().getModuleType(),e);
-                    return false;
-                }
-                Class<? extends Deployer> deployerClass = container.getDeployer();
-                Deployer deployer;
-                try {
-                        deployer = habitat.getComponent(deployerClass);
-                        containerInfo.setDeployer(deployer);
-                } catch (ComponentException e) {
-                    report.failure(logger, "Cannot instantiate or inject "+deployerClass, e);
-                    stopContainer(logger, containerInfo);
-                    return false;
-                } catch (ClassCastException e) {
-                    stopContainer(logger, containerInfo);
-                    report.failure(logger, deployerClass+" does not implement " +
-                                        " the org.jvnet.glassfish.api.deployment.Deployer interface", e);
-                    return false;
-                }
-            }  finally {
-                Thread.currentThread().setContextClassLoader(original);
+                container = containerInfo.getContainer();
+            } catch(Exception e) {
+                logger.log(Level.SEVERE, "Cannot start container  " +  containerInfo.getSniffer().getModuleType(),e);
+                return false;
             }
-
+            Class<? extends Deployer> deployerClass = container.getDeployer();
+            Deployer deployer;
+            try {
+                    deployer = habitat.getComponent(deployerClass);
+                    containerInfo.setDeployer(deployer);
+            } catch (ComponentException e) {
+                report.failure(logger, "Cannot instantiate or inject "+deployerClass, e);
+                stopContainer(logger, containerInfo);
+                return false;
+            } catch (ClassCastException e) {
+                stopContainer(logger, containerInfo);
+                report.failure(logger, deployerClass+" does not implement " +
+                                    " the org.jvnet.glassfish.api.deployment.Deployer interface", e);
+                return false;
+            }
         }
         return true;
     }
@@ -744,27 +714,21 @@ public class ApplicationLifecycle {
     // Todo : take care of Deployer when unloading...
     protected void stopContainer(Logger logger, ContainerInfo info)
     {
-        ClassLoader original = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(info.getContainer().getClass().getClassLoader());
-            if (info.getDeployer()!=null) {
-                Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
-                if (i!=null) {
-                    i.release();
-                }
+        if (info.getDeployer()!=null) {
+            Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
+            if (i!=null) {
+                i.release();
             }
-            if (info.getContainer()!=null) {
-                Inhabitant i = habitat.getInhabitantByType(info.getContainer().getClass());
-                if (i!=null) {
-                    i.release();
-                }
+        }
+        if (info.getContainer()!=null) {
+            Inhabitant i = habitat.getInhabitantByType(info.getContainer().getClass());
+            if (i!=null) {
+                i.release();
             }
-            containerRegistry.removeContainer(info);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Container " + info.getContainer().getName() + " stopped");
-            }
-        } finally {
-            Thread.currentThread().setContextClassLoader(original);
+        }
+        containerRegistry.removeContainer(info);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Container " + info.getContainer().getName() + " stopped");
         }
     }
 
@@ -808,50 +772,39 @@ public class ApplicationLifecycle {
                                      ActionReport report) {
 
         // remove any endpoints if exists.
-        ClassLoader original = Thread.currentThread().getContextClassLoader();
+        //@TODO change EndportRegistrationException processing if required
         try {
-            if (module.getApplicationContainer().getClassLoader()!=null) {
-                Thread.currentThread().setContextClassLoader(module.getApplicationContainer().getClassLoader());
-            } else {
-                Thread.currentThread().setContextClassLoader(module.getContainerInfo().getContainer().getClass().getClassLoader());
-            }
-            
-            //@TODO change EndportRegistrationException processing if required
-            try {
-                final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-                adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
-            } catch (EndpointRegistrationException e) {
-                logger.log(Level.WARNING, "Exception during unloading module '" + 
-                        module + "'", e);
-            } catch(ClassCastException e) {
-                // do nothing the application did not have an adapter
-            }
-
-
-            // first stop the application
-            try {
-                if (!module.getApplicationContainer().stop()) {
-                    logger.severe("Cannot stop application " + info.getName() + " in container "
-                            + module.getContainerInfo().getSniffer().getModuleType());
-                }
-            } catch(Exception e) {
-                report.failure(context.getLogger(), "Exception while stopping the application", e);
-                return false;
-            }
-
-            // then remove the application from the container
-            Deployer deployer = module.getContainerInfo().getDeployer();
-            try {
-                deployer.unload(module.getApplicationContainer(), context);
-            } catch(Exception e) {
-                report.failure(context.getLogger(), "Exception while shutting down application container", e);
-                return false;
-            }
-            module.getContainerInfo().remove(info);
-            return true;
-        } finally {
-            Thread.currentThread().setContextClassLoader(original);
+            final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
+            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
+        } catch (EndpointRegistrationException e) {
+            logger.log(Level.WARNING, "Exception during unloading module '" +
+                    module + "'", e);
+        } catch(ClassCastException e) {
+            // do nothing the application did not have an adapter
         }
+
+
+        // first stop the application
+        try {
+            if (!module.getApplicationContainer().stop()) {
+                logger.severe("Cannot stop application " + info.getName() + " in container "
+                        + module.getContainerInfo().getSniffer().getModuleType());
+            }
+        } catch(Exception e) {
+            report.failure(context.getLogger(), "Exception while stopping the application", e);
+            return false;
+        }
+
+        // then remove the application from the container
+        Deployer deployer = module.getContainerInfo().getDeployer();
+        try {
+            deployer.unload(module.getApplicationContainer(), context);
+        } catch(Exception e) {
+            report.failure(context.getLogger(), "Exception while shutting down application container", e);
+            return false;
+        }
+        module.getContainerInfo().remove(info);
+        return true;
     }
 
     // register application information in domain.xml

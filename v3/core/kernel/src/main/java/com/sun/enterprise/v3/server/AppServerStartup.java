@@ -37,6 +37,7 @@ import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
 
 import org.glassfish.internal.api.Init;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -91,6 +92,9 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     Branding branding;
 
+    @Inject
+    ClassLoaderHierarchy cch;
+
     /**
      * A keep alive thread that keeps the server JVM from going down
      * as long as GlassFish kernel is up.
@@ -104,6 +108,9 @@ public class AppServerStartup implements ModuleStartup {
             public void run() {
                 logger.logp(Level.INFO, "AppServerStartup", "run",
                         "[{0}] started", new Object[]{this});
+                // See issue #5596 to know why we set context CL as common CL.
+                Thread.currentThread().setContextClassLoader(
+                        cch.getCommonClassLoader());
                 AppServerStartup.this.run();
                 try {
                     synchronized (this) {

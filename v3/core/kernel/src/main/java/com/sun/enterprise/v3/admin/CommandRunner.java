@@ -55,6 +55,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
@@ -79,6 +80,9 @@ public class CommandRunner {
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
     @Inject
     Habitat habitat;
+
+    @Inject
+    ClassLoaderHierarchy clh;
 
     /**
      * Executes a command by name.
@@ -141,7 +145,7 @@ public class CommandRunner {
     
     public ActionReport doCommand(
             final String commandName, 
-            final AdminCommand command, 
+            final AdminCommand command,
             final Properties parameters, 
             final ActionReport report,
             final List<File> uploadedFiles) {
@@ -278,12 +282,32 @@ public class CommandRunner {
             return report;
         }
 
+        // We need to set context CL to common CL before executing
+        // the command. See issue #5596
+        final AdminCommand wrappedComamnd = new AdminCommand() {
+            public void execute(AdminCommandContext context) {
+                Thread thread = Thread.currentThread();
+                ClassLoader origCL = thread.getContextClassLoader();
+                ClassLoader ccl = clh.getCommonClassLoader();
+                if (origCL != ccl) {
+                    try {
+                        thread.setContextClassLoader(ccl);
+                        command.execute(context);
+                    } finally {
+                        thread.setContextClassLoader(origCL);
+                    }
+                } else {
+                    command.execute(context);
+                }
+            }
+        };
+
         // the command may be an asynchronous command, so we need to check
         // for the @Async annotation.
         Async async = command.getClass().getAnnotation(Async.class);
         if (async==null) {
             try {
-                command.execute(context);
+                wrappedComamnd.execute(context);
             } catch(Throwable e) {
                 logger.log(Level.SEVERE,
                         adminStrings.getLocalString("adapter.exception","Exception in command execution : ", e), e);
@@ -295,7 +319,7 @@ public class CommandRunner {
             Thread t = new Thread() {
                 public void run() {
                     try {
-                        command.execute(context);
+                        wrappedComamnd.execute(context);
                     } catch (RuntimeException e) {
                         logger.log(Level.SEVERE,e.getMessage(), e);
                     }

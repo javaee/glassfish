@@ -69,6 +69,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author Jennifer
  */
+@Ignore // temporarily disabled
 public class CreateJdbcResourceTest extends ConfigApiTest {
     // Get Resources config bean
     Habitat habitat = Utils.instance.getHabitat(this);
