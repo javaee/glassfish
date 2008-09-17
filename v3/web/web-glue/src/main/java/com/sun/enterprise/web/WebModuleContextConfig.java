@@ -231,9 +231,10 @@ public class WebModuleContextConfig extends ContextConfig {
             ComponentEnvManager namingMgr = habitat.getComponent(
                     com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
             if (namingMgr!=null) {
-                namingMgr.bindToComponentNamespace(webBundleDescriptor);
+                String compEnvId = namingMgr.bindToComponentNamespace(
+                    webBundleDescriptor);
+                ((WebModule) context).setComponentId(compEnvId);
             }
-            
         } catch (Exception exception) { 
             context.setAvailable(false);
             String msg = rb.getString("webcontainer.webModuleDisabled");

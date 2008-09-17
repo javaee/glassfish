@@ -161,8 +161,7 @@ public final class EmbeddedWebContainer extends Embedded {
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
-                                 WebBundleDescriptor wbd,
-                                 String compEnvId) {
+                                 WebBundleDescriptor wbd) {
 
         File configFile = new File(location, Constants.WEB_CONTEXT_XML);
         WebModule context = new WebModule(id, webContainer);
@@ -174,7 +173,6 @@ public final class EmbeddedWebContainer extends Embedded {
         context.setHasWebXml(wbd != null);
         context.setWebBundleDescriptor(wbd);
         context.setManagerChecksFrequency(1);
-        context.setComponentId(compEnvId);
         context.setServerContext(serverContext);
 
         if (configFile.exists()) {

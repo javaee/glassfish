@@ -2023,11 +2023,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             docBase = wmInfo.getLocation();
         }
 
-        // Object containing web.xml information
-        WebBundleDescriptor wbd = wmInfo.getDescriptor();
-
-        String compEnvId = componentEnvManager.bindToComponentNamespace(wbd);
-
         ctx = (WebModule) _embedded.createContext(
                 wmName,
                 wmContextPath,
@@ -2035,8 +2030,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor(),
-                compEnvId);
+                wmInfo.getDescriptor());
 
         // for now disable JNDI
         ctx.setUseNaming(false);
@@ -2067,10 +2061,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (adHocSubtrees != null) {
             ctx.addAdHocSubtrees(adHocSubtrees);
         }
+
+        // Object containing web.xml information
+        WebBundleDescriptor wbd = wmInfo.getDescriptor();
         
         // Set the context root
-        if (wmInfo.getDescriptor() != null) {
-            ctx.setContextRoot(wmInfo.getDescriptor().getContextRoot());
+        if (wbd != null) {
+            ctx.setContextRoot(wbd.getContextRoot());
         } else {
             // Should never happen.
             _logger.log(Level.WARNING, "Unable to set context root", wmInfo);
