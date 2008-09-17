@@ -401,6 +401,7 @@ public class CLIRemoteCommand {
         catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
             if (ea.getFirstInstanceOf(java.net.ConnectException.class) != null) {
+                CLILogger.getInstance().printDebugMessage("Got java.net.ConnectException");
                 return false; // this definitely means server is not up
             } else if (ea.getFirstInstanceOf(java.io.IOException.class) != null) {
                 CLILogger.getInstance().printDebugMessage("It appears that server has started, but for" +

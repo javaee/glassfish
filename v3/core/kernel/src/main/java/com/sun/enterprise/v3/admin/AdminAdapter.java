@@ -335,8 +335,11 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     }
 
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
-        latch.countDown();
-        logger.fine("Ready to receive administrative commands");            
+        if (event.is(EventTypes.SERVER_READY)) {
+            latch.countDown();
+            logger.fine("Ready to receive administrative commands");       
+        }
+        //the count-down does not start if any other event is received
     }
     
     /**
