@@ -138,7 +138,7 @@ public class AttributeResolverHelper extends VariableResolver
     {
         final String result = translate(in);
         
-        debug( "AttributeResolverHelper.resolve(): " + in + " ===> " + result );
+        //debug( "AttributeResolverHelper.resolve(): " + in + " ===> " + result );
         
         return result;
     }
