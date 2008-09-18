@@ -46,11 +46,12 @@
     />
 #include "/shared/restart.inc"    
 <sun:html>
-	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}">
+	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}" parseOnLoad="false">
                 <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
-		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-	    	<sun:form id="form"> 
+		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requ
+estScope.restartRequired}', '#{sessionScope.restartRequired}'); uploadInit(); ">
+	    	<sun:form id="form" method="POST" enctype="multipart/form-data">  
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
@@ -69,7 +70,7 @@
                                 }
                                 
                                 redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" );
-                                redirect(page="$pageSession{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                                redirect(page="webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                             />
                     </sun:button>
                     <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
@@ -95,6 +96,7 @@
 #include "uploadComponent.inc"
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
 		</sun:form>           
-	</sun:body> 
+	</sun:body>
+#include "uploadJS.inc"          
 </sun:html>  
  </sun:page>
