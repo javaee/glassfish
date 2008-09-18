@@ -71,7 +71,8 @@ public class SystemTasks implements Init, PostConstruct {
     @Inject(optional = true)
     JavaConfig javaConfig;
    
-    @Inject
+    // TODO: FIXME:  what is the right thing to do here?  Won't work without a name
+    @Inject(name="server")
     Server server;
     
     @Inject
@@ -83,6 +84,8 @@ public class SystemTasks implements Init, PostConstruct {
         setSystemPropertiesFromEnv();
         setSystemPropertiesFromDomainXml();
         resolveJavaConfig();
+        
+        _logger.info( "SystemTasks: loaded server named: " + server.getName() );
     }
 
     /*
