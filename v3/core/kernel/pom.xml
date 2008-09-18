@@ -132,8 +132,7 @@
 	<dependency>
 	    <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-<!-- FIXME: use variable for version -->
-	    <version>1.0.7-14.1120</version>
+	    <version>${uc-pkg-client.version}</version>
 	</dependency>
 	<dependency>
             <groupId>org.glassfish.flashlight</groupId>
