@@ -65,7 +65,7 @@ public final class PathnamesImpl  extends AMXNonConfigImplBase
 	PathnamesImpl( final ObjectName parentObjectName )
 	{
         super( Pathnames.J2EE_TYPE, Pathnames.J2EE_TYPE, parentObjectName, Pathnames.class, null );
-        cdebug( "PathnamesImpl: " + this.getClass().getName() );
+        //cdebug( "PathnamesImpl: " + this.getClass().getName() );
         
         //mLax = new LaxNameHandler( getDomainRoot().getPathname() );
 	}
