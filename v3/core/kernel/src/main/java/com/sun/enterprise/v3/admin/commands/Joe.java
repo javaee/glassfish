@@ -66,7 +66,7 @@ final class Joe {
             String msg = lsm.getString("joe.invalid.start", name);
             throw new IllegalArgumentException(msg);
         }
-        name = name.replace("\\", "");//removes backslashes!
+        name = name.replace("\\:", ":");//removes backslashes for ":"!
         this.name  = name;
         this.value = value;
         if ("".equals(value))
