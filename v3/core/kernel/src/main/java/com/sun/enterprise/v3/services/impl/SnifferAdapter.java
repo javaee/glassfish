@@ -82,7 +82,7 @@ public class SnifferAdapter implements Adapter {
             
             if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) != null) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.info("Container is claimed to be started...");
+                    logger.fine("Container is claimed to be started...");
                 }
                 containerRegistry.getContainer(sniffer.getContainersNames()[0]).getContainer();
             } else {
@@ -145,10 +145,4 @@ public class SnifferAdapter implements Adapter {
             adapter.afterService(request, response);
         }
     }
-    
-    
-    public void fireAdapterEvent(String s, Object o){
-    }
-        
-    
 }

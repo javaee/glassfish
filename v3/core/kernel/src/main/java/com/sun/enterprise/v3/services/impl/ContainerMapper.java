@@ -67,7 +67,6 @@ public class ContainerMapper extends StaticResourcesAdapter{
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     private String defaultHostName = "server";
     private UDecoder urlDecoder = new UDecoder();
-    private boolean snifferInitialized = false;
 
     private final Habitat habitat;
     private final GrizzlyService grizzlyService;
@@ -79,7 +78,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
     
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
-    
+      
     public ContainerMapper(GrizzlyService grizzlyService, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         this.grizzlyService = grizzlyService;
@@ -151,13 +150,16 @@ public class ContainerMapper extends StaticResourcesAdapter{
             
             HttpRequestURIDecoder.decode(decodedURI,urlDecoder,null,null);
             adapter = map(req, decodedURI, mappingData);
-           
-            /*
-            if (adapter == null && !snifferInitialized) {
-                initializeFileURLPattern();
+                       
+            if (adapter == null || (adapter instanceof ContainerMapper)) {
+                String ext = decodedURI.toString();
+                if (ext.indexOf(".") != 0){
+                    ext = "*" + ext.substring(ext.lastIndexOf("."));
+                }
+                initializeFileURLPattern(ext);
+                mappingData.recycle();
                 adapter = map(req, decodedURI, mappingData);
             }
-            */
             
             if (logger.isLoggable(Level.FINE)){
                 logger.fine("Request: " + decodedURI.toString() 
@@ -166,8 +168,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
   
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
-            // TODO: Fix next Grizzly integration (1.8.6)
-            if (adapter == null){
+            if (adapter == null || adapter instanceof ContainerMapper){
                 super.service(req, res);
             }  else {                            
                 // Re-set back the position.
@@ -193,27 +194,41 @@ public class ContainerMapper extends StaticResourcesAdapter{
         } 
     }
 
-    public synchronized void initializeFileURLPattern() {
+    public synchronized void initializeFileURLPattern(String ext) {
+        boolean match = false;
         for (Sniffer sniffer : grizzlyService.habitat.getAllByContract(Sniffer.class)) {
             if (sniffer.getURLPatterns()!=null) {
-                SnifferAdapter adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
-                adapter.initialize(sniffer, this);
+                
+                for (String pattern : sniffer.getURLPatterns()) {
+                    if (pattern.equalsIgnoreCase(ext)){
+                        match = true;
+                        break;
+                    }                  
+                }
+
+                Adapter adapter = this;
+                if (match){                              
+                    adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
+                    ((SnifferAdapter)adapter).initialize(sniffer, this);
+                }
                 
                 ContextRootInfo c= new ContextRootInfo(adapter, null, null);
                 register(ROOT,grizzlyService.hosts,adapter,null,null);
-                
-                for (String pattern : sniffer.getURLPatterns()) {
-                    for (String host: grizzlyService.hosts ){   
-                         if (logger.isLoggable(Level.INFO)) {
-                            logger.info("Enabling Container Mapping for " + pattern);          
-                         }                        
-                        mapper.addWrapper(host,ROOT, pattern,c, 
-                                ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
+
+                if (match){                                            
+                    for (String pattern : sniffer.getURLPatterns()) {
+                        for (String host: grizzlyService.hosts ){                       
+                             mapper.addWrapper(host,ROOT, pattern,c, 
+                                    ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
+                        }
+                    }
+                } else {
+                    for (String host: grizzlyService.hosts ){ 
+                        mapper.addWrapper(host,ROOT, ext,c, false); 
                     }
                 }
             }
         }
-        snifferInitialized=true;
     }
 
     Adapter map(Request req, MessageBytes decodedURI, MappingData mappingData) throws Exception {
