@@ -762,4 +762,5 @@ public class ServerTags  {
     public static final String ADMIN_CONSOLE_CONTEXT_ROOT	= "adminConsoleContextRoot";
     public static final String ADMIN_CONSOLE_DOWNLOAD_LOCATION	= "adminConsoleDownloadLocation";
     public static final String IPS_ROOT				= "ipsRoot";
+    public static final String ADMIN_CONSOLE_VERSION		= "adminConsoleVersion";
 }
