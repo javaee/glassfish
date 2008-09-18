@@ -978,8 +978,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         Map<String, String> localAttr = new HashMap<String, String>(attributes);
         for (Map.Entry<String, String> a : localAttr.entrySet()) {
             ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
-            // TODO: compare with the default value and don't write back if it's the same.
-            w.writeAttribute(a.getKey(),a.getValue());
+            String dv = am.getDefaultValue();
+            if (dv==null || !dv.equals(a.getValue())) {
+                w.writeAttribute(a.getKey(),a.getValue());
+            }
         }
 
         List<Child> localChildren = new ArrayList<Child>(children);
