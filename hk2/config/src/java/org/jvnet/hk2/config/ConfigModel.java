@@ -474,6 +474,10 @@ public final class ConfigModel {
         public void set(Dom dom, Object arg) {
             dom.attribute(xmlName, arg==null?null:arg.toString());
         }
+
+        public String getDefaultValue() {
+            return null;
+        }
     }
 
     static final class AttributeLeafWithDefaultValue extends AttributeLeaf {
@@ -488,6 +492,9 @@ public final class ConfigModel {
             if (value == null)
                 return (dv);
             return value;
+        }
+        public String getDefaultValue() {
+            return dv;
         }
     }
     
