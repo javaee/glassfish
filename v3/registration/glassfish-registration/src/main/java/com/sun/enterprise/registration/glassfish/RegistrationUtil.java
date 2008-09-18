@@ -42,6 +42,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import java.util.Properties;
+import java.io.InputStream;
+import java.util.ResourceBundle;
+
 import com.sun.enterprise.registration.impl.SysnetRegistrationService;
 import com.sun.enterprise.registration.impl.ServiceTag;
 import com.sun.enterprise.registration.RegistrationException;
@@ -53,6 +57,7 @@ public class RegistrationUtil {
     private static final String SERVICE_TAG_REGISTRY_BASE = "servicetag-registry";
     private static final String SERVICE_TAG_REGISTRY_NAME = SERVICE_TAG_REGISTRY_BASE + ".xml";
     private static final String SERVICE_TAG_REGISTRY_LINK_NAME = SERVICE_TAG_REGISTRY_BASE + ".lnk";
+    private static final String GLASSFISH_REGISTRY_PROPERTIES = "Registration.properties";
 
     /**
      * @return home for registration
@@ -113,9 +118,16 @@ public class RegistrationUtil {
         return serviceTagRegistry;
     }
 
-    public static String getGFProductURN() {
-        //FIXME: This should come from an installer/packager generated file.
-        return "urn:uuid:05617256-0677-11dd-8282-080020a9ed93";
+    public static String getGFProductURN() throws RegistrationException {
+        try {
+            InputStream is = RegistrationUtil.class.getClassLoader().getResourceAsStream(
+                GLASSFISH_REGISTRY_PROPERTIES);
+            Properties props = new Properties();
+            props.load(is);
+            return props.getProperty("product_urn");
+        } catch (Exception ex) {
+            throw new RegistrationException(ex);
+        }
     }
 
     public static String getGFInstanceURN() throws RegistrationException {
