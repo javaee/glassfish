@@ -806,29 +806,32 @@ admingui.nav = {
      *	This function determines what bread crumbs should be displayed by
      *	looking at the currently selected TreeNode.
      *
-     *	command	  - The button / href which will process the AjaxRequest, also
-     *		    the source of the event.
+     *	commandId - The button / href id which will process the AjaxRequest,
+     *		    also the source of the event.
      *	targetId  - The part(s) of the screen to refresh (breadcrumbs).
      *	count	  - Should be zero (0), helps prevent infinite loops.
      */
-    calculateBreadCrumbs: function(command, targetId, count) {
-        if (count == 5) {
+    calculateBreadCrumbs: function(commandId, targetId, count) {
+        if (count == 8) {
             // This prevents an infinite loop.  Check for the tree frame up to
             // 5 times, 2 seconds apart.
             return;
         }
         if (window.parent.frames.index) {
+	    if (document.getElementById(commandId) == null) {
+		setTimeout("admingui.nav.calculateBreadCrumbs('" + commandId + "', '" + targetId + "', " + (count + 1) + ")", 1000);
+		return;
+	    }
             var tree = admingui.nav.getTreeFrameElementById("form:tree");
             if ((tree == null) || (tree.getSelectedTreeNode == null)) {
                 // Tree isn't loaded yet, wait for it and try again
-                setTimeout('admingui.nav.calculateBreadCrumbs(document.getElementById(\'' + command.id + '\'), \'' + targetId + '\', ' + (count + 1) + ')', 2000);
+                setTimeout('admingui.nav.calculateBreadCrumbs(\'' + commandId + '\', \'' + targetId + '\', ' + (count + 1) + ')', 2000);
                 return;
             }
             var selected = tree.getSelectedTreeNode(tree.id);
             if (selected) {
-                return admingui.nav.submitAjaxRequest(command, targetId, admingui.nav.getBreadCrumbData(selected));
-            }
-            else {
+                return admingui.nav.submitAjaxRequest(document.getElementById(commandId), targetId, admingui.nav.getBreadCrumbData(selected));
+            } else {
                 // No TreeNode is selected! Nothing to do??  Maybe set
                 // CommonTask page?
             }
@@ -874,8 +877,12 @@ admingui.nav = {
      */
     getTreeFrameElementById: function(id) {
         //alert('in getTreeFrameElementById: id='+id);
-		var indexFrame = findFrame("index");
-        return indexFrame.document.getElementById(id);
+	var indexFrame = findFrame("index");
+	var result = null;
+	if (indexFrame) {
+	    result = indexFrame.document.getElementById(id);
+	}
+        return result;
     },
 
     /**
