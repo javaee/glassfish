@@ -320,9 +320,8 @@ function setHaProp(id, value){
 }
 
 function checkRedeployRequired(form, reqdMesg) {
-    var uploadField = getField(form, "fileupload");
-    var dirField = getField(form, "dirPath");
-
+    var uploadField = getField(form, "fileupload_com.sun.webui.jsf.upload");
+    var dirField = getField(form, "dirPath_field");
     if (uploadField.value=='' && dirField.value=='') {
         return showAlert(reqdMesg);
     }
