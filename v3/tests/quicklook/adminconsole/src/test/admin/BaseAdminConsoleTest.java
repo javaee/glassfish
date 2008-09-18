@@ -22,6 +22,8 @@
  */
 package test.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -42,7 +44,7 @@ public class BaseAdminConsoleTest {
 
     protected String adminUrl;
     protected HttpClient client;
-    protected static final int AC_TEST_DELAY = 5000;
+    protected static final int AC_TEST_DELAY = 10000; // Ten seconds
 
     /**
      * This BeforeTest method will verify that the login form is available.  Once
@@ -57,28 +59,28 @@ public class BaseAdminConsoleTest {
     void loginBeforeTest( String url) throws Exception {
         this.adminUrl = url;
         client = new HttpClient();
-        
-        boolean formFound = false;
-        int iterations = 0;
 
-        while (!formFound && iterations < 10) {
-            iterations++;
-            formFound = getUrlAndTestForString(url+"login.jsf", "name=\"loginform\"");
+        boolean formFound = false;
+        int iteration = 0;
+
+        while (!formFound && iteration < 10) {
+            iteration++;
+            formFound = getUrlAndTestForString(url + "login.jsf", "name=\"loginform\"");
             if (!formFound) {
-                System.err.println("***** Login page not found.  Sleeping to allow app to deploy....");
+                System.err.println("***** Login page not found.  Sleeping to allow app to deploy (" +
+                        iteration + " of 10)...");
                 Thread.sleep(AC_TEST_DELAY);
             }
         }
 
         Assert.assertTrue(formFound);
-        
-        PostMethod post = new PostMethod(url+"j_security_check");
-        post.setRequestBody(new NameValuePair[] {
-           new NameValuePair("j_username", "anonymous")
-           ,new NameValuePair("j_password", "")
-        });
+
+        PostMethod post = new PostMethod(url + "j_security_check");
+        post.setRequestBody(new NameValuePair[]{
+                    new NameValuePair("j_username", "anonymous"), new NameValuePair("j_password", "")
+                });
         post.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-        
+
         int statusCode = client.executeMethod(post);
         if (statusCode == 302) {
             Header locationHeader = post.getResponseHeader("location");
@@ -114,8 +116,18 @@ public class BaseAdminConsoleTest {
         if (statusCode != HttpStatus.SC_OK) {
             Assert.fail("BaseAdminConsoleTest.getUrlAndTestForString() failed.  HTTP Status Code:  " + statusCode);
         }
-        String haystack = get.getResponseBodyAsString();
+        String haystack = getString(get.getResponseBodyAsStream());
         get.releaseConnection();
         return haystack.indexOf(needle) > -1;
+    }
+
+    protected String getString(InputStream in) throws IOException {
+        StringBuilder out = new StringBuilder();
+        byte[] b = new byte[4096];
+        for (int n; (n = in.read(b)) != -1;) {
+            out.append(new String(b, 0, n));
+        }
+        in.close();
+        return out.toString();
     }
 }
