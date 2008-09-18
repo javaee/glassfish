@@ -21,10 +21,8 @@ import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
-import com.sun.pkg.client.Catalog;
 import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.Version;
-
 
 
 /**
@@ -159,43 +157,42 @@ public class UpdateCenterHandlers {
 
     }
     
-    private static List<Fmri> getAddOnList(Image image){
-        ArrayList<String> allFmriName = new ArrayList();
-        Catalog catalog = image.getCatalog();
-        List<Fmri> allList = catalog.getFmris();
-        for(Fmri each : allList){
-            if (allFmriName.contains(each.getName()))
-                continue;
-            allFmriName.add(each.getName());
-        }
-        List<Image.FmriState> installedList = image.getInventory(null, false);
-        for (Image.FmriState fs : installedList){
-            if (allFmriName.contains(fs.fmri.getName())){
-                allFmriName.remove(fs.fmri.getName());
-            }
-        }
-        List<Fmri> result = new ArrayList();
-        for(String eachAddOn : allFmriName){
-            result.add(catalog.getMatchingFmri(eachAddOn));
-             }
-        return result;
-    }
-    
-//    To be used when integrate UC version 1175
-//    private static List<Fmri> getAddOnList-new(Image image){
-//            List<String> installed = new ArrayList<String>();
-//                    for (Image.FmriState each : image.getInventory(null, false)) {
-//            installed.add(each.fmri.getName());
+//    private static List<Fmri> getAddOnList(Image image){
+//        ArrayList<String> allFmriName = new ArrayList();
+//        Catalog catalog = image.getCatalog();
+//        List<Fmri> allList = catalog.getFmris();
+//        for(Fmri each : allList){
+//            if (allFmriName.contains(each.getName()))
+//                continue;
+//            allFmriName.add(each.getName());
 //        }
-//        List<Fmri> result = new ArrayList();
-//        for (Image.FmriState each : image.getInventory(null, true)) {
-//            if (!each.updateable && !each.installed &&
-//                    !installed.contains(each.fs.fmri.getName())) {
-//                result.add(each.fmri);
+//        List<Image.FmriState> installedList = image.getInventory(null, false);
+//        for (Image.FmriState fs : installedList){
+//            if (allFmriName.contains(fs.fmri.getName())){
+//                allFmriName.remove(fs.fmri.getName());
 //            }
 //        }
+//        List<Fmri> result = new ArrayList();
+//        for(String eachAddOn : allFmriName){
+//            result.add(catalog.getMatchingFmri(eachAddOn));
+//             }
 //        return result;
 //    }
+    
+    private static List<Fmri> getAddOnList(Image image){
+            List<String> installed = new ArrayList<String>();
+                    for (Image.FmriState each : image.getInventory(null, false)) {
+            installed.add(each.fmri.getName());
+        }
+        List<Fmri> result = new ArrayList();
+        for (Image.FmriState each : image.getInventory(null, true)) {
+            if (!each.upgradable && !each.installed &&
+                    !installed.contains(each.fmri.getName())) {
+                result.add(each.fmri);
+            }
+        }
+        return result;
+    }
 
    
     private static List<Fmri> getUpdateList(Image image){
@@ -296,52 +293,47 @@ public class UpdateCenterHandlers {
     }
     
     
-    @Handler(id="testUCAPI",
-    output={
-        @HandlerOutput(name="installedList", type=String.class)})
-        public static void testUCAPI(HandlerContext handlerCtx) {
-        
-        File dir = new File("/Users/anilam/Sun/v3/glassfishv3-express-0709-pb14");
-        try{
-            Image img = new Image(dir);
-            img.refreshCatalogs();
-            System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
-            Catalog catalog = img.getCatalog();
-            catalog.refresh();
-            System.out.println ("cataglog size = " + catalog.size());
-            java.util.List<Fmri> listFmri = catalog.getFmris();
-            for( Fmri one : listFmri ){
-                System.out.println(" Fmri Name = " + one.getName() + 
-                        ";  URLPath = " + one.getURLPath() + 
-                        ";  Version = " + one.getVersion());
-            }
-            System.out.println("!!!!!!!!!!! ========================  getInventory");
-            List<Image.FmriState> list2 = img.getInventory(null, false);
-            for (Image.FmriState fs : list2){
-                Fmri fmri = fs.fmri;
-                System.out.println("NAME = " + fmri.getName() +
-                        ";  VERSION = " + fmri.getVersion());
-            }
-            
-            String pkgs[] = { "jmaki" };
-            img.uninstallPackages(pkgs);
-            
-            System.out.println("After un-installation ---------");
-            List<Image.FmriState> list3 = img.getInventory(null, false);
-
-            for (Image.FmriState fs : list3){
-                Fmri fmri = fs.fmri;
-                System.out.println("NAME = " + fmri.getName() +
-                        ";  VERSION = " + fmri.getVersion());
-            }
-            
-
-            
-        }catch(Exception ex){
-            System.out.println("!!!!!!!  cannot create Image") ;
-        }
-    }
-    
+//    @Handler(id="testUCAPI",
+//    output={
+//        @HandlerOutput(name="installedList", type=String.class)})
+//        public static void testUCAPI(HandlerContext handlerCtx) {
+//        
+//        File dir = new File("/Users/anilam/Sun/v3/glassfishv3-express-0709-pb14");
+//        try{
+//            Image img = new Image(dir);
+//            java.util.List<Fmri> listFmri = img.getInventory();
+//            for( Fmri one : listFmri ){
+//                System.out.println(" Fmri Name = " + one.getName() + 
+//                        ";  URLPath = " + one.getURLPath() + 
+//                        ";  Version = " + one.getVersion());
+//            }
+//            System.out.println("!!!!!!!!!!! ========================  getInventory");
+//            List<Image.FmriState> list2 = img.getInventory(null, false);
+//            for (Image.FmriState fs : list2){
+//                Fmri fmri = fs.fmri;
+//                System.out.println("NAME = " + fmri.getName() +
+//                        ";  VERSION = " + fmri.getVersion());
+//            }
+//            
+//            String pkgs[] = { "jmaki" };
+//            img.uninstallPackages(pkgs);
+//            
+//            System.out.println("After un-installation ---------");
+//            List<Image.FmriState> list3 = img.getInventory(null, false);
+//
+//            for (Image.FmriState fs : list3){
+//                Fmri fmri = fs.fmri;
+//                System.out.println("NAME = " + fmri.getName() +
+//                        ";  VERSION = " + fmri.getVersion());
+//            }
+//            
+//
+//            
+//        }catch(Exception ex){
+//            System.out.println("!!!!!!!  cannot create Image") ;
+//        }
+//    }
+//    
     final private static String CATEGORY = "info.classification";
     final private static String DESC_LONG = "description_long";
     final private static int MB = 1024*1024;

@@ -81,10 +81,8 @@
         <dependency>
             <groupId>com.sun.pkg</groupId>
 	    <artifactId>pkg-client</artifactId>
-            <version>1.0.7-14.1120</version>
-	    <!--
+	    <version>${uc-pkg-client.version}</version>
 	    <scope>provided</scope>
-	    -->
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
