@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.util;
+package org.glassfish.ejb.deployment;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -61,6 +61,10 @@ import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
+import com.sun.enterprise.deployment.util.ComponentValidator;
+import com.sun.enterprise.deployment.util.EjbBundleVisitor;
+import com.sun.enterprise.deployment.util.InterceptorBindingTranslator;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
