@@ -39,7 +39,8 @@
 <sun:commonTask
     text="$resource{i18n.commonTasks.task.monitor}"
     toolTip="$resource{i18n.commonTasks.task.monitor.toolTip}"
-    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=monitorruntime.html" onClick="admingui.nav.selectTreeNodeById('form:tree:applicationServer');" target="main">
+    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=monitorruntime.html" 
+    onClick="admingui.nav.selectTreeNodeById('form:tree:applicationServer');">
     <!command 
         setSessionAttribute(key="serverInstTabs" value="monitoring");
         redirect(page="#{facesContext.externalContext.requestContextPath}/web/monitor/webContainerPage.jsf");
@@ -48,9 +49,8 @@
 <sun:commonTask
     text="$resource{i18n.commonTasks.task.configMonitor}"
     toolTip="$resource{i18n.commonTasks.task.configMonitor.toolTip}"
-    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=monitoringService.html" onClick="admingui.nav.selectTreeNodeById('form:tree:configuration:monitor');" target="main">
-    <!command 
-        redirect(page="#{facesContext.externalContext.requestContextPath}/web/monitor/monitoringPage.jsf?configName=server-config");
+    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=monitoringService.html" 
+    onClick="admingui.nav.selectTreeNodeById('form:tree:configuration:monitor'); 
+            parent.location='#{facesContext.externalContext.requestContextPath}/web/monitor/monitoringPage.jsf?configName=server-config'; return false;">
     />
-</sun:commonTask> 
-		    
+</sun:commonTask>
