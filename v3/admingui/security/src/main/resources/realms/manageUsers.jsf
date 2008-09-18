@@ -91,6 +91,10 @@
                             getUIComponent(clientId="$pageSession{usersTableRowGroupId}", component=>$attribute{tableRowGroup});      
                             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                             removeUser(Realm="#{name}", selectedRows="${selectedRows}");
+                            checkCurrentUser(Realm="#{name}", endSession=>$attribute{endSession});
+                            if( ${endSession}){
+				redirect("#{request.contextPath}/index.jsf");
+                            }
                             setAttribute(key="selectedRows" value="${selectedRows}");
                             redirect(page="manageUsers.jsf?name=#{name}&configName=#{configName}");
                             />            

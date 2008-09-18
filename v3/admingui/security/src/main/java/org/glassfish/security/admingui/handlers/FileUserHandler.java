@@ -60,6 +60,8 @@ import java.util.List;
 import org.glassfish.admingui.common.util.AMXRoot;
 import com.sun.appserv.management.ext.realm.RealmsMgr;
 
+import javax.faces.context.ExternalContext;
+import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 
@@ -245,6 +247,43 @@ public class FileUserHandler {
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
+    } 
+    
+    
+    /**
+     *	<p> This handler checks to see if the current login user exists in current Realm,
+     *  if it doesn't, invalidate the session.
+     */
+    @Handler(id="checkCurrentUser",
+        input={
+            @HandlerInput(name="Realm", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="endSession", type=Boolean.class)}
+     )
+     public static void checkCurrentUser(HandlerContext handlerCtx){
+        boolean endSession = true;
+        String realmName = (String) handlerCtx.getInputValue("Realm");
+        RealmsMgr realmsMgr = AMXRoot.getInstance().getRealmsMgr();
+        if (realmName.equals("admin-realm")){
+            String[] userNames = realmsMgr.getUserNames(realmName);
+            if (userNames == null || userNames.length ==0){
+                endSession = true;
+            }else{
+                String currentLoginUser = (String) GuiUtil.getSessionValue("userName");
+                for(int i=0; i< userNames.length; i++){
+                    if(userNames[i].equals(currentLoginUser)){
+                        endSession = false;
+                        break;
+                    }
+                }
+            }
+        }
+        if (endSession){
+            ExternalContext extContext = handlerCtx.getFacesContext().getExternalContext();
+            HttpServletRequest request = (HttpServletRequest) extContext.getRequest();
+            request.getSession().invalidate();
+        }
+        handlerCtx.setOutputValue("endSession", endSession);
     } 
     
     
