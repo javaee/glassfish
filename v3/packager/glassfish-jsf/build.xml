@@ -140,8 +140,14 @@ own identifying information: Portions Copyright [yyyy]
 	
 
 	 <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true">
-                <graphRef refid="glassfish-jsf-modules"/>
-	   </resolveAll>
+		 <graphRef refid="glassfish-jsf-modules"/>
+		 <removeSpecificArtifacts>
+                    <scope level="compile,runtime"/>
+                    <artifact artifactId="jsf-api"/>
+                </removeSpecificArtifacts>
+	</resolveAll>
+
+		<resolveArtifact artifactId="jsf-api" todir="target/stage/glassfishv3-prelude/glassfish/modules" />
 
 	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
 		  <visualize file="all-modules.png">
@@ -159,7 +165,7 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/web" includes="*.zip" />  
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

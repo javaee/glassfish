@@ -51,7 +51,12 @@ own identifying information: Portions Copyright [yyyy]
 		 <scope level="compile,runtime">       
 			  <subtract>
 				 <graphRef refid="remove-hk2-modules"/>
-				 <subGraph artifactID="glassfish-grizzly"/>			                         
+				 <subGraph artifactID="glassfish-grizzly">
+                                     <removeSpecificArtifacts>
+                                         <scope level="compile,runtime"/>
+                                         <artifact artifactId="javax.servlet"/>
+				     </removeSpecificArtifacts>	
+                                 </subGraph>				 
 			 </subtract>
                  </scope>		 
 	 </graphDef>
