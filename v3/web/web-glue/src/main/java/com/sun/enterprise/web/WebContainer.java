@@ -624,11 +624,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             // Configure HTTP listeners
             List<HttpListener> httpListeners = httpService.getHttpListener();
+            String jkEnabled = null;
             for (HttpListener httpListener : httpListeners) {
-                if (httpListener.getId().startsWith("jk-connector")) {
+                jkEnabled = httpListener.getPropertyValue("jkEnabled");
+                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
                     createJKConnector(httpListener, httpService);
+                } else {
+                    createHttpListener(httpListener, httpService);
                 }
-                createHttpListener(httpListener, httpService);
             }
             createJKConnector(null, httpService);
             

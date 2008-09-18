@@ -38,6 +38,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
@@ -190,7 +191,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 // Do not create listener when mod_ajp/jk is enabled. This 
                 // should never happens one the grizzly-config configuration
                 // will be used.
-                if ("jk-connector".equals(listener.getId())){
+                String jkEnabled = listener.getPropertyValue("jkEnabled");
+                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
                     continue;
                 }
 

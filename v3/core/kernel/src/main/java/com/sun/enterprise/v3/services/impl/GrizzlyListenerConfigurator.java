@@ -510,6 +510,9 @@ public class GrizzlyListenerConfigurator {
         } else if ("uriEncoding".equals(propName)) {
             grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;
+        } else if ("jkEnabled".equals(propName)) {
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
+            return true;
         } else {
             return false;
         }   
