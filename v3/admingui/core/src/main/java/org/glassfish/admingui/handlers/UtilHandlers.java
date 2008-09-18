@@ -281,6 +281,8 @@ public class UtilHandlers {
 	    // FIXME: Set parent
 	    arr[idx] = new Hyperlink();
 	    arr[idx].setId("bcLnk" + idx);
+	    // Set rendererType to avoid using widget renderer!!
+	    arr[idx].setRendererType("com.sun.webui.jsf.Hyperlink");
 	    arr[idx].setText(linkText[idx]);
 	    url = linkUrl[idx];
 	    if (url.startsWith(ctxPath)) {
