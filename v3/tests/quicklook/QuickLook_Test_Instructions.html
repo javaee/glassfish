@@ -26,8 +26,13 @@ for QuickLook tests</font></b></big></font></big></h1>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
 <br>
-Change directory to v3/tests/quicklook. All italic text indicate a
-command.<br>
+Install/unzip the glassfish bundle to a directory. Let's call the full
+path to glassfish directory as {V3 Installation Dir}. Please do not
+install glassfish under v3/tests/quicklook since the "clean" target of
+QuickLook will clean up all war files under quicklook directory. Change
+directory to v3/tests/quicklook. All italic text indicate a
+command. <br>
+<br>
 <span style="font-weight: bold;">1. To Run All Tests from Top Level:</span><br>
 <ul>
   <li>For <span style="font-weight: bold;">web.zip</span> bundle of
@@ -45,8 +50,7 @@ of V3, the javadb is at the same level of glassfish and property <i
  style="font-style: italic;">{V3 Installation Dir}/glassfish</span><i
  style="font-style: italic;">
 -Dderby.system.home=</i><span style="font-style: italic;">{V3
-Installation Dir}</span><i>/javadb&nbsp; test
-      </i></li>
+Installation Dir}</span><i>/javadb&nbsp; test </i></li>
   </ul>
 </ul>
 <span style="font-weight: bold;">2. To Run Individual Test Suite from
@@ -83,7 +87,8 @@ of the following ways to point to your specific maven repository:<br>
   <ul>
     <li>Add option on command line: <span style="font-style: italic;">-Dmaven.repo.local={Local_Maven}</span></li>
     <li>Set MVN_OPTS environment varialable: <span
- style="font-style: italic;">MVN_OPTS="-D-Xmx512M -Dmaven.repo.local={Local_Maven}"</span></li>
+ style="font-style: italic;">MVN_OPTS="-D-Xmx512M
+-Dmaven.repo.local={Local_Maven}"</span></li>
     <li>Make a symbolic link from&nbsp;${user.home}/.m2/repository to
 the actuall maven repository.</li>
     <li>Another option is to use ${user.home}/.m2/settings.xml which
