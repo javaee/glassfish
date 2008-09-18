@@ -56,7 +56,7 @@
 </event>
 
 <sun:html id="html">
-    <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
+    <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false" parseOnLoad="false">
         <sun:script url="/resource/js/selectElements.js" />
         <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>

@@ -37,7 +37,7 @@
 
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}">
+        <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 

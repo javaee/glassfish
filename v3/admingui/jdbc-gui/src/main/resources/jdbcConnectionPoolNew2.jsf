@@ -65,7 +65,7 @@
 
 #include "/shared/restart.inc"
     <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
+        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" parseOnLoad="false">
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
