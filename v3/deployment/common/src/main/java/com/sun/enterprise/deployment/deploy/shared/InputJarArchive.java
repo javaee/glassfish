@@ -27,6 +27,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -54,7 +55,7 @@ import java.net.URISyntaxException;
 @Scoped(PerLookup.class)
 public class InputJarArchive extends JarArchive implements ReadableArchive {
     
-    final static Logger logger = LogDomains.getLogger(InputJarArchive.class, LogDomains.DPL_LOGGER);
+    final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     // the file we are currently mapped to 
     protected JarFile jarFile=null;

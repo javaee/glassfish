@@ -33,6 +33,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -64,7 +65,7 @@ public class ApplicationFactory implements ContractProvider {
     ArchivistFactory archivistFactory;
 
     protected static final Logger logger =
-            LogDomains.getLogger(ApplicationFactory.class, LogDomains.DPL_LOGGER);
+            LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     // resources...
     private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Archivist.class);

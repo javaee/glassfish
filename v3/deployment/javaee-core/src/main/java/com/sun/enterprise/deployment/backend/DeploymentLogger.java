@@ -48,6 +48,7 @@ package com.sun.enterprise.deployment.backend;
 
 import com.sun.logging.LogDomains;
 import java.util.logging.*;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 // Resource Bundle:
 // com/sun/logging/enterprise/system/tools/deployment/backend/LogStrings.properties
@@ -76,7 +77,7 @@ public final class DeploymentLogger
         Logger tempLogger = null;
 		try
 		{
-			tempLogger = LogDomains.getLogger(DeploymentLogger.class, LogDomains.DPL_LOGGER);
+			tempLogger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 			tempLogger.finest("Successfully created Deployment Logger");
 		}
 		catch(Throwable t)

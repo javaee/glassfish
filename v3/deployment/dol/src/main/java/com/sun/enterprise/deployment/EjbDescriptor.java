@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.logging.*;
 
+import org.glassfish.deployment.common.DeploymentUtils;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.EjbReferenceContainer;
@@ -182,7 +183,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(EjbDescriptor.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     private IASEjbExtraDescriptors iASEjbExtraDescriptors = new IASEjbExtraDescriptors();  // Ludo 12/10/2001 extra DTD info only for iAS
 

@@ -23,6 +23,7 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -96,9 +98,7 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
     }
 
     public void postConstruct() {
-        logger = Logger.getLogger(
-            getClass().getName(),
-            "/" + getClass().getPackage().getName().replace('.','/') + "/LocalStrings");
+        logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
         
         /* Create the auto-deployer right away, even if its use is disabled 
          * currently.  This way any initialization errors will appear early 

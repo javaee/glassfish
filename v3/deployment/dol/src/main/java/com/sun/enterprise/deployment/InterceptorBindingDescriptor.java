@@ -48,6 +48,7 @@ import java.util.LinkedList;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 
 /**
@@ -58,7 +59,7 @@ public class InterceptorBindingDescriptor extends Descriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(InterceptorBindingDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(InterceptorBindingDescriptor.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     public enum BindingType {
         

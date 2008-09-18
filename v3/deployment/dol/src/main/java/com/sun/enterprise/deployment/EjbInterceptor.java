@@ -48,6 +48,7 @@ import java.util.LinkedList;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
 /**
@@ -59,7 +60,7 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbInterceptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(EjbInterceptor.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescriptors;
     private String interceptorClassName;

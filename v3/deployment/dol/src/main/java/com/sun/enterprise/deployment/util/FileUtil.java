@@ -51,6 +51,7 @@ import java.util.logging.*;
 import com.sun.logging.*;
 import com.sun.enterprise.deployment.util.FileClassLoader;
 import com.sun.enterprise.util.Print;
+import org.glassfish.deployment.common.DeploymentUtils;
 //END OF IASRI 4660742
 
 /**
@@ -59,7 +60,7 @@ import com.sun.enterprise.util.Print;
 public class FileUtil {
 
     // START OF IASRI 4660742
-    static Logger _logger=LogDomains.getLogger(DOLUtils.class, LogDomains.UTIL_LOGGER);
+    static Logger _logger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.UTIL_LOGGER);
     // END OF IASRI 4660742
 
     // START OF IASRI 4679641

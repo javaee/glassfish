@@ -53,6 +53,7 @@ import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
 import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
 /**
@@ -66,7 +67,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(JndiEnvironmentRefsGroupDescriptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(JndiEnvironmentRefsGroupDescriptor.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     protected Map<CallbackType,
                 Set<LifecycleCallbackDescriptor>> callbackDescriptors

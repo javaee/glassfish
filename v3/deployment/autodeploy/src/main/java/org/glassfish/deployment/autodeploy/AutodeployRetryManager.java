@@ -24,6 +24,7 @@ package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -120,7 +122,7 @@ public class AutodeployRetryManager implements PostConstruct {
     private int timeout;
 
     public void postConstruct() {
-        sLogger = Logger.getLogger(getClass().getName());
+        sLogger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
         setTimeout();
     }
     

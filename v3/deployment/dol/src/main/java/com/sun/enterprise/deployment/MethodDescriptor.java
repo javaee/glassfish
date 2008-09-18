@@ -41,6 +41,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.*;
 import com.sun.enterprise.deployment.util.LogDomains;
 import com.sun.enterprise.deployment.util.TypeUtil;
+import org.glassfish.deployment.common.DeploymentUtils;
 
     /** I am a deployment object representing a single method or a collection
     * of methods on Enterprise Bean classes.
@@ -78,7 +79,7 @@ public final class MethodDescriptor extends Descriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(MethodDescriptor.class);    
 	    
-     final static Logger _logger = LogDomains.getLogger(MailConfiguration.class, LogDomains.DPL_LOGGER);
+     final static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 		
     private final int JAVA_FORMAT = 1;
     private final int XML_FORMAT = -1;

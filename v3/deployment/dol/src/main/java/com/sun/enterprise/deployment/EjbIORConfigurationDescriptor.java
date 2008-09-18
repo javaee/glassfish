@@ -43,6 +43,7 @@ import java.util.logging.*;
 import com.sun.logging.*;
 
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * This descriptor holds the security configuration of an EJB IOR.
@@ -68,7 +69,7 @@ public class EjbIORConfigurationDescriptor implements Serializable {
     private String callerPropagation = SUPPORTED;
     private boolean required = false;
        
-    static Logger _logger = LogDomains.getLogger(EjbIORConfigurationDescriptor.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
     /** 
     * Default constructor. 

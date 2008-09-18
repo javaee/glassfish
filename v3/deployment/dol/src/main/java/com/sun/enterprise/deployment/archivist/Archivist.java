@@ -46,6 +46,7 @@ import org.glassfish.apf.*;
 import com.sun.enterprise.deployment.annotation.factory.AnnotatedElementHandlerFactory;
 import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
 import org.glassfish.apf.impl.DefaultErrorHandler;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.OptionalPkgDependency;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import static com.sun.enterprise.deployment.io.DescriptorConstants.PERSISTENCE_DD_ENTRY;
@@ -87,7 +88,7 @@ import java.util.logging.Logger;
 public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
     protected static final Logger logger =
-            LogDomains.getLogger(ApplicationFactory.class, LogDomains.DPL_LOGGER);
+            LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     public static final String MANIFEST_VERSION_VALUE = "1.0";
 

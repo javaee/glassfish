@@ -71,7 +71,7 @@ public class OptionalPkgDependency {
     // extension name and specification version in their manifest.
     private static Set extDirJars = new LinkedHashSet();
 
-    private static Logger logger = LogDomains.getLogger(OptionalPkgDependency.class, LogDomains.DPL_LOGGER);
+    private static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     public OptionalPkgDependency() {      
     }

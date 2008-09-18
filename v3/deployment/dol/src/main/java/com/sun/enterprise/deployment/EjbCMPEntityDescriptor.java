@@ -44,6 +44,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.Globals;
 
 /** 
@@ -70,7 +71,7 @@ public class EjbCMPEntityDescriptor extends EjbEntityDescriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbCMPEntityDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(EjbCMPEntityDescriptor.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
         
     
     public EjbCMPEntityDescriptor() {

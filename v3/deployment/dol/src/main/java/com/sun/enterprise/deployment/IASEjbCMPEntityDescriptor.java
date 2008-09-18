@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.xml.*;
 import com.sun.enterprise.deployment.interfaces.QueryParser;
 import com.sun.enterprise.deployment.runtime.*;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /** 
  * This class contains information about EJB1.1 and EJB2.0 CMP EntityBeans.
@@ -67,7 +68,7 @@ public  class IASEjbCMPEntityDescriptor extends EjbCMPEntityDescriptor {
     // for i18N
     private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(IASEjbCMPEntityDescriptor.class);
-    private static final Logger _logger = LogDomains.getLogger(IASEjbCMPEntityDescriptor.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     // Standard String and Character variables.
     private static final char DOT                  = '.';   // NOI18N

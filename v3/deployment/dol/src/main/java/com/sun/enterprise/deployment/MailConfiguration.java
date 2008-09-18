@@ -57,6 +57,7 @@ import com.sun.enterprise.repository.ResourceProperty;
 
 import java.util.logging.*;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 
 /** 
@@ -128,7 +129,7 @@ public class MailConfiguration implements Serializable {
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = LogDomains.getLogger(MailConfiguration.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
     /** 
      * This constructs the mail configuration based on the username and

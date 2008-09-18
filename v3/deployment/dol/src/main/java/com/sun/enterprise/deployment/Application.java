@@ -49,6 +49,7 @@ import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.resource.common.Resource;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -168,7 +169,7 @@ public class Application extends RootDeploymentDescriptor
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = com.sun.enterprise.deployment.util.LogDomains.getLogger(Application.class, com.sun.enterprise.deployment.util.LogDomains.DPL_LOGGER);
+    static Logger _logger = com.sun.enterprise.deployment.util.LogDomains.getLogger(DeploymentUtils.class, com.sun.enterprise.deployment.util.LogDomains.DPL_LOGGER);
 
 
     /**

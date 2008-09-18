@@ -27,6 +27,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -55,7 +56,7 @@ public class ArchiveFactory implements ContractProvider {
     @Inject
     Habitat habitat;
 
-    final static Logger logger = LogDomains.getLogger(ArchiveFactory.class, LogDomains.DPL_LOGGER);
+    final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     public WritableArchive createArchive(File path) throws java.io.IOException {
         try {

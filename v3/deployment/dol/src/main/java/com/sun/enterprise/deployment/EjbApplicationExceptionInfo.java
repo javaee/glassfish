@@ -43,6 +43,7 @@ import com.sun.logging.*;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.util.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * Contains information about an ejb application exception.
@@ -53,7 +54,7 @@ public class EjbApplicationExceptionInfo implements Serializable
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbApplicationExceptionInfo.class);
 
-    static Logger _logger = LogDomains.getLogger(EjbApplicationExceptionInfo.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     private String exceptionClassName;
     private boolean rollback;
