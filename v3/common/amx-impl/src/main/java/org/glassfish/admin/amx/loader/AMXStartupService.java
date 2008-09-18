@@ -39,6 +39,8 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 import javax.management.remote.JMXServiceURL;
 
+import java.util.Set;
+
 import org.glassfish.admin.amx.config.AMXConfigLoader;
 import org.glassfish.admin.amx.util.ImplUtil;
 import org.glassfish.admin.amx.util.InjectedValues;
@@ -47,6 +49,7 @@ import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 
 import org.glassfish.admin.mbeanserver.BooterMBean;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
+import org.glassfish.admin.amx.util.ImplUtil;
 
 /**
     Startup service that waits for AMX to be pinged to load.  At startup, it registers
@@ -109,11 +112,11 @@ public final class AMXStartupService
             throw new Error(e);
         }
         //debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
-        debug( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms, registered as " + getObjectName() );
+        ImplUtil.getLogger().info( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms, registered as " + getObjectName() );
     }
 
     public void preDestroy() {
-        debug( "AMXStartupService.preDestroy()" );
+        ImplUtil.getLogger().info( "AMXStartupService.preDestroy(): stopping AMX" );
         stopAMX();
     }
 
@@ -186,7 +189,10 @@ public final class AMXStartupService
             
             getDomainRoot().waitAMXReady();
             
-            debug( "AMXStartupService: Loaded AMX MBeans in " + delta.elapsedMillis() + " ms " );
+            final long elapsedMillis = delta.elapsedMillis();
+            final Set<ObjectName> all = getDomainRoot().getQueryMgr().queryAllObjectNameSet();
+            
+            ImplUtil.getLogger().info( "AMXStartupService: loaded " + all.size() + " AMX MBeans in " + elapsedMillis + " ms " );
         }
         return getDomainRootObjectName();
     }
