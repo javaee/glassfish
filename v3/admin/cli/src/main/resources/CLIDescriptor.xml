@@ -158,6 +158,14 @@
              <ValidOption name="filter"/>
              <ValidOption name="filename"/>
         </Command>
+        <Command name="login" classname="com.sun.enterprise.admin.cli.optional.AsadminLoginCommand"
+              numberofoperands="0"
+              usage-text="login [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)]">
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="host"/>
+             <ValidOption name="port"/>
+        </Command>
         <Command name="version"
               classname="com.sun.enterprise.admin.cli.VersionCommand"
               numberofoperands="?"
