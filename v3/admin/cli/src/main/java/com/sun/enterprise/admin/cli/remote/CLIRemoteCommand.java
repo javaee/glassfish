@@ -598,6 +598,13 @@ public class CLIRemoteCommand {
                 throw new CommandException(cve);
             }
         }
+        
+        if (params.get("password") != null) {
+            password = params.get("password");
+            params.remove("password");
+            encodedPasswords.put(CLIUtil.ENV_PREFIX+"PASSWORD",password);
+            base64encode(encodedPasswords);
+        }
 
         String pwfile = params.get("passwordfile");
         
@@ -739,7 +746,7 @@ public class CLIRemoteCommand {
     private boolean isLocalParam(String param) {
         return Arrays.asList(LOCAL_PARAMS).contains(param);
     }
-
+    
     private boolean                         verbose = false;
     private boolean                         terse = false;
     private boolean                         echo = false;
