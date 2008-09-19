@@ -1,4 +1,4 @@
-		<sun:masthead id="Masthead" productImageURL="http://l.yimg.com/a/i/ww/beta/y3.gif" 
+		<sun:masthead id="Masthead" productImageURL="/resource/images/PrimaryProductName.png" 
                      productImageDescription="$resource{i18n.mastHeadDescription}" 
                      productImageWidth="#{productImageWidth}" 
                      productImageHeight="#{productImageHeight}" 

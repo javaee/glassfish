@@ -91,32 +91,44 @@
                         <!-- _include does not work. See Felix-620.
                         <_include>osgi.bundle</_include>
                         -->
-                        <Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=false</Embed-Dependency>
-                        <Export-Package>org.glassfish.theme.admingui.*</Export-Package>
-			<_exportcontents>*</_exportcontents>
+                        <!--<Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=true</Embed-Dependency>-->
+                        <Export-Package>
+                        org.glassfish.admingui.customtheme
+                        </Export-Package>
                     </instructions>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-				<!--<execution>
                         <id>bundle-manifest</id>
                         <phase>process-classes</phase>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
-                    </execution>-->
-
+                    </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.jar</exclude>
+                </excludes>
+            </resource>
+        </resources>
     </build>
-    <repositories>
+<repositories>
         <repository>
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
@@ -125,8 +137,7 @@
                 <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
-    </repositories>
-    <dependencies>
+    </repositories>    <dependencies>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
@@ -143,5 +154,7 @@
 	    <version>4.3.0.7</version>
 	    <scope>compile</scope>
 	</dependency>
+
+
     </dependencies>
 </project>

@@ -18,7 +18,13 @@
                 type="org.glassfish.admingui:loginimage" 
                 priority="100"
                 content="branding/loginimage.inc" 
-        />      
+        />  
+        <integration-point 
+                id="customtheme" 
+                type="org.glassfish.admingui:loginbackground" 
+                priority="100"
+                content="branding/loginbackground.inc" 
+        />          
         <integration-point 
                 id="customtheme" 
                 type="org.glassfish.admingui:upsellframepe" 
