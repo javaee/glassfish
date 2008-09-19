@@ -56,6 +56,14 @@ public interface Events {
     public void register(EventListener listener);
 
     /**
+     * Unregisteres a listener
+     *
+     * @param listener the register to remove
+     * @return true if the removal was successful
+     */
+    public boolean unregister(EventListener listener);
+
+    /**
      * Sends a event asynchronously
      *
      * @param event event to send
