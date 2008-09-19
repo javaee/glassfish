@@ -15,7 +15,6 @@
 .red {
 	color: #F00;
 }
-.style1 {color: #990000}
 	-->
 	</style>
 </head>
@@ -26,18 +25,18 @@ for QuickLook tests</font></b></big></font></big></h1>
 <br>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
-<p>Install/unzip the glassfish bundle to a directory. <span class="style1">As of Sept 17 2008, this directory <strong>must</strong> be
-  named &quot;glassfish&quot; eg /tests/glassfish</span>.</p>
-<p>Let's call the full
-  path to the glassfish installation directory  <strong>{V3 Installation Dir}</strong>. Please do not
-  install glassfish under v3/tests/quicklook since the "clean" target of
-  QuickLook will clean up all war files under quicklook directory. Change
-  directory to v3/tests/quicklook. All italic text indicate a
-  command. <br>
-  <br>
-  <span style="font-weight: bold;">1. To Run All Web Bundle Tests from
-  Top Level:</span><br>
-</p>
+<br>
+Install/unzip the glassfish bundle to a directory. <b> As of Sep
+t 17 2008, this directory must be named &quot;glassfish&quot; eg /tests/glassfish</b> 
+<br> Let's call the full
+path to glassfish directory as {V3 Installation Dir}. Please do not
+install glassfish under v3/tests/quicklook since the "clean" target of
+QuickLook will clean up all war files under quicklook directory. Change
+directory to v3/tests/quicklook. All italic text indicate a
+command. <br>
+<br>
+<span style="font-weight: bold;">1. To Run All Web Bundle Tests from
+Top Level:</span><br>
 <ul>
   <li>For <span style="font-weight: bold;">web.zip</span> bundle of
 V3: <br>
@@ -87,7 +86,7 @@ be set as shown in section 1.<br>
 <span style="font-weight: bold;">3. To Run JRuby Tests</span><span
  style="font-weight: bold;">:</span><br>
 <ul>
-  <li>From top leve v3/tests/quicklook dir:</li>
+  <li>From top level v3/tests/quicklook dir:</li>
   <ul style="font-style: italic;">
     <li>mvn -f web/jruby/pom.xml -Dglassfish.home={V3 Installation Dir}
 test | tee run.log</li>
@@ -98,10 +97,10 @@ test | tee run.log</li>
   </ul>
 </ul>
 For the first time of running JRuby tests, the JRuby/Rails env will be
-setup so this will take a littie time (one minute on my machine). The
-JRuby setup will be done in local maven reprository and this step will
-be skipped if the local maven repro is used.&nbsp; The test results
-will be in test-output-jruby directory.<br>
+setup so this will take a little time (one minute on my machine). The
+JRuby setup will be done in local maven repository and this step will
+be skipped for the future runs if the same local maven repro is
+used.&nbsp; The test results will be in test-output-jruby directory.<br>
 <br>
 <span style="font-weight: bold;">4. Using Local Maven Repository in
 Non-Default Directory:</span><br>
