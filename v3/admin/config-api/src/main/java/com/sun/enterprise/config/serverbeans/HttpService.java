@@ -220,6 +220,10 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     @DuckTyped
     VirtualServer getVirtualServerByName(String name);
 
+    
+    @DuckTyped
+    HttpListener getHttpListenerById(String id);
+    
     public class Duck {
         public static VirtualServer getVirtualServerByName(HttpService target, String name) {
             for (VirtualServer v : target.getVirtualServer()) {
@@ -229,5 +233,13 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
             }
             return null;
         }
+        public static HttpListener getHttpListenerById(HttpService target, String id) {
+            for (HttpListener v : target.getHttpListener()) {
+                if (v.getId().equals(id)) {
+                    return v;
+                }
+            }
+            return null;
+        }    
     }
 }

@@ -50,10 +50,13 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Delete http listener command
@@ -90,7 +93,31 @@ public class DeleteHttpListener implements AdminCommand {
             return;
         }
         try {
+            HttpListener  ls = httpService.getHttpListenerById(lid);
+            VirtualServer vs = httpService.getVirtualServerByName(ls.getDefaultVirtualServer());
             ConfigSupport.apply(new Config(lid), httpService);
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                public Object run(VirtualServer avs) throws PropertyVetoException, TransactionFailure {
+                    String lss = avs.getHttpListeners();
+                    if (lss != null && lss.contains(lid)) { //change only if needed
+                        Pattern p = Pattern.compile(",");
+                        String[] names = p.split(lss);
+                        List<String> nl = new ArrayList<String>();
+                        for (String name:names) {
+                            if(!lid.equals(name)) {
+                                nl.add(name);
+                            }
+                        }
+                        //we removed the lid from lss and is captured in nl by now
+                        lss = nl.toString();
+                        lss = lss.substring(1, lss.length()-1);
+                        avs.setHttpListeners(lss);
+                    }
+                    return ( avs );
+                }
+            }, vs);
+            //remove the id from associated virtual-server's
+            
             report.setActionExitCode(ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
