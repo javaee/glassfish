@@ -54,7 +54,9 @@ import org.glassfish.admin.amx.loader.BootUtil;
 import com.sun.appserv.management.util.misc.FeatureAvailability;
 import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.util.ObjectNames;
-//import org.glassfish.admin.amx.internal.SanityChecksMBean;
+
+import org.glassfish.admin.amx.internal.SanityChecksMBean;
+import org.glassfish.admin.amx.internal.LoadSanityChecks;
 
 import javax.management.ObjectName;
 import java.util.Set;
@@ -233,17 +235,6 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
                 RuntimeMgr.J2EE_TYPE, AMX.NO_NAME, false );
         mbean	= new RuntimeMgrImpl(self);
         registerChild( mbean, childObjectName );
-        
-        /*
-        try
-        {
-            final SanityChecksMBean checks = new org.glassfish.admin.amx.internal.LoadSanityChecks(getMBeanServer()).load();
-        }
-        catch( final Throwable t )
-        {
-            t.printStackTrace();
-        }
-        */
     }
 
         protected final void
@@ -257,6 +248,20 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         
         final NotificationEmitterService	domainNES	= new NotificationEmitterServiceImpl(getObjectName());
         registerChild( domainNES, childObjectName );
+    }
+    
+    public Object loadInternal()
+    {
+        try
+        {
+            final ObjectName objectName = LoadSanityChecks.load(getMBeanServer());
+            return "Loaded: " + objectName;
+        }
+        catch( final Throwable t )
+        {
+            t.printStackTrace();
+            throw new RuntimeException("Failed to load SanityChecks: " + t, t);
+        }
     }
 
             

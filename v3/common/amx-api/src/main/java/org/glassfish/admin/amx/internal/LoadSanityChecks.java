@@ -4,36 +4,61 @@
  */
 package org.glassfish.admin.amx.internal;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
 import javax.management.NotCompliantMBeanException;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.MBeanServerInvocationHandler;
 
+import com.sun.appserv.management.util.jmx.JMXUtil;
+
 /**
- *
+ * Enables assertions on the desired classes, then loads them.
  * @author lloyd
  */
 public final class LoadSanityChecks {
-    private final MBeanServer mMBeanServer;
+    private LoadSanityChecks() {}
     
-    public LoadSanityChecks(final MBeanServer server) {
-        mMBeanServer = server;
-        final ClassLoader cl = this.getClass().getClassLoader();
-        cl.setPackageAssertionStatus( this.getClass().getPackage().getName(), true );
-        cl.setClassAssertionStatus( "org.glassfish.admin.amx.internal.SanityChecks", true );
-    }
+    private static final ObjectName NAME = JMXUtil.newObjectName("amx-support:name=sanity-checks");
 
-    public SanityChecksMBean load() throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException
+        public static synchronized ObjectName
+    load(final MBeanServer mbeanServer) throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, InstanceAlreadyExistsException
     {
-        ObjectName objectName = JMXUtil.newObjectName( "amx-support:name=sanity-checks");
-        final SanityChecks checks = SanityChecks.newInstance(mMBeanServer);
-        objectName = mMBeanServer.registerMBean( checks, objectName ).getObjectName();
-
-        final SanityChecksMBean  mb = JMXUtil.newProxyInstance( mMBeanServer, objectName, SanityChecksMBean.class );
+        final ObjectName objectName = NAME;
         
-        return mb;
+        if ( mbeanServer.isRegistered(objectName) ) 
+        {
+            return objectName;
+        }
+        
+        final Class<LoadSanityChecks> myClass = LoadSanityChecks.class;
+        final ClassLoader cl = myClass.getClassLoader();
+        cl.setPackageAssertionStatus( myClass.getPackage().getName(), true );
+        cl.setClassAssertionStatus( "org.glassfish.admin.amx.internal.SanityChecks", true );
+
+        final SanityChecks checks = SanityChecks.newInstance(mbeanServer);
+        
+        // ensure that the name wasn't altered during registration
+        if ( ! mbeanServer.registerMBean( checks, objectName ).getObjectName().equals(objectName) )
+        {
+            throw new IllegalStateException();
+        }
+        
+        return objectName;
+    }
+    
+    public static SanityChecksMBean getSanityChecksMBean(final MBeanServer mbeanServer)
+    {
+        try
+        {
+            final ObjectName objectName = load(mbeanServer);
+            return JMXUtil.newProxyInstance( mbeanServer, objectName, SanityChecksMBean.class );
+        }
+        catch( Exception e )
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

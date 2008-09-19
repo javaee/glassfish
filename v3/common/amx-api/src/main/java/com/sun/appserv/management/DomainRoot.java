@@ -275,7 +275,11 @@ public interface DomainRoot extends Container
         included; simply append the command string and call {@link #executeREST}.
      */
     public String getRESTBaseURL();
-
+    
+    /**
+        Load internal classes. Private use, do not use.
+     */
+    public Object loadInternal();
 }
 
 
