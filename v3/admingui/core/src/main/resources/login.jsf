@@ -41,6 +41,7 @@
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
 
+
 />
 
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -78,20 +79,22 @@
 	    <td></td>
 	</tr>
             <tr><td class="LogMidBnd"></td>
-	    <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" alt=" " align="center" valign="middle">
-		<table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
-		    <tr><td width="260">
-</f:verbatim>
+</f:verbatim>            
+<!--  Customizing the background image -->
+<event>
+    <!afterCreate        
+                getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                includeIntegrations(type="org.glassfish.admingui:loginbackground" root="#{component}");                
+        
+    />
+</event>
 			    <sun:image icon="DOT" width="260" height="245" />
 <f:verbatim>
 			</td>
 			<td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
 </f:verbatim>
-			    <sun:image url="#{request.contextPath}/resource/#{loginProductImageURL}" 
-                                 alt="#{fullProductName}"
-                                  height="#{loginProductImageHeight}" width="#{loginProductImageWidth}"
-                                  />
-<!--  Commenting out until we are able to get woodstock build 7 from maven
+<!--  Customizing the login product name image -->
 <event>
     <!afterCreate        
                 getClientId(component="$this{component}" clientId=>$attribute{loginId})
@@ -100,7 +103,6 @@
         
     />
 </event>
--->
 
 <f:verbatim>
 			    <table border="0" cellspacing="0" cellpadding="0" style="visibility: #{anonLogin ? 'hidden' : 'visible'}">
