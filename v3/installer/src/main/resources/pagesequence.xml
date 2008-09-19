@@ -48,12 +48,14 @@
     <page name="updatetool"/>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
-    <page name="RegistrationOptions"/>
+    <page name="RegistrationOptions">
+	<when><![CDATA[ !DRY_RUN_MODE ]]></when>
+    </page>
     <page name="SOAccountCreation">
-	<when><![CDATA[ CREATE_NEWACCT ]]></when>
+	<when><![CDATA[ !DRY_RUN_MODE && CREATE_NEWACCT ]]></when>
     </page>
     <page name="RegistrationInfo">
-	<when><![CDATA[ CREATE_NEWACCT || USE_EXISTINGACCT ]]></when>
+	<when><![CDATA[ !DRY_RUN_MODE && (CREATE_NEWACCT || USE_EXISTINGACCT) ]]></when>
     </page> 
     <page name="Summary"/>
   </flow>

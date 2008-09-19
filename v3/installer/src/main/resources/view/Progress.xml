@@ -122,11 +122,39 @@ getComponentByName(aParent, aName) {
   return null;
 }
 
+    /**
+     * This method detects if this is a normal run or a dry run.
+     */
+    detectDryRun() {
+        boolean gDryRun = false;
+
+        try {
+            BusRequest theModeReq = new BusRequest("ModeRequest",
+                new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, 
+			EngineConfigItem.DRY_RUN_FILE));
+            BusResponse theModeResp 
+			= ControlBus.getInstance().publishRequest(theModeReq, 
+				"svc://general/EngineConfig");
+            gDryRun = (theModeResp.getResult() != null);
+        } catch (Exception theEx) {
+            // default to normal run.
+        }
+
+	return (gDryRun);
+    } 
+
 run() {
   // Burn the bridge
   wizard.enableCancel(true);
   wizard.enableHelp(true);
   wizard.setNextButtonText(Msg.get("next", null));
+
+  // Determine if this is dry run in order to skip registration panels.
+  if (detectDryRun()) {
+      List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
+      activeModes.add("DRY_RUN_MODE");
+  }
+
   BusResponse theTaskResp =  Scripting.getInterpreter().get("gSharedResponse");
   while (theTaskResp == null) {
     /* wait for task resp to be set */
