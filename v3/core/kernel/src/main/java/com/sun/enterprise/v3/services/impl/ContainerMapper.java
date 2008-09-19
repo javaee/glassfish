@@ -153,7 +153,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
                        
             if (adapter == null || (adapter instanceof ContainerMapper)) {
                 String ext = decodedURI.toString();
-                if (ext.indexOf(".") != 0){
+                if (ext.indexOf(".") > 0){
                     ext = "*" + ext.substring(ext.lastIndexOf("."));
                 }
                 initializeFileURLPattern(ext);
