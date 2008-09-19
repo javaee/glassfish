@@ -62,7 +62,7 @@
 
 <target name="jrubyHomeCon"  depends="setOSConditions,asenv-unix,asenv-windows">
  <echo message="asconf ${asenv_conf}"/>
-      <loadfile property="asconf_jruby" srcfile="${asenv_conf}">
+      <loadfile property="asconf_jruby" srcfile="${asenv_conf}" failonerror="false">
           <filterchain>
               <linecontainsregexp>
                   <regexp pattern="JRUBY_HOME"/>
