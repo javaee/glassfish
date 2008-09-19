@@ -29,6 +29,8 @@ import javax.management.JMException;
 import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 
+import org.glassfish.server.ServerEnvironmentImpl;
+
 
 /**
     Can't use things in amx-api, so a few methods are place here.
@@ -47,7 +49,7 @@ final class Util
         }
     }
     
-    public static Logger getLogger() { return Logger.getLogger(LogDomains.ADMIN_LOGGER); }
+    public static Logger getLogger() { return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER); }
 }
 
 

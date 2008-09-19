@@ -60,6 +60,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.ActionReport;
 import org.glassfish.tests.utils.Utils;
 import org.glassfish.tests.utils.ConfigApiTest;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -109,7 +110,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(CreateJdbcResourceTest.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr = new CommandRunner();

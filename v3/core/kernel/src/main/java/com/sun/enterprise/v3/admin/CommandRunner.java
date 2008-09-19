@@ -56,6 +56,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
@@ -75,7 +76,7 @@ import com.sun.enterprise.universal.BASE64Decoder;
 public class CommandRunner {
     
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunner.class);
-    public final static Logger logger = LogDomains.getLogger(CommandRunner.class, LogDomains.ADMIN_LOGGER);
+    public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
     @Inject
@@ -165,7 +166,7 @@ public class CommandRunner {
         report.setActionDescription(commandName + " AdminCommand");
 
         final AdminCommandContext context = new AdminCommandContext(
-                LogDomains.getLogger(CommandRunner.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 report, parameters, uploadedFiles);                                                 
 
         // initialize the injector.

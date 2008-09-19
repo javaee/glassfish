@@ -51,12 +51,13 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.client.ProxyFactory;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 public final class ImplUtil 
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    public static Logger getLogger() { return Logger.getLogger(LogDomains.ADMIN_LOGGER); }
+    public static Logger getLogger() { return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER); }
     
     /**
         Unload this AMX MBean and all its children.

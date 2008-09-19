@@ -48,6 +48,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -55,6 +57,7 @@ import javax.xml.stream.XMLStreamReader;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.logging.LogDomains;
 
 /**
  * Implementation of the ArchiveHandler for war files.
@@ -69,6 +72,8 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         xmlIf = XMLInputFactory.newInstance();
         xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
+
+    Logger logger = LogDomains.getLogger(WarHandler.class, LogDomains.WEB_LOGGER);
 
     public String getArchiveType() {
         return "war";               
@@ -93,9 +98,11 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             configureLoaderProperties(cloader, sunWebXmlParser, base);
             
         } catch(XMLStreamException xse) {
-            xse.printStackTrace();
+            logger.log(Level.SEVERE, xse.getMessage());
+            logger.log(Level.FINE, xse.getMessage(), xse);
         } catch(FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
+            logger.log(Level.SEVERE, fnfe.getMessage());
+            logger.log(Level.FINE, fnfe.getMessage(), fnfe);
         }
         try {
             cloader.start();

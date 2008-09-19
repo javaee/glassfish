@@ -63,7 +63,9 @@ public class StopDomainCommand implements AdminCommand {
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
         final Module mgmtAgentModule = registry.makeModuleFor(
                 "com.sun.enterprise.osgi-adapter", null);
-        mgmtAgentModule.stop();
+        if (mgmtAgentModule!=null) {
+            mgmtAgentModule.stop();
+        }
         if (force) {
             System.exit(0);
         }

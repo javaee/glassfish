@@ -59,6 +59,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.ActionReport;
 import org.glassfish.tests.utils.Utils;
 import org.glassfish.tests.utils.ConfigApiTest;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.config.DomDocument;
 
 /**
@@ -101,7 +102,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
         context = new AdminCommandContext(
-                LogDomains.getLogger(DeleteJdbcResourceTest.class, LogDomains.ADMIN_LOGGER),
+                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter(), parameters);
         
         cr = new CommandRunner();
