@@ -172,7 +172,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 super.service(req, res);
             }  else {                            
                 // Re-set back the position.
-                if (semicolon != 0 && end != 0){
+                if (semicolon > 0 && end != 0){
                     decodedURI.setBytes(uriBB.getBuffer(), start, end);
                 }
 
