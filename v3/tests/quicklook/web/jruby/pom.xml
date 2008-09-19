@@ -64,7 +64,7 @@
 
                                 <echo message="compile classpath: ${compile_classpath}"/>
                                 <echo message="plugin classpath:  ${plugin_classpath}"/>
-                                <ant dir="." antfile="build.xml" target="runtest">
+                                <ant dir="." antfile="build.xml" target="all">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                                 </ant>
                             </tasks>
