@@ -10,7 +10,7 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>
     <import file="${ws.root}/gfproject/v3-targets.xml"/>
 
-<target name="all" depends="setup-jruby,set-jrubyhome,deploy,runtest,undeploy"/>
+<target name="all" depends="setup-jruby,set-jrubyhome,deploy,runtest,undeploy,stop-server"/>
 
 <target name="setJRubyCon">
    <available file="${JRUBY_HOME}" type="dir" property="local.jruby.present"/>
