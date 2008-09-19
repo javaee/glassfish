@@ -98,6 +98,7 @@
     <echo>+-----------------------------+</echo>
     <echo>|                             |</echo>
     <echo>| S T A R T I N G   GLASSFISH |</echo>
+    <echo>|       in Felix mode         |</echo>
     <echo>|                             |</echo>
     <echo>+-----------------------------+</echo>
 
@@ -120,6 +121,10 @@
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
+    <!-- JRuby deplyment needs GF start server to be fully done. 
+         Introduce a delay for now and will investigate futher.  -->
+    <echo message="Sleeping for 20 seconds while the server is starting"/>
+    <sleep seconds="20"/>
 </target>
 
 <target name="stop-server" depends="setOSConditions">
@@ -135,7 +140,7 @@
 </target>
 
 <target name="stop-server-windows" if="isWindows">
-    <echo message="Jerome I am stopping server on windows ..."/>
+    <echo message="Stopping server on windows ..."/>
    <exec executable="cmd">
     <arg value="/c"/>
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
