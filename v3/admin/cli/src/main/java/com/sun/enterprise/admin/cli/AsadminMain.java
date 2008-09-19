@@ -55,41 +55,49 @@ public class AsadminMain {
              System.out.println(msg);
              System.exit(0);
         }
+        String command = args[0];
         try {
             exitCode = main.local(args);
         }
         catch(InvalidCommandException e) {
-            CLILogger.getInstance().printDebugMessage(e.getMessage());
-            exitCode = main.remote(args);
+            // Transform 'asadmin help remote-command' to 'asadmin remote-command --help'.
+            // Otherwise, you'll get a CommandNotFoundException: Command help not found.
+            if (args[0].equals("help")) {
+                exitCode = main.remote(new String[] {args[1], "--help"});
+                command = args[1];
+            } else {
+                CLILogger.getInstance().printDebugMessage(e.getMessage());
+                exitCode = main.remote(args);
+            }
         }
         if(exitCode == SUCCESS) {
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandSuccessful", args[0]));
+                strings.get("CommandSuccessful", command));
         }
         if(exitCode == ERROR) {
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandUnSuccessful", args[0]));
+                strings.get("CommandUnSuccessful", command));
         }
         if(exitCode == INVALID_COMMAND_ERROR) {
             try {
-                CLIMain.displayClosestMatch(args[0], main.getRemoteCommands(),
+                CLIMain.displayClosestMatch(command, main.getRemoteCommands(),
                                             strings.get("ClosestMatchedLocalAndRemoteCommands"));
             } catch (InvalidCommandException e) {
                 // not a big deal if we cannot help
             }
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandUnSuccessful", args[0]));
+                strings.get("CommandUnSuccessful", command));
         }
         if (exitCode == CONNECTION_ERROR) {
             try {
-                CLIMain.displayClosestMatch(args[0], null,
+                CLIMain.displayClosestMatch(command, null,
                                             strings.get("ClosestMatchedLocalCommands"));
             } catch (InvalidCommandException e) {
                 CLILogger.getInstance().printMessage(strings.get("InvalidRemoteCommand",
-                                                                 args[0]));
+                                                                 command));
             }
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandUnSuccessful", args[0]));
+                strings.get("CommandUnSuccessful", command));
         }
         System.exit(exitCode);
     }
