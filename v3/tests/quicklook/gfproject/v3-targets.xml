@@ -52,6 +52,47 @@
   </condition>
 </target>
 
+<target name="asenv-unix" if="isUnix">
+    <property name="asenv_conf" value="${glassfish.home}/config/asenv.conf"/>
+</target>
+
+<target name="asenv-windows" if="isWindows">
+    <property name="asenv_conf" value="${glassfish.home}/config/asenv.bat"/>
+</target>
+
+<target name="jrubyHomeCon"  depends="setOSConditions,asenv-unix,asenv-windows">
+ <echo message="asconf ${asenv_conf}"/>
+      <loadfile property="asconf_jruby" srcfile="${asenv_conf}">
+          <filterchain>
+              <linecontainsregexp>
+                  <regexp pattern="JRUBY_HOME"/>
+              </linecontainsregexp>
+          </filterchain>
+      </loadfile>
+ <echo message="asconf ${asconf_jruby}"/>
+</target>
+
+<target name="set-jrubyhome" unless="asconf_jruby" depends="setOSConditions,jrubyHomeCon">
+    <antcall target="set-jrubyhome-unix"/>
+    <antcall target="set-jrubyhome-win"/>
+</target>
+
+<target name="set-jrubyhome-unix" if="isUnix">
+<echo message="${glassfish.home}/config/asenv.conf"/>
+<concat destfile="${glassfish.home}/config/asenv.conf" append="true" >JRUBY_HOME=${JRUBY_HOME}
+</concat>
+    <antcall target="stop-server"/>
+    <antcall target="start-server"/>
+</target>
+
+<target name="set-jrubyhome-win" if="isWindows">
+<echo message="${glassfish.home}/config/asenv.bat"/>
+<concat destfile="${glassfish.home}/config/asenv.bat" append="true" >set JRUBY_HOME=${JRUBY_HOME}
+</concat>
+    <antcall target="stop-server"/>
+    <antcall target="start-server"/>
+</target>
+
 <target name="start-server" depends="setOSConditions">
 
     <echo>+-----------------------------+</echo>
@@ -66,19 +107,19 @@
 
 <target name="start-server-unix" if="isUnix">
     <exec executable="${glassfish.home}/bin/asadmin">        
+	<env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>
 
 </target>
 
 <target name="start-server-windows" if="isWindows">
-    
-    <exec executable="cmd">	
+    <exec executable="cmd" spawn="true">
+	<env key="GlassFish_Platform" value="Felix"/>
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
-    
 </target>
 
 <target name="stop-server" depends="setOSConditions">
@@ -109,7 +150,6 @@
     <echo message="./${war.file}"/>
     <echo message="OS is ${os.name}"/>    
 
-    <echo message="Please access URL http://${glassfish.http.host}:${glassfish.http.port}/${contextroot}"/>
     <antcall target="deploy-v3-impl-unix"/>
     <antcall target="deploy-v3-impl-windows"/>
 </target>
