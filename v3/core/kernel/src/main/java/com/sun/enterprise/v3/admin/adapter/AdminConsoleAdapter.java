@@ -22,41 +22,41 @@
  */
 package com.sun.enterprise.v3.admin.adapter;
 
-import com.sun.enterprise.config.serverbeans.AdminService;
-import com.sun.enterprise.config.serverbeans.Application;
 //import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.config.serverbeans.*;
+        import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.logging.LogDomains;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.api.container.Adapter;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.Container;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.api.AdminAuthenticator;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -67,28 +67,27 @@ import org.jvnet.hk2.component.PostConstruct;
  * The general contract of this adapter is as follows:
  * <ol>
  * <li>This adapter is *always* installed as a Grizzly adapter for a particular
- *     URL designated as admin URL in domain.xml. This translates to context-root
- *     of admin console application. </li>
+ * URL designated as admin URL in domain.xml. This translates to context-root
+ * of admin console application. </li>
  * <li>When the control comes to the adapter for the first time, user is asked
- *     to confirm if downloading the application is OK. In that case, the admin console
- *     application is downloaded and expanded. While the download and installation
- *     is happening, all the clients or browser refreshes get a status message.
- *     No push from the server side is attempted (yet).
- *     After the application is "installed", ApplicationLoaderService is contacted,
- *     so that the application is loaded by the containers. This application is
- *     available as a <code> system-application </code> and is persisted as
- *     such in the domain.xml. </li>
+ * to confirm if downloading the application is OK. In that case, the admin console
+ * application is downloaded and expanded. While the download and installation
+ * is happening, all the clients or browser refreshes get a status message.
+ * No push from the server side is attempted (yet).
+ * After the application is "installed", ApplicationLoaderService is contacted,
+ * so that the application is loaded by the containers. This application is
+ * available as a <code> system-application </code> and is persisted as
+ * such in the domain.xml. </li>
  * <li>Even after this application is available, we don't load it on server
- *     startup by default. It is always loaded <code> on demand </code>.
- *     Hence, this adapter will always be available to find
- *     out if application is loaded and load it in the container(s) if it is not.
- *     If the application is already loaded, it simply exits.
+ * startup by default. It is always loaded <code> on demand </code>.
+ * Hence, this adapter will always be available to find
+ * out if application is loaded and load it in the container(s) if it is not.
+ * If the application is already loaded, it simply exits.
  * </li>
  * </ol>
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352; (km@dev.java.net)
  * @author Ken Paulsen (kenpaulsen@dev.java.net)
- *
  * @since GlassFish V3 (March 2008)
  */
 @Service
@@ -101,13 +100,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     AdminService as; //need to take care of injecting the right AdminService
 
     private String contextRoot;
-    private File ipsRoot;	// GF IPS Root
-    private File warFile;	// GF Admin Console War File Location
+    private File ipsRoot;    // GF IPS Root
+    private File warFile;    // GF Admin Console War File Location
     private String proxyHost;
     private int proxyPort = 8080;
-    private AdapterState stateMsg   = AdapterState.UNINITIAZED;
-    private boolean installing	    = false;
-    private boolean isOK	    = false;  // FIXME: initialize this with previous user choice
+    private AdapterState stateMsg = AdapterState.UNINITIAZED;
+    private boolean installing = false;
+    private boolean isOK = false;  // FIXME: initialize this with previous user choice
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -123,13 +122,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     Habitat habitat;
 
-    @Inject(optional=true)
-    AdminAuthenticator authenticator=null;
+    @Inject(optional = true)
+    AdminAuthenticator authenticator = null;
 
     @Inject
     Events events;
-    
-    @Inject (name="server-config")
+
+    @Inject(name = "server-config")
     Config serverConfig;
     
     AdminEndpointDecider epd;
@@ -143,28 +142,28 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private static final String PROXY_HOST_PARAM = "proxyHost";
     private static final String PROXY_PORT_PARAM = "proxyPort";
-    private static final String OK_PARAM         = "ok";
-    private static final String CANCEL_PARAM     = "cancel";
-    private static final String VISITOR_PARAM    = "visitor";
+    private static final String OK_PARAM = "ok";
+    private static final String CANCEL_PARAM = "cancel";
+    private static final String VISITOR_PARAM = "visitor";
 
-    private static final String MYURL_TOKEN      = "%%%MYURL%%%";
-    private static final String STATUS_TOKEN     = "%%%STATUS%%%";
+    private static final String MYURL_TOKEN = "%%%MYURL%%%";
+    private static final String STATUS_TOKEN = "%%%STATUS%%%";
 
-    static final String ADMIN_APP_NAME           = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
+    static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
 
     /**
-     *	Constructor.
+     * Constructor.
      */
     public AdminConsoleAdapter() throws IOException {
-	initHtml   = Utils.packageResource2String("downloadgui.html");
-	statusHtml = Utils.packageResource2String("status.html");
+        initHtml = Utils.packageResource2String("downloadgui.html");
+        statusHtml = Utils.packageResource2String("status.html");
     }
 
     /**
      *
      */
     public String getContextRoot() {
-       return epd.getGuiContextRoot(); //default is /admin
+        return epd.getGuiContextRoot(); //default is /admin
     }
 
     /**
@@ -183,82 +182,82 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
-	try {
-	    if (!latch.await(100L, TimeUnit.SECONDS)) {
-		// todo : better error reporting.
-		log.severe("Cannot process admin console request in time");
-		return;
-	    }
-	} catch (InterruptedException ex) {
-	    log.severe("Cannot process admin console request");
-	    return;
-	}
-	logRequest(req);
+        try {
+            if (!latch.await(100L, TimeUnit.SECONDS)) {
+                // todo : better error reporting.
+                log.severe("Cannot process admin console request in time");
+                return;
+            }
+        } catch (InterruptedException ex) {
+            log.severe("Cannot process admin console request");
+            return;
+        }
+        logRequest(req);
 
-	if (isApplicationLoaded()) {
-	    // Let this pass to the admin console (do nothing)
-	    handleLoadedState();
-	} else {
-	    // Console is not yet running...
+        if (isApplicationLoaded()) {
+            // Let this pass to the admin console (do nothing)
+            handleLoadedState();
+        } else {
+            // Console is not yet running...
 
-	    // Only worry about auth before the console is running
-	    handleAuth(req, res);
+            // Only worry about auth before the console is running
+            handleAuth(req, res);
 
-	    // See what type of request this is...
-	    InteractionResult ir = getUserInteractionResult(req);
-	    if (ir == InteractionResult.CANCEL) {
+            // See what type of request this is...
+            InteractionResult ir = getUserInteractionResult(req);
+            if (ir == InteractionResult.CANCEL) {
 // FIXME: What if they clicked Cancel?
-	    }
-	    synchronized(this) {
-		if (isInstalling()) {
-		    sendStatusPage(res);
-		} else {
-		    if (isApplicationLoaded()) {
-			// Double check here that it is not now loaded (not
-			// likely, but possible)
-			handleLoadedState();
-		    } else if (!hasPermission(ir)) {
-			// Ask for permission
-			sendConsentPage(req, res);
-		    } else {
-			try {
-			    // We have permission and now we should install
-			    // (or load) the application.
-			    setInstalling(true);
-			    startThread();  // Thread must set installing false
-			} catch (Exception ex) {
-			    // Ensure we haven't crashed with the installing
-			    // flag set to true (not likely).
-			    setInstalling(false);
-			    throw new RuntimeException(
-				    "Unable to install Admin Console!", ex);
-			}
-			sendStatusPage(res);
-		    }
-		}
-	    }
-	}
+            }
+            synchronized (this) {
+                if (isInstalling()) {
+                    sendStatusPage(res);
+                } else {
+                    if (isApplicationLoaded()) {
+                        // Double check here that it is not now loaded (not
+                        // likely, but possible)
+                        handleLoadedState();
+                    } else if (!hasPermission(ir)) {
+                        // Ask for permission
+                        sendConsentPage(req, res);
+                    } else {
+                        try {
+                            // We have permission and now we should install
+                            // (or load) the application.
+                            setInstalling(true);
+                            startThread();  // Thread must set installing false
+                        } catch (Exception ex) {
+                            // Ensure we haven't crashed with the installing
+                            // flag set to true (not likely).
+                            setInstalling(false);
+                            throw new RuntimeException(
+                                    "Unable to install Admin Console!", ex);
+                        }
+                        sendStatusPage(res);
+                    }
+                }
+            }
+        }
     }
 
     /**
      *
      */
     private boolean isApplicationLoaded() {
-	return (stateMsg == AdapterState.APPLICATION_LOADED);
+        return (stateMsg == AdapterState.APPLICATION_LOADED);
     }
 
     /**
      *
      */
     boolean isInstalling() {
-	return installing;
+        return installing;
     }
 
     /**
      *
      */
     void setInstalling(boolean flag) {
-	installing = flag;
+        installing = flag;
     }
 
 
@@ -266,7 +265,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * Checks whether this adapter has been registered as a network endpoint.
      */
     public boolean isRegistered() {
-	return isRegistered;
+        return isRegistered;
     }
 
     /**
@@ -274,158 +273,158 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * network endpoint
      */
     public void setRegistered(boolean isRegistered) {
-	this.isRegistered = isRegistered;
+        this.isRegistered = isRegistered;
     }
 
 
     /**
-     *	<p> This method sets the current state.</p>
+     * <p> This method sets the current state.</p>
      */
     void setStateMsg(AdapterState msg) {
-	stateMsg = msg;
+        stateMsg = msg;
     }
 
     /**
-     *	<p> This method returns the current state, which will be one of the
-     *	    valid values defined by {@link AdapterState}.</p>
+     * <p> This method returns the current state, which will be one of the
+     * valid values defined by {@link AdapterState}.</p>
      */
     AdapterState getStateMsg() {
-	return stateMsg;
+        return stateMsg;
     }
 
     /**
      *
      */
     public void postConstruct() {
-	events.register(this);
-	//set up the environment properly
-	init();
+        events.register(this);
+        //set up the environment properly
+        init();
     }
 
     /**
      *
      */
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
-	latch.countDown();
-	if (log != null) {
-	    if (log.isLoggable(Level.FINE)) {
-		log.log(Level.FINE, "AdminConsoleAdapter is ready.");
-	    }
-	}
+        latch.countDown();
+        if (log != null) {
+            if (log.isLoggable(Level.FINE)) {
+                log.log(Level.FINE, "AdminConsoleAdapter is ready.");
+            }
+        }
     }
 
     /**
      *
      */
     private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
-	try {
-	    File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-	    if (authenticator!=null && realmFile.exists()) {
-		if (!authenticator.authenticate(greq.getRequest(), realmFile)) {
-		    setStateMsg(AdapterState.AUTHENTICATING);
-		    gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-		    gres.addHeader("WWW-Authenticate", "BASIC");
-		    gres.finishResponse();
-		}
-	    }
-	} catch (Exception ex) {
-	    throw new RuntimeException(ex);
-	}
+        try {
+            File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
+            if (authenticator != null && realmFile.exists()) {
+                if (!authenticator.authenticate(greq.getRequest(), realmFile)) {
+                    setStateMsg(AdapterState.AUTHENTICATING);
+                    gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
+                    gres.addHeader("WWW-Authenticate", "BASIC");
+                    gres.finishResponse();
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
      *
      */
     private void init() {
-	setIPSRoot(as.getProperty(ServerTags.IPS_ROOT).getValue());
-	setWarFileLocation(as.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
-	initState();
-	epd = new AdminEndpointDecider(serverConfig, log);
-	contextRoot = epd.getGuiContextRoot();
+        setIPSRoot(as.getProperty(ServerTags.IPS_ROOT).getValue());
+        setWarFileLocation(as.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
+        initState();
+        epd = new AdminEndpointDecider(serverConfig, log);
+        contextRoot = epd.getGuiContextRoot();
     }
 
     /**
      *
      */
     private void initState() {
-	// It is a given that the application is NOT loaded to begin with
-	if (appExistsInConfig()) {
-	    isOK = true; // FIXME: I don't think this is good enough
-	    setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
-	} else if (warFile.exists()) {
-	    setStateMsg(AdapterState.DOWNLOADED);
-	    isOK = true;
-	} else {
-	    setStateMsg(AdapterState.APPLICATION_NOT_INSTALLED);
-	}
+        // It is a given that the application is NOT loaded to begin with
+        if (appExistsInConfig()) {
+            isOK = true; // FIXME: I don't think this is good enough
+            setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
+        } else if (warFile.exists()) {
+            setStateMsg(AdapterState.DOWNLOADED);
+            isOK = true;
+        } else {
+            setStateMsg(AdapterState.APPLICATION_NOT_INSTALLED);
+        }
     }
 
     /**
      *
      */
     private boolean appExistsInConfig() {
-	return (getConfig() != null);
+        return (getConfig() != null);
     }
 
     /**
      *
      */
     Application getConfig() {
-	//no application-ref logic here -- that's on purpose for now
-	Application app = domain.getSystemApplicationReferencedFrom(env.getInstanceName(), ADMIN_APP_NAME);
+        //no application-ref logic here -- that's on purpose for now
+        Application app = domain.getSystemApplicationReferencedFrom(env.getInstanceName(), ADMIN_APP_NAME);
 
-	return app;
+        return app;
     }
 
     /**
      *
      */
     private void logRequest(GrizzlyRequest req) {
-	// FIXME: Change all INFO to FINE
-	log.info("AdminConsoleAdapter's STATE IS: " +  getStateMsg());
-	if (log.isLoggable(Level.FINE)) {
-	    log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
-	    Enumeration names = req.getParameterNames();
-	    while (names.hasMoreElements()) {
-		String name = (String) names.nextElement();
-		String values = Arrays.toString(req.getParameterValues(name));
-		log.fine("Parameter name: " + name + " values: " + values);
-	    }
-	}
+        // FIXME: Change all INFO to FINE
+        log.info("AdminConsoleAdapter's STATE IS: " + getStateMsg());
+        if (log.isLoggable(Level.FINE)) {
+            log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
+            Enumeration names = req.getParameterNames();
+            while (names.hasMoreElements()) {
+                String name = (String) names.nextElement();
+                String values = Arrays.toString(req.getParameterValues(name));
+                log.fine("Parameter name: " + name + " values: " + values);
+            }
+        }
     }
 
     /**
      *
      */
     private void setWarFileLocation(String value) {
-	if ((value != null) && !("".equals(value))) {
-	    warFile = new File(ipsRoot, value);
+        if ((value != null) && !("".equals(value))) {
+            warFile = new File(ipsRoot, value);
 //System.out.println("Admin Console will be downloaded to: " + warFile);
-	    if (log.isLoggable(Level.FINE)) {
-		log.fine("Admin Console will be downloaded to: "
-			+ warFile.getAbsolutePath());
-	    }
-	} else {
-	    if (log.isLoggable(Level.INFO)) {
-		log.info("The value (" + value + ") for: "
-			+ ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION
-			+ " is invalid");
-	    }
-	}
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Admin Console will be downloaded to: "
+                        + warFile.getAbsolutePath());
+            }
+        } else {
+            if (log.isLoggable(Level.INFO)) {
+                log.info("The value (" + value + ") for: "
+                        + ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION
+                        + " is invalid");
+            }
+        }
     }
 
     /**
      *
      */
     private void setIPSRoot(String value) {
-	ipsRoot  = new File(value);
-	if (log.isLoggable(Level.FINE)) {
-	    log.log(Level.FINE, "GlassFish IPS Root: "
-		    + ipsRoot.getAbsolutePath());
-	}
-	if (!ipsRoot.canWrite()) {
-	    log.warning(ipsRoot.getAbsolutePath() + " can't be written to, download will fail");
-	}
+        ipsRoot = new File(value);
+        if (log.isLoggable(Level.FINE)) {
+            log.log(Level.FINE, "GlassFish IPS Root: "
+                    + ipsRoot.getAbsolutePath());
+        }
+        if (!ipsRoot.canWrite()) {
+            log.warning(ipsRoot.getAbsolutePath() + " can't be written to, download will fail");
+        }
     }
 
 
@@ -433,193 +432,192 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     enum InteractionResult {
-	OK,
-	CANCEL,
-	FIRST_TIMER;
+        OK,
+        CANCEL,
+        FIRST_TIMER;
     }
 
     /**
-     *	<p> Determines if the user has permission.</p>
+     * <p> Determines if the user has permission.</p>
      */
     private boolean hasPermission(InteractionResult ir) {
-	//do this quickly as this is going to block the grizzly worker thread!
-	//check for returning user?
-	if (ir == InteractionResult.OK) {
+        //do this quickly as this is going to block the grizzly worker thread!
+        //check for returning user?
+        if (ir == InteractionResult.OK) {
 // FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
-	    isOK = true;
-	}
-	return isOK;
+            isOK = true;
+        }
+        return isOK;
     }
 
     /**
      *
      */
     private void startThread() {
-	new InstallerThread(ipsRoot, warFile, proxyHost, proxyPort, this, habitat, domain, env, contextRoot, log, epd.getGuiHosts()).start();
+        new InstallerThread(ipsRoot, warFile, proxyHost, proxyPort, this, habitat, domain, env, contextRoot, log, epd.getGuiHosts()).start();
     }
 
     /**
      *
      */
     private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
-	if (req.getParameter(OK_PARAM) != null) {
-	    proxyHost = req.getParameter(PROXY_HOST_PARAM);
-	    if ((proxyHost != null) && !proxyHost.equals("")) {
-		String ps = req.getParameter(PROXY_PORT_PARAM);
-		try {
-		    proxyPort = Integer.parseInt(ps);
-		} catch (NumberFormatException nfe) {
-		    throw new IllegalArgumentException(
-			"The specified proxy port (" + ps
-			+ ") must be a valid port integer!", nfe);
-		}
-	    }
+        if (req.getParameter(OK_PARAM) != null) {
+            proxyHost = req.getParameter(PROXY_HOST_PARAM);
+            if ((proxyHost != null) && !proxyHost.equals("")) {
+                String ps = req.getParameter(PROXY_PORT_PARAM);
+                try {
+                    proxyPort = Integer.parseInt(ps);
+                } catch (NumberFormatException nfe) {
+                    throw new IllegalArgumentException(
+                            "The specified proxy port (" + ps
+                                    + ") must be a valid port integer!", nfe);
+                }
+            }
 // FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
-	    setStateMsg(AdapterState.PERMISSION_GRANTED);
-	    isOK = true;
-	    return InteractionResult.OK;
-	} else if (req.getParameter(CANCEL_PARAM) != null) {
-	    // Canceled
+            setStateMsg(AdapterState.PERMISSION_GRANTED);
+            isOK = true;
+            return InteractionResult.OK;
+        } else if (req.getParameter(CANCEL_PARAM) != null) {
+            // Canceled
 // FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
-	    setStateMsg(AdapterState.CANCELED);
-	    isOK = false;
-	    return InteractionResult.CANCEL;
-	}
+            setStateMsg(AdapterState.CANCELED);
+            isOK = false;
+            return InteractionResult.CANCEL;
+        }
 
-	// This is a first-timer
-	return InteractionResult.FIRST_TIMER;
+        // This is a first-timer
+        return InteractionResult.FIRST_TIMER;
     }
 
     /**
      *
      */
     private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
-	setStateMsg(AdapterState.PERMISSION_NEEDED);
-	GrizzlyOutputBuffer ob = res.getOutputBuffer();
-	res.setStatus(200);
-	res.setContentType("text/html");
-	byte[] bytes;
-	try {
-	    try {
-		// Replace locale specific Strings
-		ResourceBundle bundle = getResourceBundle(res.getLocale());
-		String localHtml = replaceTokens(initHtml, bundle);
+        setStateMsg(AdapterState.PERMISSION_NEEDED);
+        GrizzlyOutputBuffer ob = res.getOutputBuffer();
+        res.setStatus(200);
+        res.setContentType("text/html");
+        byte[] bytes;
+        try {
+            try {
+                // Replace locale specific Strings
+                ResourceBundle bundle = getResourceBundle(res.getLocale());
+                String localHtml = replaceTokens(initHtml, bundle);
 
-		// Replace path token
-		String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
-		bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes();
-	    } catch (Exception ex) {
-		bytes = ("Catastrophe:" + ex.getMessage()).getBytes();
-	    }
-	    res.setContentLength(bytes.length);
-	    ob.write(bytes, 0, bytes.length);
-	    ob.flush();
-	} catch (IOException ex) {
-	    throw new RuntimeException(ex);
-	}
+                // Replace path token
+                String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
+                bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes();
+            } catch (Exception ex) {
+                bytes = ("Catastrophe:" + ex.getMessage()).getBytes();
+            }
+            res.setContentLength(bytes.length);
+            ob.write(bytes, 0, bytes.length);
+            ob.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
      *
      */
     private void sendStatusPage(GrizzlyResponse res) {
-	GrizzlyOutputBuffer ob = res.getOutputBuffer();
-	res.setStatus(200);
-	res.setContentType("text/html");
-	byte[] bytes;
-	try {
-	    // Replace locale specific Strings
-	    ResourceBundle bundle = getResourceBundle(res.getLocale());
-	    String localHtml = replaceTokens(statusHtml, bundle);
+        GrizzlyOutputBuffer ob = res.getOutputBuffer();
+        res.setStatus(200);
+        res.setContentType("text/html");
+        byte[] bytes;
+        try {
+            // Replace locale specific Strings
+            ResourceBundle bundle = getResourceBundle(res.getLocale());
+            String localHtml = replaceTokens(statusHtml, bundle);
 
-	    // Replace state token
-	    String status = getStateMsg().getI18NKey();
-	    try {
-		// Try to get a localized version of this key
-		status = bundle.getString(status);
-	    } catch (MissingResourceException ex) {
-		// Use the non-localized String version of the status
-		status = getStateMsg().toString();
-	    }
-	    bytes = localHtml.replace(STATUS_TOKEN, status).getBytes();
-	    res.setContentLength(bytes.length);
-	    ob.write(bytes, 0, bytes.length);
-	    ob.flush();
-	} catch (IOException ex) {
-	    throw new RuntimeException(ex);
-	}
+            // Replace state token
+            String status = getStateMsg().getI18NKey();
+            try {
+                // Try to get a localized version of this key
+                status = bundle.getString(status);
+            } catch (MissingResourceException ex) {
+                // Use the non-localized String version of the status
+                status = getStateMsg().toString();
+            }
+            bytes = localHtml.replace(STATUS_TOKEN, status).getBytes();
+            res.setContentLength(bytes.length);
+            ob.write(bytes, 0, bytes.length);
+            ob.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
-     *	<p> This method returns the resource bundle for localized Strings used
-     *	    by the AdminConsoleAdapter.</p>
+     * <p> This method returns the resource bundle for localized Strings used
+     * by the AdminConsoleAdapter.</p>
      *
-     *	@param	locale	The Locale to be used.
+     * @param    locale    The Locale to be used.
      */
     private ResourceBundle getResourceBundle(Locale locale) {
-	return ResourceBundle.getBundle(
-	    "com.sun.enterprise.v3.admin.adapter.LocalStrings", locale);
+        return ResourceBundle.getBundle(
+                "com.sun.enterprise.v3.admin.adapter.LocalStrings", locale);
     }
 
     /**
-     *	<p> This method replaces all tokens in text with values from the given
-     *	    <code>ResourceBundle</code>.  A token starts and ends with 3
-     *	    percent (%) characters.  The value between the percent characters
-     *	    will be used as the key to the given <code>ResourceBundle</code>.
-     *	    If a key does not exist in the bundle, no substitution will take
-     *	    place for that token.</p>
+     * <p> This method replaces all tokens in text with values from the given
+     * <code>ResourceBundle</code>.  A token starts and ends with 3
+     * percent (%) characters.  The value between the percent characters
+     * will be used as the key to the given <code>ResourceBundle</code>.
+     * If a key does not exist in the bundle, no substitution will take
+     * place for that token.</p>
      *
-     *	@param	text	The text containing tokens to be replaced.
-     *	@param	bundle	The <code>ResourceBundle</code> with keys for the value
-     *
-     *	@return The same text except with substituted tokens when available.
+     * @return The same text except with substituted tokens when available.
+     * @param    text    The text containing tokens to be replaced.
+     * @param    bundle    The <code>ResourceBundle</code> with keys for the value
      */
     private String replaceTokens(String text, ResourceBundle bundle) {
-	int start=0, end = 0;
-	String key = null;
-	String newString = null;
-	StringBuffer buf = new StringBuffer("");
-	Enumeration<String> keys = bundle.getKeys();
+        int start = 0, end = 0;
+        String key = null;
+        String newString = null;
+        StringBuffer buf = new StringBuffer("");
+        Enumeration<String> keys = bundle.getKeys();
 
-	while (start != -1) {
-	    // Find start of token
-	    start = text.indexOf("%%%", end);
-	    if (start != -1) {
-		// First copy the stuff before the start
-		buf.append(text.substring(end, start));
+        while (start != -1) {
+            // Find start of token
+            start = text.indexOf("%%%", end);
+            if (start != -1) {
+                // First copy the stuff before the start
+                buf.append(text.substring(end, start));
 
-		// Move past the %%%
-		start += 3;
+                // Move past the %%%
+                start += 3;
 
-		// Find end of token
-		end = text.indexOf("%%%", start);
-		if (end != -1) {
-		    try {
-			// Copy the token value to the buffer
-			buf.append(
-				bundle.getString(text.substring(start, end)));
-		    } catch (java.util.MissingResourceException ex) {
-			// Unable to find the resource, so we don't do anything
-			buf.append("%%%" + text.substring(start, end) + "%%%");
-		    }
+                // Find end of token
+                end = text.indexOf("%%%", start);
+                if (end != -1) {
+                    try {
+                        // Copy the token value to the buffer
+                        buf.append(
+                                bundle.getString(text.substring(start, end)));
+                    } catch (java.util.MissingResourceException ex) {
+                        // Unable to find the resource, so we don't do anything
+                        buf.append("%%%" + text.substring(start, end) + "%%%");
+                    }
 
-		    // Move past the %%%
-		    end +=3;
-		} else {
-		    // Add back the %%% because we didn't find a matching end
-		    buf.append("%%%");
+                    // Move past the %%%
+                    end += 3;
+                } else {
+                    // Add back the %%% because we didn't find a matching end
+                    buf.append("%%%");
 
-		    // Reset end so we can copy the remainder of the text
-		    end = start;
-		}
-	    }
-	}
+                    // Reset end so we can copy the remainder of the text
+                    end = start;
+                }
+            }
+        }
 
-	// Copy the remainder of the text
-	buf.append(text.substring(end));
+        // Copy the remainder of the text
+        buf.append(text.substring(end));
 
-	// Return the new String
-	return buf.toString();
+        // Return the new String
+        return buf.toString();
     }
 
     /**
@@ -627,16 +625,58 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private void handleLoadedState() {
 //System.out.println(" Handle Loaded State!!");
-	// do nothing
-	statusHtml = null;
-	initHtml   = null;
+        // do nothing
+        statusHtml = null;
+        initHtml = null;
     }
-    
+
     public int getListenPort() {
-	return epd.getListenPort();
+        return epd.getListenPort();
     }
-    
+
     public List<String> getVirtualServers() {
-	return epd.getGuiHosts();
+        return epd.getGuiHosts();
     }
+
+
+    /**
+     * Stop (if running) and cleanup existing admin gui installation, usually performed during upgrades.
+     * the entries in the domain.xml will NOT be removed, this is an inplace upgrade,
+     * not a redeploy.
+     *
+     * @return true if stopping and cleaning the current installation was successful
+     */
+    private boolean stopAndCleanup() {
+
+        Application app = getConfig();
+        if (app==null) {
+            // never deployed/ran, nothing to worry about
+            return true;
+        }
+        final String location = app.getLocation();
+        final Logger logger = LogDomains.getLogger(this.getClass(), LogDomains.CORE_LOGGER);
+        try {
+            final ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
+            final ReadableArchive archive = archiveFactory.openArchive(new File(location));
+
+            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, new Properties(), env);
+            ActionReport report = new PlainTextActionReporter();
+            ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
+            final ApplicationLifecycle appLifecycle = habitat.getComponent(ApplicationLifecycle.class);
+            if (info!=null) {
+                appLifecycle.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context, report);
+            } else {
+                // no need to worry, let's just delete all created metadata.
+                appLifecycle.deleteContainerMetaInfo(context);
+            }
+            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                logger.log(Level.SEVERE, "Cannot undeploy current admin gui ", report.getFailureCause());
+                return false;
+            }
+        } catch(IOException ioe) {
+            logger.log(Level.SEVERE, "Exception while stopping and cleaning previous instance of admin GUI", ioe);
+            return false;
+        }
+        return true;
+    }    
 }

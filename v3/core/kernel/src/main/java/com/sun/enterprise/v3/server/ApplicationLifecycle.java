@@ -1046,7 +1046,7 @@ public class ApplicationLifecycle {
     }
 
     // clean up generated files
-    protected void deleteContainerMetaInfo(DeploymentContext context) {
+    public void deleteContainerMetaInfo(DeploymentContext context) {
 
         // need to remove the generated directories...
         // need to remove generated/xml, generated/ejb, generated/jsp
