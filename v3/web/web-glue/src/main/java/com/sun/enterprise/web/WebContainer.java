@@ -333,11 +333,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected static MonitoringLevel monitoringLevel;
 
     /**
-     * The current level of logging verbosity for this object.
-     */
-    protected Level _logLevel = null;
-
-    /**
      * Controls the verbosity of the web container subsystem's debug messages.
      *
      * This value is non-zero only when the iAS level is one of FINE, FINER
@@ -511,8 +506,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Config cfg = habitat.getComponent(Config.class);
         serverConfigLookup = new ServerConfigLookup(cfg, clh);
         configureDynamicReloadingSettings();
-        LogService logService = cfg.getLogService();
-        initLogLevel(logService);
+        setDebugLevel();
         initMonitoringLevel(cfg.getMonitoringService());
 
         String maxDepth = null;
@@ -534,6 +528,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
     
+        LogService logService = cfg.getLogService();
         String logServiceFile = null;
         if (logService != null) {
             logServiceFile = logService.getFile();
@@ -2600,49 +2595,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    /**
-     * Set the level for the web container logger and determine the
-     * debug setting for Catalina's containers based on the iAS log
-     * level.
-     */
-    private void setLogLevel(Level level) {
-        _logLevel = level;
-        _logger.setLevel(_logLevel);
 
-        // Determine the appropriate value for Catalina's debug level
-        if (level.equals(Level.FINE))
+    /**
+     * Sets the debug level for Catalina's containers based on the logger's
+     * log level.
+     */
+    private void setDebugLevel() {
+        Level logLevel = ((_logger.getLevel() != null) ?
+                _logger.getLevel() : Level.INFO);
+        if (logLevel.equals(Level.FINE))
             _debug = 1;
-        else if (level.equals(Level.FINER))
+        else if (logLevel.equals(Level.FINER))
             _debug = 2;
-        else if (level.equals(Level.FINEST))
+        else if (logLevel.equals(Level.FINEST))
             _debug = 5;
         else
             _debug = 0;
-    }
-
-
-   /*
-    * Initializes the web container log level from the domain.xml.
-    *
-    * @param logserviceBean The log service bean from which to retrieve the
-    *        web container log level
-    */
-    private void initLogLevel(LogService logserviceBean) {
-
-        Level level = Level.INFO;
-        
-        if (logserviceBean != null
-                && logserviceBean.getModuleLogLevels() != null) {
-            try {
-                level = Level.parse(logserviceBean.getModuleLogLevels().getWebContainer());
-            } catch (IllegalArgumentException iae) {
-                _logger.log(Level.WARNING,
-                            "Unable to parse web-container log level",
-                            iae);
-            }
-        }
-
-        setLogLevel(level);
     }
 
 
