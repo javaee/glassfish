@@ -210,6 +210,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 if (match){                              
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter)adapter).initialize(sniffer, this);
+                    unregister(ROOT);
                 }
                 
                 ContextRootInfo c= new ContextRootInfo(adapter, null, null);
