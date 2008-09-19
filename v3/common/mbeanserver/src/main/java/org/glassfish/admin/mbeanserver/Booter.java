@@ -106,7 +106,7 @@ final class Booter implements BooterMBean
     {
         if ( mDomainRootObjectName == null )
         {
-            debug( "Booter.bootAMX: getting AMXStartupServiceMBean via contract" );
+            //debug( "Booter.bootAMX: getting AMXStartupServiceMBean via contract" );
             AMXStartupServiceMBean loader = null;
             try {
                 loader = mHabitat.getByContract(AMXStartupServiceMBean.class);
@@ -117,7 +117,7 @@ final class Booter implements BooterMBean
             }
             //loader.loadAMX(...)
             
-            debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
+            //debug( "Booter.bootAMX: assuming that amx-impl loads through other means" );
         
             final ObjectName startupON = AMXStartupServiceMBean.OBJECT_NAME;
             if ( ! mMBeanServer.isRegistered(startupON) )
@@ -128,9 +128,9 @@ final class Booter implements BooterMBean
             
             try
             {
-                debug( "Booter.bootAMX: invoking startAMX() on " + startupON);
+                //debug( "Booter.bootAMX: invoking startAMX() on " + startupON);
                 mDomainRootObjectName = (ObjectName)mMBeanServer.invoke( startupON, "startAMX", null, null);
-                debug( "Booter.bootAMX: domainRoot = " + mDomainRootObjectName);
+                //debug( "Booter.bootAMX: domainRoot = " + mDomainRootObjectName);
             }
             catch( final JMException e )
             {
