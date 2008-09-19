@@ -347,13 +347,19 @@ public abstract class GFLauncher {
                 parser.getProfilerSystemProperties());
 
         List<String> rawJvmOptions = parser.getJvmOptions();
-        
+        rawJvmOptions.addAll(getSpecialSystemProperties());
         if(profiler.isEnabled()) {
             rawJvmOptions.addAll(profiler.getJvmOptions());
         }
         jvmOptions = new JvmOptions(rawJvmOptions);
     }
 
+    private List<String> getSpecialSystemProperties() throws GFLauncherException {
+        Map<String, String> props = new HashMap<String, String>();
+        props.put(INSTALL_ROOT_PROPERTY, getInfo().getInstallDir().getAbsolutePath());
+        props.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getAbsolutePath());
+        return ( this.propsToJvmOptions(props) );
+    }
     private List<String> getNativePathCommandLine() {
         // do nothing unless we have something to add.
         // in that case, concatenate rather than replace.
