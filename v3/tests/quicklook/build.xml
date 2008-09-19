@@ -259,9 +259,8 @@
         
     </target>  
     
-    
     <!-- Generate the TestNG report -->
-    <target name="report" depends="initprops">        
+    <target name="report" depends="initprops">
         <echo message="Generating report at ${test.report}"/>
         <macrodef name="gen-report">
             <attribute name="name" />
@@ -275,9 +274,26 @@
                 </junitreport>
             </sequential>
         </macrodef>
-<!-- causing QL report gen. to fail. temporarily disbaled until Ming takes a look
+        <gen-report name="felix" />
+        <echo message="Test Report available at ${test.report}/index.html"/>
+    </target>
+    
+    <!-- Generate the TestNG report -->
+    <target name="reportAll" depends="initprops">        
+        <echo message="Generating report at ${test.report}"/>
+        <macrodef name="gen-report">
+            <attribute name="name" />
+            <sequential>
+                <junitreport todir="${basedir}/test-output-@{name}">
+                    <fileset dir=".">
+                        <include name="**/test-output-@{name}/**/*.xml"/>
+                        <!--<exclude name="**/testng-failed.xml"/>-->
+                    </fileset>
+                    <report format="noframes" todir="${basedir}/test-output-@{name}"/>
+                </junitreport>
+            </sequential>
+        </macrodef>
         <gen-report name="jruby" />
--->
         <gen-report name="felix" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
