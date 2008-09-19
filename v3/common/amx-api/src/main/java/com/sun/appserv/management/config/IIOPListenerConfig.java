@@ -50,7 +50,7 @@ import com.sun.appserv.management.base.XTypes;
 */
 
 public interface IIOPListenerConfig 
-	extends PropertiesAccess, NamedConfigElement, Enabled, SSLConfigContainer, Singleton
+	extends PropertiesAccess, NamedConfigElement, Enabled, SSLConfigContainer
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.IIOP_LISTENER_CONFIG;

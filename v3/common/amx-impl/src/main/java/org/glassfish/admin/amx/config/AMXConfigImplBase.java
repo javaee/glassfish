@@ -1073,7 +1073,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
             String xmlName = getXMLAttributeName( getJ2EEType(), amxName );
             if ( xmlName == null )
             {
-                cdebug( "AMXConfigImplBase.getDefaultValue(): no xml name found for: " + amxName );
+                //cdebug( "AMXConfigImplBase.getDefaultValue(): no xml name found for: " + amxName );
                 // could be a deprecated value we choose not to have in AMX
                 xmlName = amxName;
             }

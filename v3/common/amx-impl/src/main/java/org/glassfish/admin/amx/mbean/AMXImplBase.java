@@ -1111,7 +1111,8 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 			throw (AttributeNotFoundException)rootCause;
 		}
 		
-		final String msg = "Attribute not found: " + StringUtil.quote(attrName) + " [" + rootCause.getMessage() + "]";;
+		final String msg = "Attribute not found: " + StringUtil.quote(attrName) +
+            " of MBean " + JMXUtil.toString(getObjectName()) + "[" + rootCause.getMessage() + "]";;
 		throw new AttributeNotFoundException( msg );
 	}
     
@@ -1134,19 +1135,19 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		{
         e.printStackTrace();
 			trace( "InvocationTargetException: " + attrName + " by " + m );
-			rethrowAttributeNotFound( e, attrName );
+			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
 		catch( IllegalAccessException e )
 		{
         e.printStackTrace();
 			trace( "ILLEGAL ACCESS TO: " + attrName + " by " + m );
-			rethrowAttributeNotFound( e, attrName );
+			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
 		catch( Exception e )
 		{
         e.printStackTrace();
 			trace( "Exception: " + attrName + " by " + m );
-			rethrowAttributeNotFound( e, attrName );
+			rethrowAttributeNotFound( ExceptionUtil.getRootCause(e), attrName );
 		}
 		
 		return( result );

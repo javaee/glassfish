@@ -67,6 +67,9 @@ public interface DomainConfig
 	public ApplicationsConfig       getApplicationsConfig();
     
 	/** @since Glassfish V3 */
+	public SystemApplicationsConfig getSystemApplicationsConfig();
+    
+	/** @since Glassfish V3 */
 	public ServersConfig            getServersConfig();
     
 	/** @since Glassfish V3 */

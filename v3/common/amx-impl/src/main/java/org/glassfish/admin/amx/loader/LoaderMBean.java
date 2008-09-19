@@ -61,14 +61,6 @@ public interface LoaderMBean
 	 */
 	public String	getAMXJMXDomainName();
 	
-	
-	/**
-		Start loading all MBeans.
-		
-		@param waitTillDone	if true, waits until started
-	public void	start( final boolean waitTillDone );
-	 */
-	
 	/**
 		Check if Loader has loaded all MBeans.
 		<b>Use
@@ -82,20 +74,7 @@ public interface LoaderMBean
 		Synchronize with a specific MBean and return the 
 		AMX MBean name for it.
 	 */
-	public ObjectName	sync( final ObjectName name);
-	
-	/**
-		Wait till all outstanding AMX processing is complate.
-	 */
-	public void     waitAll();
-
-	
-	/**
-	    Caution: code may invoke this indirectly by hard-coding the method name.
-	    See com.sun.enterprise.admin.server.core.AdminService.callAMXHook()
-	 */
-	public void         adminServiceReady();
-	
+	public ObjectName	sync( final ObjectName name);	
 	/**
 	    Applies only to those MBeans which use a Delegate MBean.
 	    Unregister the AMX MBean, and re-process its delegate.

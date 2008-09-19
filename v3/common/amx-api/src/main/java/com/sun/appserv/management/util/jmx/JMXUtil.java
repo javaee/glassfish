@@ -64,10 +64,23 @@ public final class JMXUtil
         public static MBeanServerDelegateMBean
     getMBeanServerDelegateMBean( final MBeanServerConnection server )
     {
-        final MBeanServerDelegateMBean delegate = MBeanServerDelegateMBean.class.cast(
-            MBeanServerInvocationHandler.newProxyInstance( server,
-                newObjectName(MBEAN_SERVER_DELEGATE), MBeanServerDelegateMBean.class, true ));
+        final MBeanServerDelegateMBean delegate = newProxyInstance( server, newObjectName(MBEAN_SERVER_DELEGATE), MBeanServerDelegateMBean.class );
         return delegate;
+    }
+    
+    /** Create a new proxy supporting Notifications<p>
+        Type-safe; in JDK 5 generics aren't used */
+        public static <T> T
+    newProxyInstance( final MBeanServerConnection conn, final ObjectName objectName, final Class<T> clazz)
+    {
+        return newProxyInstance( conn, objectName, clazz, true );
+    }
+    
+    /** Type-safe; in JDK 5 generics aren't used */
+        public static <T> T
+    newProxyInstance( final MBeanServerConnection conn, final ObjectName objectName, final Class<T> clazz, boolean notificationBroadcaster)
+    {
+        return clazz.cast(MBeanServerInvocationHandler.newProxyInstance( conn, objectName, clazz, notificationBroadcaster ));
     }
     
 	public final static String	MBEAN_SERVER_ID_ATTRIBUTE_NAME	=

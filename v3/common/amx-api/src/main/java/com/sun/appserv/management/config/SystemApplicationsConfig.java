@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,41 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.appserv.management.config;
 
-
-
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.util.List;
-
-
-/** Element describing the system-applications in domain.xml
- *
- */
-
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SystemApplicationsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
-@Configured
-public interface SystemApplications extends ConfigBeanProxy, Injectable  {
-
-    /**
-     * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModuleorApplication property.
-     * Objects of the following type(s) are allowed in the list
-     * {@link LifecycleModule }
-     * {@link J2EeApplication }
-     * {@link EjbModule }
-     * {@link WebModule }
-     * {@link ConnectorModule }
-     * {@link AppclientModule }
-     * {@link Mbean }
-     * {@link ExtensionModule }
-     * {@link Application }
-     */
-    @Element("*")
-    public List<Module> getModules();
-
+/**
+	 Configuration for the &lt;system-applications> element; it is an internal "node" which
+    groups all resources under itself.
+    @since Glassfish V3
+*/
+public interface SystemApplicationsConfig extends ApplicationsConfigBase
+{
+/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
+	public static final String	J2EE_TYPE	= "X-SystemApplicationsConfig";
 }

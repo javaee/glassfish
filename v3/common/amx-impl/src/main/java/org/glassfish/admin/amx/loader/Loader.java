@@ -142,41 +142,6 @@ public final class Loader extends LoaderBase
 	{
 		trace( "handleMBeanRegistered: " + oldObjectName );
 		
-    /*
-		if ( shouldSync( oldObjectName ) )
-		{
-			final long	start	= now();
-			
-            if ( WAIT_FOR_REGISTRATION )
-            {
-                while ( ! getMBeanServer().isRegistered( oldObjectName ) &&
-                        (now() - start) < WAIT_THRESHOLD_MILLIS )
-                {
-                    mySleep( 50 );
-                    debug( "SLEPT for 50ms waiting for " + oldObjectName );
-                }
-            }
-			
-			if ( ! getMBeanServer().isRegistered( oldObjectName ) )
-			{
-				trace( "Loader.handleMBeanRegistered: not found: " + JMXUtil.toString(oldObjectName) );
-				throw new InstanceNotFoundException( JMXUtil.toString(oldObjectName) );
-			}
-			
-			try
-			{
-				sync( oldObjectName );
-			}
-			catch( Exception e )
-			{
-				final Throwable	rootCause	= ExceptionUtil.getRootCause( e );
-				if ( rootCause instanceof DeferRegistrationException )
-				{
-					mDeferredRegistrationThread.defer( oldObjectName );
-				}
-			}
-		}
-    */
 	}
 	
 	/**
@@ -552,13 +517,6 @@ public final class Loader extends LoaderBase
 		//return super.isStarted() && mQueuedAll && mRegThread.isQueueEmpty();
         return super.isStarted();
 	}
-    
-        public final void
-    waitAll()
-    {
-        //mRegThread.waitAll();
-        //debug( "waitAll() DONE" );
-    }
 	
 	    protected Object
     createDomainRoot()

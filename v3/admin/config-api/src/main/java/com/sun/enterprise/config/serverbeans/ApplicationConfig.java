@@ -59,11 +59,8 @@ import org.jvnet.hk2.config.Configured;
  * @author tjquinn
  */
 @Configured
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfigConfig")
+// NO AMXConfigInfo; this is a base (abstract) base type
 public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
-
- 
-    
     /**
      * Reports the type value which holds the container type to which this
      * particular configuration customization applies.

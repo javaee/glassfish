@@ -355,17 +355,6 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 	    throw new UnsupportedOperationException( "sync" );
 	}
 	
-
-    /**
-        See com.sun.enterprise.admin.server.core.notifyAMXThatAdminServiceIsReady()
-        Make a [synchronous] call to AMX. Semantics are that this should
-        be a quick call, not a long-running one.
-     */
-	    public void
-	adminServiceReady()
-	{
-	    // nothing by default
-	}
 	
 	    public ObjectName
 	resyncAMXMBean( final ObjectName amx )

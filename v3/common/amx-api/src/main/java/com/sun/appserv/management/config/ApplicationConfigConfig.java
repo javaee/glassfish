@@ -44,45 +44,18 @@ import com.sun.appserv.management.base.XTypes;
 import java.util.Map;
 
 /**
-	 Note that the name as reported by {@link #getName} corresponds to the
-     'type' attribute in the ConfigBean/XML.
-*/
-@AMXCreateInfo( paramNames={"type", "config"} )
-public interface ApplicationConfigConfig
-	extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement, DefaultValues, Singleton
-{
-    /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= "X-ApplicationConfigConfig";
+	 This base interface should be extended by sub-interfaces representing configuration, eg
+     WebAppConfigConfig.  The sub-interfaces are defined by 
     
+*/
+public interface ApplicationConfigConfig
+	extends PropertiesAccess, SystemPropertiesAccess, Singleton, Container, AMXConfig
+{
     /**
          The type is used as the name, so this is the same as getName()
          Don't allow it to be changed; this would alter the ObjectName
     */
     public String getType();
-    
-    /**
-     * Reports the configuration information already stored.
-     * <p>
-     * If, as suggested, the value was encoded before it was stored using
-     * {@link #setConfig} then the returned value should be decoded using
-     * {@link java.net.URLDecoder} before use by the calling logic.
-     * 
-     * @return the config
-     */
-    public String getConfig();
-    
-    
-    /**
-     * Stores the config information.
-     * <p>
-     * The value stored should have already been encoded using
-     * {@link java.net.URLEncoder} if it contains characters that might
-     * interfere with the well-formedness of the containing domain.xml
-     * XML document.
-     * 
-     * @param configData the configuration information to be stored
-     */
-    public void   setConfig( String configData );
 
 }
 

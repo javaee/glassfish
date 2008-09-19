@@ -272,11 +272,11 @@ public final class Util
         }
         catch( NoSuchFieldException e )
         {
-            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxInterface.getName() );
+            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxInterface.getName(), e);
         }
         catch( IllegalAccessException e )
         {
-            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxInterface.getName() );
+            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxInterface.getName(), e);
         }
 	}
 	
@@ -601,7 +601,54 @@ public final class Util
     {
         return AMX.class.cast( o );
     }
+    
+    /**
+        Filter the AMX dynamic proxies to those that implement the specified interface,
+        and return a new Set with the matching items.  The 'desired' interface can be
+        any AMX-defined class, including the mixin ones.
+         
+        @param candidates the Set to be filtered
+        @param desired the interface to filter by
+     */
+        public static <T extends AMX> Set<T>
+    filterAMX( final Set<T> candidates, final Class<?> desired )
+    {
+        final Set<T>   result = new HashSet<T>();
+        for( final T amx : candidates )
+        {
+            if ( desired.isAssignableFrom( amx.getClass() ) )
+            {
+                result.add(amx);
+            }
+        }
+        return result;
+    }
+    
+    /**
+        Filter the AMX dynamic proxies to those that implement the specified interface,
+        and return a new Map with the matching items.  The 'desired' interface can be
+        any AMX-defined class, including the mixin ones.
+         
+        @param candidates the Map to be filtered
+        @param desired the interface to filter by
+     */
+        public static <T extends AMX> Map<String, T>
+    filterAMX( final Map<String,T> candidates, final Class<?> desired )
+    {
+        final Map<String,T>   result = new HashMap<String,T>();
+        for( final String key : candidates.keySet() )
+        {
+            final T amx = candidates.get(key);
+            if ( desired.isAssignableFrom( amx.getClass() ) )
+            {
+                result.put(key, amx);
+            }
+        }
+        return result;
+    }
 }
+
+
 
 
 

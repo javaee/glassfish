@@ -45,7 +45,7 @@ import java.util.Map;
     Configuration for the &lt;message-security-config&gt; element.
 */
 public interface MessageSecurityConfig 
-	extends NamedConfigElement, Container, Singleton
+	extends NamedConfigElement, Container
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MESSAGE_SECURITY_CONFIG;
