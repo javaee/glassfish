@@ -12,4 +12,4 @@ EL_IMPL=$AS_INSTALL_LIB/@EL_IMPL@
 JSTL_IMPL=$AS_INSTALL_LIB/web/@JSTL_IMPL@
 JSF_IMPL=$AS_INSTALL_LIB/web/@JSF_IMPL@
 
-java -cp "$AS_INSTALL_LIB/webservices.jar:$AS_INSTALL_LIB/jaxb.jar" com.sun.tools.ws.WsGen "$@"
+java -cp "$AS_INSTALL_LIB/webservices.jar:$AS_INSTALL_LIB/jaxb.jar" com.sun.xml.rpc.tools.wscompile.Main "$@"
