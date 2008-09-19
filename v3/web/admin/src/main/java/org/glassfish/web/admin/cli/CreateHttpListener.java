@@ -202,13 +202,19 @@ public class CreateHttpListener implements AdminCommand {
                 public Object run(VirtualServer avs) throws PropertyVetoException, TransactionFailure {
                     String DELIM = ",";
                     String lss = avs.getHttpListeners();
-                    if (!lss.contains(listenerId)) {
+                    boolean listenerShouldBeAdded = true;
+                    if (lss == null || lss.length() == 0) {
+                        lss = listenerId; //the only listener in the list
+                    } else if (!lss.contains(listenerId)) { //listener does not already exist
                         if(!lss.endsWith(DELIM)) {
                             lss += DELIM;
                         }
                         lss += listenerId;
-                        avs.setHttpListeners(lss);
+                    } else { //listener already exists in the list, do nothing
+                        listenerShouldBeAdded = false;
                     }
+                    if (listenerShouldBeAdded)
+                        avs.setHttpListeners(lss);
                     return ( avs );
                 }
             }, vs);
