@@ -28,6 +28,7 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
@@ -48,10 +49,11 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
+
+import org.glassfish.api.event.*;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
@@ -123,7 +125,24 @@ public class AppServerStartup implements ModuleStartup {
                         "[{0}] exiting", new Object[]{this});
             }
         };
+        final CountDownLatch latch = new CountDownLatch(1);
         serverThread.start();
+        org.glassfish.api.event.EventListener listener = new org.glassfish.api.event.EventListener() {
+            public void event(Event event) {
+                if (event.is(EventTypes.SERVER_READY) || event.is(EventTypes.SERVER_SHUTDOWN))
+                    latch.countDown();
+            }
+        };
+        events.register(listener);
+
+        // wait until we are finished started.
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        events.unregister(listener);
+
     }
 
     public void run() {

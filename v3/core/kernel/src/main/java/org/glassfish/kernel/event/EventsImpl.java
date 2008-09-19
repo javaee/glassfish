@@ -80,4 +80,8 @@ public class EventsImpl implements Events {
             }
         }
     }
+
+    public synchronized boolean unregister(EventListener listener) {
+        return listeners.remove(listener);
+    }
 }
