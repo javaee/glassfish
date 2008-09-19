@@ -282,6 +282,13 @@ public class LogDomains
                                     }
                                 }
                             }
+                        // look in this package for the file
+                        try {
+                                return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(),
+                                        LogDomains.class.getClassLoader());
+
+                            } catch (MissingResourceException me) {
+                        }
                         System.out.println("class name that failed "+clazz.getName());
 
                         throw e;
