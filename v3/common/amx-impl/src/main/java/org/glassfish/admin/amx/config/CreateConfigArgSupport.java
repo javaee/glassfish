@@ -61,6 +61,20 @@ final class CreateConfigArgSupport
 
     private static void debug( final String s ) { System.out.println(s); }
     
+    
+    public CreateConfigArgSupport( 
+        final String operationName,
+        final Map<String,Object> params )
+    {
+        mOperationName = operationName;
+        mArgs = null;
+        
+        final Map<String,Object> attrs = params == null ? new HashMap<String,Object>() : new HashMap<String,Object>(params);
+        mProperties = extractProperties( attrs, PropertiesAccess.PROPERTY_PREFIX);
+        mSystemProperties = extractProperties( attrs, SystemPropertiesAccess.SYSTEM_PROPERTY_PREFIX);
+        mAttrs = stringifyMap(attrs);
+    }
+    
     public CreateConfigArgSupport( 
         final String operationName,
         final Object[] argsIn,
@@ -110,7 +124,7 @@ final class CreateConfigArgSupport
         mAttrs = stringifyMap( attrs );
     }
     
-    public int numArgs() { return mArgs.length; }
+    public int numArgs() { return mArgs == null ?  0 :mArgs.length; }
     
     public Map<String,Object> getAttrs() { return mAttrs; }
     public Map<String,String> getProperties() { return mProperties; }

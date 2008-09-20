@@ -41,7 +41,7 @@ import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Singleton;
 
 @AMXCreateInfo( paramNames={} )
-public interface WebAppConfigConfig extends AMXConfig, Container, Singleton
+public interface WebAppConfigConfig extends ApplicationConfigConfig
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE = "X-WebAppConfigConfig";

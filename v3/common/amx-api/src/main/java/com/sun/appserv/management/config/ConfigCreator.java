@@ -41,35 +41,33 @@ import com.sun.appserv.management.base.Container;
 import java.util.Map;
 
 /**
-	Any {@link AMXConfig} implementing this interface allows any contained AMXConfig to be created.
-    Implementors of this interface should generally also be an {@link Container}, but certain
-    special types might not be.
+	Any {@link AMXConfig} implementing this interface allows any contained AMXConfig to be created
+    generically.
+    Implementors of this interface should generally also be an {@link Container}.
 */
 public interface ConfigCreator
 {
     /**
-        Generic creation of an {@link AMXConfig} based on the desired j2eeType, which must
-        be a Containee type of the {@link Container} (eg one of the types returned by {@link Container#getContaineeSet}.
+        Generic creation of an {@link AMXConfig} based on the desired XML element type, which must
+        be legitimate for the containing element.  Intended for use where there are any number
+        of sub-elements extending a common base interface where the sub-elements can be available
+        dynamically via new modules (and thus cannot be known at compile time).
         <p>
-        Almost always, certain parameters are required (a name for non-singletons).  Use the
-        {@link AMXAttributes#ATTR_NAME} key for the name.
+        Required attributes must be specified, and should all be 'String'.  The Map value is declared
+        with a type of of 'Object' anticipating future extensions.
+        Use the {@link AMXAttributes#ATTR_NAME} key for the name.
         <p>
         Properties can be included in the 'params' Map using the {@link PropertiesAccess#PROPERTY_PREFIX}
         prefix on the property name.  
         System properties can be included in the 'params' Map using the
         {@link SystemPropertiesAccess#SYSTEM_PROPERTY_PREFIX} prefix on the property name.
         
-        @param j2eeType the AMX j2eeType
-        @param params optional parameters (some of which may be reu
+        @param elementType the XML element type
+        @param params Map containing  attributes which are required by the @Configured and any
+        optional attributes (as desired).
         @return proxy interface to the newly-created AMXConfig
         
         @see com.sun.appserv.management.base.XTypes
      */
-    public <T extends AMXConfig > T createAMXConfig( String j2eeType, Map<String,String> params );
-    
-    /**
-        Dynamically add an interface which can be instantiated.  The interface must extend
-        org.jvnet.hk2.config.ConfigBeanProxy.
-     */
-    public void addCreatable( final String interfaceName );
+    public AMXConfig createConfigByElementType( String elementType, Map<String,Object> params );
 }

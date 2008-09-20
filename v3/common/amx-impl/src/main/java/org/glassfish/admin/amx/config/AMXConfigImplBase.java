@@ -270,6 +270,12 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         return getConfigDelegate().getConfigBean();
     }
+    
+        private final ConfigBeanProxy
+    getConfigBeanProxy()
+    {
+        return getConfigBean().getProxy( getConfigBean().getProxyType() );
+    }
 
 		public final String
 	getGroup()
@@ -510,8 +516,16 @@ public class AMXConfigImplBase extends AMXImplBase
         private boolean
     isGenericCreateConfig( final String operationName)
     {
-        // eg "createConfig"
-        return operationName.equals( CREATE_PREFIX + CONFIG_SUFFIX);
+        // not quite suffficient, but will do for anticipated cases
+        try
+        {
+            final Class[] types = new Class[] { String.class, Map.class };
+            return ConfigCreator.class.getMethod(operationName, types) != null;
+        }
+        catch( final NoSuchMethodException e )
+        {
+            return false;
+        }
     }
      
         private Method
@@ -607,21 +621,96 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         final List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
         
-        for( final String name : values.keySet() ) {
-            final Object value = values.get(name);
-            
-            if ( value == null || (value instanceof String) )
-            {
-                changes.add( new ConfigSupport.SingleAttributeChange(name, (String)value) );
-            }
-            else
-            {
-                changes.add( new ConfigSupport.MultipleAttributeChanges(name, (String[])value) );
+        if ( values != null )
+        {
+            for( final String name : values.keySet() ) {
+                final Object value = values.get(name);
+                
+                if ( value == null || (value instanceof String) )
+                {
+                    changes.add( new ConfigSupport.SingleAttributeChange(name, (String)value) );
+                }
+                else
+                {
+                    changes.add( new ConfigSupport.MultipleAttributeChanges(name, (String[])value) );
+                }
             }
         }
         return changes;
     }
+    
+    private ObjectName finishCreate(
+        final Class<? extends ConfigBeanProxy>  elementClass,
+        final CreateConfigArgSupport argSpt,
+        final  List<ConfigSupport.AttributeChanges>  changes)
+    {
+        ConfigBean newConfigBean = null;
+        final PropertiesCallback  callback = new PropertiesCallback( argSpt.getProperties(), argSpt.getSystemProperties() );
+        cdebug( "createConfigGeneric: 2 ");
+        try
+        {
+            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), elementClass, changes, callback);
+        }
+        catch( Throwable t )
+        {
+            cdebug( ExceptionUtil.toString(t) );
+            throw new RuntimeException( t );
+        }
+        cdebug( "createConfigGeneric: 3 ");
 
+        //----------------------
+        //
+        // Force a synchronous processing of the new ConfigBean into an AMX MBean
+        //
+        final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
+        amxLoader.handleConfigBean( newConfigBean, true );
+        final ObjectName objectName = newConfigBean.getObjectName();
+        cdebug( "NEW OBJECTNAME:  " + objectName);
+        
+        //
+        // Set the properties and system properties.  Ideally, this should be part of the original
+        // transaction, but doing so would require creating sub-elements of the newly-created element,
+        // an undertaking that is more involved.
+        //
+        final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
+        setAllProperties( newAMX, argSpt.getProperties(), argSpt.getSystemProperties() );
+    
+        return objectName;
+    }
+
+    /**
+        Create a sub-element generically.
+     */
+        protected ObjectName
+    createConfigGeneric(
+        final String operationName,
+        final Object[] args,
+        String[]	   types)
+        throws ClassNotFoundException, TransactionFailure
+    {
+        if ( types.length != 2)
+        {
+            throw new IllegalArgumentException("unexpected signature for create" );
+        }
+        final String elementType = (String)args[0];
+        // for now, the only allowed values are of type String
+        final Map<String,Object> params = TypeCast.checkMap(TypeCast.asMap(args[1]), String.class, Object.class);
+        
+        final Class<? extends ConfigBeanProxy>  newItemClass =
+            ConfigSupport.getElementTypeByName( getConfigBeanProxy(), elementType );
+        if ( newItemClass == null )
+        {
+            throw new IllegalArgumentException( "ConfigBean of type " + getConfigBean().getProxyType() +
+                " does not support sub-element of type " + elementType );
+        }
+        
+        //--------------
+        
+        final CreateConfigArgSupport argSpt = new CreateConfigArgSupport( operationName, params );
+        final List<ConfigSupport.AttributeChanges> changes = toAttributeChanges(params);
+        
+        return finishCreate( newItemClass, argSpt, changes);
+    }
 
         protected ObjectName
    createConfig(
@@ -996,6 +1085,17 @@ cdebug( "removeConfig: by  j2eeType + name" );
                 removeConfig( operationName, args, types );
 	        }
 	        catch( InvocationTargetException e )
+	        {
+	            throw new MBeanException( e );
+	        }
+	    }
+	    else if ( isGenericCreateConfig( operationName ) )
+	    {
+	        try
+	        {
+	            result  = createConfigGeneric( operationName, args, types);
+	        }
+	        catch( Exception e )
 	        {
 	            throw new MBeanException( e );
 	        }
