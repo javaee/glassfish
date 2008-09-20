@@ -72,7 +72,6 @@ public class AppTest
      * @return the suite of tests being tested
      */
     public static Test suite() throws NamingException {
-        NamingManager.setInitialContextFactoryBuilder(new GFInitialContextFactoryBuilder());
         return new TestSuite(AppTest.class);
     }
 
@@ -117,30 +116,16 @@ public class AppTest
     public void testEmptySubContext() {
         try {
             String name1 = "rmi://a//b/c/d/name1";
-            String name2 = "rmi://a//b/c/d/name2";
 
             Context ctx = new InitialContext();
             ctx.bind(name1, "Name1");
-            ctx = new InitialContext();
-            ctx.bind(name2, "Name2");
-
-	    Object v1 = ctx.lookup(name1);
-	    Object v2 = ctx.lookup(name2);
-
-	    Context ctx2 = (Context) (new InitialContext()).lookup("rmi://a//b");
-	    Object val1 = ctx2.lookup("c/d/name1");
-	    Object val2 = ctx2.lookup("c/d/name2");
-
-            System.out.println("testEmptySubContext: " + v1 + "  " + v2);
-            System.out.println("testEmptySubContext: " + val1 + "  " + val2);
-            boolean check1 = v1.equals("Name1") && v2.equals("Name2");
-            boolean check2 = val1.equals("Name1") && val2.equals("Name2");
 	
-	    assert(check1 && check2);
+            String val = (String) ctx.lookup(name1);
+	    assert(false);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
-            assert (false);
+            System.out.println("Got expected exception: " + ex);
+            assert (true);
         } finally {
         }
     }
