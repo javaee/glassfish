@@ -61,7 +61,7 @@ public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Inject
      * these customizations.
      * @return
      */
-    @Attribute(defaultValue="web")
+    @Attribute(defaultValue="web",required=true)
     public String getType();
     public void setType(String value);
     
