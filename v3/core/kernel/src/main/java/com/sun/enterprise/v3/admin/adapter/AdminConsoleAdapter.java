@@ -22,9 +22,12 @@
  */
 package com.sun.enterprise.v3.admin.adapter;
 
-//import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.pkg.client.Image;
+import com.sun.pkg.client.Version;
+import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.*;
-        import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -32,8 +35,8 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import java.beans.PropertyVetoException;
 import com.sun.logging.LogDomains;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -51,6 +54,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.api.AdminAuthenticator;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -61,6 +65,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -97,7 +104,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     ServerEnvironmentImpl env;
 
     @Inject
-    AdminService as; //need to take care of injecting the right AdminService
+    AdminService adminService; //need to take care of injecting the right AdminService
 
     private String contextRoot;
     private File ipsRoot;    // GF IPS Root
@@ -107,6 +114,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private AdapterState stateMsg = AdapterState.UNINITIAZED;
     private boolean installing = false;
     private boolean isOK = false;  // FIXME: initialize this with previous user choice
+    private boolean errorOccurred   = false;
+    private String currentDeployedVersion   = "";     //Version of admin console that is currently deployed
+    private String downloadedVersion = "";            //Version of the console IPS package that is downloaded
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -142,15 +152,15 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private static final String PROXY_HOST_PARAM = "proxyHost";
     private static final String PROXY_PORT_PARAM = "proxyPort";
-    private static final String OK_PARAM = "ok";
-    private static final String CANCEL_PARAM = "cancel";
-    private static final String VISITOR_PARAM = "visitor";
+    private static final String OK_PARAM         = "ok";
+    private static final String CANCEL_PARAM     = "cancel";
 
     private static final String MYURL_TOKEN = "%%%MYURL%%%";
     private static final String STATUS_TOKEN = "%%%STATUS%%%";
+    private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
-
+    
     /**
      * Constructor.
      */
@@ -207,41 +217,99 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             InteractionResult ir = getUserInteractionResult(req);
             if (ir == InteractionResult.CANCEL) {
 // FIXME: What if they clicked Cancel?
-            }
-            synchronized (this) {
-                if (isInstalling()) {
-                    sendStatusPage(res);
-                } else {
-                    if (isApplicationLoaded()) {
-                        // Double check here that it is not now loaded (not
-                        // likely, but possible)
-                        handleLoadedState();
-                    } else if (!hasPermission(ir)) {
-                        // Ask for permission
-                        sendConsentPage(req, res);
-                    } else {
-                        try {
-                            // We have permission and now we should install
-                            // (or load) the application.
-                            setInstalling(true);
-                            startThread();  // Thread must set installing false
-                        } catch (Exception ex) {
-                            // Ensure we haven't crashed with the installing
-                            // flag set to true (not likely).
-                            setInstalling(false);
-                            throw new RuntimeException(
-                                    "Unable to install Admin Console!", ex);
-                        }
+	    }
+	    synchronized(this) {
+		if (isInstalling()) {
+		    sendStatusPage(res);
+		} else {
+                    if (isErrorOccurred()){
+                        restore();
                         sendStatusPage(res);
-                    }
-                }
-            }
-        }
+                        return;
+                    }else if (isApplicationLoaded()) {
+			// Double check here that it is not yet loaded (not
+			// likely, but possible)
+			handleLoadedState();
+		    } else if (!hasPermission(ir)) {
+			// Ask for permission
+			sendConsentPage(req, res);
+		    }else {
+                        if (redeployNeeded()){
+                            setStateMsg(AdapterState.APPLICATION_PREPARE_UPGRADE);
+                            sendStatusPage(res);
+                            if ( !prepareRedeploy()){
+                                setErrorOccurred(true);
+                                sendStatusPage(res);
+                                return;
+                            }
+                        }
+			try {
+			    // We have permission and now we should install
+			    // (or load) the application.
+			    setInstalling(true);
+			    startThread();  // Thread must set installing false
+			} catch (Exception ex) {
+			    // Ensure we haven't crashed with the installing
+			    // flag set to true (not likely).
+			    setInstalling(false);
+			    throw new RuntimeException(
+				    "Unable to install Admin Console!", ex);
+			}
+			sendStatusPage(res);
+		    }
+		}
+	    }
+	}
+
     }
 
     /**
+     * returns true if there is any error occurs during the upgrade process.
+     */
+    private boolean isErrorOccurred(){
+        return errorOccurred;
+    }
+    
+    /**
+     * set error condition 
+     */
+    private void setErrorOccurred(boolean error){
+        errorOccurred=error;
+    }
+    
+    
+    /**
      *
      */
+    private boolean prepareRedeploy(){
+        try{
+            if (! stopAndCleanup()){
+                setStateMsg(AdapterState.APPLICATION_CLEANUP_FALED);
+                return false;
+            }
+            File parentFile = warFile.getParentFile();
+            File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
+            File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
+            if (currentDeployedDir.renameTo(backupDir))
+                return true;
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        logger.log(Level.SEVERE, "Cannot backup previous version of __admingui ");
+        setStateMsg(AdapterState.APPLICATION_BACKUP_FALED);
+        return false;
+    }
+    
+    private void restore(){
+        setStateMsg(AdapterState.APPLICATION_RESTORE);
+        File parentFile = warFile.getParentFile();
+        File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
+        File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
+        backupDir.renameTo(currentDeployedDir);
+        setStateMsg(AdapterState.APPLICATION_UPGRADE_FALED);
+    }
+    
+    
     private boolean isApplicationLoaded() {
         return (stateMsg == AdapterState.APPLICATION_LOADED);
     }
@@ -282,6 +350,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     void setStateMsg(AdapterState msg) {
         stateMsg = msg;
+        log.log(Level.INFO, msg + "");
     }
 
     /**
@@ -336,11 +405,18 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void init() {
-        setIPSRoot(as.getProperty(ServerTags.IPS_ROOT).getValue());
-        setWarFileLocation(as.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
-        initState();
-        epd = new AdminEndpointDecider(serverConfig, log);
-        contextRoot = epd.getGuiContextRoot();
+	setIPSRoot(adminService.getProperty(ServerTags.IPS_ROOT).getValue());
+	setWarFileLocation(adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION).getValue());
+        Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
+        if (prop != null){
+            currentDeployedVersion = prop.getValue();
+        }else {
+            currentDeployedVersion = "";
+        }
+        setDownloadedVersion();
+	initState();
+	epd = new AdminEndpointDecider(serverConfig, log);
+	contextRoot = epd.getGuiContextRoot();
     }
 
     /**
@@ -621,6 +697,96 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     /**
+     * 
+     */
+    public String getDownloadedVersion(){
+        return downloadedVersion;
+    }
+    
+    public void setDownloadedVersion(){
+        try{
+            Image image = new Image(ipsRoot);
+            if (image != null){
+                List<Image.FmriState> fList = image.getInventory(new String[]{ADMIN_CONSOLE_IPS_PKGNAME}, false);
+                if (fList.size() > 0){
+                    downloadedVersion = fList.get(0).fmri.getVersion().toString();
+                }
+            }else{
+                log.log(Level.WARNING, "!!!! No information relating to update center.");
+            }
+        }catch(Exception ex){
+            log.log(Level.WARNING, "!!!!! Cannot create Update Center Image" );
+            ex.printStackTrace();
+        }
+    }
+    
+    public String getCurrentDeployedVersion(){
+        return currentDeployedVersion;
+    }
+    
+    public AdminService getAdminService(){
+        return adminService;
+    }
+    
+    public String getIPSPackageName(){
+        return ADMIN_CONSOLE_IPS_PKGNAME;
+        
+    }
+    
+    
+    private boolean redeployNeeded(){
+        //for first access after installation, deployedVersion will be "",  we don't want to do redeployment.
+        //it will just go through install and loading.
+        if (currentDeployedVersion == null || currentDeployedVersion.equals("")){
+            return false;
+        }
+        //if we don't know the downloaded version, we don't want to do redeployment either.
+        //this maybe the case during development where web.zip doesn't include UC info.
+        if (downloadedVersion.equals ("")){
+            return false;
+        }
+        
+        Version deployed = new Version(currentDeployedVersion);
+        Version downloaded = new Version(downloadedVersion);
+        int compare = deployed.compareTo(downloaded);
+        //-1 if this version is less than downloaded, 0 if they are equal, 1 if this version is greater than downloaded
+        if (compare == -1){
+            return true;
+        }else
+            return false;
+    }
+
+    
+    public void updateDeployedVersion(){
+        try{
+            final Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
+            if (prop == null){
+                ConfigSupport.apply(new SingleConfigCode<AdminService>() {
+                    public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
+                        Property newProp = ConfigSupport.createChildOf(adminService, Property.class);
+                        adminService.getProperty().add(newProp);
+                        newProp.setName(ServerTags.ADMIN_CONSOLE_VERSION);
+                        newProp.setValue(downloadedVersion);
+                        return newProp;
+                    }
+                }, adminService);
+            }else{
+                if (! downloadedVersion.equals(prop.getValue())){
+                    ConfigSupport.apply(new SingleConfigCode<Property>() {
+                        public Object run(Property prop) throws PropertyVetoException, TransactionFailure {
+                            prop.setValue(downloadedVersion);
+                            return prop;
+                        }
+                    }, prop);
+                }
+            }
+        }catch(Exception ex){
+            log.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
      *
      */
     private void handleLoadedState() {
@@ -659,7 +825,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             final ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
             final ReadableArchive archive = archiveFactory.openArchive(new File(location));
 
-            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, new Properties(), env);
+            Properties prop = new Properties();
+            prop.setProperty(ParameterNames.NAME, ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
+            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, prop, env);
             ActionReport report = new PlainTextActionReporter();
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             final ApplicationLifecycle appLifecycle = habitat.getComponent(ApplicationLifecycle.class);

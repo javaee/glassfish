@@ -24,20 +24,21 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.SystemApplications;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipFile;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.pkg.client.Image;
+
 
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -69,7 +70,7 @@ final class InstallerThread extends Thread {
     private final Habitat habitat;
     private final Logger log;
     private final List<String> vss;
-
+           
 
     /**
      *	Constructor.
@@ -103,6 +104,7 @@ final class InstallerThread extends Thread {
             expand();
             install();
 	    load();
+            cleanup();
 
 	    // From within this Thread mark the installation process complete
 	    adapter.setInstalling(false);
@@ -126,8 +128,7 @@ final class InstallerThread extends Thread {
 
 	// Not downloaded get it from IPS
 	adapter.setStateMsg(AdapterState.DOWNLOADING);
-// FIXME: Use proxy information for UC
-	Proxy proxy = Proxy.NO_PROXY;
+	Proxy proxy = null;  //Proxy.NO_PROXY;
 	if (proxyHost != null && !"".equals(proxyHost)) {
 	    SocketAddress address = new InetSocketAddress(proxyHost, proxyPort);
 	    proxy = new Proxy(Proxy.Type.HTTP, address);
@@ -135,33 +136,22 @@ final class InstallerThread extends Thread {
 
 	// Download and install files from Update Center
 	try {
-	    Image img = new Image(ipsRoot);
-//System.out.println("image.getRootDirectory() = " + img.getRootDirectory());
-	    /*
-	    img.refreshCatalogs();
-	    Catalog catalog = img.getCatalog();
-	    catalog.refresh();
-
-	    System.out.println("!!!!!!!!!!! ========================  getInventory");
-	    List<Image.FmriState> list2 = img.getInventory(null, false);
-	    for (Image.FmriState fs : list2){
-		Fmri fmri = fs.fmri;
-		System.out.println("NAME = " + fmri.getName() + ";  VERSION = " + fmri.getVersion());
-	    }
-	    */
-	    
-	    String pkgs[] = { "glassfish-gui" };
-	    img.installPackages(pkgs);
-// FIXME: Verify that getWarFile() exists, it should by this point.
+            Image image = new Image(ipsRoot);
+	    String pkgs[] = { adapter.getIPSPackageName() };
+            if(proxy != null){
+                image.setProxy(proxy);
+            }
+	    image.installPackages(pkgs);
+            //Verify that admingui.war exists, it should by this point.
+            if (getWarFile().exists()){
+                log.log(Level.SEVERE, "Error in downloading Admin Console from UpdateCenter");
+                // FIXME: should we thrown an exception here ?
+            }
+            adapter.setDownloadedVersion();
 	    adapter.setStateMsg(AdapterState.DOWNLOADED);
-
-	    // FIXME: Adjust this if needed.
-	    //img.setAuthority("glassfish.org",  "http://eflat.sfbay.sun.com:10000",  "glassfish.org");
-//System.out.println("\nAfter installation ---------");
 	} catch (Exception ex) {
 // FIXME: Handle properly
 	    ex.printStackTrace();
-//System.out.println("!!!!!!!  cannot create Image");
 	}
     }
 
@@ -175,10 +165,10 @@ final class InstallerThread extends Thread {
 		    + warFile.getAbsolutePath());
 	}
         File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
-	if (expFolder.exists() && new File(expFolder, "WEB-INF").exists()) {
-	    // Already completed
-	    return;
-	}
+        if (expFolder.exists() && new File(expFolder, "WEB-INF").exists()) {
+            // Already completed
+            return;
+        }
 
 	// Set the adapter state
 	adapter.setStateMsg(AdapterState.EXPANDING);
@@ -204,7 +194,7 @@ final class InstallerThread extends Thread {
     private File getWarFile() {
 	return warFile;
     }
-
+    
     /**
      *	<p> Install the admingui.war file.</p>
      */
@@ -212,6 +202,8 @@ final class InstallerThread extends Thread {
 	if (domain.getSystemApplicationReferencedFrom(env.getInstanceName(), AdminConsoleAdapter.ADMIN_APP_NAME) != null) {
 	    // Application is already installed
 	    adapter.setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
+            // no need to change domain.xml application config, except to update the deployed version.
+            adapter.updateDeployedVersion();
 	    return;
 	}
 
@@ -256,6 +248,7 @@ final class InstallerThread extends Thread {
                 return true;
             }
         };
+        adapter.updateDeployedVersion();
         Server server = domain.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
 
@@ -297,4 +290,17 @@ final class InstallerThread extends Thread {
 	// Set adapter state
 	adapter.setStateMsg(AdapterState.APPLICATION_LOADED);
     }
+    
+    /*
+     * <p> Clean up the backup copy
+     */
+    private void cleanup(){
+        File backup = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME + ".backup");
+        if (backup.exists()) {
+            adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANING);
+            FileUtils.whack(backup);
+        }
+        adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANED);
+    }
+    
 }

@@ -44,7 +44,15 @@ enum AdapterState {
     APPLICATION_INSTALLED_BUT_NOT_LOADED("state.installedNotLoaded", "The Admin Console is already installed, but not yet loaded."),
     APPLICATION_LOADING("state.loading", "The Admin Console is loading..."),
     APPLICATION_LOADED("state.loaded", "The Admin Console application is loaded."),
-    APPLICATION_NOT_INSTALLED("state.notInstalled", "The Admin Console Application is not yet installed.");
+    APPLICATION_NOT_INSTALLED("state.notInstalled", "The Admin Console Application is not yet installed."),
+    APPLICATION_PREPARE_UPGRADE("state.prepareRedeploy", "Preparing to upgrade Admin Console Application..."),
+    APPLICATION_BACKUP_FALED("state.backupFailed", "Cannot backup previous version of __admingui"),
+    APPLICATION_CLEANUP_FALED("state.cleanupFailed", "Exception while cleaning previous instance of admin GUI"),
+    APPLICATION_BACKUP_CLEANING("state.cleaningBackup", "Cleaning up temperory backup file..."),
+    APPLICATION_BACKUP_CLEANED("state.cleanupFailed", "Temperory backup file removed"),
+    APPLICATION_RESTORE("state.restore", "Restoring previously deployed Admin Console..."),
+    APPLICATION_UPGRADE_FALED("state.upgradeFailed", "Cannot upgrade Admin Console.");
+    
     
     private final String desc;
     private final String i18nKey;
