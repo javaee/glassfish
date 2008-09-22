@@ -200,6 +200,8 @@ own identifying information: Portions Copyright [yyyy]
 
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" />  
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/web" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/web" includes="*.pom" /> 
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />
