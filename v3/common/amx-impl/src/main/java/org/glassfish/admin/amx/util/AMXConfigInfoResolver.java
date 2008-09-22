@@ -50,10 +50,17 @@ public final class AMXConfigInfoResolver
     private static void debug( final String s ) { System.out.println(s); }
     
     private final AMXConfigInfo mAMXConfigInfo;
+    private final ClassLoader  mClassloader;
     
-    public AMXConfigInfoResolver( final AMXConfigInfo info )
+    public AMXConfigInfoResolver(  final AMXConfigInfo info )
+    {
+        this( AMXConfigInfoResolver.class.getClassLoader(), info );
+    }
+    
+    public AMXConfigInfoResolver( final ClassLoader classloader, final AMXConfigInfo info )
     {
         mAMXConfigInfo = info;
+        mClassloader   = classloader;
     }
     
         public Class<? extends AMXConfig> 
@@ -66,16 +73,12 @@ public final class AMXConfigInfoResolver
         Class<?> theClass = null;
         try
         {
-            theClass = Class.forName( classname );
+            theClass = mClassloader.loadClass( classname );
+            theInterface = theClass.asSubclass( AMXConfig.class );
         }
         catch( final Exception e )
         {
             throw new RuntimeException(e);
-        }
-        
-        if ( theClass != null )
-        {
-            theInterface = theClass.asSubclass( AMXConfig.class );
         }
         
         return theInterface;
