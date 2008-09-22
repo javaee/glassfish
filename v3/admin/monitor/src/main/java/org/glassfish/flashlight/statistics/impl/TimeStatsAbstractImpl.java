@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
         implements TimeStats {
 
-    private static Average average = AverageFactory.createAverage();
+    private Average average = AverageFactory.createAverage();
 
 
     private AtomicLong lastSampleTime = new AtomicLong(0);

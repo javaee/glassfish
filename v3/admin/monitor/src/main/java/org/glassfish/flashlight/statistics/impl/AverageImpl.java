@@ -33,8 +33,8 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     /** DEFAULT_VALUE of any statistic is 0 */
     protected static final String NEWLINE = System.getProperty("line.separator");
    
-    long min = DEFAULT_MIN_BOUND;
-    long max = 0;
+    AtomicLong min = new AtomicLong (DEFAULT_MIN_BOUND);
+    AtomicLong max = new AtomicLong(0);
     
     AtomicLong times = new AtomicLong(0);
     AtomicLong sum = new AtomicLong(0);
@@ -58,14 +58,14 @@ public class AverageImpl extends AbstractTreeNode implements Average {
      * method
      */
     public void addDataPoint(long value) {
-        if (min == DEFAULT_MIN_BOUND) // initial seeding
+        if (min.get() == DEFAULT_MIN_BOUND) // initial seeding
         {
-            min = value;
+            min.set(value);
         }
-        if (value < min) {
-            min = value;
-        } else if (value > max) {
-            max = value;
+        if (value < min.get()) {
+            min.set(value);
+        } else if (value > max.get()) {
+            max.set(value);
         }
         sum.addAndGet(value);
         times.incrementAndGet();
@@ -87,11 +87,11 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     }
 
     public long getMin() {
-        return min;
+        return min.get();
     }
 
     public long getMax() {
-        return max;
+        return max.get();
     }
 
     public String toString() {
