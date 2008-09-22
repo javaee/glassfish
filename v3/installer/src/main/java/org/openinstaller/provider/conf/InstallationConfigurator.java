@@ -96,8 +96,11 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
             LOGGER.log(Level.INFO, "Configuring GlassFish");
             configSuccessful = configureGlassfish(
                 installDir,
-                "4848",
-                aSheet.getProperty("Administration.A_HTTP_PORT"));
+                aSheet.getProperty("Administration.ADMIN_PORT"),
+                aSheet.getProperty("Administration.HTTP_PORT"),
+                aSheet.getProperty("Administration.ADMIN_USER"),
+                aSheet.getProperty("Administration.ADMIN_PASSWORD"),
+                aSheet.getProperty("Administration.LOGIN_MODE"));
 	    }
 
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
@@ -162,7 +165,7 @@ public void handleNotification (final Notification aNotification,
 }
 
 /* Returns true if configuration is successful, else false */
-boolean configureGlassfish(String installDir, String adminPort, String httpPort) throws Exception {
+boolean configureGlassfish(String installDir, String adminPort, String httpPort, String adminUser, String adminPwd, String loginMode) throws Exception {
 
     boolean success = true;
 
@@ -270,12 +273,17 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort)
 
         FileWriter writer = null;
         File pwdFile = null;        
+
+        String pwd = "";
+        if (!loginMode.equals("ANONYMOUS")) {
+            pwd = adminPwd;
+        }
         try {            
             pwdFile = File.createTempFile("asadminTmp", null);                        
             pwdFile.deleteOnExit();            
             writer = new FileWriter(pwdFile);            
-            writer.write("AS_ADMIN_ADMINPASSWORD=\n");
-            writer.write("AS_ADMIN_PASSWORD=\n");
+            writer.write("AS_ADMIN_ADMINPASSWORD=" + adminPwd + "\n");
+            writer.write("AS_ADMIN_PASSWORD=" + adminPwd + "\n");
             writer.write("AS_ADMIN_MASTERPASSWORD=changeit\n");
             writer.close();
             writer = null;
@@ -335,11 +343,17 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort)
                 asadminCommand = installDir + "/glassfish/bin/asadmin";
             }
 
+            // determine admin user
+            String user = "anonymous";
+            if (!loginMode.equals("ANONYMOUS")) {
+                user = adminUser;
+            }
+
             String[] asadminCommandArray = { asadminCommand, "create-domain",
                 "--savelogin",
 		"--no-checkports",
                 "--adminport", adminPort,
-                "--user", "anonymous",
+                "--user", user,
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "domain1"};
@@ -350,7 +364,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort)
                 "--savelogin",
 		"--no-checkports",
                 "--adminport", adminPort,
-                "--user", "anonymous",
+                "--user", user,
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "domain1"};
@@ -358,6 +372,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort)
             LOGGER.log(Level.INFO, "Creating GlassFish domain");
             LOGGER.log(Level.INFO, "Admin port:" + adminPort);
             LOGGER.log(Level.INFO, "HTTP port:" + httpPort);
+            LOGGER.log(Level.INFO, "User:" + user);
 
 	    String existingPath = System.getenv("PATH");
 	    LOGGER.log(Level.INFO, "Existing PATH: " +existingPath);
