@@ -52,7 +52,6 @@
     <modules>
         <module>bootstrap</module>
 	<module>kernel</module>
-        <module>security</module>
         <module>branding</module>
         <module>api-exporter</module>
     </modules>

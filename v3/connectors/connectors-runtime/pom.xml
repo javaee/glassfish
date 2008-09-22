@@ -114,7 +114,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.core</groupId>
+            <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

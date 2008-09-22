@@ -39,15 +39,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.security</groupId>
+         <groupId>org.glassfish.security</groupId>
         <artifactId>securitymodule</artifactId>
         <version>10.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>        
     </parent>    
     <groupId>org.glassfish.security</groupId>
-    <artifactId>websecurity</artifactId>
+    <artifactId>security</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>WebTier Security Integration</name>
+    <name>Security Core Classes</name>
     <developers>
         <developer>
             <id>kumarjayanti</id>
@@ -70,15 +70,21 @@
         </resources>
     </build>
     <dependencies>
+        <!-- LDAPBP not yet published to maven
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>ldapbp</artifactId>
+            <version>1.0</version>
+        </dependency> -->
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.security</groupId>
-            <artifactId>security</artifactId>
+            <artifactId>realms</artifactId>
             <version>${project.version}</version>
-        </dependency>      
+        </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>securitycommon</artifactId>
@@ -94,11 +100,6 @@
             <artifactId>glassfish-api</artifactId>
         </dependency>   
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>internal-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
@@ -108,30 +109,9 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.security.auth.message</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
-            <!-- Don't set scope as provided. See issue #5992-->
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>war-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -140,8 +120,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-module</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.security.jacc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
