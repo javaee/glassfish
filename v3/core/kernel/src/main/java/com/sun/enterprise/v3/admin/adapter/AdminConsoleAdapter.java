@@ -116,7 +116,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private boolean isOK = false;  // FIXME: initialize this with previous user choice
     private boolean errorOccurred   = false;
     private String currentDeployedVersion   = "";     //Version of admin console that is currently deployed
-    private String downloadedVersion = "";            //Version of the console IPS package that is downloaded
+    private String downloadedVersion = null;            //Version of the console IPS package that is downloaded
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
@@ -219,6 +219,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 // FIXME: What if they clicked Cancel?
 	    }
 	    synchronized(this) {
+		if (downloadedVersion == null){
+		    setDownloadedVersion();
+		}
 		if (isInstalling()) {
 		    sendStatusPage(res);
 		} else {
@@ -413,7 +416,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }else {
             currentDeployedVersion = "";
         }
-        setDownloadedVersion();
 	initState();
 	epd = new AdminEndpointDecider(serverConfig, log);
 	contextRoot = epd.getGuiContextRoot();
@@ -704,6 +706,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
     
     public void setDownloadedVersion(){
+	if (downloadedVersion == null){
+	    downloadedVersion = "";
+	}
         try{
             Image image = new Image(ipsRoot);
             if (image != null){

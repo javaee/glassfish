@@ -299,8 +299,8 @@ final class InstallerThread extends Thread {
         if (backup.exists()) {
             adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANING);
             FileUtils.whack(backup);
+	    adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANED);
         }
-        adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANED);
     }
     
 }
