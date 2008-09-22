@@ -164,7 +164,8 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             return;
         if (mrdr.get("server") != null) {
             serverNode = mrdr.get("server");
-            if (serverNode.getNode("http-service") == null){
+            httpServiceNode = serverNode.getNode("http-service");
+            if (httpServiceNode == null){
                 // http-service
                 httpServiceNode = TreeNodeFactory.createTreeNode("http-service", null, "http-service");
                 serverNode.addChild(httpServiceNode);
