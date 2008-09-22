@@ -39,6 +39,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
+
 import org.glassfish.flashlight.statistics.*;
 import org.glassfish.flashlight.statistics.factory.CounterFactory;
 import org.glassfish.flashlight.statistics.factory.TimeStatsFactory;
@@ -46,18 +51,15 @@ import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.*;
 import org.glassfish.flashlight.client.ProbeListener;
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
-        
-import org.glassfish.flashlight.provider.annotations.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
+import com.sun.enterprise.config.serverbeans.*;
 
 /**
  * Provides the monitoring data at the Web container level
  *
  * @author Prashanth Abbagani
  */
-public class WebRequestTelemetry{
+public class WebRequestTelemetry implements PostConstruct {
     //Provides the longest response time for a request - not a cumulative value, 
     //but the largest response time from among the response times.
     //private Counter maxTime = CounterFactory.createCount();
@@ -74,10 +76,19 @@ public class WebRequestTelemetry{
     private Collection<ProbeClientMethodHandle> handles;
     private Logger logger;
     private boolean isEnabled = true;
+    private HttpService httpService = null;
+    private VirtualServer virtualServer = null;
     
-    public WebRequestTelemetry(TreeNode parent, boolean webMonitoringEnabled, Logger logger) {
+    @Inject
+    private static Domain domain;
+    private String virtualServerName = null;
+    private String moduleName = null;
+
+    public WebRequestTelemetry(TreeNode parent, String appName, String vsName, Logger logger) {
         try {
             this.logger = logger;
+            this.virtualServerName = vsName;
+            this.moduleName = appName;
             webRequestNode = parent;
             //add maxTime attribute    
             Method m1 = requestProcessTime.getClass().getMethod("getMaximumTime", (Class[]) null);
@@ -89,8 +100,8 @@ public class WebRequestTelemetry{
             TreeNode requestCount = TreeNodeFactory.createMethodInvoker("requestCount", requestProcessTime, "request", m2);
             parent.addChild(requestCount);
             //add processTime
-            Method m3 = this.getClass().getMethod("getProcessTime", (Class[]) null);
-            TreeNode processingTime = TreeNodeFactory.createMethodInvoker("processingTime", this, "request", m3);
+            Method m3 = requestProcessTime.getClass().getMethod("getTime", (Class[]) null);
+            TreeNode processingTime = TreeNodeFactory.createMethodInvoker("processingTime", requestProcessTime, "request", m3);
             parent.addChild(processingTime);
             //add errorCount
             errorCount.setName("errorCount");
@@ -102,13 +113,36 @@ public class WebRequestTelemetry{
         }
     }
 
+
+    public void postConstruct() {
+    }
+
     @ProbeListener("web:request::requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response) {
-        logger.finest("[TM]requestStartEvent received - request = " + 
-                            request + ": response = " + response);
-        requestProcessTime.entry();
+        if ((virtualServerName != null) && (moduleName != null)) {
+            String vs = WebTelemetryBootstrap.getVirtualServerName(request.getServerName(),
+                                                String.valueOf(request.getServerPort()));
+            String contextPath = request.getContextPath();
+            String appName = WebTelemetryBootstrap.getAppName(contextPath);
+            if (vs.equals(virtualServerName) && appName.equals(moduleName)){
+                //increment counts
+                requestProcessTime.entry();
+                logger.finest("[TM]requestStartEvent received - virtual-server = " +
+                                    request.getServerName() + ": application = " +
+                                    contextPath + " :appName = " + appName + " : servlet = " +
+                                    request.getServletPath() + " : port = " +
+                                    request.getServerPort());
+            }
+        }
+        else {
+            requestProcessTime.entry();
+            logger.finest("[TM]requestStartEvent received - virtual-server = " +
+                                request.getServerName() + ": application = " +
+                                request.getContextPath() + " : servlet = " +
+                                request.getServletPath());
+        }
     }
 
     @ProbeListener("web:request::requestEndEvent")
@@ -121,12 +155,14 @@ public class WebRequestTelemetry{
         if (statusCode > 400)
             errorCount.increment();
         
-        logger.finest("[TM]requestEndEvent received - request = " + 
-                            request + ": response = " + response + 
-                            " :Response code = " + statusCode + 
-                            " :Response time = " + requestProcessTime.getTime());
+        logger.finest("[TM]requestEndEvent received - virtual-server = " +
+                            request.getServerName() + ": application = " +
+                            request.getContextPath() + " : servlet = " +
+                            request.getServletPath() + " :Response code = " +
+                            statusCode + " :Response time = " +
+                            requestProcessTime.getTime());
+    }
 
-    }        
     
     public long getProcessTime() {
         return requestProcessTime.getTotalTime()/requestProcessTime.getCount();
@@ -154,5 +190,13 @@ public class WebRequestTelemetry{
             webRequestNode.setEnabled(flag);
             isEnabled = flag;
         }
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+    
+    public String getVSName() {
+        return virtualServerName;
     }
 }

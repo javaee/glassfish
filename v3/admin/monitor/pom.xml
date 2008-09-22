@@ -69,6 +69,16 @@
                 <role>Developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>abbagani</id>
+	    <name>Prashanth Abbagani</name>
+            <url>http://blogs.sun.com/prashanth/</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>Lead</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <resources>
@@ -86,13 +96,11 @@
 			<artifactId>stats77</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	<!--
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
         </dependency>
-    -->
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>

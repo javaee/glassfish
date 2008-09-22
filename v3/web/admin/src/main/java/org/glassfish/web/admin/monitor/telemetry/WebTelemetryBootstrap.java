@@ -6,6 +6,7 @@
 package org.glassfish.web.admin.monitor.telemetry;
 
 import java.beans.PropertyChangeEvent;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import java.net.InetAddress;
 /**
  *
  * @author PRASHANTH ABBAGANI
@@ -61,6 +63,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private List<SessionStatsTelemetry> vsSessionTMs = null;
     private ServletStatsTelemetry webServletsTM = null;
     private List<ServletStatsTelemetry> vsServletTMs = null;
+    private List<WebRequestTelemetry> vsRequestTMs = null;
     private JspStatsTelemetry webJspTM = null;
     private List<JspStatsTelemetry> vsJspTMs = null;
 
@@ -71,6 +74,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private TreeNode webJspNode;
     private TreeNode webRequestNode;
     private TreeNode applicationsNode;
+    private static HttpService httpService = null;
 
     public WebTelemetryBootstrap() {
     }
@@ -88,6 +92,16 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
 
         //Build the top level monitoring tree
         buildTopLevelMonitoringTree();        
+
+        List<Config> lc = domain.getConfigs().getConfig();
+        Config config = null;
+        for (Config cf : lc) {
+            if (cf.getName().equals("server-config")) {
+                config = cf;
+                break;
+            }
+        }
+        httpService = config.getHttpService();
     }
     
     public void onLevelChange(String newLevel) {
@@ -346,6 +360,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                         removeJSPTelemetryForVS(appName, vsName);
                         removeServletTelemetryForVS(appName, vsName);
                         removeSessionTelemetryForVS(appName, vsName);
+                        removeRequestTelemetryForVS(appName, vsName);
                     }
                     appNode.setEnabled(false);
                     appNodeToRemove = appNode;
@@ -558,15 +573,62 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     
     private void buildWebRequestTelemetry() {
         if (webRequestTM == null) {
-            webRequestTM = new WebRequestTelemetry(webRequestNode, webMonitoringEnabled, logger);
+            webRequestTM = new WebRequestTelemetry(webRequestNode, null, null, logger);
             Collection<ProbeClientMethodHandle> handles = pcm.registerListener(webRequestTM);
             webRequestTM.setProbeListenerHandles(handles);
         } else { // Make sure you turn it on
             if (!webRequestTM.isEnabled())
                 webRequestTM.enableMonitoring(true);
         }
+        if (vsRequestTMs == null) {
+            vsRequestTMs = new ArrayList<WebRequestTelemetry>();
+            TreeNode appsNode = serverNode.getNode("applications");
+            Collection<TreeNode> appNodes = appsNode.getChildNodes();
+            for (TreeNode appNode : appNodes){
+                //Get all virtual servers
+                Collection<TreeNode> vsNodes = appNode.getChildNodes();
+                for (TreeNode vsNode : vsNodes) {
+                    //Create sessionTM for each vsNode
+                    buildWebRequestTelemetryForVS(vsNode, appNode.getName());
+                }
+            }
+        }else { //Make sure you turn them on
+            for (WebRequestTelemetry requestTM : vsRequestTMs) {
+                if (!requestTM.isEnabled())
+                    requestTM.enableMonitoring(true);
+            }
+        }
     }
 
+    private void buildWebRequestTelemetryForVS(TreeNode vsNode, String appName) {
+        if (!requestProviderRegistered)
+            return;
+        //Create webRequestTM for each vsNode
+        WebRequestTelemetry vsRequestTM = 
+                new WebRequestTelemetry(vsNode, 
+                    appName, vsNode.getName(), logger);
+        Collection<ProbeClientMethodHandle> handles = 
+                                    pcm.registerListener(vsRequestTM);
+        vsRequestTM.setProbeListenerHandles(handles);
+        vsRequestTMs.add(vsRequestTM);
+    }
+
+    private void removeRequestTelemetryForVS(String appName, String vsName) {
+        if (!requestProviderRegistered || !isWebTreeBuilt || (vsRequestTMs == null))
+            return;
+        List<WebRequestTelemetry> requestTMsToRemove = new ArrayList<WebRequestTelemetry>();
+        for (WebRequestTelemetry vsRequestTM : vsRequestTMs){
+            if (vsRequestTM.getModuleName().equals(appName) && 
+                            vsRequestTM.getVSName().equals(vsName)) {
+                vsRequestTM.enableMonitoring(false);
+                requestTMsToRemove.add(vsRequestTM);
+            }
+        }
+        for (WebRequestTelemetry requestTMToRemove : requestTMsToRemove) {
+            vsRequestTMs.remove(requestTMToRemove);
+        }
+    }
+    
     private void enableWebMonitoring(boolean isEnabled) {
         //Enable/Disable webNode
         webNode.setEnabled(isEnabled);
@@ -603,5 +665,60 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
         //Enable/Disable Request telemetry
         if (webRequestTM != null)
             webRequestTM.enableMonitoring(isEnabled);
+        if (vsRequestTMs != null) {
+            for (WebRequestTelemetry requestTM : vsRequestTMs) {
+                requestTM.enableMonitoring(isEnabled);
+            }
+        }
+    }
+
+    public static String getAppName(String contextRoot) {
+        if (contextRoot == null)
+            return null;
+        // first check in web modules
+        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
+        for (WebModule wm : lm) {
+            if (contextRoot.equals(wm.getContextRoot())) {
+                return (wm.getName());
+            }
+        }
+        // then check under applications (introduced in V3 not j2ee app)
+        List<Application> la = domain.getApplications().getModules(Application.class);
+        for (Application sapp : la) {
+            if (contextRoot.equals(sapp.getContextRoot())) {
+                return (sapp.getName());
+            }
+        }
+        return null;
+    }
+
+    public static String getVirtualServerName(String hostName, String listenerPort) {
+        try {
+            //
+            if (hostName == null) {
+                return null;
+            }
+            if (hostName.equals("localhost")) {
+                hostName = InetAddress.getLocalHost().getHostName();
+            }
+            HttpListener httpListener = null;
+
+            for (HttpListener hl : httpService.getHttpListener()) {
+                if (hl.getPort().equals(listenerPort)) {
+                    httpListener = hl;
+                }
+                break;
+            }
+            VirtualServer virtualServer = null;
+            for (VirtualServer vs : httpService.getVirtualServer()) {
+                if (vs.getHosts().contains(hostName) && vs.getHttpListeners().contains(httpListener.getId())) {
+                    virtualServer = vs;
+                }
+            }
+            return virtualServer.getId();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(WebTelemetryBootstrap.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
