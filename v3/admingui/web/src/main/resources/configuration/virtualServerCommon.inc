@@ -44,7 +44,7 @@
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
     # purposely to omit breadcrumb, including it causes syntax error, but only for this page
-    #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 #include "virtualServerAttr.inc"               
 #include "/shared/propertyTable.inc"
