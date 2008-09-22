@@ -61,6 +61,37 @@
             </roles>
         </developer>
     </developers>
+    <build>
+        <plugins>
+            <!--
+            Forwheteverreason(wehavetoinvestigatefurther),
+            compilerplugincompilesservletclassesandputsthem
+            here.So,wedeletethemasaworkaround.
+            Seeissue#5855fordetails.
+            Thisgoalisboundtocompilephase,becausemaven-bundle-plugin
+            runsaspartofprocess-classesphaseandwewanttodelete
+            beforethat.Althoughthispluginisboundtocompilephase,
+            itwillrunaftercompiler-plugin,becauseitisexplicitlybound.
+            -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>work-around-issue-5855</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${project.build.outputDirectory}/javax/servlet/" quiet="false" verbose="true"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
