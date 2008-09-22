@@ -146,6 +146,7 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-all</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
     	</dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
