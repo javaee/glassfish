@@ -499,7 +499,6 @@ public class SingleSignOn
     }
 
 
-    // BEGIN S1AS8 PE 4856062,4918627
     /**
      * Register the specified Principal as being associated with the specified
      * value for the single sign on identifier.
@@ -513,24 +512,6 @@ public class SingleSignOn
      */
     protected void register(String ssoId, Principal principal, String authType,
                   String username, String password, String realmName) {
-        // DO nothing since that class is not used.
-    }
-    // END S1AS8 PE 4856062,4918627
-
-
-    /**
-     * Register the specified Principal as being associated with the specified
-     * value for the single sign on identifier.
-     *
-     * @param ssoId Single sign on identifier to register
-     * @param principal Associated user principal that is identified
-     * @param authType Authentication type used to authenticate this
-     *  user principal
-     * @param username Username used to authenticate this user
-     * @param password Password used to authenticate this user
-     */
-    protected void register(String ssoId, Principal principal, String authType,
-                  String username, String password) {
 
         if (debug >= 1)
             log("Registering sso id '" + ssoId + "' for user '" +
@@ -538,7 +519,8 @@ public class SingleSignOn
 
         synchronized (cache) {
             cache.put(ssoId, new SingleSignOnEntry(ssoId, principal, authType,
-                                                   username, password));
+                                                   username, password,
+                                                   realmName));
         }
 
     }
@@ -596,71 +578,5 @@ public class SingleSignOn
 
     }
 
-
-}
-
-
-// ------------------------------------------------------------ Private Classes
-
-
-/**
- * A private class representing entries in the cache of authenticated users.
- */
-class SingleSignOnEntry {
-
-    public String id = null;
-
-    public String authType = null;
-
-    public String password = null;
-
-    public Principal principal = null;
-
-    public Session sessions[] = new Session[0];
-
-    public String username = null;
-
-    public SingleSignOnEntry(String id, Principal principal, String authType,
-                             String username, String password) {
-        super();
-        this.id = id;
-        this.principal = principal;
-        this.authType = authType;
-        this.username = username;
-        this.password = password;
-    }
-
-    /**
-     * Gets the id of this SSO entry.
-     */
-    public String getId() {
-        return id;
-    }
-
-    public synchronized void addSession(SingleSignOn sso, Session session) {
-        for (int i = 0; i < sessions.length; i++) {
-            if (session == sessions[i])
-                return;
-        }
-        Session results[] = new Session[sessions.length + 1];
-        System.arraycopy(sessions, 0, results, 0, sessions.length);
-        results[sessions.length] = session;
-        sessions = results;
-        session.addSessionListener(sso);
-    }
-
-    public synchronized void removeSession(Session session) {
-        Session[] nsessions = new Session[sessions.length - 1];
-        for (int i = 0, j = 0; i < sessions.length; i++) {
-            if (session == sessions[i])
-                continue;
-            nsessions[j++] = sessions[i];
-        }
-        sessions = nsessions;
-    }
-
-    public synchronized Session[] findSessions() {
-        return (this.sessions);
-    }
 
 }

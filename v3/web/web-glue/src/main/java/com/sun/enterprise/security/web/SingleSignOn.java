@@ -62,6 +62,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
 import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.authenticator.SingleSignOnEntry;
 import org.apache.catalina.Realm;
 //6406580 START
 import org.apache.catalina.session.StandardSession;
