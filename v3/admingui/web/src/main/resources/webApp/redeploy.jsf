@@ -49,8 +49,7 @@
 	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}" parseOnLoad="false">
                 <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
-		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requ
-estScope.restartRequired}', '#{sessionScope.restartRequired}'); uploadInit(); ">
+		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}'); uploadInit(); ">
 	    	<sun:form id="form" method="POST" enctype="multipart/form-data">  
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
