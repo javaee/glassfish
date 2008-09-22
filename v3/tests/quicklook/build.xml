@@ -64,7 +64,7 @@
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
         <antcall target="stopDerby"/>
-	<move file="test-output" tofile="test-output-felix" failonerror="false" overwrite="true"/>
+	<move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -274,7 +274,7 @@
                 </junitreport>
             </sequential>
         </macrodef>
-        <gen-report name="felix" />
+        <gen-report name="web" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
     
@@ -293,8 +293,8 @@
                 </junitreport>
             </sequential>
         </macrodef>
-        <gen-report name="jruby" />
-        <gen-report name="felix" />
+        <gen-report name="web" />
+        <gen-report name="glassfish" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
     
