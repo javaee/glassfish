@@ -25,12 +25,20 @@
 	<delete dir="target/resources"/>
         <mkdir dir="target/resources"/>
 
+        <resolveArtifact artifactId="servlet-api" property="servlet.api" />
+        <basename file="${servlet.api}" property="servlet.api.base" />
+        <resolveArtifact artifactId="jsp-api" property="jsp.api" />
+        <basename file="${jsp.api}" property="jsp.api.base" />
         <resolveArtifact artifactId="jsp-impl" property="jsp.impl" />
         <basename file="${jsp.impl}" property="jsp.impl.base" />
         <resolveArtifact artifactId="el-impl" property="el.impl" />
         <basename file="${el.impl}" property="el.impl.base" />
+        <resolveArtifact artifactId="jstl-api" property="jstl.api" />
+        <basename file="${jstl.api}" property="jstl.api.base" />
         <resolveArtifact artifactId="jstl-impl" property="jstl.impl" />
         <basename file="${jstl.impl}" property="jstl.impl.base" />
+        <resolveArtifact artifactId="jsf-api" property="jsf.api" />
+        <basename file="${jsf.api}" property="jsf.api.base" />
         <resolveArtifact artifactId="jsf-impl" property="jsf.impl" />
         <basename file="${jsf.impl}" property="jsf.impl.base" />
 
@@ -40,9 +48,13 @@
             </fileset>
             <filterset>
               <filter token="VERSION" value="${version}"/>
+              <filter token="SERVLET_API" value="${servlet.api.base}"/>
+              <filter token="JSP_API" value="${jsp.api.base}"/>
               <filter token="JSP_IMPL" value="${jsp.impl.base}"/>
               <filter token="EL_IMPL" value="${el.impl.base}"/>
+              <filter token="JSTL_API" value="${jstl.api.base}"/>
               <filter token="JSTL_IMPL" value="${jstl.impl.base}"/>
+              <filter token="JSF_API" value="${jsf.api.base}"/>
               <filter token="JSF_IMPL" value="${jsf.impl.base}"/>
             </filterset>
         </copy>
