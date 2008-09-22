@@ -434,7 +434,7 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
 	    wrapperWriter.write ("REM\n");
 	    wrapperWriter.write ("setlocal\n");
 	    wrapperWriter.write ("cd \"" + installDir + "\\updatetool\\bin\"\n");
-	    wrapperWriter.write ("call updatetool.bat\n");
+	    wrapperWriter.write ("call updatetool.exe\n");
  	    wrapperWriter.write ("endlocal\n");
             wrapperWriter.close();
             wrapperWriter = null;
