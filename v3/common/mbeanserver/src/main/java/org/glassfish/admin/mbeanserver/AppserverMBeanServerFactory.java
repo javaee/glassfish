@@ -36,37 +36,28 @@
 package org.glassfish.admin.mbeanserver;
 
 import org.jvnet.hk2.annotations.FactoryFor;
-import org.jvnet.hk2.annotations.Extract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Factory;
 import org.jvnet.hk2.component.ComponentException;
 
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.management.JMException;
 
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.annotations.Inject;
-
 /**
-    Factory for the MBeanServer, but also loads critical hooks for AMX support.
+    Factory for the MBeanServer.  Not particularly useful now, since it just loads
+    the default MBeanServer.  But this could change in the future.
     @see PendingConfigBeans
  */
 @Service
 @Async
 @FactoryFor(MBeanServer.class)
-public final class AppserverMBeanServerFactory implements Factory, Startup, PostConstruct {
+public final class AppserverMBeanServerFactory implements Factory, Startup {
     private static void debug( final String s ) { System.out.println(s); }
     
     private final MBeanServer     mMBeanServer;
-    private volatile AMXBooterMgr mAMXBooterMgr;
-    
-    @Inject
-    Habitat mHabitat;
     
     public AppserverMBeanServerFactory()
     {
@@ -80,8 +71,6 @@ public final class AppserverMBeanServerFactory implements Factory, Startup, Post
     
     public void postConstruct()
     {
-        // start AMX booter, JMX Connectors, etc
-        mAMXBooterMgr = new AMXBooterMgr( mHabitat, mMBeanServer );
     }
     
     /**

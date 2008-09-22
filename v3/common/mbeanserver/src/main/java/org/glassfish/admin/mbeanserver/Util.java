@@ -22,7 +22,6 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
 
@@ -30,7 +29,6 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 
 import org.glassfish.server.ServerEnvironmentImpl;
-
 
 /**
     Can't use things in amx-api, so a few methods are place here.
@@ -47,6 +45,17 @@ final class Util
         {
             throw new RuntimeException("bad ObjectName", e);
         }
+    }
+    
+        public static String
+    localhost()
+    {
+        try {
+            return java.net.InetAddress.getLocalHost().getCanonicalHostName();
+        }
+        catch (java.net.UnknownHostException e) {
+        }
+        return "localhost";
     }
     
     public static Logger getLogger() { return LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER); }

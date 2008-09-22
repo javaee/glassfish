@@ -238,7 +238,6 @@ public final class BasicAMXTests extends AMXTestBase {
     }
     
     
-    
     @Test(dependsOnMethods="bootAMX")
     public void iterateAttributeResolver()
     {
@@ -250,10 +249,6 @@ public final class BasicAMXTests extends AMXTestBase {
     }
     private void _checkAttributeResolver( final AMXConfig amxConfig )
     {
-    /*
-	if ( getEffortLevel() != EffortLevel.EXTENSIVE ) { return; }
-    */
-    
     	final String[] attrNames = Util.getExtra(amxConfig).getAttributeNames();
     	for( final String attrName : attrNames )
     	{

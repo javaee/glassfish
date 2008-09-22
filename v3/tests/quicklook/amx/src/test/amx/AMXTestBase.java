@@ -69,7 +69,6 @@ public class AMXTestBase {
     String mHost;
     int	   mPort;
     boolean mDebug;
-    EffortLevel mEffortLevel;
     
     private volatile MBeanServerConnection mMBeanServerConnection;
     private volatile DomainRoot mDomainRoot;
@@ -87,19 +86,16 @@ public class AMXTestBase {
     
     // might need these later: "admin.user", "admin.password"
     @BeforeClass(description="get setup and connect to the MBeanServer")
-    @Parameters({"amx.debug", "amx.port", "amx.effortLevel"})
+    @Parameters({"amx.debug", "amx.rmiport"})
     void setUpEnvironment(
     	final boolean debug,
-    	final int     port,
-    	final String  effortLevel)
+    	final int     port)
     {
         // defined in top-level build.xml
         mHost = System.getProperty( "http.host" );
         
         mDebug = debug;
         mPort = port;
-        mEffortLevel = EffortLevel.valueOf(effortLevel);
-        debug( "AMXTestBase: EffortLevel = " + mEffortLevel);
         
         try {
             setup();
@@ -135,9 +131,7 @@ public class AMXTestBase {
     	}
     	debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
     }
-    
-    protected EffortLevel getEffortLevel() { return mEffortLevel; }
-    
+        
     protected QueryMgr getQueryMgr()
     {
     	return mQueryMgr;
@@ -188,7 +182,8 @@ public class AMXTestBase {
     	// service:jmx:jmxmp://localhost:8888
     	// CHANGE to RMI once it's working
     	//
-    	final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
+    	// final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
+        final String urlStr = "service:jmx:rmi:///jndi/rmi://" + mHost + ":" + mPort + "/jmxrmi";
     	
     	final JMXServiceURL url = new JMXServiceURL(urlStr);
     	

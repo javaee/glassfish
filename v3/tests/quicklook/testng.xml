@@ -44,11 +44,8 @@
   
 <!-- AMX -->
   <parameter name="amx.debug" value="true"/>
-<!-- AMX see EffortLevel.java:  BASIC, EXTENSIVE -->
-  <parameter name="amx.effortLevel" value="EXTENSIVE"/>
-<!-- AMX: port of the JMX connector to be used, jmxmp as of Sept 11, 2008
- this will become port 8686 for the RMI connector when it is working -->
-  <parameter name="amx.port" value="8888"/>
+<!-- AMX: port of the JMX RMI -->
+  <parameter name="amx.rmiport" value="8686"/>
 
 <!-- AMX -->
   <test name="amx_tests">

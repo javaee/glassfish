@@ -38,8 +38,6 @@ import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 
-
-
 /**
     Registers the AMX Booter MBean.
 

@@ -44,6 +44,9 @@ import org.jvnet.hk2.component.ComponentException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ListenerNotFoundException;
 
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
@@ -60,23 +63,21 @@ import java.lang.management.ManagementFactory;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.JmxConnector;
 
-import org.glassfish.admin.connector.rmi.JmxConnectorServerDriver;
-import org.glassfish.admin.connector.rmi.RemoteJmxProtocol;
-
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.JMXConnectorServerFactory;
-
+import javax.management.remote.JMXConnectionNotification;
 
 import javax.management.MBeanServerConnection;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
 import java.io.IOException;
+
 /**
-    Responsible for starting JMXConnectors as configured.
+    Responsible for starting AMXBooter initialization, and starting JMXConnectors as configured.
  */
 @Service
 @Async
@@ -89,6 +90,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     @Inject
     AdminService    mAdminService;
     
+    @Inject
+    Habitat mHabitat;
+    
+    private volatile Booter mBooter;
+
     public ConnectorStartupService()
     {
     }
@@ -97,37 +103,19 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     {
         if ( mMBeanServer != ManagementFactory.getPlatformMBeanServer() )
         {
-            throw new IllegalStateException( "MBeanServer must be the Platform one" );
-        }        
-       final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
-       //debug( "SystemJmxConnectorName: " + mAdminService.getSystemJmxConnectorName() );
-       final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors);
-       starter.start();
+            throw new IllegalStateException( "MBeanServer must be ManagementFactory.getPlatformMBeanServer()" );
+        }
+        
+        mBooter = Booter.create( mHabitat, mMBeanServer );
+    
+        final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
+        
+        final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors, mBooter);
+        starter.start();
     }
     
-        private static String
-    localhost()
-    {
-        try {
-            return java.net.InetAddress.getLocalHost().getCanonicalHostName();
-        }
-        catch (java.net.UnknownHostException e) {
-        }
-        return "localhost";
-    }
-
-    private static Registry startRegistry(final int port) {
-        try {
-            return LocateRegistry.createRegistry(port);
-        }
-        catch (final Exception e) {
-            throw new RuntimeException("Port " + port + " is not available for the internal rmi registry. " + 
-                "This means that a call was made with the same port, without closing earlier " +
-                "registry instance. This has to do with the system jmx connector configuration " +
-                "in admin-service element of the configuration associated with this instance" );
-        }
-    }
-    
+    /*
+    KEEP: this was a problem at one point, could be again
     private static boolean verifyBugFix( final int port)
     {
         boolean jndiWorking = false;
@@ -151,18 +139,72 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         }
         return jndiWorking;
     }
+    */
+    
+    private static final class BootAMXListener implements NotificationListener
+    {
+        private final JMXConnectorServer mServer;
+        private final Booter             mBooter;
+        
+        public BootAMXListener(final JMXConnectorServer server, final Booter booter)
+        {
+            mServer = server;
+            mBooter = booter;
+        }
+        
+        public void handleNotification( final Notification notif, final Object handback )
+        {
+            if ( notif instanceof JMXConnectionNotification )
+            {
+                final JMXConnectionNotification n = (JMXConnectionNotification)notif;
+                if ( n.getType().equals(JMXConnectionNotification.OPENED) )
+                {
+                    Util.getLogger().info( "ConnectorStartupService.BootAMXListener: connection made, booting AMX MBeans" );
+                    mBooter.bootAMX();
+                    
+                    // job is done, stop listening
+                    try
+                    {
+                        mServer.removeNotificationListener(this);
+                        Util.getLogger().fine( "ConnectorStartupService.BootAMXListener: AMX is booted, stopped listening" );
+                    }
+                    catch( final ListenerNotFoundException e )
+                    {
+                        // should be impossible.
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    
+    private static Registry startRegistry(final int port) {
+        try {
+            return LocateRegistry.createRegistry(port);
+        }
+        catch (final Exception e) {
+            throw new RuntimeException("Port " + port + " is not available for the internal rmi registry. " + 
+                "This means that a call was made with the same port, without closing earlier " +
+                "registry instance. This has to do with the system jmx connector configuration " +
+                "in admin-service element of the configuration associated with this instance" );
+        }
+    }
+    
     
     private static final class ConnectorsStarterThread extends Thread
     {
         private final List<JmxConnector> mConfiguredConnectors;
         private final MBeanServer mMBeanServer;
+        private final Booter      mAMXBooter;
         
         public ConnectorsStarterThread(
             final MBeanServer mbs,
-            final List<JmxConnector> configuredConnectors )
+            final List<JmxConnector> configuredConnectors,
+            final Booter amxBooter)
         {
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
+            mAMXBooter = amxBooter;
         }
         
         private static String toString( final JmxConnector c )
@@ -176,11 +218,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 ", SecurityEnabled = " + c.getSecurityEnabled() +
                 "}";
         }
-        
+
         /**
             Start the JMX RMI connector server using rmi_jrmp protocol.
          */
-        private static final class RMIConnectorStarter 
+        private final class RMIConnectorStarter 
         {
             private final MBeanServer mMBeanServer;
             private final String mAddress;
@@ -215,12 +257,14 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 }
                 
                 mRegistry = startRegistry(mPort);
+                /*
                 if ( ! verifyBugFix(mPort) )
                 {
                     final String msg = "JNDI provider for JNDI URLs that look like rmi://host:port/name is not working. " +
                         "The JMX RMI connector will not be accessible to clients, even if it appears to load correctly.  See issues #6025, 5637";
                     Util.getLogger().warning( msg );
                 }
+                */
             }
 
             public JMXConnectorServer startRMIConnector( final String name) throws IOException
@@ -232,13 +276,13 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                // env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol"); 
                 //env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
                 
-                final String s = "service:jmx:rmi:///jndi/rmi://" + localhost() + ":" + mPort  + "/" + name;
+                final String s = "service:jmx:rmi:///jndi/rmi://" + Util.localhost() + ":" + mPort  + "/" + name;
                 final JMXServiceURL url = new JMXServiceURL( s );
                 
                 final JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer( url, env, mMBeanServer);
+                final BootAMXListener listener = new BootAMXListener(cs, mAMXBooter);
+                cs.addNotificationListener( listener, null, null);
                 cs.start();
-                
-                Util.getLogger().info( "RMI connector server URL = " + url );
                 
                 return cs;
             }
@@ -250,6 +294,11 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             Util.getLogger().fine( "Starting JMXConnector: " + toString(connConfig) );
             
             final String protocol = connConfig.getProtocol();
+            if ( ! protocol.equals("rmi_jrmp" ) )
+            {
+                throw new IllegalArgumentException( "The only protocol supported is rmi_jrmp" );
+            }
+            
             final String address  = connConfig.getAddress();
             final int port        = Integer.parseInt(connConfig.getPort());
             final String authRealmName = connConfig.getAuthRealmName();
@@ -259,44 +308,24 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             
             final JMXConnectorServer server = starter.startRMIConnector("jmxrmi");
             final JMXServiceURL url = server.getAddress();
-            final JMXConnector conn = JMXConnectorFactory.connect(url);
-            MBeanServerConnection mbsc = conn.getMBeanServerConnection();
-            mbsc.getDomains();
-            //debug( "Connected to the server just started through " + url );
-            //JmxConnectorServerDriver.dumpRegistryBindings("startConnector", port );
-
+            
+            // test that it works
             /*
-            final JmxConnectorServerDriver dr = new JmxConnectorServerDriver();
-            dr.setMBeanServer(mMBeanServer);
-            dr.setProtocol( RemoteJmxProtocol.instance(protocol) );
-            dr.setPort( port );
-            //dr.setddress( address );
-            dr.setSsl( securityEnabled );
-            dr.setAuthentication( false );
-            dr.setRmiRegistrySecureFlag( false );
-            final JMXConnectorServer  server1 = dr.startConnectorServer();
-            final JMXConnectorServer server2 = dr.startJconsoleConnectorServer();
-            
-            final JMXConnector conn = server2.toJMXConnector(null);
-            conn.connect();
-            MBeanServerConnection mbsc = conn.getMBeanServerConnection();
+            final JMXConnector conn = JMXConnectorFactory.connect(url);
+            final MBeanServerConnection mbsc = conn.getMBeanServerConnection();
             mbsc.getDomains();
-            debug( "Connected internally to the server just started" );  
-            
-            final JMXServiceURL url = server2.getAddress();
-            final JMXConnector conn2 = JMXConnectorFactory.connect(url);
-            mbsc = conn.getMBeanServerConnection();
-            mbsc.getDomains();
-            debug( "Connected to the server just started through " + url );
             */
-                        
+            
+            Util.getLogger().info( "Started JMXConnector, JMXService URL = " + url );
             return server;
         }
-
+        
         public void run()
         {
            // JmxConnectorServerDriver.testStart(8686, "rmi_jrmp", true );
 
+            Util.getLogger().fine( "Number of JMX connectors: " + mConfiguredConnectors.size() );
+            
             for( final JmxConnector c : mConfiguredConnectors )
             {
                 if ( ! Boolean.parseBoolean(c.getEnabled()) )
@@ -304,10 +333,10 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                      Util.getLogger().info( "JmxConnector " + c.getName() + " is disabled, skipping." );
                      continue;
                 }
-
+                
                 try
                 {
-                    startConnector(c);
+                    final JMXConnectorServer server = startConnector(c);
                 }
                 catch( final Throwable t )
                 {
@@ -316,6 +345,18 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 }
             }
 
+            if ( Boolean.valueOf( System.getProperty("START_JMXMP") ))
+            {
+                startJMXMPConnector();
+            }
+        }
+        
+    
+        /**
+            Retain this code, it is used for testing/verification.
+         */
+        private void startJMXMPConnector()
+        {
             // this is for JMXMP, remove soon, use the config mechanism above
             final JMXMPConnectorStarter jmxmpStarter = new JMXMPConnectorStarter( mMBeanServer);
             try
