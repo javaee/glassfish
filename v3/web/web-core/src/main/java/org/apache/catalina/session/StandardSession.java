@@ -1524,8 +1524,7 @@ public class StandardSession
                 (sm.getString("standardSession.removeAttribute.ise"));
 
         // Remove this attribute from our collection
-        Object value = null;
-        value = attributes.remove(name);
+        Object value = attributes.remove(name);
 
         // Do we need to do valueUnbound() and attributeRemoved() notification?
         if (!notify || (value == null)) {
@@ -1664,8 +1663,7 @@ public class StandardSession
         }
 
         // Replace or add this attribute
-        Object unbound = null;
-        unbound = attributes.put(name, value);
+        Object unbound = attributes.put(name, value);
 
         // Call the valueUnbound() method if necessary
         if ((unbound != null) &&
@@ -1901,9 +1899,7 @@ public class StandardSession
         ArrayList saveNames = new ArrayList();
         ArrayList saveValues = new ArrayList();
         for (int i = 0; i < keys.length; i++) {
-            Object value = null;
-            value = attributes.get(keys[i]);
-
+            Object value = attributes.get(keys[i]);
             if (value == null) {
                 continue;            
 
