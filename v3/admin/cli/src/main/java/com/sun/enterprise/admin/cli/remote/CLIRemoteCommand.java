@@ -580,7 +580,8 @@ public class CLIRemoteCommand {
 
         encodedPasswords = new HashMap<String, String>();
         
-        if (commandName.equalsIgnoreCase("change-admin-password")) {
+        if (commandName.equalsIgnoreCase("change-admin-password")
+		&& params.get("help") == null ) {
             try {
                 password = getInteractiveOptionWithConfirmation(encodedPasswords);
                 base64encode(encodedPasswords);
