@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-web-management",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-web-management",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Web Container",
+                        "pkg.description" : "GlassFish Web Container Management package provide advanced administration and monitoring of the web tier technologies. The administration commands facilitate creation, deletion and listing of web components such as http-listener and virtual-server. The monitoring of web container includes several statistics related to web requests, http listener, and http request. This package provides necessary implementation to enable monitoring web container statistics using GlassFish management console and/or asadmin monitor command. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

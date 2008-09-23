@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jdbc-management",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jdbc-management",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish JDBC Management",
+                        "pkg.description" : "GlassFish JDBC Management package provides administration and monitoring support for Java Database Connectivity (JDBC) software resources. The administration includes creation/deletion and listing of commands for jdbc connection pool, and jdbc resource. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

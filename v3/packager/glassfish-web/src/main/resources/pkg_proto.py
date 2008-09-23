@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-web",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-web",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Web Container",
+                        "pkg.description" : "GlassFish web container runtime module enables support for Java EE web application technologies. For more information on Java EE web application technologies, please refer to http://java.sun.com/javaee/technologies/webapps/. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

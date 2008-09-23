@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-gui",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-gui",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Management Console",
+                        "pkg.description" : "Web based management console for administering GlassFish server. The administration console enables configuration and management of core features of the server, such as security realms and general server properties, and to obtain general information about the server. If this package is installed, one can plug in extensions to the administration console to administer other features, such as the web container or Java Database Connectivity (JDBC) software resources.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

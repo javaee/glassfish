@@ -44,8 +44,8 @@ pkg = {
     "name"          : "felix",
     "version"       : conf.felix_version,
     "attributes"    : {
-                        "description" : "OSGi R4 Service Platform",
-                        "description_long" : "Felix is a community effort to implement the OSGi R4 Service Platform, which includes the OSGi framework and standard services, as well as providing and supporting other interesting OSGi-related technologies.",
+                        "pkg.summary" : "Apache Felix",
+                        "pkg.description" : "Apache Felix is a community effort to implement the OSGi R4 Service Platform, which includes the OSGi framework and standard services, as well as providing and supporting other interesting OSGi-related technologies. For more information, see: http://felix.apache.org/site/index.html.",
                         "info.classification" : "OSGi Service Platform Release 4",
                       },
     "dirtrees"      : [ "glassfish" ],

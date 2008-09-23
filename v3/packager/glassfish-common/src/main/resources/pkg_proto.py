@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-common",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-common",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Common Utilities and Components",
+                        "pkg.description" : "GlassFish common utilities and components.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

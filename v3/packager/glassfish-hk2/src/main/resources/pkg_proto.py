@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-hk2",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-hk2",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "HK2",
+                        "pkg.description" : "Hundred Kilobytes Kernel (HK2) is a module subsystem coupled with a simple yet powerful component model to build software. For more information, see https://hk2.dev.java.net/.   "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

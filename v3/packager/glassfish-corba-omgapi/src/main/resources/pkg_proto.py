@@ -54,8 +54,8 @@ pkg = {
     "name"          : "glassfish-corba-omgapi",
     "version"       : ips_version,
     "attributes"    : {
-                        "description" : "OMG CORBA APIs used in GlassFish",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "OMG CORBA APIs used in GlassFish",
+                        "pkg.description" : "Implementation of Object Management Group (OMG) API for GlassFish.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

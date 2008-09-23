@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jpa",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jpa",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish JPA",
+                        "pkg.description" : "GlassFish Java EE ORM technology. This provides implementation for Java Persistence API (JPA). For more information on JPA, please refer to http://java.sun.com/javaee/technologies/persistence.jsp.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

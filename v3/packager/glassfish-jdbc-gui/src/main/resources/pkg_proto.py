@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jdbc-gui",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jdbc-gui",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "JDBC Management Console Plugin",
+                        "pkg.description" : "An extension to the administration console that enables administration of Java Database Connectivity (JDBC) software resources and connection pools. This package requires the administration console. If the administration console is not already installed, it is installed with this package.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

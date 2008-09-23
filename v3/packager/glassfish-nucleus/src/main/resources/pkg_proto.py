@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-nucleus",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-nucleus",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Nucleus",
+                        "pkg.description" : "GlassFish Nucleus package contains core server infrastrucutre such as GlassFish kernel, etc. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish", "bin" ],

@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jca",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jca",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish JCA",
+                        "pkg.description" : "GlassFish connector and connection pooling module provides runtime infrastructure to use resource-adapters in GlassFish. For more information on Java EE Connector Architecture (JCA), please refer to http://java.sun.com/j2ee/connector/.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

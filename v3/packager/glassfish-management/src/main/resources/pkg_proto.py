@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-management",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-management",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Management",
+                        "pkg.description" : "GlassFish administration and monitoring base module. The base monitoring includes JVM and Threadpool monitoring. It also provides the core monitoring infrastructre needed by other monitoring modules. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

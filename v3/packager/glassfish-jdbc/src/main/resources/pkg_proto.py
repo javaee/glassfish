@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jdbc",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "glassfish-jdbc",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish JDBC",
+                        "pkg.description" : "GlassFish JDBC package provides support for applications that use Java Database Connectivity (JDBC) API for database access. This module supports datasources of type javax.sql.DataSource, javax.sql.ConnectionPoolDataSource, javax.sql.XADataSource and works with JDBC (includes JDBC 4.0) compliant drivers. For more information on JDBC, refer to http://java.sun.com/products/jdbc/overview.html.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

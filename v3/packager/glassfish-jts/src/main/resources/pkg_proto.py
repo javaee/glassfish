@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-jts",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "description" : "GlassFish XA Transaction Support",
-                        "description_long" : conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish XA Transaction Support",
+                        "pkg.description" : "GlassFish JTS package provides XA transaction support. For more information on Java Transaction Service (JTS), please refer to http://java.sun.com/javaee/technologies/jts/. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],
