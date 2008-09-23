@@ -60,6 +60,10 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
                dottedNames.putAll(getAllDottedNodes(parentNode.node));
         }
         // reset the pattern.
+        String prefix="";
+        if (!pattern.startsWith(parentNodes[0].relativeName)) {
+            prefix= pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+        }
         pattern = parentNodes[0].relativeName;
 
         Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
@@ -72,7 +76,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setChildrenType("DottedName");
-            part.setMessage((String)node.getValue());
+            part.setMessage(prefix + (String)node.getValue());
         }
     }
     
