@@ -489,13 +489,11 @@ public class SingleSignOn
         sso.removeSession( session );
 
         // see if we are the last session, if so blow away ssoId
-        Session sessions[] = sso.findSessions();
-        if ( sessions == null || sessions.length == 0 ) {
+        if (sso.isEmpty()) {
             synchronized (cache) {
                 sso = (SingleSignOnEntry) cache.remove(ssoId);
             }
         }
-
     }
 
 

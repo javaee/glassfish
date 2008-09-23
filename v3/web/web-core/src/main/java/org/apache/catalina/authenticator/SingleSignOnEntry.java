@@ -79,11 +79,15 @@ import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.Realm;
+import org.apache.catalina.session.StandardSession;
 
 /**
  * A private class representing entries in the cache of authenticated users.
  */
 public class SingleSignOnEntry {
+
+    private static final Logger log = Logger.getLogger(
+        SingleSignOnEntry.class.getName());
 
     public String id = null;
 
@@ -151,8 +155,47 @@ public class SingleSignOnEntry {
         sessions = nsessions;
     }
 
-    public synchronized Session[] findSessions() {
-        return (this.sessions);
+
+    /**
+     * Returns true if this SingleSignOnEntry does not have any sessions
+     * associated with it, and false otherwise.
+     *
+     * @return true if this SingleSignOnEntry does not have any sessions
+     * associated with it, and false otherwise
+     */
+    public synchronized boolean isEmpty() {
+        return (sessions.length == 0);
     }
 
+
+    /**
+     * Expires all sessions associated with this SingleSignOnEntry
+     *
+     * @param reverse the reverse map from which to remove the sessions as
+     * they are being expired
+     */
+    public synchronized void expireSessions(HashMap reverse) {
+        for (int i = 0; i < sessions.length; i++) {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(" Invalidating session " + sessions[i]);
+            }
+
+            // Remove from reverse cache first to avoid recursion
+            synchronized (reverse) {
+                reverse.remove(sessions[i]);
+            }
+        
+            //6406580 START
+            /*
+            // Invalidate this session
+            sessions[i].expire();
+             */
+            // Invalidate this session
+            // if it is not already invalid(ated)
+            if( ((StandardSession)sessions[i]).getIsValid() ) {
+                sessions[i].expire();
+            }
+            //6406580 END
+        }
+    }
 }

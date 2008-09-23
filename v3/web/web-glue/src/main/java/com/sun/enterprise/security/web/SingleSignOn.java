@@ -501,13 +501,11 @@ public class SingleSignOn
         sso.removeSession( session );
 
         // see if we are the last session, if so blow away ssoId
-        Session sessions[] = sso.findSessions();
-        if ( sessions == null || sessions.length == 0 ) {
+        if (sso.isEmpty()) {
             synchronized (cache) {
                 sso = (SingleSignOnEntry) cache.remove(ssoId);
             }
         }
-
     }
 
 
@@ -534,28 +532,7 @@ public class SingleSignOn
             return;
 
         // Expire any associated sessions
-        Session sessions[] = sso.findSessions();
-        for (int i = 0; i < sessions.length; i++) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(" Invalidating session " + sessions[i]);
-            }
-            // Remove from reverse cache first to avoid recursion
-            synchronized (reverse) {
-                reverse.remove(sessions[i]);
-            }
-            
-            //6406580 START
-            /*
-            // Invalidate this session
-            sessions[i].expire();
-             */
-            // Invalidate this session
-            // if it is not already invalid(ated)
-            if( ((StandardSession)sessions[i]).getIsValid() ) {
-                sessions[i].expire();
-            }
-            //6406580 END            
-        }
+        sso.expireSessions(reverse);
 
         // NOTE:  Clients may still possess the old single sign on cookie,
         // but it will be removed on the next request since it is no longer
@@ -778,7 +755,7 @@ public class SingleSignOn
 
         // If there are not sessions left in the SingleSignOnEntry,
         // deregister the entry.
-        if (entry.findSessions().length == 0) {
+        if (entry.isEmpty()) {
             deregister(ssoId);
         }
     }
