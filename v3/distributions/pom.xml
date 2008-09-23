@@ -75,12 +75,10 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.32</version>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.poormans-installer</groupId>
                 <artifactId>installer-builder</artifactId>
-                <version>1.1</version>
                 <configuration>
                     <licenseFile>pom.xml</licenseFile>
                 </configuration>

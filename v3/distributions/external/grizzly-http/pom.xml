@@ -116,7 +116,6 @@
                  -->
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.32</version>
                 <configuration>
                     <tasks>
                         <resolveAll todir="target/source-jars" classifier="sources">
