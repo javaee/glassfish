@@ -98,7 +98,7 @@ public class MonitorCommand extends AbstractCommand {
         host         = getOption(HOST);
         user         = getOption(USER);
         passwordFile = getOption(PASSWORDFILE);
-        interval = Integer.parseInt(getOption(INTERVAL));
+        interval = Integer.parseInt(getOption(INTERVAL)) * 1000;
         type = getOption(TYPE);
         filter = getOption(FILTER);
         return true;
