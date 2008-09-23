@@ -22,8 +22,16 @@
  */
 package test.admin;
 
-import java.io.IOException;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+import java.net.MalformedURLException;
 import java.io.InputStream;
+import java.io.IOException;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -36,15 +44,43 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
 
-/** The base class for asadmin tests. Designed for extension.
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+import com.sun.appserv.management.client.AMXBooter;
+import com.sun.appserv.management.client.ProxyFactory;
+import com.sun.appserv.management.DomainRoot;
+import java.io.File;
+
+/** The base class for admin console tests. Designed for extension.
+ * @author jdlee@dev.java.net
  * @since GlassFish v3 Prelude
  */
 public class BaseAdminConsoleTest {
 
     protected String adminUrl;
-    protected HttpClient client;
-    protected static final int AC_TEST_DELAY = 10000; // Ten seconds
+    private HttpClient client;
+    private static final int AC_TEST_DELAY = 1000; // One second
+    private static final int AC_TEST_ITERATIONS = 100; // Ten seconds
+    private String host;
+    private int port;
+    private volatile MBeanServerConnection mMBeanServerConnection;
+    private volatile DomainRoot mDomainRoot;
+    private static final String FILE_SEP = System.getProperty("file.separator");
+    private static final String CONSOLE_ARCHIVE_PATH = FILE_SEP + "lib" + FILE_SEP + 
+            "install" + FILE_SEP + "applications" + FILE_SEP + "admingui.war";
+
+    // Copied from Lloyd's AMX tests
+    void setUpEnvironment(int port) {
+        try {
+            if (mMBeanServerConnection == null) {
+                host = System.getProperty("http.host");
+                this.port = port;
+
+                mMBeanServerConnection = _getMBeanServerConnection();
+                mDomainRoot = _getDomainRoot(mMBeanServerConnection);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * This BeforeTest method will verify that the login form is available.  Once
@@ -55,27 +91,31 @@ public class BaseAdminConsoleTest {
      * @throws java.lang.Exception
      */
     @BeforeTest
-    @Parameters({"admin.console.url"})
-    void loginBeforeTest( String url) throws Exception {
+    @Parameters({"admin.console.url", "amx.rmiport"})
+    public void loginBeforeTest(String url, int port) throws Exception {
         this.adminUrl = url;
+        setUpEnvironment(port);
         client = new HttpClient();
 
         boolean formFound = false;
         int iteration = 0;
+        Assert.assertTrue(checkForAdminConsoleArchive(), "The admin console archive was not found.  Please check your installation.");
 
-        while (!formFound && iteration < 10) {
+        while (!formFound && iteration < AC_TEST_ITERATIONS) {
             iteration++;
-            formFound = getUrlAndTestForString(url + "login.jsf", "name=\"loginform\"");
+
+            formFound = getUrlAndTestForStrings(adminUrl + "login.jsf","id=\"Login.username\"");
             if (!formFound) {
                 System.err.println("***** Login page not found.  Sleeping to allow app to deploy (" +
-                        iteration + " of 10)...");
+                        iteration + " of " + AC_TEST_ITERATIONS + ")...");
                 Thread.sleep(AC_TEST_DELAY);
             }
         }
 
         Assert.assertTrue(formFound);
 
-        PostMethod post = new PostMethod(url + "j_security_check");
+        // The login for was found, so let's now POST the form to authenticate our session.
+        PostMethod post = new PostMethod(adminUrl + "j_security_check");
         post.setRequestBody(new NameValuePair[]{
                     new NameValuePair("j_username", "anonymous"), new NameValuePair("j_password", "")
                 });
@@ -94,6 +134,16 @@ public class BaseAdminConsoleTest {
         }
     }
 
+    /**
+     * This method uses the AMX API to get the install directory, then checks to
+     * see if the admin console archive is present.
+     * @return
+     */
+    protected boolean checkForAdminConsoleArchive() {
+        File archive = new File(this.getDomainRoot().getInstallDir() + CONSOLE_ARCHIVE_PATH);
+        return archive.exists();
+    }
+
     @AfterTest
     public void shutdownClient() {
         client = null;
@@ -107,7 +157,25 @@ public class BaseAdminConsoleTest {
      * @return
      * @throws java.lang.Exception
      */
-    protected boolean getUrlAndTestForString(String url, String needle) throws Exception {
+    protected boolean getUrlAndTestForStrings(String url, String... needles) throws IOException {
+        String haystack = getUrl(url);
+        boolean allFound = true;
+        for (String needle : needles) {
+            if (haystack.indexOf(needle) == -1) {
+                allFound = false;
+            }
+        }
+
+        return allFound;
+    }
+
+    /**
+     * Request the specified URL and return the contents as a String
+     * @param url
+     * @return
+     * @throws java.io.IOException
+     */
+    protected String getUrl(String url) throws IOException {
         GetMethod get = new GetMethod(url);
         get.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         get.setFollowRedirects(true);
@@ -116,11 +184,17 @@ public class BaseAdminConsoleTest {
         if (statusCode != HttpStatus.SC_OK) {
             Assert.fail("BaseAdminConsoleTest.getUrlAndTestForString() failed.  HTTP Status Code:  " + statusCode);
         }
-        String haystack = getString(get.getResponseBodyAsStream());
+        String response = getString(get.getResponseBodyAsStream());
         get.releaseConnection();
-        return haystack.indexOf(needle) > -1;
+        return response;
     }
 
+    /**
+     * Read the entire contents of the InputStream and return them as a String
+     * @param in
+     * @return
+     * @throws java.io.IOException
+     */
     protected String getString(InputStream in) throws IOException {
         StringBuilder out = new StringBuilder();
         byte[] b = new byte[4096];
@@ -129,5 +203,37 @@ public class BaseAdminConsoleTest {
         }
         in.close();
         return out.toString();
+    }
+
+    /*
+     * These methods were all copied from Lloyd's AMX QL tests.
+     */
+
+    protected DomainRoot getDomainRoot() {
+        return mDomainRoot;
+    }
+
+    protected DomainRoot _getDomainRoot(final MBeanServerConnection conn)
+            throws MalformedURLException, IOException, java.net.MalformedURLException {
+        final ObjectName domainRootObjectName = AMXBooter.bootAMX(conn);
+        final DomainRoot domainRoot = ProxyFactory.getInstance(conn).getDomainRoot();
+        return domainRoot;
+    }
+
+    private MBeanServerConnection _getMBeanServerConnection()
+            throws MalformedURLException, IOException {
+        // service:jmx:rmi:///jndi/rmi://192.168.1.8:8686/jmxrmi
+        // service:jmx:jmxmp://localhost:8888
+        // CHANGE to RMI once it's working
+        //
+        // final String urlStr = "service:jmx:jmxmp://" + mHost + ":" + mPort;
+        final String urlStr = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
+
+        final JMXServiceURL url = new JMXServiceURL(urlStr);
+
+        final JMXConnector jmxConn = JMXConnectorFactory.connect(url);
+        final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
+        conn.getDomains();	// sanity check
+        return conn;
     }
 }

@@ -20,7 +20,6 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-
 package test.admin;
 
 import org.testng.Assert;
@@ -31,6 +30,7 @@ import org.testng.annotations.Test;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish v3 Prelude
  */
+@Test(groups = {"adminconsole"}, description = "Admin Console tests")
 public class AdminConsoleTests extends BaseAdminConsoleTest {
 
     /**
@@ -39,7 +39,9 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testFrameSet() throws Exception {
-        Assert.assertTrue(getUrlAndTestForString(this.adminUrl, "frameset id=\"outerFrameset\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl,
+                "frameset id=\"outerFrameset\""),
+                "The main frameset does not appear to have been rendered.");
     }
 
     /**
@@ -48,7 +50,9 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testNavTree() throws Exception {
-        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "peTree.jsf", "div id=\"form:tree\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "peTree.jsf",
+                "div id=\"form:tree\""),
+                "The navigation tree does not appear to have been rendererd.");
     }
 
     /**
@@ -57,7 +61,9 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testHeader() throws Exception {
-        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "header.jsf", "form id=\"propertyForm\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "header.jsf",
+                "form id=\"propertyForm\"", "propertyForm:Masthead:helpLink"), // Find all of these strings or fail
+                "The header does not appear to have been rendered.");
     }
 
     /**
@@ -66,7 +72,9 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testCommonTasks() throws Exception {
-        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "commonTask.jsf", "Common Task"));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "commonTask.jsf",
+                "id=\"form:commonTasksSection\""),
+                "The Common Task page does not appear to have been rendered.");
     }
 
     /**
@@ -75,6 +83,20 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testDeployedWebAppPage() throws Exception {
-        Assert.assertTrue(getUrlAndTestForString(this.adminUrl + "web/webApp/webApplications.jsf", "Deployed Web Applications ("));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "web/webApp/webApplications.jsf",
+                "id=\"propertyForm:deployTable\""),
+                "The Deployed Web Applications table does not appear to have been rendered.");
+    }
+
+    @Test
+    public void testHelpPage() throws Exception {
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=CONTEXT_HELP.html",
+                "id=\"navFrame\"", "id=\"buttonNavFrame\"", "id=\"contentFrame\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "com_sun_webui_jsf/help/navigator.jsf",
+                "id=\"helpNavigatorForm:javaHelpTabSet\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "com_sun_webui_jsf/help/buttonnav.jsf",
+                "input id=\"helpButtonNavForm_hidden\""));
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "html/en/help/CONTEXT_HELP.html",
+                "body class=\"HlpBdy\""));
     }
 }
