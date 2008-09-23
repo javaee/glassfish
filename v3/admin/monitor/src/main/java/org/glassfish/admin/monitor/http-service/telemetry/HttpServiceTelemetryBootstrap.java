@@ -205,7 +205,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
         vsRequestTMs = new ArrayList<HttpServiceRequestTelemetry>();
         
         for (VirtualServer vs : httpService.getVirtualServer()) {
-            TreeNode vsNode = TreeNodeFactory.createTreeNode(vs.getId(), null, "http-service");
+            TreeNode vsNode = TreeNodeFactory.createTreeNode(vs.getId(), null, "virtual-server");
             httpServiceNode.addChild(vsNode);
             TreeNode requestNode = TreeNodeFactory.createTreeNode("request", null, "http-service");
             vsNode.addChild(requestNode);

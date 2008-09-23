@@ -47,8 +47,7 @@
                 </sun:table>
             "</td>-->
             "<td width="1%"></td>
-            "<td width="25%">
-                "<br/>
+            "<td width="25%" valign="top">
                 <sun:dropDown id="tpDD" label="$resource{i18n_web.monitoring.ThreadPool}" selected="#{tpVal}" values="$attribute{tpList}" labels="$attribute{tpList}" submitForm="#{true}" immediate="#{true}" >
                     <!beforeCreate
                         getChildNodes(
@@ -68,7 +67,6 @@
                         navigate(page="monitor/httpServicePage.jsf");
                     />
                 </sun:dropDown>
-                "<br/>
                 "<br/>
                 <sun:table id="threadpool" title="$resource{i18n_web.monitoring.ThreadPoolStatistics}" lite="#{true}">
                     <!beforeCreate
@@ -96,29 +94,19 @@
                 </sun:table>
             "</td>
         "<td width="1%"></td>
-        "<td width="25%"></td>
-        "<td width="1%"></td>
-        "<td width="25%"></td>
-        "</tr>
-    "</table>
-<!-- 
-    <sun:propertySheet id="dropDowns">
-        <sun:propertySheetSection id="dropDownsSection">
-            <sun:property id="filtersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
-                <!beforeCreate
-                    setPageSessionAttribute(key="vsVal" value="#{vsVal}");
-                    setPageSessionAttribute(key="hlVal" value="#{hlVal}");
-                    setPageSessionAttribute(key="hlList" value="#{hlList}");
-                    setPageSessionAttribute(key="requestStatsNode" value="#{requestStatsNode}");
-                />
-                <sun:dropDown id="virtualServer" label="$resource{i18n_web.monitoring.VirtualServer}:" selected="#{vsVal}" values="$attribute{vsList}" labels="$attribute{vsList}" submitForm="#{true}" immediate="#{true}" >
+        "<td width="25%" valign="top">
+        <sun:dropDown id="virtualServer" label="$resource{i18n_web.monitoring.VirtualServer}:" selected="#{vsVal}" values="$attribute{vsList}" labels="$attribute{vsList}" submitForm="#{true}" immediate="#{true}" >
                     <!beforeCreate
                         getChildNodes(
                             node='http-service',
-                            category='virtual-server'
+                            category='virtual-server',
                             childNodes=>$attribute{vsList},
                             firstItem=>$attribute{firstItem});
                         setAttribute(key="initialData" value="http-service.#{firstItem}.request");
+                        setPageSessionAttribute(key="vsVal" value="#{vsVal}");
+                        <!--setPageSessionAttribute(key="hlVal" value="#{hlVal}");-->
+                        <!--setPageSessionAttribute(key="hlList" value="#{hlList}");-->
+                        setPageSessionAttribute(key="requestStatsNode" value="#{requestStatsNode}");
                     />
                     <!command
                         setAttribute(key="click" value="$this{component}");
@@ -130,6 +118,42 @@
                         navigate(page="monitor/httpServicePage.jsf");
                     />
                 </sun:dropDown>
+        "<br/>
+        <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}" lite="#{true}">
+                    <!beforeCreate
+                        if (#{requestStatsNode}) {
+                            setAttribute(key="node" value="#{requestStatsNode}");
+                        }
+                        if (!#{requestStatsNode}) {
+                            setAttribute(key="node" value="#{initialData}");
+                        }
+                        getStats(
+                            serverName='#{request.serverName}',
+                            node='#{node}'
+                            stats=>$attribute{requestStats});
+                    />
+                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
+                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
+                            <staticText id="name" value="#{td.value.Name}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col2">
+                            <staticText id="value" value="#{td.value.Value}" />
+                        </sun:tableColumn>
+                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
+                   </sun:tableRowGroup>
+                </sun:table>
+        "</td>
+        "<td width="1%"></td>
+        "<td width="25%"></td>
+        "</tr>
+    "</table>
+<!--    <sun:propertySheet id="dropDowns">
+        <sun:propertySheetSection id="dropDownsSection">
+            <sun:property id="filtersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
+                <!beforeCreate
+                    
+                />
+                
                 "&nbsp;&nbsp;&nbsp;
                 <sun:dropDown id="httpListener" label="$resource{i18n_web.monitoring.HTTPListener}:" selected="#{hlVal}" values="$attribute{hlList}" labels="$attribute{hlList}" submitForm="#{true}" immediate="#{true}" >
                     <!beforeCreate
@@ -159,29 +183,6 @@
         "<tr>
             "<td width="1%"></td>
             "<td width="25%">
-     <sun:table id="requests" title="$resource{i18n_web.monitoring.requestStatistics}" lite="#{true}">
-                    <!beforeCreate
-                        if (#{requestStatsNode}) {
-                            setAttribute(key="node" value="#{requestStatsNode}");
-                        }
-                        if (!#{requestStatsNode}) {
-                            setAttribute(key="node" value="#{initialData}");
-                        }
-                        getStats(
-                            serverName='#{request.serverName}',
-                            node='#{node}'
-                            stats=>$attribute{requestStats});
-                    />
-                    <sun:tableRowGroup id="rowGroup1" data={"$attribute{requestStats}"} sourceVar="td">
-                        <sun:tableColumn id="col1" toolTip="#{td.value.ToolTip}">
-                            <staticText id="name" value="#{td.value.Name}" />
-                        </sun:tableColumn>
-                        <sun:tableColumn id="col2">
-                            <staticText id="value" value="#{td.value.Value}" />
-                        </sun:tableColumn>
-                        <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
-                   </sun:tableRowGroup>
-                </sun:table>
             "</td>
             "<td width="1%"></td>
             "<td width="25%"></td>
