@@ -130,20 +130,43 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
         // redirect stderr and stdout
         LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
-        System.setOut(new PrintStream(los, true));
+        final PrintStream pout = new  PrintStream(los, true);
+        System.setOut(pout);
 
         los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
-        System.setErr(new PrintStream(los, true));
+        final PrintStream perr = new PrintStream(los, true);
+        System.setErr(perr);
 
         // finally listen to changes to the logging.properties file
         if (logging!=null) {
             fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
                 public void changed(File changedFile) {
                     try {
+                        //System.out.println("file changed");
+                        //temporarily reset system out and err before calling the log manager
+
+                        PrintStream p = new PrintStream("tmp");
+                        System.setOut(p);
+                        System.setErr(p);
+
                         logMgr.readConfiguration();
+                        logger.log(Level.INFO,  "Logger configuration updated");
+                        // redirect stderr and stdout back
+                        /*
+                        LoggingOutputStream los2 = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
+                        System.setOut(new PrintStream(los2, true));
+
+                        los2 = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
+                        System.setErr(new PrintStream(los2, true));
+                        */
+                        System.setOut(pout);
+                        System.setErr(perr);
+
+
                     } catch (IOException e) {
                         logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
                     }
+
                 }
             });
         }
