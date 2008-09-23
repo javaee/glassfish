@@ -527,6 +527,8 @@ public class DeploymentProperties extends Properties {
     // internal use - from autodeployer
     public static final String LOG_REPORTED_ERRORS = "logReportedErrors";
 
+    public static final String KEEP_SESSIONS = "keepSessions";
+
     static Map keyMap;
 
     static {

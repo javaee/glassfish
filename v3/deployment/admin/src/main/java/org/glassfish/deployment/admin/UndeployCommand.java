@@ -43,6 +43,8 @@ import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
@@ -58,6 +60,7 @@ import java.util.logging.Level;
  */
 @Service(name="undeploy")
 @I18n("undeploy.command")
+@Scoped(PerLookup.class)
 public class UndeployCommand extends ApplicationLifecycle implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
@@ -73,6 +76,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     
     @Param(optional=true, defaultValue="false")
     Boolean keepreposdir;
+
+    @Param(optional=true)
+    Properties properties=null;
 
     public void execute(AdminCommandContext context) {
         
@@ -119,6 +125,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         }
 
         DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, parameters, env);
+        if (properties!=null) {
+            deploymentContext.setProps(properties);
+        }
 
         if (info!=null) {
             undeploy(name, deploymentContext, report);
@@ -148,10 +157,6 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
                     FileUtils.whack(new File(info.getSource().getURI()));
                 }
             }
-
-            // save the context properties saved by the deployers during undeploy as they
-            // might be useful if there is in fact a redeploy action.
-            report.setExtraProperties(deploymentContext.getProps());
 
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } // else a message should have been provided.

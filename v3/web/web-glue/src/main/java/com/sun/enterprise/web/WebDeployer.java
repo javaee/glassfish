@@ -46,6 +46,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.web.jsp.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -200,15 +201,26 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
          
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
-        WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
-
-        return new WebApplication(container, wmInfo, dc);
+        WebModuleConfig wmInfo = loadWebModuleConfig(dc);
+        return new WebApplication(container, wmInfo,
+            (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
+                dc.getProps():null));
     }
 
     
     public void unload(WebApplication webApplication, DeploymentContext dc) {
-        
-    }               
+
+        // dochez : quite a hack..
+        // I have no choice but to do the following hack. The thing is that
+        // WebApplication.stop() is saving the saving the sessions and it
+        // does not have access to DeploymentContext
+        // we will need a better solution after prelude.
+        if (webApplication.props!=null) {
+            if ((dc.getProps().get("ActionReportProperties"))!=null) {
+                ((Properties) dc.getProps().get("ActionReportProperties")).putAll(webApplication.props);
+            }
+        }
+    }
     
     
     /**

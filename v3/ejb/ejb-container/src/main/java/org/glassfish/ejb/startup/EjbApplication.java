@@ -30,11 +30,10 @@ import com.sun.ejb.containers.SingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -42,7 +41,6 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Ejb container service
@@ -85,7 +83,7 @@ public class EjbApplication
         return ejbs;
     }
 
-    public boolean start(StartupContext startupContext) {
+    public boolean start(ApplicationContext startupContext) {
         /*
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 
@@ -139,7 +137,7 @@ public class EjbApplication
         return true;
     }
 
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
         for (Container container : containers) {
             container.onShutdown();
         }

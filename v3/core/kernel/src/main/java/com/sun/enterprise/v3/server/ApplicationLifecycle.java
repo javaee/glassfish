@@ -34,12 +34,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ResolveError;
-import com.sun.enterprise.module.common_impl.Tokenizer;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
@@ -80,10 +76,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,7 +85,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -592,7 +583,7 @@ public class ApplicationLifecycle {
         for (ModuleInfo module : modules) {
             try {
                 ClassLoader cloader = module.getApplicationContainer().getClassLoader();
-                module.getApplicationContainer().stop();
+                module.getApplicationContainer().stop(null);
                 try {
                     PreDestroy.class.cast(cloader).preDestroy();
                 } catch (Exception e) {
@@ -783,10 +774,13 @@ public class ApplicationLifecycle {
             // do nothing the application did not have an adapter
         }
 
+        if (report.getExtraProperties()!=null) {
+            context.getProps().put("ActionReportProperties", report.getExtraProperties());
+        }
 
         // first stop the application
         try {
-            if (!module.getApplicationContainer().stop()) {
+            if (!module.getApplicationContainer().stop(context)) {
                 logger.severe("Cannot stop application " + info.getName() + " in container "
                         + module.getContainerInfo().getSniffer().getModuleType());
             }

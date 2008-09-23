@@ -38,7 +38,7 @@ import com.sun.grizzly.tcp.Response;
 import com.sun.phobos.container.RequestWrapper;
 import com.sun.phobos.container.ResponseWrapper;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.container.Adapter;
 
 
@@ -119,15 +119,16 @@ public class GlassFishPhobosAdapter extends GrizzlyPhobosAdapter implements Appl
      * @param startupContext the start up context
      * @return true if the container startup was successful.
      */
-    public boolean start(StartupContext startupContext) {
+    public boolean start(ApplicationContext startupContext) {
         return true;
     }
 
     /**
      * Stop the application container
      * @return true if stopping was successful.
+     * @param stopContext
      */
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
         shutdown();
         return true;
     }

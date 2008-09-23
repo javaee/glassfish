@@ -39,7 +39,7 @@ package com.sun.enterprise.connectors.module;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.javaee.services.ResourceManager;
 
 import java.util.logging.Level;
@@ -83,7 +83,7 @@ public class ConnectorApplication implements ApplicationContainer {
      * @param startupContext the start up context
      * @return true if the container startup was successful.
      */
-    public boolean start(StartupContext startupContext) {
+    public boolean start(ApplicationContext startupContext) {
         boolean started = false;
 
         deployResources(moduleName);
@@ -113,8 +113,9 @@ public class ConnectorApplication implements ApplicationContainer {
      * Stop the application container
      *
      * @return true if stopping was successful.
+     * @param stopContext
      */
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
         boolean stopped = false;
         undeployResources(moduleName);
         //TODO V3 temporary

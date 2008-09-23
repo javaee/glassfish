@@ -108,10 +108,5 @@
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
     </dependencies>
 </project>

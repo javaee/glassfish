@@ -87,7 +87,7 @@ public class DeploymentContextImpl implements DeploymentContext {
         return parameters;
     }
 
-    public Properties getStartupParameters() {
+    public Properties getParameters() {
         return parameters;
     }
 

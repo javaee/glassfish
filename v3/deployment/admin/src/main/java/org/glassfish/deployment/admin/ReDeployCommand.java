@@ -61,6 +61,10 @@ public class ReDeployCommand extends ApplicationLifecycle implements AdminComman
     @Param(primary=true, optional=true)
     String path = null;
 
+    @Param(optional=true)
+    Properties properties=null;
+
+
         //define this variable to skip parameter valadation.
         //Param validation will be done when referening deploy command.
     boolean skipParamValidation = true;

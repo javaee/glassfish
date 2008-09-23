@@ -44,17 +44,9 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
@@ -1858,7 +1850,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public List<Result<WebModule>> loadWebModule(
             WebModuleConfig wmInfo, String j2eeApplication,
-            DeploymentContext dc) {
+            Properties deploymentProperties) {
 
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
@@ -1889,7 +1881,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                         WebModule ctx = null;
                         try {
-                            ctx = loadWebModule(vs, wmInfo, j2eeApplication, dc);
+                            ctx = loadWebModule(vs, wmInfo, j2eeApplication, deploymentProperties);
                             results.add(new Result(ctx));
                         } catch (Throwable t) {
                             if (ctx != null) {
@@ -1926,11 +1918,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 VirtualServer vs,
                 WebModuleConfig wmInfo,
                 String j2eeApplication,
-                DeploymentContext dc)
+                Properties deploymentProperties)
             throws Exception {
-
-        // XXX Initialize from deployment command line option
-        boolean preserveSessionsDuringRedeploy = false;
 
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
@@ -1992,7 +1981,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 ctx.getJ2EEApplication(),
                                 vs.getName(),
                                 true,
-                                dc);
+                                null);
             } else if (!ctx.getAvailable()){
                 /*
                  * Context has been marked unavailable by a previous
@@ -2209,10 +2198,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.addChild(ctx);
 
-        if (preserveSessionsDuringRedeploy) {
-            ctx.loadSessions(dc);
-        }
-
+        ctx.loadSessions(deploymentProperties);
+        
         return ctx;
     }
 
@@ -2373,8 +2360,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void unloadWebModule(String contextRoot,
             String appName,
             String virtualServers,
-            DeploymentContext dc) {
-        unloadWebModule(contextRoot, appName, virtualServers, false, dc);
+            Properties props) {
+        unloadWebModule(contextRoot, appName, virtualServers, false, props);
     }
 
     /**
@@ -2393,10 +2380,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String appName,
             String virtualServers,
             boolean dummy,
-            DeploymentContext dc) {
-
-        // XXX Initialize from deployment command line option
-        boolean preserveSessionsDuringRedeploy = false;
+            Properties props) {
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("WebContainer.unloadWebModule(): contextRoot: "
@@ -2441,9 +2425,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     context = (WebModule) host.findChild(contextRoot);
                     if (context != null) {
-                        if (preserveSessionsDuringRedeploy) {
-                            context.saveSessions(dc);
-                        }
+                        context.saveSessions(props);
                         host.removeChild(context);
                         try {
                             /*

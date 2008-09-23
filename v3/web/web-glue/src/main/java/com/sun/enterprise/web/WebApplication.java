@@ -45,8 +45,8 @@ import com.sun.logging.LogDomains;
 import java.util.Collection;
 import java.util.HashSet;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.StartupContext;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.plugin.common.WebAppConfig;
@@ -58,7 +58,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.config.ConfigSupport;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
@@ -67,27 +66,29 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
-    private final DeploymentContext deploymentContext;
- 
-    public WebApplication(WebContainer container, WebModuleConfig config,
-                          DeploymentContext dc) {
+    Properties props = null;
+
+    public WebApplication(WebContainer container, WebModuleConfig config, Properties props) {
         this.container = container;
         this.wmInfo = config;
-        this.deploymentContext = dc;
+        this.props = props;
     }
 
 
-    public boolean start(StartupContext startupContext) throws Exception {
-        wmInfo.setAppClassLoader(startupContext.getClassLoader());
-        applyApplicationConfig(startupContext);
-        return start();
-    }
+    public boolean start(ApplicationContext startupContext) throws Exception {
+
+        if (startupContext!=null) {
+            wmInfo.setAppClassLoader(startupContext.getClassLoader());
+            applyApplicationConfig(startupContext);
+        }
 
 
-    private boolean start() throws Exception {
         // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(
-            wmInfo, "null", deploymentContext);
+            wmInfo, "null", props);
+
+        props = null;
+
         if (results == null) {
             logger.log(Level.SEVERE,
                 "Unknown error, loadWebModule returned null, file a bug");
@@ -111,7 +112,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         if (isFailure) {
             throw new Exception(sb.toString());
         }
-     
+
         logger.info("Loading application " + wmInfo.getDescriptor().getName() +
                     " at " + wmInfo.getDescriptor().getContextRoot());
 
@@ -119,10 +120,16 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }
 
 
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
 
+
+        props = null;
+
+        if (Boolean.parseBoolean(stopContext.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))) {
+            props = new Properties();
+        }
         container.unloadWebModule(getDescriptor().getContextRoot(), null,
-                                  null, deploymentContext);
+                                  null, props);
 
         if (getClassLoader() instanceof WebappClassLoader) {
             try {
@@ -150,10 +157,10 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      * Resumes this application on all virtual servers.
      */
     public boolean resume() throws Exception {
-        // WebContainer.loadWebModule(), which is called by start(), 
+        // WebContainer.loadWebModule(), which is called by start(),
         // already checks if the web module has been suspended, and if so,
         // just resumes it and returns
-        return start();
+        return start(null);
     }
 
 
@@ -186,8 +193,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      * start-up context's start-up parameters) to the web app's descriptor.
      * @param startupContext
      */
-    private void applyApplicationConfig(StartupContext startupContext) {
-        Properties startupParams = startupContext.getStartupParameters();
+    private void applyApplicationConfig(ApplicationContext startupContext) {
+        Properties startupParams = startupContext.getParameters();
         /*
          * Fetch the WebAppConfig object, if any was stored in the startup parameters
          * so we could retrieve it here.
@@ -198,7 +205,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             if ( ! (config instanceof WebAppConfig)) {
                 logger.warning("Expected WebAppConfig instance in startup context but found " + config.getClass().getName() + "; ignoring and continuing");
             }
-            
+
             WebAppConfig c = (WebAppConfig) config;
 
             WebBundleDescriptor descriptor = wmInfo.getDescriptor();
@@ -227,7 +234,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         Set<ContextParameter> uncustomizedContextParameters =
                 new HashSet<ContextParameter>(descriptor.getContextParametersSet());
-        
+
         Set<ContextParam> unappliedCustomizationContextParams =
                 new HashSet<ContextParam>(contextParams);
 

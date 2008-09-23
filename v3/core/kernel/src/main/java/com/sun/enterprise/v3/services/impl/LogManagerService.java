@@ -28,6 +28,7 @@ import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
+import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.branding.Branding;

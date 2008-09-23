@@ -24,7 +24,7 @@
 package org.glassfish.persistence.jpa;
 
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
@@ -92,11 +92,11 @@ public class JPAApplication implements ApplicationContainer {
         return null;
     }
 
-    public boolean start(StartupContext startupContxt) {
+    public boolean start(ApplicationContext startupContxt) {
         return true;
     }
 
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
         closeAllEMFs();
         return true;
     }

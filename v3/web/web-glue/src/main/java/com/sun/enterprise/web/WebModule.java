@@ -47,17 +47,9 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.ResourceBundle;
+import java.util.*;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
 
@@ -1391,10 +1383,10 @@ public class WebModule extends PwcWebModule {
      * Saves all active sessions to the given deployment context, so they
      * can be restored following a redeployment.
      *
-     * @param dc the deployment context to which to save the sessions
+     * @param props the deployment context properties to which to save the sessions
      */
-    void saveSessions(DeploymentContext dc) {
-        if (dc == null || dc.getProps() == null) {
+    void saveSessions(Properties props) {
+        if (props == null) {
             return;
         }
 
@@ -1406,7 +1398,7 @@ public class WebModule extends PwcWebModule {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             manager.writeSessions(baos);
-            dc.getProps().setProperty(getObjectName(),
+            props.setProperty(getObjectName(),
                                       gfEncoder.encode(baos.toByteArray()));
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Unable to save sessions for " +
@@ -1419,10 +1411,10 @@ public class WebModule extends PwcWebModule {
      * Loads any sessions that were stored in the given deployment context
      * prior to a redeployment of this web module.
      *
-     * @param dc the deployment context from which to load the sessions
+     * @param deploymentProperties the deployment context properties from which to load the sessions
      */
-    void loadSessions(DeploymentContext dc) {
-        if (dc == null || dc.getProps() == null) {
+    void loadSessions(Properties deploymentProperties) {
+        if (deploymentProperties == null) {
             return;
         }    
 
@@ -1431,7 +1423,7 @@ public class WebModule extends PwcWebModule {
             return;
         }
 
-        String sessions = dc.getProps().getProperty(getObjectName());
+        String sessions = deploymentProperties.getProperty(getObjectName());
         if (sessions != null) {
             try {
                 ByteArrayInputStream bais = new ByteArrayInputStream(
@@ -1442,6 +1434,7 @@ public class WebModule extends PwcWebModule {
                            getName(), ex);
 
             }
+            deploymentProperties.remove(getObjectName());
         }
     }
 

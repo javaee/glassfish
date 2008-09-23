@@ -50,11 +50,12 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.List;
-import java.util.Calendar;
-import java.util.Collection;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 
@@ -145,6 +146,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Param(optional=true)
     String description;
+
+    @Param(optional=true)
+    Properties properties;
 
     private List<ApplicationConfig> appConfigList; 
 
@@ -255,6 +259,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             // reset the properties (might be null) set by the deployers when undeploying.
             deploymentContext.setProps(undeployProps);
+
+            if (properties!=null) {
+                deploymentContext.getProps().putAll(properties);
+            }
 
             // create the classloaders used for deployment and load-time
             deploymentContext.createClassLoaders(clh, archiveHandler);
@@ -380,6 +388,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             undeployParam.put(DeploymentProperties.KEEP_REPOSITORY_DIRECTORY, 
                     keepreposdir.toString());
             ActionReport subReport = report.addSubActionsReport();
+            if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
+                undeployParam.setProperty("properties", DeploymentProperties.KEEP_SESSIONS+"="+properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                subReport.setExtraProperties(new Properties());
+            }
             commandRunner.doCommand("undeploy", undeployParam, subReport);
             return subReport.getExtraProperties();
         }

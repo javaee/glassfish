@@ -24,9 +24,8 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.StartupContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -47,11 +46,11 @@ public class EjbApplicationContainer
         this.bundleDesc = bundleDesc;
     }
 
-    public boolean start(StartupContext startupContext) {
+    public boolean start(ApplicationContext startupContext) {
         return true;
     }
 
-    public boolean stop() {
+    public boolean stop(ApplicationContext stopContext) {
         return false;
     }
 
