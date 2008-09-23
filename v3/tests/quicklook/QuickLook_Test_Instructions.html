@@ -27,8 +27,9 @@ for QuickLook tests</font></b></big></font></big></h1>
 Running QuickLook tests:</b></big></font></big></p>
 <br>
 Install/unzip the glassfish bundle to a directory. <b> As of Sep
-t 17 2008, this directory must be named &quot;glassfish&quot; eg /tests/glassfish</b> 
-<br> Let's call the full
+t 17 2008, this directory must be named "glassfish" eg /tests/glassfish</b>
+<br>
+Let's call the full
 path to glassfish directory as {V3 Installation Dir}. Please do not
 install glassfish under v3/tests/quicklook since the "clean" target of
 QuickLook will clean up all war files under quicklook directory. Change
@@ -57,7 +58,7 @@ Installation Dir}</span><i>/javadb&nbsp; test</i></li>
   </ul>
 </ul>
 <i><span style="font-style: italic;"></span></i>The test results will
-be in test-output-felix directory.<br>
+be in test-output-web directory.<br>
 <br>
 <span style="font-weight: bold;">2. To Run Individual Test Suite from
 Directory Level:</span><br>
@@ -83,8 +84,9 @@ For <span style="font-weight: bold;">web-ips.zip</span> bundle,
 property <i style="font-style: italic;">derby.system.home </i>need to
 be set as shown in section 1.<br>
 <br>
-<span style="font-weight: bold;">3. To Run JRuby Tests</span><span
- style="font-weight: bold;">:</span><br>
+<span style="font-weight: bold;">3. To Run Additional Tests (JRuby, EJB
+tests)</span><span style="font-weight: bold;">:</span><br>
+To run JRuby tests:<br>
 <ul>
   <li>From top level v3/tests/quicklook dir:</li>
   <ul style="font-style: italic;">
@@ -100,7 +102,22 @@ For the first time of running JRuby tests, the JRuby/Rails env will be
 setup so this will take a little time (one minute on my machine). The
 JRuby setup will be done in local maven repository and this step will
 be skipped for the future runs if the same local maven repro is
-used.&nbsp; The test results will be in test-output-jruby directory.<br>
+used.&nbsp; <br>
+<br>
+To run EJB Singleton tests:<br>
+<ul>
+  <li>From top level v3/tests/quicklook dir:</li>
+  <ul style="font-style: italic;">
+    <li>mvn -f ejb/singleton/pom.xml -Dglassfish.home={V3 Installation
+Dir}
+test | tee run.log</li>
+  </ul>
+  <li>Or from v3/tests/quicklook/ejb/singleton dir:</li>
+  <ul style="font-style: italic;">
+    <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
+  </ul>
+</ul>
+The test results will be in test-output-glassfish directory.<br>
 <br>
 <span style="font-weight: bold;">4. Using Local Maven Repository in
 Non-Default Directory:</span><br>
