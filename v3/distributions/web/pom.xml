@@ -383,6 +383,25 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-theme-plugin</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.woodstock</groupId>
+                    <artifactId>webui-jsf</artifactId>
+                    </exclusion>
+                <exclusion>
+                    <groupId>com.sun.woodstock</groupId>
+                    <artifactId>webui-jsf-suntheme</artifactId>
+                    </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jsftemplating</groupId>
+                    <artifactId>jsftemplating-dynafaces</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
             <artifactId>dist-fragment</artifactId>
             <version>${project.version}</version>
             <type>distribution-fragment</type>
