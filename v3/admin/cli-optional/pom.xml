@@ -164,10 +164,14 @@
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <!-- see 5776. Commenting out backup for Prelude -->
+        <!--
         <dependency>    
             <groupId>org.glassfish.admin</groupId>
             <artifactId>backup</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        -->
+        <!-- see 5776. Commenting out backup for Prelude -->
     </dependencies>
 </project>
