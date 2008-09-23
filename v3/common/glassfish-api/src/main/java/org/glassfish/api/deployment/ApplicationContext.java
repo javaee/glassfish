@@ -29,12 +29,12 @@ import java.util.Properties;
  * Useful services for application loading implementation
  *
  */
-public interface StartupContext {
+public interface ApplicationContext {
 
     /**
-     * @return the start up parameters
+     * @return the operation parameters
      */
-    public Properties getStartupParameters();
+    public Properties getParameters();
 
     /**
      * Returns the class loader associated with the application.
@@ -50,5 +50,10 @@ public interface StartupContext {
      * source
      */
     public ClassLoader getClassLoader();
+
+    /**
+     * @return the operation extra properties
+     */
+    public Properties getProps();
 
 }

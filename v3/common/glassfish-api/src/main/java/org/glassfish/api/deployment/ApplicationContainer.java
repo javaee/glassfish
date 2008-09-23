@@ -50,13 +50,14 @@ public interface ApplicationContainer<T> {
      *
      * @throws Exception if this application container could not be started
      */
-    public boolean start(StartupContext startupContext) throws Exception;
+    public boolean start(ApplicationContext startupContext) throws Exception;
     
     /**
      * Stop the application container
-     * @return true if stopping was successful.  
+     * @return true if stopping was successful.
+     * @param stopContext
      */
-    public boolean stop();
+    public boolean stop(ApplicationContext stopContext);
 
     /**
      * Suspends this application container.

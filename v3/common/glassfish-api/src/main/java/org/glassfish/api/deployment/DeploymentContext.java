@@ -30,14 +30,12 @@ import java.io.File;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
 
-import com.sun.enterprise.module.ModuleDefinition;
-
 /**
  * Useful services for Deployer service implementation
  *
  * @author Jerome Dochez
  */
-public interface DeploymentContext extends StartupContext, ExecutionContext {
+public interface DeploymentContext extends ApplicationContext, ExecutionContext {
 
     /**
      * Application bits, at the raw level. Deployer's should avoid
