@@ -49,11 +49,11 @@
         </prop>           
      </group>
  </component>
- <!--if:desktop>
+ <if:desktop>
     <if:shortcut name="Start Update Tool" type="APPLICATION" runInTerminal="false">
 	    <if:target path="updatetool/lib/updatetool-start" relative="INSTALL_HOME"/>
          <if:location path="GlassFish v3 Prelude" relative="USER_START_MENU"/>
 	 <if:icon path="updatetool/vendor-packages/updatetool/images/application-update-tool.ico" relative="INSTALL_HOME"/>
     </if:shortcut>    
-  </if:desktop-->
+  </if:desktop>
 </oor:component-schema>
