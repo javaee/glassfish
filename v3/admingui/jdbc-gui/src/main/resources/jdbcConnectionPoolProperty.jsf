@@ -73,7 +73,7 @@
                             newProps="${newProps}"
                         );
                         setAttribute(key="name" value="$pageSession{jndiName}");
-                        #navigate(page="jdbcConnectionPoolProperty.jsf");
+                        navigate(page="/jdbc/jdbcConnectionPoolProperty.jsf");
                         />
 
                     </sun:button>
