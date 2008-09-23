@@ -182,21 +182,18 @@ ssl_key = None]]>
     <resolveArtifact artifactId="server-mgmt" groupId="org.glassfish.admin" property="server-mgmt.jar"/>
     <resolveArtifact artifactId="admin-util" groupId="org.glassfish.admin" property="admin-util.jar"/>
     <resolveArtifact artifactId="realms" groupId="org.glassfish.security" property="realms.jar"/>
-    <resolveArtifact artifactId="backup" groupId="org.glassfish.admin" property="backup.jar"/>
     <resolveArtifact artifactId="amx-api" groupId="org.glassfish.common" property="amx-api.jar"/>
 
     <echo message="cli-optional jar: ${cli-optional.jar}"/>
     <echo message="server-mgmt jar: ${server-mgmt.jar}"/>
     <echo message="admin-util jar: ${admin-util.jar}"/>
     <echo message="realms jar: ${realms.jar}"/>
-    <echo message="backup jar: ${backup.jar}"/>
     <echo message="amx-api jar: ${amx-api.jar}"/>
 
     <copy file="${cli-optional.jar}" todir="${modules.dir}"/>
     <copy file="${server-mgmt.jar}" todir="${modules.dir}"/>
     <copy file="${admin-util.jar}" todir="${modules.dir}"/>
     <copy file="${realms.jar}" todir="${modules.dir}"/>
-    <copy file="${backup.jar}" todir="${modules.dir}"/>
     <copy file="${amx-api.jar}" todir="${modules.dir}"/>
 </target>
 
