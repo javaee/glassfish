@@ -53,7 +53,7 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
     @Inject
     ServerEnvironmentImpl env;
 
-    @Param(primary=true, name="component")
+    @Param(primary=true)
     String component = null;
 
     @Param(optional=true)    

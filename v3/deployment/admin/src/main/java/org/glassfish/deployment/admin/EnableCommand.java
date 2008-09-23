@@ -68,7 +68,7 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     ServerEnvironmentImpl env;
 
-    @Param(primary=true, name="ParameterNames.COMPONENT")
+    @Param(primary=true)
     String component = null;
 
     @Param(optional=true)
