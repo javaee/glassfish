@@ -40,6 +40,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.branding.Branding;
+import org.jvnet.hk2.component.PostConstruct;
+
+import java.util.PropertyResourceBundle;
+import java.util.MissingResourceException;
 
 /**
  * Branding and Version information based on given distribution/OEM
@@ -49,17 +53,52 @@ import org.glassfish.api.branding.Branding;
 
 @Service
 @Scoped(Singleton.class) 
-public class GlassFishBranding implements Branding { 
+public class GlassFishBranding implements Branding, PostConstruct { 
 
     /**
     * version strings populated during build
     */
-    private final String product_name          = "@PRODUCT_NAME@ Prelude";
-    private final String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
-    private final String full_version          = "@FULL_VERSION@";
-    private final String major_version         = "@MAJOR_VERSION@";
-    private final String minor_version         = "@MINOR_VERSION@"; 
-    private final String build_id              = "@BUILD_ID@";
+    private String product_name          = "@PRODUCT_NAME@ Prelude";
+    private String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
+    private String full_version          = "@FULL_VERSION@";
+    private String major_version         = "@MAJOR_VERSION@";
+    private String minor_version         = "@MINOR_VERSION@"; 
+    private String build_id              = "@BUILD_ID@";
+
+	public void postConstruct() {
+	    // check for resource bundle
+	    try {
+                PropertyResourceBundle vRes =
+                (PropertyResourceBundle)PropertyResourceBundle.getBundle("BrandingVersion");
+                String str = vRes.getString("product_name");
+                if ((str != null) && (str.length() > 0)) {
+	            product_name = str;
+                }
+                str = vRes.getString("abbrev_product_name");
+                if ((str != null) && (str.length() > 0)) {
+	            abbrev_product_name = vRes.getString("abbrev_product_name");
+                }
+	        str = vRes.getString("full_version");
+                if ((str != null) && (str.length() > 0)) {
+	            full_version = vRes.getString("full_version");
+                }
+	        str = vRes.getString("major_version");
+                if ((str != null) && (str.length() > 0)) {
+	            major_version = vRes.getString("major_version");
+                }
+	        str = vRes.getString("minor_version");
+                if ((str != null) && (str.length() > 0)) {
+	            minor_version = vRes.getString("minor_version");
+                }
+	        str = vRes.getString("build_id");
+                if ((str != null) && (str.length() > 0)) {
+	            build_id = vRes.getString("build_id");
+                }
+            } catch(MissingResourceException mre) {
+                // cannot use logger because this may have been called from logger itself
+                System.out.println("no resource bundle found for version, using default GlassFish version");
+            }
+	}
 
     /**
      * Returns version
