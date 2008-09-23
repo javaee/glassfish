@@ -51,6 +51,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -228,12 +229,7 @@ public final class Transactions {
                         }
                         notifiedListeners.add(listener);
                     }
-                } else {
-                    // if nothing is listening, then by definition it's unprocessed
-                    final UnprocessedChangeEvent unp = new UnprocessedChangeEvent(evt, "no ConfigListener listening to dom element " + dom.getProxyType().getName() );
-                    unprocessedEvents.add( new UnprocessedChangeEvents(unp) );
                 }
-                
                 // we notify the immediate parent.
                 // dochez : should we notify the parent chain up to the root or stop at the first parent.
                 if (dom.parent()!=null && dom.parent().getListeners()!=null) {
