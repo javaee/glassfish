@@ -1,1 +1,4 @@
 -exportcontents: com.sun.web.security
+Import-Package: \
+                        com.sun.logging.enterprise.system.core.security, \
+                        *

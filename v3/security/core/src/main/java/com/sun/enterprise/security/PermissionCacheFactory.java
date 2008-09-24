@@ -38,7 +38,7 @@ package com.sun.enterprise.security;
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.Policy;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
@@ -48,7 +48,7 @@ import java.util.Iterator;
 
 public class PermissionCacheFactory {
 
-    private static HashMap cacheMap = new HashMap();
+    private static final Hashtable cacheMap = new Hashtable();
     private static int factoryKey = 0;
     private static boolean supportsReuse = false;
 

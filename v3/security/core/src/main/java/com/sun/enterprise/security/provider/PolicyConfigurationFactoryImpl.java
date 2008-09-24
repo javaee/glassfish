@@ -161,9 +161,10 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 	    // return the policy configuration to the open state, value of
 	    // remove will determine if statements are removed
 	    pci.initialize(true,remove,false);
-            if (remove) {
-                this.removePolicyConfigurationImpl(contextId);
-            }
+            //according to JACC spec we should not remove
+            //  if (remove) {
+            //      this.removePolicyConfigurationImpl(contextId);
+            //  }
 	}
 	return pci;
     }

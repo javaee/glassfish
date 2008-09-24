@@ -152,6 +152,19 @@ public class WebSecurityManager  {
     private WebBundleDescriptor wbd = null;
     //TODO:V3 Copied from VirtualServer.java to avoid dependency on web-container module
     public static final String ADMIN_VS = "__asadmin";
+    private boolean register = true;
+    
+    WebSecurityManager(WebBundleDescriptor wbd, ServerContext svc, WebSecurityManagerFactory fact, boolean register) throws PolicyContextException{
+        this.register = register;
+         this.wbd = wbd;
+        this.CONTEXT_ID = getContextID(wbd);
+        this.serverContext = svc;
+        this.wsmf = fact;
+        String appname = getAppId();
+        factory = Globals.get(SecurityRoleMapperFactory.class);
+        postConstruct();
+        initialise(appname);
+    }
     
     // Create a WebSecurityObject
     private WebSecurityManager(WebBundleDescriptor wbd, WebSecurityManagerFactory fact) throws PolicyContextException {
@@ -248,16 +261,17 @@ public class WebSecurityManager  {
         loadPolicyConfiguration();
  
  	if (uncheckedPermissionCache == null) {
- 	    uncheckedPermissionCache =
-		PermissionCacheFactory.createPermissionCache
-		(this.CONTEXT_ID, codesource, protoPerms, null);
- 
-		allResourcesCP = 
-		    new CachedPermissionImpl(uncheckedPermissionCache,
-					     allResources);
-		allConnectionsCP = 
-		    new CachedPermissionImpl(uncheckedPermissionCache,
-					     allConnections);
+            if (register) {
+                uncheckedPermissionCache =
+                        PermissionCacheFactory.createPermissionCache(this.CONTEXT_ID, codesource, protoPerms, null);
+
+                allResourcesCP =
+                        new CachedPermissionImpl(uncheckedPermissionCache,
+                        allResources);
+                allConnectionsCP =
+                        new CachedPermissionImpl(uncheckedPermissionCache,
+                        allConnections);
+            }
  	} else {
  	    uncheckedPermissionCache.reset();
  	}

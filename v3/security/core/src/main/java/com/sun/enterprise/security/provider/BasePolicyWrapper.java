@@ -403,6 +403,11 @@ public class BasePolicyWrapper extends java.security.Policy {
                 final String contextId2 = contextId;
                 final Permission permission2 = permission;
                 final ProtectionDomain domain2 = domain;
+                if (logger.isLoggable(Level.INFO)) {
+                    Exception ex = new Exception();
+                    ex.fillInStackTrace();
+                    logger.log(Level.INFO, "JACC Policy Provider, failed Permission Check at :", ex);
+                }
                 AccessController.doPrivileged(new PrivilegedAction() {
                     public Object run() {
                         logger.info("JACC Policy Provider: PolicyWrapper.implies, context("

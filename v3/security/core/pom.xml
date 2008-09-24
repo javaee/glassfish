@@ -70,12 +70,6 @@
         </resources>
     </build>
     <dependencies>
-        <!-- LDAPBP not yet published to maven
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>ldapbp</artifactId>
-            <version>1.0</version>
-        </dependency> -->
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
@@ -128,6 +122,12 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
     </dependencies>
 </project>
