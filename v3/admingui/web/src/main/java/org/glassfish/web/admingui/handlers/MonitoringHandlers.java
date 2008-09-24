@@ -123,6 +123,7 @@ public class MonitoringHandlers {
             @HandlerInput(name="serverName", type=String.class, required=true),
             @HandlerInput(name="application", type=String.class, required=true),
             @HandlerInput(name="virtualServer", type=String.class, required=false),
+            @HandlerInput(name="statNames", type=List.class, required=false), 
             @HandlerInput(name="type", type=String.class, required=true),
             @HandlerInput(name="test", type=String.class, required=false)},
         output={
@@ -132,6 +133,7 @@ public class MonitoringHandlers {
         String serverName = (String)handlerCtx.getInputValue("serverName");
         String application = (String)handlerCtx.getInputValue("application");
         String virtualServer = (String)handlerCtx.getInputValue("virtualServer");
+        List<String> statNames = (List)handlerCtx.getInputValue("statNames");
         String type = (String)handlerCtx.getInputValue("type");
         String test = (String)handlerCtx.getInputValue("test");
         TreeNode statsNode = null;
@@ -149,10 +151,20 @@ public class MonitoringHandlers {
             if (application == null || application.equals("All")) {
                 coll = statsNode.getChildNodes();
             } else {
-                String ype = type.substring(1);
-                String t = type.substring(0,1);
-                String T = t.toUpperCase();
-                coll = statsNode.getNodes("*applications."+application+"."+virtualServer+"."+"*"+"["+t+T+"]"+ype+"*");
+                if (type.equals("request")) {
+                    coll = new ArrayList();
+                    for (String s : statNames) {
+                        TreeNode tn = serverRoot.getNode("applications."+application+"."+virtualServer+"."+s);
+                        if (tn != null) {
+                            coll.add(tn);
+                        }
+                    }
+                } else {
+                    String ype = type.substring(1);
+                    String t = type.substring(0,1);
+                    String T = t.toUpperCase();
+                    coll = statsNode.getNodes("*applications."+application+"."+virtualServer+"."+"*"+"["+t+T+"]"+ype+"*");
+                }
             }
             ArrayList list = new ArrayList();
             list.addAll(coll);
