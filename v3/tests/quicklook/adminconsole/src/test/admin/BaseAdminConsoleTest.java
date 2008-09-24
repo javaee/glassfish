@@ -66,6 +66,7 @@ public class BaseAdminConsoleTest {
     private static final String FILE_SEP = System.getProperty("file.separator");
     private static final String CONSOLE_ARCHIVE_PATH = FILE_SEP + "lib" + FILE_SEP + 
             "install" + FILE_SEP + "applications" + FILE_SEP + "admingui.war";
+    private static final String GLASSFISH_DIR = FILE_SEP + ".." + FILE_SEP +"glassfish";
 
     // Copied from Lloyd's AMX tests
     void setUpEnvironment(int port) {
@@ -99,7 +100,11 @@ public class BaseAdminConsoleTest {
 
         boolean formFound = false;
         int iteration = 0;
-        Assert.assertTrue(checkForAdminConsoleArchive(), "The admin console archive was not found.  Please check your installation.");
+        if (!checkForAdminConsoleArchive()) {
+            Assert.fail("The admin console archive was not found at " +
+                this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_ARCHIVE_PATH +
+                ".  Please check your installation.");
+        }
 
         while (!formFound && iteration < AC_TEST_ITERATIONS) {
             iteration++;
@@ -112,7 +117,9 @@ public class BaseAdminConsoleTest {
             }
         }
 
-        Assert.assertTrue(formFound);
+        if (!formFound) {
+            Assert.fail("The login form was not found.");
+        }
 
         // The login for was found, so let's now POST the form to authenticate our session.
         PostMethod post = new PostMethod(adminUrl + "j_security_check");
@@ -140,7 +147,8 @@ public class BaseAdminConsoleTest {
      * @return
      */
     protected boolean checkForAdminConsoleArchive() {
-        File archive = new File(this.getDomainRoot().getInstallDir() + CONSOLE_ARCHIVE_PATH);
+        // Hard-coding "../glassfish" to help cover a deficiency in IPS
+        File archive = new File(this.getDomainRoot().getInstallDir() + GLASSFISH_DIR + CONSOLE_ARCHIVE_PATH);
         return archive.exists();
     }
 
