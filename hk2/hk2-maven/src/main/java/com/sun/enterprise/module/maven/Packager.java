@@ -161,7 +161,7 @@ public class Packager {
             if(a.isOptional())
                 continue;   // optional dependency
             
-            classPathNames.add(a.getFile().getName());
+            classPathNames.add(stripVersion(a));
             classPathIds.add(a.getId());
         }
         if(!classPathNames.isEmpty()) {
@@ -184,5 +184,18 @@ public class Packager {
             entries.put(entryName,in.readLine());
             in.close();
         }
+    }
+
+    private static String stripVersion(Artifact a) {
+        String origName = a.getFile().getName();
+        String newName = origName;
+        int idx = origName.lastIndexOf(a.getVersion());
+        if (idx != -1) {
+            // remove version in artifactId-version(-classifier).type
+            String baseFilename = origName.substring( 0, idx - 1 );
+            String extension = origName.substring( idx + a.getVersion().length());
+            newName = baseFilename + extension;
+        }
+        return newName;
     }
 }
