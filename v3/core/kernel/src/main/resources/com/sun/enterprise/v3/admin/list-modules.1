@@ -54,11 +54,15 @@ Administration Commands                           list-modules(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -95,13 +99,13 @@ Administration Commands                           list-modules(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
 Java EE 5            Last change: 7 Apr 2008                    2
 
 Administration Commands                           list-modules(1)
+
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
@@ -150,15 +154,15 @@ EXAMPLES
              Module Characteristics : Provides to following services
              Module Characteristics : List of imported modules
                      Imports : com.sun.enterprise:hk2:1.0
-                     Imports : org.glassfish.common:glassfish-api:1.0
-                     Imports : org.glassfish.common:internal-api:1.0
-                     Imports : org.glassfish.core:kernel:1.0
-             Module Characteristics : List of Jars implementing the module
 
 Java EE 5            Last change: 7 Apr 2008                    3
 
 Administration Commands                           list-modules(1)
 
+                     Imports : org.glassfish.common:glassfish-api:1.0
+                     Imports : org.glassfish.common:internal-api:1.0
+                     Imports : org.glassfish.core:kernel:1.0
+             Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/glassfish-naming-10.0-SNAPSHOT.jar
        Module : org.glassfish.common:dol:1.0
              properties=(visibility=public,)
@@ -207,15 +211,15 @@ Administration Commands                           list-modules(1)
                      Jar : file:/C:/glassfish/modules/apache-commons-10.0-SNAPSHOT.jar
        Module : org.glassfish.security:websecurity:1.0
              properties=(visibility=public,)
-       State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
-                     Imports : com.sun.enterprise:hk2:1.0
 
 Java EE 5            Last change: 7 Apr 2008                    4
 
 Administration Commands                           list-modules(1)
 
+       State=READY)
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
+                     Imports : com.sun.enterprise:hk2:1.0
                      Imports : org.glassfish.core:security:1.0
                      Imports : org.glassfish.security:securitycommon:1.0
                      Imports : org.glassfish.admin:config-api:1.0
@@ -264,15 +268,15 @@ Administration Commands                           list-modules(1)
              properties=(visibility=public,)
        State=NEW)
        Module : org.glassfish.persistence:jpa-connector:1.0
-             properties=(visibility=public,)
-       State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
 
 Java EE 5            Last change: 7 Apr 2008                    5
 
 Administration Commands                           list-modules(1)
 
+             properties=(visibility=public,)
+       State=READY)
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
                      Imports : com.sun.enterprise:hk2:1.0
                      Imports : org.glassfish.common:dol:1.0
                      Imports : org.glassfish.common:common-util:1.0
@@ -321,15 +325,15 @@ Administration Commands                           list-modules(1)
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/config-api-10.0-SNAPSHOT.jar
        Module : org.glassfish.common:annotation-framework:1.0
-             properties=(visibility=public,)
-       State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
 
 Java EE 5            Last change: 7 Apr 2008                    6
 
 Administration Commands                           list-modules(1)
 
+             properties=(visibility=public,)
+       State=READY)
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
                      Imports : com.sun.enterprise:hk2:1.0
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/annotation-framework-10.0-SNAPSHOT.jar
@@ -378,15 +382,15 @@ Administration Commands                           list-modules(1)
              properties=(visibility=public,)
        State=READY)
              Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
-                     Imports : com.sun.enterprise:hk2:1.0
-                     Imports : org.glassfish:javax.javaee:1.0
-                     Imports : org.glassfish.web:webtier:1.0
 
 Java EE 5            Last change: 7 Apr 2008                    7
 
 Administration Commands                           list-modules(1)
 
+             Module Characteristics : List of imported modules
+                     Imports : com.sun.enterprise:hk2:1.0
+                     Imports : org.glassfish:javax.javaee:1.0
+                     Imports : org.glassfish.web:webtier:1.0
                      Imports : org.glassfish.web:war-util:1.0
                      Imports : org.glassfish.common:common-util:1.0
                      Imports : org.glassfish.common:glassfish-api:1.0
@@ -435,15 +439,15 @@ Administration Commands                           list-modules(1)
        Module : org.glassfish.common:glassfish-mbeanserver:1.0
              properties=(visibility=public,)
        State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
-                     Imports : com.sun.enterprise:hk2:1.0
-                     Imports : org.glassfish.common:internal-api:1.0
 
 Java EE 5            Last change: 7 Apr 2008                    8
 
 Administration Commands                           list-modules(1)
 
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
+                     Imports : com.sun.enterprise:hk2:1.0
+                     Imports : org.glassfish.common:internal-api:1.0
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/glassfish-mbeanserver-1.0.jar
        Module : org.glassfish.external:grizzly-jruby-module:1.0
@@ -492,15 +496,15 @@ Administration Commands                           list-modules(1)
                      Imports : org.glassfish.common:glassfish-mbeanserver:1.0
                      Imports : org.glassfish.common:common-util:1.0
                      Imports : org.glassfish.common:glassfish-api:1.0
-             Module Characteristics : List of Jars implementing the module
-                     Jar : file:/C:/glassfish/modules/amx-impl-10.0-SNAPSHOT.jar
-                     Jar : file:/C:/glassfish/modules/jmxremote_optional-1.0_01-ea.jar
-       Module : org.glassfish.web:jsf-connector:1.0
 
 Java EE 5            Last change: 7 Apr 2008                    9
 
 Administration Commands                           list-modules(1)
 
+             Module Characteristics : List of Jars implementing the module
+                     Jar : file:/C:/glassfish/modules/amx-impl-10.0-SNAPSHOT.jar
+                     Jar : file:/C:/glassfish/modules/jmxremote_optional-1.0_01-ea.jar
+       Module : org.glassfish.web:jsf-connector:1.0
              properties=(visibility=public,)
        State=READY)
              Module Characteristics : Provides to following services
@@ -549,15 +553,15 @@ Administration Commands                           list-modules(1)
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/web/jstl-impl-10.0-SNAPSHOT.jar
        Module : org.glassfish.security:securitycommon:1.0
-             properties=(visibility=public,)
-       State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
 
 Java EE 5            Last change: 7 Apr 2008                   10
 
 Administration Commands                           list-modules(1)
 
+             properties=(visibility=public,)
+       State=READY)
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
                      Imports : com.sun.enterprise:hk2:1.0
                      Imports : org.glassfish.admin:config-api:1.0
                      Imports : org.glassfish.common:glassfish-api:1.0
@@ -606,15 +610,15 @@ Administration Commands                           list-modules(1)
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/javaee-core-10.0-SNAPSHOT.jar
        Module : org.glassfish.common:amx-api:1.0
-             properties=(visibility=public,)
-       State=READY)
-             Module Characteristics : Provides to following services
-             Module Characteristics : List of imported modules
 
 Java EE 5            Last change: 7 Apr 2008                   11
 
 Administration Commands                           list-modules(1)
 
+             properties=(visibility=public,)
+       State=READY)
+             Module Characteristics : Provides to following services
+             Module Characteristics : List of imported modules
              Module Characteristics : List of Jars implementing the module
                      Jar : file:/C:/glassfish/modules/amx-api-2.0-SNAPSHOT.jar
        Module : org.glassfish.connectors:connectors-runtime:1.0
@@ -663,14 +667,15 @@ Administration Commands                           list-modules(1)
                      Jar : file:/C:/glassfish/modules/tiger-types-1.0.jar
                      Jar : file:/C:/glassfish/modules/config-0.2-SNAPSHOT.jar
                      Jar : file:/C:/glassfish/modules/wstx-asl-3.2.3.jar
-                     Jar : file:/C:/glassfish/modules/auto-depends-0.2-SNAPSHOT.jar
-                     Jar : file:/C:/glassfish/modules/hk2-core-0.2-SNAPSHOT.jar
-                     Jar : file:/C:/glassfish/modules/stax-api-1.0-2.jar
-       Command list-modules executed successfully
 
 Java EE 5            Last change: 7 Apr 2008                   12
 
 Administration Commands                           list-modules(1)
+
+                     Jar : file:/C:/glassfish/modules/auto-depends-0.2-SNAPSHOT.jar
+                     Jar : file:/C:/glassfish/modules/hk2-core-0.2-SNAPSHOT.jar
+                     Jar : file:/C:/glassfish/modules/stax-api-1.0-2.jar
+       Command list-modules executed successfully
 
 EXIT STATUS
      0                           command executed successfully

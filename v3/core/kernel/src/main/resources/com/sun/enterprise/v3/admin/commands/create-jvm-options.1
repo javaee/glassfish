@@ -13,19 +13,19 @@ SYNOPSIS
      [--passwordfile filename] [--help]
      [ --target  target]
      [--profiler={true|false}] (jvm_option_name=jvm_option_value)
-     [:jvm_option_name=jvm_option_name*]
+     [:jvm_option_name=jvm_option_value*]
 
 DESCRIPTION
      The create-jvm-options command creates JVM  options  in  the
      Java  configuration  or  profiler elements of the domain.xml
-     file. If JVM options are created for a  profiler,  they  are
+     file.  If JVM options are created for a profiler,  they  are
      used  to record the settings needed to get a particular pro-
      filer going.
 
      This command is supported in remote mode only.
 
      You must restart the server for newly created JVM options to
-     take  effect.  Use  the start/stop-domain command to restart
+     take  effect.   Use the start/stop-domain command to restart
      the domain administration server.
 
 OPTIONS
@@ -48,7 +48,7 @@ OPTIONS
      -H --host
          The machine name where the domain administration  server
 
-Java EE 5           Last change: 11 Jul 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                     create-jvm-options(1)
 
@@ -59,11 +59,15 @@ Administration Commands                     create-jvm-options(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -96,13 +100,14 @@ Administration Commands                     create-jvm-options(1)
 
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
+
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                     create-jvm-options(1)
+
          password  to  authenticate  to the domain administration
          server. The password can be specified by one of the fol-
          lowing means:
-
-Java EE 5           Last change: 11 Jul 2007                    2
-
-Administration Commands                     create-jvm-options(1)
 
              o    Through the --passwordfile option
 
@@ -134,9 +139,11 @@ Administration Commands                     create-jvm-options(1)
          Displays the help text for the command.
 
      --target
-         Specifies the target  on  which  you  are  creating  jvm
-         options. Valid targets are config, instance, cluster, or
-         server. The default is server.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --profiler
 
@@ -145,15 +152,17 @@ Administration Commands                     create-jvm-options(1)
          Default is false.
 
 OPERANDS
+
+Java EE 5            Last change: 2 Sep 2008                    3
+
+Administration Commands                     create-jvm-options(1)
+
      jvm_option_name
+
          The left side of the equal sign (=) is  the  JVM  option
          name.  The  right  side of the equal sign (=) is the JVM
          option value. A colon (:) is a  delimiter  for  multiple
          options.
-
-Java EE 5           Last change: 11 Jul 2007                    3
-
-Administration Commands                     create-jvm-options(1)
 
 EXAMPLES
      Example 1 Using the create-jvm-options command
@@ -164,9 +173,10 @@ EXAMPLES
        asadmin> create-jvm-options --interactive=true
        --secure=true --passwordfile passwords.txt --terse=false
        --user admin --host localhost --port 4848 --target server
-       \\-Dunixlocation=/root/example:
-       -Dvariable=\$HOME:-Dwindowslocation=d\\:\\\sun\\\appserver:
-       -Doption1=-value1
+       \-Dunixlocation=/root/example:
+       \-Dvariable=\$HOME:
+       \-Dwindowslocation=d\:\\sun\\appserver:
+       \-Doption1=-value1
        Command create-jvm-options executed successfully
 
 EXIT STATUS
@@ -177,5 +187,5 @@ EXIT STATUS
 SEE ALSO
      delete-jvm-options(1), list-jvm-options(1)
 
-Java EE 5           Last change: 11 Jul 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    4
 

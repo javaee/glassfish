@@ -1,19 +1,44 @@
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
 NAME
-     set - sets the values of attributes
+     list - lists the configurable elements
 
 SYNOPSIS
-     set
+     list
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     attributename=value
+     [ --monitor =false]
+     [dotted_parent_attribute_name]
 
 DESCRIPTION
-     Sets the values of one or more configurable attribute.
+     Lists the  configurable  element.  On  Solaris,  quotes  are
+     needed when executing commands with * as the option value or
+     operand.
+
+     The dotted notation follows these guidelines:
+
+         o    Any list command that has a dotted name that is not
+              followed by a wildcard (*) will get, as its result,
+              the current node's immediate children. For example,
+              list  --monitor server lists all immediate children
+              belonging to the server node.
+
+         o    Any list command that has a dotted name followed by
+              a wildcard(*) will get, as its result, a hierarchi-
+              cal tree of children nodes from the  current  node.
+              For  example,  list --monitor server.applications.*
+              will list all children of  applications  and  their
+              subsequent child nodes and so on.
+
+         o    Any list command that has a dotted name preceded or
+              followed by a wildcard (*) of the form *dotted name
+              or dotted * name or dotted name* will get,  as  its
+              result,  all  nodes and their children matching the
+              regular expression created by the provided matching
+              pattern.
 
      An application server dotted name uses the "." (period) as a
      delimiter  to separate the parts of a complete name. This is
@@ -26,6 +51,10 @@ DESCRIPTION
          o     A . (period) always separates two sequential parts
               of the name.
 
+Java EE 5           Last change: 22 Dec 2004                    1
+
+Administration Commands                                   list(1)
+
          o    A part of the name usually identifies  an  applica-
               tion server subsystem and/or its specific instance.
               For example:  web-container,  log-service,  thread-
@@ -36,6 +65,14 @@ DESCRIPTION
               \fR (backslash) so that the "." does not act like a
               delimiter.
 
+         o    An * (asterisk) can be used anywhere in the  dotted
+              name  and  it  acts  like the wildcard character in
+              regular expressions. Additionally, an  *  can  col-
+              lapse all the parts of the dotted name. Long dotted
+              name like  "this.is.really.long.hierarchy"  can  be
+              abbreviated to "th*.hierarchy". But note that the .
+              always delimits the parts of the name.
+
          o    The top level switch for any dotted name is  -moni-
               tor  or  -m that is separately specified on a given
               command line. The presence or lack of  this  switch
@@ -43,7 +80,7 @@ DESCRIPTION
               for appserver management: monitoring and configura-
               tion.
 
-              If you happen to know  the  exact  complete  dotted
+         o    If you happen to know  the  exact  complete  dotted
               name  without any wildcard character, then list and
               get/set have a little difference  in  their  seman-
               tics:
@@ -51,11 +88,6 @@ DESCRIPTION
              o    The list command treats  this  complete  dotted
                   name  as  the complete name of a parent node in
                   the abstract  hierarchy.  Upon  providing  this
-
-Java EE 5           Last change: 22 Dec 2004                    1
-
-Administration Commands                                    set(1)
-
                   name  to  list  command,  it simply returns the
                   names of the immediate children at that  level.
                   For   example,   list  server.applications.web-
@@ -75,6 +107,11 @@ Administration Commands                                    set(1)
                   *.   For   example,    server.applications.web-
                   module.JSPWiki.context-root   will  return  the
                   context-root of the web-application deployed to
+
+Java EE 5           Last change: 22 Dec 2004                    2
+
+Administration Commands                                   list(1)
+
                   the domain or default server.
 
          o    server(usually the first part of the complete  dot-
@@ -96,17 +133,17 @@ Administration Commands                                    set(1)
      example, to find out the modified date (attribute) of a par-
      ticular file in a large file  system  that  starts  with  /.
      First  you  must  find  out the location of that file in the
-     file system, and then look at its attributes. Therefore  two
+     file system, and then look at its attributes. Therefor,  two
      of  the  first  commands  to  understand  the hierarchies in
-     appserver are: * list * and * list "*" -monitor. The  sorted
+     appserver are: * list "*" and * list * -monitor. The  sorted
      output of these commands is typically of the following form:
 
          Command                                    Output
      ___________________________________________________________________________________
 
-Java EE 5           Last change: 22 Dec 2004                    2
+Java EE 5           Last change: 22 Dec 2004                    3
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      list *
 
@@ -160,9 +197,9 @@ Administration Commands                                    set(1)
 
                                 o    domain.resources.jdbc-connection-pool._CallFlowPool
 
-Java EE 5           Last change: 22 Dec 2004                    3
+Java EE 5           Last change: 22 Dec 2004                    4
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
                                 o    domain.resources.jdbc-connection-pool._TimerPool
 
@@ -217,9 +254,9 @@ Administration Commands                                    set(1)
 
                                 o    server.web-container
 
-Java EE 5           Last change: 22 Dec 2004                    4
+Java EE 5           Last change: 22 Dec 2004                    5
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
                                 o    server.web-container-availability
      list -monitor *
@@ -270,9 +307,9 @@ Administration Commands                                    set(1)
      subsystems. Every component or subsystem is capable of  hav-
      ing zero or more attributes that can be read and modified.
 
-Java EE 5           Last change: 22 Dec 2004                    5
+Java EE 5           Last change: 22 Dec 2004                    6
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      With thelist command you can drill down through the  hierar-
      chy  in a particular branch of interest. For example, if you
@@ -305,9 +342,9 @@ Administration Commands                                    set(1)
 
                                                                                          8.   server.http-service.http-listener.http-listener-2
 
-Java EE 5           Last change: 22 Dec 2004                    6
+Java EE 5           Last change: 22 Dec 2004                    7
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      2      To   find    the    listener    that                                server.http-service.http-
             corresponds  to  the  default  http-                                listener.http-listener-
@@ -358,9 +395,9 @@ Administration Commands                                    set(1)
          2.   Obtain the various information about the  JVM  that
               the application server domain is running.
 
-Java EE 5           Last change: 22 Dec 2004                    7
+Java EE 5           Last change: 22 Dec 2004                    8
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
       ID                Command                       Output/Comment
      _______________________________________________________________________
@@ -402,9 +439,9 @@ Administration Commands                                    set(1)
                                               attributes  of  a   particular
                                               component.
 
-Java EE 5           Last change: 22 Dec 2004                    8
+Java EE 5           Last change: 22 Dec 2004                    9
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      3      get          server.monitoring-   server.monitoring-
             service.module-monitoring-        service.module-monitoring-
@@ -457,9 +494,9 @@ Administration Commands                                    set(1)
                                               toring  hierarchy,  start with
                                               the list command again.
 
-Java EE 5           Last change: 22 Dec 2004                    9
+Java EE 5           Last change: 22 Dec 2004                   10
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      5      list --monitor * | grep jvm       server.jvm   server.jvm.class-
                                               loading-system
@@ -500,9 +537,9 @@ Administration Commands                                    set(1)
                                               Thus the command  is  get  not
                                               list.
 
-Java EE 5           Last change: 22 Dec 2004                   10
+Java EE 5           Last change: 22 Dec 2004                   11
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
      6      get -monitor  server.jvm.class-   server.jvm.class-loading-
             loading-system.*                  system.dotted-name           =
@@ -557,9 +594,9 @@ Administration Commands                                    set(1)
                                               system.unloadedclasscount-
                                               lastsampletime = 1133819508973
 
-Java EE 5           Last change: 22 Dec 2004                   11
+Java EE 5           Last change: 22 Dec 2004                   12
 
-Administration Commands                                    set(1)
+Administration Commands                                   list(1)
 
                                               server.jvm.class-loading-
                                               system.unloadedclasscount-name
@@ -604,16 +641,20 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-Java EE 5           Last change: 22 Dec 2004                   12
+         The default port number for administration is 4848.
 
-Administration Commands                                    set(1)
+Java EE 5           Last change: 22 Dec 2004                   13
+
+Administration Commands                                   list(1)
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -660,12 +701,11 @@ Administration Commands                                    set(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
+Java EE 5           Last change: 22 Dec 2004                   14
+
+Administration Commands                                   list(1)
+
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 22 Dec 2004                   13
-
-Administration Commands                                    set(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -684,17 +724,97 @@ Administration Commands                                    set(1)
 
          Displays the help text for the command.
 
+     --monitor
+         defaults to false; if set  to  false,  the  configurable
+         attribute values are returned. If set to true, the moni-
+         torable attribute values are returned.
+
 OPERANDS
-     attributename=value         identifies  the  attribute  name
-                                 and its value. See the Reference
-                                 for a listing of  the  available
-                                 attribute names.
+     dotted_parent_element_name  configurable or monitorable ele-
+                                 ment name.
 
 EXAMPLES
-     Example 1 Using set
+     Example 1 Using list to view all dotted-name prefixes
 
-       asadmin> set --user admin --passwordfile password.txt --host localhost
-       --port 4848 server.transaction-service.automatic-recovery=true
+       asadmin> list --user admin --passwordfile password.txt
+       --port 5001 "*"
+       server
+       server.admin-service
+       server.admin-service.das-config
+       server.application-ref.MEjbApp
+       server.application-ref.__ejb_container_timer_app
+       server.application-ref.adminapp
+       server.application-ref.admingui
+       server.application-ref.com_sun_web_ui
+       server.applications
+       server.applications.j2ee-application.MEjbApp
+       server.applications.j2ee-application.__ejb_container_timer_app
+       server.applications.web-module.adminapp
+       server.applications.web-module.admingui
+       server.applications.web-module.com_sun_web_ui
+       server.ejb-container
+
+Java EE 5           Last change: 22 Dec 2004                   15
+
+Administration Commands                                   list(1)
+
+       server.http-service
+       server.http-service.http-listener.admin-listener
+       server.http-service.http-listener.http-listener-1
+       server.http-service.http-listener.http-listener-2
+       server.iiop-service
+       server.iiop-service.iiop-listener.SSL
+       server.iiop-service.iiop-listener.SSL.ssl
+       server.iiop-service.iiop-listener.SSL_MUTUALAUTH
+       server.iiop-service.iiop-listener.SSL_MUTUALAUTH.ssl
+       server.iiop-service.iiop-listener.orb-listener-1
+       server.iiop-service.orb
+       server.java-config
+       server.jms-service
+       server.jms-service.jms-host.default_JMS_host
+       server.log-service
+       server.log-service.module-log-levels
+       server.mdb-container
+       server.monitoring-service
+       server.monitoring-service.module-monitoring-levels
+       server.resource-ref.jdbc/PointBase
+       server.resource-ref.jdbc/__TimerPool
+       server.resources
+       server.resources.jdbc-connection-pool.PointBasePool
+       server.resources.jdbc-connection-pool.__TimerPool
+       server.resources.jdbc-resource.jdbc/PointBase
+       server.resources.jdbc-resource.jdbc/__TimerPool
+       server.security-service
+       server.security-service.audit-module.default
+       server.security-service.auth-realm.certificate
+       server.security-service.auth-realm.file
+       server.security-service.jacc-provider.default
+       server.thread-pools
+       server.thread-pools.thread-pool.thread-pool-1
+       server.transaction-service
+       server.virtual-server.__asadmin
+       server.virtual-server.server
+       server.web-container
+
+     Example 2 Using list for an application
+
+       asadmin> list --user admin --passwordfile password.txt
+       --host localhost --port 4848 server.applications.j2ee-application
+       server.applications.j2ee-application.MEjbApp
+       server.applications.j2ee-application._ejb_container_timer_app
+       server.applications.j2ee-application.stateless-simple
+
+     Example 3 Using list for a web module
+
+Java EE 5           Last change: 22 Dec 2004                   16
+
+Administration Commands                                   list(1)
+
+       asadmin> list --user admin --passwordfile password.txt
+       --host localhost --port 4848 server.applications.web-module
+       server.applications.web-module.adminapp
+       server.applications.web-module.adminguip
+       server.applications.web-module.com_sun_web_ui
 
 EXIT STATUS
      0                           command executed successfully
@@ -702,7 +822,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     get(1), list(1)
+     get(1), set(1)
 
-Java EE 5           Last change: 22 Dec 2004                   14
+Java EE 5           Last change: 22 Dec 2004                   17
 

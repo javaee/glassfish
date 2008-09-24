@@ -33,7 +33,7 @@ DESCRIPTION
 
      Directory deployment is for advanced developers only. Do not
      use  it  in  production environments. In production environ-
-     ments, use the deploy command. Directory deployment is  only
+     ments, use the deploy command.  Directory deployment is only
      supported  on localhost, that is, the client and server must
      reside on the same machine. For this reason, the only values
      for the --host option are:
@@ -44,19 +44,15 @@ DESCRIPTION
 
          o    The IP address of the machine
 
-     If   the   --uniquetablenames,   --createtables,   and    --
-     dropandcreatetables  options  are not specified, the entries
-     in the deployment descriptors are used.
-
-Java EE 5           Last change: 28 Mar 2007                    1
-
-Administration Commands                              deploydir(1)
-
      The --force option makes sure the  component  is  forcefully
      (re)deployed  even  if  the  specified component has already
      been deployed or already exists. Set --force to false for  a
      first  deployment. If the application with that name is run-
      ning and force is set to false, the command fails.
+
+Java EE 5           Last change: 16 Sep 2008                    1
+
+Administration Commands                              deploydir(1)
 
      This command is supported in remote mode only.
 
@@ -86,25 +82,28 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
          The user name of the authorized administrative  user  of
          the domain administration server.
 
-         If you have authenticated  to  a  domain  by  using  the
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
 
-Java EE 5           Last change: 28 Mar 2007                    2
+Java EE 5           Last change: 16 Sep 2008                    2
 
 Administration Commands                              deploydir(1)
-
-         asadmin  login  command, you need not specify the --user
-         option for subsequent operations on the domain.
 
      --passwordfile
 
@@ -155,12 +154,12 @@ Administration Commands                              deploydir(1)
          For security reasons, a password that is specified as an
          environment variable is not read by the asadmin command.
 
-Java EE 5           Last change: 28 Mar 2007                    3
-
-Administration Commands                              deploydir(1)
-
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
+
+Java EE 5           Last change: 16 Sep 2008                    3
+
+Administration Commands                              deploydir(1)
 
      --help
 
@@ -195,48 +194,39 @@ Administration Commands                              deploydir(1)
          Name of the deployable component.
 
      --uniquetablenames
-         Guarantees unique table names  for  all  the  beans  and
-         results  in a hashcode added to the table names. This is
-         useful if you have an  application  with  case-sensitive
-         bean names.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --dbvendorname
 
-         Specifies the name of  the  database  vendor  for  which
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
 
-Java EE 5           Last change: 28 Mar 2007                    4
+Java EE 5           Last change: 16 Sep 2008                    4
 
 Administration Commands                              deploydir(1)
 
-         tables are created. Supported values include db2, mssql,
-         oracle, derby, javadb, postgresql, pointbase and sybase,
-         case-insensitive.  If  not  specified,  the value of the
-         database-vendor-name  attribute  in  sun-ejb-jar.xml  is
-         used.  If no value is specified, a connection is made to
-         the resource specifie by the jndi-name subelement of the
-         cmp-resource  element  in  the sun-ejb-jar.xml file, and
-         the database vendor name is read. If the connection can-
-         not  be  established, or if the value is not recognized,
-         SQL-92 compliance is presumed.
+         ignored.
 
      --createtables
 
-         Creates tables at  deployment  of  an  application  with
-         unmapped  CMP  beans.  Default  is the create-tables-at-
-         deploy entry in the cmp-resource  element  of  the  sun-
-         ejb-jar.xml file.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --dropandcreatetables
-         Drops existing tables and creates tables during  deploy-
-         ment  for  application  using unmapped CMP beans. If not
-         specified, the tables are dropped  if  the  drop-tables-
-         at-undeploy  entry  in  the  cmp-resource element of the
-         sun-ejb-jar.xml file is set to true. The new tables  are
-         created  if  the  create-tables-at-deploy  entry  in the
-         cmp-resource element of the sun-ejb-jar.xml  is  set  to
-         true.  When  the  component  is  redeployed,  the tables
-         created by the previous deployment  are  dropped  before
-         creating the new tables.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --generatermistubs
 
@@ -257,38 +247,30 @@ Administration Commands                              deploydir(1)
          availability is configured and enabled at higher levels,
          such as the server and container levels.
 
-Java EE 5           Last change: 28 Mar 2007                    5
-
-Administration Commands                              deploydir(1)
-
      --libraries
 
          Specify the library JAR files by their relative or abso-
          lute   paths.   Specify   relative   paths  relative  to
          instance-root/lib/applibs. The JAR files  are  separated
          by  a colon on Unix and Linux systems and by a semicolon
-         on Windows systems.  The libraries are made available to
+         on Windows systems. The libraries are made available  to
          the application in the order specified. Place the depen-
          dent JAR files in the domain-dir/lib directory.
 
+Java EE 5           Last change: 16 Sep 2008                    5
+
+Administration Commands                              deploydir(1)
+
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster  profile  or  the  enterprise  profile.
-         Specifies  the  target to which you are deploying. Valid
-         values are:
 
-         server
-
-             Deploys the component to the default server instance
-             server and is the default value.
-
-         domain
-             Deploys the component to the domain.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 OPERANDS
      dirpath
-
          Path to the directory containing the exploded format  of
          the deployable archive.
 
@@ -304,10 +286,6 @@ EXAMPLES
        --host localhost --port 4848 --force=true --precompilejsp=true /home/temp/sampleApp
        Command deploydir executed successfully
 
-Java EE 5           Last change: 28 Mar 2007                    6
-
-Administration Commands                              deploydir(1)
-
 EXIT STATUS
      0                           command executed successfully
 
@@ -317,5 +295,5 @@ SEE ALSO
      deploy(1), disable(1), enable(1), list-components(1),  rede-
      ploy(1), undeploy(1)
 
-Java EE 5           Last change: 28 Mar 2007                    7
+Java EE 5           Last change: 16 Sep 2008                    6
 

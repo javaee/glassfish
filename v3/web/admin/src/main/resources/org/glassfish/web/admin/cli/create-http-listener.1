@@ -48,7 +48,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5           Last change: 15 May 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                   create-http-listener(1)
 
@@ -57,11 +57,15 @@ Administration Commands                   create-http-listener(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -98,13 +102,13 @@ Administration Commands                   create-http-listener(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                   create-http-listener(1)
+
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
-
-Java EE 5           Last change: 15 May 2007                    2
-
-Administration Commands                   create-http-listener(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
@@ -150,15 +154,15 @@ Administration Commands                   create-http-listener(1)
 
          Tells the server what to put in the host name section of
          any  URLs  it sends to the client. This affects URLs the
-         server automatically generates; it  doesn't  affect  the
-         URLs  for  directories  and  files stored in the server.
-         This name should be the alias name if your  server  uses
-         an alias.  If a colon and port number are appended, that
 
-Java EE 5           Last change: 15 May 2007                    3
+Java EE 5            Last change: 2 Sep 2008                    3
 
 Administration Commands                   create-http-listener(1)
 
+         server automatically generates; it  doesn't  affect  the
+         URLs  for  directories  and  files stored in the server.
+         This name should be the alias name if your  server  uses
+         an  alias. If a colon and port number are appended, that
          port will be used in URLs that the server sends  to  the
          client.
 
@@ -174,7 +178,7 @@ Administration Commands                   create-http-listener(1)
          responses. The Servlet 2.4 specification defines the  X-
          Powered-By: Servlet/2.4 header, which containers may add
          to servlet-generated responses. Similarly, the  JSP  2.0
-         specification  defines the X-Powered-By: JSP/2.0 header,
+         specification defines the X-Powered-By:  JSP/2.0 header,
          which containers may add to responses that use JSP tech-
          nology.   The goal of these headers is to aid in gather-
          ing statistical data  about the use of Servlet  and  JSP
@@ -202,34 +206,17 @@ Administration Commands                   create-http-listener(1)
 
          If set to true, the listener is enabled at runtime.
 
-     --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-
-Java EE 5           Last change: 15 May 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    4
 
 Administration Commands                   create-http-listener(1)
 
-         with the cluster  profile  or  the  enterprise  profile.
-         Specifies the target for which you are creating the HTTP
-         listener. Valid values are
+     --target
 
-         server
-
-             Creates the listener for the default server instance
-             server and is the default value.
-
-         configuration_name
-             Creates the listener for the named configuration.
-
-         cluster_name
-
-             Creates the listener for every  server  instance  in
-             the cluster.
-
-         stand-alone_instance_name
-             Creates the listener  for  a  particular  standalone
-             server instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 OPERANDS
      listener_id                 The  listener  ID  of  the  HTTP
@@ -251,11 +238,6 @@ EXAMPLES
        Command create-http-listener executed successfully.
 
 EXIT STATUS
-
-Java EE 5           Last change: 15 May 2007                    5
-
-Administration Commands                   create-http-listener(1)
-
      0                           command executed successfully
 
      1                           error in executing the command
@@ -264,5 +246,5 @@ SEE ALSO
      delete-http-listener(1),   list-http-listeners(1),   create-
      virtual-server(1), create-ssl(1)
 
-Java EE 5           Last change: 15 May 2007                    6
+Java EE 5            Last change: 2 Sep 2008                    5
 

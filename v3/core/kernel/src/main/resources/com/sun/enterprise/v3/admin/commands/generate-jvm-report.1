@@ -2,8 +2,8 @@
 Administration Commands                    generate-jvm-report(1)
 
 NAME
-     generate-jvm-report - shows the threads, classes and  memory
-     for a given target instance.
+     generate-jvm-report - shows the  threads,  classes,  memory,
+     and loggers for a given target instance.
 
 SYNOPSIS
      generate-jvm-report
@@ -11,17 +11,17 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [target] [ --type =summary|memory|class|thread]
+     [ --type =summary|memory|class|thread|log] [target]
 
 DESCRIPTION
      This command  shows  the  threads  (dump  of  stack  trace),
-     classes  and  memory  for a given target instance, including
-     the Domain Administration Service. This command  works  only
-     with the application server instance processes. This command
-     replaces the traditional techniques like sending  ctrl+break
-     or kill -3 signals to application server processes. The com-
-     mand will not work if the target server instance is not run-
-     ning.
+     classes,  memory,  and  loggers for a given target instance,
+     including the Domain Administration  Service.  This  command
+     works  only  with the application server instance processes.
+     This command replaces the traditional techniques like  send-
+     ing  ctrl+break  or  kill  -3  signals to application server
+     processes. The command will not work if  the  target  server
+     instance is not running.
 
 OPTIONS
      -t --terse
@@ -50,16 +50,20 @@ OPTIONS
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
 
-Java EE 5           Last change: 30 Jan 2007                    1
+Java EE 5           Last change: 16 Sep 2008                    1
 
 Administration Commands                    generate-jvm-report(1)
 
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -100,15 +104,14 @@ Administration Commands                    generate-jvm-report(1)
 
              o    Through the asadmin login command
 
+Java EE 5           Last change: 16 Sep 2008                    2
+
+Administration Commands                    generate-jvm-report(1)
+
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                    generate-jvm-report(1)
-
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
@@ -131,38 +134,48 @@ Administration Commands                    generate-jvm-report(1)
          Displays the help text for the command.
 
      --type
-         The type of report user wants to see.
+         The type of report that is to be generated.
 
          summary
 
-             Displays    summary    information     about     the
-             threads/classes and memory.
+             Displays  summary  information  about  the  threads,
+             classes, and memory.
 
          memory
              Provides information about heap and non-heap  memory
              consumption,  memory  pools,  and garbage collection
              statistics for a given target instance.
 
-         classes
+         class
 
              Provides information about the class  loader  for  a
              given target instance.
 
-         threads
+         thread
              Provides information about threads running  and  the
              thread   dump  (stack  trace)  for  a  given  target
              instance.
 
-Java EE 5           Last change: 30 Jan 2007                    3
+Java EE 5           Last change: 16 Sep 2008                    3
 
 Administration Commands                    generate-jvm-report(1)
 
+         log
+
+             Provides information  about  the  loggers  that  are
+             registered in the Virtual Machine TMr the Java plat-
+             form (Java Virtual Machine or  JVM   machine).
+
+             The terms "Java Virtual Machine" and  "JVM"  mean  a
+             Virtual Machine for the Java platform.
+
 OPERANDS
      target
-
-         This option specifies the ending location of the connec-
-         tor  resources.  Valid targets are server, domain, clus-
-         ter, and instance. The default target is server.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using the generate-jvm-report command
@@ -187,5 +200,5 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 16 Sep 2008                    4
 

@@ -49,7 +49,7 @@ OPTIONS
      -H --host
          The machine name where the domain administration  server
 
-Java EE 5           Last change: 30 Jan 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                             create-ssl(1)
 
@@ -60,11 +60,15 @@ Administration Commands                             create-ssl(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -97,13 +101,14 @@ Administration Commands                             create-ssl(1)
 
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
+
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                             create-ssl(1)
+
          password  to  authenticate  to the domain administration
          server. The password can be specified by one of the fol-
          lowing means:
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                             create-ssl(1)
 
              o    Through the --passwordfile option
 
@@ -135,50 +140,27 @@ Administration Commands                             create-ssl(1)
          Displays the help text for the command.
 
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile  or  the  enterprise  profile..
-         Specifies  the  target  on which you are configuring the
-         ssl element. The following values are valid:
-
-         server
-
-             Specifies the server in which  the  iiop-service  or
-             HTTP/IIOP listener is to be configured for SSL.
-
-         config
-             Specifies  the  configuration  that   contains   the
-             HTTP/IIOP  listener or iiop-service for which SSL is
-             to be configured.
-
-         cluster
-
-             Specifies  the  cluster  in  which   the   HTTP/IIOP
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                             create-ssl(1)
-
-             listener  or  iiop-service  is  to be configured for
-             SSL. All the server instances in  the  cluster  will
-             get   the   SSL  configuration  for  the  respective
-             listener or iiop-service.
-
-         instance
-
-             Specifies  the  instance  in  which  the   HTTP/IIOP
-             listener  or  iiop-service  is  to be configured for
-             SSL.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --type
+
          The type of service or listener for  which  the  SSL  is
-         created. The type can be:
+         created.  The type can be:
 
              o    http-listener
 
              o    iiop-listener
 
              o    iiop-service
+
+Java EE 5            Last change: 2 Sep 2008                    3
+
+Administration Commands                             create-ssl(1)
+
          When the type  is  iiop-service,  the  ssl-client-config
          along  with  the  embedded  ssl  element  is  created in
          domain.xml.
@@ -191,7 +173,7 @@ Administration Commands                             create-ssl(1)
          property, the tokenname: is optional.
 
      --ssl2enabled
-         Set this property to true to enable  SSL2.  The  default
+         Set this property to true to enable SSL2.   The  default
          value  is false. If both SSL2 and SSL3 are enabled for a
          virtual server, the server tries SSL3 encryption  first.
          In  the  event  SSL3  encryption  fails, the server then
@@ -207,10 +189,6 @@ Administration Commands                             create-ssl(1)
 
              o    rc4export
 
-Java EE 5           Last change: 30 Jan 2007                    4
-
-Administration Commands                             create-ssl(1)
-
              o    rc2
 
              o    rc2export
@@ -224,20 +202,23 @@ Administration Commands                             create-ssl(1)
          assumed to be enabled.
 
      --ssl3enabled
-
-         Set this property to false to disable SSL3. The  default
+         Set this property to false to disable SSL3.  The default
          value  is  true. If both SSL2 and SSL3 are enabled for a
          virtual server, the server tries SSL3 encryption  first.
          In  the  event  SSL3  encryption  fails, the server then
          tries SSL2 encryption.
 
+Java EE 5            Last change: 2 Sep 2008                    4
+
+Administration Commands                             create-ssl(1)
+
      --tlsenabled
+
          Set this property to false to disable TLS.  The  default
          value  is  true It is good practice to enable TLS, which
          is a more secure version of SSL.
 
      --ssl3tlsciphers
-
          A comma-separated list of the SSL3 and/or TLS ciphers to
          be  used.  Use  the prefix + to enable or - to disable a
          particular cipher. Allowed values are:
@@ -258,15 +239,11 @@ Administration Commands                             create-ssl(1)
          If no value is  specified,  all  supported  ciphers  are
          assumed to be enabled.
 
-Java EE 5           Last change: 30 Jan 2007                    5
-
-Administration Commands                             create-ssl(1)
-
      --tlsrollbackenabled
 
-         Set to true (default) to enable TLS rollback. TLS  roll-
+         Set to true (default) to enable TLS rollback.  TLS roll-
          back  should  be enabled for Microsoft Internet Explorer
-         5.0  and  5.5.  This   option   is   only   valid   when
+         5.0  and  5.5.   This  option   is   only   valid   when
          -tlsenabled=true.
 
      --clientauthenabled
@@ -280,6 +257,10 @@ OPERANDS
           The ID of the HTTP or IIOP listener for which  the  SSL
          element  is  to  be  created.  The  listener_id  is  not
          required if the --type is iiop-service.
+
+Java EE 5            Last change: 2 Sep 2008                    5
+
+Administration Commands                             create-ssl(1)
 
 EXAMPLES
      Example 1 Using create-ssl
@@ -300,5 +281,5 @@ EXIT STATUS
 SEE ALSO
      delete-ssl(1)
 
-Java EE 5           Last change: 30 Jan 2007                    6
+Java EE 5            Last change: 2 Sep 2008                    6
 

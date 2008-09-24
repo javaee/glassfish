@@ -46,16 +46,20 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-Java EE 5           Last change: 30 Jan 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                        delete-profiler(1)
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -98,16 +102,16 @@ Administration Commands                        delete-profiler(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
+
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                        delete-profiler(1)
+
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                        delete-profiler(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -127,37 +131,17 @@ Administration Commands                        delete-profiler(1)
          Displays the help text for the command.
 
      --target
-         This option specifies the target profiler element  which
-         you are deleting. Valid values are
-
-         server
-
-             Deletes the profiler element for the default  server
-             instance server and is the default value.
-
-         configuration_name
-             Deletes the profiler element for  the  named  confi-
-             guration.
-
-         cluster_name
-
-             Deletes  the  profiler  element  for  every   server
-             instance in the cluster.
-
-         instance_name
-             Deletes the profiler element for a particular server
-             instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using delete-profiler
 
        asadmin> delete-profiler --user admin --passwordfile password.txt
        --host localhost --port 4848
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                        delete-profiler(1)
-
        Command delete-profiler executed successfully
 
 EXIT STATUS
@@ -168,5 +152,5 @@ EXIT STATUS
 SEE ALSO
      create-profiler(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    3
 

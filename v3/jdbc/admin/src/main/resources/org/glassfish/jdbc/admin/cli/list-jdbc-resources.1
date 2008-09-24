@@ -43,19 +43,22 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-     -s --secure
-         If set to true, uses SSL/TLS  to  communicate  with  the
+         The default port number for administration is 4848.
 
 Java EE 5           Last change: 30 Jan 2007                    1
 
 Administration Commands                    list-jdbc-resources(1)
 
+     -s --secure
+
+         If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
-     -u --user
+         The default is false.
 
+     -u --user
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -64,6 +67,7 @@ Administration Commands                    list-jdbc-resources(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -99,15 +103,14 @@ Administration Commands                    list-jdbc-resources(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password   through   the   --passwordfile   option   for
-
 Java EE 5           Last change: 30 Jan 2007                    2
 
 Administration Commands                    list-jdbc-resources(1)
 
-         subsequent  operations  on the domain. However, only the
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
          AS_ADMIN_USERPASSWORD, when required by individual  com-
@@ -149,11 +152,12 @@ EXAMPLES
 
        asadmin> list-jdbc-resources --user admin --passwordfile passwords.txt
        jdbc/DerbyPool
-       Command list-jdbc-resources executed successfully.
 
 Java EE 5           Last change: 30 Jan 2007                    3
 
 Administration Commands                    list-jdbc-resources(1)
+
+       Command list-jdbc-resources executed successfully.
 
 EXIT STATUS
      0                           command executed successfully

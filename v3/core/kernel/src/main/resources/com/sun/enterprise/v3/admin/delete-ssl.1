@@ -48,7 +48,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5           Last change: 13 Jul 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                             delete-ssl(1)
 
@@ -57,11 +57,15 @@ Administration Commands                             delete-ssl(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -98,13 +102,13 @@ Administration Commands                             delete-ssl(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                             delete-ssl(1)
+
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
-
-Java EE 5           Last change: 13 Jul 2007                    2
-
-Administration Commands                             delete-ssl(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
@@ -132,49 +136,26 @@ Administration Commands                             delete-ssl(1)
          Displays the help text for the command.
 
      --target
-         This operand is valid in domains that are configured  to
-         support  clusters, such as domains that are created with
-         the cluster profile or the enterprise profile. Specifies
-         the target on which you are configuring the ssl element.
-         The following values are valid:
-
-         server
-
-             Specifies the server in which  the  iiop-service  or
-             HTTP/IIOP listener is to be unconfigured for SSL.
-
-         config
-             Specifies  the  configuration  that   contains   the
-             HTTP/IIOP  listener or iiop-service for which SSL is
-             to be unconfigured.
-
-         cluster
-
-             Specifies  the  cluster  in  which   the   HTTP/IIOP
-             listener  or  iiop-service is to be unconfigured for
-             SSL. All the server instances in  the  cluster  will
-             get  SSL unconfigured for the respective listener or
-             iiop-service.
-
-Java EE 5           Last change: 13 Jul 2007                    3
-
-Administration Commands                             delete-ssl(1)
-
-         instance
-
-             Specifies  the  instance  in  which  the   HTTP/IIOP
-             listener  or  iiop-service is to be unconfigured for
-             SSL.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
       --type
+
          The type of service or listener for  which  the  SSL  is
-         deleted. The type must be one of the following types:
+         deleted.  The type must be one of the following types:
 
              o    http-listener
 
              o    iiop-listener
 
              o    iiop-service
+
+Java EE 5            Last change: 2 Sep 2008                    3
+
+Administration Commands                             delete-ssl(1)
 
 OPERANDS
      listener_id
@@ -201,12 +182,8 @@ EXIT STATUS
 
      1                            error in executing the command
 
-Java EE 5           Last change: 13 Jul 2007                    4
-
-Administration Commands                             delete-ssl(1)
-
 SEE ALSO
      create-ssl(1)
 
-Java EE 5           Last change: 13 Jul 2007                    5
+Java EE 5            Last change: 2 Sep 2008                    4
 

@@ -46,9 +46,11 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-Java EE 5           Last change: 13 Jul 2007                    1
+         The default port number for administration is 4848.
+
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                   delete-jdbc-resource(1)
 
@@ -56,6 +58,8 @@ Administration Commands                   delete-jdbc-resource(1)
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -102,12 +106,11 @@ Administration Commands                   delete-jdbc-resource(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-         After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 13 Jul 2007                    2
+Java EE 5            Last change: 2 Sep 2008                    2
 
 Administration Commands                   delete-jdbc-resource(1)
 
+         After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -127,36 +130,13 @@ Administration Commands                   delete-jdbc-resource(1)
          Displays the help text for the command.
 
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile.
-
-         This option helps specify the target from which you  are
-         removing the JDBC resource. Valid targets are:
-
-         server
-
-             Removes  the  resource  from  the   default   server
-             instance. This is the default value.
-
-         domain
-             Removes the resource from the domain.
-
-         cluster_name
-
-             Removes the resource from every server  instance  in
-             the cluster.
-
-         instance_name
-             Removes  the  resource  from  a   particular   sever
-             instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 OPERANDS
-
-Java EE 5           Last change: 13 Jul 2007                    3
-
-Administration Commands                   delete-jdbc-resource(1)
-
      jndi_name                   The  JNDI  name  of  this   JDBC
                                  resource to be removed.
 
@@ -171,6 +151,10 @@ EXAMPLES
        Command delete-jdbc-resource executed successfully.
 
      Example 2 Using the delete-jdbc-resource command
+
+Java EE 5            Last change: 2 Sep 2008                    3
+
+Administration Commands                   delete-jdbc-resource(1)
 
      The following example shows how to delete a JDBC resource in
      a domain whose profile is the cluster profile.
@@ -187,5 +171,5 @@ EXIT STATUS
 SEE ALSO
      create-jdbc-resource(1), list-jdbc-resources(1)
 
-Java EE 5           Last change: 13 Jul 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    4
 

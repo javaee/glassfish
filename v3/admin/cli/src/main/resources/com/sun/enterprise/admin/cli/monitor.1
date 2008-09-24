@@ -1,0 +1,292 @@
+
+Administration Commands                                monitor(1)
+
+NAME
+     monitor - displays monitoring data for commonly-used  Enter-
+     prise Server components
+
+SYNOPSIS
+     monitor
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+      --type  monitor_type [--filename file_name]
+     [--interval interval] [--filter filter_name]
+     instance_name
+
+DESCRIPTION
+     This command prints out  commonly  monitored  attributes  of
+     Enterprise  Server components, and has options for filtering
+     out statistics and capturing the output in a Comma Separated
+     Values  (CSV) file. The output appears in a table format. To
+     view the legend of the table header, type h.
+
+     Note -
+
+       To  monitor  information  for  a  given   attribute,   the
+       attribute's  monitoring  level must be set to HIGH or LOW.
+       Set the monitoring level through the  Administration  Con-
+       sole, or use the set command.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         If set to true, the command-line statement is echoed  on
+         the standard output. Default is false.
+
+     -I --interactive
+
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+Java EE 5          Last change: 17 April 2007                   1
+
+Administration Commands                                monitor(1)
+
+     -p --port
+
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
+
+     -s --secure
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+         The default is false.
+
+     -u --user
+
+         The user name of the authorized administrative  user  of
+         the domain administration server.
+
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
+
+     --passwordfile
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
+
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
+
+           AS_ADMIN_PASSWORD=password
+
+         In this example, password is  the  actual  administrator
+         password.
+
+         The following other passwords can also be specified:
+
+             o    AS_ADMIN_MAPPEDPASSWORD
+
+             o    AS_ADMIN_USERPASSWORD
+
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
+
+Java EE 5          Last change: 17 April 2007                   2
+
+Administration Commands                                monitor(1)
+
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
+
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
+
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
+
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --type
+         The type of statistics to monitor. Valid values are:
+
+             o    connection
+
+             o    connectionqueue
+
+             o    connectorpool
+
+             o    endpoint
+
+             o    entitybean
+
+             o    filecache
+
+             o    httplistener
+
+             o    httpservice
+
+             o    jdbcpool
+
+Java EE 5          Last change: 17 April 2007                   3
+
+Administration Commands                                monitor(1)
+
+             o    jvm
+
+             o    keepalive
+
+             o    messagedriven
+
+             o    servlet
+
+             o    statefulsession
+
+             o    statelesssession
+
+             o    threadpool
+
+             o    webmodule
+
+     --filename
+
+         Saves output to a file in CSV format.
+
+     --interval
+         The interval  in  seconds  before  capturing  monitoring
+         attributes.  If the interval must be greater than 0. The
+         monitoring attributes are displayed on stdout until  you
+         type ctrl-c or q.  The default value is 30.
+
+     --filter
+
+         If there is more than one  monitorable  element  in  the
+         given type, use this option to filter the results to get
+         the information you want.
+
+OPERANDS
+     instance_name               The server instance for which to
+                                 view monitoring data.
+
+EXAMPLES
+     For the following examples, enable monitoring for  the  type
+     before running the commands. For example:
+
+       asadmin set server.monitoring-service.module-monitoring-levels.jvm=LOW
+
+     Example 1 Sending output to the screen:
+
+       asadmin> monitor --type jvm --user admin --passwordfile password.txt server
+                                     JVM Monitoring
+
+Java EE 5          Last change: 17 April 2007                   4
+
+Administration Commands                                monitor(1)
+
+       UpTime(ms)                                    HeapSize(bytes)
+       current                   min        max        low        high       count
+       327142979                 0          531628032  0          45940736   45940736
+
+     Example 2 Using the filter option:
+
+     The following example shows a type for which there are  mul-
+     tiple monitoring options when the filter option is not used:
+
+       asadmin> monitor --type httplistener --user admin --passwordfile password.txt server
+
+       There are more than one monitoring elements. Please consider using the filter option.
+       The following are available elements to monitor:
+           http-listener-1
+           http-listener-2
+       CLI137 Command monitor failed.
+
+     Using the filter option:
+
+       asadmin> monitor --type httplistener --filter http-listener-1
+       --user admin --passwordfile password.txt server
+
+                          HTTP Listener Monitoring: http-listener-1
+       br   bs   c200 c2xx c302 c304 c3xx c400 c401 c403 c404 c4xx c503 c5xx coc  co
+       ctc  ctb  ec   moc  mst  mt   mtm  mst  pt   rc
+       0    0    0    0    0    3    3    0    0    0    0    0    0    0    0    0
+       2    0    0    1    20   20   2    2    6    3
+
+     Enter h to see the legend for the table headings:
+
+       ******************************************************************************************
+       * br   = Cumulative value of the Bytes received by each of the Request Processors        *
+       * bs   = Cumulative value of the Bytes sent by each of the Request Processors            *
+       * c200 = Number of responses with a status code equal to 200                             *
+       * c2xx = Number of responses with a status code in the 2xx range                         *
+       * c302 = Number of responses with a status code equal to 302                             *
+
+Java EE 5          Last change: 17 April 2007                   5
+
+Administration Commands                                monitor(1)
+
+       * c304 = Number of responses with a status code equal to 304                             *
+       * c3xx = Number of responses with a status code in the 3xx range                         *
+       * c400 = Number of responses with a status code equal to 400                             *
+       * c401 = Number of responses with a status code equal to 401                             *
+       * c403 = Number of responses with a status code equal to 403                             *
+       * c404 = Number of responses with a status code equal to 404                             *
+       * c4xx = Number of responses with a status code equal to 4xx                             *
+       * c504 = Number of responses with a status code equal to 504                             *
+       * c5xx = Number of responses with a status code equal to 5xx                             *
+       * coc  = Number of open connections                                                      *
+       * co   = Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range *
+       * ctc  = Number of request processing threads currently in the listener thread pool      *
+       * ctb  = Number of request processing threads currently in use in the listener thread    *
+       *        pool serving requests                                                           *
+       * ec   = Number of responses with a status code equal to 400                             *
+       * moc  = Maximum number of open connections                                              *
+       * mst  = Minimum number of request processing threads that will be created at listener   *
+       *        startup time and maintained as spare threads above the current thread count     *
+       * mt   = Maximum number of request processing threads that are created by the listener   *
+       * mtm  = Provides the longest response time for a request - not a cumulative value, but  *
+       *        the largest response time from among the response times                         *
+       * pt   = Cumulative value of the times taken to process each request. The processing     *
+       *        time is the average of request processing times over the request count          *
+       * rc   = Cumulative number of the requests processed so far                              *
+       ******************************************************************************************
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     get(1), list(1)
+
+Java EE 5          Last change: 17 April 2007                   6
+

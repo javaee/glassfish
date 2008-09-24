@@ -43,19 +43,22 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-     -s --secure
-         If set to true, uses SSL/TLS  to  communicate  with  the
+         The default port number for administration is 4848.
 
-Java EE 5           Last change: 30 Jan 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                      create-auth-realm(1)
 
+     -s --secure
+
+         If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
-     -u --user
+         The default is false.
 
+     -u --user
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -64,6 +67,7 @@ Administration Commands                      create-auth-realm(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -99,15 +103,14 @@ Administration Commands                      create-auth-realm(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-         After authenticating to a domain by  using  the  asadmin
-         login  command,  you need not specify the administration
-         password   through   the   --passwordfile   option   for
-
-Java EE 5           Last change: 30 Jan 2007                    2
+Java EE 5            Last change: 2 Sep 2008                    2
 
 Administration Commands                      create-auth-realm(1)
 
-         subsequent  operations  on the domain. However, only the
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
          AS_ADMIN_USERPASSWORD, when required by individual  com-
@@ -124,24 +127,11 @@ Administration Commands                      create-auth-realm(1)
          Displays the help text for the command.
 
      --target
-         Specifies the target  on  which  you  are  creating  the
-         realm. Valid values are
-
-         server
-
-             Creates the realm for the  default  server  instance
-             server and is the default value.
-
-         configuration_name
-             Creates the realm for the named configuration.
-
-         cluster_name
-
-             Creates the realm for every server instance  in  the
-             cluster.
-
-         instance_name
-             Creates the realm for a particular server instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --classname
 
@@ -150,10 +140,6 @@ Administration Commands                      create-auth-realm(1)
      --property
          Optional attributes name/value pairs of provider  imple-
          mentation specific attributes.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                      create-auth-realm(1)
 
 OPERANDS
      auth_realm_name             Name of this realm.
@@ -167,6 +153,10 @@ EXAMPLES
        --property defaultuser=admin:Password=admin db
        Command create-auth-realm executed successfully
 
+Java EE 5            Last change: 2 Sep 2008                    3
+
+Administration Commands                      create-auth-realm(1)
+
      Where db is the auth realm created.
 
 EXIT STATUS
@@ -177,5 +167,5 @@ EXIT STATUS
 SEE ALSO
      delete-auth-realm(1), list-auth-realms(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    4
 

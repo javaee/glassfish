@@ -78,11 +78,15 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -93,13 +97,14 @@ OPTIONS
          min  login  command,  you  need  not  specify the --user
          option for subsequent operations on the domain.
 
-     --passwordfile
-         Specifies the name, including the full path, of  a  file
-         that contains the password entries in a specific format.
-
 Java EE 5           Last change: 11 Apr 2008                    2
 
 Administration Commands                       list-jvm-options(1)
+
+     --passwordfile
+
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
 
          The entry for a password must have the AS_ADMIN_  prefix
          followed  by the password name in uppercase letters. For
@@ -148,13 +153,13 @@ Administration Commands                       list-jvm-options(1)
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
 
-     --help
-
-         Displays the help text for the command.
-
 Java EE 5           Last change: 11 Apr 2008                    3
 
 Administration Commands                       list-jvm-options(1)
+
+     --help
+
+         Displays the help text for the command.
 
 EXAMPLES
      Example 1 Using the list-jvm-options command

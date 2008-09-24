@@ -54,12 +54,16 @@ Administration Commands                          list-commands(1)
 
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -98,15 +102,14 @@ Administration Commands                          list-commands(1)
 
              o    Through the --passwordfile option
 
-             o    Through the asadmin login command
-
-             o    Interactively at the command prompt
-         The asadmin login command can be used  only  to  specify
-
 Java EE 5           Last change: 14 Apr 2008                    2
 
 Administration Commands                          list-commands(1)
 
+             o    Through the asadmin login command
+
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
@@ -152,15 +155,15 @@ EXAMPLES
        ********** Local Commands **********
        create-domain
        backup-domain
-       delete-domain
-       start-domain
-       restore-domain
-       stop-domain
 
 Java EE 5           Last change: 14 Apr 2008                    3
 
 Administration Commands                          list-commands(1)
 
+       delete-domain
+       start-domain
+       restore-domain
+       stop-domain
        stop-database
        list-domains
        start-database
@@ -209,15 +212,15 @@ Administration Commands                          list-commands(1)
        list-virtual-servers
        ping-connection-pool
        redeploy
-       stop-domain
-       undeploy
-       update-file-user
-       version
 
 Java EE 5           Last change: 14 Apr 2008                    4
 
 Administration Commands                          list-commands(1)
 
+       stop-domain
+       undeploy
+       update-file-user
+       version
        Command list-commands executed successfully.
 
 EXIT STATUS

@@ -47,16 +47,20 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-Java EE 5           Last change: 30 Jan 2007                    1
+Java EE 5           Last change: 23 Sep 2008                    1
 
 Administration Commands                                version(1)
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -99,16 +103,16 @@ Administration Commands                                version(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
+
+Java EE 5           Last change: 23 Sep 2008                    2
+
+Administration Commands                                version(1)
+
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                                version(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -144,7 +148,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     help(1)
+     asadmin(1M)
 
-Java EE 5           Last change: 30 Jan 2007                    3
+Java EE 5           Last change: 23 Sep 2008                    3
 

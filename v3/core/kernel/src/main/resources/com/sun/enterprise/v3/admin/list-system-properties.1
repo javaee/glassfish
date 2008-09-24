@@ -3,31 +3,18 @@ Administration Commands                 list-system-properties(1)
 
 NAME
      list-system-properties - lists the system properties of  the
-     domain, configuration, cluster, or server instance
+     domain
 
 SYNOPSIS
-     lists-system-properties
+     list-system-properties
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [target target_name]
+     [ target]
 
 DESCRIPTION
-     Note -
-
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
-
-     Shared or clustered server  instances  will  often  need  to
-     override  attributes  defined in their referenced configura-
-     tion. Any configuration attribute in a server  instance  can
-     be overridden through a system property of the corresponding
-     name. This command lists the system properties of a  domain,
-     configuration, cluster, or server instance.
+     This command lists the system properties of a domain.
 
 OPTIONS
      -t --terse
@@ -48,11 +35,6 @@ OPTIONS
 
      -H --host
          The machine name where the domain administration  server
-
-Java EE 5           Last change: 13 Jul 2007                    1
-
-Administration Commands                 list-system-properties(1)
-
          is running. The default value is localhost.
 
      -p --port
@@ -60,14 +42,22 @@ Administration Commands                 list-system-properties(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
+
+Java EE 5           Last change: 23 Sep 2008                    1
+
+Administration Commands                 list-system-properties(1)
 
      -s --secure
+
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
-     -u --user
+         The default is false.
 
+     -u --user
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -76,6 +66,7 @@ Administration Commands                 list-system-properties(1)
          option for subsequent operations on the domain.
 
      --passwordfile
+
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -101,10 +92,6 @@ Administration Commands                 list-system-properties(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5           Last change: 13 Jul 2007                    2
-
-Administration Commands                 list-system-properties(1)
-
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
@@ -114,6 +101,10 @@ Administration Commands                 list-system-properties(1)
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
+
+Java EE 5           Last change: 23 Sep 2008                    2
+
+Administration Commands                 list-system-properties(1)
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
@@ -136,34 +127,11 @@ Administration Commands                 list-system-properties(1)
 
 OPERANDS
      target
-         This option specifies the target on which you are  list-
-         ing the system properties. Valid values are:
-
-         domain
-
-             Lists the system properties defined for the domain.
-
-         configuration_name
-             Lists the system properties for the named configura-
-             tion  as well as those the cluster inherits from the
-             domain.
-
-         cluster_name
-
-             Lists the system properties defined  for  the  named
-             cluster  as well as those the cluster. inherits from
-             its configuration and the domain.
-
-Java EE 5           Last change: 13 Jul 2007                    3
-
-Administration Commands                 list-system-properties(1)
-
-         instance_name
-
-             Lists the system properties defined  for  the  named
-             server instance as well as those the server inherits
-             from its cluster (if the instance is clustered), its
-             configuration, and the domain.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using list-system-properties
@@ -182,5 +150,5 @@ EXIT STATUS
 SEE ALSO
      create-system-properties(1), delete-system-property(1)
 
-Java EE 5           Last change: 13 Jul 2007                    4
+Java EE 5           Last change: 23 Sep 2008                    3
 

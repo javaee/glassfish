@@ -49,7 +49,7 @@ OPTIONS
          If set to true (default),  only  the  required  password
          options are prompted.
 
-Java EE 5           Last change: 10 Apr 2008                    1
+Java EE 5           Last change: 23 Sep 2008                    1
 
 Administration Commands                        list-components(1)
 
@@ -62,12 +62,16 @@ Administration Commands                        list-components(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -98,16 +102,15 @@ Administration Commands                        list-components(1)
 
              o    AS_ADMIN_USERPASSWORD
 
-             o    AS_ADMIN_ALIASPASSWORD
-         All remote  commands  must  specify  the  administration
-         password  to  authenticate  to the domain administration
-         server. The password can be  specified  by  one  of  the
-
-Java EE 5           Last change: 10 Apr 2008                    2
+Java EE 5           Last change: 23 Sep 2008                    2
 
 Administration Commands                        list-components(1)
 
-         following means:
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
 
              o    Through the --passwordfile option
 
@@ -140,7 +143,7 @@ Administration Commands                        list-components(1)
 
      --type
          Specifies the type of the  components  that  are  to  be
-         listed. The options are as follows:
+         listed.  The options are as follows:
 
              o    application (default)
 
@@ -153,34 +156,21 @@ Administration Commands                        list-components(1)
              o    web
 
              o    webservice
-         If no type is specified, all components are listed.
 
-Java EE 5           Last change: 10 Apr 2008                    3
+Java EE 5           Last change: 23 Sep 2008                    3
 
 Administration Commands                        list-components(1)
 
+         If no type is specified, all components are listed.
+
 OPERANDS
-     -target
+     target
 
-         This is the name of the target upon  which  the  command
-         operates. The valid values are:
-
-         server
-             Lists the components for the default server instance
-             server and is the default value.
-
-         domain_name
-
-             Lists the components for the named domain.
-
-         cluster_name
-             Lists the components for every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Lists  the  components  for  a   particular   server
-             instance.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 EXAMPLES
      Example 1 Using the list-components command
@@ -197,8 +187,7 @@ EXIT STATUS
      1                   error in executing the command
 
 SEE ALSO
-     list-applications(1),     list-sub-components(1),      show-
-     component-status(1)
+     list-applications(1), list-sub-components(1)
 
-Java EE 5           Last change: 10 Apr 2008                    4
+Java EE 5           Last change: 23 Sep 2008                    4
 

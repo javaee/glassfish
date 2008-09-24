@@ -55,11 +55,15 @@ Administration Commands                               redeploy(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
 
@@ -96,13 +100,13 @@ Administration Commands                               redeploy(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-             o    Through the --passwordfile option
-
-             o    Through the asadmin login command
-
 Java EE 5           Last change: 10 Apr 2008                    2
 
 Administration Commands                               redeploy(1)
+
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
@@ -148,26 +152,25 @@ Administration Commands                               redeploy(1)
          precomplied  during deployment. Possible values  are  as
          follows:
 
+Java EE 5           Last change: 10 Apr 2008                    3
+
+Administration Commands                               redeploy(1)
+
          false
 
              JSP pages are not precompiled during deployment, but
              are complied at runtime (default).
 
-Java EE 5           Last change: 10 Apr 2008                    3
-
-Administration Commands                               redeploy(1)
-
          true
-
              JSP pages are precompiled during deployment.
 
      --virtualservers
+
          One  or  more  virtual  server  IDs.  Multiple  IDs  are
          separated by commas.
 
 OPERANDS
      archive-path
-
          The path to the archive that  contains  the  application
          that  is  being  redeployed. This path can be a relative
          path or an absolute path.
@@ -198,16 +201,16 @@ OPERANDS
 EXAMPLES
      Example 1 Redeploying a Web Application From a File
 
+Java EE 5           Last change: 10 Apr 2008                    4
+
+Administration Commands                               redeploy(1)
+
      This example redeploys the web application  hello  from  the
      hello.war  file in the current working directory. The appli-
      cation was originally deployed from a file.
 
        asadmin> redeploy --user admin --passwordfile myfile --name hello hello.war
        Command redeploy executed successfully
-
-Java EE 5           Last change: 10 Apr 2008                    4
-
-Administration Commands                               redeploy(1)
 
      Example 2 Redeploying a Web Application From a Directory
 

@@ -1,46 +1,19 @@
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
 NAME
-     get - gets the values of  the  monitorable  or  configurable
-     attributes
+     set - sets the values of attributes
 
 SYNOPSIS
-     get
+     set
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --monitor =[true|false]]
-     (dotted_attribute_name)+
+     attributename=value
 
 DESCRIPTION
-     Gets the names and values of attributes.  If  the  --monitor
-     option  is  set  to  true,  the  monitorable  attributes are
-     returned. If the --monitor option is set to false, the  con-
-     figurable  attribute values are returned. On UNIX platforms,
-     if the shell treats the wildcard (*) as a special character,
-     enclose the dotted name in a double quotes ("dotted_name").
-
-     The asadmin get, set and list commands  work  in  tandem  to
-     provide  a navigation mechanism for the Application Server's
-     abstract hierarchy. There  are two  hierarchies:  configura-
-     tion  and monitoring and these commands operate on both. The
-     list command provides the fully qualified  dotted  names  of
-     the  management components that have read-only or modifiable
-     attributes. The configuration hierarchy provides  attributes
-     that  are  modifiable;  whereas the attributes of management
-     components from monitoring hierarchy are  purely  read-only.
-     The configuration hierarchy is loosely based on the domain's
-     schema document; whereas the monitoring hierarchy is a  lit-
-     tle  different.  Use  the list command to reach a particular
-     management component in the desired hierarchy. Then,  invoke
-     the  get and set commands to get the names and values or set
-     the values of the attributes of the management component  at
-     hand.  Use the wildcard (*) option to fetch all matches in a
-     given fully qualified dotted  name.  See  the  examples  for
-     further  clarification  of  the  possible  navigation of the
-     hierarchies and management components.
+     Sets the values of one or more configurable attribute.
 
      An application server dotted name uses the "." (period) as a
      delimiter  to separate the parts of a complete name. This is
@@ -49,10 +22,6 @@ DESCRIPTION
      system. The following rules apply while forming  the  dotted
      names  accepted by the get, set and list commands. Note that
      a specific command has some additional semantics applied.
-
-Java EE 5           Last change: 22 Dec 2004                    1
-
-Administration Commands                                    get(1)
 
          o     A . (period) always separates two sequential parts
               of the name.
@@ -67,14 +36,6 @@ Administration Commands                                    get(1)
               \fR (backslash) so that the "." does not act like a
               delimiter.
 
-         o    An * (asterisk) can be used anywhere in the  dotted
-              name  and  it  acts  like the wildcard character in
-              regular expressions. Additionally, an  *  can  col-
-              lapse all the parts of the dotted name. Long dotted
-              name like  "this.is.really.long.hierarchy"  can  be
-              abbreviated to "th*.hierarchy". But note that the .
-              always delimits the parts of the name.
-
          o    The top level switch for any dotted name is  -moni-
               tor  or  -m that is separately specified on a given
               command line. The presence or lack of  this  switch
@@ -82,7 +43,7 @@ Administration Commands                                    get(1)
               for appserver management: monitoring and configura-
               tion.
 
-         o    If you happen to know  the  exact  complete  dotted
+              If you happen to know  the  exact  complete  dotted
               name  without any wildcard character, then list and
               get/set have a little difference  in  their  seman-
               tics:
@@ -90,6 +51,11 @@ Administration Commands                                    get(1)
              o    The list command treats  this  complete  dotted
                   name  as  the complete name of a parent node in
                   the abstract  hierarchy.  Upon  providing  this
+
+Java EE 5           Last change: 22 Dec 2004                    1
+
+Administration Commands                                    set(1)
+
                   name  to  list  command,  it simply returns the
                   names of the immediate children at that  level.
                   For   example,   list  server.applications.web-
@@ -106,11 +72,6 @@ Administration Commands                                    get(1)
                   with this case because in order to find out the
                   names of attributes of a particular node in the
                   hierarchy,  you must use the wildcard character
-
-Java EE 5           Last change: 22 Dec 2004                    2
-
-Administration Commands                                    get(1)
-
                   *.   For   example,    server.applications.web-
                   module.JSPWiki.context-root   will  return  the
                   context-root of the web-application deployed to
@@ -135,17 +96,17 @@ Administration Commands                                    get(1)
      example, to find out the modified date (attribute) of a par-
      ticular file in a large file  system  that  starts  with  /.
      First  you  must  find  out the location of that file in the
-     file system, and then look at its attributes. Therefor,  two
+     file system, and then look at its attributes. Therefore  two
      of  the  first  commands  to  understand  the hierarchies in
-     appserver are: * list "*" and * list * -monitor. The  sorted
+     appserver are: * list * and * list "*" -monitor. The  sorted
      output of these commands is typically of the following form:
 
          Command                                    Output
      ___________________________________________________________________________________
 
-Java EE 5           Last change: 22 Dec 2004                    3
+Java EE 5           Last change: 22 Dec 2004                    2
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      list *
 
@@ -199,9 +160,9 @@ Administration Commands                                    get(1)
 
                                 o    domain.resources.jdbc-connection-pool._CallFlowPool
 
-Java EE 5           Last change: 22 Dec 2004                    4
+Java EE 5           Last change: 22 Dec 2004                    3
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
                                 o    domain.resources.jdbc-connection-pool._TimerPool
 
@@ -256,9 +217,9 @@ Administration Commands                                    get(1)
 
                                 o    server.web-container
 
-Java EE 5           Last change: 22 Dec 2004                    5
+Java EE 5           Last change: 22 Dec 2004                    4
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
                                 o    server.web-container-availability
      list -monitor *
@@ -309,9 +270,9 @@ Administration Commands                                    get(1)
      subsystems. Every component or subsystem is capable of  hav-
      ing zero or more attributes that can be read and modified.
 
-Java EE 5           Last change: 22 Dec 2004                    6
+Java EE 5           Last change: 22 Dec 2004                    5
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      With thelist command you can drill down through the  hierar-
      chy  in a particular branch of interest. For example, if you
@@ -344,9 +305,9 @@ Administration Commands                                    get(1)
 
                                                                                          8.   server.http-service.http-listener.http-listener-2
 
-Java EE 5           Last change: 22 Dec 2004                    7
+Java EE 5           Last change: 22 Dec 2004                    6
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      2      To   find    the    listener    that                                server.http-service.http-
             corresponds  to  the  default  http-                                listener.http-listener-
@@ -397,9 +358,9 @@ Administration Commands                                    get(1)
          2.   Obtain the various information about the  JVM  that
               the application server domain is running.
 
-Java EE 5           Last change: 22 Dec 2004                    8
+Java EE 5           Last change: 22 Dec 2004                    7
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
       ID                Command                       Output/Comment
      _______________________________________________________________________
@@ -441,9 +402,9 @@ Administration Commands                                    get(1)
                                               attributes  of  a   particular
                                               component.
 
-Java EE 5           Last change: 22 Dec 2004                    9
+Java EE 5           Last change: 22 Dec 2004                    8
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      3      get          server.monitoring-   server.monitoring-
             service.module-monitoring-        service.module-monitoring-
@@ -496,9 +457,9 @@ Administration Commands                                    get(1)
                                               toring  hierarchy,  start with
                                               the list command again.
 
-Java EE 5           Last change: 22 Dec 2004                   10
+Java EE 5           Last change: 22 Dec 2004                    9
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      5      list --monitor * | grep jvm       server.jvm   server.jvm.class-
                                               loading-system
@@ -539,9 +500,9 @@ Administration Commands                                    get(1)
                                               Thus the command  is  get  not
                                               list.
 
-Java EE 5           Last change: 22 Dec 2004                   11
+Java EE 5           Last change: 22 Dec 2004                   10
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
      6      get -monitor  server.jvm.class-   server.jvm.class-loading-
             loading-system.*                  system.dotted-name           =
@@ -596,9 +557,9 @@ Administration Commands                                    get(1)
                                               system.unloadedclasscount-
                                               lastsampletime = 1133819508973
 
-Java EE 5           Last change: 22 Dec 2004                   12
+Java EE 5           Last change: 22 Dec 2004                   11
 
-Administration Commands                                    get(1)
+Administration Commands                                    set(1)
 
                                               server.jvm.class-loading-
                                               system.unloadedclasscount-name
@@ -643,16 +604,20 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
 
-Java EE 5           Last change: 22 Dec 2004                   13
+         The default port number for administration is 4848.
 
-Administration Commands                                    get(1)
+Java EE 5           Last change: 22 Dec 2004                   12
+
+Administration Commands                                    set(1)
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -699,12 +664,11 @@ Administration Commands                                    get(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
+Java EE 5           Last change: 22 Dec 2004                   13
+
+Administration Commands                                    set(1)
+
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 22 Dec 2004                   14
-
-Administration Commands                                    get(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -723,324 +687,17 @@ Administration Commands                                    get(1)
 
          Displays the help text for the command.
 
-     --monitor
-         defaults to false; if set  to  false,  the  configurable
-         attribute values are returned. If set to true, the moni-
-         torable attribute values are returned.
-
 OPERANDS
-     attributename               Identifies the attribute name in
-                                 the  dotted  notation.  At least
-                                 one  dotted  name  attribute  is
-                                 required. The dotted notation is
-                                 the syntax used to access attri-
-                                 butes  of configurable entities.
-                                 The following format is used for
-                                 the notation:
-
-                                 Configuration:           <config
-                                 name>.<config            element
-                                 name>.<primary   key>.<attribute
-                                 name>  | <instance name>.<config
-                                 element           name>.<primary
-                                 key>.<attribute name>
-
-                                 Resource:
-                                 <instancename>.<resource
-                                 name>.<primary   key>.<attribute
-                                 name>                          |
-                                 domain.resources.<resource
-                                 name>.<primary   key>.<attribute
-                                 name>
-
-Java EE 5           Last change: 22 Dec 2004                   15
-
-Administration Commands                                    get(1)
+     attributename=value         identifies  the  attribute  name
+                                 and its value. See the Reference
+                                 for a listing of  the  available
+                                 attribute names.
 
 EXAMPLES
-     Example 1 Using the get command with wildcard
+     Example 1 Using set
 
-     ____________________________________________________________
-    |__________________________________|________________________|
-    | get *                            |  get all values on  all|
-    |                                  |  dotted name prefixes  |
-    |__________________________________|________________________|
-    |__________________________________|________________________|
-    | get domain.*                     |  gets all values on the|
-    |                                  |  dotted  name "domain."|
-    |                                  |  Note  that   this   is|
-    |                                  |  quite  different  from|
-    |                                  |  "domain*".            |
-    |__________________________________|________________________|
-    | get domain*                      |  gets all values on the|
-    |                                  |  dotted nams that begin|
-    |                                  |  with         "domain".|
-    |                                  |  Equivalent    to   get|
-    |__________________________________|________________________|
-    | get *config*.*.*                 |  gets all values on the|
-    |                                  |  dotted   names   which|
-    |                                  |  match "*config*.*"    |
-    |__________________________________|________________________|
-    | get                  domain.j2ee-|  gets all values on all|
-    | applications.*.ejb-module.*.*    |  ejb-modules   of   all|
-    |__________________________________|________________________|
-    | get *web-modules.*.*             |  get all values on  all|
-    |                                  |  web modules whether in|
-    |                                  |  an   application    or|
-    |                                  |  standalone.           |
-    |__________________________________|________________________|
-    | get *.*.*.*                      |  get all values on  all|
-    |                                  |  dotted   names   which|
-    |__________________________________|________________________|
-
-     Example 2 Using get with the monitor option
-
-     To get the monitoring data from  the  domain  administration
-     server,  the appropriate monitoring level must be set on the
-     appropriate subsystem. Use the set command to set the  moni-
-     toring  data level. For example, to set the monitoring level
-     on Web Container on Domain Administration  Server  (DAS)  to
-     HIGH  so  that  the  Web  Container returns many monitorable
-     attributes    and    their    values:     server.monitoring-
-     service.module-monitoring-levels.web-container=HIGH. See the
-     set command for further details on  setting  the  monitoring
-     level.
-
-Java EE 5           Last change: 22 Dec 2004                   16
-
-Administration Commands                                    get(1)
-
-     Top Level
-
-     _______________________________________________________________
-    |________|_______________________|_____________________________|
-    | get -m |  server.*             |  No output, but message say-|
-    |        |                       |  ing there are no attributes|
-    |        |                       |  at this node.              |
-    |________|_______________________|_____________________________|
-
-     Applications Level
-
-     ________________________________________________________________________________
-    | Command|               Dotted Name              |            Output           |
-    |________|________________________________________|_____________________________|
-    | get -m |  server.applications.*or*applications.*|  No output, but message say-|
-    |        |                                        |  ing there are no attributes|
-    |________|________________________________________|_____________________________|
-
-     Applications  -  Enterprise  Applications   and   Standalone
-     Modules
-
-Java EE 5           Last change: 22 Dec 2004                   17
-
-Administration Commands                                    get(1)
-
-     _____________________________________________________________________________________
-     _____________________________________________________________________________________
-      get -m    server.applications.app1.*or*app1.*      No output, but message say-
-                                                         ing there are no attributes
-                                                         at this node.
-     _____________________________________________________________________________________
-      get -m     server.applications.app1.ejb-           No output, but message say-
-                module1_jar.* or *ejb-module1_jar.*      ing there are no attributes
-                or         server.applications.ejb-      at this node.
-     _____________________________________________________________________________________
-      get -m    server.applications.app1.ejb-            Attribute
-                module1_jar.bean1.*Note  : where it      CreateCount_Count,  Value =
-                is a standalone  module,  the  node      xxxxAttribute
-                app1 will not appear.                    CreateCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_Name,  Value  =
-                                                         xxxxAttribute
-                                                         CreateCount_StartTime,
-                                                         Value    =    xxxxAttribute
-                                                         CreateCount_Unit,  Value  =
-                                                         xxxxAttribute
-                                                         MethodReadyCount_Current,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_HighWaterMark,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_LowWaterMark,
-                                                         Value    =    xxxxAttribute
-                                                         MethodReadyCount_Name,
-                                                         Value                     =
-                                                         xxxxMethodReadyCount_StartTime,
-                                                         Value                     =
-                                                         xxxxMethodReadyCount_Unit,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Count,  Value =
-                                                         xxxxAttribute
-                                                         RemoveCount_Description,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_LastSampleTime,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Name,  Value  =
-                                                         xxxxAttribute
-                                                         RemoveCount_StartTime,
-                                                         Value    =    xxxxAttribute
-                                                         RemoveCount_Unit,  Value  =
-                                                         xxxx
-     _____________________________________________________________________________________
-
-Java EE 5           Last change: 22 Dec 2004                   18
-
-Administration Commands                                    get(1)
-
-      get -m    server.applications.app1.ejb-            List  of   Attributes   and
-    |        |  module1_jar.bean1.bean-poolNote:      |  Values   corresponding   to     |
-    |        |  Where it is  a  standalone  module,   |  attributes as defined under     |
-    |        |  the node app1 will not appear.        |  EJBPoolStats Statistics.        |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.ejb-         |  List  of   Attributes   and     |
-    |        |  module1_jar.bean1.bean-cache.*Note:   |  Values   corresponding   to     |
-    |        |  Where it is  a  standalone  module,   |  attributes as defined under     |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.ejb-         |  List  of   Attributes   and     |
-    |        |  module1_jar.bean1.bean-               |  Values   corresponding   to     |
-    |        |  cachemethod.method1.*Note: Where it   |  attributes as defined under     |
-    |        |  is  a  standalone  module, the node   |  EJBMethodStats Statistics.      |
-    |        |  app1 will not appear.                 |                                  |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  No output, but message say-     |
-    |        |  module1_war.*                         |  ing there are no attributes     |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  No output, but message say-     |
-    |        |  module1_war.virtual_server1.*         |  ing there are no attributes     |
-    |        |                                        |  at this node.                   |
-    |________|________________________________________|__________________________________|
-    | get -m |  server.applications.app1.web-         |  List  of   Attributes   and     |
-    |        |  module1_war.virtual_server1.servlet1.*|  Values   corresponding   to     |
-    |________|________________________________________|__________________________________|
-
-     Http-Service Level
-
-     _____________________________________________________________________________
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.*              |  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |        |                                     |  at this node.              |
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.virtual-server1|  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.http-service.virtual-       |  Attributes    and    Values|
-    |        |  server1.http-listener1.*           |  corresponding            to|
-    |        |                                     |  HttpListerneStats   Statis-|
-    |        |                                     |  tics.                      |
-    |________|_____________________________________|_____________________________|
-
-     Thread-Pools Level
-
-Java EE 5           Last change: 22 Dec 2004                   19
-
-Administration Commands                                    get(1)
-
-     ____________________________________________________________________________
-    |________|____________________________________|_____________________________|
-    | get -m |  server.thread-pools.*             |  No output, but message say-|
-    |        |                                    |  ing there are no attributes|
-    |        |                                    |  at this node.              |
-    |________|____________________________________|_____________________________|
-    | get -m |  server.thread-pools.thread-pool1.*|  List  of   Attributes   and|
-    |        |                                    |  Values   corresponding   to|
-    |________|____________________________________|_____________________________|
-
-     Resources Level
-
-     _____________________________________________________________________________
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.resources.*                 |  No output, but message say-|
-    |        |                                     |  ing there are no attributes|
-    |        |                                     |  at this node.              |
-    |________|_____________________________________|_____________________________|
-    | get -m |  server.resources.connection-pool1.*|  List  of   Attributes   and|
-    |        |                                     |  Values   corresponding   to|
-    |        |                                     |  JDBCConnectionPool Stats or|
-    |        |                                     |  ConnectorConnectionPool-   |
-    |        |                                     |  Stats  Statistics  as   the|
-    |________|_____________________________________|_____________________________|
-
-     Transaction-Service Level
-
-     ______________________________________________________________________
-    |________|______________________________|_____________________________|
-    | get -m |  server.transaction-service.*|  List  of   Attributes   and|
-    |        |                              |  Values   corresponding   to|
-    |        |                              |  JTAStats Statistics.       |
-    |________|______________________________|_____________________________|
-
-     ORB Level
-
-Java EE 5           Last change: 22 Dec 2004                   20
-
-Administration Commands                                    get(1)
-
-     __________________________________________________________________________
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.*                    |  No output, but message say-|
-    |        |                                  |  ing there are no attributes|
-    |        |                                  |  at this node.              |
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.connection-managers.*|  No output, but message say-|
-    |        |                                  |  ing there are no attributes|
-    |________|__________________________________|_____________________________|
-    | get -m |  server.orb.connection-          |  Attributes    and    values|
-    |        |  managers.orbconnmgr1.*          |  corresponding to OrbConnec-|
-    |        |                                  |  tionManagerStats    Statis-|
-    |        |                                  |  tics.                      |
-    |________|__________________________________|_____________________________|
-
-     JVM Level
-
-     _________________________________________________________________________________
-      Command        Dotted Name                           Output
-     _________________________________________________________________________________
-
-Java EE 5           Last change: 22 Dec 2004                   21
-
-Administration Commands                                    get(1)
-
-      get -m    server.jvm.*            Attributes    and    Values
-                                        corresponding  to  JVMStats
-                                        Statistics.For
-                                        example:server.jvm.HeapSize_Current
-                                        =
-                                        45490176server.jvm.HeapSize_Description
-                                        =                 Describes
-                                        JvmHeapSizeserver.jvm.HeapSize_HighWaterMark
-                                        =
-                                        45490176server.jvm.HeapSize_LastSampleTime
-                                        =
-                                        1063217002433server.jvm.HeapSize_LowWaterMark
-                                        =
-                                        0server.jvm.HeapSize_LowerBound
-                                        = 0server.jvm.HeapSize_Name
-                                        =
-                                        JvmHeapSizeserver.jvm.HeapSize_StartTime
-                                        =
-                                        1063238840055server.jvm.HeapSize_Unit
-                                        =
-                                        bytesserver.jvm.HeapSize_UpperBound
-                                        =
-    |        |                       |  531628032server.jvm.UpTime_Count             |
-    |        |                       |  =                                            |
-    |        |                       |  1063238840100server.jvm.UpTime_Description   |
-    |        |                       |  =                 Describes                  |
-    |        |                       |  JvmUpTimeserver.jvm.UpTime_LastSampleTime    |
-    |        |                       |  =                        1-                  |
-    |        |                       |  63238840070server.jvm.UpTime_Name            |
-    |        |                       |  =                                            |
-    |        |                       |  JvmUpTimeserver.jvm.UpTime_StartTime         |
-    |        |                       |  =                                            |
-    |        |                       |  1063217002430server.jvm.UpTime_Unit          |
-    |        |                       |  = milliseconds                               |
-    |________|_______________________|_______________________________________________|
+       asadmin> set --user admin --passwordfile password.txt --host localhost
+       --port 4848 server.transaction-service.automatic-recovery=true
 
 EXIT STATUS
      0                           command executed successfully
@@ -1048,7 +705,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     set(1), list(1)
+     get(1), list(1)
 
-Java EE 5           Last change: 22 Dec 2004                   22
+Java EE 5           Last change: 22 Dec 2004                   14
 

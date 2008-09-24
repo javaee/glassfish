@@ -65,12 +65,16 @@ Administration Commands                      list-applications(1)
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -99,14 +103,13 @@ Administration Commands                      list-applications(1)
 
              o    AS_ADMIN_MAPPEDPASSWORD
 
-             o    AS_ADMIN_USERPASSWORD
-
-             o    AS_ADMIN_ALIASPASSWORD
-
 Java EE 5           Last change: 14 Apr 2008                    2
 
 Administration Commands                      list-applications(1)
 
+             o    AS_ADMIN_USERPASSWORD
+
+             o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
          password  to  authenticate  to the domain administration
          server. The password can be specified by one of the fol-
@@ -155,12 +158,12 @@ Administration Commands                      list-applications(1)
 
              o    web
 
-             o    webservice
-         If no type is specified, all applications are listed.
-
 Java EE 5           Last change: 14 Apr 2008                    3
 
 Administration Commands                      list-applications(1)
+
+             o    webservice
+         If no type is specified, all applications are listed.
 
 EXAMPLES
      Example 1 Using the list-applications command

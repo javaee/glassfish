@@ -50,18 +50,22 @@ OPTIONS
 
          The HTTP port or HTTPS  port  for  administration.  This
 
-Java EE 5           Last change: 11 Jul 2007                    1
+Java EE 5            Last change: 2 Sep 2008                    1
 
 Administration Commands                     delete-jvm-options(1)
 
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
+         http://localhost:4848.
+
+         The default port number for administration is 4848.
 
      -s --secure
 
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
+
+         The default is false.
 
      -u --user
          The user name of the authorized administrative  user  of
@@ -100,15 +104,14 @@ Administration Commands                     delete-jvm-options(1)
 
              o    Through the --passwordfile option
 
+Java EE 5            Last change: 2 Sep 2008                    2
+
+Administration Commands                     delete-jvm-options(1)
+
              o    Through the asadmin login command
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
-
-Java EE 5           Last change: 11 Jul 2007                    2
-
-Administration Commands                     delete-jvm-options(1)
-
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
@@ -133,13 +136,11 @@ Administration Commands                     delete-jvm-options(1)
          Displays the help text for the command.
 
      --target
-         This option helps specify the target from which you want
-         to remove the JVM options. Valid target is server, clus-
-         ter, or instance. The default is server.
-
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --profiler
 
@@ -153,30 +154,30 @@ OPERANDS
          option value. A colon (:) is a  delimiter  for  multiple
          options.
 
-EXAMPLES
-     Example 1 Using the delete-jvm-options command
-
-Java EE 5           Last change: 11 Jul 2007                    3
+Java EE 5            Last change: 2 Sep 2008                    3
 
 Administration Commands                     delete-jvm-options(1)
 
-     To remove more than one JVM  option,  use  a  colon  (:)  to
+EXAMPLES
+     Example 1 Using the delete-jvm-options command
+
+     To remove more than one JVM option,  use  a  colon  (:)   to
      separate  the  options.  If the JVM option itself contains a
-     colon (:), use the backslash (\) to  offset  the  colon  (:)
+     colon (:), use the backslash (\fR) to offset the  colon  (:)
      delimiter.
 
        asadmin> delete-jvm-options -e
        --interactive=true --secure=true --passwordfile passwords.txt
        --terse=false --user admin --target server --host localhost
-       --echo=true --port 4848 "\-Dtmp=sun"
+       --echo=true --port 4848 "-Dtmp=sun"
        Command delete-jvm-options executed successfully
 
      Where more than one JVM options are deleted.
 
-       asadmin> delete-jvm-options -e \-Doption1=value1
+       asadmin> delete-jvm-options -e -Doption1=value1
        --interactive=true --secure=true --passwordfile passwords.txt
        --terse=false --user admin --target server --host localhost
-       --echo=true --port 4848 "\-Doption1=value1:-Doption2=value2"
+       --echo=true --port 4848 "-Doption1=value1:-Doption2=value2"
        Command delete-jvm-options executed successfully
 
 EXIT STATUS
@@ -187,5 +188,5 @@ EXIT STATUS
 SEE ALSO
      create-jvm-options(1), list-jvm-options(1)
 
-Java EE 5           Last change: 11 Jul 2007                    4
+Java EE 5            Last change: 2 Sep 2008                    4
 
