@@ -2355,7 +2355,7 @@ public abstract class BaseContainer
                 // Not an error.  This is the case where the EJB 3.0
                 // client view is being used and there is no corresponding
                 // create/init method.
-            } else if (isStatelessSession ) {
+            } else if (isStatelessSession || isSingleton) {
                 // Ignore.  Not an error.  
                 // EJB 3.0 Stateless session ejbCreate/PostConstruct
                 // is decoupled from RemoteHome/LocalHome create().
