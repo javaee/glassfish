@@ -54,7 +54,6 @@
                     redirect(page="installed.jsf");
                 />       
         </sun:tab>
-<!--
         <sun:tab id="config" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.ConfigTab}" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="config");
@@ -62,6 +61,5 @@
                 />       
         </sun:tab>
         
--->
 
 </sun:tabSet>

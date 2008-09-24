@@ -145,6 +145,33 @@ public class UpdateCenterHandlers {
         handlerCtx.setOutputValue("result", result);
     }
     
+    
+    @Handler(id="getAuthList",
+        output={
+        @HandlerOutput(name="result", type=java.util.List.class)})
+    public static void getAuthList(HandlerContext handlerCtx) {
+        
+        List result = new ArrayList();
+        try {
+            Image image = getUpdateCenterImage();
+            if (image == null){
+                handlerCtx.setOutputValue("result", result);
+                return;
+            }
+            String[] auths = image.getAuthorityNames();
+            for(int i=0; i< auths.length; i++){
+                Map oneRow = new HashMap();
+                    oneRow.put("authName", auths[i]);
+                    result.add(oneRow);
+            }
+        }catch(Exception ex1){
+            ex1.printStackTrace();
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+    
+                    
+    
     private static void putInfo( Map oneRow, String key, String value){
         oneRow.put( key, GuiUtil.isEmpty(value) ? "" : value);
     }
