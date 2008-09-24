@@ -39,11 +39,19 @@ package org.glassfish.webservices;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
+import com.sun.enterprise.container.common.spi.util.InjectionException;
 
 import java.util.Iterator;
 
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
+
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.ComponentInvocation;
 
 
 /**
@@ -52,27 +60,25 @@ import javax.xml.ws.WebServiceException;
 
 public class ResourceInjectorImpl extends ResourceInjector {
     
-    /*private WebServiceEndpoint endpoint;
+    private WebServiceEndpoint endpoint;
     private ComponentInvocation inv;
-    private InvocationManager invMgr;*/
+    private InvocationManager invMgr;
 
     
 
     public ResourceInjectorImpl(WebServiceEndpoint ep) {
-        /* TODO BM fix this
-        // 
-        Switch theSwitch = Switch.getSwitch();
-        invMgr = theSwitch.getInvocationManager();
-        inv = invMgr.getCurrentInvocation();
-        //
+
+        WebServiceContractImpl    wscImpl = WebServiceContractImpl.getInstance();
+        invMgr =  wscImpl.getInvocationManager();
+        inv = invMgr.getCurrentInvocation();      
         endpoint = ep;
-        */
+
     }
     
     public void inject(WSWebServiceContext context, Object instance)
                     throws WebServiceException {
 
-     /*   try {
+       try {
             // Set proper component context
             invMgr.preInvoke(inv);
             // Injection first
@@ -85,7 +91,7 @@ public class ResourceInjectorImpl extends ResourceInjector {
             WebBundleDescriptor bundle = (WebBundleDescriptor)endpoint.getBundleDescriptor();
             Iterator<ResourceReferenceDescriptor> it = bundle.getResourceReferenceDescriptors().iterator();
             while(it.hasNext()) {
-                ResourceReferenceDescriptor r = it.next();            
+                ResourceReferenceDescriptor r = it.next();
                 if(r.isWebServiceContext()) {
                     Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
                     boolean matchingClassFound = false;
@@ -114,6 +120,6 @@ public class ResourceInjectorImpl extends ResourceInjector {
             throw new WebServiceException(ie);
         } finally {
             invMgr.postInvoke(inv);
-        }             */
+        }
     }
 }

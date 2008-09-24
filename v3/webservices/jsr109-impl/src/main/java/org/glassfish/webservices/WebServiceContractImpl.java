@@ -6,6 +6,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.api.invocation.InvocationManager;
 import com.sun.enterprise.module.ModulesRegistry;
 
 import java.util.logging.Level;
@@ -28,6 +29,10 @@ public class WebServiceContractImpl implements WebServicesContract{
     private ModulesRegistry modulesRegistry;
 
 
+    @Inject
+    private InvocationManager invManager;
+
+
 
     private  static WebServiceContractImpl wscImpl;
 
@@ -36,6 +41,11 @@ public class WebServiceContractImpl implements WebServicesContract{
     public ComponentEnvManager getComponentEnvManager() {
         return compEnvManager;  
     }
+
+    public InvocationManager getInvocationManager() {
+            return invManager;
+        }
+
 
 
     public ServerEnvironmentImpl getServerEnvironmentImpl (){
