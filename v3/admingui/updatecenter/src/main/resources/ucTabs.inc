@@ -36,11 +36,11 @@
 <!-- updateCenter/ucTabs.inc -->
 
 <sun:tabSet id="ucSet" immediate="$boolean{true}" selected="#{sessionScope.ucTabs}">
-        <sun:tab id="installed" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.InstalledTab}" >
-                <!command
-                    setSessionAttribute(key="ucTabs" value="installed");
-                    redirect(page="installed.jsf");
-                />       
+        <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}">
+            <!command
+                setSessionAttribute(key="ucTabs" value="addOn");
+                redirect(page="addOn.jsf");
+            />
         </sun:tab>
         <sun:tab id="update" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.UpdateTab}">
             <!command
@@ -48,10 +48,20 @@
                 redirect(page="update.jsf");
             />
         </sun:tab>
-        <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}">
-            <!command
-                setSessionAttribute(key="ucTabs" value="addOn");
-                redirect(page="addOn.jsf");
-            />
+        <sun:tab id="installed" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.InstalledTab}" >
+                <!command
+                    setSessionAttribute(key="ucTabs" value="installed");
+                    redirect(page="installed.jsf");
+                />       
         </sun:tab>
+<!--
+        <sun:tab id="config" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.ConfigTab}" >
+                <!command
+                    setSessionAttribute(key="ucTabs" value="config");
+                    redirect(page="ucConfig.jsf");
+                />       
+        </sun:tab>
+        
+-->
+
 </sun:tabSet>

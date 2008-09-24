@@ -58,36 +58,38 @@ public class UpdateCenterHandlers {
     
     @Handler(id="getPkgDetailsInfo",
     	input={
-        @HandlerInput(name="fmri", type=String.class, required=true )},
+        @HandlerInput(name="fmriStr", type=String.class, required=true ),
+        @HandlerInput(name="auth", type=String.class, required=true )},
         output={
         @HandlerOutput(name="details", type=java.util.Map.class)})
     public static void getPkgDetailsInfo(HandlerContext handlerCtx) {
-        String fmriStr = (String)handlerCtx.getInputValue("fmri");
+        String fmriStr = (String)handlerCtx.getInputValue("fmriStr");
         //Called by the intiPage and don't need to process.  When we can use beforeCreate to do this, we can remove this check.
-        if (GuiUtil.isEmpty(fmriStr)){
+        if (fmriStr == null){
             handlerCtx.setOutputValue("details", new HashMap());
             return;
         }
-        Map details = new HashMap();  
         Fmri fmri = new Fmri(fmriStr);
+        Map details = new HashMap();  
         Image img = getUpdateCenterImage();
         try{
+            details.put("pkgName", fmri.getName());
+            details.put("uid", fmri.toString());
+            details.put("version", getPkgVersion(fmri.getVersion()));
+            details.put("date", fmri.getVersion().getPublishDate());
+            details.put("auth", (String) handlerCtx.getInputValue("auth"));
+            details.put("url", fmri.getURLPath());
             if (img != null){
                 Manifest manifest = img.getManifest(fmri);
                 details.put("category", manifest.getAttribute(CATEGORY));
                 details.put("bytes", "" + manifest.getPackageSize() );
                 details.put("pkgSize", getPkgSize(manifest));
-                details.put("auth", img.getPreferredAuthorityName());
                 details.put("desc", manifest.getAttribute(DESC_LONG));
             }
+            
         }catch(Exception ex){
             ex.printStackTrace();
         }
-
-        details.put("pkgName", fmri.getName());
-        details.put("uid", fmriStr);
-        details.put("version", getPkgVersion(fmri.getVersion()));
-        details.put("date", fmri.getVersion().getPublishDate());
         handlerCtx.setOutputValue("details", details);
         
     }
@@ -124,14 +126,14 @@ public class UpdateCenterHandlers {
                 try{
                     Manifest manifest = img.getManifest(fmri);
                     oneRow.put("selected", false);
-                    putInfo(oneRow, "fmri", fmri.toString());
+                    oneRow.put("fmri", fmri);
+                    oneRow.put("fmriStr", fmri.toString());
                     putInfo(oneRow, "pkgName", fmri.getName());
                     putInfo(oneRow, "version", getPkgVersion(fmri.getVersion()));
                     putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
                     putInfo(oneRow, "pkgSize", getPkgSize(manifest));
                     oneRow.put( "size", Integer.valueOf(manifest.getPackageSize()));
-                    putInfo(oneRow, "auth", img.getPreferredAuthorityName());
-                    oneRow.put( "frmi", fmri);
+                    putInfo(oneRow, "auth", fmri.getAuthority());
                     result.add(oneRow);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -222,8 +224,7 @@ public class UpdateCenterHandlers {
         List<Fmri> fList = new ArrayList();
         try {
             for (Map oneRow : selectedRows) {
-                Fmri fmri = new Fmri( (String) oneRow.get("fmri"));
-                fList.add(fmri);
+                fList.add((Fmri)oneRow.get("fmri"));
             }
             if (install){
                 image.installPackages(fList);

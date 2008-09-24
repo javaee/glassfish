@@ -38,12 +38,7 @@
 
 <!initPage 
     setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings")
-    if (! $pageSession{fromPage}){
-        getRequestValue(key="fromPage" value=>$page{fromPage});
-    }
-    getRequestValue(key="fmri" value=>$page{fmri});
-    getRequestValue(key="auth" value=>$page{auth});
-    getPkgDetailsInfo(fmri="#{fmri}" details=>$page{details});
+    
 />
 <!composition template="/templates/propertySheetTemplate.tpl" 
               pageTitle="$resource{i18nUC.pkgDetails.Title}" 
@@ -63,6 +58,14 @@
     
     <!define name="properties">
         <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsPkgName}" >
+            <!beforeCreate
+                if (! $pageSession{fromPage}){
+                    getRequestValue(key="fromPage" value=>$page{fromPage});
+                }
+                getRequestValue(key="fmriStr" value=>$page{fmriStr});
+                getRequestValue(key="auth" value=>$page{auth});
+                getPkgDetailsInfo(fmriStr="#{fmriStr}" auth="#{auth}" details=>$page{details});
+            />
             <staticText id="name" value="#{details.pkgName}" />
         </sun:property>
         
@@ -89,6 +92,12 @@
         <sun:property id="source"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsSource}" >
             <staticText id="source" value="#{details.auth}" />
         </sun:property>
+        
+        <!--
+        <sun:property id="url"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsURL}" >
+            <staticText id="url" value="#{details.url}" />
+        </sun:property>
+        -->
         
         <sun:property id="desc"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.detailsDesc}" >
             <staticText id="desc" value="#{details.desc}" />

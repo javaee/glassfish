@@ -38,16 +38,6 @@
     
 <!initPage 
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-        setSessionAttribute(key="ucTabs" value="installed");
-        setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
-        setPageSessionAttribute(key="action" value="remove");
-        setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.installed.tableTitle}");
-        setPageSessionAttribute(key="fromPage" value="installed.jsf");
-        setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
-        
-        getInstalledPath(result=>$attribute{installedPath});
-        getAuthority(result=>$attribute{authority});
-        getUcList(state="installed", result=>$attribute{listOfRows} );
 />
 <!composition template="/templates/baseTemplate.tpl" 
     pageTitle="$resource{i18nUC.updateCenter.installed.pageTitle}" 
@@ -68,7 +58,18 @@
 #include "/updateCenter/ucTabs.inc"
     </define>
     <!define name="content">
-        <sun:propertySheet id="propertySheet">			 
+        <sun:propertySheet id="propertySheet">
+            <!beforeCreate
+                setSessionAttribute(key="ucTabs" value="installed");
+                setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.UnInstall}");
+                setPageSessionAttribute(key="action" value="remove");
+                setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.installed.tableTitle}");
+                setPageSessionAttribute(key="fromPage" value="installed.jsf");
+                setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
+                getInstalledPath(result=>$attribute{installedPath});
+                getAuthority(result=>$attribute{authority});
+                getUcList(state="installed", result=>$attribute{listOfRows} );
+            />
             <sun:propertySheetSection id="propertySectionTextField">
                 <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
                     <staticText id="path" value="${installedPath}" />

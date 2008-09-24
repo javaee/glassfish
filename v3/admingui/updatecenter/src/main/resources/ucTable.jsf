@@ -81,7 +81,7 @@
     
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.component}" sort="pkgName" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.pkgName}" 
-            url="/updateCenter/pkgDetails.jsf?fmri=#{td.value.fmri}&fromPage=#{fromPage}" />
+            url="/updateCenter/pkgDetails.jsf?fmriStr=#{td.value.fmriStr}&auth=#{td.value.auth}&fromPage=#{fromPage}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.category}" sort="category" rowHeader="$boolean{true}" id="colc">
@@ -96,11 +96,9 @@
         <staticText id="colsize" value="#{td.value.pkgSize}" />
     </sun:tableColumn>
     
-    <!--
-    <sun:tableColumn headerText="$resource{i18nUC.ucTable.size}" sort="pkgDate" rowHeader="$boolean{true}" id="colize">
-        <staticText id="colsize" value="#{td.value.auth}" />
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.source}" sort="source" rowHeader="$boolean{true}" id="source">
+        <staticText id="source" value="#{td.value.auth}" />
     </sun:tableColumn>
-    -->
     
   </sun:tableRowGroup>
   
