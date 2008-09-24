@@ -45,14 +45,14 @@ import org.jvnet.hk2.config.Element;
 
 
 /**
- * Corresponds to the web-app-config element used for recording web 
+ * Corresponds to the web-app-config element used for recording web
  * application configuration customizations.
- * 
+ *
  * @author tjquinn
  */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebAppConfigConfig", singleton=true )
 @Configured
-public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
+public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
 
     /**
      * Returns the env-entry objects, if any.
@@ -60,12 +60,12 @@ public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Inject
      */
     @Element
     public List<EnvEntry> getEnvEntry();
-    
+
     /**
      * Returns the context-param objects, if any.
      * @return
      */
     @Element
     public List<ContextParam> getContextParam();
-    
+
 }

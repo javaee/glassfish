@@ -50,7 +50,6 @@ import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.web.loader.WebappClassLoader;
-import org.glassfish.web.plugin.common.WebAppConfig;
 import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
 
@@ -197,14 +196,16 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     private void applyApplicationConfig(ApplicationContext appContext) {
         Properties startupParams = appContext.getParameters();
         /*
-         * Fetch the WebAppConfig object, if any was stored in the startup parameters
+         * Fetch the WebModuleConfig object, if any was stored in the startup parameters
          * so we could retrieve it here.
          */
         Object configList = startupParams.get(DeploymentProperties.APP_CONFIG);
         if (configList != null) {
             try {
                 List<ApplicationConfig> configs = (List<ApplicationConfig>) configList;
-                WebAppConfig c = Application.Duck.getApplicationConfig(configs, WebAppConfig.class);
+                org.glassfish.web.plugin.common.WebModuleConfig c =
+                        Application.Duck.getApplicationConfig(configs,
+                        org.glassfish.web.plugin.common.WebModuleConfig.class);
                 if (c != null) {
                     WebBundleDescriptor descriptor = wmInfo.getDescriptor();
 
