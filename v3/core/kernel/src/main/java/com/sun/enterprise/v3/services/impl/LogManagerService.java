@@ -42,6 +42,7 @@ import org.jvnet.hk2.component.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PipedOutputStream;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.logging.Handler;
@@ -146,22 +147,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                         //System.out.println("file changed");
                         //temporarily reset system out and err before calling the log manager
 
-                        PrintStream p = new PrintStream("tmp");
+                        PrintStream p = new PrintStream(new PipedOutputStream());
                         System.setOut(p);
                         System.setErr(p);
 
                         logMgr.readConfiguration();
                         logger.log(Level.INFO,  "Logger configuration updated");
                         // redirect stderr and stdout back
-                        /*
-                        LoggingOutputStream los2 = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
-                        System.setOut(new PrintStream(los2, true));
-
-                        los2 = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
-                        System.setErr(new PrintStream(los2, true));
-                        */
                         System.setOut(pout);
                         System.setErr(perr);
+                        p.close();
 
 
                     } catch (IOException e) {
