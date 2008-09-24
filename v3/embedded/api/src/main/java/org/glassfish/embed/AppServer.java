@@ -42,38 +42,42 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.security.SecuritySniffer;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
-import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
 import com.sun.enterprise.web.WebDeployer;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
-import java.net.URL;
 import org.glassfish.api.Startup;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
+import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
+import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
 import org.glassfish.embed.impl.EmbeddedDomainXml;
+import org.glassfish.embed.impl.EmbeddedServerEnvironment;
+import org.glassfish.embed.impl.EmbeddedWebDeployer;
 import org.glassfish.embed.impl.EntityResolverImpl;
 import org.glassfish.embed.impl.ProxyModuleDefinition;
-import org.glassfish.embed.impl.EmbeddedServerEnvironment;
-import org.glassfish.embed.impl.SilentActionReport;
-import org.glassfish.embed.impl.EmbeddedWebDeployer;
 import org.glassfish.embed.impl.ScatteredWarHandler;
+import org.glassfish.embed.impl.SilentActionReport;
 import org.glassfish.internal.api.Init;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.web.WebEntityResolver;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -81,23 +85,21 @@ import org.jvnet.hk2.component.Inhabitants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
-import org.glassfish.api.admin.ParameterNames;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMSource;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -105,8 +107,8 @@ import java.util.logging.Logger;
 
 /**
  * Entry point to the embedded GlassFish Server.
- *
- * <p>
+ * <p/>
+ * <p/>
  * TODO: the way this is done today is that the embedded API wraps the ugliness
  * of the underlying GFv3 internal abstractions, but ideally, it should be the
  * other way around &mdash; this should be the native interface inside GlassFish,
@@ -119,7 +121,7 @@ public class AppServer {
     /**
      * As of April 2008, several key configurations like HTTP listener
      * creation cannot be done once GFv3 starts running.
-     * <p>
+     * <p/>
      * We hide this from the client of this API by laziyl starting
      * the server, and this flag remembers which state we are in.
      */
@@ -145,7 +147,7 @@ public class AppServer {
     protected /*almost final*/ SnifferManager snifMan;
     protected /*almost final*/ ArchiveFactory archiveFactory;
     protected /*almost  final*/ ServerEnvironmentImpl env;
-    
+
     protected AppServer(URL domainXmlUrl, boolean start) throws EmbeddedException {
         this.domainXmlUrl = domainXmlUrl;
         if (this.domainXmlUrl == null) { // if not defined get the default one
@@ -161,13 +163,13 @@ public class AppServer {
 
     /**
      * Starts an empty do-nothing GlassFish v3.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
      */
     public AppServer(URL domainXmlUrl) throws EmbeddedException {
-        this (domainXmlUrl, true);
+        this(domainXmlUrl, true);
     }
 
     /**
@@ -194,7 +196,7 @@ public class AppServer {
 //        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace 
         //return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
         return dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
-        
+
     }
     /**
      * @return the domainXml URL.
@@ -233,7 +235,7 @@ public class AppServer {
         // register scattered web handler before normal WarHandler kicks in.
         Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
         parser.habitat.add(swh);
-        parser.habitat.addIndex(swh,ArchiveHandler.class.getName(),null);
+        parser.habitat.addIndex(swh, ArchiveHandler.class.getName(), null);
 
         // we don't want GFv3 to reconfigure all the loggers
         parser.drop(LogManagerService.class);
@@ -247,7 +249,7 @@ public class AppServer {
             Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
             parser.drop(AutoDeployService.class);
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // ignore.  It may not be available
         }
 
@@ -291,7 +293,7 @@ public class AppServer {
     }
 
     protected File createTempDir() throws IOException {
-        File dir = File.createTempFile("glassfish","embedded");
+        File dir = File.createTempFile("glassfish", "embedded");
         dir.delete();
         dir.mkdirs();
         return dir;
@@ -299,31 +301,31 @@ public class AppServer {
 
     public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener) {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
-        if(started)
+        if (started)
             throw new IllegalStateException();
 
         DomBuilder db = onHttpService();
         db.element("virtual-server")
-                .attribute("id","server")
-                .attribute("http-listeners",listener.getId())
-                .attribute("hosts","${com.sun.aas.hostName}")   // ???
-                .attribute("log-file","")
+                .attribute("id", "server")
+                .attribute("http-listeners", "http-listener-1")
+                .attribute("hosts", "${com.sun.aas.hostName}")   // ???
+                .attribute("log-file", "")
                 .element("property")
-                    .attribute("name","docroot")
-                    .attribute("value",".");
+                .attribute("name", "docroot")
+                .attribute("value", ".");
         /**
          * Write domain.xml to a temporary file. UGLY UGLY UGLY.
          */
         try {
-            File domainFile = File.createTempFile("domain","xml");
+            File domainFile = File.createTempFile("domain", "xml");
             domainFile.deleteOnExit();
             Transformer t = TransformerFactory.newInstance().newTransformer();
-            t.transform(new DOMSource(this.domainXml),new StreamResult(domainFile));
+            t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
             domainXmlUrl = domainFile.toURI().toURL();
         } catch (IOException e) {
-            throw new EmbeddedException("Failed to write domain XML",e);
+            throw new EmbeddedException("Failed to write domain XML", e);
         } catch (TransformerException e) {
-            throw new EmbeddedException("Failed to write domain XML",e);
+            throw new EmbeddedException("Failed to write domain XML", e);
         }
 
         return new EmbeddedVirtualServer(null);
@@ -358,18 +360,19 @@ public class AppServer {
 
     public EmbeddedHttpListener createHttpListener(final int listenerPort) {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
-        if(started)
+        if (started)
             throw new IllegalStateException();
 
         onHttpService().element("http-listener")
-                .attribute("id",listenerPort)
-                .attribute("address","0.0.0.0")
-                .attribute("port",listenerPort)
-                .attribute("default-virtual-server","server")
-                .attribute("server-name","")
-                .attribute("enabled",true);
+                //hardcoding to http-listner-1 should not be a requirment, but the id is used to find the right Inhabitant
+                .attribute("id", "http-listener-1")
+                .attribute("address", "0.0.0.0")
+                .attribute("port", listenerPort)
+                .attribute("default-virtual-server", "server")
+                .attribute("server-name", "")
+                .attribute("enabled", true);
 
-        return new EmbeddedHttpListener(String.valueOf(listenerPort),null);
+        return new EmbeddedHttpListener(String.valueOf(listenerPort), null);
 
 //        try {
 //            Configs configs = habitat.getComponent(Configs.class);
@@ -395,7 +398,7 @@ public class AppServer {
 
     private DomBuilder onHttpService() {
         try {
-            return new DomBuilder((Element) xpath.evaluate("//http-service",domainXml, XPathConstants.NODE));
+            return new DomBuilder((Element) xpath.evaluate("//http-service", domainXml, XPathConstants.NODE));
         } catch (XPathExpressionException e) {
             throw new AssertionError(e);    // impossible
         }
@@ -405,27 +408,28 @@ public class AppServer {
      * Starts the server if hasn't done so already. Necessary to work around the live HTTP listener update.
      */
     private void start() {
-        if(started) return;
+        if (started) return;
         started = true;
 
         try {
             final Module[] proxyMod = new Module[1];
-            
+
             // ANONYMOUS CLASS HERE!!
             ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
                 public Module find(Class clazz) {
                     Module m = super.find(clazz);
-                    if(m==null)
+                    if (m == null)
                         return proxyMod[0];
                     return m;
                 }
             };
-            
+
             proxyMod[0] = modulesRegistry.add(new ProxyModuleDefinition(getClass().getClassLoader()));
             StartupContext startupContext = new StartupContext(createTempDir(), new String[0]);
 
+
             // ANONYMOUS CLASS HERE!!
-            Main main =  new Main() {
+            Main main = new Main() {
                 @Override
                 protected InhabitantsParser createInhabitantsParser(Habitat habitat1) {
                     return decorateInhabitantsParser(super.createInhabitantsParser(habitat1));
@@ -433,8 +437,8 @@ public class AppServer {
 
             };
 
-            
-            habitat = main.launch(modulesRegistry,startupContext);
+
+            habitat = main.launch(modulesRegistry, startupContext);
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -450,19 +454,16 @@ public class AppServer {
     /**
      * Deploys WAR/EAR/RAR/etc to this Server.
      *
-     * @return
-     *      always non-null. Represents the deployed application.
-     * @throws GFException
-     *      General error that represents a deployment failure.
-     * @throws IOException
-     *      If the given archive reports {@link IOException} from one of its methods,
-     *      that exception will be passed through.
+     * @return always non-null. Represents the deployed application.
+     * @throws GFException General error that represents a deployment failure.
+     * @throws IOException If the given archive reports {@link IOException} from one of its methods,
+     *                     that exception will be passed through.
      */
     public App deploy(File archive) throws IOException {
         start();
         ReadableArchive a = archiveFactory.openArchive(archive);
 
-        if(!archive.isDirectory()) {
+        if (!archive.isDirectory()) {
             // explode (if I don't, WarHandler won't work)
             ArchiveHandler h = appLife.getArchiveHandler(a);
 
@@ -479,24 +480,20 @@ public class AppServer {
 
     /**
      * Deploys a {@link ReadableArchive} to this Server.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This overloaded version of the deploy method is for advanced users.
      * It allows the caller to deploy an application in a non-standard layout.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * The deployment uses the {@link ReadableArchive#getName() archive name}
      * as the context path.
      *
-     * @return
-     *      The object that represents a deployed application.
-     *      Never null.
-     *
-     * @throws GFException
-     *      General error that represents a deployment failure.
-     * @throws IOException
-     *      If the given archive reports {@link IOException} from one of its methods,
-     *      that exception will be passed through.
+     * @return The object that represents a deployed application.
+     *         Never null.
+     * @throws GFException General error that represents a deployment failure.
+     * @throws IOException If the given archive reports {@link IOException} from one of its methods,
+     *                     that exception will be passed through.
      */
     public App deploy(ReadableArchive a) throws IOException {
         return deploy(a, null);
@@ -504,8 +501,8 @@ public class AppServer {
 
     /**
      * Deploys a {@link ReadableArchive} to this Server.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This overloaded version of the deploy method is for advanced users.
      * It allows you specifying additional parameters to be passed to the deploy command
      *
@@ -516,11 +513,14 @@ public class AppServer {
      */
     public App deploy(ReadableArchive a, Properties params) throws IOException {
         start();
-        
+
         ArchiveHandler h = appLife.getArchiveHandler(a);
 
         // now prepare sniffers
-        ClassLoader parentCL = snifMan.createSnifferParentCL(null);
+
+        //is this required?
+        ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
+
         ClassLoader cl = h.getClassLoader(parentCL, a);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
@@ -528,25 +528,46 @@ public class AppServer {
         if (params == null) {
             params = new Properties();
         }
-        params.put(ParameterNames.NAME,a.getName());
-        params.put(ParameterNames.ENABLED,"true");
+        params.put(ParameterNames.NAME, a.getName());
+        params.put(ParameterNames.ENABLED, "true");
         final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
-        deploymentContext.setClassLoader(cl);
 
         SilentActionReport r = new SilentActionReport();
         ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
         r.check();
 
-        return new App(this,appInfo,deploymentContext);
+        return new App(this, appInfo, deploymentContext);
     }
 
-    
-         /**
+    /**
+     * Sets up a parent classloader that will be used to create a temporary application
+     * class loader to load classes from the archive before the Deployers are available.
+     * Sniffer.handles() method takes a class loader as a parameter and this class loader
+     * needs to be able to load any class the sniffer load themselves.
+     *
+     * @param parent   parent class loader for this class loader
+     * @param sniffers sniffer instances
+     * @return a class loader with visibility on all classes loadable by classloaders.
+     */
+    public ClassLoader createSnifferParentCL(ClassLoader parent, Collection<Sniffer> sniffers) {
+        // Use the sniffers class loaders as the delegates to the parent class loader.
+        // This will allow any class loadable by the sniffer (therefore visible to the sniffer
+        // class loader) to be also loadable by the archive's class loader.
+        ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
+        for (Sniffer sniffer : sniffers) {
+            cl.addDelegate(sniffer.getClass().getClassLoader());
+        }
+        return cl;
+
+    }
+
+
+    /**
      * Convenience method to deploy a scattered war archive on a given virtual server
      * and using the specified context root.
      *
-     * @param war the scattered war
-     * @param contextRoot the context root to use
+     * @param war           the scattered war
+     * @param contextRoot   the context root to use
      * @param virtualServer the virtual server ID
      */
     public App deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
@@ -564,7 +585,7 @@ public class AppServer {
     /**
      * Convenience method to deploy a scattered war archive on the default virtual server.
      *
-     * @param war the archive
+     * @param war         the archive
      * @param contextRoot the context root to use
      * @throws IOException
      */
@@ -581,12 +602,12 @@ public class AppServer {
     public App deployWar(ScatteredWar war) throws IOException {
         return deployWar(war, null, null);
     }
-    
+
     /**
      * Stops the running server.
      */
     public void stop() {
-        if(!started)
+        if (!started)
             return;
 
         for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
