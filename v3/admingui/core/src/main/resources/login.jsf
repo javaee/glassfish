@@ -79,7 +79,9 @@
 	    <td></td>
 	</tr>
             <tr><td class="LogMidBnd"></td>
-</f:verbatim>            
+
+</f:verbatim>        
+    
 <!--  Customizing the background image -->
 <event>
     <!afterCreate        
@@ -94,6 +96,8 @@
 			</td>
 			<td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
 </f:verbatim>
+<sun:image icon="DOT" width="1" height="100" border="0" />
+
 <!--  Customizing the login product name image -->
 <event>
     <!afterCreate        
@@ -172,7 +176,7 @@
 			    <tr><td>&nbsp;</td></tr>
 			    <tr><td>
 </f:verbatim>
-				    <sun:image icon="DOT" width="1" height="33" />
+				    <sun:image icon="DOT" width="0" height="87" border="0" />
 <f:verbatim>
 				</td>
 				<td>&nbsp;</td></tr>
@@ -191,9 +195,11 @@
 	<td class="LogMidBnd" 
 	    style="background-image: url(#{themeImages.LOGIN_GRADIENT_SIDES});background-repeat:repeat-x;background-position:left top;">
 	    &nbsp;</td></tr>
+             <tr><td><sun:image icon="DOT" width="1" height="500" /></td></tr>
     <tr class="LogBotBnd" style="background-image: url(#{themeImages.LOGIN_GRADIENT_BOTTOM});background-repeat:repeat-x;background-position:left top;">
-	<td>&nbsp;</td>
+	<td>&nbsp;<br>&nbsp;<br></td>
 	<td><div class="logCpy"><span class="logTxtCpy">
+             
 </f:verbatim>
 		<sun:staticText id="text1" text="$resource{i18n.copyright.shortMessage}" />
 <f:verbatim>
