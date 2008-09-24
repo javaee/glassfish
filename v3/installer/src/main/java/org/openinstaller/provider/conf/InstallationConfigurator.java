@@ -513,7 +513,8 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
             writer.write("image.path=" + installDirForward + "\n");
             writer.write("install.pkg=true\n");
             writer.write("install.updatetool=true\n");
-            writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
+            //writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
+            writer.write("optin.update.notification=false\n");
             writer.write("optin.usage.reporting=" + allowUpdateCheck + "\n");
             if (proxyURL != null) {
                 writer.write("proxy.URL=" + proxyURL + "\n");
