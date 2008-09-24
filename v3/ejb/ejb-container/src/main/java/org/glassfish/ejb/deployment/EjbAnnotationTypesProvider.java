@@ -6,6 +6,7 @@ import com.sun.enterprise.deployment.AnnotationTypesProvider;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import java.lang.annotation.Annotation;
 
 /**
@@ -17,7 +18,7 @@ import java.lang.annotation.Annotation;
 public class EjbAnnotationTypesProvider implements AnnotationTypesProvider {
     public Class<? extends Annotation>[] getAnnotationTypes() {
         return new Class[] {
-                MessageDriven.class, Stateful.class, Stateless.class };    }
+                MessageDriven.class, Stateful.class, Stateless.class, Singleton.class };    }
 
     public Class getType(String typename) throws ClassNotFoundException {
         return getClass().getClassLoader().loadClass(typename);
