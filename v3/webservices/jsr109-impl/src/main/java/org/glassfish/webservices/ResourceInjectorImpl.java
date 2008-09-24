@@ -78,7 +78,7 @@ public class ResourceInjectorImpl extends ResourceInjector {
     public void inject(WSWebServiceContext context, Object instance)
                     throws WebServiceException {
 
-       try {
+       /*try {
             // Set proper component context
             invMgr.preInvoke(inv);
             // Injection first
@@ -120,6 +120,6 @@ public class ResourceInjectorImpl extends ResourceInjector {
             throw new WebServiceException(ie);
         } finally {
             invMgr.postInvoke(inv);
-        }
+        }*/
     }
 }
