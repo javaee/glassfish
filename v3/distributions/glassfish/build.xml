@@ -30,7 +30,7 @@
     </target>
 
     <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
-        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true">
+        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
             <fullGraph />
             <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>

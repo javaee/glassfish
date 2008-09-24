@@ -59,7 +59,7 @@
     </scm>
 
     <properties>
-      <hk2.version>0.3.26</hk2.version>
+      <hk2.version>0.3.28</hk2.version>
     </properties>
 
     <dependencyManagement>

@@ -81,6 +81,7 @@
                             <excludeGroupIds>com.sun.enterprise</excludeGroupIds>
                             <includeScope>compile</includeScope>
                             <includeScope>runtime</includeScope>
+                            <stripVersion>true</stripVersion>
                         </configuration>
                    </execution>
                </executions>

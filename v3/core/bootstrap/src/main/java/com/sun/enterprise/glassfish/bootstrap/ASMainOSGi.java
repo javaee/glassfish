@@ -74,11 +74,9 @@ public abstract class ASMainOSGi {
     /**
      * The following jars in the modules directory are to be added to {@link #launcherCL}.
      * <p/>
-     * These are the prefixes of the jar names (to avoid hard-coding versions),
-     * and so for entry "foo", we'll find "foo*.jar"
      */
     private String[] additionalJars = {
-        "javax.xml.stream-*.jar", "wstx-asl-*.jar" // needed by config module in HK2
+        "javax.xml.stream.jar", "wstx-asl.jar" // needed by config module in HK2
     };
 
 

@@ -78,6 +78,7 @@
                             <excludeTransitive>true</excludeTransitive>
                             <includeScope>compile</includeScope>
                             <includeScope>runtime</includeScope>
+                            <stripVersion>true</stripVersion>
                         </configuration>
                    </execution>
                </executions>

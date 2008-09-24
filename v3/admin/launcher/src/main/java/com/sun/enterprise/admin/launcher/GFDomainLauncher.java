@@ -58,19 +58,12 @@ class GFDomainLauncher extends GFLauncher {
         List<File> list = new ArrayList<File>();
         File dir = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY),"modules");
 
-        File[] matches = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return BOOTSTRAP_JAR.matcher(name).matches();
-            }
-        });
-
-        if ((matches==null || matches.length==0) && !isFakeLaunch())
+        File bootjar = new File(dir, BOOTSTRAP_JAR);
+        if (!bootjar.exists() && !isFakeLaunch())
             throw new GFLauncherException("nobootjar", dir.getPath());
 
-        // TODO: we are not supposed to have matches.length>1 so report that as an error
-        if(matches!=null)
-            for (File m : matches)
-                list.add(SmartFile.sanitize(m));
+        if(bootjar.exists())
+            list.add(SmartFile.sanitize(bootjar));
 
         return list;
     }
@@ -81,7 +74,7 @@ class GFDomainLauncher extends GFLauncher {
     
     private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.ASMain";
 
-    private static final Pattern BOOTSTRAP_JAR = Pattern.compile("glassfish-\\d.*\\.jar");
+    private static final String BOOTSTRAP_JAR = "glassfish.jar";
 }
 
 /* sample profiler config

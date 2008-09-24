@@ -25,7 +25,8 @@ own identifying information: Portions Copyright [yyyy]
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
 
-      	<resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules">
+      	<resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules"
+                    stripVersion="true">
              <scope level="compile,runtime" />
         </resolveAll>
 

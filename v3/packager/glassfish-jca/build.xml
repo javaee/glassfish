@@ -114,7 +114,8 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef> 
 	
 
-	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true">
+	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true"
+                        stripVersion="true">
                 <graphRef refid="glassfish-jca-modules"/>
 	   </resolveAll>
 

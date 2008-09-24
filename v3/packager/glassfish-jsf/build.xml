@@ -139,7 +139,8 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef> 
 	
 
-	 <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true">
+	 <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true"
+                     stripVersion="true">
 		 <graphRef refid="glassfish-jsf-modules"/>
 		 <removeSpecificArtifacts>
                     <scope level="compile,runtime"/>
@@ -147,7 +148,7 @@ own identifying information: Portions Copyright [yyyy]
                 </removeSpecificArtifacts>
 	</resolveAll>
 
-		<resolveArtifact artifactId="jsf-api" todir="target/stage/glassfishv3-prelude/glassfish/modules" />
+		<resolveArtifact artifactId="jsf-api" tofile="target/stage/glassfishv3-prelude/glassfish/modules/jsf-api.jar" />
 
 	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
 		  <visualize file="all-modules.png">

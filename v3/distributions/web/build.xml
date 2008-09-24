@@ -68,7 +68,7 @@
                 </scope>
             </graphDef>
 
-            <resolveAll todir="target/stage/glassfish/modules/@{name}" tolerateBrokenPOMs="true">
+            <resolveAll todir="target/stage/glassfish/modules/@{name}" tolerateBrokenPOMs="true" stripVersion="true">
                 <graphRef refid="@{name}-modules"/>
             </resolveAll>
         </sequential>
@@ -92,7 +92,7 @@
         <attribute name="base" />
         <sequential>
             <!-- find all fragments -->
-            <resolveAll todir="target/fragments" tolerateBrokenPOMs="true">
+            <resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
                 <fullGraph/>
                 <!-- now treat the full graph as the list and then do simple list filtering -->
                 <packaging value="distribution-fragment"/>
@@ -112,7 +112,7 @@
     </macrodef>
 
     <target name="create.bundle" depends="web.prepare, web.moduleDef">
-        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true">
+        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
             <!-- first filter out all the distribution fragments and their transitive dependencies -->
             <packaging not="distribution-fragment" />
             <!-- Also filter our projects with pom packaging to avoid packaging the .pom--> 

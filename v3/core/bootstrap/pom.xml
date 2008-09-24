@@ -80,10 +80,6 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.glassfish.bootstrap.ASMain</mainClass>
                         </manifest>
-                        <!-- this specifies the bootstrap module -->
-                        <manifestEntries>
-                            <Class-Path>hk2-core${hk2.version}.jar</Class-Path>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
