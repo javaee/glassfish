@@ -144,47 +144,4 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      */
     public void setRef(String value) throws PropertyVetoException;
 
-
-    /**
-     * Gets the applicationConfig children.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the applicationConfig children.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getApplicationConfig().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ApplicationConfig }
-     */
-    @Element("*")
-    public List<ApplicationConfig> getApplicationConfig();
-    
-    /**
-     * Retrieves the single ApplicationConfig object for the given type,
-     * if any exists.  
-     * @param type the type of the application config of interest
-     * @return ApplicationConfig for the specified type; null if none exists
-     */
-    @DuckTyped
-    public ApplicationConfig getApplicationConfig(String type);
-    
-    public class Duck {
-        public static ApplicationConfig getApplicationConfig(ApplicationRef me, String type) {
-            for (ApplicationConfig ac : me.getApplicationConfig()) {
-                if (ac.getType().equals(type)) {
-                    return ac;
-                }
-            }
-            return null;
-        }
-    }
 }

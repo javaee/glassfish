@@ -893,7 +893,7 @@ public class ApplicationLifecycle {
                             (List<ApplicationConfig>) moduleProps.get(DeploymentProperties.APP_CONFIG);
                     if (savedAppConfigs != null) {
                         for (ApplicationConfig ac : savedAppConfigs) {
-                            appRef.getApplicationConfig().add(ac);
+                            app.getApplicationConfigs().add(ac);
                         }
                     }
 
@@ -993,9 +993,9 @@ public class ApplicationLifecycle {
                 appRef.getVirtualServers());
         }
 
-        if (appRef.getApplicationConfig() != null) {
+        if (app.getApplicationConfigs() != null) {
             addApplicationConfigToProps(deploymentParams, 
-                appRef.getApplicationConfig());
+                app.getApplicationConfigs());
         }
 
         return deploymentParams;
@@ -1003,19 +1003,13 @@ public class ApplicationLifecycle {
 
     protected void addApplicationConfigToProps (Properties props,
         List<ApplicationConfig> appConfigList) {
-        for (ApplicationConfig appConfig : appConfigList) {
-            /*
-             * Each individual ApplicationContainer implementation will retrieve
-             * its particular application config, getting APP_CONFIG.<container-type>
-             * from the startup context parameters, and (typically) casting it
-             * to the corresponding sub-interface of ApplicationConfig for that
-             * container type.  See WebApplication in the web/web-glue module
-             * for an example.
-             */
-            String appConfigName = DeploymentProperties.APP_CONFIG + "." +
-                appConfig.getType();
-            props.put(appConfigName, appConfig);
-        }
+        /*
+         * Place the entire list of ApplicationConfig objects into the
+         * properties.  The individual app containers will extract only
+         * the ones of interest to them using the class type of the
+         * specific ones they want.
+         */
+        props.put(DeploymentProperties.APP_CONFIG, appConfigList);
     }
 
 

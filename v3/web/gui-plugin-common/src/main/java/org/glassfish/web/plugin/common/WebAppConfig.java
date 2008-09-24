@@ -39,7 +39,6 @@ package org.glassfish.web.plugin.common;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import java.util.List;
 import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -55,16 +54,6 @@ import org.jvnet.hk2.config.Element;
 @Configured
 public interface WebAppConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
 
-    /**
-     * The type attribute duplicates what is declared in ApplicationConfig except
-     * that here we add the defaultValue to specify the container type of
-     * these customizations.
-     * @return
-     */
-    @Attribute(defaultValue="web",required=true)
-    public String getType();
-    public void setType(String value);
-    
     /**
      * Returns the env-entry objects, if any.
      * @return

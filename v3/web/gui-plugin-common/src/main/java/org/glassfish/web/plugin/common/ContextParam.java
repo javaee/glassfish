@@ -36,6 +36,7 @@
 
 package org.glassfish.web.plugin.common;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -88,4 +89,9 @@ public interface ContextParam extends ConfigBeanProxy {
      * @param value new value
      */
     public void setParamValue(String value);
+
+    @Attribute(dataType=Boolean.class, defaultValue="false")
+    public String getIgnoreDescriptorItem();
+    public void setIgnoreDescriptorItem(String value);
+
 }

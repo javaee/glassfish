@@ -40,6 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
@@ -261,4 +262,53 @@ public interface Application extends ConfigBeanProxy, Injectable, Module, Proper
      */
     @Element
     public List<WebServiceEndpoint> getWebServiceEndpoint();
+
+    /**
+     * Gets the applicationConfig children.
+     * <p/>
+     * <p/>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the applicationConfig children.
+     * <p/>
+     * <p/>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getApplicationConfig().add(newItem);
+     * </pre>
+     * <p/>
+     * <p/>
+     * <p/>
+     * Objects of the following type(s) are allowed in the list
+     * {@link ApplicationConfig }
+     */
+    @Element("*")
+    public List<ApplicationConfig> getApplicationConfigs();
+
+    /**
+     * Retrieves the single ApplicationConfig object for the given type,
+     * if any exists.
+     * @param type the type of the application config of interest
+     * @return ApplicationConfig for the specified type; null if none exists
+     */
+    @DuckTyped
+    public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type);
+
+    public class Duck {
+        public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
+            return getApplicationConfig(me.getApplicationConfigs(), type);
+        }
+
+        public static <T extends ApplicationConfig> T getApplicationConfig(
+                List<ApplicationConfig> candidates,
+                Class<T> type) {
+            for (ApplicationConfig ac : candidates) {
+                if (type.isInstance(ac)) {
+                    return (T) ac;
+                }
+            }
+            return null;
+        }
+    }
 }

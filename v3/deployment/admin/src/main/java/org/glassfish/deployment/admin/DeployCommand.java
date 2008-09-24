@@ -23,6 +23,8 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
@@ -71,7 +73,10 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 public class DeployCommand extends ApplicationLifecycle implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
-    
+
+    @Inject
+    Applications apps;
+
     @Inject
     ServerEnvironmentImpl env;
 
@@ -431,10 +436,12 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
 
             // also save the application config data
-            appConfigList = 
-                ConfigBeansUtilities.getApplicationConfig(target, name);
-            if (appConfigList != null) {
-                addApplicationConfigToProps(parameters, appConfigList);
+            final Application app = apps.getModule(Application.class, name);
+            if (app != null) {
+                appConfigList = app.getApplicationConfigs();
+                if (appConfigList != null) {
+                    addApplicationConfigToProps(parameters, appConfigList);
+                }
             }
 
         }

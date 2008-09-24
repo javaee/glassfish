@@ -51,31 +51,11 @@ import org.jvnet.hk2.config.Configured;
  * <p>
  * Each different container type provides its own sub-interface of ApplicationConfig
  * to reprsent the customizable parts of its application config information.
- * Each sub-interface must reproduce the @Attribute declaration and methods
- * defined on ApplicationConfig for itself, with identical definitions except
- * adding the default value for type to be the container type.  See
- * WebAppConfig in web/webgui-plugin-common for an example.  
+ * See WebAppConfig in web/webgui-plugin-common for an example.
  * 
  * @author tjquinn
  */
 @Configured
 // NO AMXConfigInfo; this is a base (abstract) base type
 public interface ApplicationConfig extends ConfigBeanProxy, Injectable {
-    /**
-     * Reports the type value which holds the container type to which this
-     * particular configuration customization applies.
-     * 
-     * @return the type for these customizations
-     */
-    @Attribute(required=true,key=true)
-    public String getType();
-    
-    /**
-     * Sets the type attribute value to the specified container type.
-     * 
-     * @param the container type for which these customizations apply
-     * @throws java.beans.PropertyVetoException
-     */
-    public void setType(String value) throws PropertyVetoException;
-    
 }

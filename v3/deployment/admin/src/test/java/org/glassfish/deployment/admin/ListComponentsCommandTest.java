@@ -36,6 +36,7 @@
  */
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
@@ -170,6 +171,9 @@ public class ListComponentsCommandTest {
         public List<Engine> getEngine(){ return engineList;}
         public List<Property> getProperty(){ return null;}
         public List<WebServiceEndpoint> getWebServiceEndpoint() {return null;}
+        public List<ApplicationConfig> getApplicationConfig(Class<?> type) {return null;}
+        public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type) {return null;}
+        public List<ApplicationConfig> getApplicationConfigs() {return null;}
         
         public void setEngines(List<Engine> engines) {
             engineList = engines;
