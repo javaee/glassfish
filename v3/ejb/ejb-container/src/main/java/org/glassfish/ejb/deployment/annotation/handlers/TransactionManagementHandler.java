@@ -97,4 +97,8 @@ public class TransactionManagementHandler extends AbstractAttributeHandler {
     public Class<? extends Annotation>[] getTypeDependencies() {
         return getEjbAnnotationTypes();
     }
+
+    protected boolean supportTypeInheritance() {
+        return true;
+    }
 }

@@ -85,7 +85,11 @@ public class InterceptorsHandler extends AbstractAttributeHandler {
     public Class<? extends Annotation> getAnnotationType() {
         return Interceptors.class;
     }    
-        
+
+    protected boolean supportTypeInheritance() {
+        return true;
+    }
+
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
