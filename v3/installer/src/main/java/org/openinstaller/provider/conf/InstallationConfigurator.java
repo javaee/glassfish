@@ -359,7 +359,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
                 "domain1"};
 
 	    String[] asadminCommandArrayMac = { "java", "-jar",
-		installDir+"/glassfish/modules/admin-cli-10.0-SNAPSHOT.jar",
+		installDir+"/glassfish/modules/admin-cli.jar",
 	        "create-domain",
                 "--savelogin",
 		"--no-checkports",
