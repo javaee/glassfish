@@ -85,7 +85,11 @@
 			<!--
 			<Bundle-Classpath>.</Bundle-Classpath>
 			-->
-                        <Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=true</Embed-Dependency>
+<!--
+FIXME: This is needed in order to embed the Woodstock files in this bundle.
+       Commenting this out for now so build doesn't break
+			<Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=true</Embed-Dependency>
+-->
                         <Export-Package>org.glassfish.admingui.customtheme.*</Export-Package>
 <!--
 FIXME: The org.glassfish.admingui.customtheme.* and branding.* entries below are added to avoid the following error:
