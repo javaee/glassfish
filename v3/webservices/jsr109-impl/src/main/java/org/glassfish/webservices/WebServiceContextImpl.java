@@ -103,13 +103,14 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
         return this.jaxwsContextDelegate.isUserInRole(role);
     }
     
+    /* TODO BM need to fix this after checking with JAXWS spec
     public EndpointReference getEndpointReference(Class clazz, org.w3c.dom.Element... params) {
         return this.jaxwsContextDelegate.getEndpointReference(clazz, params);
     }
     
     public EndpointReference getEndpointReference(org.w3c.dom.Element... params) {
         return this.jaxwsContextDelegate.getEndpointReference(params);
-    }
+    }*/
     
     public Packet getRequestPacket() {
         return this.jaxwsContextDelegate.getRequestPacket();
