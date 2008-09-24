@@ -84,8 +84,12 @@ public class EjbApplication
     }
 
     public boolean start(ApplicationContext startupContext) {
+        return true;
+    }
+
+    boolean loadAndStartContainers(ApplicationContext startupContext) {
         /*
-        Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
+        Set<EjbDescriptor> descs = (Set<GEjbDescriptor>) bundleDesc.getEjbs();
 
         long appUniqueID = ejbs.getUniqueId();
         long appUniqueID = 0;

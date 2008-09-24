@@ -176,11 +176,7 @@ public class EjbDeployer
         String appName = dc.getCommandParameters().getProperty(ParameterNames.NAME);
         ejbApps.put(appName, ejbApp);
 
-        /*
-        System.out.println("**EjbDeployer: " + ejbApp
-            + ";  CL => " + dc.getClassLoader()
-            + "; TCCL => " + Thread.currentThread().getContextClassLoader());
-        */
+        ejbApp.loadAndStartContainers(dc);
         return ejbApp;
     }
 
