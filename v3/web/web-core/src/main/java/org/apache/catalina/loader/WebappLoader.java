@@ -1164,7 +1164,13 @@ public class WebappLoader
                                                 destFile.getAbsolutePath()));
                     }
 
-                    Resource jarResource = (Resource) binding.getObject();
+                    Object obj = binding.getObject();
+
+                    if (!(obj instanceof Resource))
+                        continue;
+
+                    Resource jarResource = (Resource) obj;
+
                     if (copyJars) {
                         if (!copy(jarResource.streamContent(),
                                   new FileOutputStream(destFile)))
