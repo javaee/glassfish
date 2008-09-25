@@ -76,6 +76,10 @@ public class MonitorCommand extends AbstractCommand {
                 {
                     timer.cancel();
                     done = true;
+                    String exceptionMessage = monitorTask.getExceptionMessage();
+                    if (exceptionMessage != null) {
+                        throw new CommandException(exceptionMessage);
+                    }
                 }
                 else if (str.equals("h") || str.equals("H"))
                 {

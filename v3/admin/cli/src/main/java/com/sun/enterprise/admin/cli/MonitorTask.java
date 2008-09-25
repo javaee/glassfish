@@ -44,6 +44,9 @@ import java.io.File;
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
 public class MonitorTask extends TimerTask
 {
     private final static LocalStringsImpl strings = new LocalStringsImpl(MonitorTask.class);
@@ -53,6 +56,7 @@ public class MonitorTask extends TimerTask
     File fileName = null;
     boolean verbose = false;
     String[] remoteArgs;
+    private String exceptionMessage = null;
     
     public MonitorTask() {}
 
@@ -106,8 +110,15 @@ public class MonitorTask extends TimerTask
     void cancelMonitorTask()
     {
         timer.cancel();
-        final String msg = strings.get("commands.monitor.press_to_quit");
-        CLILogger.getInstance().printMessage(msg);
+        try {
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_Q);
+            robot.keyRelease(KeyEvent.VK_Q);
+            robot.keyPress(KeyEvent.VK_ENTER);
+            robot.keyRelease(KeyEvent.VK_ENTER);
+        } catch (java.awt.AWTException e) {
+            CLILogger.getInstance().printError(strings.get("awt.error", e.getMessage()));
+        }
     }
 
     public void run(){
@@ -123,12 +134,17 @@ public class MonitorTask extends TimerTask
         catch(Exception e) {
             CLILogger.getInstance().printError(strings.get("listCommands.errorRemote", e.getMessage()));
             cancelMonitorTask();
+            exceptionMessage = e.getMessage();
         }
         finally {
             //CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
+    
     public void displayDetails(){
         CLILogger.getInstance().printMessage("These are the details");
     }
