@@ -19,7 +19,7 @@
     <sun:body onLoad="#{bodyOnLoad}">
         <sun:form id="form">
             <!insert name="formExtra" />
-            <sun:title title="#{pageTitle}" helpText="#{helpText}">
+            <sun:title id="topTitle" title="#{pageTitle}" helpText="#{helpText}">
                 <!insert name="titleExtra" />
 
                 <!-- Buttons  -->
@@ -33,6 +33,15 @@
             <!insert name="content">
                 "Content Goes Here
             </insert>
+
+            <sun:title id="bottomTitle" rendered="#{useBottomTitle}">
+                <!-- Buttons  -->
+                <!facet pageButtonsBottom>
+                    <sun:panelGroup id="bottomButtons">
+                        <!insert name="pageButtonsBottom" />
+                    </sun:panelGroup>
+                </facet>
+            </sun:title>
 
             <!insert name="helpkey" />
         </sun:form>
