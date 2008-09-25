@@ -160,6 +160,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * @param weight int value from 1 to 100 to specify the search order
      */
     public synchronized void addRepository(Repository repository, int weight) {
+        // check that we don't already have this repository
+        for (Repository repo : repositories.values()) {
+            if (repo.getLocation().equals(repository.getLocation())) {
+                throw new RuntimeException("repository at " + repository.getLocation() + " already registered");
+            }
+        }
         while (repositories.containsKey(weight)) {
             weight++;
         }

@@ -233,7 +233,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      *      null if the attribute is not found.
      */
     public String attribute(String name) {
-        return t(attributes.get(name));
+        return t(rawAttribute(name));
     }
 
     /**
@@ -243,7 +243,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      *      null if the attribute is not found.
      */
     public String rawAttribute(String name) {
-        return attributes.get(name);
+        String value = attributes.get(name);
+        if (value==null && model.attributes.containsKey(name)) {
+                value = model.attributes.get(name).getDefaultValue();
+        }
+        return value;
     }
     
     public Set<String> getAttributeNames() {
