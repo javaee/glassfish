@@ -51,13 +51,13 @@
          <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-        <sun:button id="addSharedTableButton"  text="$resource{i18n.jvmOptions.AddJvmOption}">   
+        <sun:button id="addSharedTableButton" immediate="true" text="$resource{i18n.jvmOptions.AddJvmOption}">   
             <!command
             getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
             addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"option"});
             />                                 
         </sun:button>
-        <sun:button id="button1"  text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"> 
+        <sun:button id="button1" immediate="true" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"> 
             <!command
                 getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{trg});      
                 getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});

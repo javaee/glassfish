@@ -89,10 +89,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerDomainAttributes", output = {
-@HandlerOutput(name = "AppRoot", type = String.class),
-@HandlerOutput(name = "LogRoot", type = String.class),
-@HandlerOutput(name = "Locale", type = String.class)
-})
+        @HandlerOutput(name = "AppRoot", type = String.class),
+        @HandlerOutput(name = "LogRoot", type = String.class),
+        @HandlerOutput(name = "Locale", type = String.class)
+    })
     public static void getServerDomainAttributes(HandlerContext handlerCtx) {
 
         DomainConfig domainConfig = AMXRoot.getInstance().getDomainConfig();
@@ -114,10 +114,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerDomainAttributes", input = {
-@HandlerInput(name = "AppRoot", type = String.class),
-@HandlerInput(name = "LogRoot", type = String.class),
-@HandlerInput(name = "Locale", type = String.class)
-})
+        @HandlerInput(name = "AppRoot", type = String.class),
+        @HandlerInput(name = "LogRoot", type = String.class),
+        @HandlerInput(name = "Locale", type = String.class)
+    })
     public static void saveServerDomainAttributes(HandlerContext handlerCtx) {
 
         DomainConfig domainConfig = AMXRoot.getInstance().getDomainConfig();
@@ -145,19 +145,19 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerAppsConfigAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "Reload", type = String.class),
-@HandlerOutput(name = "ReloadInterval", type = String.class),
-@HandlerOutput(name = "AutoDeploy", type = String.class),
-@HandlerOutput(name = "AdminTimeout", type = String.class),
-@HandlerOutput(name = "AutoDeployInterval", type = String.class),
-@HandlerOutput(name = "AutoDeployTimeout", type = String.class),
-@HandlerOutput(name = "Verifier", type = String.class),
-@HandlerOutput(name = "Precompile", type = String.class),
-@HandlerOutput(name = "AutoDeployDirectory", type = String.class),
-@HandlerOutput(name = "Properties", type = Map.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "Reload", type = String.class),
+        @HandlerOutput(name = "ReloadInterval", type = String.class),
+        @HandlerOutput(name = "AutoDeploy", type = String.class),
+        @HandlerOutput(name = "AdminTimeout", type = String.class),
+        @HandlerOutput(name = "AutoDeployInterval", type = String.class),
+        @HandlerOutput(name = "AutoDeployTimeout", type = String.class),
+        @HandlerOutput(name = "Verifier", type = String.class),
+        @HandlerOutput(name = "Precompile", type = String.class),
+        @HandlerOutput(name = "AutoDeployDirectory", type = String.class),
+        @HandlerOutput(name = "Properties", type = Map.class)
+    })
     public static void getServerAppsConfigAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -167,9 +167,9 @@ public class ServerHandlers {
         String autoDeploy = dConfig.getAutodeployEnabled();
         //refer to issue# 5698 and issue# 3691
         String adminTimeout = "";
-        try{
+        try {
             adminTimeout = dConfig.getAdminSessionTimeoutInMinutes();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         String autoDeployInterval = dConfig.getAutodeployPollingIntervalInSeconds();
@@ -206,18 +206,18 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerDefaultAppsConfigAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "Reload", type = Boolean.class),
-@HandlerOutput(name = "ReloadInterval", type = String.class),
-@HandlerOutput(name = "AutoDeploy", type = Boolean.class),
-@HandlerOutput(name = "AdminTimeout", type = String.class),
-@HandlerOutput(name = "AutoDeployInterval", type = String.class),
-@HandlerOutput(name = "AutoDeployTimeout", type = String.class),
-@HandlerOutput(name = "Verifier", type = Boolean.class),
-@HandlerOutput(name = "Precompile", type = Boolean.class),
-@HandlerOutput(name = "AutoDeployDirectory", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "Reload", type = Boolean.class),
+        @HandlerOutput(name = "ReloadInterval", type = String.class),
+        @HandlerOutput(name = "AutoDeploy", type = Boolean.class),
+        @HandlerOutput(name = "AdminTimeout", type = String.class),
+        @HandlerOutput(name = "AutoDeployInterval", type = String.class),
+        @HandlerOutput(name = "AutoDeployTimeout", type = String.class),
+        @HandlerOutput(name = "Verifier", type = Boolean.class),
+        @HandlerOutput(name = "Precompile", type = Boolean.class),
+        @HandlerOutput(name = "AutoDeployDirectory", type = String.class)
+    })
     public static void getServerDefaultAppsConfigAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -274,18 +274,18 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerAppsConfigAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "Reload", type = String.class),
-@HandlerInput(name = "ReloadInterval", type = String.class),
-@HandlerInput(name = "AutoDeploy", type = String.class),
-@HandlerInput(name = "AdminTimeout", type = String.class),
-@HandlerInput(name = "AutoDeployInterval", type = String.class),
-@HandlerInput(name = "AutoDeployTimeout", type = String.class),
-@HandlerInput(name = "Verifier", type = String.class),
-@HandlerInput(name = "Precompile", type = String.class),
-@HandlerInput(name = "AutoDeployDirectory", type = String.class),
-@HandlerInput(name = "newProps", type = Map.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "Reload", type = String.class),
+        @HandlerInput(name = "ReloadInterval", type = String.class),
+        @HandlerInput(name = "AutoDeploy", type = String.class),
+        @HandlerInput(name = "AdminTimeout", type = String.class),
+        @HandlerInput(name = "AutoDeployInterval", type = String.class),
+        @HandlerInput(name = "AutoDeployTimeout", type = String.class),
+        @HandlerInput(name = "Verifier", type = String.class),
+        @HandlerInput(name = "Precompile", type = String.class),
+        @HandlerInput(name = "AutoDeployDirectory", type = String.class),
+        @HandlerInput(name = "newProps", type = Map.class)
+    })
     public static void saveServerAppsConfigAttributes(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
@@ -314,15 +314,15 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerJvmAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "JavaHome", type = String.class),
-@HandlerOutput(name = "JavacOptions", type = String.class),
-@HandlerOutput(name = "DebugEnabled", type = Boolean.class),
-@HandlerOutput(name = "DebugOptions", type = String.class),
-@HandlerOutput(name = "RmicOptions", type = String.class),
-@HandlerOutput(name = "BytecodePreprocessor", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "JavaHome", type = String.class),
+        @HandlerOutput(name = "JavacOptions", type = String.class),
+        @HandlerOutput(name = "DebugEnabled", type = Boolean.class),
+        @HandlerOutput(name = "DebugOptions", type = String.class),
+        @HandlerOutput(name = "RmicOptions", type = String.class),
+        @HandlerOutput(name = "BytecodePreprocessor", type = String.class)
+    })
     public static void getServerJvmAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -372,39 +372,39 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getDefaultServerModuleLogLevels", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "EJB", type = String.class),
-@HandlerOutput(name = "Admin", type = String.class),
-@HandlerOutput(name = "EJB", type = String.class),
-@HandlerOutput(name = "Classloader", type = String.class),
-@HandlerOutput(name = "Configuration", type = String.class),
-@HandlerOutput(name = "Connector", type = String.class),
-@HandlerOutput(name = "Corba", type = String.class),
-@HandlerOutput(name = "Deployment", type = String.class),
-@HandlerOutput(name = "Javamail", type = String.class),
-@HandlerOutput(name = "Jaxr", type = String.class),
-@HandlerOutput(name = "Jaxrpc", type = String.class),
-@HandlerOutput(name = "Jms", type = String.class),
-@HandlerOutput(name = "Jta", type = String.class),
-@HandlerOutput(name = "Jts", type = String.class),
-@HandlerOutput(name = "MDB", type = String.class),
-@HandlerOutput(name = "Naming", type = String.class),
-@HandlerOutput(name = "Root", type = String.class),
-@HandlerOutput(name = "Saaj", type = String.class),
-@HandlerOutput(name = "Security", type = String.class),
-@HandlerOutput(name = "SelfManagement", type = String.class),
-@HandlerOutput(name = "Server", type = String.class),
-@HandlerOutput(name = "Util", type = String.class),
-@HandlerOutput(name = "Verifier", type = String.class),
-@HandlerOutput(name = "WEB", type = String.class),
-@HandlerOutput(name = "PersistenceLogLevel", type = String.class),
-@HandlerOutput(name = "Jbi", type = String.class),
-@HandlerOutput(name = "NodeAgent", type = String.class),
-@HandlerOutput(name = "Synchronization", type = String.class),
-@HandlerOutput(name = "Gms", type = String.class),
-@HandlerOutput(name = "Jaxws", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "EJB", type = String.class),
+        @HandlerOutput(name = "Admin", type = String.class),
+        @HandlerOutput(name = "EJB", type = String.class),
+        @HandlerOutput(name = "Classloader", type = String.class),
+        @HandlerOutput(name = "Configuration", type = String.class),
+        @HandlerOutput(name = "Connector", type = String.class),
+        @HandlerOutput(name = "Corba", type = String.class),
+        @HandlerOutput(name = "Deployment", type = String.class),
+        @HandlerOutput(name = "Javamail", type = String.class),
+        @HandlerOutput(name = "Jaxr", type = String.class),
+        @HandlerOutput(name = "Jaxrpc", type = String.class),
+        @HandlerOutput(name = "Jms", type = String.class),
+        @HandlerOutput(name = "Jta", type = String.class),
+        @HandlerOutput(name = "Jts", type = String.class),
+        @HandlerOutput(name = "MDB", type = String.class),
+        @HandlerOutput(name = "Naming", type = String.class),
+        @HandlerOutput(name = "Root", type = String.class),
+        @HandlerOutput(name = "Saaj", type = String.class),
+        @HandlerOutput(name = "Security", type = String.class),
+        @HandlerOutput(name = "SelfManagement", type = String.class),
+        @HandlerOutput(name = "Server", type = String.class),
+        @HandlerOutput(name = "Util", type = String.class),
+        @HandlerOutput(name = "Verifier", type = String.class),
+        @HandlerOutput(name = "WEB", type = String.class),
+        @HandlerOutput(name = "PersistenceLogLevel", type = String.class),
+        @HandlerOutput(name = "Jbi", type = String.class),
+        @HandlerOutput(name = "NodeAgent", type = String.class),
+        @HandlerOutput(name = "Synchronization", type = String.class),
+        @HandlerOutput(name = "Gms", type = String.class),
+        @HandlerOutput(name = "Jaxws", type = String.class)
+    })
     public static void getDefaultServerModuleLogLevels(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -497,38 +497,38 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerModuleLogLevels", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "EJB", type = String.class),
-@HandlerOutput(name = "Admin", type = String.class),
-@HandlerOutput(name = "EJB", type = String.class),
-@HandlerOutput(name = "Classloader", type = String.class),
-@HandlerOutput(name = "Configuration", type = String.class),
-@HandlerOutput(name = "Connector", type = String.class),
-@HandlerOutput(name = "Corba", type = String.class),
-@HandlerOutput(name = "Deployment", type = String.class),
-@HandlerOutput(name = "Javamail", type = String.class),
-@HandlerOutput(name = "Jaxr", type = String.class),
-@HandlerOutput(name = "Jaxrpc", type = String.class),
-@HandlerOutput(name = "Jms", type = String.class),
-@HandlerOutput(name = "Jta", type = String.class),
-@HandlerOutput(name = "Jts", type = String.class),
-@HandlerOutput(name = "MDB", type = String.class),
-@HandlerOutput(name = "Naming", type = String.class),
-@HandlerOutput(name = "Root", type = String.class),
-@HandlerOutput(name = "Saaj", type = String.class),
-@HandlerOutput(name = "Security", type = String.class),
-@HandlerOutput(name = "SelfManagement", type = String.class),
-@HandlerOutput(name = "Server", type = String.class),
-@HandlerOutput(name = "Util", type = String.class),
-@HandlerOutput(name = "Verifier", type = String.class),
-@HandlerOutput(name = "WEB", type = String.class),
-@HandlerOutput(name = "Jbi", type = String.class),
-@HandlerOutput(name = "NodeAgent", type = String.class),
-@HandlerOutput(name = "Synchronization", type = String.class),
-@HandlerOutput(name = "Gms", type = String.class),
-@HandlerOutput(name = "Jaxws", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "EJB", type = String.class),
+        @HandlerOutput(name = "Admin", type = String.class),
+        @HandlerOutput(name = "EJB", type = String.class),
+        @HandlerOutput(name = "Classloader", type = String.class),
+        @HandlerOutput(name = "Configuration", type = String.class),
+        @HandlerOutput(name = "Connector", type = String.class),
+        @HandlerOutput(name = "Corba", type = String.class),
+        @HandlerOutput(name = "Deployment", type = String.class),
+        @HandlerOutput(name = "Javamail", type = String.class),
+        @HandlerOutput(name = "Jaxr", type = String.class),
+        @HandlerOutput(name = "Jaxrpc", type = String.class),
+        @HandlerOutput(name = "Jms", type = String.class),
+        @HandlerOutput(name = "Jta", type = String.class),
+        @HandlerOutput(name = "Jts", type = String.class),
+        @HandlerOutput(name = "MDB", type = String.class),
+        @HandlerOutput(name = "Naming", type = String.class),
+        @HandlerOutput(name = "Root", type = String.class),
+        @HandlerOutput(name = "Saaj", type = String.class),
+        @HandlerOutput(name = "Security", type = String.class),
+        @HandlerOutput(name = "SelfManagement", type = String.class),
+        @HandlerOutput(name = "Server", type = String.class),
+        @HandlerOutput(name = "Util", type = String.class),
+        @HandlerOutput(name = "Verifier", type = String.class),
+        @HandlerOutput(name = "WEB", type = String.class),
+        @HandlerOutput(name = "Jbi", type = String.class),
+        @HandlerOutput(name = "NodeAgent", type = String.class),
+        @HandlerOutput(name = "Synchronization", type = String.class),
+        @HandlerOutput(name = "Gms", type = String.class),
+        @HandlerOutput(name = "Jaxws", type = String.class)
+    })
     public static void getServerModuleLogLevels(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -593,9 +593,9 @@ public class ServerHandlers {
     }
 
     @Handler(id = "getPredefinedLogLevels", output = {
-@HandlerOutput(name = "levelsLabel", type = List.class),
-@HandlerOutput(name = "levelsValue", type = List.class)
-})
+        @HandlerOutput(name = "levelsLabel", type = List.class),
+        @HandlerOutput(name = "levelsValue", type = List.class)
+    })
     public static void getPredefinedLogLevels(HandlerContext handlerCtx) {
         List labels = new ArrayList();
         labels.add(GuiUtil.getMessage("logging.Finest"));
@@ -651,38 +651,38 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerModuleLogLevels", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "EJB", type = String.class),
-@HandlerInput(name = "Admin", type = String.class),
-@HandlerInput(name = "EJB", type = String.class),
-@HandlerInput(name = "Classloader", type = String.class),
-@HandlerInput(name = "Configuration", type = String.class),
-@HandlerInput(name = "Connector", type = String.class),
-@HandlerInput(name = "Corba", type = String.class),
-@HandlerInput(name = "Deployment", type = String.class),
-@HandlerInput(name = "Javamail", type = String.class),
-@HandlerInput(name = "Jaxr", type = String.class),
-@HandlerInput(name = "Jaxrpc", type = String.class),
-@HandlerInput(name = "Jms", type = String.class),
-@HandlerInput(name = "Jta", type = String.class),
-@HandlerInput(name = "Jts", type = String.class),
-@HandlerInput(name = "MDB", type = String.class),
-@HandlerInput(name = "Naming", type = String.class),
-@HandlerInput(name = "Root", type = String.class),
-@HandlerInput(name = "Saaj", type = String.class),
-@HandlerInput(name = "Security", type = String.class),
-@HandlerInput(name = "SelfManagement", type = String.class),
-@HandlerInput(name = "Server", type = String.class),
-@HandlerInput(name = "Util", type = String.class),
-@HandlerInput(name = "Verifier", type = String.class),
-@HandlerInput(name = "WEB", type = String.class),
-@HandlerInput(name = "Jbi", type = String.class),
-@HandlerInput(name = "Jaxws", type = String.class),
-@HandlerInput(name = "NodeAgent", type = String.class),
-@HandlerInput(name = "Synchronization", type = String.class),
-@HandlerInput(name = "Gms", type = String.class),
-@HandlerInput(name = "newProps", type = Map.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "EJB", type = String.class),
+        @HandlerInput(name = "Admin", type = String.class),
+        @HandlerInput(name = "EJB", type = String.class),
+        @HandlerInput(name = "Classloader", type = String.class),
+        @HandlerInput(name = "Configuration", type = String.class),
+        @HandlerInput(name = "Connector", type = String.class),
+        @HandlerInput(name = "Corba", type = String.class),
+        @HandlerInput(name = "Deployment", type = String.class),
+        @HandlerInput(name = "Javamail", type = String.class),
+        @HandlerInput(name = "Jaxr", type = String.class),
+        @HandlerInput(name = "Jaxrpc", type = String.class),
+        @HandlerInput(name = "Jms", type = String.class),
+        @HandlerInput(name = "Jta", type = String.class),
+        @HandlerInput(name = "Jts", type = String.class),
+        @HandlerInput(name = "MDB", type = String.class),
+        @HandlerInput(name = "Naming", type = String.class),
+        @HandlerInput(name = "Root", type = String.class),
+        @HandlerInput(name = "Saaj", type = String.class),
+        @HandlerInput(name = "Security", type = String.class),
+        @HandlerInput(name = "SelfManagement", type = String.class),
+        @HandlerInput(name = "Server", type = String.class),
+        @HandlerInput(name = "Util", type = String.class),
+        @HandlerInput(name = "Verifier", type = String.class),
+        @HandlerInput(name = "WEB", type = String.class),
+        @HandlerInput(name = "Jbi", type = String.class),
+        @HandlerInput(name = "Jaxws", type = String.class),
+        @HandlerInput(name = "NodeAgent", type = String.class),
+        @HandlerInput(name = "Synchronization", type = String.class),
+        @HandlerInput(name = "Gms", type = String.class),
+        @HandlerInput(name = "newProps", type = Map.class)
+    })
     public static void saveServerModuleLogLevels(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -739,15 +739,15 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerDefaultJvmAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "JavaHome", type = String.class),
-@HandlerOutput(name = "Options", type = String.class),
-@HandlerOutput(name = "DebugEnabled", type = Boolean.class),
-@HandlerOutput(name = "DebugOptions", type = String.class),
-@HandlerOutput(name = "RmicOptions", type = String.class),
-@HandlerOutput(name = "BytecodePreprocessor", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "JavaHome", type = String.class),
+        @HandlerOutput(name = "Options", type = String.class),
+        @HandlerOutput(name = "DebugEnabled", type = Boolean.class),
+        @HandlerOutput(name = "DebugOptions", type = String.class),
+        @HandlerOutput(name = "RmicOptions", type = String.class),
+        @HandlerOutput(name = "BytecodePreprocessor", type = String.class)
+    })
     public static void getServerDefaultJvmAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -786,14 +786,14 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerJvmAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "JavaHome", type = String.class, required = true),
-@HandlerInput(name = "JavacOptions", type = String.class),
-@HandlerInput(name = "DebugEnabled", type = Boolean.class),
-@HandlerInput(name = "DebugOptions", type = String.class),
-@HandlerInput(name = "RmicOptions", type = String.class),
-@HandlerInput(name = "BytecodePreprocessor", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "JavaHome", type = String.class, required = true),
+        @HandlerInput(name = "JavacOptions", type = String.class),
+        @HandlerInput(name = "DebugEnabled", type = Boolean.class),
+        @HandlerInput(name = "DebugOptions", type = String.class),
+        @HandlerInput(name = "RmicOptions", type = String.class),
+        @HandlerInput(name = "BytecodePreprocessor", type = String.class)
+    })
     public static void saveServerJvmAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -821,16 +821,16 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerJvmPathSettings", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "SystemClasspath", type = String.class),
-@HandlerOutput(name = "IgnoreEnvClasspath", type = Boolean.class),
-@HandlerOutput(name = "ServerClasspath", type = String.class),
-@HandlerOutput(name = "ClasspathPrefix", type = String.class),
-@HandlerOutput(name = "ClasspathSuffix", type = String.class),
-@HandlerOutput(name = "NativeLibPathPrefix", type = String.class),
-@HandlerOutput(name = "NativeLibPathSuffix", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "SystemClasspath", type = String.class),
+        @HandlerOutput(name = "IgnoreEnvClasspath", type = Boolean.class),
+        @HandlerOutput(name = "ServerClasspath", type = String.class),
+        @HandlerOutput(name = "ClasspathPrefix", type = String.class),
+        @HandlerOutput(name = "ClasspathSuffix", type = String.class),
+        @HandlerOutput(name = "NativeLibPathPrefix", type = String.class),
+        @HandlerOutput(name = "NativeLibPathSuffix", type = String.class)
+    })
     public static void getServerJvmPathSettings(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -867,15 +867,15 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerJvmPathSettings", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "SystemClasspath", type = String.class),
-@HandlerInput(name = "ServerClasspath", type = String.class),
-@HandlerInput(name = "IgnoreEnvClasspath", type = Boolean.class),
-@HandlerInput(name = "ClasspathPrefix", type = String.class),
-@HandlerInput(name = "ClasspathSuffix", type = String.class),
-@HandlerInput(name = "NativeLibPathPrefix", type = String.class),
-@HandlerInput(name = "NativeLibPathSuffix", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "SystemClasspath", type = String.class),
+        @HandlerInput(name = "ServerClasspath", type = String.class),
+        @HandlerInput(name = "IgnoreEnvClasspath", type = Boolean.class),
+        @HandlerInput(name = "ClasspathPrefix", type = String.class),
+        @HandlerInput(name = "ClasspathSuffix", type = String.class),
+        @HandlerInput(name = "NativeLibPathPrefix", type = String.class),
+        @HandlerInput(name = "NativeLibPathSuffix", type = String.class)
+    })
     public static void saveServerJvmPathSettings(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -947,17 +947,17 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getLogGeneralSettings", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "LogFile", type = String.class),
-@HandlerOutput(name = "Alarms", type = String.class),
-@HandlerOutput(name = "SystemLog", type = String.class),
-@HandlerOutput(name = "LogHandler", type = String.class),
-@HandlerOutput(name = "LogFilter", type = String.class),
-@HandlerOutput(name = "RotationLimit", type = String.class),
-@HandlerOutput(name = "RotationTimeLimit", type = String.class),
-@HandlerOutput(name = "RetainErrorStats", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "LogFile", type = String.class),
+        @HandlerOutput(name = "Alarms", type = String.class),
+        @HandlerOutput(name = "SystemLog", type = String.class),
+        @HandlerOutput(name = "LogHandler", type = String.class),
+        @HandlerOutput(name = "LogFilter", type = String.class),
+        @HandlerOutput(name = "RotationLimit", type = String.class),
+        @HandlerOutput(name = "RotationTimeLimit", type = String.class),
+        @HandlerOutput(name = "RetainErrorStats", type = String.class)
+    })
     public static void getLogGeneralSettings(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -998,18 +998,18 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerLogGeneralSettings", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "LogFile", type = String.class),
-@HandlerInput(name = "Alarms", type = String.class),
-@HandlerInput(name = "SystemLog", type = String.class),
-@HandlerInput(name = "LogHandler", type = String.class),
-@HandlerInput(name = "LogFilter", type = String.class),
-@HandlerInput(name = "RotationLimit", type = String.class),
-@HandlerInput(name = "RotationTimeLimit", type = String.class),
-@HandlerInput(name = "RetainErrorStats", type = String.class),
-@HandlerInput(name = "AddProps", type = Map.class),
-@HandlerInput(name = "RemoveProps", type = ArrayList.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "LogFile", type = String.class),
+        @HandlerInput(name = "Alarms", type = String.class),
+        @HandlerInput(name = "SystemLog", type = String.class),
+        @HandlerInput(name = "LogHandler", type = String.class),
+        @HandlerInput(name = "LogFilter", type = String.class),
+        @HandlerInput(name = "RotationLimit", type = String.class),
+        @HandlerInput(name = "RotationTimeLimit", type = String.class),
+        @HandlerInput(name = "RetainErrorStats", type = String.class),
+        @HandlerInput(name = "AddProps", type = Map.class),
+        @HandlerInput(name = "RemoveProps", type = ArrayList.class)
+    })
     public static void saveServerLogGeneralSettings(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -1049,9 +1049,9 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveJvmOptions", input = {
-@HandlerInput(name = "NameList", type = ArrayList.class, required = true),
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-})
+        @HandlerInput(name = "NameList", type = ArrayList.class, required = true),
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    })
     public static void saveJvmOptions(HandlerContext handlerCtx) {
         ArrayList names = (ArrayList) handlerCtx.getInputValue("NameList");
         if (names == null) {
@@ -1074,9 +1074,9 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveProfilerJvmOptions", input = {
-@HandlerInput(name = "NameList", type = ArrayList.class, required = true),
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-})
+        @HandlerInput(name = "NameList", type = ArrayList.class, required = true),
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    })
     public static void saveProfilerJvmOptions(HandlerContext handlerCtx) {
         ArrayList names = (ArrayList) handlerCtx.getInputValue("NameList");
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -1085,7 +1085,7 @@ public class ServerHandlers {
             if (names != null && names.size() > 0) {
                 String[] options = (String[]) names.toArray(new String[names.size()]);
                 profilerConfig.setJVMOptions(options);
-            } 
+            }
 
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -1103,14 +1103,14 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServerProfilerAttributes", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "ProfilerName", type = String.class),
-@HandlerOutput(name = "ProfilerEnabled", type = Boolean.class),
-@HandlerOutput(name = "Classpath", type = String.class),
-@HandlerOutput(name = "NativeLibrary", type = String.class),
-@HandlerOutput(name = "edit", type = Boolean.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "ProfilerName", type = String.class),
+        @HandlerOutput(name = "ProfilerEnabled", type = Boolean.class),
+        @HandlerOutput(name = "Classpath", type = String.class),
+        @HandlerOutput(name = "NativeLibrary", type = String.class),
+        @HandlerOutput(name = "edit", type = Boolean.class)
+    })
     public static void getServerProfilerAttributes(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -1148,12 +1148,12 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "saveServerProfilerSettings", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "ProfilerName", type = String.class),
-@HandlerInput(name = "Classpath", type = String.class),
-@HandlerInput(name = "ProfilerEnabled", type = Boolean.class),
-@HandlerInput(name = "NativeLibrary", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "ProfilerName", type = String.class),
+        @HandlerInput(name = "Classpath", type = String.class),
+        @HandlerInput(name = "ProfilerEnabled", type = Boolean.class),
+        @HandlerInput(name = "NativeLibrary", type = String.class)
+    })
     public static void saveServerProfilerSettings(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -1202,10 +1202,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getLoggerList", input = {
-@HandlerInput(name = "Module", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "LogList", type = String.class)
-})
+        @HandlerInput(name = "Module", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "LogList", type = String.class)
+    })
     public static void getLoggerList(HandlerContext handlerCtx) {
 
         String module = (String) handlerCtx.getInputValue("Module");
@@ -1227,8 +1227,8 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getPersistenceLoggerList", output = {
-@HandlerOutput(name = "LogList", type = String.class)
-})
+        @HandlerOutput(name = "LogList", type = String.class)
+    })
     public static void getPersistenceLoggerList(HandlerContext handlerCtx) {
 
         String jdo = getLoggerList("jdo");
@@ -1265,10 +1265,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getPersistenceLogLevel", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "PersistenceLogLevel", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "PersistenceLogLevel", type = String.class)
+    })
     public static void getPersistenceLogLevel(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
@@ -1284,9 +1284,9 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "setPersistenceLogLevel", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true),
-@HandlerInput(name = "Value", type = String.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true),
+        @HandlerInput(name = "Value", type = String.class)
+    })
     public static void setPersistenceLogLevel(HandlerContext handlerCtx) {
 
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
@@ -1310,14 +1310,14 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "generateDiagnosticReport", input = {
-@HandlerInput(name = "Description", type = String.class),
-@HandlerInput(name = "BugIds", type = String.class),
-@HandlerInput(name = "StartDate", type = Date.class),
-@HandlerInput(name = "EndDate", type = Date.class),
-@HandlerInput(name = "Target", type = String.class)
-}, output = {
-@HandlerOutput(name = "ReportLocation", type = String.class)
-})
+        @HandlerInput(name = "Description", type = String.class),
+        @HandlerInput(name = "BugIds", type = String.class),
+        @HandlerInput(name = "StartDate", type = Date.class),
+        @HandlerInput(name = "EndDate", type = Date.class),
+        @HandlerInput(name = "Target", type = String.class)
+    }, output = {
+        @HandlerOutput(name = "ReportLocation", type = String.class)
+    })
     public static void generateDiagnosticReport(HandlerContext handlerCtx) {
         HashMap map = new HashMap();
         map.put("logstartdate", (Date) handlerCtx.getInputValue("StartDate"));
@@ -1348,21 +1348,21 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getConfidentialProps", output = {
-@HandlerOutput(name = "ConfidentialProps", type = List.class)
-})
+        @HandlerOutput(name = "ConfidentialProps", type = List.class)
+    })
     public static void getConfidentialProps(HandlerContext handlerCtx) {
-    /* TODO-V3
-    List propList = (List)JMXUtil.getAttribute(
-    JMXUtil.DomainDiagnosticsMBeanName,
-    "ConfidentialProperties");
-    List mapList = new ArrayList(); 
-    for (int i = 0; i < propList.size(); i++) {
-    Map oneRow = new HashMap();
-    oneRow.put("prop", propList.get(i));
-    mapList.add(oneRow);
-    }
-    handlerCtx.setOutputValue("ConfidentialProps", mapList);
-     */
+        /* TODO-V3
+        List propList = (List)JMXUtil.getAttribute(
+        JMXUtil.DomainDiagnosticsMBeanName,
+        "ConfidentialProperties");
+        List mapList = new ArrayList(); 
+        for (int i = 0; i < propList.size(); i++) {
+        Map oneRow = new HashMap();
+        oneRow.put("prop", propList.get(i));
+        mapList.add(oneRow);
+        }
+        handlerCtx.setOutputValue("ConfidentialProps", mapList);
+         */
     }
 
     /**
@@ -1372,10 +1372,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getJvmOptions", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "JvmOptions", type = List.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "JvmOptions", type = List.class)
+    })
     public static void getJvmOptions(HandlerContext handlerCtx) {
 
         //more null pointer checking put in due to issue#2247
@@ -1409,10 +1409,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getJvmOptionsForProfiler", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "JvmOptions", type = List.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "JvmOptions", type = List.class)
+    })
     public static void getJvmOptionsForProfiler(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
@@ -1427,12 +1427,8 @@ public class ServerHandlers {
                     System.out.println("!!!!! getJvmOptionsForProfiler: getJavaConfig() returns NULL; configName=" + configName);
                 } else {
                     ProfilerConfig profilerConfig = javaConfig.getProfilerConfig();
-                    if (profilerConfig == null) {
-                        System.out.println("!!!!! getJvmOptionsForProfiler: getProfilerConfig() returns NULL; configName=" + configName);
-                    } else {
-                        String[] jvmOptions = profilerConfig.getJVMOptions();
-                        list.add(convertToListOfMap(jvmOptions, "option"));
-                    }
+                    String[] jvmOptions = (profilerConfig == null) ? new String[]{} : profilerConfig.getJVMOptions();
+                    list.add(convertToListOfMap(jvmOptions, "option"));
                 }
             }
         } catch (Exception ex) {
@@ -1448,10 +1444,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getModuleLogLevelProperties", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "Properties", type = Map.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "Properties", type = Map.class)
+    })
     public static void getModuleLogLevelProperties(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
@@ -1467,10 +1463,10 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getLoggingProperties", input = {
-@HandlerInput(name = "ConfigName", type = String.class, required = true)
-}, output = {
-@HandlerOutput(name = "Properties", type = Map.class)
-})
+        @HandlerInput(name = "ConfigName", type = String.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "Properties", type = Map.class)
+    })
     public static void getLoggingProperties(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String) handlerCtx.getInputValue("ConfigName")));
         LogServiceConfig lc = config.getLogServiceConfig();
@@ -1483,11 +1479,11 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getViews", input = {
-@HandlerInput(name = "InstanceName", type = String.class),
-@HandlerInput(name = "View", type = String.class)
-}, output = {
-@HandlerOutput(name = "Report", type = String.class)
-})
+        @HandlerInput(name = "InstanceName", type = String.class),
+        @HandlerInput(name = "View", type = String.class)
+    }, output = {
+        @HandlerOutput(name = "Report", type = String.class)
+    })
     public static void getViews(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("InstanceName");
         String selectedView = (String) handlerCtx.getInputValue("View");
@@ -1517,9 +1513,9 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getJVMReportList", output = {
-@HandlerOutput(name = "ReportListValue", type = java.util.List.class),
-@HandlerOutput(name = "ReportListLabel", type = java.util.List.class)
-})
+        @HandlerOutput(name = "ReportListValue", type = java.util.List.class),
+        @HandlerOutput(name = "ReportListLabel", type = java.util.List.class)
+    })
     public static void getJVMReportList(HandlerContext handlerCtx) {
         List label = new ArrayList();
         label.add(GuiUtil.getMessage("jvmReport.Summary"));
@@ -1548,13 +1544,13 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getServers", input = {
-@HandlerInput(name = "InstanceName", type = String.class, required = true),
-@HandlerInput(name = "SupportCluster", type = Boolean.class, required = true)
-}, output = {
-@HandlerOutput(name = "NotRunning", type = Boolean.class),
-@HandlerOutput(name = "ServerName", type = String.class),
-@HandlerOutput(name = "ServersList", type = SelectItem[].class)
-})
+        @HandlerInput(name = "InstanceName", type = String.class, required = true),
+        @HandlerInput(name = "SupportCluster", type = Boolean.class, required = true)
+    }, output = {
+        @HandlerOutput(name = "NotRunning", type = Boolean.class),
+        @HandlerOutput(name = "ServerName", type = String.class),
+        @HandlerOutput(name = "ServersList", type = SelectItem[].class)
+    })
     public static void getServers(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("InstanceName");
         boolean supportCluster = (Boolean) handlerCtx.getInputValue("SupportCluster");
@@ -1610,11 +1606,11 @@ public class ServerHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "recoverTransactions", input = {
-@HandlerInput(name = "SupportCluster", type = Boolean.class, required = true),
-@HandlerInput(name = "InstanceName", type = String.class),
-@HandlerInput(name = "ServerName", type = String.class),
-@HandlerInput(name = "TransactionsLogDir", type = String.class)
-})
+        @HandlerInput(name = "SupportCluster", type = Boolean.class, required = true),
+        @HandlerInput(name = "InstanceName", type = String.class),
+        @HandlerInput(name = "ServerName", type = String.class),
+        @HandlerInput(name = "TransactionsLogDir", type = String.class)
+    })
     public static void recoverTransactions(HandlerContext handlerCtx) {
         try {
             String objName = "com.sun.appserv:type=transactions-recovery,category=config";
@@ -1655,6 +1651,7 @@ public class ServerHandlers {
         return list;
     }
     private static HashMap viewOperationMap = new HashMap();
+    
 
     static {
         viewOperationMap.put("Summary", "getSummary");
@@ -1666,6 +1663,7 @@ public class ServerHandlers {
     private static final String JAXWS_MODULE_PROPERTY = "javax.enterprise.resource.webservices.jaxws";
     private static final String JBI_MODULE_PROPERTY = "com.sun.jbi";
     private static List skipLogModulePropsList = new ArrayList();
+    
 
     static {
         skipLogModulePropsList.add(PERSISTENCE_MODULE_PROPERTY);
