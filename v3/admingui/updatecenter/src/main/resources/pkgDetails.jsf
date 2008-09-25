@@ -45,6 +45,7 @@
               helpText="$resource{i18nUC.pkgDetails.TitleHelp}"
               helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
               i18nBundle="org.glassfish.admingui.core.Strings"
+              useBottomTitle="false"
               helpkey="uc.pkgDetails"
               >
   

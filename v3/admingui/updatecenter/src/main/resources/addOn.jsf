@@ -47,6 +47,7 @@
         setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.addOn.pageTitleHelp}");
         setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.addOn.tableTitle}");
         setPageSessionAttribute(key="fromPage" value="addOn.jsf");
+        setPageSessionAttribute(key="forInstall" value="true");
         setAttribute(key="helpKey" value="$resource{help.uc.addOn}");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
         setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")

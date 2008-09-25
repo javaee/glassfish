@@ -35,7 +35,7 @@
 -->
 <!-- updateCenter/ucTable.inc -->
 
-<sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
+<sun:table id="ucTable" title="AA$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
         selectMultipleButton="$boolean{true}"
         selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
@@ -49,18 +49,32 @@
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-            
             <sun:button id="button1" text="#{buttonText}" disabled="#{true}" primary="#{true}"
                     onClick="if ( getConfirm(this,'#{confirmMsg}') )
                         { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
                         else {return false;}"
             > 
-            <!command 
-                getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
-                getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                updateCenterProcess(selectedRows="${selectedRows}" action="#{action}" );
-                prepareAlertMsg(summary="#{successMsg}" type="success");
-                redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            <!command
+            
+                # make sure that the if() is in this order. otherwise, after calling the navigate() handler, forInstall will be set
+                # to null, and will pass through and and execute the next if() statements.
+                
+                if ("!$pageSession{forInstall}"){
+                    getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
+                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                    updateCenterProcess(selectedRows="${selectedRows}" action="#{action}" );
+                    prepareAlertMsg(summary="#{successMsg}" type="success");
+                    redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                }
+                if ("$pageSession{forInstall}"){
+                    getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});      
+                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                    setAttribute(key="selectedRows" value="${selectedRows}");
+                    setAttribute(key="fromPage" value="#{fromPage}");
+                    setAttribute(key="action" value="#{action}");
+                    setAttribute(key="successMsg" value="#{successMsg}");
+                    navigate(page="/updateCenter/acceptLicense.jsf");
+                }
             />
             </sun:button>
          </sun:panelGroup>

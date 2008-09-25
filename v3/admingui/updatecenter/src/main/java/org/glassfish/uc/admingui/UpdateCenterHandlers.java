@@ -24,6 +24,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
+import com.sun.pkg.client.LicenseAction;
 import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.Version;
@@ -298,6 +299,10 @@ public class UpdateCenterHandlers {
         if (action.equals("install"))
             install=true;
         List obj = (List) handlerCtx.getInputValue("selectedRows");
+        if (obj == null){
+            System.out.println("updateCenterProcess: No row selected for ");
+            return;
+        }
         List<Map> selectedRows = (List) obj;
         List<Fmri> fList = new ArrayList();
         try {
@@ -313,6 +318,50 @@ public class UpdateCenterHandlers {
             GuiUtil.handleException(handlerCtx, ex);
             ex.printStackTrace();
         }
+    }
+    
+   // getLicenseText(selectedRows="#{selectedRows}" license=>$page{license});
+     @Handler(id="getLicenseText",
+    	input={
+        @HandlerInput(name="selectedRows", type=java.util.List.class, required=true)},
+        output={
+        @HandlerOutput(name="license", type=String.class)})
+    public static void getLicenseText(HandlerContext handlerCtx) {
+         
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        Image image = getUpdateCenterImage();
+        List<Map> selectedRows = (List) obj;
+        try {
+            StringBuffer allLicense = new StringBuffer();
+            for (Map oneRow : selectedRows) {
+                Fmri fmri = (Fmri)oneRow.get("fmri");
+                allLicense.append(getLicense(image, fmri));
+            }
+            handlerCtx.setOutputValue("license", ""+allLicense);
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+            ex.printStackTrace();
+        }
+     }
+        
+    
+    private static String getLicense(Image img, Fmri fmri){
+        StringBuffer licenseText = new StringBuffer();
+        try{
+            Manifest manifest = img.getManifest(fmri);
+            List<LicenseAction> lla = manifest.getActionsByType(LicenseAction.class);
+            for (LicenseAction la : lla) {
+                licenseText.append("============= ").append(la.getName()).append(" ================\n");
+                licenseText.append(fmri.toString());
+                licenseText.append("\n\n");
+                licenseText.append(la.getText());
+                licenseText.append("\n\n");
+            }
+            return "" + licenseText;
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
     }
     
     private static String getPkgVersion(Version version){

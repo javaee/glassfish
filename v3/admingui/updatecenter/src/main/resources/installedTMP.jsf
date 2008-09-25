@@ -65,6 +65,7 @@
                 setPageSessionAttribute(key="action" value="remove");
                 setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.installed.tableTitle}");
                 setPageSessionAttribute(key="fromPage" value="installed.jsf");
+                setPageSessionAttribute(key="forInstall" value="false");
                 setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterUnInstall}");
                 getInstalledPath(result=>$attribute{installedPath});
                 getAuthority(result=>$attribute{authority});
