@@ -228,13 +228,6 @@ public class WebModuleContextConfig extends ContextConfig {
                 
             }
                             
-            ComponentEnvManager namingMgr = habitat.getComponent(
-                    com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
-            if (namingMgr!=null) {
-                String compEnvId = namingMgr.bindToComponentNamespace(
-                    webBundleDescriptor);
-                ((WebModule) context).setComponentId(compEnvId);
-            }
         } catch (Exception exception) { 
             context.setAvailable(false);
             String msg = rb.getString("webcontainer.webModuleDisabled");
@@ -250,8 +243,16 @@ public class WebModuleContextConfig extends ContextConfig {
      * Process a "start" event for this Context - in background
      */
     protected synchronized void start() {
+
+        try {
+
+            ComponentEnvManager namingMgr = habitat.getComponent(
+                com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
+            if (namingMgr!=null) {
+                String compEnvId = namingMgr.bindToComponentNamespace(webBundleDescriptor);
+                ((WebModule) context).setComponentId(compEnvId);    
+            }
         
-        try{
             TomcatDeploymentConfig.configureWebModule((WebModule)context,
                                                       webBundleDescriptor);
         } catch (Throwable t){
@@ -421,4 +422,26 @@ public class WebModuleContextConfig extends ContextConfig {
     protected void defaultConfig() {
         ;
     }
+
+
+    /**
+     * Process a "stop" event for this Context.
+     */
+    protected synchronized void stop() {
+        
+        super.stop();
+
+        try {
+            ComponentEnvManager namingMgr = habitat.getComponent(
+                com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
+            if (namingMgr!=null) {
+                namingMgr.unbindFromComponentNamespace(webBundleDescriptor);
+            }
+        } catch (javax.naming.NamingException ex) {
+            logger.log(Level.WARNING, context.getName() + " failed to unbind namespace");
+        }
+        
+    }
+
+
 }
