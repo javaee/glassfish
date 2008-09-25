@@ -131,7 +131,6 @@ public class SessionStatsTelemetry{
         if (!isValidEvent(appName, hostName)) {
             return;
         }
-        sessionsTotal.increment();
         incrementActiveSessionsCurrent();
         //logger.log(Level.FINE, "[Logger] session created event");
     }
@@ -164,7 +163,7 @@ public class SessionStatsTelemetry{
             return;
         }
         //activeSessionsCurrent.decrement();
-        sessionsTotal.increment();
+        sessionsTotal.increment(); //????
         rejectedSessionsTotal.increment();
     }
 
@@ -180,7 +179,6 @@ public class SessionStatsTelemetry{
         if (!isValidEvent(appName, hostName)) {
             return;
         }
-        //activeSessionsCurrent.decrement();
         expiredSessionsTotal.increment();
     }
 
@@ -210,7 +208,6 @@ public class SessionStatsTelemetry{
         if (!isValidEvent(appName, hostName)) {
             return;
         }
-        activeSessionsCurrent.decrement();
         persistedSessionsTotal.increment();
     }
 
@@ -270,7 +267,6 @@ public class SessionStatsTelemetry{
         if (!isValidEvent(appName, hostName)) {
             return;
         }
-        activeSessionsCurrent.decrement();
         passivatedSessionsTotal.increment();
     }
 
@@ -291,8 +287,8 @@ public class SessionStatsTelemetry{
         if (activeSessionsCurrent.getCount() > activeSessionsHigh.getCount()){
             activeSessionsHigh.setCount(activeSessionsCurrent.getCount());
         }
+        sessionsTotal.increment();
     }
-
     
     public void setProbeListenerHandles(Collection<ProbeClientMethodHandle> handles) {
         this.handles = handles;
