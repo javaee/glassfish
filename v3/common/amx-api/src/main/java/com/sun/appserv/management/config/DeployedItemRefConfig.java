@@ -45,7 +45,7 @@ import com.sun.appserv.management.base.Container;
 	Represents an &lt;application-ref&gt; element
 	found within a &lt;server&gt element.
 */
-public interface DeployedItemRefConfig extends Container, RefConfig, ConfigCreator, ConfigRemover
+public interface DeployedItemRefConfig extends Container, RefConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DEPLOYED_ITEM_REF_CONFIG;

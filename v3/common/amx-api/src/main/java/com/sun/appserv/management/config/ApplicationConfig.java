@@ -42,12 +42,26 @@ import com.sun.appserv.management.base.XTypes;
 import java.util.Map;
 
 /**
-	 Configuration for the &lt;web-module&gt; element.
+	 Configuration for the &lt;application&gt; element.
+     <p>
+     Containees may include unspecified (runtime-determined)
+     sub-interfaces of {@link ApplicationConfigConfig}.
+     <p>
+     To find all Containees of a specific type, eg {@link ApplicationConfigConfig},
+        use {@link com.sun.appserv.management.base.Util#filterAMX}:
+     <pre>
+     ApplicationConfig ac = ...;
+     Set<AMX> containees = ac.getContaineeSet();
+     Set<ApplicationConfigConfig> s = Util.filterAMX(containees, ApplicationConfigConfig.class);
+     <pre>
+     Alternately, containees may be filtered by j2eeType eg amx.getJ2EEType(), if the j2eeType
+     is known specifically.
+     
      @since Glassfish V3
 */
 
 public interface ApplicationConfig
-    extends ModuleConfig, Libraries, Container, WebServiceEndpointConfigCR
+    extends ModuleConfig, Libraries, Container, WebServiceEndpointConfigCR, ConfigCreator, ConfigRemover
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.APPLICATION_CONFIG;
@@ -101,3 +115,6 @@ public interface ApplicationConfig
     
     public Map<String,EngineConfig> getEngineConfigMap();
 }
+
+
+

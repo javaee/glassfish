@@ -41,22 +41,21 @@ import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
-import java.util.Map;
-
 /**
+	 Abstract base interface for an element which extends the @Configured type 'ApplicationConfig'.
+     <p>
 	 This base interface should be extended by sub-interfaces representing configuration, eg
-     WebAppConfigConfig.  The sub-interfaces are defined by 
+     WebAppConfigConfig; there can be new such sub-interfaces defined by modules not yet written.
+     <p>
+     The actual type  is defined by the interface and these are {@link Singleton} because
+     the type alone makes the item unique within its scope (there can be only one such element
+     of any given type).
+     @see ApplicationConfig
+     @since Glassfish V3
     
 */
-public interface ApplicationConfigConfig
-	extends PropertiesAccess, SystemPropertiesAccess, Singleton, Container, AMXConfig
+public interface ApplicationConfigConfig extends Singleton, Container, AMXConfig
 {
-    /**
-         The type is used as the name, so this is the same as getName()
-         Don't allow it to be changed; this would alter the ObjectName
-    */
-    public String getType();
-
 }
 
 

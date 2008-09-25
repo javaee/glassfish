@@ -39,7 +39,7 @@ package com.sun.appserv.management.config;
 
 /**
     Configuration for the &lt;applications&gt; element; it is an internal "node" which
-    groups all resources under itself.
+    groups all applications under itself.
     @since Glassfish V3
 */
 public interface ApplicationsConfig extends ApplicationsConfigBase
