@@ -111,7 +111,7 @@ public class CreateSystemProperties implements AdminCommand {
                         for (SystemProperty sysProperty : param.getSystemProperty()) {
                             if (sysProperty.getName().equals(propName)) {
                                 param.getSystemProperty().remove(sysProperty);
-                                continue;
+                                break;
                             }
                         }
                         
