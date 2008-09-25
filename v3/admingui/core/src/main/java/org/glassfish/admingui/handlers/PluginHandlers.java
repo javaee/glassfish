@@ -55,7 +55,7 @@ import java.net.URLClassLoader;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Properties;
 
@@ -162,78 +162,164 @@ public class PluginHandlers {
 	List<IntegrationPoint> points = getIntegrationPoints(ctx, type);
 
 	// Include them
-	includeIntegrationPoints(ctx, root, points);
+	includeIntegrationPoints(ctx, root, getSortedIntegrationPoints(points));
     }
+
+    @Handler(id="includeFirstIntegrationPoint",
+    	input={
+            @HandlerInput(name="type", type=String.class, required=true),
+	    @HandlerInput(name="root", type=UIComponent.class, required=false)})
+    public static void includeFirstIP(HandlerContext handlerCtx) {
+	// Get the input
+	String type = (String) handlerCtx.getInputValue("type");
+	UIComponent root = (UIComponent) handlerCtx.getInputValue("root");
+
+	// Get the IntegrationPoints
+	FacesContext ctx = handlerCtx.getFacesContext();
+	Set<IntegrationPoint> points =
+	    getSortedIntegrationPoints(getIntegrationPoints(ctx, type));
+	if (points != null) {
+	    Iterator<IntegrationPoint> it = points.iterator();
+	    if (it.hasNext()) {
+		// Get the first one...
+		IntegrationPoint point = it.next();
+
+		// Include the first one...
+		includeIntegrationPoint(
+		    ctx, getIntegrationPointParent(root, point), point);
+	    }
+	}
+    }
+
+
+    /**
+     *	<p> This method sorts the given {@link IntegrationPoint}'s by parentId
+     *	    and then by priority.  It returns a <code>SortedSet</code> of the
+     *	    results with the ABC order parentId.  When parentId's match, the
+     *	    highest piority will appear first.</p>
+     */
+    public static Set<IntegrationPoint> getSortedIntegrationPoints(List<IntegrationPoint> points) {
+	// Make sure we have something...
+	if (points == null) {
+	    return null;
+	}
+
+	// Use a TreeSet to sort automatically
+	Set<IntegrationPoint> sortedSet =
+	    new TreeSet<IntegrationPoint>(
+		IntegrationPointComparator.getInstance());
+// FIXME: Check for duplicates! Modify "id" if there is a duplicate?
+	sortedSet.addAll(points);
+	return sortedSet;
+    }
+
 
     /**
      *
+     *	@param	points	This parameter should be the {@link IntegrationPoint}s
+     *			to include in the order in which you want to include
+     *			them if that matters (i.e. use <code>SortedSet</code>).
      */
-    public static void includeIntegrationPoints(FacesContext ctx, UIComponent root, List<IntegrationPoint> points) {
+    public static void includeIntegrationPoints(FacesContext ctx, UIComponent root, Set<IntegrationPoint> points) {
+	if (points == null) {
+	    // Do nothing...
+	    return;
+	}
 	if (root == null) {
 	    // No root is specified, search whole page
 	    root = ctx.getViewRoot();
 	}
 
-	// Use a TreeSet to sort automatically
-	SortedSet<IntegrationPoint> sortedSet =
-	    new TreeSet<IntegrationPoint>(
-		IntegrationPointComparator.getInstance());
-// FIXME: Check for duplicates! Modify "id" if there is a duplicate?
-	sortedSet.addAll(points);
-
 	// Iterate
 	IntegrationPoint point;
 	Iterator<IntegrationPoint> it = null;
 	int lastSize = 0;
-	int currSize = sortedSet.size();
+	int currSize = points.size();
+	String parentId = null;
 	String lastParentId = null;
 	while (currSize != lastSize) {
 	    // Stop loop by comparing previous size
 	    lastSize = currSize;
-	    it = sortedSet.iterator();
+	    it = points.iterator();
 	    lastParentId = "";
-	    UIComponent parent = null;
+	    UIComponent parent = root;
 
 	    // Iterate through the IntegrationPoints
 	    while (it.hasNext()) {
 		point = it.next();
 
 		// Optimize for multiple plugins for the same parent
-		String parentId = point.getParentId();
-		if (parentId == null) {
-		    // If not specified, just stick it @ the root
-		    parentId = root.getId();
-		    parent = root;
-		} else if (!parentId.equals(lastParentId)) {
-		    parent = findComponentById(root, parentId);
-		    if (parent == null) {
-			// Didn't find the one specified!
+		parentId = point.getParentId();
+		if ((parentId == null) || !parentId.equals(lastParentId)) {
+		    // New parent (or root -- null)
+		    parent = getIntegrationPointParent(root, point);
+		}
+		if (parent == null) {
+		    // Didn't find the one specified!
 // FIXME: log FINE!  Note this may not be a problem, keep iterating to see if we find it later.
 //System.out.println("The specified parentId (" + parentId + ") was not found!"); 
-			lastParentId = null;
-			continue;
-		    }
-		    lastParentId = parentId;
+		    lastParentId = null;
+		    continue;
 		}
+		lastParentId = parent.getId();
+
+		// Add the content
+		includeIntegrationPoint(ctx, parent, point);
 
 		// We found the parent, remove from our list of IPs to add
 		it.remove();
 
-		// Add the content
-		String content = point.getContent();
-		while (content.startsWith("/")) {
-		    content = content.substring(1);
-		}
-		LayoutDefinition def =
-		    LayoutDefinitionManager.getLayoutDefinition(ctx,
-			"/" + point.getConsoleConfigId() + "/" + content);
-		LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
 	    }
 
 	    // Get the set size to see if we have any left to process
-	    currSize = sortedSet.size();
+	    currSize = points.size();
 	}
     }
+
+    /**
+     *	<p> This method returns the parent for the content of the given
+     *	    {@link IntgrationPoint}.</p>
+     *
+     *	@param	root	The <code>UIComponent</code> in which to search for
+     *			the parent.
+     *	@param	point	The {@link IntgrationPoint} which is looking for its
+     *			parent <code>UIComponent</code>.
+     */
+    public static UIComponent getIntegrationPointParent(UIComponent root, IntegrationPoint point) {
+	UIComponent parent = null;
+	String parentId = point.getParentId();
+	if (parentId == null) {
+	    // If not specified, just stick it @ the root
+	    parentId = root.getId();
+	    parent = root;
+	} else {
+	    parent = findComponentById(root, parentId);
+	}
+
+	// Return the IntegrationPoint parent
+	return parent;
+    }
+
+    /**
+     *	<p> This method includes a single {@link IntgrationPoint} under the
+     *	    given parent <code>UIComponent</code>.</p>
+     *
+     *	@param	ctx	The <code>FacesContext</code>.
+     *	@param	parent	The parent for the {@link IntegrationPoint}.
+     *	@param	point	The {@link IntegrationPoint}.
+     */
+    public static void includeIntegrationPoint(FacesContext ctx, UIComponent parent, IntegrationPoint point) {
+	// Add the content
+	String content = point.getContent();
+	while (content.startsWith("/")) {
+	    content = content.substring(1);
+	}
+	LayoutDefinition def =
+	    LayoutDefinitionManager.getLayoutDefinition(ctx,
+		"/" + point.getConsoleConfigId() + "/" + content);
+	LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
+    }
+
 
     /**
      *	<p> This method search for the requested simple id in the given
@@ -321,8 +407,9 @@ public class PluginHandlers {
                     try {
                         Properties propertyMap = new Properties();
                         propertyMap.load(propertyFileURL.openStream());
-                        ThemeContext themeContext = AdminguiThemeContext.getInstance(
-                                ctx, propertyMap);
+                        ThemeContext themeContext =
+			    AdminguiThemeContext.getInstance(ctx, propertyMap);
+			themeContext.setDefaultClassLoader(pluginCL);
                         handlerCtx.setOutputValue("themeContext", themeContext);
                     } catch (Exception ex) {
                         throw new RuntimeException(

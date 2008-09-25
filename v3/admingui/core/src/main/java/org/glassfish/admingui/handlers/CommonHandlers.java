@@ -684,7 +684,7 @@ public class CommonHandlers {
     }
     /**
      * <p> This handler sets a property on an object which is stored in an existing key
-     * For example "advance.lazyConnectionEnlistment".  <strong>Note</string>:  This does
+     * For example "advance.lazyConnectionEnlistment".  <strong>Note</strong>:  This does
      * <em>not</em> evaluate the EL expression.  Its value (e.g., "#{advance.lazyConnectionEnlistment}")
      * is passed as is to the EL API.
      */
