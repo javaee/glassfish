@@ -62,6 +62,21 @@
             </roles>
         </developer>
     </developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+		        <manifestEntries>
+			    <Class-Path>admin-util-l10n.jar </Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.common</groupId>

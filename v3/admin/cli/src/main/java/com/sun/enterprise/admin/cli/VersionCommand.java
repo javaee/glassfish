@@ -62,6 +62,7 @@ public final class VersionCommand extends AbstractCommand {
         in.put(USER, getOption(USER));
         in.put(PASSWORDFILE, getOption(PASSWORDFILE));
         in.put(SECURE, getOption(SECURE));
+        in.put(TERSE, getOption(TERSE));        
         in.invoke();
     }
     

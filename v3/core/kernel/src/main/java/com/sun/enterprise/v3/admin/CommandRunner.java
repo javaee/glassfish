@@ -150,6 +150,7 @@ public class CommandRunner {
             final Properties parameters, 
             final ActionReport report,
             final List<File> uploadedFiles) {
+        
         if (parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
             String manPage = encodeManPage(in);
@@ -732,7 +733,6 @@ public class CommandRunner {
             if ("DEFAULT".equals(key) || key.startsWith(ASADMIN_CMD_PREFIX)) {
                 continue;
             }
-            
             //check if key is a valid Param Field
             boolean validOption = false;
                 //loop through the Param field in the command class
@@ -747,7 +747,8 @@ public class CommandRunner {
                     continue;
                 }
                 if (field.getName().equals(key) ||
-                    param.name().equals(key) ) {
+                    param.name().equals(key) ||
+                    param.shortName().equals(key) ) {
                     validOption=true;
                     break;
                 }

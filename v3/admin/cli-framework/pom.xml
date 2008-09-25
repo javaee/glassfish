@@ -78,15 +78,10 @@
                 <configuration>
                     <archive>
 		        <manifestEntries>
-			    <Class-Path>cli-framework-l10n-${project.version}.jar </Class-Path>
+			    <Class-Path>cli-framework-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

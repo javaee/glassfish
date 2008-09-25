@@ -69,7 +69,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     Domain domain;
 
     //How to define short option name?
-    @Param(optional=true, defaultValue="false")
+    @Param(optional=true, defaultValue="false", shortName="m")
     Boolean monitor;
 
     @Param(primary = true)
