@@ -203,11 +203,11 @@
 
                 
          <copy tofile="${tmp.dir}/bin/updatetool"
-		 file="${uc.stage.dir}/ucbootstub"/>  
+		 file="${uc.stage.dir}/ucbootstub.sh"/>  
          <copy tofile="${tmp.dir}/bin/updatetool.bat"
 		 file="${uc.stage.dir}/ucbootstub.bat"/> 
          <copy tofile="${tmp.dir}/bin/pkg"
-		 file="${uc.stage.dir}/ucbootstub"/>  
+		 file="${uc.stage.dir}/ucbootstub.sh"/>  
          <copy tofile="${tmp.dir}/bin/pkg.bat"
                  file="${uc.stage.dir}/ucbootstub.bat"/>	 
          <zip destfile="${stage.dir}/Product/Packages/updatetool.zip"
