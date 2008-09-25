@@ -144,9 +144,9 @@ own identifying information: Portions Copyright [yyyy]
             <include name="ucbootstrap*.zip"/>
         </fileset>
     </unzip>
-    <copy file="${image.dir}/bin/ucbootstub" tofile="${image.dir}/bin/updatetool"/>
+    <copy file="${image.dir}/bin/ucbootstub.sh" tofile="${image.dir}/bin/updatetool"/>
     <copy file="${image.dir}/bin/ucbootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
-    <move file="${image.dir}/bin/ucbootstub" tofile="${image.dir}/bin/pkg"/>
+    <move file="${image.dir}/bin/ucbootstub.sh" tofile="${image.dir}/bin/pkg"/>
     <move file="${image.dir}/bin/ucbootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
 </target>
 </project>
