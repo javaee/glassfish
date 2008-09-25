@@ -70,7 +70,10 @@
 
             <resolveAll todir="target/stage/glassfish/modules/@{name}" tolerateBrokenPOMs="true" stripVersion="true">
                 <graphRef refid="@{name}-modules"/>
-            </resolveAll>
+       	    </resolveAll>
+
+	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.zip"/>
+	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.pom"/>
         </sequential>
     </macrodef>
 
@@ -124,7 +127,8 @@
             </removeSpecificArtifacts>
         </resolveAll>
 
-        <delete dir="target/stage/glassfish/modules" includes="*.zip"/>
+	<delete dir="target/stage/glassfish/modules" includes="*.zip"/>
+	<delete dir="target/stage/glassfish/modules" includes="*.pom"/>
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">

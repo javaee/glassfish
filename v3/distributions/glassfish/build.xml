@@ -39,7 +39,8 @@
             </removeSpecificArtifacts>
         </resolveAll>
 
-        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
+	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
+	<delete dir="target/stage/glassfish/modules" includes="*.pom" />
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
