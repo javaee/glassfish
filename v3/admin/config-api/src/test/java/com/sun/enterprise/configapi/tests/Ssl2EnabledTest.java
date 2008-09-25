@@ -40,7 +40,7 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: Jerome Dochez
@@ -64,12 +64,13 @@ public class Ssl2EnabledTest extends ConfigApiTest {
     }
 
     @Test
-    public void sslEnbaledTest() {
+    public void sslEnabledTest() {
         for (HttpListener listener : service.getHttpListener()) {
             if (listener.getSsl()!=null) {
                 try {
                     logger.fine("SSL2 ENABLED = " + listener.getSsl().getSsl2Enabled());
-                    assertTrue(Boolean.parseBoolean(listener.getSsl().getSsl2Enabled()));
+                    assertFalse(Boolean.parseBoolean(listener.getSsl().getSsl2Enabled()));
+                    assertFalse(Boolean.parseBoolean(listener.getSsl().getSsl3Enabled()));
                 } catch(Exception e) {
                      e.printStackTrace();
                 }

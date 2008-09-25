@@ -164,8 +164,12 @@ class ManifestManager implements ResponseManager {
             
             if(ok(childrenType))
                 sb.append(prefix).append(childrenType).append(" : ");
-            
-            sb.append(container.substring(index)).append(EOL);
+
+            try {
+                sb.append(java.net.URLDecoder.decode(container.substring(index), "UTF-8")).append(EOL);
+            } catch (Exception e) {
+                sb.append(container.substring(index)).append(EOL);
+            }
             processOneLevel(prefix + TAB, container, entry.getValue(), sb);
         }
     }

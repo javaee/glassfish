@@ -32,6 +32,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -80,7 +81,10 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
         }
 
         try {
-            disable(component, report);
+            final DeploymentContextImpl deploymentContext =
+                new DeploymentContextImpl(logger, null, context.getCommandParameters(), env);
+
+            disable(component, deploymentContext, report);
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {

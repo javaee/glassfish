@@ -72,7 +72,8 @@ public class EnabledTest extends ConfigApiTest {
     public void enabled() {
         for (HttpListener listener : listeners) {
             logger.fine("Listener " + listener.getId() + " enabled " + listener.getEnabled());
-            if (listener.getId().equals("admin-listener")) {
+            System.out.println("Listener " + listener.getId() + " enabled " + listener.getEnabled());
+            if (listener.getId().equals("http-listener-2")) {
                 assertFalse(new Boolean(listener.getEnabled()).booleanValue());
             } else {
                 assertTrue(new Boolean(listener.getEnabled()).booleanValue());

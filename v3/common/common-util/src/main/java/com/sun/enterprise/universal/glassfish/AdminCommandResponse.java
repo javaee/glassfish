@@ -72,7 +72,12 @@ public class AdminCommandResponse {
 
             for(String key : keys) {
                 String name = map.get(key + "_name");
-                String value = map.get(key + "_value");
+                String value = null;
+                try {
+                    value = map.get(key + java.net.URLDecoder.decode("_value", "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    value = map.get(key + "_value");
+                }
 
                 if(!ok(name))
                     continue;

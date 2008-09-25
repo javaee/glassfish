@@ -47,6 +47,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 
 import java.util.*;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -116,7 +118,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                 if (matches(node.getValue(), pattern)) {
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setChildrenType("DottedName");
-                    part.setMessage(prefix + node.getValue() + "=" + node.getKey().attribute("value"));
+                    part.setMessage(prefix + node.getValue() + "=" + encode(node.getKey().attribute("value")));
                 }
             }   else {
                 Map<String, String> attributes = getNodeAttributes(node.getKey(), pattern);
@@ -130,6 +132,14 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                     }
                 }
             }
+        }
+    }
+
+    private String encode(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return value;
         }
     }
     

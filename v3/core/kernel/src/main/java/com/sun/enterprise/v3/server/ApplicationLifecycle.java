@@ -37,6 +37,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
@@ -46,11 +47,7 @@ import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
@@ -76,15 +73,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,7 +83,7 @@ import java.util.logging.Logger;
  * <p>
  * TODO: this class has a "feature-envy" problem. For better encapsulation and
  * API navigability, much of these methods should be moved to ApplicationInfo/
- * ContainerInfo/ModuleInfo. For example the {@link #startModules} method
+ * ContainerInfo/ModuleInfo. For example the {@link #start} method
  * clearly belongs to {@link ApplicationInfo} - KK.
  *
  * <p>
@@ -143,6 +132,7 @@ public class ApplicationLifecycle {
     protected ClassLoaderHierarchy clh;
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
 
     protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
         return containerInfo.getDeployer();
@@ -165,16 +155,16 @@ public class ApplicationLifecycle {
         return null;
     }
 
-    public ApplicationInfo deploy(Iterable<Sniffer> sniffers, final DeploymentContextImpl context, ActionReport report) {
+    public ApplicationInfo deploy(Iterable<Sniffer> sniffers, final DeploymentContextImpl context, final ActionReport report) {
 
         final ApplicationLifecycle myself = this;
 
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
-                myself.stopModules(get("started", ModuleInfo.class), logger);
-                myself.unload(get(ModuleInfo.class), context);
-                myself.clean(get(Deployer.class), context);
-                stopContainers(get(ContainerInfo.class), logger);
+                myself.stop(get("started", ModuleInfo.class).toArray(new ModuleInfo[0]), context, logger);
+                myself.unload(get(ModuleInfo.class).toArray(new ModuleInfo[0]), null, context, report);
+                myself.clean(get(Deployer.class).toArray(new Deployer[0]), context);
+                stopContainers(get(ContainerInfo.class).toArray(new ContainerInfo[0]), logger);
             }
         };
 
@@ -203,7 +193,7 @@ public class ApplicationLifecycle {
             // we start the application
             if (Boolean.valueOf(context.getCommandParameters().getProperty(
                 ParameterNames.ENABLED))) {
-                if (startModules(appInfo, context, report, tracker)==null) {
+                if (start(appInfo, context, report, tracker)==null) {
                     return null;
                 }
             }
@@ -217,37 +207,41 @@ public class ApplicationLifecycle {
         }
     }
 
-    public ApplicationInfo enable(Iterable<Sniffer> sniffers, final DeploymentContextImpl context, ActionReport report) {
+    public ApplicationInfo enable(String appName, final DeploymentContextImpl context, final ActionReport report) {
 
         final ApplicationLifecycle myself = this;
 
-        String appName = context.getCommandParameters().getProperty(
-            ParameterNames.COMPONENT);
+        final ApplicationInfo appInfo = appRegistry.get(appName);
 
-        ApplicationInfo appInfo = appRegistry.get(appName);
+        final Collection<Sniffer> sniffers = snifferManager.getSniffers(context.getSource(),
+                context.getClassLoader());
 
         if (appInfo != null) {
             // this is an enable after deploy without server restart
             ProgressTracker tracker = new ProgressTracker() {
                 public void actOn(Logger logger) {
-                    myself.stopModules(get("started", ModuleInfo.class),
-                        logger);
+                    myself.unload(get("started", ModuleInfo.class).toArray(new ModuleInfo[0]), appInfo, context, report);
                 }
             };
 
-            try {
-                // construct application classloader and store in the context
-                List<Deployer> deployers = new ArrayList<Deployer>();
 
-                for (Sniffer sniffer : sniffers) {
-                    ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
-                    Deployer deployer = getDeployer(containerInfo);
-                    deployers.add(deployer);
-                }
+            try {
+                // construct application classloader and store in the context                 
                 ArchiveHandler handler = getArchiveHandler(context.getSource());
                 context.createClassLoaders(clh, handler);
 
-                return startModules(appInfo, context, report, tracker);
+                List<ContainerInfo> containerInfos = new ArrayList<ContainerInfo>();
+                for (Sniffer sniffer : sniffers) {
+                    containerInfos.add(containerRegistry.getContainer(sniffer.getContainersNames()[0]));
+                }
+                if (sniffers.size()==0) {
+                    report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return null;
+                }
+
+                load(containerInfos, appInfo, context, report, tracker);
+                return start(appInfo, context, report, tracker);
             } catch (Exception e) {
                 report.failure(logger, "Exception while enabling the app", e);
                 tracker.actOn(logger);
@@ -260,13 +254,9 @@ public class ApplicationLifecycle {
         }
     }
 
-    public void disable(String appName, ActionReport report) {
+    public void disable(String appName, DeploymentContext context, ActionReport report) {
 
-        ApplicationInfo appInfo = appRegistry.get(appName);
-
-        if (appInfo != null) {
-            stopModules(Arrays.asList(appInfo.getModuleInfos()), logger);
-        }
+        unload(appName, context, report);
     }
 
     /**
@@ -279,8 +269,7 @@ public class ApplicationLifecycle {
 
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo != null) {
-            isSuccess = suspendModules(Arrays.asList(appInfo.getModuleInfos()),
-                                       logger);
+            isSuccess = suspend(appInfo.getModuleInfos(), logger);
         }
 
         return isSuccess;
@@ -475,20 +464,19 @@ public class ApplicationLifecycle {
             ParameterNames.NAME);
 
         ApplicationInfo appInfo = new ApplicationInfo(context.getSource(),
-            appName, tracker.get(ModuleInfo.class).toArray(
-            new ModuleInfo[tracker.get(ModuleInfo.class).size()]));
+            appName, tracker.get(ModuleInfo.class).toArray(new ModuleInfo[0]));
 
         appRegistry.add(appName, appInfo);
 
         return appInfo;
     }
 
-    public ApplicationInfo load(LinkedList<ContainerInfo> sortedContainerInfos,
+    public ApplicationInfo load(List<ContainerInfo> sortedContainerInfos,
         ApplicationInfo appInfo, DeploymentContextImpl context,
         ActionReport report, ProgressTracker tracker) throws Exception {
 
         context.setPhase(DeploymentContextImpl.Phase.LOAD);
-        List <ModuleInfo> moduleInfos = tracker.get(ModuleInfo.class);
+        ModuleInfo[] moduleInfos = tracker.get(ModuleInfo.class).toArray(new ModuleInfo[0]);
 
         if (!context.getTransformers().isEmpty()) {
             // add the class file transformers to the new class loader
@@ -507,7 +495,9 @@ public class ApplicationLifecycle {
             // get the container.
             Deployer deployer = containerInfo.getDeployer();
 
+            ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(context.getClassLoader());
                 ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
                 if (appCtr==null) {
                     String msg = "Cannot load application in " + containerInfo.getContainer().getName() + " container";
@@ -515,7 +505,7 @@ public class ApplicationLifecycle {
                     throw new Exception(msg);
                 }
 
-                if (moduleInfos.isEmpty())  {
+                if (moduleInfos.length==0)  {
                     // if ModuleInfos have not been partially
                     // populated before
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo,
@@ -533,6 +523,8 @@ public class ApplicationLifecycle {
             } catch(Exception e) {
                 report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
                 throw e;
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
 
@@ -540,14 +532,13 @@ public class ApplicationLifecycle {
             String appName = context.getCommandParameters().getProperty(
                 ParameterNames.NAME);
             appInfo = new ApplicationInfo(context.getSource(),
-                appName, tracker.get(ModuleInfo.class).toArray(
-                new ModuleInfo[tracker.get(ModuleInfo.class).size()]));
+                appName, tracker.get(ModuleInfo.class).toArray(new ModuleInfo[0]));
         }
 
         return appInfo;
     }
 
-    public ApplicationInfo startModules(
+    public ApplicationInfo start(
         ApplicationInfo appInfo, DeploymentContextImpl context,
         ActionReport report, ProgressTracker tracker) throws Exception {
 
@@ -555,20 +546,7 @@ public class ApplicationLifecycle {
         for (ModuleInfo module : appInfo.getModuleInfos()) {
 
             try {
-                if (!module.getApplicationContainer().start(context)) {
-                    report.failure(logger, "Cannot start the container, check server.log for more information");
-                    return null;
-                }
-                tracker.add("started", ModuleInfo.class, module);
-
-                // add the endpoint
-                try {
-                    Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-                    adapter.registerEndpoint(appAdapter.getContextRoot(), appAdapter, module.getApplicationContainer());
-                } catch (ClassCastException e) {
-                    // ignore the application may not publish endpoints.
-                }
-
+                start(module, context, report, tracker);
             } catch(Exception e) {
                 report.failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method", e);
                 throw e;
@@ -578,12 +556,30 @@ public class ApplicationLifecycle {
         return appInfo;
     }
 
-    protected void stopModules(Iterable<ModuleInfo> modules, Logger logger) {
+    protected void start(ModuleInfo module, ApplicationContext context, ActionReport report, ProgressTracker tracker)
+        throws Exception{
+
+        if (!module.getApplicationContainer().start(context)) {
+            report.failure(logger, "Cannot start the container, check server.log for more information");
+            return;
+        }
+        tracker.add("started", ModuleInfo.class, module);
+
+        // add the endpoint
+        try {
+            Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
+            adapter.registerEndpoint(appAdapter.getContextRoot(), appAdapter, module.getApplicationContainer());
+        } catch (ClassCastException e) {
+            // ignore the application may not publish endpoints.
+        }
+    }
+
+    protected void stop(ModuleInfo[] modules, ApplicationContext context, Logger logger) {
 
         for (ModuleInfo module : modules) {
             try {
                 ClassLoader cloader = module.getApplicationContainer().getClassLoader();
-                module.getApplicationContainer().stop(null);
+                stop(module, context, logger);
                 try {
                     PreDestroy.class.cast(cloader).preDestroy();
                 } catch (Exception e) {
@@ -596,7 +592,23 @@ public class ApplicationLifecycle {
         }
     }
 
-    protected boolean suspendModules(Iterable<ModuleInfo> modules,
+    public boolean stop(ModuleInfo module, ApplicationContext context,  Logger logger) {
+        // remove any endpoints if exists.
+        //@TODO change EndportRegistrationException processing if required
+        try {
+            final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
+            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
+        } catch (EndpointRegistrationException e) {
+            logger.log(Level.WARNING, "Exception during unloading module '" +
+                    module + "'", e);
+        } catch(ClassCastException e) {
+            // do nothing the application did not have an adapter
+        }
+
+       return module.getApplicationContainer().stop(context);
+    }
+
+    protected boolean suspend(ModuleInfo[] modules,
                                      Logger logger) {
 
         boolean isSuccess = true;
@@ -632,18 +644,31 @@ public class ApplicationLifecycle {
         return isSuccess;
     }
 
-    protected void unload(Iterable<ModuleInfo> modules, DeploymentContextImpl context) {
+    protected void unload(ModuleInfo[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
+
+        Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
         for (ModuleInfo module : modules) {
+            if (module.getApplicationContainer()!=null && module.getApplicationContainer().getClassLoader()!=null) {
+                classLoaders.add(module.getApplicationContainer().getClassLoader());
+            }
             try {
-                module.getContainerInfo().getDeployer().unload(module.getApplicationContainer(), context);
+                unload(module, info, context, report);
             } catch(Throwable e) {
                 logger.log(Level.SEVERE, "Failed to unload from container type : " +
                         module.getContainerInfo().getSniffer().getModuleType(), e);
             }
         }
+        // all modules have been unloaded, clean the class loaders...
+        for (ClassLoader cloader : classLoaders) {
+            try {
+                PreDestroy.class.cast(cloader).preDestroy();
+            } catch (Exception e) {
+                // ignore, the class loader does not need to be explicitely stopped.
+            }
+        }
     }
 
-    protected void clean(Iterable<Deployer> deployers, DeploymentContext context) {
+    protected void clean(Deployer[] deployers, DeploymentContext context) {
         for (Deployer deployer : deployers) {
             try {
                 deployer.clean(context);
@@ -663,7 +688,7 @@ public class ApplicationLifecycle {
         return containersInfo;
     }
 
-    protected boolean startContainers(Collection<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
+    protected boolean startContainers(List<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
         for (ContainerInfo containerInfo : containersInfo) {
             Container container;
             try {
@@ -691,7 +716,7 @@ public class ApplicationLifecycle {
         return true;
     }
 
-    protected void stopContainers(Iterable<ContainerInfo> ctrInfos, Logger logger) {
+    protected void stopContainers(ContainerInfo[] ctrInfos, Logger logger) {
         for (ContainerInfo ctrInfo : ctrInfos) {
             try {
                 stopContainer(logger, ctrInfo);
@@ -731,10 +756,10 @@ public class ApplicationLifecycle {
             return null;
 
         }
-        for (ModuleInfo moduleInfo : info.getModuleInfos()) {
-            unloadModule(moduleInfo, info, context, report);
-        }
 
+        stop(info.getModuleInfos(), context, logger);
+
+        unload(info.getModuleInfos(), info, context, report);
 
         return info;
 
@@ -742,7 +767,11 @@ public class ApplicationLifecycle {
 
     public void undeploy(String appName, DeploymentContext context, ActionReport report) {
 
-        ApplicationInfo info =unload(appName, context, report);
+        if (report.getExtraProperties()!=null) {
+            context.getProps().put("ActionReportProperties", report.getExtraProperties());
+        }
+        
+        ApplicationInfo info = unload(appName, context, report);
 
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             for (ModuleInfo moduleInfo : info.getModuleInfos()) {
@@ -757,37 +786,10 @@ public class ApplicationLifecycle {
         appRegistry.remove(appName);
     }
 
-    protected boolean unloadModule(ModuleInfo module,
+    protected boolean unload(ModuleInfo module,
                                      ApplicationInfo info,
                                      DeploymentContext context,
                                      ActionReport report) {
-
-        // remove any endpoints if exists.
-        //@TODO change EndportRegistrationException processing if required
-        try {
-            final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
-        } catch (EndpointRegistrationException e) {
-            logger.log(Level.WARNING, "Exception during unloading module '" +
-                    module + "'", e);
-        } catch(ClassCastException e) {
-            // do nothing the application did not have an adapter
-        }
-
-        if (report.getExtraProperties()!=null) {
-            context.getProps().put("ActionReportProperties", report.getExtraProperties());
-        }
-
-        // first stop the application
-        try {
-            if (!module.getApplicationContainer().stop(context)) {
-                logger.severe("Cannot stop application " + info.getName() + " in container "
-                        + module.getContainerInfo().getSniffer().getModuleType());
-            }
-        } catch(Exception e) {
-            report.failure(context.getLogger(), "Exception while stopping the application", e);
-            return false;
-        }
 
         // then remove the application from the container
         Deployer deployer = module.getContainerInfo().getDeployer();
@@ -797,7 +799,9 @@ public class ApplicationLifecycle {
             report.failure(context.getLogger(), "Exception while shutting down application container", e);
             return false;
         }
-        module.getContainerInfo().remove(info);
+        if (info!=null) {
+            module.getContainerInfo().remove(info);
+        }
         return true;
     }
 

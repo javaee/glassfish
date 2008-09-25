@@ -30,6 +30,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.Archive;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -60,7 +61,6 @@ import java.net.URI;
 @Service(name="enable")
 @I18n("enable.command")
 @Scoped(PerLookup.class)
-    
 public class EnableCommand extends ApplicationLifecycle implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);    
@@ -162,30 +162,14 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             deploymentContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
             deploymentContext.createClassLoaders(clh, archiveHandler);
 
-            final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(currentCL);
-                final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive,
-                        deploymentContext.getClassLoader());
+            deploymentContext.setProps(contextProps);
+            enable(component, deploymentContext, report);
 
-                if (appSniffers.size()==0) {
-                    report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-
-                deploymentContext.setProps(contextProps);
-
-                ApplicationInfo appInfo = enable(appSniffers, deploymentContext,
-                    report);
-
-                if (report.getActionExitCode().equals(
-                    ActionReport.ExitCode.SUCCESS)) {
-                    setEnableAttributeInDomainXML(component, true);
-                }
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
+            if (report.getActionExitCode().equals(
+                ActionReport.ExitCode.SUCCESS)) {
+                setEnableAttributeInDomainXML(component, true);
             }
+
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during enabling: ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

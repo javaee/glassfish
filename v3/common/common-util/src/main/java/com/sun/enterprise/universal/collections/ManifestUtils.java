@@ -25,6 +25,8 @@ package com.sun.enterprise.universal.collections;
 
 import java.util.*;
 import java.util.jar.*;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 
 /**
  * all-static methods for handling operations with Manifests

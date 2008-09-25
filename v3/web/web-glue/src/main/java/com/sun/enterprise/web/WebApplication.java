@@ -131,15 +131,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
         container.unloadWebModule(getDescriptor().getContextRoot(), null,
                                   null, props);
 
-        if (getClassLoader() instanceof WebappClassLoader) {
-            try {
-                ((WebappClassLoader) getClassLoader()).stop();
-            } catch (Exception e) {
-                logger.log(Level.WARNING,
-                           "Unable to stop classloader for " + this, e);
-            }
-        }
-
         return true;
     }
 

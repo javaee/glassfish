@@ -31,14 +31,14 @@ public class DefaultValueTest extends ConfigApiTest {
     @Test
     public void rawAttributeTest() throws NoSuchMethodException {
 
-        String family = listener.getEnabled();
+        String family = listener.getFamily();
 
         Dom raw = Dom.unwrap(listener);
-        Attribute attr = raw.getProxyType().getMethod("getEnabled").getAnnotation(Attribute.class);
+        Attribute attr = raw.getProxyType().getMethod("getFamily").getAnnotation(Attribute.class);
         assertEquals(attr.defaultValue(), family);
-
-        assertEquals(raw.attribute("enabled"), family);
-        assertEquals(raw.rawAttribute("enabled"), family);
+        
+        assertEquals(raw.attribute("family"), family);
+        assertEquals(raw.rawAttribute("family"), family);
 
     }
 

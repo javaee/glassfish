@@ -76,17 +76,17 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
      */
     public void flush() throws IOException {
 
-        String record;
+        String record=null;
         synchronized (this) {
             super.flush();
             record = this.toString();
             super.reset();
-
+        }
+        if (record!=null) {
             if (record.length() == 0 || record.equals(lineSeparator)) {
                 // avoid empty records
                 return;
-            }
-
+            }            
             logger.logp(level, "", "", record);
         }
     }
