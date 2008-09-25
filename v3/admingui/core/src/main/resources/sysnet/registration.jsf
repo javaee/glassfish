@@ -78,7 +78,7 @@
         />
     </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">accountGroup
+    <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.reg.PageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
