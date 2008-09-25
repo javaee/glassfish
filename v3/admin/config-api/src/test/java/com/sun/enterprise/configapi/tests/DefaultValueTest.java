@@ -12,7 +12,6 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 /**
  * Test attribute and raw attribute access *
  */
-@Ignore
 public class DefaultValueTest extends ConfigApiTest {
 
     HttpListener listener;
