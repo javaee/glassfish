@@ -109,6 +109,8 @@ own identifying information: Portions Copyright [yyyy]
         </graphDef>
 
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.pom" />
+	
 	<delete dir="target/stage/glassfishv3-prelude/META-INF" /> 
 
         <if test="${compression}">
