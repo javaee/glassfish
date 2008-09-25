@@ -2101,6 +2101,9 @@ public class StandardContext
      * @return
      */ 
     public String getWorkPath() {
+        if (getWorkDir() == null) {
+            return null;
+        }
         File workDir = new File(getWorkDir());
         if (!workDir.isAbsolute()) {
             File catalinaHome = engineBase();
