@@ -52,7 +52,7 @@ ips_version =  version+',0-'+build
 
 pkg = {
     "name"          : "glassfish-corba-omgapi",
-    "version"       : ips_version,
+    "version"       : conf.corba_omgapi_version,
     "attributes"    : {
                         "pkg.summary" : "OMG CORBA APIs used in GlassFish",
                         "pkg.description" : "Implementation of Object Management Group (OMG) API for GlassFish.  "+conf.glassfish_description_long,

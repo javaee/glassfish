@@ -23,6 +23,7 @@
 glassfish_version="3.0,0-@BUILD_ID@"
 felix_version="1.0.4,0-0"
 javadb_version="10.2.2.1,0-0"
+corba_omgapi_version="3.0.0,0-1"
 
 #description
 glassfish_description="GlassFish v3 Application Server"
