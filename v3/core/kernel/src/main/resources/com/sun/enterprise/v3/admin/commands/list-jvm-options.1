@@ -14,26 +14,45 @@ SYNOPSIS
 
 DESCRIPTION
      The list-jvm-options command displays a list of command-line
-     options  that  are passed to the JavaTM application launcher
-     when the Application Server is started. The list-jvm-options
+     options  that  are  passed  to the Java application launcher
+     when the Enterprise Server is started. The  list-jvm-options
      command displays the following options:
-
-         o    Startup parameters for the Virtual Machine for  the
-              Java   platform  (Java  Virtual  Machine  or  JVMTM
-              machine). Startup parameters are set through the -X
-              option  of the Java application launcher, for exam-
-              ple, -Xmx1024m.
 
          o    Java system properties. System properties  are  set
               through  the  -D  option  of  the  Java application
-              launcher, for example, -Djava.security.manager.
+              launcher, for example:
+
+             o    -Djava.security.manager
+
+             o    -Denvironment=Production
+
+         o    Startup parameters for the Virtual Machine for  the
+              Java   platform   (Java   Virtual  Machine  or  JVM
+              machine).
+
+         The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
+         tual  Machine  for  the Java platform.Startup parameters
+         are preceded by the dash character (-) , for example:
+
+             o    --XX:PermSize=size
+
+             o    -Xmx1024m
+
+             o    -client
+
+             o    -d64
 
      The options are specified through the  JVM Options  page  of
-     the Admin Console GUI or through the following commands:
+     the  Administration  Console  or  through the following com-
+     mands:
 
          o    create-jvm-options(1)
 
          o    delete-jvm-options(1)
+
+Java EE 5           Last change: 24 Sep 2008                    1
+
+Administration Commands                       list-jvm-options(1)
 
      This command is supported in remote mode only.
 
@@ -41,16 +60,12 @@ DESCRIPTION
      see the reference page for the operating system that you are
      using:
 
-         o    SolarisTM Operating System (Solaris OS) and  Linux:
+         o    Solaris Operating System (Solaris  OS)  and  Linux:
               java    -    the    Java    application    launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
          o    Windows:  java  -  the  Java  application  launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
-
-Java EE 5           Last change: 11 Apr 2008                    1
-
-Administration Commands                       list-jvm-options(1)
 
 OPTIONS
      -t --terse
@@ -86,6 +101,10 @@ OPTIONS
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
+Java EE 5           Last change: 24 Sep 2008                    2
+
+Administration Commands                       list-jvm-options(1)
+
          The default is false.
 
      -u --user
@@ -97,12 +116,7 @@ OPTIONS
          min  login  command,  you  need  not  specify the --user
          option for subsequent operations on the domain.
 
-Java EE 5           Last change: 11 Apr 2008                    2
-
-Administration Commands                       list-jvm-options(1)
-
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -140,8 +154,13 @@ Administration Commands                       list-jvm-options(1)
 
          After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
-         password through the --passwordfile  option  for  subse-
-         quent  operations  on  the  domain.  However,  only  the
+         password   through   the   --passwordfile   option   for
+
+Java EE 5           Last change: 24 Sep 2008                    3
+
+Administration Commands                       list-jvm-options(1)
+
+         subsequent  operations  on the domain. However, only the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
          AS_ADMIN_USERPASSWORD, when required by individual  com-
@@ -152,10 +171,6 @@ Administration Commands                       list-jvm-options(1)
 
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
-
-Java EE 5           Last change: 11 Apr 2008                    3
-
-Administration Commands                       list-jvm-options(1)
 
      --help
 
@@ -191,5 +206,5 @@ SEE ALSO
      Windows
      (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 5           Last change: 11 Apr 2008                    4
+Java EE 5           Last change: 24 Sep 2008                    4
 

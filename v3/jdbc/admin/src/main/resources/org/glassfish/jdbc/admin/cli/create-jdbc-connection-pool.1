@@ -264,7 +264,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
          A pool with this property set to true  can  be  used  by
          non-Java  EE  components, that is, components other than
-         EJBs or Servlets.  The returned connection  is  enlisted
+         EJBs or Servlets. The returned  connection  is  enlisted
          automatically with the transaction context obtained from
          the transaction manager.
 
@@ -484,6 +484,15 @@ Administration Commands            create-jdbc-connection-pool(1)
          Optional attribute name/value pairs for configuring  the
          connection pool.
 
+         Note -
+
+           If an attribute name or  attribute  value  contains  a
+           colon,  the backslash (\fR) must be used to escape the
+           colon in the name or  value.  Other  characters  might
+           also require an escape character. For more information
+           about escape characters in command  options,  see  the
+           asadmin(1M) man page.
+
 OPERANDS
      connectionpoolid            The name of the JDBC  connection
                                  pool to be created.
@@ -500,6 +509,10 @@ EXAMPLES
        create\=true sample_derby_pool
        Command create-jdbc-connection-pool executed successfully
 
+Java EE 5           Last change: 22 Sep 2008                   10
+
+Administration Commands            create-jdbc-connection-pool(1)
+
      Where, the sample_derby_pool is created. The escape  charac-
      ter backslash (\fR) is used in the --property option to dis-
      tinguish the semicolon (;). Two backslashes (\) are used  to
@@ -508,15 +521,13 @@ EXAMPLES
 EXIT STATUS
      0                           command executed successfully
 
-Java EE 5           Last change: 22 Sep 2008                   10
-
-Administration Commands            create-jdbc-connection-pool(1)
-
      1                           error in executing the command
 
 SEE ALSO
      delete-jdbc-connection-pool(1),        list-jdbc-connection-
      pools(1)
+
+     asadmin(1M)
 
 Java EE 5           Last change: 22 Sep 2008                   11
 

@@ -16,17 +16,80 @@ SYNOPSIS
      [:jvm_option_name=jvm_option_value*]
 
 DESCRIPTION
-     The create-jvm-options command creates JVM  options  in  the
-     Java  configuration  or  profiler elements of the domain.xml
-     file.  If JVM options are created for a profiler,  they  are
-     used  to record the settings needed to get a particular pro-
-     filer going.
+     The create-jvm-options command creates command-line  options
+     that  are  passed  to  the  JavaTM application launcher when
+     Enterprise Server is started. These options  are  stored  in
+     the  Java  configuration  element or profiler element of the
+     domain.xml file. If options are created for a profiler, they
+     are used to record the settings that are required to start a
+     particular profiler.
 
      This command is supported in remote mode only.
 
-     You must restart the server for newly created JVM options to
-     take  effect.   Use the start/stop-domain command to restart
-     the domain administration server.
+     The  create-jvm-options  command   creates   the   following
+     options:
+
+         o    Java system properties. System properties  are  set
+              through  the  -D  option  of  the  Java application
+              launcher, for example:
+
+             o    -Djava.security.manager
+
+             o    -Denvironment=Production
+
+         o    Startup parameters for the Virtual Machine for  the
+              Java   platform  (Java  Virtual  Machine  or  JVMTM
+              machine).
+
+         The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
+         tual  Machine  for  the Java platform.Startup parameters
+         are preceded by the dash character (-) , for example:
+
+             o    --XX:PermSize=size
+
+             o    -Xmx1024m
+
+Java EE 5           Last change: 24 Sep 2008                    1
+
+Administration Commands                     create-jvm-options(1)
+
+             o    -client
+
+             o    -d64
+
+     In the following situations, you must terminate the  command
+     with a double-dash (--) before the options:
+
+         o    You are specifying only one  system  property  with
+              just   a   name   and   no   value,   for  example,
+              -Djava.security.manager.
+
+         o    You are specifying a startup parameter for the  JVM
+              machine without a value, for example, -Xmx1024m
+
+     Note -
+
+       If the command specifies an option  that  already  exists,
+       the command does not re-create the option.
+
+     For newly created options to take effect, you  must  restart
+     the  domain administration server (DAS). To restart the DAS,
+     use the following commands in this order:
+
+         1.   stop-domain(1)
+
+         2.   start-domain(1)
+
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
+     using:
+
+         o    SolarisTM Operating System (Solaris OS) and  Linux:
+              java    -    the    Java    application    launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+
+         o    Windows:  java  -  the  Java  application  launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
 OPTIONS
      -t --terse
@@ -38,6 +101,11 @@ OPTIONS
 
      -e --echo
          If set to true, the command-line statement is echoed  on
+
+Java EE 5           Last change: 24 Sep 2008                    2
+
+Administration Commands                     create-jvm-options(1)
+
          the standard output. Default is false.
 
      -I --interactive
@@ -47,11 +115,6 @@ OPTIONS
 
      -H --host
          The machine name where the domain administration  server
-
-Java EE 5            Last change: 2 Sep 2008                    1
-
-Administration Commands                     create-jvm-options(1)
-
          is running. The default value is localhost.
 
      -p --port
@@ -89,6 +152,10 @@ Administration Commands                     create-jvm-options(1)
 
            AS_ADMIN_PASSWORD=password
 
+Java EE 5           Last change: 24 Sep 2008                    3
+
+Administration Commands                     create-jvm-options(1)
+
          In this example, password is  the  actual  administrator
          password.
 
@@ -100,11 +167,6 @@ Administration Commands                     create-jvm-options(1)
 
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
-
-Java EE 5            Last change: 2 Sep 2008                    2
-
-Administration Commands                     create-jvm-options(1)
-
          password  to  authenticate  to the domain administration
          server. The password can be specified by one of the fol-
          lowing means:
@@ -145,6 +207,10 @@ Administration Commands                     create-jvm-options(1)
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
+Java EE 5           Last change: 24 Sep 2008                    4
+
+Administration Commands                     create-jvm-options(1)
+
      --profiler
 
          Indicates whether the JVM options are for the  profiler.
@@ -152,32 +218,76 @@ Administration Commands                     create-jvm-options(1)
          Default is false.
 
 OPERANDS
-
-Java EE 5            Last change: 2 Sep 2008                    3
-
-Administration Commands                     create-jvm-options(1)
-
      jvm_option_name
-
          The left side of the equal sign (=) is  the  JVM  option
          name.  The  right  side of the equal sign (=) is the JVM
          option value. A colon (:) is a  delimiter  for  multiple
          options.
 
-EXAMPLES
-     Example 1 Using the create-jvm-options command
+         Note -
 
-     JVM options must start with a dash (-).  Use  the  backslash
-     (\) to escape the dash delimiter.
+           If an option name or option value  contains  a  colon,
+           the  backslash  (\fR) must be used to escape the colon
+           in the name or value.   Other  characters  might  also
+           require  an  escape  character.  For  more information
+           about escape characters in command  options,  see  the
+           asadmin(1M) man page.
+
+EXAMPLES
+     Example 1 Setting Java System Properties
+
+     JVM machine options must start with  a  dash  (-).  Use  the
+     backslash (\fR) to escape the dash delimiter.
 
        asadmin> create-jvm-options --interactive=true
        --secure=true --passwordfile passwords.txt --terse=false
        --user admin --host localhost --port 4848 --target server
-       \-Dunixlocation=/root/example:
-       \-Dvariable=\$HOME:
-       \-Dwindowslocation=d\:\\sun\\appserver:
-       \-Doption1=-value1
+       -Dunixlocation=/root/example:
+       -Dvariable=OME:
+       -Dwindowslocation=d:\sun\appserver:
+       -Doption1=-value1
+       created 4 option(s)
+
        Command create-jvm-options executed successfully
+
+     Example 2 Setting a Single Startup  Parameter  for  the  JVM
+     Machine
+
+     This example shows  the  command  for  setting  the  maximum
+     available heap size to 1024. Because this command is setting
+     a startup parameter for the JVM machine without a value, the
+
+Java EE 5           Last change: 24 Sep 2008                    5
+
+Administration Commands                     create-jvm-options(1)
+
+     command is terminated by a double dash -- before the parame-
+     ter.
+
+       asadmin> create-jvm-options -- -Xmx1024m
+       created 1 option(s)
+
+       Command create-jvm-options executed successfully.
+
+     Example 3 Setting Multiple Startup Parameters  for  the  JVM
+     Machine
+
+     This example shows the command for setting  startup  parame-
+     ters for the JVM machine as follows:
+
+         o    The maximum available heap size is set to 1024.
+
+         o    Information about garbage collection is to be  pro-
+              vided.
+
+       asadmin> create-jvm-options "-Xmx1024m:-XX:+PrintGCDetails"
+       created 1 option(s)
+
+       Command create-jvm-options executed successfully.
+
+     In this example, one parameter already  existed  before  the
+     command  was  run.  Therefore, the command reports that only
+     one option was set.
 
 EXIT STATUS
      0                           command executed successfully
@@ -185,7 +295,21 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-jvm-options(1), list-jvm-options(1)
+     delete-jvm-options(1), list-jvm-options(1), start-domain(1),
+     stop-domain(1)
 
-Java EE 5            Last change: 2 Sep 2008                    4
+     asadmin(1M)
+
+Java EE 5           Last change: 24 Sep 2008                    6
+
+Administration Commands                     create-jvm-options(1)
+
+     java  - the Java application launcher reference page for the
+     Solaris               OS              and              Linux
+     (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html),
+     java  -  the  Java  application launcher  reference page for
+     Windows
+     (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 5           Last change: 24 Sep 2008                    7
 

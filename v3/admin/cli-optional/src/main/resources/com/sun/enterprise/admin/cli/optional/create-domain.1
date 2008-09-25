@@ -8,7 +8,7 @@ SYNOPSIS
      create-domain  [--user user] [--passwordfile passwordfile]
      {--adminport port_number | --portbase portbase}
      [(--profile developer | cluster | enterprise ] --template domain_template)]
-     [--domaindir domain_directory/domains]
+     [--domaindir domain_directory]
      [--instanceport port_number] [--savemasterpassword={false|true}]
      [ --domainproperties  (name=value)[:name=value]*]
      [--keytooloptions (name=value)[:name=value]*]
@@ -42,15 +42,6 @@ DESCRIPTION
      A domain can be managed by tools such as the  Administration
      GUI or asadmin.
 
-     You choose an appropriate profile for the domain,  depending
-     on the applications that you want to run on your new domain.
-     You can choose the developer, cluster, or enterprise profile
-     for the domain you create.
-
-Java EE 5           Last change: 23 Sep 2008                    1
-
-Administration Commands                          create-domain(1)
-
      This command is supported in local mode only.
 
 OPTIONS
@@ -58,29 +49,34 @@ OPTIONS
 
          The username of the administrator of the domain.
 
+Java EE 5           Last change: 24 Sep 2008                    1
+
+Administration Commands                          create-domain(1)
+
      -t --terse
+
          Indicates that any output data  must  be  very  concise,
          typically avoiding human-friendly sentences and favoring
          well-formatted data for consumption by a script. Default
          is false.
 
      -e --echo
-
          Setting to true will echo the command line statement  on
          the standard output. Default is false.
 
      -I --interactive
+
          If set to true (default),  only  the  required  password
          options are prompted.
 
      --domaindir
-
          The directory where the domain  is  to  be  created.  If
          specified,  the  path must be accessible in the filesys-
          tem. If not specified, the  domain  is  created  in  the
          default domain directory.
 
      --profile
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the com-
@@ -88,24 +84,24 @@ OPTIONS
          ignored.
 
      --template
-
-         The file name of a domain.xml template  used  to  create
-         the domain. This allows domains of different types to be
-         created.  This also allows you to define your  own  tem-
-         plate.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --adminport
+
          The HTTP/S port for  administration. This is the port to
-
-Java EE 5           Last change: 23 Sep 2008                    2
-
-Administration Commands                          create-domain(1)
-
          which   you   should   point   your  browser   (example,
          http://localhost:this-port) to manage the domain.
 
          Either the --adminport option or the  --portbase  option
          must be specified.
+
+Java EE 5           Last change: 24 Sep 2008                    2
+
+Administration Commands                          create-domain(1)
 
      --portbase
 
@@ -120,6 +116,11 @@ Administration Commands                          create-domain(1)
          this command for a complete list of occupied ports, when
          --portbase option is specified.
 
+         Note -
+
+           This command uses some ports that  are  not  required.
+           This behavior is retained for compatibility with other
+           releases.
          Either the --adminport option or the  --portbase  option
          must be specified.
 
@@ -152,7 +153,7 @@ Administration Commands                          create-domain(1)
          well-formatted data for consumption by a script. Default
          is false.
 
-Java EE 5           Last change: 23 Sep 2008                    3
+Java EE 5           Last change: 24 Sep 2008                    3
 
 Administration Commands                          create-domain(1)
 
@@ -206,7 +207,7 @@ Administration Commands                          create-domain(1)
          created. The list must be separated by the :  character.
          The following properties are available:
 
-Java EE 5           Last change: 23 Sep 2008                    4
+Java EE 5           Last change: 24 Sep 2008                    4
 
 Administration Commands                          create-domain(1)
 
@@ -243,20 +244,24 @@ Administration Commands                          create-domain(1)
      --keytooloptions
 
          Specifies an optional list of name-value pairs  of  key-
-         tool options for a self-signed certificate. Each pair in
-         the list must be separated by the : character. The  fol-
-         lowing properties are available:
+         tool  options  for a self-signed server certificate. The
+         certificate is generated  during  the  creation  of  the
+         domain.  Each  pair in the list must be separated by the
+         colon character (:).
 
-         cn
+         Allowed options are as follows:
+
+         CN
              Specifies the common name of the host that is to  be
              used  for  the  self-signed certificate. This option
              name is case insensitive.
 
-             By default, the name is determined automatically.
-
-Java EE 5           Last change: 23 Sep 2008                    5
+Java EE 5           Last change: 24 Sep 2008                    5
 
 Administration Commands                          create-domain(1)
+
+             By default, the name is the fully-qualified name  of
+             the machine where the create-domain command is run.
 
       --savelogin
 
@@ -286,13 +291,11 @@ OPERANDS
                                  created.
 
 EXAMPLES
-     Example 1 Using the create-domain  command  (developer  pro-
-     file)
+     Example 1 Using the create-domain command
 
-     The following command creates domain4 domain with  developer
-     profile.
+     The following command creates the domain domain4.
 
-       asadmin>create-domain --adminport 4848 --profile developer domain4
+       asadmin>create-domain --adminport 4848 domain4
        Please enter the admin user name>admin
        Please enter the admin password>
        Please enter the admin password again>
@@ -304,25 +307,25 @@ EXAMPLES
        Using default port 3700 for IIOP.
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
-       Using default port 3920 for IIOP_MUTUALAUTH.
-       Using default port 8686 for JMX_ADMIN.
-       Domain being created with profile:developer, as specified on command line or environment.
 
-Java EE 5           Last change: 23 Sep 2008                    6
+Java EE 5           Last change: 24 Sep 2008                    6
 
 Administration Commands                          create-domain(1)
 
-       Security Store used should be JKS
+       Using default port 3920 for IIOP_MUTUALAUTH.
+       Using default port 8686 for JMX_ADMIN.
+       Distinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=starless,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
        Domain domain4 created.
+       Command create-domain executed successfully.
 
-     Example 2 Using the create-domain command  (enterprise  pro-
-     file)
+     Example 2 Using the create-domain command (domaindir)
 
-     The  following  command  creates  sampleDomain  domain  with
-     enterprise profile in the /export/domains directory.
+     The following command creates the domain sampleDomain in the
+     /export/domains directory.
 
        asadmin> create-domain --domaindir /export/domains
-       --profile enterprise --adminport 7070 --adminuser admin
+       --adminport 7070 --user admin
        --instanceport 7071 sampleDomain
        Please enter the admin password>
        Please enter the admin password again>
@@ -336,45 +339,63 @@ Administration Commands                          create-domain(1)
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
-       Domain being created with profile:enterprise, as specified
-       by variable AS_ADMIN_PROFILE in configuration file.
-       Security Store used should be NSS
+       Distinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=fracture,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
        Domain sampleDomain created.
 
      Example 3 Using the create-domain command (savelogin)
 
-     The following command creates the myDomain domain  with  the
-     enterprise  profile  and  saves the admin username and pass-
-     word.
+     The following command creates the domain myDomain and  saves
+     the administration username and password.
 
-       asadmin>  create-domain --adminport 8282 --adminuser admin
+       asadmin>  create-domain --adminport 8282 --user admin
        --savelogin=true myDomain
-       Please enter the admin user name>admin
-       Please enter the admin password>
-       Please enter the admin password again>
-       Please enter the master password>
-       Please enter the master password again>
        Using port 8282 for Admin.
        Using default port 8080 for HTTP Instance.
+       Using default port 7676 for JMS.
+       Using default port 3700 for IIOP.
+       Using default port 8181 for HTTP_SSL.
+       Using default port 3820 for IIOP_SSL.
 
-Java EE 5           Last change: 23 Sep 2008                    7
+Java EE 5           Last change: 24 Sep 2008                    7
 
 Administration Commands                          create-domain(1)
 
+       Using default port 3920 for IIOP_MUTUALAUTH.
+       Using default port 8686 for JMX_ADMIN.
+       Distinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=exiles,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       Domain myDomain created.
+       Admin login information for host [localhost] and port [8282] is being overwritten
+       with credentials provided. This is because the --savelogin option was used during
+       create-domain command.
+       Login information relevant to admin user name [admin] for this domain [myDomain]
+       stored at [/home/someuser/.asadminpass] successfully.
+       Make sure that this file remains protected. Information stored in this file will be
+       used by asadmin commands to manage this domain.
+       Command create-domain executed successfully.
+
+     Example 4 Using the create-domain command (keytool options)
+
+     The following command creates the domain customdomain.   The
+     common  name  of  the  host that is to be used for the self-
+     signed certificate is trio.
+
+       asadmin> create-domain --adminport 9898 --user admin
+       --keytooloptions CN=trio customdomain
+       Enter admin password>
+       Enter admin password again>
+       Using port 9898 for Admin.
+       Using default port 8080 for HTTP Instance.
        Using default port 7676 for JMS.
        Using default port 3700 for IIOP.
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
-       Domain being created with profile:enterprise, as specified by variable
-       AS_ADMIN_PROFILE in configuration file.
-       adSecurity Store used should be NSS
-       Domain myDomain created.
-       Login information relevant to admin user name [admin] for this domain [myDomain]
-       stored at [/.asadminpass] successfully.
-       Make sure that this file remains protected. Information stored in this file will be
-       used by asadmin commands to manage this domain.
+       Distinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=trio,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       Domain customdomain created.
 
 EXIT STATUS
      0                           command executed successfully
@@ -385,5 +406,5 @@ SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
      list-domains(1)
 
-Java EE 5           Last change: 23 Sep 2008                    8
+Java EE 5           Last change: 24 Sep 2008                    8
 

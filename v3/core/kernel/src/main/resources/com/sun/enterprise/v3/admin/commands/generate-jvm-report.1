@@ -14,14 +14,43 @@ SYNOPSIS
      [ --type =summary|memory|class|thread|log] [target]
 
 DESCRIPTION
-     This command  shows  the  threads  (dump  of  stack  trace),
-     classes,  memory,  and  loggers for a given target instance,
-     including the Domain Administration  Service.  This  command
-     works  only  with the application server instance processes.
-     This command replaces the traditional techniques like  send-
-     ing  ctrl+break  or  kill  -3  signals to application server
-     processes. The command will not work if  the  target  server
-     instance is not running.
+     This command creates a report that shows the  threads  (dump
+     of  stack  trace),  classes,  memory, or loggers for a given
+     target instance, including the domain administration  server
+     (DAS).  This  command works only with the application server
+     instance processes.
+
+     This command provides an alternative to  sending  Ctrl+Break
+     or kill -3 signals to application server processes to obtain
+     a stack trace for processes that are hanging.
+
+     The information in the report is obtained from managed beans
+     (MBeans) and MXBeans that are provided in the Java Platform,
+     Standard Edition (Java SE ) or  JDKTM  software  with  which
+     Sun GlassFishTM Enterprise Server is being used.
+
+     If Enterprise Server is running in the Java Runtime Environ-
+     ment  (JRETM)  software  from   JDK  release 6 or Java SE 6,
+     additional information is provided, for example:
+
+         o    System load on the available processors
+
+         o    Object  monitors  that  are   currently   held   or
+              requested by a thread
+
+         o    Lock objects that a thread is holding, for example,
+              ReentrantLock  objects  and  ReentrantReadWriteLock
+              objects
+
+     If the JRE software cannot  provide  this  information,  the
+     report contains the text NOT_AVAILABLE.
+
+     This command is supported in remote mode only.  The  command
+     does not work if the target server instance is not running.
+
+Java EE 5           Last change: 24 Sep 2008                    1
+
+Administration Commands                    generate-jvm-report(1)
 
 OPTIONS
      -t --terse
@@ -49,29 +78,28 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-
-Java EE 5           Last change: 16 Sep 2008                    1
-
-Administration Commands                    generate-jvm-report(1)
-
          http://localhost:4848.
 
          The default port number for administration is 4848.
 
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
          If you have authenticated to a domain by using the asad-
          min  login  command,  you  need  not  specify the --user
          option for subsequent operations on the domain.
+
+Java EE 5           Last change: 24 Sep 2008                    2
+
+Administration Commands                    generate-jvm-report(1)
 
      --passwordfile
 
@@ -104,10 +132,6 @@ Administration Commands                    generate-jvm-report(1)
 
              o    Through the asadmin login command
 
-Java EE 5           Last change: 16 Sep 2008                    2
-
-Administration Commands                    generate-jvm-report(1)
-
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
          the  administration  password.  For other passwords that
@@ -129,6 +153,10 @@ Administration Commands                    generate-jvm-report(1)
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
 
+Java EE 5           Last change: 24 Sep 2008                    3
+
+Administration Commands                    generate-jvm-report(1)
+
      --help
 
          Displays the help text for the command.
@@ -139,7 +167,7 @@ Administration Commands                    generate-jvm-report(1)
          summary
 
              Displays  summary  information  about  the  threads,
-             classes, and memory.
+             classes, and memory (default).
 
          memory
              Provides information about heap and non-heap  memory
@@ -155,10 +183,6 @@ Administration Commands                    generate-jvm-report(1)
              Provides information about threads running  and  the
              thread   dump  (stack  trace)  for  a  given  target
              instance.
-
-Java EE 5           Last change: 16 Sep 2008                    3
-
-Administration Commands                    generate-jvm-report(1)
 
          log
 
@@ -177,8 +201,13 @@ OPERANDS
          mand  runs  successfully  and  the  option  is  silently
          ignored.
 
+Java EE 5           Last change: 24 Sep 2008                    4
+
+Administration Commands                    generate-jvm-report(1)
+
 EXAMPLES
-     Example 1 Using the generate-jvm-report command
+     Example  1  Obtaining  Summary  Information  About  Threads,
+     Classes, and Memory
 
        asadmin> generate-jvm-report --user admin --passwordfile passwords.txt
        --type summary server1
@@ -195,10 +224,199 @@ EXAMPLES
        user.timezone = America/Los_Angeles
        Command generate-jvm-report executed successfully
 
+     Example 2 Obtaining Information About Memory Usage
+
+       asadmin> generate-jvm-report --type=memory
+       Memory Pool Name: Eden Space
+       Memory that Java Virtual Machine initially requested to the
+       Operating System: 2,097,152 Bytes
+       Memory that Java Virtual Machine is guaranteed to receive from the
+       Operating System: 9,895,936 Bytes
+       Maximum Memory that Java Virtual Machine may get from the
+       Operating System: 168,427,520 Bytes
+       Note that this is not guaranteed.
+       Memory that Java Virtual Machine uses at this time: 7,159,784 Bytes
+       ...
+       Memory Pool Name: Survivor Space
+       Memory that Java Virtual Machine initially requested to the
+       Operating System: 65,536 Bytes
+       Memory that Java Virtual Machine is guaranteed to receive from the
+       Operating System: 262,144 Bytes
+       Maximum Memory that Java Virtual Machine may get from the
+       Operating System: 5,242,880 Bytes.
+       Note that this is not guaranteed.
+       Memory that Java Virtual Machine uses at this time: 35,208 Bytes
+       ...
+       Name of the Garbage Collector: MarkSweepCompact
+       Number of collections occured using this garbage collector: 0 Bytes
+       Garbage Collection Time: 0 Seconds 0 Milliseconds
+       Name of the Garbage Collector: Copy
+       Number of collections occured using this garbage collector: 47 Bytes
+       Garbage Collection Time: 1 Seconds 395 Milliseconds
+
+       Heap Memory Usage:
+
+Java EE 5           Last change: 24 Sep 2008                    5
+
+Administration Commands                    generate-jvm-report(1)
+
+       Memory that Java Virtual Machine initially requested to the
+       Operating System: 0 Bytes
+       Memory that Java Virtual Machine is guaranteed to receive from the
+       Operating System: 30,728,192 Bytes
+       Maximum Memory that Java Virtual Machine may get from the
+       Operating System: 531,628,032 Bytes.
+       Note that this is not guaranteed.
+       Memory that Java Virtual Machine uses at this time: 25,434,432 Bytes
+
+       Non-heap Memory Usage:
+       Memory that Java Virtual Machine initially requested to the
+       Operating System: 29,523,968 Bytes
+       Memory that Java Virtual Machine is guaranteed to receive from the
+       Operating System: 32,833,536 Bytes
+       Maximum Memory that Java Virtual Machine may get from the
+       Operating System: 121,634,816 Bytes
+       Note that this is not guaranteed.
+       Memory that Java Virtual Machine uses at this time: 22,920,624 Bytes
+
+       Approximate number of objects for which finalization is pending: 0
+
+       Command generate-jvm-report executed successfully.
+
+     Example 3 Obtaining Information About Running Threads
+
+       asadmin> generate-jvm-report --type=thread
+       Full Java Thread Dump Java HotSpot(TM) Client VM 1.5.0_14-b03 Sun Microsystems Inc.
+       Number of threads: 39
+       Number of daemon threads: 33
+       Peak live thread count since the Java virtual machine started or peak was reset: 44
+       Is support for thread contention monitoring available on this JVM? [true]
+       Is thread contention monitoring enabled? [false]. If false, some thread
+       synchronization statistics are not be available.
+       Is support for CPU time measurement for any thread available on this JVM? [true]
+       Is thread CPU time measurement enabled? [true]. If false, thread execution times
+       are not available for any thread.
+       --------------------------------------------------------------------------------
+       Thread Execution Information:
+       -----------------------
+       Thread "RMI ConnectionExpiration-[129.146.11.147:61218]" thread-id: 84 thread-state:
+       TIMED_WAITING
+             at: java.lang.Thread.sleep(Native Method)
+             at: sun.rmi.transport.tcp.TCPChannel$Reaper.run(TCPChannel.java:446)
+             at: java.lang.Thread.run(Thread.java:595)
+       Thread Synchronization Statistics:
+       -----------------------
+       Number of times this thread was blocked (to enter/reenter a Monitor): 0
+       Number of times this thread waited for a notification (i.e. it was in WAITING or
+
+Java EE 5           Last change: 24 Sep 2008                    6
+
+Administration Commands                    generate-jvm-report(1)
+
+       TIMED_WAITING state): 0
+       Total CPU time for this thread: 0 seconds 131,855 nanoseconds.
+       User-level CPU time for this thread: 0 seconds 131,855 nanoseconds.
+       Object Monitors currently held or requested by this thread: NOT_AVAILABLE
+       Ownable Synchronizers (e.g. ReentrantLock and ReentrantReadWriteLock) held by
+       this thread: NOT_AVAILABLE
+       --------------------------------------------------------------------------------
+       ...
+       Thread Execution Information:
+       -----------------------
+       Thread "Reference Handler" thread-id: 2 thread-state: WAITING Waiting on lock:
+       java.lang.ref.Reference$Lock@f63055
+             at: java.lang.Object.wait(Native Method)
+             at: java.lang.Object.wait(Object.java:474)
+             at: java.lang.ref.Reference$ReferenceHandler.run(Reference.java:116)
+       Thread Synchronization Statistics:
+       -----------------------
+       Number of times this thread was blocked (to enter/reenter a Monitor): 318
+       Number of times this thread waited for a notification (i.e. it was in WAITING or
+       TIMED_WAITING state): 43
+       Total CPU time for this thread: 0 seconds 26,004,119 nanoseconds.
+       User-level CPU time for this thread: 0 seconds 26,004,119 nanoseconds.
+       Object Monitors currently held or requested by this thread: NOT_AVAILABLE
+       Ownable Synchronizers (e.g. ReentrantLock and ReentrantReadWriteLock) held by this
+       thread: NOT_AVAILABLE
+       No deadlock found
+
+       Command generate-jvm-report executed successfully.
+
+     Example 4 Obtaining Information About a Class Loader
+
+       asadmin> generate-jvm-report --type=class
+       Class loading and unloading in the Java Virtual Machine:
+       Number of classes currently loaded in the Java Virtual Machine: 2,798
+       Number of classes loaded in the Java Virtual Machine since the startup: 2,798
+       Number of classes unloaded from the Java Virtual Machine: 0
+       Just-in-time (JIT) compilation information in the Java Virtual Machine:
+       Java Virtual Machine compilation monitoring allowed: true
+       Name of the Just-in-time (JIT) compiler: HotSpot Client Compiler
+       Total time spent in compilation: 0 Hours 0 Minutes 2 Seconds
+
+       Command generate-jvm-report executed successfully.
+
+     Example 5 Obtaining Information About Loggers
+
+       asadmin> generate-jvm-report --type=log
+
+Java EE 5           Last change: 24 Sep 2008                    7
+
+Administration Commands                    generate-jvm-report(1)
+
+       Effective logging properties file:
+       [/home/someuser/glassfishv3-prelude/glassfish/domains/domain1/config/
+       logging.properties].
+       If null, it indicates JRE standard file.
+       Number of loggers currently registered in the JVM: [35]. Details follow:
+       If the level is blank, it is inherited from parent logger
+       Parent logger is the nearest existing parent logger
+       Logger Name | Logging Level | Parent Logger Name
+       --------------------------------------------------
+       |INFO|root
+       --------------------------------------------------
+       GRIZZLY||root
+       --------------------------------------------------
+       Grizzly||root
+       --------------------------------------------------
+       com.sun.enterprise.naming||root
+       --------------------------------------------------
+       com.sun.enterprise.v3.admin.commands||root
+       --------------------------------------------------
+       com.sun.enterprise.v3.server.DynamicReloadService||root
+       --------------------------------------------------
+       com.sun.enterprise.v3.server.DynamicReloader||root
+       --------------------------------------------------
+       com.sun.grizzly.util.http.HttpRequestURIDecoder||root
+       --------------------------------------------------
+       com.sun.jmx.remote.opt.util||root
+       --------------------------------------------------
+       global||root
+       --------------------------------------------------
+       grizzly||root
+       --------------------------------------------------
+       javax.enterprise.resource.jta||root
+       --------------------------------------------------
+       javax.enterprise.resource.resourceadapter||root
+       --------------------------------------------------
+       ...
+       sun.rmi.transport.misc||root
+       --------------------------------------------------
+       sun.rmi.transport.tcp||root
+       --------------------------------------------------
+       sun.rmi.transport.tcp.proxy||sun.rmi.transport.tcp
+       --------------------------------------------------
+
+       Command generate-jvm-report executed successfully.
+
 EXIT STATUS
      0                           command executed successfully
 
+Java EE 5           Last change: 24 Sep 2008                    8
+
+Administration Commands                    generate-jvm-report(1)
+
      1                           error in executing the command
 
-Java EE 5           Last change: 16 Sep 2008                    4
+Java EE 5           Last change: 24 Sep 2008                    9
 
