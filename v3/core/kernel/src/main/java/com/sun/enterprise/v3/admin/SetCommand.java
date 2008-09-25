@@ -46,6 +46,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
+import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
@@ -62,6 +63,7 @@ import java.util.regex.Matcher;
  */
 @Service(name="set")
 @Scoped(PerLookup.class)
+@I18n("set")
 public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject
