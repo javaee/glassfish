@@ -544,6 +544,10 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
                 }                
             }
         }
+
+    if (allowUpdateCheck.equalsIgnoreCase("true")) {
+        LOGGER.log(Level.INFO, "Enabling Updatetool");
+    }
  
     //construct the bootstrap command
 

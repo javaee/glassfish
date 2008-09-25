@@ -60,7 +60,33 @@
             <apt:visual>
                 <apt:checkBox apt:labelPost="Install Update Tool" apt:toolTip="Requires Online Installation" />
             </apt:visual>
+
+          <apt:scriptHandler apt:scriptLanguage="beanshell" >
+                <apt:scriptCode><![CDATA[
+import java.lang.String;
+import java.util.List;
+import org.openinstaller.provider.conf.ConfigHelper;
+import org.openinstaller.bus.*;
+import org.openinstaller.core.*;
+
+theAL = new ActionListener() {
+    actionPerformed(e) {
+      radio1 = getComponentByName(content, "BOOTSTRAP_UPDATETOOL");
+      radio2 = getComponentByName(content, "ALLOW_UPDATE_CHECK");
+      if (!radio1.isSelected()) {
+          radio2.setSelected(false);
+          radio2.setEnabled(false);
+      } else if (radio1.isSelected()) {
+          radio2.setEnabled(true);
+      }
+
+    }
+};
+return theAL;
+                ]]></apt:scriptCode>
+            </apt:scriptHandler>
            </apt:property>
+
           <apt:property apt:name="PROXY_HOST"
               apt:label="Proxy Host"
               apt:dataPath="Configuration.PROXY_HOST"
