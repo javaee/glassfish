@@ -19,7 +19,7 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
+<project name="nucleus bundle creation" default="create.bundle" basedir=".">
    <target name="create.bundle">
        <mkdir dir="target/stage"/>
 
@@ -30,6 +30,7 @@ own identifying information: Portions Copyright [yyyy]
        </resolveAll>
 
        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
+       <delete dir="target/stage/glassfish/modules" includes="*.pom" />
         
         <graphDef id="generate-picture">
             <visualize file="modules.png">
