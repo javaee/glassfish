@@ -1,5 +1,5 @@
 <!--
- DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
  
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  
@@ -45,7 +45,7 @@
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
     helpkey="help.uc.config"
-    bodyOnLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');"
+    bodyOnLoad="admingui.nav.refreshTree('form:tree:updateCenterPlugIN'); showSection('#{proxyGroup}');"
     >
     
     <!define name="headExtra">
@@ -57,6 +57,17 @@
 #include "/shared/alertMsg.inc"
 #include "/updateCenter/ucTabs.inc"
     </define>
+    <!define name="pageButtonsTop">
+        <sun:button id="button" text="$resource{i18n.button.Save}" 
+            onClick="if (validateProxyField()){ 
+                return submitAndDisable(this, '$resource{i18n.button.Processing}'); } 
+                else{ return false;}" onKeyPress="javascript: return true;" > 
+            <!command
+                setProxyInfo(connection="#{proxyGroup}", host="#{host}", port="#{port}");
+                redirect("/updateCenter/ucConfig.jsf");
+             />
+        </sun:button>
+    </define>
     <!define name="content">
         <sun:propertySheet id="propertySheet">
             <!beforeCreate
@@ -65,6 +76,7 @@
                 setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.config.tableTitle}");
                 getInstalledPath(result=>$attribute{installedPath});
                 getAuthority(result=>$attribute{authority});
+                getProxyInfo(connection=>$attribute{proxyGroup}, host=>$attribute{host}, port=>$attribute{port} );
                 getAuthList(result=>$attribute{listOfRows} );
             />
             <sun:propertySheetSection id="propertySectionTextField">
@@ -74,6 +86,29 @@
                 <sun:property id="auth"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.authority}" >
                     <staticText id="auth" value="${authority}" />
                 </sun:property>
+                
+                <sun:property id="directProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nUC.config.proxyUse}">
+                    <sun:radioButton id="direct" name="proxyGroup" label="$resource{i18nUC.config.direct}" selected="${proxyGroup}" selectedValue="direct" 
+                        onClick="javascript: showProxyFields(false)" onKeyPress="javascript: return true;" />
+                    "<br />
+                    <sun:radioButton id="useProxy" name="proxyGroup" label="$resource{i18nUC.config.proxy}" selected="${proxyGroup}" selectedValue="useProxy" 
+                        onClick="javascript: showProxyFields(true)" onKeyPress="javascript: return true;" />
+                    "<br /><br />
+                </sun:property>
+                 <sun:property id="hostProp"  visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nUC.config.host}" helpText="" >                           
+                      <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{hostId});
+                        />
+                    <sun:textField id="host"  columns="$int{20}" text="#{requestScope.host}" required="#{false}" />
+                </sun:property>
+
+                <sun:property id="portProp"  visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nUC.config.port}" helpText="" >                           
+                      <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{portId});
+                        />
+                    <sun:textField id="port"  columns="$int{10}" text="#{requestScope.port}" required="#{false}" />
+                </sun:property>
+                    
             </sun:propertySheetSection>
         </sun:propertySheet>
         "<br /><br />
@@ -85,8 +120,54 @@
             </sun:tableRowGroup>
         </sun:table>
     </define>
+    
     <!define name="htmlExtra">
-#include "/shared/changeButtonsJS.inc"
+        <f:verbatim>
+        <script type="text/javascript">
+            
+            function showProxyFields(value) {
+                webui.suntheme.common.setVisible('#{hostId}', value);
+                webui.suntheme.common.setVisible( '#{portId}', value);
+            }
+            
+            function showSection(which){
+                if(which == 'direct'){
+                    showProxyFields(false);
+                }else{
+                    showProxyFields(true);
+                }
+            }
+            
+            
+            function validateProxyField(){
+                ss = getSelectedValue('proxyGroup');
+                if( ss =='useProxy'){
+                    test= (checkRequired('#{hostId}:host', '#{reqMsg}') && checkRequired('#{portId}:port',  '#{reqMsg}') ) ;
+                    if (!test){
+                        return test;
+                    }
+                    if (! checkProxyPort('#{portId}:port')){
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+            
+           
+            function checkProxyPort(componentId){
+                var component = getTextElement(componentId);
+                var value = component.value;
+                if ( (!checkForIntValue(value)) || (!checkNumbericRange(value, 0, 65536))){
+                        component.focus();
+                        return showAlert('$resource{i18n.msg.JS.enterPortValue} '+  getLabel( component ));
+                }
+                return true;
+            }
+                    
+        </script>
+</f:verbatim>
+
     </define>
     
 </composition>

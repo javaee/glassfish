@@ -6,6 +6,9 @@
 package org.glassfish.uc.admingui;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +25,7 @@ import org.glassfish.admingui.common.util.GuiUtil;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.Manifest;
+import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.Version;
 
 
@@ -170,6 +174,53 @@ public class UpdateCenterHandlers {
         handlerCtx.setOutputValue("result", result);
     }
     
+    
+    @Handler(id="getProxyInfo",
+        output={
+        @HandlerOutput(name="connection", type=String.class),
+        @HandlerOutput(name="host", type=String.class),
+        @HandlerOutput(name="port", type=String.class)}
+        )
+    public static void getProxyInfo(HandlerContext handlerCtx) {
+        
+        Proxy proxy = SystemInfo.getProxy();
+        if (proxy != null){
+            InetSocketAddress address = (InetSocketAddress) proxy.address();
+            if (address != null){
+                handlerCtx.setOutputValue("connection", "useProxy");
+                handlerCtx.setOutputValue("host", address.getHostName());
+                handlerCtx.setOutputValue("port", address.getPort());
+                return;
+            }
+        }
+        handlerCtx.setOutputValue("connection", "direct");
+        handlerCtx.setOutputValue("host", "");
+        handlerCtx.setOutputValue("port", "");
+    }
+    
+    @Handler(id="setProxyInfo",
+        input={
+        @HandlerInput(name="connection", type=String.class),
+        @HandlerInput(name="host", type=String.class),
+        @HandlerInput(name="port", type=String.class)}
+        )
+    public static void setProxyInfo(HandlerContext handlerCtx) {
+        String connection = (String)handlerCtx.getInputValue("connection");
+        String host = (String)handlerCtx.getInputValue("host");
+        String port = (String)handlerCtx.getInputValue("port");
+        try{
+            Image image = getUpdateCenterImage();
+            if (connection.equals("useProxy")){
+                int portNo = Integer.parseInt(port);
+                SocketAddress address = new InetSocketAddress(host, portNo);
+                image.setProxy(new Proxy(Proxy.Type.HTTP, address));
+            }else{
+                image.setProxy(null);
+            }
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
                     
     
     private static void putInfo( Map oneRow, String key, String value){
