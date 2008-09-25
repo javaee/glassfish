@@ -34,7 +34,7 @@
                 "Content Goes Here
             </insert>
 
-            <sun:title id="bottomTitle" rendered="#{useBottomTitle}">
+            <sun:title id="bottomTitle" rendered="#{useBottomTitle == 'true'}">
                 <!-- Buttons  -->
                 <!facet pageButtonsBottom>
                     <sun:panelGroup id="bottomButtons">
