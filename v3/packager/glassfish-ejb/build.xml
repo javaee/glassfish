@@ -224,6 +224,7 @@ own identifying information: Portions Copyright [yyyy]
 
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/ejb" includes="*.zip" />   
 	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/ejb" includes="*.pom" />  
+	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules/ejb" includes="*.war" />
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

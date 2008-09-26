@@ -74,6 +74,7 @@
 
 	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.zip"/>
 	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.pom"/>
+	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.war"/>
         </sequential>
     </macrodef>
 
