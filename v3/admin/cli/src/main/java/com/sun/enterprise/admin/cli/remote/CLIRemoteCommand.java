@@ -171,7 +171,7 @@ public class CLIRemoteCommand {
                 boolean serverAppearsSecure = 
                         NetUtils.isSecurePort(hostName, hostPort);
                 if (serverAppearsSecure != secure) {
-                    String msg = strings.get("ServerMaybeSecure", hostName, hostPort);
+                    String msg = strings.get("ServerMaybeSecure", hostName, hostPort+"");
                     logger.printError(msg);
                     throw new CommandException(se);
                 }
