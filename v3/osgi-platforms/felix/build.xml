@@ -24,10 +24,6 @@ own identifying information: Portions Copyright [yyyy]
         <echo>v=${hk2.version}</echo>
         <copy todir="target/classes" overwrite="true">
             <fileset dir="src/main/resources" />
-            <filterset begintoken="@" endtoken="@">
-                <filter token="HK2.VERSION" value="${hk2.version}" />
-                <filter token="PROJECT.VERSION" value="${project.version}" />
-            </filterset>
         </copy>
         <zip destfile="target/felix.zip" basedir="target/classes/"/>
         <attachArtifact file="target/felix.zip"/>

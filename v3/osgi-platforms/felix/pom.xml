@@ -82,15 +82,6 @@
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
                     <tasks>
-                        <!--
-                            Because of the way Maven exports its properties to Ant
-                            (which is resolver-based and don't eagerly populate
-                            the property bag of Ant),
-                            these values are lost when we launch another Ant project.
-                            So explicitly reset them so that the build.xml can see this value.
-                        -->
-                        <property name="hk2.version" value="${hk2.version}" />
-                        <property name="project.version" value="${project.version}" />
                         <ant dir="." antfile="build.xml" target="create.bundle"/>
                     </tasks>
                 </configuration>
