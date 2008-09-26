@@ -202,6 +202,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }
         logRequest(req);
         bundle = getResourceBundle(req.getLocale());
+        res.setContentType("text/html; charset=UTF-8");
 
         if (isApplicationLoaded()) {
             // Let this pass to the admin console (do nothing)
@@ -565,26 +566,32 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         // This is a first-timer
         return InteractionResult.FIRST_TIMER;
     }
+    
+    private GrizzlyOutputBuffer getOutputBuffer(GrizzlyResponse res) {
+        GrizzlyOutputBuffer ob = res.getOutputBuffer();
+        res.setStatus(200);
+        res.setContentType("text/html");
+        ob.setEncoding("UTF-8");
+        return ob;
+    }
 
     /**
      *
      */
     private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
         setStateMsg(AdapterState.PERMISSION_NEEDED);
-        GrizzlyOutputBuffer ob = res.getOutputBuffer();
-        res.setStatus(200);
-        res.setContentType("text/html");
         byte[] bytes;
         try {
+            GrizzlyOutputBuffer ob = getOutputBuffer(res);
             try {
                 // Replace locale specific Strings
                 String localHtml = replaceTokens(initHtml, bundle);
 
                 // Replace path token
                 String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
-                bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes();
+                bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes("UTF-8");
             } catch (Exception ex) {
-                bytes = ("Catastrophe:" + ex.getMessage()).getBytes();
+                bytes = ("Catastrophe:" + ex.getMessage()).getBytes("UTF-8");
             }
             res.setContentLength(bytes.length);
             ob.write(bytes, 0, bytes.length);
@@ -598,11 +605,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void sendStatusPage(GrizzlyResponse res) {
-        GrizzlyOutputBuffer ob = res.getOutputBuffer();
-        res.setStatus(200);
-        res.setContentType("text/html");
         byte[] bytes;
         try {
+            GrizzlyOutputBuffer ob = getOutputBuffer(res);
             // Replace locale specific Strings
             String localHtml = replaceTokens(statusHtml, bundle);
 
@@ -615,7 +620,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 // Use the non-localized String version of the status
                 status = getStateMsg().toString();
             }
-            bytes = localHtml.replace(STATUS_TOKEN, status).getBytes();
+            bytes = localHtml.replace(STATUS_TOKEN, status).getBytes("UTF-8");
             res.setContentLength(bytes.length);
             ob.write(bytes, 0, bytes.length);
             ob.flush();
