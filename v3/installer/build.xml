@@ -232,6 +232,16 @@
         <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-unix">
            <fileset dir="${basedir}/target" includes="installer_distro.jar"/>
         </concat>
+
+	<!-- prepare installer zip artifact for consumption in Sun branded build -->
+
+
+       <zip destfile="${basedir}/target/installer_artifact.zip"
+	       basedir="${stage.dir}"
+	       excludes="**/glassfish.zip" />
+
+       <attachArtifact file="${basedir}/target/installer_artifact.zip"/> 
+        
     </target>
 
 </project>

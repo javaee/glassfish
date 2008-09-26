@@ -19,7 +19,7 @@
     <groupId>org.glassfish.installer</groupId>
     <artifactId>installer</artifactId>
     <name>Glassfish Installer</name>
-    <packaging>pom</packaging>
+    <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to build Glassfish Installer</description>
 
     <build>
