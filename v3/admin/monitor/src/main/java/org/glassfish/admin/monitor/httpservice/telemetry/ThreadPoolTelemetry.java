@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.monitor.threadpool.telemetry;
+package org.glassfish.admin.monitor.httpservice.telemetry;
 
 import java.lang.reflect.Method;
 import java.util.Collection;

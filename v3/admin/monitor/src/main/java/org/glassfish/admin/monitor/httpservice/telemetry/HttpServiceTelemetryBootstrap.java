@@ -50,12 +50,16 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
 
     private boolean httpServiceMonitoringEnabled = false;
     private TreeNode serverNode = null;
-    private boolean httpServiceProviderRegistered = false;
-    private boolean isHttpServiceTreeBuilt = false;
+    private boolean requestProviderRegistered = false;
+    private boolean isRequestTreeBuilt = false;
     private boolean probeProviderListenerRegistered = false;;
     private TreeNode httpServiceNode =  null;
     private static HttpService httpService = null;
     private List<HttpServiceRequestTelemetry> vsRequestTMs = null;
+    private boolean threadPoolProviderRegistered = false;
+    private boolean isThreadPoolTreeBuilt = false;
+    private TreeNode threadPoolNode =  null;
+    private List<ThreadPoolTelemetry> threadPoolTMs = null;
     
     public HttpServiceTelemetryBootstrap() {
     }
@@ -67,12 +71,9 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
         Level dbgLevel = Level.FINEST;
         Level defaultLevel = logger.getLevel();
         if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
-            //logger.setLevel(dbgLevel);
+            logger.setLevel(dbgLevel);
         }
         logger.finest("[Monitor]In the HttpServiceRequestTelemetry bootstrap ************");
-
-        //Build the top level monitoring tree
-        buildTopLevelMonitoringTree();        
 
         List<Config> lc = domain.getConfigs().getConfig();
         Config config = null;
@@ -112,8 +113,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
               //    whether the telemetry objects are created is done in enableHttpServiceMon..()
               // (2)Could be that the telemetry objects are there but were disabled 
               //    explicitly by user. Now we need to enable them
-                if (httpServiceProviderRegistered)
-                    enableHttpServiceMonitoring(true);
+                enableHttpServiceMonitoring(true);
             }
         } else { 
             //enable flag turned from 'ON' to 'OFF', so disable telemetry
@@ -129,18 +129,28 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
                                 " : appName = " + appName);
             if (providerName.equals("request")){
                 logger.finest("[Monitor]and it is Http Request");
-                httpServiceProviderRegistered = true;
-                if (isHttpServiceTreeBuilt || !httpServiceMonitoringEnabled) {
+                requestProviderRegistered = true;
+                if (isRequestTreeBuilt || !httpServiceMonitoringEnabled) {
                     //The reason being either the tree already exists or the 
                     // monitoring is 'OFF'
                     return;
                 }
-                buildHttpServiceMonitoringTree();
+                buildRequestMonitoringTree();
+            }
+            if (providerName.equals("threadpool")){
+                logger.finest("[Monitor]and it is Thread Pool");
+                threadPoolProviderRegistered = true;
+                if (isThreadPoolTreeBuilt || !httpServiceMonitoringEnabled) {
+                    //The reason being either the tree already exists or the 
+                    // monitoring is 'OFF'
+                    return;
+                }
+                buildThreadPoolMonitoringTree();
             }
         }catch (Exception e) {
             //Never throw an exception as the Web container startup will have a problem
             //Show warning
-            logger.finest("[Monitor]WARNING: Exception in WebMonitorStartup : " + 
+            logger.finest("[Monitor]WARNING: Exception in HttpService Monitor Startup : " + 
                                     e.getLocalizedMessage());
             e.printStackTrace();
         }
@@ -172,15 +182,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             }
             return;
         }
-        // server
-        Server srvr = null;
-        List<Server> ls = domain.getServers().getServer();
-        for (Server sr : ls) {
-            if ("server".equals(sr.getName())) {
-                srvr = sr;
-                break;
-            }
-        }
+
         serverNode = TreeNodeFactory.createTreeNode("server", null, "server");
         mrdr.add("server", serverNode);
         // http-service
@@ -189,17 +191,12 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
     }
 
     //builds the thread pool sub nodes
-    private void buildHttpServiceMonitoringTree() {
-        if (isHttpServiceTreeBuilt || !httpServiceMonitoringEnabled)
+    private void buildRequestMonitoringTree() {
+        if (isRequestTreeBuilt || !httpServiceMonitoringEnabled)
             return;
-        Server srvr = null;
-        List<Server> ls = domain.getServers().getServer();
-        for (Server sr : ls) {
-            if ("server".equals(sr.getName())) {
-                srvr = sr;
-                break;
-            }
-        }
+        //Build the top level monitoring tree
+        buildTopLevelMonitoringTree();        
+
         logger.finest("[Monitor]Http Service Monitoring tree is being built");
         //http-service sub-nodes
         vsRequestTMs = new ArrayList<HttpServiceRequestTelemetry>();
@@ -217,7 +214,38 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             vsRequestTMs.add(vsRequestTM);
         }
         
-        isHttpServiceTreeBuilt = true;
+        isRequestTreeBuilt = true;
+    }
+
+    //builds the thread pool sub nodes
+    private void buildThreadPoolMonitoringTree() {
+        if (isThreadPoolTreeBuilt || !httpServiceMonitoringEnabled)
+            return;
+        //Build the top level monitoring tree
+        buildTopLevelMonitoringTree();        
+
+        //thread-pool
+        threadPoolNode = TreeNodeFactory.createTreeNode("thread-pool", null, "http-service");
+        httpServiceNode.addChild(threadPoolNode);
+        threadPoolTMs = new ArrayList<ThreadPoolTelemetry>();
+        for (Config config : domain.getConfigs().getConfig()) {
+            if (config.getName().equals("server-config")) {
+                for (ThreadPool tp : config.getThreadPools().getThreadPool()) {
+                    String id = tp.getThreadPoolId();
+                    String maxTPSize = tp.getMaxThreadPoolSize();
+                    //Create tree node
+                    TreeNode tpNode = TreeNodeFactory.createTreeNode(id, null, "http-service");
+                    threadPoolNode.addChild(tpNode);
+                    ThreadPoolTelemetry threadPoolTM = 
+                            new ThreadPoolTelemetry(tpNode, id, maxTPSize, logger);
+                    Collection<ProbeClientMethodHandle> handles = 
+                                        pcm.registerListener(threadPoolTM);
+                    threadPoolTM.setProbeListenerHandles(handles);
+                    threadPoolTMs.add(threadPoolTM);
+                }
+            }
+        }
+        isThreadPoolTreeBuilt = true;
     }
 
     private boolean getEnabledValue(String enabledStr) {
@@ -230,9 +258,20 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
     private void enableHttpServiceMonitoring(boolean isEnabled) {
         //Enable/Disable thread-pool telemetry
         httpServiceNode.setEnabled(isEnabled);
-        if (vsRequestTMs != null) {
-            for (HttpServiceRequestTelemetry requestTM : vsRequestTMs) {
-                requestTM.enableMonitoring(isEnabled);
+        
+        if (requestProviderRegistered){
+            if (vsRequestTMs != null) {
+                for (HttpServiceRequestTelemetry requestTM : vsRequestTMs) {
+                    requestTM.enableMonitoring(isEnabled);
+                }
+            }
+        }
+        if (threadPoolProviderRegistered) {
+            //Enable/Disable thread-pool telemetry
+            threadPoolNode.setEnabled(isEnabled);
+            if (threadPoolTMs != null) {
+                for (ThreadPoolTelemetry threadPoolTM : threadPoolTMs)
+                    threadPoolTM.enableMonitoring(isEnabled);
             }
         }
     }
