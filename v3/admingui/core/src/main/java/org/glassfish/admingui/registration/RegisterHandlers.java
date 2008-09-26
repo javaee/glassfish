@@ -58,6 +58,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
+import com.sun.enterprise.registration.glassfish.RegistrationUtil;
 import com.sun.enterprise.registration.RegistrationAccount;
 import com.sun.enterprise.registration.RegistrationService;
 import com.sun.enterprise.registration.RegistrationService.RegistrationStatus;
@@ -510,44 +511,31 @@ public class RegisterHandlers {
         handlerCtx.setOutputValue("query", query);       
 
     }
-    
+
     
     @Handler(id="getProductInstanceURN")
     public static void getProductInstanceURN(HandlerContext handlerCtx)
     {
-        
         Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
-
-      
-//Uncomment out the code when the API is available.
+        //Ensure this method is called once per session
+        String productInstanceURN = (String) sessionMap.get("productInstanceURN");
+        if (!GuiUtil.isEmpty(productInstanceURN )){
+            //System.out.println(" !!!!! productInstanceURN="+ productInstanceURN);
+            return;
+        }
+        try{
+            String urn = RegistrationUtil.getGFProductURN();
+            sessionMap.put("productInstanceURN", urn);
+            System.out.println("getGFProductURN returns  " + urn);
+            //sessionMap.put("productInstanceURN", "0000");
+        }catch(Exception ex){
+            System.out.println("!!!!!! Cannot get ProductURN, set to '0000' ");
+            sessionMap.put("productInstanceURN", "0000");
+            ex.printStackTrace();
+        }
         
-//        //Ensure this method is called once per session
-//        String productInstanceURN = (String) sessionMap.get("productInstanceURN");
-//        if (!GuiUtil.isEmpty(productInstanceURN )){
-//            //System.out.println(" !!!!! productInstanceURN="+ productInstanceURN);
-//            return;
-//        }
-//        RegistrationService regService = getRegistrationService();
-//        if (regService == null) {
-//            System.out.println("WARNING: getRegistrationService returns NULL !!");
-//            sessionMap.put("productInstanceURN", "0000");
-//            return;
-//        }
-//        try{
-//            List<ServiceTag> tags = regService.getServiceTags(RegistrationUtil.getGFProductURN());
-//            ServiceTag firstTag = tags.get(0);
-//            if (firstTag != null){
-//                sessionMap.put("productInstanceURN", firstTag.getInstanceURN());
-//                //System.out.println( "!!!!!!!!! get productInstanceURN #" + firstTag.getInstanceURN());
-//                return;
-//            }
-//        }catch(Exception ex){
-//            ex.printStackTrace();
-//        }
-//        System.out.println("!!!!!! No service Tag");
-        sessionMap.put("productInstanceURN", "0000");
+        
     }
-
         
 
 }
