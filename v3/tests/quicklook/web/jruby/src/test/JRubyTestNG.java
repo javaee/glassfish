@@ -35,6 +35,7 @@
  * holder.
  */
 package test.web.jruby.helloapp;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
@@ -58,6 +59,8 @@ public class JRubyTestNG {
     private String contextRoot = "helloapp";
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
+    String fileName="/tmp/JRuby_deploy.output";
+    BufferedReader in = null;
 
     /*
      *If two asserts are mentioned in one method, then last assert is taken in
@@ -65,9 +68,38 @@ public class JRubyTestNG {
      *Each method can act as one test within one test suite
      */
 
+    @BeforeTest
+    @Test(groups ={ "pulse"} )
+    public void deployTest() throws Exception {
+       boolean result=true;
+       System.out.println("Deployment output file: " + fileName );
+       try {
+           in = new BufferedReader(new FileReader(fileName));
+       } catch (FileNotFoundException e) {
+           System.out.println("Could not open file " + fileName + " for reading ");
+       }
 
-    //@Parameters({ "host", "port", "contextroot" })
-    @Test(groups ={ "pulse"} ) // test method
+       if(in != null) {
+           String line;
+           String testLine = null;        
+           try {
+              while (( line = in.readLine() )  != null ) {
+                System.out.println("The line read is: " + line);
+            	if(line.indexOf("Command deploy failed")!=-1){
+                  result=false;
+             	  testLine = line;
+                  Assert.fail("Deployment failed.");
+           	  System.out.println(testLine);
+                } } 
+           }catch(Exception e){
+              e.printStackTrace();
+              throw new Exception(e);
+         }
+       }
+    }
+
+    //@Parameters({ "hest", "port", "contextroot" })
+    @Test(groups ={ "functional"} ) // test method
     //public void webtest(String host, String port, String contextroot) throws Exception{
     public void webtest() throws Exception{
         
