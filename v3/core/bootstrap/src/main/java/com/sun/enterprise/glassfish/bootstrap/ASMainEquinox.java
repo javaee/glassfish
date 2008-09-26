@@ -84,7 +84,6 @@ public class ASMainEquinox extends ASMainOSGi {
         // Add all the jars to classpath for the moment, since the jar name
         // is not a constant.
        if (pluginsDir!=null) {
-            cpb.addJarFolder(pluginsDir);
             cpb.addGlob(pluginsDir, "org.eclipse.osgi_*.jar");
 
         } else {
