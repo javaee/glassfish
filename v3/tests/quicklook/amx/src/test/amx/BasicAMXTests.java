@@ -280,7 +280,7 @@ public final class BasicAMXTests extends AMXTestBase {
     {
     	final SystemStatus ss = getDomainRoot().getSystemStatus();
     	
-    	ss.getUnprocessedConfigChanges();
+    	ss.getRestartRequiredChanges();
     	
     	final Set<JDBCConnectionPoolConfig> pools = getQueryMgr().queryJ2EETypeSet(JDBCConnectionPoolConfig.J2EE_TYPE);
     	

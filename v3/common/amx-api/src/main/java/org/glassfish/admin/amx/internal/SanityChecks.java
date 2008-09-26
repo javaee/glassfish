@@ -82,11 +82,13 @@ public final class SanityChecks implements SanityChecksMBean {
     }
 
     /**
-       In-process or out of process (remote).
+       In-process or out of process (remote); can be an MBeanServer for in-process or
+       an MBeanServerConnection for out-of-process.
      */
-
     public static SanityChecks newInstance(final MBeanServerConnection server) {
         try {
+            server.getDomains(); // verify that it works
+            
             return new SanityChecks(server);
         } catch (final IOException e) {
             // should  never happen with an MBeanServer,  but could with an MBeanServerConnection
@@ -388,7 +390,7 @@ public final class SanityChecks implements SanityChecksMBean {
         final SystemStatus ss = getDomainRoot().getSystemStatus();
 
         // just invoke it for now
-        ss.getUnprocessedConfigChanges();
+        final List<Object[]>  restarts = ss.getRestartRequiredChanges();
 
         final Set<JDBCConnectionPoolConfig> pools = getQueryMgr().queryJ2EETypeSet(JDBCConnectionPoolConfig.J2EE_TYPE);
 

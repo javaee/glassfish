@@ -528,7 +528,7 @@ public class CommonHandlers {
         @HandlerOutput(name="unprocessedChanges", type=List.class)}
     )
     public void checkRestart(HandlerContext handlerCtx) {
-        List<Object[]> changes = AMXRoot.getInstance().getDomainRoot().getSystemStatus().getUnprocessedConfigChanges();
+        List<Object[]> changes = AMXRoot.getInstance().getDomainRoot().getSystemStatus().getRestartRequiredChanges();
         handlerCtx.setOutputValue("RestartRequired", changes.size() > 0); 
         handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }

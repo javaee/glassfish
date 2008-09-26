@@ -153,7 +153,7 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
     }
     
         public List<Object[]>
-    getUnprocessedConfigChanges() {
+    getRestartRequiredChanges() {
         final UnprocessedConfigListener unp = getHabitat().getComponent( UnprocessedConfigListener.class );
         
         final List<UnprocessedChangeEvents> items = unp.getUnprocessedChangeEvents();
