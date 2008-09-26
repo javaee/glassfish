@@ -87,7 +87,7 @@
     <!afterCreate        
                 getClientId(component="$this{component}" clientId=>$attribute{loginId})
                 getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
-                includeIntegrations(type="org.glassfish.admingui:loginbackground" root="#{component}");                
+                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginbackground" root="#{component}");                
         
     />
 </event>
@@ -103,7 +103,7 @@
     <!afterCreate        
                 getClientId(component="$this{component}" clientId=>$attribute{loginId})
                 getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
-                includeIntegrations(type="org.glassfish.admingui:loginimage" root="#{component}");                
+                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginimage" root="#{component}");                
         
     />
 </event>
