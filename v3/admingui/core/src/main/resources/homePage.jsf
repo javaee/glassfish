@@ -67,7 +67,7 @@
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$attribute{homeId})
                         getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
-                        includeIntegrations(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+                        includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
                     />
                  </event>
                 
@@ -81,7 +81,7 @@
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$attribute{homeId})
                             getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
-                            includeIntegrations(type="org.glassfish.admingui:upsellframeee" root="#{component}");
+                            includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframeee" root="#{component}");
                         />
                     </event>
                 
