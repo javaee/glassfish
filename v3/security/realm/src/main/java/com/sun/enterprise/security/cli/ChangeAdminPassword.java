@@ -156,14 +156,16 @@ public class ChangeAdminPassword implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "change.admin.password.realmcorrupted",
-                    "Configured admin realm is corrupted."));
+                    "Configured admin realm is corrupted.") +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "change.admin.password.realmnotsupported",
-                    "Configured admin realm does not exist."));
+                    "Configured admin realm does not exist.") +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -188,7 +190,8 @@ public class ChangeAdminPassword implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "change.admin.password.userupdatefailed",
-                    "Password change failed for user named {0}", userName));
+                    "Password change failed for user named {0}", userName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        

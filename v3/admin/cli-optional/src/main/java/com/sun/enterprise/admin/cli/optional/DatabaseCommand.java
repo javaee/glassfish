@@ -59,7 +59,7 @@ public abstract class DatabaseCommand extends S1ASCommand
 {
     private final static String DB_HOST       = "dbhost";
     private final static String DB_PORT       = "dbport";
-    private static final String[] MODULES_IN_CLASSPATH = {"glassfish-","admin-cli-","cli-framework-","common-util-"};
+    private static final String[] MODULES_IN_CLASSPATH = {"glassfish","admin-cli","cli-framework","common-util"};
 
     protected String dbHost;
     protected String dbPort;

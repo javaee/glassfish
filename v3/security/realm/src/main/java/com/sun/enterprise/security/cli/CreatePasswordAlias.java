@@ -124,7 +124,8 @@ public class CreatePasswordAlias implements AdminCommand {
             ex.printStackTrace();
             report.setMessage(localStrings.getLocalString(
                 "create.password.alias.fail", 
-                "Creation of Password Alias {0} failed", aliasName));
+                "Creation of Password Alias {0} failed", aliasName)+
+                              "  " + ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
             return;            

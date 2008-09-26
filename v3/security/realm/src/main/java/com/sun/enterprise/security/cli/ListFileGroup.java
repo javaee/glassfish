@@ -155,14 +155,16 @@ public class ListFileGroup implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.group.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch (NoSuchUserException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.group.usernotfound",
-                    "Specified file user {0} not found.", fileUserName));
+                    "Specified file user {0} not found.", fileUserName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -208,14 +210,16 @@ public class ListFileGroup implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmnotsupported",
-                    "Configured file realm {0} is not supported.", authRealmName));
+                    "Configured file realm {0} is not supported.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }

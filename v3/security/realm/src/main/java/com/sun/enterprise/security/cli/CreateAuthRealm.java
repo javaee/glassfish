@@ -148,7 +148,8 @@ public class CreateAuthRealm implements AdminCommand {
 
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("create.auth.realm.fail", 
-                    "Creation of Authrealm {0} failed", authRealmName));
+                    "Creation of Authrealm {0} failed", authRealmName) +
+                              "  " + e.getLocalizedMessage() );
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);        
         }

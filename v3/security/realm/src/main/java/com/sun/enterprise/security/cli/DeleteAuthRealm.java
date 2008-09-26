@@ -114,7 +114,7 @@ public class DeleteAuthRealm implements AdminCommand {
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString(
                 "delete.auth.realm.fail", "Deletion of Authrealm {0} failed", 
-                authRealmName));
+                authRealmName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }

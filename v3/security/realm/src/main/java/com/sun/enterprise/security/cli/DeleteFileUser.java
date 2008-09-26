@@ -157,14 +157,16 @@ public class DeleteFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "delete.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "delete.file.user.realmnotsupported",
-                    "Configured file realm {0} is not supported.", authRealmName));
+                    "Configured file realm {0} is not supported.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -176,7 +178,7 @@ public class DeleteFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString("delete.file.user.usernotfound",
                 "There is no such existing user {0} in the file realm {1}.", 
-                userName, authRealmName));
+                userName, authRealmName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch (Exception e) {
@@ -184,7 +186,7 @@ public class DeleteFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString("delete.file.user.userdeletefailed",
                 "Removing User {0} from file realm {1} failed", 
-                userName, authRealmName));
+                userName, authRealmName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        

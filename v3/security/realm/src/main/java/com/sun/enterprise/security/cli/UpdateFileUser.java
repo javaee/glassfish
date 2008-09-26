@@ -183,14 +183,16 @@ public class UpdateFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "update.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "update.file.user.realmnotsupported",
-                    "Configured file realm {0} does not exist.", authRealmName));
+                    "Configured file realm {0} does not exist.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -210,7 +212,7 @@ public class UpdateFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString("update.file.user.userupdatefailed",
                 "Updating user {0} in file realm {1} failed", 
-                userName, authRealmName));
+                userName, authRealmName) + "  " + e.getLocalizedMessage() );
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        

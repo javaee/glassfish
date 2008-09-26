@@ -154,14 +154,16 @@ public class ListFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmnotsupported",
-                    "Configured file realm {0} is not supported.", authRealmName));
+                    "Configured file realm {0} is not supported.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -177,7 +179,8 @@ public class ListFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "list.file.user.realmcorrupted",
-                    "Configured file realm {0} is corrupted.", authRealmName));
+                    "Configured file realm {0} is corrupted.", authRealmName) +
+                "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        
