@@ -112,7 +112,7 @@ public final class AMXStartupService
             throw new Error(e);
         }
         //debug( "AMXStartupService.postConstruct(): registered: " + getObjectName());
-        ImplUtil.getLogger().info( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms, registered as " + getObjectName() );
+        ImplUtil.getLogger().fine( "Initialized AMX Startup service in " + delta.elapsedMillis() + " ms, registered as " + getObjectName() );
     }
 
     public void preDestroy() {
@@ -192,7 +192,7 @@ public final class AMXStartupService
             final long elapsedMillis = delta.elapsedMillis();
             final Set<ObjectName> all = getDomainRoot().getQueryMgr().queryAllObjectNameSet();
             
-            ImplUtil.getLogger().info( "AMXStartupService: loaded " + all.size() + " AMX MBeans in " + elapsedMillis + " ms " );
+            ImplUtil.getLogger().info( "AMXStartupService: loaded " + all.size() + " AMX MBeans in " + elapsedMillis + " ms (wall-clock time)" );
         }
         return getDomainRootObjectName();
     }
