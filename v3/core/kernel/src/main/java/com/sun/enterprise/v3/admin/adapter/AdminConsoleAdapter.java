@@ -24,8 +24,6 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
-import com.sun.enterprise.config.serverbeans.AdminService;
-import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
@@ -45,10 +43,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.*;
 
 import org.glassfish.api.container.Adapter;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
@@ -147,6 +144,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private String initHtml;
 
     private boolean isRegistered = false;
+    private ResourceBundle bundle;
 
     //don't change the following without changing the html pages
 
@@ -203,6 +201,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             return;
         }
         logRequest(req);
+        bundle = getResourceBundle(req.getLocale());
 
         if (isApplicationLoaded()) {
             // Let this pass to the admin console (do nothing)
@@ -579,7 +578,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         try {
             try {
                 // Replace locale specific Strings
-                ResourceBundle bundle = getResourceBundle(res.getLocale());
                 String localHtml = replaceTokens(initHtml, bundle);
 
                 // Replace path token
@@ -606,7 +604,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         byte[] bytes;
         try {
             // Replace locale specific Strings
-            ResourceBundle bundle = getResourceBundle(res.getLocale());
             String localHtml = replaceTokens(statusHtml, bundle);
 
             // Replace state token
