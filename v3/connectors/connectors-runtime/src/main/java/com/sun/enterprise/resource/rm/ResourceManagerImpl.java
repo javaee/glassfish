@@ -78,7 +78,7 @@ public class ResourceManagerImpl implements ResourceManager {
 	        return null;
 	    }
         }
-        return inv.getTransaction();
+        return (Transaction) inv.getTransaction();
     }
     
     /**
@@ -138,7 +138,7 @@ public class ResourceManagerImpl implements ResourceManager {
 			_logger.log(Level.INFO, e.getMessage());
 		    }
                 } else {
-                    tran = inv.getTransaction();
+                    tran = (Transaction) inv.getTransaction();
                     tm.registerComponentResource(handle);
                 }
                 
@@ -202,7 +202,7 @@ public class ResourceManagerImpl implements ResourceManager {
                }
 
             } else {
-                tran = inv.getTransaction();
+                tran = (Transaction) inv.getTransaction();
 	    }
             if (tran != null) {
                 tran.setRollbackOnly();
@@ -261,7 +261,7 @@ public class ResourceManagerImpl implements ResourceManager {
                         _logger.log(Level.INFO, e.getMessage());
                     }
                 } else {
-                    tran = inv.getTransaction();
+                    tran = (Transaction) inv.getTransaction();
                     tm.unregisterComponentResource(resource);
                 }
                 if (tran != null && resource.isEnlisted()) {

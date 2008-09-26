@@ -131,15 +131,15 @@ public class ComponentInvocation {
         return container;
     }
 
-    public <T> T getTransaction() {
-        return (T)transaction;
+    public Object getTransaction() {
+        return transaction;
     }
 
-    public <T> void setTransaction(T t) {
+    public void setTransaction(Object t) {
         this.transaction = t;
     }
     
-    public <T> T getTransactionOperationsManager() {
+    public Object getTransactionOperationsManager() {
         return null;
     }
 

@@ -396,7 +396,7 @@ public class TimerBean implements TimerLocal {
 
         if( transaction == null ) {
             ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
-            transaction = i.getTransaction();
+            transaction = (Transaction) i.getTransaction();
             if (transaction != null) {
                 // Need to know when it happens
                 logger.log(Level.WARNING, "Context transaction = null. Using " +

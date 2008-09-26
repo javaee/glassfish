@@ -1271,7 +1271,7 @@ public class JavaEETransactionManagerSimplified
         throws InvocationException {
 
         try {
-            Transaction tran = inv.getTransaction();
+            Transaction tran = (Transaction) inv.getTransaction();
             if (isTransactionActive(tran)) {
                 List l = getExistingResourceList(inv.getInstance(), inv);
                 if (l == null || l.size() == 0)
@@ -1320,7 +1320,7 @@ public class JavaEETransactionManagerSimplified
     throws InvocationException {
 
         try {
-            Transaction tran = inv.getTransaction();
+            Transaction tran = (Transaction) inv.getTransaction();
             if (isTransactionActive(tran)) {
                 List l = getExistingResourceList(inv.getInstance(), inv);
                 if (l == null || l.size() == 0) return;

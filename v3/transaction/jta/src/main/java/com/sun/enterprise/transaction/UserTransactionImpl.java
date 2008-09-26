@@ -129,7 +129,8 @@ public class UserTransactionImpl implements UserTransaction, Serializable
 
     private void checkUserTransactionMethodAccess(ComponentInvocation inv) 
         throws IllegalStateException, SystemException {
-        TransactionOperationsManager toMgr = inv.getTransactionOperationsManager();
+        TransactionOperationsManager toMgr = 
+                (TransactionOperationsManager)inv.getTransactionOperationsManager();
         if ( toMgr != null && checkEjbAccess ) {
             if( !toMgr.userTransactionMethodsAllowed() ) {
                 throw new IllegalStateException(sm.getString("enterprise_distributedtx.operation_not_allowed"));
@@ -161,7 +162,8 @@ public class UserTransactionImpl implements UserTransaction, Serializable
 
         try {
             if (inv != null) {
-                TransactionOperationsManager toMgr = inv.getTransactionOperationsManager();
+                TransactionOperationsManager toMgr = 
+                        (TransactionOperationsManager)inv.getTransactionOperationsManager();
                 if ( toMgr != null) 
                     toMgr.doAfterUtxBegin();
 
