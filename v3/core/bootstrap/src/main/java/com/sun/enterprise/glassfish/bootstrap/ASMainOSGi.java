@@ -89,7 +89,6 @@ public abstract class ASMainOSGi {
         context = new StartupContext(bootstrapFile, args);
         // we need to save the startup context as there is no easy way to pass it through felix
         // to our bundles.
-        System.out.println("Time zero is " + System.currentTimeMillis());
 
         Properties properties = ArgumentManager.argsToMap(args);
         properties.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
