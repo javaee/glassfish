@@ -88,7 +88,8 @@
             <web-resource-name>protected</web-resource-name>
             <url-pattern>*.jsf</url-pattern>
             <url-pattern>/download/*</url-pattern>
-            <url-pattern>/resource/*</url-pattern>
+            <!-- We need to change this when we have a fix for the plugin url security issue -->
+            <!--<url-pattern>/resource/*</url-pattern>-->
             <http-method>DELETE</http-method>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
@@ -104,9 +105,12 @@
             <url-pattern>/theme/com/*</url-pattern>
             <url-pattern>/theme/org/*</url-pattern>        
             <url-pattern>/theme/woodstock4_3/*</url-pattern>
-            <url-pattern>/resource/js/*</url-pattern>
-            <url-pattern>/resource/css/*</url-pattern>
-            <url-pattern>/resource/images/*</url-pattern>
+            <!-- We need to make this more secure -->
+            <url-pattern>/resource/*</url-pattern>
+            <!--<url-pattern>/resource/theme/*</url-pattern>-->           		
+            <!--<url-pattern>/resource/js/*</url-pattern>-->
+            <!--<url-pattern>/resource/css/*</url-pattern>-->
+            <!--<url-pattern>/resource/images/*</url-pattern>-->
             <url-pattern>/theme/META-INF/*</url-pattern>
             <http-method>GET</http-method>
         </web-resource-collection>
