@@ -100,7 +100,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         // reset the pattern.
         String prefix="";
         if (!pattern.startsWith(parentNodes[0].relativeName)) {
-            prefix= pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName)+1);
+            prefix= pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
         }
         pattern = parentNodes[0].relativeName;
 
