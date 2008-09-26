@@ -56,18 +56,41 @@
 "    </tr>
 "    <tr class="LogTopBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
 "      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="30" alt="" /></td>
-"      <td nowrap="nowrap" valign="middle"></td>
+"      <td nowrap="nowrap" valign="middle">
+    <sun:image icon="DOT" width="1" height="30" border="1" />
+"    </td>
 "      <td>&nbsp;</td>
 "    </tr>
 "    <tr>
 "      <td class="LogMidBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
+<!--"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
 "        <table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
 "          <tr>
-"            <td width="260"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
+"            <td width="260">-->
+<!--  Customizing the background image -->
+<event>
+    <!afterCreate        
+                getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginbackground" root="#{component}");                
+        
+    />
+</event>
+"               <img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
 "            <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
-"                <img name="Login.welcomeImg" src="#{request.contextPath}/resource/#{loginProductImageURL}" 
-                     "alt="#{fullProductName}" border="0" height="#{loginProductImageHeight}" width="#{loginProductImageWidth}" />
+<!--"                <img name="Login.welcomeImg" src="#{request.contextPath}/resource/#{loginProductImageURL}" 
+                     "alt="#{fullProductName}" border="0" height="#{loginProductImageHeight}" width="#{loginProductImageWidth}" />-->
+<sun:image icon="DOT" width="1" height="100" border="0" />
+
+<!--  Customizing the login product name image -->
+<event>
+    <!afterCreate        
+                getClientId(component="$this{component}" clientId=>$attribute{loginId})
+                getUIComponent(clientId="#{loginId}"  component=>$attribute{component})
+                includeFirstIntegrationPoint(type="org.glassfish.admingui:loginimage" root="#{component}");                
+        
+    />
+</event>                     
 "              <table border="0" cellspacing="0" cellpadding="0">
 "                <tr>
 "                  <td colspan="2">
@@ -137,7 +160,9 @@
 "                    <td>&nbsp;</td>
 "                  </tr>
 "		  <tr>
-"		    <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="33" alt="" /></td>
+"		    <td>
+<sun:image icon="DOT" width="0" height="34" border="0" />
+"    </td>
 "	            <td>&nbsp;</td>
 "		  </tr>
 "              </table>
@@ -153,6 +178,7 @@
 "      <td class="LogMidBnd" 
 "          style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
 "    </tr>
+" <tr><td><sun:image icon="DOT" width="1" height="500" border="1" /></td></tr>
 "    <tr class="LogBotBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
 "      <td>&nbsp;</td>
 "      <td><div class="logCpy"><span class="logTxtCpy">
