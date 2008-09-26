@@ -60,7 +60,7 @@ public final class Issues
         final boolean wasMissing = mIssues.add( description );
         if ( wasMissing )
         {
-            ImplUtil.getLogger().fine( "NOT DONExx: " + description );
+            ImplUtil.getLogger().fine( "NOT DONE: " + description );
         }
     }
 }
