@@ -52,6 +52,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.*;
 
 public final class InstallationConfigurator implements Configurator, NotificationListener {
 
@@ -67,6 +68,16 @@ private final static String GLASSFISH_PRODUCT_NAME = "glassfish";
 private final static String UPDATETOOL_PRODUCT_NAME = "updatetool";
 
 private static final Logger LOGGER;
+
+/* List of port numbers currently defaulted by asadmin command */
+String portArray[][] = {
+                        {"jms.port", "7676"},
+                        {"domain.jmxPort", "8686"},
+                        {"orb.listener.port", "3700"},
+                        {"http.ssl.port", "8181"},
+                        {"orb.ssl.port", "3820"},
+                        {"orb.mutualauth.port", "3920"}
+                        };
 
 static {
     LOGGER = Logger.getLogger(ClassUtils.getClassName());
@@ -356,6 +367,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
                 "--user", user,
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
+                "--domainproperties="+ getDomainProperties(adminPort, httpPort),
                 "domain1"};
 
 	    String[] asadminCommandArrayMac = { "java", "-jar",
@@ -367,6 +379,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
                 "--user", user,
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
+                "--domainproperties="+ getDomainProperties(adminPort, httpPort),
                 "domain1"};
             
             LOGGER.log(Level.INFO, "Creating GlassFish domain");
@@ -664,6 +677,46 @@ void unconfigureGlassfish(String installDir) throws Exception {
     }
 
 }
+
+/* Validates to make sure that the asadmin command line does not
+include duplicate port values. Currently HTTP and Admin ports are
+input by user and seven other ports(refer to this.PortArray[][])
+have been hard-coded with constant values. This method makes sure
+that the user-entered values are not duplicated in the assumptions
+that asadmin makes. If so, then the assumptions(ports) will be 
+incremented by one. Returns the whole of formulated domainproperties
+to be used in asadmin create-domain command line.
+Refer to Issue traker issue #6173.
+*/
+public String getDomainProperties(String adminPort, String httpPort) {
+	
+        String domainProperties = "";
+
+	/* Check admin and http port given by user against
+	the list of default ports used by asadmin. */
+        for (int i=0;i<portArray.length;i++) {
+        	if (portArray[i][1].equals(adminPort) || 
+			portArray[i][1].equals(httpPort)) {
+                	/* Convert string to a number, then add 1
+	                then convert it back to a string. Update the
+			portArray with new port #. */
+        	 Integer newPortNumber = Integer.parseInt(portArray[i][1]) + 1;
+               	 portArray[i][1] = Integer.toString(newPortNumber);
+        	}
+
+        // Store the modified array elements into the commandline
+        domainProperties = 
+		domainProperties + portArray[i][0] + "=" + portArray[i][1];
+
+        /* Don't add a ":" to the last element :-), though asadmin ignores it,
+	Safe not to put junk in commandline.
+	*/
+        if (i < 5)
+                domainProperties = domainProperties + ":";
+        }
+        return domainProperties;
+}
+
 
 static public void deleteDirectory(File objName) throws Exception {
 	File filesList[] = objName.listFiles();
