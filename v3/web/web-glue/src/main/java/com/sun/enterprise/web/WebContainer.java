@@ -1254,11 +1254,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             int i=0;
             for (i=0; i<portsList.size(); i++) {
                 ports[i] = portsList.get(i).intValue();
-                 _logger.info("Virtual Server "+vs.getID()+" set port "+ports[i]);
+                 if (_logger.isLoggable(Level.FINE)) {
+                     _logger.fine("Virtual Server " + vs.getID() +
+                                  " set port " + ports[i]);
+                 }
             }
             if (addJkListenerPort) {
                 ports[i] = jkConnector.getPort();
-                 _logger.info("Virtual Server "+vs.getID()+" set jk port "+ports[i]);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Virtual Server " + vs.getID() +
+                                 " set jk port " + ports[i]);
+                }
             }
             vs.setPorts(ports);
         }

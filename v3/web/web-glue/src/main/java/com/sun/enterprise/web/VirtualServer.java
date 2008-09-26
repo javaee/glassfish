@@ -1417,8 +1417,10 @@ public class VirtualServer extends StandardHost {
             /*
              * Disable SSO
              */
-            Object[] params = {  getID() };
-            _logger.log(Level.INFO, "webcontainer.ssodisabled", params);
+            if (_logger.isLoggable(Level.FINE)) {
+                Object[] params = { getID() };
+                _logger.log(Level.FINE, "webcontainer.ssodisabled", params);
+            }
 
             // Remove existing SSO valve (if any)
             GlassFishValve[] valves = getValves();
