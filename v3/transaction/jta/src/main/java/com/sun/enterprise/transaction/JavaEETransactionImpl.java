@@ -294,7 +294,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return txEntityManagerMap;
     }
     
-    private void onTxCompletion(boolean status) {
+    protected void onTxCompletion(boolean status) {
+        if( txEntityManagerMap == null ) {
+            return;
+        }
+
         for (Map.Entry<EntityManagerFactory, EntityManager> entry : 
             getTxEntityManagerMap().entrySet()) {
             

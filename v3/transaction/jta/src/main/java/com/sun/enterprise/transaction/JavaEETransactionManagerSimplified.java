@@ -845,8 +845,14 @@ public class JavaEETransactionManagerSimplified
                 }
             }
             else  {
-                // it might be a JTS imported global tx or an error
-                getDelegate().commitDistributedTransaction(); 
+                try{
+                    // it might be a JTS imported global tx or an error
+                    getDelegate().commitDistributedTransaction(); 
+                }finally{
+                    if ( tx != null ) {
+                        ((JavaEETransactionImpl)tx).onTxCompletion(true);
+                    }
+                }
             }
 
         } finally {
@@ -874,7 +880,14 @@ public class JavaEETransactionManagerSimplified
                 }
             }
             else  {
-                getDelegate().rollbackDistributedTransaction(); // a JTS imported global tx or an error
+                try {
+                    // a JTS imported global tx or an error
+                    getDelegate().rollbackDistributedTransaction(); 
+                }finally{
+                    if ( tx != null ) {
+                        ((JavaEETransactionImpl)tx).onTxCompletion(false);
+                    }
+                }
             }
 
         } finally {
