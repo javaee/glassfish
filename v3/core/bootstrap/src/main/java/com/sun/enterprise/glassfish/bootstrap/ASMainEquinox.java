@@ -50,6 +50,11 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ASMainEquinox extends ASMainOSGi {
+    /* if equinox is installed under glassfish/eclipse this would be the
+     *  glassfish/eclipse/plugins dir that contains the equinox jars
+     *  can be null
+     * */
+    private static File pluginsDir=null;
 
     public ASMainEquinox(Logger logger, String... args) {
         super(logger, args);
@@ -62,6 +67,15 @@ public class ASMainEquinox extends ASMainOSGi {
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
+            fwDir = new File(glassfishDir, "eclipse");
+            if (fwDir.exists()){//default Eclipse equinox structure from a equinoz zip distro
+                pluginsDir = new File(fwDir,"plugins");
+                if (!pluginsDir.exists()){
+                    pluginsDir =null;//no luck
+                }
+            }
+        }
+        if (!fwDir.exists()) {
             throw new RuntimeException("Can't locate Equinox at " + fwPath);
         }
     }
@@ -69,7 +83,13 @@ public class ASMainEquinox extends ASMainOSGi {
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
         // Add all the jars to classpath for the moment, since the jar name
         // is not a constant.
-        cpb.addJarFolder(fwDir);
+       if (pluginsDir!=null) {
+            cpb.addJarFolder(pluginsDir);
+            cpb.addGlob(pluginsDir, "org.eclipse.osgi_*.jar");
+
+        } else {
+            cpb.addJarFolder(fwDir);
+        }
     }
 
     protected void launchOSGiFW() throws Exception {
