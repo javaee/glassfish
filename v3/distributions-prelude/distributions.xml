@@ -190,23 +190,24 @@ ssl_key = None]]>
     <echo message="realms jar: ${realms.jar}"/>
     <echo message="amx-api jar: ${amx-api.jar}"/>
 
-    <copy file="${cli-optional.jar}" todir="${modules.dir}"/>
-    <copy file="${server-mgmt.jar}" todir="${modules.dir}"/>
-    <copy file="${admin-util.jar}" todir="${modules.dir}"/>
-    <copy file="${realms.jar}" todir="${modules.dir}"/>
-    <copy file="${amx-api.jar}" todir="${modules.dir}"/>
+<!-- FIXME - see if we can directly use resolveArtifact instead of this -->
+    <copy file="${cli-optional.jar}" tofile="${modules.dir}/cli-optional.jar"/>
+    <copy file="${server-mgmt.jar}" tofile="${modules.dir}/server-mgmt.jar"/>
+    <copy file="${admin-util.jar}" tofile="${modules.dir}/admin-util.jar"/>
+    <copy file="${realms.jar}" tofile="${modules.dir}/realms.jar"/>
+    <copy file="${amx-api.jar}" tofile="${modules.dir}/amx-api.jar"/>
 </target>
 
 <!-- delete artifacts required to create default domain; these are not bundled as part of nucleus -->
 <target name="delete-domain-creation-artifacts">
     <delete>
         <fileset dir="${modules.dir}">
-            <include name="cli-optional*.jar"/>
-            <include name="server-mgmt*.jar"/>
-            <include name="admin-util*.jar"/>
-            <include name="realms*.jar"/>
-            <include name="backup*.jar"/>
-            <include name="amx-api*.jar"/>
+            <include name="cli-optional.jar"/>
+            <include name="server-mgmt.jar"/>
+            <include name="admin-util.jar"/>
+            <include name="realms.jar"/>
+            <include name="backup.jar"/>
+            <include name="amx-api.jar"/>
         </fileset>
     </delete>
 </target>
