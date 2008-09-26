@@ -25,8 +25,8 @@ Copyright (C) 1995-2002 Jean-loup Gailly and Mark Adler
   Jean-loup Gailly jloup@gzip.org
   Mark Adler madler@alumni.caltech.edu
 
-%% The following software may be included in this product: Ant, Apache Commons Codec
- Use of any of this software is governed by the terms of the license below:
+%% The following software may be included in this product: Ant
+   Use of any of this software is governed by the terms of the license below:
  
 
 
@@ -334,7 +334,7 @@ Implementation.
 including without limitation, method, process, and apparatus claims, in any patent for whichthe grantor has the right to grant a license.
 
 1.9.  "Reference Implementation" means the prototype or "proof of concept"
-implementa√°tion of the Specification developed and made available for license by or on behalf of BEA.
+implementa¬≠tion of the Specification developed and made available for license by or on behalf of BEA.
 
 1.10. "Source Code" means the preferred form of the Covered Code for making
 modifications to it, including all modules it contains, plus any associated documentation, interface definition files, scripts used to control compilation and installation of an Executable, or source code differential comparisons against either the Original Code or another well known, available Covered Code of the Contributor's choice.
@@ -342,7 +342,7 @@ modifications to it, including all modules it contains, plus any associated docu
 1.11.  "Specification" means the written specification for the Streaming API for
 XML , Java technology developed pursuant to the Java Community Process.
 1.12. "Technology Compatibility Kit" or "TCK" means the documentation, testing
-tools and test suites associated with the Specification as may be revised by BEA from time to time, that is provided so that an implementer of the Specifi√°cation may determine if its implementation is compliant with the Specification.
+tools and test suites associated with the Specification as may be revised by BEA from time to time, that is provided so that an implementer of the Specifi¬≠cation may determine if its implementation is compliant with the Specification.
 
 1.13. "You" (or "Your") means an individual or a legal entity exercising rights
 under, and complying with all of the terms of, this Agreement or a future version of this
@@ -376,7 +376,7 @@ You must cause all Covered Code to which You contribute to contain a file
 documenting the changes You made to create that Covered Code and the date of any change. You must include a prominent statement that the Modification is derived, directly or indirectly, from Original Code provided by BEA and including the name of BEA in (a) the Source Code, and (b) in any notice in an Executable version or related documentation in which You describe the origin or ownership of the Covered Code.
 
 
-%% The following software may be included in this product: Commons logging. Use of any of this software is governed by the terms of the license below:
+%% The following software may be included in this product: Commons logging, Apache Commons Codec, Java DB, Derby, JSTL. Use of any of this software is governed by the terms of the license below:
 	
 	
  			     Apache License
@@ -1420,7 +1420,7 @@ documenting the changes You made to create that Covered Code and the date of any
 
 2.  Restrictions. the Software is confidential to BEA and protected by Copyright and other bodies of law protecting intellectual property rights. Title to the Software and all associated intellectual property rights is retained by BEA and/or its licensors. Except as specifically authorized in Section 1, above, you may not make copies of the Software. Unless enforcement is prohibited by applicable law, you may not modify, decompile, or reverse engineer the Software. No right, title or interest in or to any trademark, service mark, logo or trade name of BEA or its licensors is granted under this Agreement.  the Software is not designed, licensed or intended for use in the design, construction, operation or maintenance of any nuclear facility, nor may you use it for such purposes.
 
-3.  DISCLAIMER OF WARRANTY. THE SOFTWARE IS PROVIDED Ç«£AS IS,Ç«• WITHOUT WARRANTY.  ALL WARRANTIES, EXPRESS OR IMPLIED, CONDITIONS, AND REPRESENTATIONS, INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT ARE DISCLAIMED.
+3.  DISCLAIMER OF WARRANTY. THE SOFTWARE IS PROVIDED ‚ÄúAS IS,‚Äù WITHOUT WARRANTY.  ALL WARRANTIES, EXPRESS OR IMPLIED, CONDITIONS, AND REPRESENTATIONS, INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT ARE DISCLAIMED.
 
 4.  Limitation of Liability. In no event will BEA or its Licensors be liable for any lost revenue, profits or data, or for special, incidental, consequential or other indirect damages, or for punitive damages, however caused, regardless of the theory of liability, arising out of or related to the Software or this Agreement, even if BEA has been advised of the possibility of such loss. In no event will BEA's liability to you, whether in contract, tort (including negligence), or otherwise, exceed the amount paid by you for the Software hereunder.
 
@@ -1445,6 +1445,10 @@ documenting the changes You made to create that Covered Code and the date of any
 
 %% The following software may be included in this product: Eclipse Link 
  Use of any of this software is governed by the terms of the license below:
+
+Sun elects to have this file available under and governed by the EDL license (see below for full license text).  However, the following notice accompanied the original version of this file:
+
+The Eclipse Foundation makes available all content in this plug-in ("Content"). Unless otherwise indicated below, the Content is provided to you under the terms and conditions of the Eclipse Public License Version 1.0 ("EPL") and Eclipse Distribution License Version 1.0 (‚ÄúEDL‚Äù). For purposes of the EPL, "Program" will mean the Content.
 
 Eclipse Distribution License - v 1.0
 
@@ -1668,6 +1672,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 **Update Center**
+
+DO NOT TRANSLATE OR LOCALIZE.
 
 %% The following software may be included in this product: wxPython and wxWidgets
  Use of any of this software is governed by the terms of the license below:
@@ -2106,33 +2112,58 @@ bound by the terms and conditions of this License Agreement.
 Everett VSPro 1
 Final 11.04.02
 END-USER LICENSE AGREEMENT FOR MICROSOFT SOFTWARE
-IMPORTANT»ÛÇÈºÇ«•READ CAREFULLY: This End-User License Agreement (»ÛÇÈº ÙEULA»ÛÇÈº√•) is a legal
+IMPORTANT???READ CAREFULLY: This End-User License Agreement (???EULA???) is a legal
 agreement between you (either an individual or a single entity) and Microsoft
-Corporation (»ÛÇÈº ÙMicrosoft»ÛÇÈº√•) for the Microsoft software that accompanies this EULA, which includes computer software and may include associated media, printed materials, »ÛÇÈº Ùonline»ÛÇÈº√• or electronic documentation, and Internet-based services (»ÛÇÈº ÙSoftware»ÛÇÈº√•). An amendment or addendum to this EULA may accompany the Software. YOU AGREE TO BE BOUND BY THE TERMS OF THIS EULA BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE. IF YOU
-DO NOT AGREE, DO NOT INSTALL, COPY, OR USE THE SOFTWARE; YOU MAY RETURN IT TO YOUR PLACE OF PURCHASE (IF APPLICABLE) FOR A FULL REFUND. MICROSOFT SOFTWARE LICENSE
+Corporation
+(???Microsoft???) for the Microsoft software that accompanies this EULA, which
+includes computer
+software and may include associated media, printed materials, ???online??? or electronic
+documentation, and Internet-based services (???Software???). An amendment or
+addendum to this
+EULA may accompany the Software. YOU AGREE TO BE BOUND BY THE TERMS OF THIS
+EULA BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE. IF YOU
+DO NOT AGREE, DO NOT INSTALL, COPY, OR USE THE SOFTWARE; YOU MAY
+RETURN IT TO YOUR PLACE OF PURCHASE (IF APPLICABLE) FOR A FULL REFUND.
+MICROSOFT SOFTWARE LICENSE
 1. GRANTS OF LICENSE. Microsoft grants you the rights described in this EULA
 provided that you comply with all terms and conditions of this EULA. NOTE:
 Microsoft is not
 licensing to you any rights with respect to Crystal Reports for Microsoft Visual
-Studio .NET; your use of Crystal Reports for Microsoft Visual Studio .NET is subject to your acceptance of the terms and conditions of the enclosed (hard copy) end user license agreement from Crystal Decisions for that product.
+Studio .NET;
+your use of Crystal Reports for Microsoft Visual Studio .NET is subject to your
+acceptance of
+the terms and conditions of the enclosed (hard copy) end user license agreement
+from Crystal
+Decisions for that product.
 1.1 General License Grant. Microsoft grants to you as an individual, a personal,
 nonexclusive license to use the Software, and to make and use copies of the
-Software for the purposes of designing, developing, testing, and demonstrating your software product(s), provided that you are the only individual using the Software.
+Software for the
+purposes of designing, developing, testing, and demonstrating your software
+product(s),
+provided that you are the only individual using the Software.
 If you are an entity, Microsoft grants to you a personal, nonexclusive license to
 use the Software, and to make and use copies of the Software, provided that for
-each individual using the Software within your organization, you have acquired a separate and valid license for each such individual.
+each individual
+using the Software within your organization, you have acquired a separate and
+valid license for
+each such individual.
 1.2 Documentation. You may make and use an unlimited number of copies of any
 documentation, provided that such copies shall be used only for personal
-purposes and are not to be republished or distributed (either in hard copy or electronic form) beyond your premises.
+purposes and are not
+to be republished or distributed (either in hard copy or electronic form) beyond
+your premises.
 1.3 Storage/Network Use. You may also store or install a copy of the Software on a
 storage device, such as a network server, used only to install or run the
-Software on computers used by licensed end users in accordance with Section 1.1. A single license for the Software may not be shared or used concurrently by multiple end users.
-1.4 Visual Studio»ÛÇÈºÇ«•Effect of EULA. As a suite of development tools and other
-Microsoft software programs (each such tool or software program, a »ÛÇÈº ÙComponent»ÛÇÈº√•),
+Software on computers
+used by licensed end users in accordance with Section 1.1. A single license for
+the Software may
+not be shared or used concurrently by multiple end users.
+1.4 Visual Studio???Effect of EULA. As a suite of development tools and other
+Microsoft software programs (each such tool or software program, a ???Component???),
 Components that you receive as part of the Software may include a separate
 end-user license
-agreement (each, a »ÛÇÈº ÙComponent EULA»ÛÇÈº√•). Except as provided in Section 4
-(»ÛÇÈº ÙPrerelease Code»ÛÇÈº√•), in
+agreement (each, a ???Component EULA???). Except as provided in Section 4
+(???Prerelease Code???), in
 the event of inconsistencies between this EULA and any Component EULA, the terms
 of this
 EULA shall control. The Software may also contain third-party software programs.
@@ -2153,7 +2184,7 @@ Section 3.
 2.1 Sample Code. Microsoft grants you a limited, nonexclusive, royalty-free license
 to: (a) use and modify the source code version of those portions of the Software
 identified as
-»ÛÇÈº ÙSamples»ÛÇÈº√• in REDIST.TXT or elsewhere in the Software (»ÛÇÈº ÙSample Code»ÛÇÈº√•) for the
+???Samples??? in REDIST.TXT or elsewhere in the Software (???Sample Code???) for the
 sole purposes
 of designing, developing, and testing your software product(s), and (b)
 reproduce and
@@ -2161,12 +2192,12 @@ distribute the Sample Code, along with any modifications thereof, in object
 and/or source code
 form. For applicable redistribution requirements for Sample Code, see Section
 3.1 below.
-2.2 Redistributable Code»ÛÇÈºÇ«•General. Microsoft grants you a limited, nonexclusive,
+2.2 Redistributable Code???General. Microsoft grants you a limited, nonexclusive,
 royalty-free license to reproduce and distribute the object code form of any
 portion of the
-Software listed in REDIST.TXT (»ÛÇÈº ÙRedistributable Code»ÛÇÈº√•). For general redistribution
+Software listed in REDIST.TXT (???Redistributable Code???). For general redistribution
 requirements for Redistributable Code, see Section 3.1 below.
-2.3 Redistributable Code»ÛÇÈºÇ«•Microsoft Merge Modules (»ÛÇÈº ÙMSM»ÛÇÈº√•). Microsoft grants
+2.3 Redistributable Code???Microsoft Merge Modules (???MSM???). Microsoft grants
 you a limited, nonexclusive, royalty-free license to reproduce and distribute
 the content of MSM
 file(s) listed in REDIST.TXT in the manner described in the Software
@@ -2175,13 +2206,13 @@ long as you redistribute such content in its entirety and do not modify such
 content in any way.
 For all other applicable redistribution requirements for MSM files, see Section
 3.1 below.
-2.4 Redistributable Code»ÛÇÈºÇ«•Microsoft Foundation Classes (MFC), Active Template
+2.4 Redistributable Code???Microsoft Foundation Classes (MFC), Active Template
 Libraries (ATL), and C runtimes (CRTs). In addition to the rights granted in
 Section 1,
 Microsoft grants you a license to use and modify the source code version of
 those portions of
-the Software that are identified as MFC, ATL, or CRTs (collectively, the »ÛÇÈº ÙVC
-Redistributables»ÛÇÈº√•),
+the Software that are identified as MFC, ATL, or CRTs (collectively, the ???VC
+Redistributables???),
 for the sole purposes of designing, developing, and testing your software
 product(s). Provided
 you comply with Section 3.1 and you rename any files created by you that are
@@ -2190,7 +2221,7 @@ Licensee Software (defined below), Microsoft grants you a limited, nonexclusive,
 royalty-free
 license to reproduce and distribute the object code version of the VC
 Redistributables, including
-any modifications you make. For purposes of this section, »ÛÇÈº Ùmodifications»ÛÇÈº√• shall mean
+any modifications you make. For purposes of this section, ???modifications??? shall mean
 enhancements to the functionality of the VC Redistributables. For all other
 applicable
 redistribution requirements for VC Redistributables, see Section 3.1 below.
@@ -2202,27 +2233,27 @@ Code has
 additional limited use rights described in Section 3.2.
 3.1 General Distribution Requirements.
 (a) If you choose to redistribute Sample Code, or Redistributable Code
-(collectively, the »ÛÇÈº ÙRedistributables»ÛÇÈº√•) as described in Section 2, you agree: (i)
+(collectively, the ???Redistributables???) as described in Section 2, you agree: (i)
 except as otherwise
 noted in Section 2.1 (Sample Code), to distribute the Redistributables only in
 object code form
 and in conjunction with and as a part of a software application product
 developed by you that
-adds significant and primary functionality to the Redistributables (»ÛÇÈº ÙLicensee
-Software»ÛÇÈº√•);
+adds significant and primary functionality to the Redistributables (???Licensee
+Software???);
 (ii) that the Redistributables only operate in conjunction with Microsoft
 Windows platforms;
-(iii) that if the Licensee Software is distributed beyond Licensee»ÛÇÈºÇ‰Ûs premises or
+(iii) that if the Licensee Software is distributed beyond Licensee???s premises or
 externally from
-Licensee»ÛÇÈºÇ‰Ûs organization, to distribute the Licensee Software containing the
+Licensee???s organization, to distribute the Licensee Software containing the
 Redistributables
-pursuant to an end user license agreement (which may be »ÛÇÈº Ùbreak-the-seal»ÛÇÈº√•,
-»ÛÇÈº Ùclick-wrap»ÛÇÈº√• or
+pursuant to an end user license agreement (which may be ???break-the-seal???,
+???click-wrap??? or
 signed), with terms no less protective than those contained in this EULA; (iv)
 not to use
-Microsoft»ÛÇÈºÇ‰Ûs name, logo, or trademarks to market the Licensee Software; (v) to
+Microsoft???s name, logo, or trademarks to market the Licensee Software; (v) to
 display your own
-valid copyright notice which shall be sufficient to protect Microsoft»ÛÇÈºÇ‰Ûs
+valid copyright notice which shall be sufficient to protect Microsoft???s
 copyright in the Software;
 Everett VSPro 3
 Final 11.04.02
@@ -2230,7 +2261,7 @@ Final 11.04.02
 appear on the
 Software as delivered to you; (vii) to indemnify, hold harmless, and defend
 Microsoft from and
-against any claims or lawsuits, including attorney»ÛÇÈºÇ‰Ûs fees, that arise or result
+against any claims or lawsuits, including attorney???s fees, that arise or result
 from the use or
 distribution of the Licensee Software; (viii) to otherwise comply with the terms
 of this EULA;
@@ -2258,7 +2289,7 @@ distributing the Redistributables (or derivative works thereof) in any manner
 that would cause
 the Redistributables to become subject to any of the terms of an Excluded
 License. An
-»ÛÇÈº ÙExcluded License»ÛÇÈº√• is any license that requires as a condition of use,
+???Excluded License??? is any license that requires as a condition of use,
 modification and/or
 distribution of software subject to the Excluded License, that such software or
 other software
@@ -2271,7 +2302,7 @@ charge.
 If you choose to redistribute the files discussed in this Section, then in
 addition to the terms of
 Section 3.1, you must ALSO comply with the following.
-(a) Microsoft SQL Server Desktop Engine (»ÛÇÈº ÙMSDE»ÛÇÈº√•). If you redistribute
+(a) Microsoft SQL Server Desktop Engine (???MSDE???). If you redistribute
 MSDE you agree to comply with the following additional requirements: (a) Licensee
 Software shall not substantially duplicate the capabilities of Microsoft Access
 or, in the
@@ -2287,7 +2318,7 @@ Access.
 A product that includes limited word processing, spreadsheet or database components
 along with other components which provide significant and primary value, such as an
 accounting product with limited spreadsheet capability, is not considered to be a
-»ÛÇÈº Ùgeneral purpose»ÛÇÈº√• product.
+???general purpose??? product.
 (b) Microsoft Data Access Components. If you redistribute the Microsoft
 Data Access Component file identified as MDAC_TYP.EXE, you also agree to
 redistribute such file in object code only in conjunction with and as a part of
@@ -2301,83 +2332,215 @@ component parts may not be separated for use by more than one user.
 3.4 Benchmark Testing. The Software may contain the Microsoft .NET Framework.
 You may not disclose the results of any benchmark test of the .NET Framework
 component of
-the Software to any third party without Microsoft»ÛÇÈºÇ‰Ûs prior written approval.
+the Software to any third party without Microsoft???s prior written approval.
 4. PRERELEASE CODE. Portions of the Software may be identified as prerelease code
-(»ÛÇÈº ÙPrerelease Code»ÛÇÈº√•). Such Prerelease Code is not at the level of performance and
-compatibility of the final, generally available product offering. The Prerelease Code may not operate correctly and may be substantially modified prior to first commercial shipment. Microsoft is not obligated to make this or any later version of the Prerelease Code commercially available. The grant of license to use Prerelease Code expires upon availability of a commercial release of the Prerelease Code from Microsoft. NOTE: In the event that Prerelease Code contains a separate end-user license agreement, the terms and conditions of such end-user license agreement shall govern your use of the corresponding Prerelease Code.
+(???Prerelease Code???). Such Prerelease Code is not at the level of performance and
+compatibility
+of the final, generally available product offering. The Prerelease Code may not
+operate correctly
+and may be substantially modified prior to first commercial shipment. Microsoft
+is not
+obligated to make this or any later version of the Prerelease Code commercially
+available. The
+grant of license to use Prerelease Code expires upon availability of a
+commercial release of the
+Prerelease Code from Microsoft. NOTE: In the event that Prerelease Code contains
+a separate
+end-user license agreement, the terms and conditions of such end-user license
+agreement shall
+govern your use of the corresponding Prerelease Code.
 5. RESERVATION OF RIGHTS AND OWNERSHIP. Microsoft reserves all rights not
 expressly granted to you in this EULA. The Software is protected by copyright
-and other intellectual property laws and treaties. Microsoft or its suppliers own the
-title, copyright, and other intellectual property rights in the Software. The Software is licensed, not sold.
-6. LIMITATIONS ON REVERSE ENGINEERING, DECOMPILATION, AND DISASSEMBLY. You may not reverse engineer, decompile, or disassemble the Software, except and only to the extent that such activity is expressly permitted by applicable law notwithstanding this limitation.
+and other
+intellectual property laws and treaties. Microsoft or its suppliers own the
+title, copyright, and
+other intellectual property rights in the Software. The Software is licensed,
+not sold.
+6. LIMITATIONS ON REVERSE ENGINEERING, DECOMPILATION, AND
+DISASSEMBLY. You may not reverse engineer, decompile, or disassemble the Software,
+except and only to the extent that such activity is expressly permitted by
+applicable law
+notwithstanding this limitation.
 7. NO RENTAL/COMMERCIAL HOSTING. You may not rent, lease, lend or provide
 commercial hosting services with the Software.
 8. CONSENT TO USE OF DATA. You agree that Microsoft and its affiliates may collect
 and use technical information gathered as part of the product support services
-provided to you, if any, related to the Software. Microsoft may use this information solely to improve our products or to provide customized services or technologies to you and will not disclose this information in a form that personally identifies you.
+provided to you,
+if any, related to the Software. Microsoft may use this information solely to
+improve our
+products or to provide customized services or technologies to you and will not
+disclose this
+information in a form that personally identifies you.
 9. LINKS TO THIRD PARTY SITES. You may link to third party sites through the use of
 the Software. The third party sites are not under the control of Microsoft, and
-Microsoft is not responsible for the contents of any third party sites, any links contained in third party sites, or any changes or updates to third party sites. Microsoft is not responsible for webcasting or any other form of transmission received from any third party sites. Microsoft is providing these links to third party sites to you only as a convenience, and the inclusion of any link does not imply an endorsement by Microsoft of the third party site.
+Microsoft is not
+responsible for the contents of any third party sites, any links contained in
+third party sites, or
+any changes or updates to third party sites. Microsoft is not responsible for
+webcasting or any
+other form of transmission received from any third party sites. Microsoft is
+providing these
+links to third party sites to you only as a convenience, and the inclusion of
+any link does not
+imply an endorsement by Microsoft of the third party site.
 10. ADDITIONAL SOFTWARE/SERVICES. This EULA applies to updates, supplements,
 add-on components, or Internet-based services components, of the Software that
-Microsoft may provide to you or make available to you after the date you obtain your initial copy of the Software, unless we provide other terms along with the update, supplement, add-on component, or Internet-based services component. Microsoft reserves the right to discontinue any Internet-based services provided to you or made available to you through the use of the Software.
+Microsoft may
+provide to you or make available to you after the date you obtain your initial
+copy of the
+Software, unless we provide other terms along with the update, supplement, add-on
+component, or Internet-based services component. Microsoft reserves the right to
+discontinue
+any Internet-based services provided to you or made available to you through the
+use of the
+Software.
 11. UPGRADES/DOWNGRADES
 Everett VSPro 5
 Final 11.04.02
 11.1 Upgrades. To use a version of the Software identified as an upgrade, you must
 first be licensed for the software identified by Microsoft as eligible for the
-upgrade. After upgrading, you may no longer use the software that formed the basis for your upgrade eligibility.
+upgrade. After
+upgrading, you may no longer use the software that formed the basis for your upgrade
+eligibility.
 11.2 Downgrades. Instead of installing and using the Software, you may install and
 use copies of an earlier version of the Software, provided that you completely
-remove such earlier version and install the current version of the Software within a
-reasonable time. Your use of such earlier version shall be governed by this EULA, and your rights to use such earlier version shall terminate when you install the Software.
+remove such
+earlier version and install the current version of the Software within a
+reasonable time. Your
+use of such earlier version shall be governed by this EULA, and your rights to
+use such earlier
+version shall terminate when you install the Software.
 11.3 Special Terms for Version 2003 Upgrade Editions of the Software. If the
 Software accompanying this EULA is the version 2003 edition of the Software and
-you have acquired it as an upgrade from the corresponding »ÛÇÈº Ù2002»ÛÇÈº√• edition of the Microsoft software product with the same product name as the Software (the »ÛÇÈº ÙQualifying Software»ÛÇÈº√•), then Section 11.1 does not apply to you. Instead, you may continue to use the Qualifying Software AND the version 2003 upgrade for so long as you continue to comply with the terms of this EULA and the EULA governing your use of the Qualifying Software. Qualifying Software does not include non-Microsoft software products.
-12. NOT FOR RESALE SOFTWARE. Software identified as »ÛÇÈº ÙNot For Resale»ÛÇÈº√• or »ÛÇÈº ÙNFR,»ÛÇÈº√•
+you have
+acquired it as an upgrade from the corresponding ???2002??? edition of the Microsoft
+software
+product with the same product name as the Software (the ???Qualifying Software???), then
+Section 11.1 does not apply to you. Instead, you may continue to use the
+Qualifying Software
+AND the version 2003 upgrade for so long as you continue to comply with the
+terms of this
+EULA and the EULA governing your use of the Qualifying Software. Qualifying
+Software does
+not include non-Microsoft software products.
+12. NOT FOR RESALE SOFTWARE. Software identified as ???Not For Resale??? or ???NFR,???
 may not be sold or otherwise transfered for value, or used for any purpose other
-than demonstration, test or evaluation.
-13. ACADEMIC EDITION SOFTWARE. To use Software identified as »ÛÇÈº ÙAcademic
-Edition»ÛÇÈº√• or »ÛÇÈº ÙAE,»ÛÇÈº√• you must be a »ÛÇÈº ÙQualified Educational User.»ÛÇÈº√• For
-qualification-related questions, please contact the Microsoft Sales Information Center/One Microsoft Way/Redmond, WA 98052-6399 or the Microsoft subsidiary serving your country.
+than
+demonstration, test or evaluation.
+13. ACADEMIC EDITION SOFTWARE. To use Software identified as ???Academic
+Edition??? or ???AE,??? you must be a ???Qualified Educational User.??? For
+qualification-related
+questions, please contact the Microsoft Sales Information Center/One Microsoft
+Way/Redmond, WA 98052-6399 or the Microsoft subsidiary serving your country.
 14. EXPORT RESTRICTIONS. You acknowledge that the Software is subject to U.S. export
 jurisdiction. You agree to comply with all applicable international and national
-laws that apply to the Software, including the U.S. Export Administration Regulations, as well as end-user, enduse, and destination restrictions issued by U.S. and other governments. For additional information see .
+laws that apply
+to the Software, including the U.S. Export Administration Regulations, as well
+as end-user, enduse,
+and destination restrictions issued by U.S. and other governments. For additional
+information see .
 15. SOFTWARE TRANSFER. The initial user of the Software may make a one-time
 permanent transfer of this EULA and Software to another end user, provided the
-initial user retains no copies of the Software. This transfer must include all of the
-Software (including all component parts, the media and printed materials, any upgrades (including any Qualifying Software as defined in Section 11.3), this EULA, and, if applicable, the Certificate of Authenticity). The transfer may not be an indirect transfer, such as a consignment. Prior to the transfer, the end user receiving the Software must agree to all the EULA terms.
+initial user
+retains no copies of the Software. This transfer must include all of the
+Software (including all
+component parts, the media and printed materials, any upgrades (including any
+Qualifying
+Software as defined in Section 11.3), this EULA, and, if applicable, the
+Certificate of
+Authenticity). The transfer may not be an indirect transfer, such as a
+consignment. Prior to the
+transfer, the end user receiving the Software must agree to all the EULA terms.
 16. TERMINATION. Without prejudice to any other rights, Microsoft may terminate this
 EULA if you fail to comply with the terms and conditions of this EULA. In such
-event, you must destroy all copies of the Software and all of its component parts.
-Everett VSPro 6 Final 11.04.02
+event, you
+must destroy all copies of the Software and all of its component parts.
+Everett VSPro 6
+Final 11.04.02
 17. LIMITED WARRANTY FOR SOFTWARE ACQUIRED IN THE US AND CANADA.
-Except for the »ÛÇÈº ÙRedistributables,»ÛÇÈº√• which are provided AS IS without warranty of
-any kind, Microsoft warrants that the Software will perform substantially in accordance
-with the accompanying materials for a period of ninety (90) days from the date of receipt. If an implied warranty or condition is created by your state/jurisdiction and
-federal or state/provincial law prohibits disclaimer of it, you also have an implied
-warranty or condition, BUT ONLY AS TO DEFECTS DISCOVERED DURING THE PERIOD OF THIS LIMITED WARRANTY (NINETY DAYS). AS TO ANY DEFECTS DISCOVERED AFTER THE
+Except for the ???Redistributables,??? which are provided AS IS without warranty of
+any kind,
+Microsoft warrants that the Software will perform substantially in accordance
+with the
+accompanying materials for a period of ninety (90) days from the date of receipt.
+If an implied warranty or condition is created by your state/jurisdiction and
+federal or
+state/provincial law prohibits disclaimer of it, you also have an implied
+warranty or condition,
+BUT ONLY AS TO DEFECTS DISCOVERED DURING THE PERIOD OF THIS LIMITED
+WARRANTY (NINETY DAYS). AS TO ANY DEFECTS DISCOVERED AFTER THE
 NINETY-DAY PERIOD, THERE IS NO WARRANTY OR CONDITION OF ANY KIND.
 Some states/jurisdictions do not allow limitations on how long an implied
-warranty or condition lasts, so the above limitation may not apply to you.
+warranty or
+condition lasts, so the above limitation may not apply to you.
 Any supplements or updates to the Software, including without limitation, any
-(if any) service packs or hot fixes provided to you after the expiration of the ninety day Limited Warranty period are not covered by any warranty or condition, express, implied or statutory. LIMITATION ON REMEDIES; NO CONSEQUENTIAL OR OTHER DAMAGES. Your
+(if any) service
+packs or hot fixes provided to you after the expiration of the ninety day
+Limited Warranty
+period are not covered by any warranty or condition, express, implied or statutory.
+LIMITATION ON REMEDIES; NO CONSEQUENTIAL OR OTHER DAMAGES. Your
 exclusive remedy for any breach of this Limited Warranty is as set forth below.
-Except for any refund elected by Microsoft, YOU ARE NOT ENTITLED TO ANY DAMAGES,
+Except for any
+refund elected by Microsoft, YOU ARE NOT ENTITLED TO ANY DAMAGES,
 INCLUDING BUT NOT LIMITED TO CONSEQUENTIAL DAMAGES, if the Software does
-not meet Microsoft»ÛÇÈºÇ‰Ûs Limited Warranty, and, to the maximum extent allowed by
-applicable law, even if any remedy fails of its essential purpose. The terms of Section 19 (»ÛÇÈº ÙExclusion of Incidental, Consequential and Certain Other Damages»ÛÇÈº√•) are also incorporated into this Limited Warranty. Some states/jurisdictions do not allow the exclusion or limitation of incidental or consequential damages, so the above limitation or exclusion may not apply to you. This Limited Warranty gives you specific legal rights. You may have other rights which vary from state/jurisdiction to state/jurisdiction. YOUR EXCLUSIVE REMEDY. Microsoft»ÛÇÈºÇ‰Ûs and its suppliers»ÛÇÈºÇ‰Û entire liability and your exclusive remedy for any breach of this Limited Warranty or
+not meet Microsoft???s Limited Warranty, and, to the maximum extent allowed by
+applicable
+law, even if any remedy fails of its essential purpose. The terms of Section 19
+(???Exclusion of
+Incidental, Consequential and Certain Other Damages???) are also incorporated into
+this Limited
+Warranty. Some states/jurisdictions do not allow the exclusion or limitation of
+incidental or
+consequential damages, so the above limitation or exclusion may not apply to
+you. This
+Limited Warranty gives you specific legal rights. You may have other rights
+which vary from
+state/jurisdiction to state/jurisdiction. YOUR EXCLUSIVE REMEDY. Microsoft???s and its
+suppliers??? entire liability and your exclusive remedy for any breach of this
+Limited Warranty or
 for any other breach of this EULA or for any other liability relating to the
-Software shall be, at Microsoft»ÛÇÈºÇ‰Ûs option from time to time exercised subject to applicable law, (a) return of the amount paid (if any) for the Software, or (b) repair or replacement of the Software, that does not meet this Limited Warranty and that is returned to Microsoft with a copy of your receipt. You will receive the remedy elected by Microsoft without charge, except that you are responsible for any expenses you may incur (e.g. cost of shipping the Software to Microsoft). This Limited Warranty is void if failure of the Software has resulted from accident, abuse, misapplication, abnormal use or a virus. Any replacement Software will be warranted for the remainder of the
+Software shall be, at
+Microsoft???s option from time to time exercised subject to applicable law, (a)
+return of the
+amount paid (if any) for the Software, or (b) repair or replacement of the
+Software, that does not
+meet this Limited Warranty and that is returned to Microsoft with a copy of your
+receipt. You
+will receive the remedy elected by Microsoft without charge, except that you are
+responsible for
+any expenses you may incur (e.g. cost of shipping the Software to Microsoft).
+This Limited
+Warranty is void if failure of the Software has resulted from accident, abuse,
+misapplication,
+abnormal use or a virus. Any replacement Software will be warranted for the
+remainder of the
 original warranty period or thirty (30) days, whichever is longer, and Microsoft
-will use commercially reasonable efforts to provide your remedy within a commercially
-reasonable time of your compliance with Microsoft»ÛÇÈºÇ‰Ûs warranty remedy procedures. Outside the United States or Canada, neither these remedies nor any product support services offered by Microsoft are available without proof of purchase from an authorized international source. To exercise your remedy, contact: Microsoft, Attn. Microsoft Sales Information Center/One Microsoft Way/Redmond, WA 98052-6399, or the Microsoft subsidiary serving your country.
+will use
+commercially reasonable efforts to provide your remedy within a commercially
+reasonable time
+of your compliance with Microsoft???s warranty remedy procedures. Outside the
+United States or
+Canada, neither these remedies nor any product support services offered by
+Microsoft are
+available without proof of purchase from an authorized international source. To
+exercise your
+remedy, contact: Microsoft, Attn. Microsoft Sales Information Center/One Microsoft
+Way/Redmond, WA 98052-6399, or the Microsoft subsidiary serving your country.
 18. DISCLAIMER OF WARRANTIES. The Limited Warranty that appears above is the
 only express warranty made to you and is provided in lieu of any other express
-warranties or similar obligations (if any) created by any advertising, documentation,
-packaging, or other communications. EXCEPT FOR THE LIMITED WARRANTY AND TO THE MAXIMUM
-Everett VSPro 7 Final 11.04.02 EXTENT PERMITTED BY APPLICABLE LAW, MICROSOFT AND ITS SUPPLIERS PROVIDE THE SOFTWARE AND SUPPORT SERVICES (IF ANY) AS IS AND WITH ALL
-FAULTS, AND HEREBY DISCLAIM ALL OTHER WARRANTIES AND CONDITIONS, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY) IMPLIED WARRANTIES, DUTIES OR CONDITIONS OF MERCHANTABILITY, OF FITNESS FOR A PARTICULAR PURPOSE, OF RELIABILITY OR AVAILABILITY, OF ACCURACY OR COMPLETENESS OF RESPONSES, OF
+warranties or
+similar obligations (if any) created by any advertising, documentation,
+packaging, or other
+communications. EXCEPT FOR THE LIMITED WARRANTY AND TO THE MAXIMUM
+Everett VSPro 7
+Final 11.04.02
+EXTENT PERMITTED BY APPLICABLE LAW, MICROSOFT AND ITS SUPPLIERS
+PROVIDE THE SOFTWARE AND SUPPORT SERVICES (IF ANY) AS IS AND WITH ALL
+FAULTS, AND HEREBY DISCLAIM ALL OTHER WARRANTIES AND CONDITIONS,
+WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED TO,
+ANY (IF ANY) IMPLIED WARRANTIES, DUTIES OR CONDITIONS OF
+MERCHANTABILITY, OF FITNESS FOR A PARTICULAR PURPOSE, OF RELIABILITY
+OR AVAILABILITY, OF ACCURACY OR COMPLETENESS OF RESPONSES, OF
 RESULTS, OF WORKMANLIKE EFFORT, OF LACK OF VIRUSES, AND OF LACK OF
 NEGLIGENCE, ALL WITH REGARD TO THE SOFTWARE, AND THE PROVISION OF OR
 FAILURE TO PROVIDE SUPPORT OR OTHER SERVICES, INFORMATION, SOFTWARE,
@@ -2428,7 +2591,7 @@ commercial license rights and restrictions described elsewhere herein. All
 Software provided to
 the U.S. Government pursuant to solicitations issued prior to December 1, 1995
 is provided with
-»ÛÇÈº ÙRestricted Rights»ÛÇÈº√• as provided for in FAR, 48 CFR 52.227-14 (JUNE 1987) or
+???Restricted Rights??? as provided for in FAR, 48 CFR 52.227-14 (JUNE 1987) or
 DFAR, 48 CFR
 252.227-7013 (OCT 1988), as applicable.
 22. APPLICABLE LAW. If you acquired this Software in the United States, this EULA is
@@ -2458,163 +2621,163 @@ of this EULA is
 held to be void, invalid, unenforceable or illegal, the other provisions shall
 continue in full force
 and effect.
-Si vous avez acquis votre produit Microsoft au CANADA, la garantie limit»‚√®e suivante
-s»ÛÇÈºÇ‰Ûapplique :
-GARANTIE LIMIT»‚Ç«óE
-Sauf pur celles du »ÛÇÈº ÙRedistributables,»ÛÇÈº√• qui sont fournies »ÛÇÈº Ùcomme telles,»ÛÇÈº√•
+Si vous avez acquis votre produit Microsoft au CANADA, la garantie limit??e suivante
+s???applique :
+GARANTIE LIMIT??E
+Sauf pur celles du ???Redistributables,??? qui sont fournies ???comme telles,???
 Microsoft garantit que
-le Logiciel fonctionnera conform»‚√®ment aux documents inclus pendant une p»‚√®riode
+le Logiciel fonctionnera conform??ment aux documents inclus pendant une p??riode
 de 90 jours
-suivant la date de r»‚√®ception.
-Si une garantie ou condition implicite est cr»‚√®»‚√®e par votre »‚Ç«ótat ou votre
-territoire et qu»ÛÇÈºÇ‰Ûune loi
-f»‚√®d»‚√®rale ou provinciale ou d»ÛÇÈºÇ‰Ûun »‚Ç«ótat en interdit le d»‚√®ni, vous jouissez
-»‚√®galement d»ÛÇÈºÇ‰Ûune
-garantie ou condition implicite, MAIS UNIQUEMENT POUR LES D»‚Ç«óFAUTS D»‚Ç«óCOUVERTS
-DURANT LA P»‚Ç«óRIODE DE LA PR»‚Ç«óSENTE GARANTIE LIMIT»‚Ç«óE (QUATRE-VINGT-DIX
-JOURS). IL N»ÛÇÈºÇ‰ÛY A AUCUNE GARANTIE OU CONDITION DE QUELQUE NATURE QUE
-CE SOIT QUANT AUX D»‚Ç«óFAUTS D»‚Ç«óCOUVERTS APR»‚›ÂS CETTE P»‚Ç«óRIODE DE QUATREVINGT-
-DIX JOURS. Certains »‚Ç«ótats ou territoires ne permettent pas de limiter la dur»‚√®e d»ÛÇÈºÇ‰Ûune
+suivant la date de r??ception.
+Si une garantie ou condition implicite est cr????e par votre ??tat ou votre
+territoire et qu???une loi
+f??d??rale ou provinciale ou d???un ??tat en interdit le d??ni, vous jouissez
+??galement d???une
+garantie ou condition implicite, MAIS UNIQUEMENT POUR LES D??FAUTS D??COUVERTS
+DURANT LA P??RIODE DE LA PR??SENTE GARANTIE LIMIT??E (QUATRE-VINGT-DIX
+JOURS). IL N???Y A AUCUNE GARANTIE OU CONDITION DE QUELQUE NATURE QUE
+CE SOIT QUANT AUX D??FAUTS D??COUVERTS APR??S CETTE P??RIODE DE QUATREVINGT-
+DIX JOURS. Certains ??tats ou territoires ne permettent pas de limiter la dur??e d???une
 garantie ou condition implicite de sorte que la limitation ci-dessus peut ne pas
-s»ÛÇÈºÇ‰Ûappliquer »‚ 
+s???appliquer ??
 vous.
-Tous les suppl»‚√®ments ou toutes les mises »‚  jour relatifs au Logiciel, notamment,
+Tous les suppl??ments ou toutes les mises ?? jour relatifs au Logiciel, notamment,
 les ensembles
-de services ou les r»‚√®parations »‚  chaud (le cas »‚√®ch»‚√®ant) qui vous sont fournis
-apr»‚√øs l»ÛÇÈºÇ‰Ûexpiration
-de la p»‚√®riode de quatre-vingt-dix jours de la garantie limit»‚√®e ne sont pas
+de services ou les r??parations ?? chaud (le cas ??ch??ant) qui vous sont fournis
+apr??s l???expiration
+de la p??riode de quatre-vingt-dix jours de la garantie limit??e ne sont pas
 couverts par quelque
 garantie ou condition que ce soit, expresse, implicite ou en vertu de la loi.
 LIMITATION DES RECOURS; ABSENCE DE DOMMAGES INDIRECTS OU AUTRES.
-Votre recours exclusif pour toute violation de la pr»‚√®sente garantie limit»‚√®e est
-d»‚√®crit ci-apr»‚√øs.
+Votre recours exclusif pour toute violation de la pr??sente garantie limit??e est
+d??crit ci-apr??s.
 Sauf pour tout remboursement au choix de Microsoft, si le Logiciel ne respecte
 pas la
 Everett VSPro 9
 Final 11.04.02
-garantie limit»‚√®e de Microsoft et, dans la mesure maximale permise par les lois
+garantie limit??e de Microsoft et, dans la mesure maximale permise par les lois
 applicables,
-m»‚√¨me si tout recours n»ÛÇÈºÇ‰Ûatteint pas son but essentiel, VOUS N»ÛÇÈºÇ‰ÛAVEZ DROIT »‚ÇÈº AUCUNS
+m??me si tout recours n???atteint pas son but essentiel, VOUS N???AVEZ DROIT ?? AUCUNS
 DOMMAGES, NOTAMMENT DES DOMMAGES INDIRECTS. Les termes de la
-clause »È√ΩExclusion des dommages accessoires, indirects et de certains autres
-dommages »È√© sont
-»‚√®galement int»‚√®gr»‚√®es »‚  la pr»‚√®sente garantie limit»‚√®e. Certains »‚Ç«ótats ou
+clause ??Exclusion des dommages accessoires, indirects et de certains autres
+dommages ?? sont
+??galement int??gr??es ?? la pr??sente garantie limit??e. Certains ??tats ou
 territoires ne permettent
-pas l»ÛÇÈºÇ‰Ûexclusion ou la limitation des dommages indirects ou accessoires de sorte
+pas l???exclusion ou la limitation des dommages indirects ou accessoires de sorte
 que la limitation
-ou l»ÛÇÈºÇ‰Ûexclusion ci-dessus peut ne pas s»ÛÇÈºÇ‰Ûappliquer »‚  vous. La pr»‚√®sente garantie
-limit»‚√®e vous donne
-des droits l»‚√®gaux sp»‚√®cifiques. Vous pouvez avoir d»ÛÇÈºÇ‰Ûautres droits qui peuvent
-varier d»ÛÇÈºÇ‰Ûun
-territoire ou d»ÛÇÈºÇ‰Ûun »‚Ç«ótat »‚  un autre. VOTRE RECOURS EXCLUSIF. La seule responsabilit»‚√®
+ou l???exclusion ci-dessus peut ne pas s???appliquer ?? vous. La pr??sente garantie
+limit??e vous donne
+des droits l??gaux sp??cifiques. Vous pouvez avoir d???autres droits qui peuvent
+varier d???un
+territoire ou d???un ??tat ?? un autre. VOTRE RECOURS EXCLUSIF. La seule responsabilit??
 obligation de Microsoft et de ses fournisseurs et votre recours exclusif pour
 toute violation de
-la pr»‚√®sente garantie limit»‚√®e ou pour toute autre violation du pr»‚√®sent contrat ou
+la pr??sente garantie limit??e ou pour toute autre violation du pr??sent contrat ou
 pour toute autre
-responsabilit»‚√® relative au Logiciel seront, selon le choix de Microsoft exerc»‚√®
-de temps »‚  autre
-sous r»‚√®serve de toute loi applicable, a) le remboursement du prix pay»‚√®, le cas
-»‚√®ch»‚√®ant, pour le
-Logiciel ou b) la r»‚√®paration ou le remplacement du Logiciel qui ne respecte pas
-la pr»‚√®sente
-garantie limit»‚√®e et qui est retourn»‚√® »‚  Microsoft avec une copie de votre re»‚√∫u.
+responsabilit?? relative au Logiciel seront, selon le choix de Microsoft exerc??
+de temps ?? autre
+sous r??serve de toute loi applicable, a) le remboursement du prix pay??, le cas
+??ch??ant, pour le
+Logiciel ou b) la r??paration ou le remplacement du Logiciel qui ne respecte pas
+la pr??sente
+garantie limit??e et qui est retourn?? ?? Microsoft avec une copie de votre re??u.
 Vous recevrez la
-compensation choisie par Microsoft, sans frais, sauf que vous »‚√¨tes responsable
-des d»‚√®penses que
-vous pourriez engager (p. ex., les frais d»ÛÇÈºÇ‰Ûenvoi du Logiciel »‚  Microsoft). La
-pr»‚√®sente garantie
-limit»‚√®e est nulle si la d»‚√®fectuosit»‚√® du Logiciel est caus»‚√®e par un accident, un
+compensation choisie par Microsoft, sans frais, sauf que vous ??tes responsable
+des d??penses que
+vous pourriez engager (p. ex., les frais d???envoi du Logiciel ?? Microsoft). La
+pr??sente garantie
+limit??e est nulle si la d??fectuosit?? du Logiciel est caus??e par un accident, un
 usage abusif, une
 mauvaise application, un usage anormal ou un virus. Tout Logiciel de
 remplacement sera
-garanti pour le reste de la p»‚√®riode initiale de la garantie ou pendant trente
+garanti pour le reste de la p??riode initiale de la garantie ou pendant trente
 (30) jours, selon la
-plus longue entre ces deux p»‚√®riodes. »‚ÇÈº l»ÛÇÈºÇ‰Ûext»‚√®rieur des »‚Ç«ótats-Unis ou du Canada,
+plus longue entre ces deux p??riodes. ?? l???ext??rieur des ??tats-Unis ou du Canada,
 ces recours ou
-l»ÛÇÈºÇ‰Ûun quelconque des services de soutien technique offerts par Microsoft ne sont
+l???un quelconque des services de soutien technique offerts par Microsoft ne sont
 pas disponibles
-sans preuve d»ÛÇÈºÇ‰Ûachat d»ÛÇÈºÇ‰Ûune source internationale autoris»‚√®e. Pour exercer votre
+sans preuve d???achat d???une source internationale autoris??e. Pour exercer votre
 recours, vous
 devez communiquer avec Microsoft et vous adresser au Microsoft Sales Information
-Center/One Microsoft Way/Redmond, WA 98052-6399, ou »‚  la filiale de Microsoft de
+Center/One Microsoft Way/Redmond, WA 98052-6399, ou ?? la filiale de Microsoft de
 votre
 pays.
-D»‚Ç«óNI DE GARANTIES. La garantie limit»‚√®e qui appara»‚√´t ci-dessus constitue la seule
+D??NI DE GARANTIES. La garantie limit??e qui appara??t ci-dessus constitue la seule
 garantie
-expresse qui vous est donn»‚√®e et remplace toutes autres garanties expresses (s»ÛÇÈºÇ‰Ûil
-en est) cr»‚√®es par
-une publicit»‚√®, un document, un emballage ou une autre communication. SAUF EN CE
+expresse qui vous est donn??e et remplace toutes autres garanties expresses (s???il
+en est) cr??es par
+une publicit??, un document, un emballage ou une autre communication. SAUF EN CE
 QUI A
-TRAIT »‚ÇÈº LA GARANTIE LIMIT»‚Ç«óE ET DANS LA MESURE MAXIMALE PERMISE PAR
+TRAIT ?? LA GARANTIE LIMIT??E ET DANS LA MESURE MAXIMALE PERMISE PAR
 LES LOIS APPLICABLES, LE LOGICIEL ET LES SERVICES DE SOUTIEN TECHNIQUE
-(LE CAS »‚Ç«óCH»‚Ç«óANT) SONT FOURNIS TELS QUELS ET AVEC TOUS LES D»‚Ç«óFAUTS PAR
-MICROSOFT ET SES FOURNISSEURS, LESQUELS PAR LES PR»‚Ç«óSENTES D»‚Ç«óNIENT
+(LE CAS ??CH??ANT) SONT FOURNIS TELS QUELS ET AVEC TOUS LES D??FAUTS PAR
+MICROSOFT ET SES FOURNISSEURS, LESQUELS PAR LES PR??SENTES D??NIENT
 TOUTES AUTRES GARANTIES ET CONDITIONS EXPRESSES, IMPLICITES OU EN
-VERTU DE LA LOI, NOTAMMENT, MAIS SANS LIMITATION, (LE CAS »‚Ç«óCH»‚Ç«óANT) LES
-GARANTIES, DEVOIRS OU CONDITIONS IMPLICITES DE QUALIT»‚Ç«ó MARCHANDE,
-D»ÛÇÈºÇ‰ÛADAPTATION »‚ÇÈº UNE FIN PARTICULI»‚›ÂRE, DE FIABILIT»‚Ç«ó OU DE DISPONIBILIT»‚Ç«ó,
-D»ÛÇÈºÇ‰ÛEXACTITUDE OU D»ÛÇÈºÇ‰ÛEXHAUSTIVIT»‚Ç«ó DES R»‚Ç«óPONSES, DES R»‚Ç«óSULTATS, DES
-EFFORTS D»‚Ç«óPLOY»‚Ç«óS SELON LES R»‚›ÂGLES DE L»ÛÇÈºÇ‰ÛART, D»ÛÇÈºÇ‰ÛABSENCE DE VIRUS ET
-D»ÛÇÈºÇ‰ÛABSENCE DE N»‚Ç«óGLIGENCE, LE TOUT »‚ÇÈº L»ÛÇÈºÇ‰Û»‚Ç«óGARD DU LOGICIEL ET DE LA
-PRESTATION OU DE L»ÛÇÈºÇ‰ÛOMISSION DE LA PRESTATION DES SERVICES DE SOUTIEN
-TECHNIQUE OU »‚ÇÈº L»ÛÇÈºÇ‰Û»‚Ç«óGARD DE LA FOURNITURE OU DE L»ÛÇÈºÇ‰ÛOMISSION DE LA
+VERTU DE LA LOI, NOTAMMENT, MAIS SANS LIMITATION, (LE CAS ??CH??ANT) LES
+GARANTIES, DEVOIRS OU CONDITIONS IMPLICITES DE QUALIT?? MARCHANDE,
+D???ADAPTATION ?? UNE FIN PARTICULI??RE, DE FIABILIT?? OU DE DISPONIBILIT??,
+D???EXACTITUDE OU D???EXHAUSTIVIT?? DES R??PONSES, DES R??SULTATS, DES
+EFFORTS D??PLOY??S SELON LES R??GLES DE L???ART, D???ABSENCE DE VIRUS ET
+D???ABSENCE DE N??GLIGENCE, LE TOUT ?? L?????GARD DU LOGICIEL ET DE LA
+PRESTATION OU DE L???OMISSION DE LA PRESTATION DES SERVICES DE SOUTIEN
+TECHNIQUE OU ?? L?????GARD DE LA FOURNITURE OU DE L???OMISSION DE LA
 FOURNITURE DE TOUS AUTRES SERVICES, RENSEIGNEMENTS, LOGICIELS, ET
-CONTENU QUI S»ÛÇÈºÇ‰ÛY RAPPORTE GR»‚Ç«‹CE AU LOGICIEL OU PROVENANT AUTREMENT
-DE L»ÛÇÈºÇ‰ÛUTILISATION DU LOGICIEL . PAR AILLEURS, IL N»ÛÇÈºÇ‰ÛY A AUCUNE GARANTIE OU
-CONDITION QUANT AU TITRE DE PROPRI»‚Ç«óT»‚Ç«ó, »‚ÇÈº LA JOUISSANCE OU LA
-POSSESSION PAISIBLE, »‚ÇÈº LA CONCORDANCE »‚ÇÈº UNE DESCRIPTION NI QUANT »‚ÇÈº
-UNE ABSENCE DE CONTREFA»‚Ç«ÌON CONCERNANT LE LOGICIEL.
+CONTENU QUI S???Y RAPPORTE GR??CE AU LOGICIEL OU PROVENANT AUTREMENT
+DE L???UTILISATION DU LOGICIEL . PAR AILLEURS, IL N???Y A AUCUNE GARANTIE OU
+CONDITION QUANT AU TITRE DE PROPRI??T??, ?? LA JOUISSANCE OU LA
+POSSESSION PAISIBLE, ?? LA CONCORDANCE ?? UNE DESCRIPTION NI QUANT ??
+UNE ABSENCE DE CONTREFA??ON CONCERNANT LE LOGICIEL.
 EXCLUSION DES DOMMAGES ACCESSOIRES, INDIRECTS ET DE CERTAINS AUTRES
 DOMMAGES. DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS APPLICABLES,
 EN AUCUN CAS MICROSOFT OU SES FOURNISSEURS NE SERONT RESPONSABLES
-DES DOMMAGES SP»‚Ç«óCIAUX, CONS»‚Ç«óCUTIFS, ACCESSOIRES OU INDIRECTS DE
+DES DOMMAGES SP??CIAUX, CONS??CUTIFS, ACCESSOIRES OU INDIRECTS DE
 Everett VSPro 10
 Final 11.04.02
-QUELQUE NATURE QUE CE SOIT (NOTAMMENT, LES DOMMAGES »‚ÇÈº L»ÛÇÈºÇ‰Û»‚Ç«óGARD DU
-MANQUE »‚ÇÈº GAGNER OU DE LA DIVULGATION DE RENSEIGNEMENTS
-CONFIDENTIELS OU AUTRES, DE LA PERTE D»ÛÇÈºÇ‰ÛEXPLOITATION, DE BLESSURES
-CORPORELLES, DE LA VIOLATION DE LA VIE PRIV»‚Ç«óE, DE L»ÛÇÈºÇ‰ÛOMISSION DE REMPLIR
-TOUT DEVOIR, Y COMPRIS D»ÛÇÈºÇ‰ÛAGIR DE BONNE FOI OU D»ÛÇÈºÇ‰ÛEXERCER UN SOIN
-RAISONNABLE, DE LA N»‚Ç«óGLIGENCE ET DE TOUTE AUTRE PERTE P»‚Ç«óCUNIAIRE OU
+QUELQUE NATURE QUE CE SOIT (NOTAMMENT, LES DOMMAGES ?? L?????GARD DU
+MANQUE ?? GAGNER OU DE LA DIVULGATION DE RENSEIGNEMENTS
+CONFIDENTIELS OU AUTRES, DE LA PERTE D???EXPLOITATION, DE BLESSURES
+CORPORELLES, DE LA VIOLATION DE LA VIE PRIV??E, DE L???OMISSION DE REMPLIR
+TOUT DEVOIR, Y COMPRIS D???AGIR DE BONNE FOI OU D???EXERCER UN SOIN
+RAISONNABLE, DE LA N??GLIGENCE ET DE TOUTE AUTRE PERTE P??CUNIAIRE OU
 AUTRE PERTE DE QUELQUE NATURE QUE CE SOIT) SE RAPPORTANT DE QUELQUE
-MANI»‚›ÂRE QUE CE SOIT »‚ÇÈº L»ÛÇÈºÇ‰ÛUTILISATION DU LOGICIEL OU »‚ÇÈº L»ÛÇÈºÇ‰ÛINCAPACIT»‚Ç«ó DE
-S»ÛÇÈºÇ‰ÛEN SERVIR, »‚ÇÈº LA PRESTATION OU »‚ÇÈº L»ÛÇÈºÇ‰ÛOMISSION DE LA PRESTATION DE
-SERVICES DE SOUTIEN TECHNIQUE OU »‚ÇÈº LA FOURNITURE OU »‚ÇÈº L»ÛÇÈºÇ‰ÛOMISSION DE
+MANI??RE QUE CE SOIT ?? L???UTILISATION DU LOGICIEL OU ?? L???INCAPACIT?? DE
+S???EN SERVIR, ?? LA PRESTATION OU ?? L???OMISSION DE LA PRESTATION DE
+SERVICES DE SOUTIEN TECHNIQUE OU ?? LA FOURNITURE OU ?? L???OMISSION DE
 LA FOURNITURE DE TOUS AUTRES SERVICES, RENSEIGNEMENTS, LOGICIELS, ET
-CONTENU QUI S»ÛÇÈºÇ‰ÛY RAPPORTE GR»‚Ç«‹CE AU LOGICIEL OU PROVENANT AUTREMENT
-DE L»ÛÇÈºÇ‰ÛUTILISATION DU LOGICIEL OU AUTREMENT AUX TERMES DE TOUTE
-DISPOSITION DE LA PR»‚Ç«óSENTE CONVENTION OU RELATIVEMENT »‚ÇÈº UNE TELLE
-DISPOSITION, M»‚ ·ME EN CAS DE FAUTE, DE D»‚Ç«óLIT CIVIL (Y COMPRIS LA
-N»‚Ç«óGLIGENCE), DE RESPONSABILIT»‚Ç«ó STRICTE, DE VIOLATION DE CONTRAT OU DE
-VIOLATION DE GARANTIE DE MICROSOFT OU DE TOUT FOURNISSEUR ET M»‚ ·ME
-SI MICROSOFT OU TOUT FOURNISSEUR A »‚Ç«óT»‚Ç«ó AVIS»‚Ç«ó DE LA POSSIBILIT»‚Ç«ó DE TELS
+CONTENU QUI S???Y RAPPORTE GR??CE AU LOGICIEL OU PROVENANT AUTREMENT
+DE L???UTILISATION DU LOGICIEL OU AUTREMENT AUX TERMES DE TOUTE
+DISPOSITION DE LA PR??SENTE CONVENTION OU RELATIVEMENT ?? UNE TELLE
+DISPOSITION, M??ME EN CAS DE FAUTE, DE D??LIT CIVIL (Y COMPRIS LA
+N??GLIGENCE), DE RESPONSABILIT?? STRICTE, DE VIOLATION DE CONTRAT OU DE
+VIOLATION DE GARANTIE DE MICROSOFT OU DE TOUT FOURNISSEUR ET M??ME
+SI MICROSOFT OU TOUT FOURNISSEUR A ??T?? AVIS?? DE LA POSSIBILIT?? DE TELS
 DOMMAGES.
-LIMITATION DE RESPONSABILIT»‚Ç«ó ET RECOURS. MALGR»‚Ç«ó LES DOMMAGES QUE
+LIMITATION DE RESPONSABILIT?? ET RECOURS. MALGR?? LES DOMMAGES QUE
 VOUS PUISSIEZ SUBIR POUR QUELQUE MOTIF QUE CE SOIT (NOTAMMENT, MAIS
-SANS LIMITATION, TOUS LES DOMMAGES SUSMENTIONN»‚Ç«óS ET TOUS LES
-DOMMAGES DIRECTS OU G»‚Ç«óN»‚Ç«óRAUX OU AUTRES), LA SEULE RESPONSABILIT»‚Ç«ó DE
-MICROSOFT ET DE L»ÛÇÈºÇ‰ÛUN OU L»ÛÇÈºÇ‰ÛAUTRE DE SES FOURNISSEURS AUX TERMES DE
-TOUTE DISPOSITION DE LA PR»‚Ç«óSENTE CONVENTION ET VOTRE RECOURS
-EXCLUSIF »‚ÇÈº L»ÛÇÈºÇ‰Û»‚Ç«óGARD DE TOUT CE QUI PR»‚Ç«óC»‚›ÂDE (SAUF EN CE QUI CONCERNE
-TOUT RECOURS DE R»‚Ç«óPARATION OU DE REMPLACEMENT CHOISI PAR
-MICROSOFT »‚ÇÈº L»ÛÇÈºÇ‰Û»‚Ç«óGARD DE TOUT MANQUEMENT »‚ÇÈº LA GARANTIE LIMIT»‚Ç«óE) SE
-LIMITE AU PLUS »‚Ç«óLEV»‚Ç«ó ENTRE LES MONTANTS SUIVANTS : LE MONTANT QUE
-VOUS AVEZ R»‚Ç«óELLEMENT PAY»‚Ç«ó POUR LE LOGICIEL OU 5,00 $US. LES LIMITES,
-EXCLUSIONS ET D»‚Ç«óNIS QUI PR»‚Ç«óC»‚›ÂDENT (Y COMPRIS LES CLAUSES CI-DESSUS),
-S»ÛÇÈºÇ‰ÛAPPLIQUENT DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS
-APPLICABLES, M»‚ ·ME SI TOUT RECOURS N»ÛÇÈºÇ‰ÛATTEINT PAS SON BUT ESSENTIEL.
-»‚ÇÈº moins que cela ne soit prohib»‚√® par le droit local applicable, la pr»‚√®sente
-Convention est r»‚√®gie
-par les lois de la province d»ÛÇÈºÇ‰ÛOntario, Canada. Vous consentez »‚  la comp»‚√®tence
+SANS LIMITATION, TOUS LES DOMMAGES SUSMENTIONN??S ET TOUS LES
+DOMMAGES DIRECTS OU G??N??RAUX OU AUTRES), LA SEULE RESPONSABILIT?? DE
+MICROSOFT ET DE L???UN OU L???AUTRE DE SES FOURNISSEURS AUX TERMES DE
+TOUTE DISPOSITION DE LA PR??SENTE CONVENTION ET VOTRE RECOURS
+EXCLUSIF ?? L?????GARD DE TOUT CE QUI PR??C??DE (SAUF EN CE QUI CONCERNE
+TOUT RECOURS DE R??PARATION OU DE REMPLACEMENT CHOISI PAR
+MICROSOFT ?? L?????GARD DE TOUT MANQUEMENT ?? LA GARANTIE LIMIT??E) SE
+LIMITE AU PLUS ??LEV?? ENTRE LES MONTANTS SUIVANTS : LE MONTANT QUE
+VOUS AVEZ R??ELLEMENT PAY?? POUR LE LOGICIEL OU 5,00 $US. LES LIMITES,
+EXCLUSIONS ET D??NIS QUI PR??C??DENT (Y COMPRIS LES CLAUSES CI-DESSUS),
+S???APPLIQUENT DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS
+APPLICABLES, M??ME SI TOUT RECOURS N???ATTEINT PAS SON BUT ESSENTIEL.
+?? moins que cela ne soit prohib?? par le droit local applicable, la pr??sente
+Convention est r??gie
+par les lois de la province d???Ontario, Canada. Vous consentez ?? la comp??tence
 des tribunaux
-f»‚√®d»‚√®raux et provinciaux si»‚√®geant »‚  Toronto, dans la province d»ÛÇÈºÇ‰ÛOntario.
-Au cas o»‚√† vous auriez des questions concernant cette licence ou que vous
-d»‚√®siriez vous mettre
+f??d??raux et provinciaux si??geant ?? Toronto, dans la province d???Ontario.
+Au cas o?? vous auriez des questions concernant cette licence ou que vous
+d??siriez vous mettre
 en rapport avec Microsoft pour quelque raison que ce soit, veuillez utiliser
-l»ÛÇÈºÇ‰Ûinformation
+l???information
 contenue dans le Logiciel pour contacter la filiale de Microsoft desservant
 votre pays, ou visitez
-Microsoft sur le World Wide Web »‚  http://www.microsoft.com.
+Microsoft sur le World Wide Web ?? http://www.microsoft.com.
 The following MICROSOFT GUARANTEE applies to you if you acquired this Software in
 any other country:
 Statutory rights not affected - The following guarantee is not restricted to any
@@ -2623,14 +2786,14 @@ not affect any statutory rights that you may have from your reseller or from
 Microsoft if you
 acquired the Software directly from Microsoft. If you acquired the Software or
 any support
-services in Australia, New Zealand or Malaysia, please see the »ÛÇÈº ÙConsumer rights»ÛÇÈº√•
+services in Australia, New Zealand or Malaysia, please see the ???Consumer rights???
 section
 below.
 Everett VSPro 11
 Final 11.04.02
 The guarantee - The Software is designed and offered as a general-purpose
 software, not for any
-user»ÛÇÈºÇ‰Ûs particular purpose. You accept that no Software is error free and you are
+user???s particular purpose. You accept that no Software is error free and you are
 strongly
 advised to back-up your files regularly. Provided that you have a valid license,
 Microsoft
@@ -2678,7 +2841,7 @@ business interruption, loss of business information or other pecuniary loss)
 arising out of the
 use or inability to use the Software, even if Microsoft has been advised of the
 possibility of such
-damages. In any case Microsoft»ÛÇÈºÇ‰Ûs entire liability under any provision of this
+damages. In any case Microsoft???s entire liability under any provision of this
 Agreement shall be
 limited to the amount actually paid by you for the Software. These limitations
 do not apply to
@@ -2698,8 +2861,8 @@ Australia and if
 Microsoft breaches a condition or warranty implied under any law which cannot
 lawfully be
 modified or excluded by this agreement then, to the extent permitted by law,
-Microsoft»ÛÇÈºÇ‰Ûs
-liability is limited, at Microsoft»ÛÇÈºÇ‰Ûs option, to: (i) in the case of the
+Microsoft???s
+liability is limited, at Microsoft???s option, to: (i) in the case of the
 Software: a) repairing or
 replacing the Software; or b) the cost of such repair or replacement; and (ii)
 in the case of
@@ -3069,7 +3232,7 @@ Millennium Edition, Windows NT 4.0 and Windows 98.
 
 END-USER LICENSE AGREEMENT 
 MICROSOFT PLATFORM SOFTWARE DEVELOPMENT KIT
-IMPORTANT»ÛÇÈºÇ«•READ CAREFULLY:  This End-User License Agreement ("EULA") is a legal
+IMPORTANT???READ CAREFULLY:  This End-User License Agreement ("EULA") is a legal
 agreement 
 between you (either an individual or a single entity) and Microsoft Corporation
 for the Microsoft software 
@@ -3087,15 +3250,24 @@ FULL REFUND.
 comply with all terms and conditions of this 
 EULA:
 * SOFTWARE PRODUCT.  You may install and use an unlimited number of copies of
-the SOFTWARE PRODUCT on computers, including workstations, terminals or other digital electronic devices residing on your premises ("Computers") to 
+the SOFTWARE PRODUCT on 
+computers, including workstations, terminals or other digital electronic devices
+residing on your premises ("Computers") to 
 design, develop, and test your software application(s) ("Application") for use
-with any version or edition of Microsoft Windows 95, Windows 98, Windows NT 4.0, Windows 2000 operating system products and/or any version or edition of any 
+with any version or edition of Microsoft 
+Windows 95, Windows 98, Windows NT 4.0, Windows 2000 operating system products
+and/or any version or edition of any 
 Microsoft operating system product that is a successor to the foregoing and/or
-any Microsoft product suite that contains any of the foregoing (each a "Microsoft Operating System Product").  
+any Microsoft product suite that contains any 
+of the foregoing (each a "Microsoft Operating System Product").  
 * Sample Code.  You may modify the sample source code located in the SOFTWARE
-PRODUCT's "samples" directories ("Sample Code") to design, develop, and test your Application solely for use with a Microsoft Operating System Product.  You 
+PRODUCT's "samples" directories 
+("Sample Code") to design, develop, and test your Application solely for use
+with a Microsoft Operating System Product.  You 
 may also reproduce and distribute the Sample Code in object code form along with
-any modifications you make to the Sample Code, provided that you comply with the Distribution Terms described below.  For purposes of this section, "modifications" 
+any modifications you make to the Sample 
+Code, provided that you comply with the Distribution Terms described below.  For
+purposes of this section, "modifications" 
 shall mean enhancements to the functionality of the Sample Code.
 * Redistributable Code.  Portions of the SOFTWARE PRODUCT are designated as
 "Redistributable Code."  The text file, 
@@ -3159,7 +3331,7 @@ wrongful act of you; (3) is rightfully received from
 a third party without similar restriction and without breach of this Agreement;
 or (4) is independently developed by you.  This 
 provision shall survive the termination or expiration of this Agreement.  
-3. TRANSFER»ÛÇÈºÇ«•Internal.  You may move the SOFTWARE PRODUCT to a different
+3. TRANSFER???Internal.  You may move the SOFTWARE PRODUCT to a different
 Computer.  Transfer to Third Party.  The initial 
 user of the SOFTWARE PRODUCT may make a one-time transfer of the SOFTWARE
 PRODUCT to another end user.  The transfer 
@@ -3168,9 +3340,12 @@ applicable, the Certificate of Authenticity.  The
 transfer may not be an indirect transfer, such as a consignment.  Prior to the
 transfer, the end user receiving the transferred 
 SOFTWARE PRODUCT must agree to all the EULA terms.   No Rental.  You may not
-rent, lease, or lend the SOFTWARE PRODUCT.
+rent, lease, or lend the SOFTWARE 
+PRODUCT.
 4. LIMITATION ON REVERSE ENGINEERING, DECOMPILATION, AND DISASSEMBLY.  You may
-not reverse engineer, decompile, or disassemble the SOFTWARE PRODUCT, except and only to the extent that it is expressly permitted by applicable 
+not reverse engineer, 
+decompile, or disassemble the SOFTWARE PRODUCT, except and only to the extent
+that it is expressly permitted by applicable 
 law notwithstanding this limitation. 
 5. TERMINATION.  Without prejudice to any other rights, Microsoft may cancel
 this EULA if you do not abide by the terms and 
@@ -3179,7 +3354,8 @@ SOFTWARE PRODUCT and all of its component parts.
 6. CONSENT TO USE OF DATA.  You agree that Microsoft and its affiliates may
 collect and use technical information you provide 
 as a part of support services related to the SOFTWARE PRODUCT.  Microsoft agrees
-not to use this information in a form that personally identifies you.   
+not to use this information in a form that 
+personally identifies you.   
 7. NOT FOR RESALE SOFTWARE.  SOFTWARE PRODUCT identified as "Not for Resale" or
 "NFR," may not be resold, 
 transferred or used for any purpose other than demonstration, test or evaluation.
@@ -3192,136 +3368,192 @@ country.
 9. EXPORT RESTRICTIONS.  You acknowledge that the SOFTWARE PRODUCT is of U.S.
 origin.  You agree to comply with all 
 applicable international and national laws that apply to the SOFTWARE PRODUCT,
-including the U.S. Export Administration Regulations, as well as end-user, end-use and destination restrictions issued by U.S. and other governments.  For additional 
+including the U.S. Export Administration 
+Regulations, as well as end-user, end-use and destination restrictions issued by
+U.S. and other governments.  For additional 
 information, see .
 10. DISCLAIMER OF WARRANTIES.  To the maximum extent permitted by applicable
-law, Microsoft and its suppliers provide to you the SOFTWARE PRODUCT, and any (if any) support services relating to the SOFTWARE PRODUCT ("Support Services") AS IS AND WITH ALL FAULTS; and Microsoft and its suppliers hereby disclaim with respect to the SOFTWARE 
-PRODUCT and Support Services all warranties and conditions, whether express, implied or statutory, including, but not limited to, any (if any) warranties, duties or conditions of or related to: merchantability, fitness for a particular purpose, lack 
+law, Microsoft and its suppliers provide 
+to you the SOFTWARE PRODUCT, and any (if any) support services relating to the
+SOFTWARE PRODUCT ("Support 
+Services") AS IS AND WITH ALL FAULTS; and Microsoft and its suppliers hereby
+disclaim with respect to the SOFTWARE 
+PRODUCT and Support Services all warranties and conditions, whether express,
+implied or statutory, including, but not 
+limited to, any (if any) warranties, duties or conditions of or related to: 
+merchantability, fitness for a particular purpose, lack 
 of viruses, accuracy or completeness of responses, results, workmanlike effort
-and lack of negligence.  ALSO THERE IS NO WARRANTY, DUTY OR CONDITION OF TITLE, QUIET ENJOYMENT, QUIET POSSESSION, CORRESPONDENCE TO 
+and lack of negligence.  ALSO THERE IS NO 
+WARRANTY, DUTY OR CONDITION OF TITLE, QUIET ENJOYMENT, QUIET POSSESSION,
+CORRESPONDENCE TO 
 DESCRIPTION OR NON-INFRINGEMENT.  THE ENTIRE RISK ARISING OUT OF USE OR
-PERFORMANCE OF THE SOFTWARE PRODUCT AND ANY SUPPORT SERVICES REMAINS WITH YOU.
+PERFORMANCE OF THE 
+SOFTWARE PRODUCT AND ANY SUPPORT SERVICES REMAINS WITH YOU.
 11. EXCLUSION OF INCIDENTAL, CONSEQUENTIAL AND CERTAIN OTHER DAMAGES.  TO THE
-MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL MICROSOFT OR ITS SUPPLIERS BE LIABLE FOR ANY SPECIAL, INCIDENTAL, INDIRECT, PUNITIVE OR CONSEQUENTIAL DAMAGES WHATSOEVER (INCLUDING,BUT NOT LIMITED TO, DAMAGES FOR:  LOSS OF PROFITS, LOSS OF CONFIDENTIAL OR OTHER INFORMATION, BUSINESS INTERRUPTION, PERSONAL INJURY, LOSS OF PRIVACY, FAILURE TO MEET ANY DUTY (INCLUDING OF GOOD FAITH OR OF REASONABLE CARE), NEGLIGENCE, AND ANY OTHER PECUNIARY OR OTHER LOSS WHATSOEVER) ARISING 
+MAXIMUM EXTENT 
+PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL MICROSOFT OR ITS SUPPLIERS BE
+LIABLE FOR ANY SPECIAL, 
+INCIDENTAL, INDIRECT, PUNITIVE OR CONSEQUENTIAL DAMAGES WHATSOEVER (INCLUDING,
+BUT NOT LIMITED 
+TO, DAMAGES FOR:  LOSS OF PROFITS, LOSS OF CONFIDENTIAL OR OTHER INFORMATION,
+BUSINESS 
+INTERRUPTION, PERSONAL INJURY, LOSS OF PRIVACY, FAILURE TO MEET ANY DUTY
+(INCLUDING OF GOOD FAITH 
+OR OF REASONABLE CARE), NEGLIGENCE, AND ANY OTHER PECUNIARY OR OTHER LOSS
+WHATSOEVER) ARISING 
 OUT OF OR IN ANY WAY RELATED TO THE USE OF OR INABILITY TO USE THE SOFTWARE
-PRODUCT OR THE SUPPORT SERVICES, OR THE PROVISION OF OR FAILURE TO PROVIDE SUPPORT SERVICES, OR OTHERWISE UNDER OR IN CONNECTION WITH ANY PROVISION OF THIS EULA, EVEN IF MICROSOFT OR ANY SUPPLIER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  
+PRODUCT OR THE 
+SUPPORT SERVICES, OR THE PROVISION OF OR FAILURE TO PROVIDE SUPPORT SERVICES, OR
+OTHERWISE UNDER 
+OR IN CONNECTION WITH ANY PROVISION OF THIS EULA, EVEN IF MICROSOFT OR ANY
+SUPPLIER HAS BEEN 
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  
 12. LIMITATION OF LIABILITY AND REMEDIES.  Notwithstanding any damages that you
-might incur for any reason whatsoever  (including, without limitation, all damages referenced above and all direct or general damages), the entire liability 
+might incur for any reason 
+whatsoever  (including, without limitation, all damages referenced above and all
+direct or general damages), the entire liability 
 of Microsoft and any of its suppliers under any provision of this EULA and your
-exclusive remedy for all of the foregoing shall be limited to the greater of the amount actually paid by you for the SOFTWARE PRODUCT or U.S.$5.00.  The foregoing 
+exclusive remedy for all of the foregoing shall 
+be limited to the greater of the amount actually paid by you for the SOFTWARE
+PRODUCT or U.S.$5.00.  The foregoing 
 limitations, exclusions and disclaimers shall apply to the maximum extent
-permitted by applicable law, even if any remedy fails its essential purpose.
+permitted by applicable law, even if any remedy 
+fails its essential purpose.
 13. NOTE ON JAVA SUPPORT.  THE SOFTWARE PRODUCT MAY CONTAIN SUPPORT FOR PROGRAMS
-WRITTEN IN JAVA. JAVA TECHNOLOGY IS NOT FAULT TOLERANT AND IS NOT DESIGNED, MANUFACTURED, OR INTENDED FOR USE OR RESALE AS ONLINE CONTROL EQUIPMENT IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE PERFORMANCE, SUCH AS IN THE OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS, AIR TRAFFIC CONTROL, DIRECT LIFE SUPPORT MACHINES, OR WEAPONS SYSTEMS, IN WHICH THE FAILURE OF JAVA 
+WRITTEN IN JAVA.  
+JAVA TECHNOLOGY IS NOT FAULT TOLERANT AND IS NOT DESIGNED, MANUFACTURED, OR
+INTENDED FOR USE OR 
+RESALE AS ONLINE CONTROL EQUIPMENT IN HAZARDOUS ENVIRONMENTS REQUIRING FAIL-SAFE
+PERFORMANCE, 
+SUCH AS IN THE OPERATION OF NUCLEAR FACILITIES, AIRCRAFT NAVIGATION OR
+COMMUNICATION SYSTEMS, AIR 
+TRAFFIC CONTROL, DIRECT LIFE SUPPORT MACHINES, OR WEAPONS SYSTEMS, IN WHICH THE
+FAILURE OF JAVA 
 TECHNOLOGY COULD LEAD DIRECTLY TO DEATH, PERSONAL INJURY, OR SEVERE PHYSICAL OR
-ENVIRONMENTAL DAMAGE.  Sun Microsystems, Inc. has contractually obligated Microsoft to make this disclaimer.
+ENVIRONMENTAL 
+DAMAGE.  Sun Microsystems, Inc. has contractually obligated Microsoft to make
+this disclaimer.
 14. U.S. GOVERNMENT LICENSE RIGHTS.  All SOFTWARE PRODUCT provided to the U.S.
-Government pursuant to solicitations issued on or after December 1, 1995 is provided with the commercial license rights and restrictions described elsewhere herein.  
+Government pursuant to solicitations 
+issued on or after December 1, 1995 is provided with the commercial license
+rights and restrictions described elsewhere herein.  
 All SOFTWARE PRODUCT provided to the U.S. Government pursuant to solicitations
-issued prior to December 1, 1995 is provided with "Restricted Rights" as provided for in FAR, 48 CFR 52.227-14 (JUNE 1987) or DFAR, 48 CFR 252.227-7013 (OCT 
+issued prior to December 1, 1995 is 
+provided with "Restricted Rights" as provided for in FAR, 48 CFR 52.227-14 (JUNE
+1987) or DFAR, 48 CFR 252.227-7013 (OCT 
 1988), as applicable. 
 15. APPLICABLE LAW.  If you acquired this SOFTWARE PRODUCT in the United States,
-this EULA is governed by the laws of the State of Washington.  If you acquired this SOFTWARE PRODUCT in Canada, unless expressly prohibited by local law, this EULA 
+this EULA is governed by the laws of the 
+State of Washington.  If you acquired this SOFTWARE PRODUCT in Canada, unless
+expressly prohibited by local law, this EULA 
 is governed by the laws in force in the Province of Ontario, Canada; and, in
-respect of any dispute which may arise hereunder, you consent to the jurisdiction of the federal and provincial courts sitting in Toronto, Ontario.  If this SOFTWARE PRODUCT was 
+respect of any dispute which may arise hereunder, you 
+consent to the jurisdiction of the federal and provincial courts sitting in
+Toronto, Ontario.  If this SOFTWARE PRODUCT was 
 acquired outside the United States, then local law may apply.
 16. ENTIRE AGREEMENT.  This EULA (including any addendum or amendment to this
-EULA which is included with the SOFTWARE PRODUCT) are the entire agreement between you and Microsoft relating to the SOFTWARE PRODUCT and the 
+EULA which is included with the 
+SOFTWARE PRODUCT) are the entire agreement between you and Microsoft relating to
+the SOFTWARE PRODUCT and the 
 support services (if any) and they supersede all prior or contemporaneous oral
-or written communications, proposals and representations with respect to the SOFTWARE PRODUCT or any other subject matter covered by this EULA.  To the extent 
+or written communications, proposals and 
+representations with respect to the SOFTWARE PRODUCT or any other subject matter
+covered by this EULA.  To the extent 
 the terms of any Microsoft policies or programs for support services conflict
-with the terms of this EULA, the terms of this EULA shall control.
+with the terms of this EULA, the terms of this 
+EULA shall control.
 17. The SOFTWARE PRODUCT is protected by copyright and other intellectual
 property laws and treaties.  Microsoft or its suppliers 
 own the title, copyright, and other intellectual property rights in the SOFTWARE
-PRODUCT.  The SOFTWARE PRODUCT is licensed, not sold.
+PRODUCT.  The SOFTWARE PRODUCT is 
+licensed, not sold.
 
 
 Si vous avez acquis votre PRODUIT LOGICIEL Microsoft au CANADA, la garantie
-limit»‚√®e suivante vous concerne :
-D»‚Ç«óNI DE GARANTIE.   DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS APPLICABLES,
+limit??e suivante vous concerne :
+D??NI DE GARANTIE.   DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS APPLICABLES,
 MICROSOFT ET SES 
 FOURNISSEURS VOUS FOURNISSENT LE PRODUIT LOGICIEL ET LES SERVICES DE SOUTIEN
 TECHNIQUE POUR LE 
-PRODUIT LOGICIEL (LES "SERVICES DE SOUTIEN"), LE CAS »‚Ç«óCH»‚Ç«óANT, TEL QUEL ET AVEC
-TOUS LES D»‚Ç«óFAUTS; 
-MICROSOFT ET SES FOURNISSEURS, PAR LES PR»‚Ç«óSENTES, D»‚Ç«óNIENT TOUTES AUTRES
+PRODUIT LOGICIEL (LES "SERVICES DE SOUTIEN"), LE CAS ??CH??ANT, TEL QUEL ET AVEC
+TOUS LES D??FAUTS; 
+MICROSOFT ET SES FOURNISSEURS, PAR LES PR??SENTES, D??NIENT TOUTES AUTRES
 GARANTIES ET CONDITIONS 
 EXPRESSES, IMPLICITES OU EN VERTU DE LA LOI, RELATIVEMENT AU PRODUIT LOGICIEL ET
 AUX SERVICES DE 
-SOUTIEN, NOTAMMENT (LE CAS »‚Ç«óCH»‚Ç«óANT) LES GARANTIES, DEVOIRS OU CONDITIONS DE, OU
-EN MATI»‚›ÂRE DE, 
-QUALIT»‚Ç«ó MARCHANDE, D'ADAPTATION »‚ÇÈº UN USAGE PARTICULIER, D'ABSENCE DE VIRUS,
+SOUTIEN, NOTAMMENT (LE CAS ??CH??ANT) LES GARANTIES, DEVOIRS OU CONDITIONS DE, OU
+EN MATI??RE DE, 
+QUALIT?? MARCHANDE, D'ADAPTATION ?? UN USAGE PARTICULIER, D'ABSENCE DE VIRUS,
 D'EXACTITUDE OU 
-D'EXHAUSTIVIT»‚Ç«ó DES R»‚Ç«óPONSES, DES R»‚Ç«óSULTATS, DES EFFORTS D»‚Ç«óPLOY»‚Ç«óS SELON LES
-R»‚›ÂGLES DE L'ART ET 
-D'ABSENCE DE N»‚Ç«óGLIGENCE.  PAR AILLEURS, IL N'Y A AUCUNE GARANTIE, DEVOIR OU
+D'EXHAUSTIVIT?? DES R??PONSES, DES R??SULTATS, DES EFFORTS D??PLOY??S SELON LES
+R??GLES DE L'ART ET 
+D'ABSENCE DE N??GLIGENCE.  PAR AILLEURS, IL N'Y A AUCUNE GARANTIE, DEVOIR OU
 CONDITION QUANT AU 
-TITRE DE PROPRI»‚Ç«óT»‚Ç«ó, »‚ÇÈº LA JOUISSANCE OU »‚ÇÈº LA POSSESSION PAISIBLE, »‚ÇÈº LA
-CONCORDANCE »‚ÇÈº UNE DESCRIPTION 
-NI QUANT »‚ÇÈº UNE ABSENCE DE CONTREFA»‚Ç«ÌON CONCERNANT LE PRODUIT LOGICIEL OU LES
+TITRE DE PROPRI??T??, ?? LA JOUISSANCE OU ?? LA POSSESSION PAISIBLE, ?? LA
+CONCORDANCE ?? UNE DESCRIPTION 
+NI QUANT ?? UNE ABSENCE DE CONTREFA??ON CONCERNANT LE PRODUIT LOGICIEL OU LES
 SERVICES DE 
-SOUTIEN.  VOUS ACCEPTEZ TOUS LES RISQUES RELATIVEMENT »‚ÇÈº L'UTILISATION DU PRODUIT
+SOUTIEN.  VOUS ACCEPTEZ TOUS LES RISQUES RELATIVEMENT ?? L'UTILISATION DU PRODUIT
 LOGICIEL ET DES 
-SERVICES DE SOUTIEN DE M»‚ ·ME QUE RELATIVEMENT »‚ÇÈº LA PERFORMANCE DU PRODUIT
-LOGICIEL ET »‚ÇÈº LA 
+SERVICES DE SOUTIEN DE M??ME QUE RELATIVEMENT ?? LA PERFORMANCE DU PRODUIT
+LOGICIEL ET ?? LA 
 PRESTATION DES SERVICES DE SOUTIEN.
 EXCLUSION DES DOMMAGES ACCESSOIRES, INDIRECTS ET DE CERTAINS AUTRES DOMMAGES. 
 DANS LA MESURE 
 MAXIMALE PERMISE PAR LES LOIS APPLICABLES, EN AUCUN CAS MICROSOFT OU SES
 FOURNISSEURS NE SERONT 
-RESPONSABLES DES DOMMAGES SP»‚Ç«óCIAUX, ACCESSOIRES, INDIRECTS OU CONS»‚Ç«óCUTIFS DE
+RESPONSABLES DES DOMMAGES SP??CIAUX, ACCESSOIRES, INDIRECTS OU CONS??CUTIFS DE
 QUELQUE NATURE 
-QUE CE SOIT (NOTAMMENT, LES DOMMAGES »‚ÇÈº L'»‚Ç«óGARD DE LA PERTE DE PROFITS OU »‚ÇÈº LA
+QUE CE SOIT (NOTAMMENT, LES DOMMAGES ?? L'??GARD DE LA PERTE DE PROFITS OU ?? LA
 PERTE DE 
 RENSEIGNEMENTS CONFIDENTIELS OU AUTRES, DE L'INTERRUPTION DES AFFAIRES, DE
 BLESSURES CORPORELLES, 
-DE LA VIOLATION DE LA VIE PRIV»‚Ç«óE, DE L'OMISSION DE REMPLIR TOUT DEVOIR, Y
+DE LA VIOLATION DE LA VIE PRIV??E, DE L'OMISSION DE REMPLIR TOUT DEVOIR, Y
 COMPRIS D'AGIR DE BONNE 
-FOI OU D'EXERCER UN SOIN RAISONNABLE, DE LA N»‚Ç«óGLIGENCE ET DE TOUTE AUTRE PERTE
-P»‚Ç«óCUNIAIRE OU 
-AUTRE PERTE DE QUELQUE NATURE QUE CE SOIT) SE RAPPORTANT DE QUELQUE MANI»‚›ÂRE QUE
-CE SOIT »‚ÇÈº 
-L'UTILISATION DU PRODUIT LOGICIEL OU »‚ÇÈº L'INCAPACIT»‚Ç«ó DE S'EN SERVIR, »‚ÇÈº LA
-PRESTATION OU »‚ÇÈº L'OMISSION 
+FOI OU D'EXERCER UN SOIN RAISONNABLE, DE LA N??GLIGENCE ET DE TOUTE AUTRE PERTE
+P??CUNIAIRE OU 
+AUTRE PERTE DE QUELQUE NATURE QUE CE SOIT) SE RAPPORTANT DE QUELQUE MANI??RE QUE
+CE SOIT ?? 
+L'UTILISATION DU PRODUIT LOGICIEL OU ?? L'INCAPACIT?? DE S'EN SERVIR, ?? LA
+PRESTATION OU ?? L'OMISSION 
 D'UNE PRESTATION DES SERVICES DE SOUTIEN OU AUTREMENT AUX TERMES DE TOUTE
 DISPOSITION DE CE CLUF, 
-OU RELATIVEMENT »‚ÇÈº UNE TELLE DISPOSITION, M»‚ ·ME EN CAS DE FAUTE, DE D»‚Ç«óLIT CIVIL (Y
+OU RELATIVEMENT ?? UNE TELLE DISPOSITION, M??ME EN CAS DE FAUTE, DE D??LIT CIVIL (Y
 COMPRIS LA 
-N»‚Ç«óGLIGENCE, DE RESPONSABILIT»‚Ç«ó STRICTE, DE VIOLATION DE CONTRAT OU DE VIOLATION
+N??GLIGENCE, DE RESPONSABILIT?? STRICTE, DE VIOLATION DE CONTRAT OU DE VIOLATION
 DE GARANTIE DE 
-MICROSOFT OU DE TOUT FOURNISSEUR, ET CE M»‚ ·ME SI MICROSOFT OU TOUT FOURNISSEUR A
-»‚Ç«óT»‚Ç«ó AVIS»‚Ç«ó DE LA 
-POSSIBILIT»‚Ç«ó DE TELS DOMMAGES.
+MICROSOFT OU DE TOUT FOURNISSEUR, ET CE M??ME SI MICROSOFT OU TOUT FOURNISSEUR A
+??T?? AVIS?? DE LA 
+POSSIBILIT?? DE TELS DOMMAGES.
 
-LIMITATION DE RESPONSABILIT»‚Ç«ó ET RECOURS.  MALGR»‚Ç«ó LES DOMMAGES QUE VOUS PUISSIEZ
+LIMITATION DE RESPONSABILIT?? ET RECOURS.  MALGR?? LES DOMMAGES QUE VOUS PUISSIEZ
 SUBIR POUR 
-QUELQUE MOTIF QUE CE SOIT (NOTAMMENT, TOUS LES DOMMAGES SUS-MENTIONN»‚Ç«óS ET TOUS
+QUELQUE MOTIF QUE CE SOIT (NOTAMMENT, TOUS LES DOMMAGES SUS-MENTIONN??S ET TOUS
 LES DOMMAGES 
-DIRECTS OU G»‚Ç«óN»‚Ç«óRAUX), L'OBLIGATION INT»‚Ç«óGRALE DE MICROSOFT ET DE L'UN OU L'AUTRE
+DIRECTS OU G??N??RAUX), L'OBLIGATION INT??GRALE DE MICROSOFT ET DE L'UN OU L'AUTRE
 DE SES 
 FOURNISSEURS AUX TERMES DE TOUTE DISPOSITION DE CE CLUF ET VOTRE RECOURS
-EXCLUSIF »‚ÇÈº L'»‚Ç«óGARD DE 
-TOUT DE QUI PR»‚Ç«óC»‚›ÂDE SE LIMITENT AUX DOMMAGES R»‚Ç«óELS QUE VOUS AVEZ SUBIS EN VOUS
+EXCLUSIF ?? L'??GARD DE 
+TOUT DE QUI PR??C??DE SE LIMITENT AUX DOMMAGES R??ELS QUE VOUS AVEZ SUBIS EN VOUS
 FONDANT SUR UNE 
-EXPECTATIVE RAISONNABLE, JUSQU'AU PLUS »‚Ç«óLEV»‚Ç«ó ENTRE LES MONTANTS SUIVANTS :  LE
+EXPECTATIVE RAISONNABLE, JUSQU'AU PLUS ??LEV?? ENTRE LES MONTANTS SUIVANTS :  LE
 MONTANT QUE VOUS 
-AVEZ R»‚Ç«óELLEMENT PAY»‚Ç«ó POUR LE PRODUIT LOGICIEL OU $5.00 U.S.  LES LIMITES,
-EXCLUSIONS ET D»‚Ç«óNIS QUI 
-PR»‚Ç«óC»‚›ÂDENT S'APPLIQUENT DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS APPLICABLES
-M»‚ ·ME SI TOUT 
+AVEZ R??ELLEMENT PAY?? POUR LE PRODUIT LOGICIEL OU $5.00 U.S.  LES LIMITES,
+EXCLUSIONS ET D??NIS QUI 
+PR??C??DENT S'APPLIQUENT DANS LA MESURE MAXIMALE PERMISE PAR LES LOIS APPLICABLES
+M??ME SI TOUT 
 RECOURS N'ATTEINT PAS SON BUT ESSENTIEL.
-La pr»‚√®sente Convention est r»‚√®gie par les lois de la province d'Ontario, Canada.
- Chacune des parties »‚  la pr»‚√®sente reconna»‚√´t 
-irr»‚√®vocablement la comp»‚√®tence des tribunaux de la province d'Ontario et consent
-»‚  instituer tout litige qui pourrait d»‚√®couler de la 
-pr»‚√®sente aupr»‚√øs des tribunaux situ»‚√®s dans le district judiciaire de York,
+La pr??sente Convention est r??gie par les lois de la province d'Ontario, Canada.
+ Chacune des parties ?? la pr??sente reconna??t 
+irr??vocablement la comp??tence des tribunaux de la province d'Ontario et consent
+?? instituer tout litige qui pourrait d??couler de la 
+pr??sente aupr??s des tribunaux situ??s dans le district judiciaire de York,
 province d'Ontario.
-Au cas o»‚√† vous auriez des questions concernant cette licence ou que vous
-d»‚√®siriez vous mettre en rapport avec Microsoft pour 
+Au cas o?? vous auriez des questions concernant cette licence ou que vous
+d??siriez vous mettre en rapport avec Microsoft pour 
 quelque raison que ce soit, veuillez contacter la succursale Microsoft
 desservant votre pays, dont l'adresse est fournie dans ce 
-produit, ou »‚√®crivez »‚  : Microsoft Sales Information Center, One Microsoft Way,
+produit, ou ??crivez ?? : Microsoft Sales Information Center, One Microsoft Way,
 Redmond, Washington 98052-6399.
 
 %% The following software may be included in this product: Apache Ant
@@ -3658,27 +3890,751 @@ Redmond, Washington 98052-6399.
  * [including the GNU Public Licence.]
  */
 
-*********************************
 
-%% The following software may be included in this product: backport-util-concurrent
+                 ooooo     ooo ooooooooo.   ooooooo  ooooo
+                 `888'     `8' `888   `Y88.  `8888    d8'
+                  888       8   888   .d88'    Y888..8P
+                  888       8   888ooo88P'      `8888'
+                  888       8   888            .8PY888.
+                  `88.    .8'   888           d8'  `888b
+                    `YbodP'    o888o        o888o  o88888o
+
+
+                    The Ultimate Packer for eXecutables
+          Copyright (c) 1996-2000 Markus Oberhumer & Laszlo Molnar
+               http://wildsau.idv.uni-linz.ac.at/mfx/upx.html
+                          http://www.nexus.hu/upx
+                            http://upx.tsx.org
+
+
+PLEASE CAREFULLY READ THIS LICENSE AGREEMENT, ESPECIALLY IF YOU PLAN
+TO MODIFY THE UPX SOURCE CODE OR USE A MODIFIED UPX VERSION.
+
+
+ABSTRACT
+========
+
+   UPX and UCL are copyrighted software distributed under the terms
+   of the GNU General Public License (hereinafter the "GPL").
+
+   The stub which is imbedded in each UPX compressed program is part
+   of UPX and UCL, and contains code that is under our copyright. The
+   terms of the GNU General Public License still apply as compressing
+   a program is a special form of linking with our stub.
+
+   As a special exception we grant the free usage of UPX for all
+   executables, including commercial programs.
+   See below for details and restrictions.
+
+
+COPYRIGHT
+=========
+
+   UPX and UCL are copyrighted software. All rights remain with the authors.
+
+   UPX is Copyright (C) 1996-2000 Markus Franz Xaver Johannes Oberhumer
+   UPX is Copyright (C) 1996-2000 Laszlo Molnar
+
+   UCL is Copyright (C) 1996-2000 Markus Franz Xaver Johannes Oberhumer
+
+
+GNU GENERAL PUBLIC LICENSE
+==========================
+
+   UPX and the UCL library are free software; you can redistribute them
+   and/or modify them under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2 of
+   the License, or (at your option) any later version.
+
+   UPX and UCL are distributed in the hope that they will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; see the file COPYING.
+
+
+SPECIAL EXCEPTION FOR COMPRESSED EXECUTABLES
+============================================
+
+   The stub which is imbedded in each UPX compressed program is part
+   of UPX and UCL, and contains code that is under our copyright. The
+   terms of the GNU General Public License still apply as compressing
+   a program is a special form of linking with our stub.
+
+   Hereby Markus F.X.J. Oberhumer and Laszlo Molnar grant you special
+   permission to freely use and distribute all UPX compressed programs
+   (including commercial ones), subject to the following restrictions:
+
+   1. You must compress your program with a completely unmodified UPX
+      version; either with our precompiled version, or (at your option)
+      with a self compiled version of the unmodified UPX sources as
+      distributed by us.
+   2. This also implies that the UPX stub must be completely unmodfied, i.e.
+      the stub imbedded in your compressed program must be byte-identical
+      to the stub that is produced by the official unmodified UPX version.
+   3. The decompressor and any other code from the stub must exclusively get
+      used by the unmodified UPX stub for decompressing your program at
+      program startup. No portion of the stub may get read, copied,
+      called or otherwise get used or accessed by your program.
+
+
+ANNOTATIONS
+===========
+
+  - You can use a modified UPX version or modified UPX stub only for
+    programs that are compatible with the GNU General Public License.
+
+  - We grant you special permission to freely use and distribute all UPX
+    compressed programs. But any modification of the UPX stub (such as,
+    but not limited to, removing our copyright string or making your
+    program non-decompressible) will immediately revoke your right to
+    use and distribute a UPX compressed program.
+
+  - UPX is not a software protection tool; by requiring that you use
+    the unmodified UPX version for your proprietary programs we
+    make sure that any user can decompress your program. This protects
+    both you and your users as nobody can hide malicious code -
+    any program that cannot be decompressed is highly suspicious
+    by definition.
+
+  - You can integrate all or part of UPX and UCL into projects that
+    are compatible with the GNU GPL, but obviously you cannot grant
+    any special exceptions beyond the GPL for our code in your project.
+
+  - We want to actively support manufacturers of virus scanners and
+    similar security software. Please contact us if you would like to
+    incorporate parts of UPX or UCL into such a product.
+
+
+
+Markus F.X.J. Oberhumer                   Laszlo Molnar
+markus.oberhumer@jk.uni-linz.ac.at        ml1050@cdata.tvnet.hu
+
+Linz, Austria, 25 Feb 2000
+
+%% The following software may be included in this product: CherryPy
+
+Copyright (c) 2002-2008, CherryPy Team (team@cherrypy.org)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+      this list of conditions and the following disclaimer in the documentation 
+      and/or other materials provided with the distribution.
+    * Neither the name of the CherryPy Team nor the names of its contributors 
+      may be used to endorse or promote products derived from this software 
+      without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Admin Console
+
+
+%% The following software may be included in this product: Commons FileUpload
+ Use of any of this software is governed by the terms of the license below
+
+				Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+*jMaki
+
+%% The following software may be included in this product: Dojo
  Use of any of this software is governed by the terms of the license below:
- 
 
-Copyright-Only Dedication (based on United States law) or Public Domain Certification
+		Academic Free License
+		v. 2.1
 
-The person or persons who have associated work with this document (the "Dedicator" or "Certifier") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the "Work") to the public domain. A certifier, morever, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a "dedicator" below.
+(plain text version)
 
-A certifier has taken reasonable steps to verify the copyright status of this work. Certifier recognizes that his good faith efforts may not shield him from liability if in fact the work certified is not in the public domain.
+This Academic Free License (the "License") applies to any original work of
+authorship (the "Original Work") whose owner (the "Licensor") has placed the
+following notice immediately following the copyright notice for the Original Work:
 
-Dedicator makes this dedication for the benefit of the public at large and to the detriment of the Dedicator's heirs and successors. Dedicator intends this dedication to be an overt act of relinquishment in perpetuity of all present and future rights under copyright law, whether vested or contingent, in the Work. Dedicator understands that such relinquishment of all rights includes the relinquishment of all rights to enforce (by lawsuit or otherwise) those copyrights in the Work.
+    Licensed under the Academic Free License version 2.1 
 
-Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.
+1) Grant of Copyright License. Licensor hereby grants You a world-wide,
+royalty-free, non-exclusive, perpetual, sublicenseable license to do the following:
+
+    * to reproduce the Original Work in copies;
+    * to prepare derivative works ("Derivative Works") based upon the Original Work;
+    * to distribute copies of the Original Work and Derivative Works to the public;
+    * to perform the Original Work publicly; and
+    * to display the Original Work publicly. 
+
+2) Grant of Patent License. Licensor hereby grants You a world-wide,
+royalty-free, non-exclusive, perpetual, sublicenseable license, under patent
+claims owned or controlled by the Licensor that are embodied in the Original
+Work as furnished by the Licensor, to make, use, sell and offer for sale the
+Original Work and Derivative Works.
+
+3) Grant of Source Code License. The term "Source Code" means the preferred form
+of the Original Work for making modifications to it and all available
+documentation describing how to modify the Original Work. Licensor hereby agrees
+to provide a machine-readable copy of the Source Code of the Original Work along
+with each copy of the Original Work that Licensor distributes. Licensor reserves
+the right to satisfy this obligation by placing a machine-readable copy of the
+Source Code in an information repository reasonably calculated to permit
+inexpensive and convenient access by You for as long as Licensor continues to
+distribute the Original Work, and by publishing the address of that information
+repository in a notice immediately following the copyright notice that applies
+to the Original Work.
+
+4) Exclusions From License Grant. Neither the names of Licensor, nor the names
+of any contributors to the Original Work, nor any of their trademarks or service
+marks, may be used to endorse or promote products derived from this Original
+Work without express prior written permission of the Licensor. Nothing in this
+License shall be deemed to grant any rights to trademarks, copyrights, patents,
+trade secrets or any other intellectual property of Licensor except as expressly
+stated herein. No patent license is granted to make, use, sell or offer to sell
+embodiments of any patent claims other than the licensed claims defined in
+Section 2. No right is granted to the trademarks of Licensor even if such marks
+are included in the Original Work. Nothing in this License shall be interpreted
+to prohibit Licensor from licensing under different terms from this License any
+Original Work that Licensor otherwise would have a right to license.
+
+5) This section intentionally omitted.
+
+6) Attribution Rights. You must retain, in the Source Code of any Derivative
+Works that You create, all copyright, patent or trademark notices from the
+Source Code of the Original Work, as well as any notices of licensing and any
+descriptive text identified therein as an "Attribution Notice." You must cause
+the Source Code for any Derivative Works that You create to carry a prominent
+Attribution Notice reasonably calculated to inform recipients that You have
+modified the Original Work.
+
+7) Warranty of Provenance and Disclaimer of Warranty. Licensor warrants that the
+copyright in and to the Original Work and the patent rights granted herein by
+Licensor are owned by the Licensor or are sublicensed to You under the terms of
+this License with the permission of the contributor(s) of those copyrights and
+patent rights. Except as expressly stated in the immediately proceeding
+sentence, the Original Work is provided under this License on an "AS IS" BASIS
+and WITHOUT WARRANTY, either express or implied, including, without limitation,
+the warranties of NON-INFRINGEMENT, MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. THE ENTIRE RISK AS TO THE QUALITY OF THE ORIGINAL WORK IS WITH YOU.
+This DISCLAIMER OF WARRANTY constitutes an essential part of this License. No
+license to Original Work is granted hereunder except under this disclaimer.
+
+8) Limitation of Liability. Under no circumstances and under no legal theory,
+whether in tort (including negligence), contract, or otherwise, shall the
+Licensor be liable to any person for any direct, indirect, special, incidental,
+or consequential damages of any character arising as a result of this License or
+the use of the Original Work including, without limitation, damages for loss of
+goodwill, work stoppage, computer failure or malfunction, or any and all other
+commercial damages or losses. This limitation of liability shall not apply to
+liability for death or personal injury resulting from Licensor's negligence to
+the extent applicable law prohibits such limitation. Some jurisdictions do not
+allow the exclusion or limitation of incidental or consequential damages, so
+this exclusion and limitation may not apply to You.
+
+9) Acceptance and Termination. If You distribute copies of the Original Work or
+a Derivative Work, You must make a reasonable effort under the circumstances to
+obtain the express assent of recipients to the terms of this License. Nothing
+else but this License (or another written agreement between Licensor and You)
+grants You permission to create Derivative Works based upon the Original Work or
+to exercise any of the rights granted in Section 1 herein, and any attempt to do
+so except under the terms of this License (or another written agreement between
+Licensor and You) is expressly prohibited by U.S. copyright law, the equivalent
+laws of other countries, and by international treaty. Therefore, by exercising
+any of the rights granted to You in Section 1 herein, You indicate Your
+acceptance of this License and all of its terms and conditions.
+
+10) Termination for Patent Action. This License shall terminate automatically
+and You may no longer exercise any of the rights granted to You by this License
+as of the date You commence an action, including a cross-claim or counterclaim,
+against Licensor or any licensee alleging that the Original Work infringes a
+patent. This termination provision shall not apply for an action alleging patent
+infringement by combinations of the Original Work with other software or hardware.
+
+11) Jurisdiction, Venue and Governing Law. Any action or suit relating to this
+License may be brought only in the courts of a jurisdiction wherein the Licensor
+resides or in which Licensor conducts its primary business, and under the laws
+of that jurisdiction excluding its conflict-of-law provisions. The application
+of the United Nations Convention on Contracts for the International Sale of
+Goods is expressly excluded. Any use of the Original Work outside the scope of
+this License or after its termination shall be subject to the requirements and
+penalties of the U.S. Copyright Act, 17 U.S.C. √É‚Äö√Ç¬ß 101 et seq., the equivalent
+laws of other countries, and international treaty. This section shall survive
+the termination of this License.
+
+12) Attorneys Fees. In any action to enforce the terms of this License or
+seeking damages relating thereto, the prevailing party shall be entitled to
+recover its costs and expenses, including, without limitation, reasonable
+attorneys' fees and costs incurred in connection with such action, including any
+appeal of such action. This section shall survive the termination of this License.
+
+13) Miscellaneous. This License represents the complete agreement concerning the
+subject matter hereof. If any provision of this License is held to be
+unenforceable, such provision shall be reformed only to the extent necessary to
+make it enforceable.
+
+14) Definition of "You" in This License. "You" throughout this License, whether
+in upper or lower case, means an individual or a legal entity exercising rights
+under, and complying with all of the terms of, this License. For legal entities,
+"You" includes any entity that controls, is controlled by, or is under common
+control with you. For purposes of this definition, "control" means (i) the
+power, direct or indirect, to cause the direction or management of such entity,
+whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or
+more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+15) Right to Use. You may use the Original Work in all ways not otherwise
+restricted or conditioned by this License or by law, and Licensor promises not
+to interfere with or be responsible for such uses by You.
+
+This license is Copyright (C) 2003-2004 Lawrence E. Rosen. All rights reserved.
+Permission is hereby granted to copy and distribute this license without
+modification. This license may not be modified without the express written
+permission of its copyright owner.
 
 
-%% The following software may be included in this product: jRuby
+Previous Approved Versions: AFL 2.0, AFL 1.2, AFL 1.1
+Plain Text Version
+
+Copyright √Ç¬© 2005 by the Open Source Initiative
+Technical questions about the website go to Steve M.: webmaster at
+opensource.org / Policy questions about open source go to the Board of Directors.
+
+The contents of this website are licensed under the Open Software License 2.1 or
+Academic Free License 2.1
+
+OSI is a registered non-profit with 501(c)(3) status. Donating to OSI is one way
+to show your support.
+
+
+%% The following software may be included in this product:  Scriptaculous
  Use of any of this software is governed by the terms of the license below:
 
-GNU LESSER GENERAL PUBLIC LICENSE
+Copyright (c) 2005 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+%% The following software may be included in this product:  Spry
+ Use of any of this software is governed by the terms of the license below:
+
+BSD License
+The BSD License (http://www.opensource.org/licenses/bsd-license.php) specifies
+the terms and conditions of use for Spry:
+
+Copyright (c) 2006. Adobe Systems Incorporated.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+    * Neither the name of Adobe Systems Incorporated nor the names of its
+contributors may be used to endorse or promote products derived from this
+software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+%% The following software may be included in this product:  Yahoo Widgets
+ Use of any of this software is governed by the terms of the license below:
+
+Software License Agreement (BSD License)
+
+Copyright (c) 2006, Yahoo! Inc.
+All rights reserved.
+
+Redistribution and use of this software in source and binary forms, with or
+without modification, are
+permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above
+  copyright notice, this list of conditions and the
+  following disclaimer.
+
+* Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the
+  following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+
+* Neither the name of Yahoo! Inc. nor the names of its
+  contributors may be used to endorse or promote products
+  derived from this software without specific prior
+  written permission of Yahoo! Inc.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+%% The following software may be included in this product:  json.org
+ Use of any of this software is governed by the terms of the license below:
+
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+%% The following software may be included in this product:  json.php
+ Use of any of this software is governed by the terms of the license below:
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+    * Neither the name of the  nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+%% The following software may be included in this product:  MochiKit
+ Use of any of this software is governed by the terms of the license below:
+
+MIT License
+===========
+
+Copyright (c) 2005 Bob Ippolito.  All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+%% The following software may be included in this product:  reflection.js
+ Use of any of this software is governed by the terms of the license below:
+
+
+The MIT License
+
+Copyright (c)  
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+%% The following software may be included in this product:  jQuery
+ Use of any of this software is governed by the terms of the license below:
+
+Copyright (c) 2007 John Resig, http://jquery.com/
+2	
+3	Permission is hereby granted, free of charge, to any person obtaining
+4	a copy of this software and associated documentation files (the
+5	"Software"), to deal in the Software without restriction, including
+6	without limitation the rights to use, copy, modify, merge, publish,
+7	distribute, sublicense, and/or sell copies of the Software, and to
+8	permit persons to whom the Software is furnished to do so, subject to
+9	the following conditions:
+10	
+11	The above copyright notice and this permission notice shall be
+12	included in all copies or substantial portions of the Software.
+13	
+14	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+15	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+16	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+17	NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+18	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+19	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+20	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+%% The following software may be included in this product:  extjs
+ Use of any of this software is governed by the terms of the license below:
 
 Version 2.1, February 1999
 
@@ -3845,9 +4801,9 @@ of its purpose remains meaningful.
 purpose that is entirely well-defined independent of the application. Therefore,
 Subsection 2d requires that any application-supplied function or table used by
 this function must be optional: if the application does not supply it, the
-square root function must still compute square roots.) 
+square root function must still compute square roots.)
 
-These requirements apply to the modified work as a whole. If identifiable
+      These requirements apply to the modified work as a whole. If identifiable
 sections of that work are not derived from the Library, and can be reasonably
 considered independent and separate works in themselves, then this License, and
 its terms, do not apply to those sections when you distribute them as separate
@@ -3856,14 +4812,15 @@ work based on the Library, the distribution of the whole must be on the terms of
 this License, whose permissions for other licensees extend to the entire whole,
 and thus to each and every part regardless of who wrote it.
 
-Thus, it is not the intent of this section to claim rights or contest your
+      Thus, it is not the intent of this section to claim rights or contest your
 rights to work written entirely by you; rather, the intent is to exercise the
 right to control the distribution of derivative or collective works based on the
 Library.
 
-In addition, mere aggregation of another work not based on the Library with the
-Library (or with a work based on the Library) on a volume of a storage or
-distribution medium does not bring the other work under the scope of this License.
+      In addition, mere aggregation of another work not based on the Library
+with the Library (or with a work based on the Library) on a volume of a storage
+or distribution medium does not bring the other work under the scope of this
+License. 
 
 3. You may opt to apply the terms of the ordinary GNU General Public License
 instead of this License to a given copy of the Library. To do this, you must
@@ -4128,3 +5085,752 @@ signature of Ty Coon, 1 April 1990
 Ty Coon, President of Vice
 
 That's all there is to it!
+Return to GNU's home page.
+
+FSF & GNU inquiries & questions to gnu@gnu.org. Other ways to contact the FSF.
+
+Comments on these web pages to webmasters@www.gnu.org, send other questions to
+gnu@gnu.org.
+
+Copyright notice above.
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110, USA
+
+Updated: $Date: 2005/05/05 19:37:12 $ $Author: novalis $
+
+
+%% The following software may be included in this product:  ui.jquery
+ Use of any of this software is governed by the terms of the license below:
+
+Copyright (c) 2007 John Resig, http://jquery.com/
+2	
+3	Permission is hereby granted, free of charge, to any person obtaining
+4	a copy of this software and associated documentation files (the
+5	"Software"), to deal in the Software without restriction, including
+6	without limitation the rights to use, copy, modify, merge, publish,
+7	distribute, sublicense, and/or sell copies of the Software, and to
+8	permit persons to whom the Software is furnished to do so, subject to
+9	the following conditions:
+10	
+11	The above copyright notice and this permission notice shall be
+12	included in all copies or substantial portions of the Software.
+13	
+14	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+15	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+16	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+17	NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+18	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+19	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+20	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+%% The following software may be included in this product: jsfcompounds
+ Use of any of this software is governed by the terms of the license below
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+$$ Project Woodstock
+
+
+%% The following software may be included in this product: Velocity
+ Use of any of this software is governed by the terms of the license below:
+ 
+ 				Apache License
+   			Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+
+%% The following software may be included in this product: JSON
+
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+
+  
+%% The following software may be included in this product: Dojo
+
+# Larry Rosen has ceased to use or recommend any version
+# of the Academic Free License below version 2.1
+
+The Academic Free License
+v. 2.1
+
+This Academic Free License (the "License") applies to any original work of
+authorship (the "Original Work") whose owner (the "Licensor") has placed
+the following notice immediately following the copyright notice for the
+Original Work:
+
+Licensed under the Academic Free License version 2.1
+
+1) Grant of Copyright License. Licensor hereby grants You a world-wide,
+royalty-free, non-exclusive, perpetual, sublicenseable license to do
+the following:
+
+a) to reproduce the Original Work in copies;
+
+b) to prepare derivative works ("Derivative Works") based upon the Original Work;
+
+c) to distribute copies of the Original Work and Derivative Works to the public;
+
+d) to perform the Original Work publicly; and
+
+e) to display the Original Work publicly.
+
+2) Grant of Patent License. Licensor hereby grants You a world-wide, royalty-free,
+non-exclusive, perpetual, sublicenseable license, under patent claims owned or
+controlled by the Licensor that are embodied in the Original Work as furnished
+by the Licensor, to make, use, sell and offer for sale the Original Work and
+Derivative Works.
+
+3) Grant of Source Code License. The term "Source Code" means the preferred
+form of the Original Work for making modifications to it and all available
+documentation describing how to modify the Original Work. Licensor hereby
+agrees to provide a machine-readable copy of the Source Code of the Original
+Work along with each copy of the Original Work that Licensor distributes.
+Licensor reserves the right to satisfy this obligation by placing a
+machine-readable copy of the Source Code in an information repository
+reasonably calculated to permit inexpensive and convenient access by You
+for as long as Licensor continues to distribute the Original Work, and by
+publishing the address of that information repository in a notice immediately
+following the copyright notice that applies to the Original Work.
+
+4) Exclusions From License Grant. Neither the names of Licensor, nor the
+names of any contributors to the Original Work, nor any of their trademarks
+or service marks, may be used to endorse or promote products derived from
+this Original Work without express prior written permission of the Licensor.
+Nothing in this License shall be deemed to grant any rights to trademarks,
+copyrights, patents, trade secrets or any other intellectual property of
+Licensor except as expressly stated herein. No patent license is granted
+to make, use, sell or offer to sell embodiments of any patent claims other
+than the licensed claims defined in Section 2. No right is granted to the
+trademarks of Licensor even if such marks are included in the Original Work.
+Nothing in this License shall be interpreted to prohibit Licensor from
+licensing under different terms from this License any Original Work that
+Licensor otherwise would have a right to license.
+
+5) This section intentionally omitted.
+
+6) Attribution Rights. You must retain, in the Source Code of any Derivative
+Works that You create, all copyright, patent or trademark notices from the
+Source Code of the Original Work, as well as any notices of licensing and
+any descriptive text identified therein as an "Attribution Notice." You must
+cause the Source Code for any Derivative Works that You create to carry a
+prominent Attribution Notice reasonably calculated to inform recipients
+that You have modified the Original Work.
+
+7) Warranty of Provenance and Disclaimer of Warranty. Licensor warrants that
+the copyright in and to the Original Work and the patent rights granted herein
+by Licensor are owned by the Licensor or are sublicensed to You under the
+terms of this License with the permission of the contributor(s) of those
+copyrights and patent rights. Except as expressly stated in the immediately
+proceeding sentence, the Original Work is provided under this License on an
+"AS IS" BASIS and WITHOUT WARRANTY, either express or implied, including,
+without limitation, the warranties of NON-INFRINGEMENT, MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY OF THE
+ORIGINAL WORK IS WITH YOU. This DISCLAIMER OF WARRANTY constitutes an
+essential part of this License. No license to Original Work is granted
+hereunder except under this disclaimer.
+
+8) Limitation of Liability. Under no circumstances and under no legal theory,
+whether in tort (including negligence), contract, or otherwise, shall the
+Licensor be liable to any person for any direct, indirect, special, incidental,
+or consequential damages of any character arising as a result of this License
+or the use of the Original Work including, without limitation, damages for
+loss of goodwill, work stoppage, computer failure or malfunction, or any
+and all other commercial damages or losses. This limitation of liability
+shall not apply to liability for death or personal injury resulting from
+Licensor's negligence to the extent applicable law prohibits such limitation.
+Some jurisdictions do not allow the exclusion or limitation of incidental or
+consequential damages, so this exclusion and limitation may not apply to You.
+
+9) Acceptance and Termination. If You distribute copies of the Original Work
+or a Derivative Work, You must make a reasonable effort under the circumstances
+to obtain the express assent of recipients to the terms of this License.
+Nothing else but this License (or another written agreement between Licensor
+and You) grants You permission to create Derivative Works based upon the
+Original Work or to exercise any of the rights granted in Section 1 herein,
+and any attempt to do so except under the terms of this License (or another
+written agreement between Licensor and You) is expressly prohibited by U.S.
+copyright law, the equivalent laws of other countries, and by international
+treaty. Therefore, by exercising any of the rights granted to You in
+Section 1 herein, You indicate Your acceptance of this License and all
+of its terms and conditions.
+
+10) Termination for Patent Action. This License shall terminate automatically
+and You may no longer exercise any of the rights granted to You by this
+License as of the date You commence an action, including a cross-claim
+or counterclaim, against Licensor or any licensee alleging that the
+Original Work infringes a patent. This termination provision shall not
+apply for an action alleging patent infringement by combinations of the
+Original Work with other software or hardware.
+
+11) Jurisdiction, Venue and Governing Law. Any action or suit relating to
+this License may be brought only in the courts of a jurisdiction wherein
+the Licensor resides or in which Licensor conducts its primary business,
+and under the laws of that jurisdiction excluding its conflict-of-law
+provisions. The application of the United Nations Convention on Contracts
+for the International Sale of Goods is expressly excluded. Any use of the
+Original Work outside the scope of this License or after its termination
+shall be subject to the requirements and penalties of the U.S. Copyright
+Act, 17 U.S.C. √É‚Äö√Ç¬ß 101 et seq., the equivalent laws of other countries,
+and international treaty. This section shall survive the termination of
+this License.
+
+12) Attorneys Fees. In any action to enforce the terms of this License
+or seeking damages relating thereto, the prevailing party shall be entitled
+to recover its costs and expenses, including, without limitation, reasonable
+attorneys' fees and costs incurred in connection with such action, including
+any appeal of such action. This section shall survive the termination of
+this License.
+
+13) Miscellaneous. This License represents the complete agreement concerning
+the subject matter hereof. If any provision of this License is held to be
+unenforceable, such provision shall be reformed only to the extent necessary
+to make it enforceable.
+
+14) Definition of "You" in This License. "You" throughout this License,
+whether in upper or lower case, means an individual or a legal entity
+exercising rights under, and complying with all of the terms of, this License. 
+
+For legal entities, "You" includes any entity that controls, is controlled
+by, or is under common control with you. For purposes of this definition,
+"control" means (i) the power, direct or indirect, to cause the direction
+or management of such entity, whether by contract or otherwise, or
+(ii) ownership of fifty percent (50%) or more of the outstanding shares,
+or (iii) beneficial ownership of such entity.
+
+15) Right to Use. You may use the Original Work in all ways not otherwise
+restricted or conditioned by this License or by law, and Licensor promises
+not to interfere with or be responsible for such uses by You.
+
+This license is Copyright (C) 2003-2004 Lawrence E. Rosen. All rights reserved.
+Permission is hereby granted to copy and distribute this license without
+modification. This license may not be modified without the express written
+permission of its copyright owner.
+
+
+%% The following software may be included in this product: Prototype
+
+1 	Copyright (c) 2005 Sam Stephenson
+2 	
+3 	Permission is hereby granted, free of charge, to any person obtaining a copy
+4 	of this software and associated documentation files (the "Software"), to deal
+5 	in the Software without restriction, including without limitation the rights
+6 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+7 	copies of the Software, and to permit persons to whom the Software is
+8 	furnished to do so, subject to the following conditions:
+9 	
+10 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+11 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+12 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+13 	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+14 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+15 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+16 	SOFTWARE.
+
+
+%% The following software may be included in this product: Dynamic Faces
+
+COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0 1.
+
+Definitions.
+
+1.1. Contributor means each individual or entity that creates or contributes to
+the creation of Modifications.
+
+1.2. Contributor Version means the combination of the Original Software, prior
+Modifications used by a Contributor (if any), and the Modifications made by
+that particular Contributor.
+
+1.3. Covered Software means (a) the Original Software, or (b) Modifications,
+or (c) the combination of files containing Original Software with files
+containing Modifications, in each case including portions thereof.
+
+1.4. Executable means the Covered Software in any form other than Source Code.
+
+1.5. Initial Developer means the individual or entity that first makes Original
+Software available under this License.
+
+1.6. Larger Work means a work which combines Covered Software or portions
+thereof with code not governed by the terms of this License.
+
+1.7. License means this document.
+
+1.8. Licensable means having the right to grant, to the maximum extent possible, 
+whether at the time of the initial grant or subsequently acquired, any and all
+of the rights conveyed herein.
+
+1.9. Modifications means the Source Code and Executable form of any of the following:
+A. Any file that results from an addition to, deletion from or modification of the
+contents of a file containing Original Software or previous Modifications; 
+B. Any new file that contains any part of the Original Software or previous Modification;
+or C. Any new file that is contributed or otherwise made available under the terms
+of this License.
+
+1.10. Original Software means the Source Code and Executable form of computer
+software code that is originally released under this License.
+
+1.11. Patent Claims means any patent claim(s), now owned or hereafter acquired,
+including without limitation, method, process, and apparatus claims, in any patent
+Licensable by grantor.
+
+1.12. Source Code means (a) the common form of computer software code in which
+modifications are made and (b) associated documentation included in or with such code.
+
+1.13. You (or Your) means an individual or a legal entity exercising rights under,
+and complying with all of the terms of, this License. For legal entities, You
+includes any entity which controls, is controlled by, or is under common control
+with You. For purposes of this definition, control means (a) the power, direct or
+indirect, to cause the direction or management of such entity, whether by contract
+or otherwise, or (b) ownership of more than fifty percent (50%) of the outstanding
+shares or beneficial ownership of such entity.
+
+2. License Grants.
+
+ 2.1. The Initial Developer Grant. Conditioned upon Your compliance with Section
+ 3.1 below and subject to third party intellectual property claims, the Initial
+ Developer hereby grants You a world-wide, royalty-free, non-exclusive license:
+
+(a) under intellectual property rights (other than patent or trademark) Licensable
+by Initial Developer, to use, reproduce, modify, display, perform, sublicense and
+distribute the Original Software (or portions thereof), with or without Modifications,
+and/or as part of a Larger Work; and
+
+(b) under Patent Claims infringed by the making, using or selling of Original Software,
+to make, have made, use, practice, sell, and offer for sale, and/or otherwise dispose
+of the Original Software (or portions thereof);
+
+ (c) The licenses granted in Sections 2.1(a) and (b) are effective on the date Initial
+ Developer first distributes or otherwise makes the Original Software available to a
+ third party under the terms of this License;
+
+ (d) Notwithstanding Section 2.1(b) above, no patent license is granted: (1) for code
+ that You delete from the Original Software, or (2) for infringements caused by:
+ (i) the modification of the Original Software, or (ii) the combination of the
+ Original Software with other software or devices.
+
+2.2. Contributor Grant. Conditioned upon Your compliance with Section 3.1 below
+and subject to third party intellectual property claims, each Contributor hereby
+grants You a world-wide, royalty-free, non-exclusive license:
+
+(a) under intellectual property rights (other than patent or trademark) Licensable
+by Contributor to use, reproduce, modify, display, perform, sublicense and distribute
+the Modifications created by such Contributor (or portions thereof), either on an
+unmodified basis, with other Modifications, as Covered Software and/or as part of
+a Larger Work; and
+
+(b) under Patent Claims infringed by the making, using, or selling of Modifications
+made by that Contributor either alone and/or in combination with its Contributor
+Version (or portions of such combination), to make, use, sell, offer for sale, have
+made, and/or otherwise dispose of: (1) Modifications made by that Contributor
+(or portions thereof); and (2) the combination of Modifications made by that
+Contributor with its Contributor Version (or portions of such combination).
+
+(c) The licenses granted in Sections 2.2(a) and 2.2(b) are effective on the date
+Contributor first distributes or otherwise makes the Modifications available to
+a third party.
+
+(d) Notwithstanding Section 2.2(b) above, no patent license is granted: (1) for
+any code that Contributor has deleted from the Contributor Version; (2) for
+infringements caused by: (i) third party modifications of Contributor Version,
+or (ii) the combination of Modifications made by that Contributor with other
+software (except as part of the Contributor Version) or other devices; or
+(3) under Patent Claims infringed by Covered Software in the absence of
+Modifications made by that Contributor.
+
+3. Distribution Obligations.
+
+3.1. Availability of Source Code. Any Covered Software that You distribute or
+otherwise make available in Executable form must also be made available in
+Source Code form and that Source Code form must be distributed only under the
+terms of this License. You must include a copy of this License with every copy
+of the Source Code form of the Covered Software You distribute or otherwise make
+available. You must inform recipients of any such Covered Software in Executable
+form as to how they can obtain such Covered Software in Source Code form in a
+reasonable manner on or through a medium customarily used for software exchange.
+
+3.2. Modifications. The Modifications that You create or to which You contribute
+are governed by the terms of this License. You represent that You believe Your
+Modifications are Your original creation(s) and/or You have sufficient rights
+to grant the rights conveyed by this License.
+
+3.3. Required Notices. You must include a notice in each of Your Modifications
+that identifies You as the Contributor of the Modification. You may not remove
+or alter any copyright, patent or trademark notices contained within the Covered
+Software, or any notices of licensing or any descriptive text giving attribution
+to any Contributor or the Initial Developer.
+
+3.4. Application of Additional Terms. You may not offer or impose any terms on
+any Covered Software in Source Code form that alters or restricts the applicable
+version of this License or the recipients rights hereunder. You may choose to
+offer, and to charge a fee for, warranty, support, indemnity or liability
+obligations to one or more recipients of Covered Software. However, you may
+do so only on Your own behalf, and not on behalf of the Initial Developer or
+any Contributor. You must make it absolutely clear that any such warranty,
+support, indemnity or liability obligation is offered by You alone, and You
+hereby agree to indemnify the Initial Developer and every Contributor for any
+liability incurred by the Initial Developer or such Contributor as a result
+of warranty, support, indemnity or liability terms You offer.
+
+3.5. Distribution of Executable Versions. You may distribute the Executable
+form of the Covered Software under the terms of this License or under the
+terms of a license of Your choice, which may contain terms different from
+this License, provided that You are in compliance with the terms of this
+License and that the license for the Executable form does not attempt to
+limit or alter the recipients rights in the Source Code form from the rights
+set forth in this License. If You distribute the Covered Software in Executable
+form under a different license, You must make it absolutely clear that any
+terms which differ from this License are offered by You alone, not by the
+Initial Developer or Contributor. You hereby agree to indemnify the Initial
+Developer and every Contributor for any liability incurred by the Initial
+Developer or such Contributor as a result of any such terms You offer.
+
+3.6. Larger Works. You may create a Larger Work by combining Covered Software
+with other code not governed by the terms of this License and distribute the
+Larger Work as a single product. In such a case, You must make sure the
+requirements of this License are fulfilled for the Covered Software.
+
+4. Versions of the License.
+
+4.1. New Versions. Sun Microsystems, Inc. is the initial license steward
+and may publish revised and/or new versions of this License from time to
+time. Each version will be given a distinguishing version number. Except
+as provided in Section 4.3, no one other than the license steward has the
+right to modify this License.
+
+4.2. Effect of New Versions. You may always continue to use, distribute
+or otherwise make the Covered Software available under the terms of the
+version of the License under which You originally received the Covered
+Software. If the Initial Developer includes a notice in the Original
+Software prohibiting it from being distributed or otherwise made available
+under any subsequent version of the License, You must distribute and make
+the Covered Software available under the terms of the version of the License
+under which You originally received the Covered Software. Otherwise, You
+may also choose to use, distribute or otherwise make the Covered Software
+available under the terms of any subsequent version of the License published
+by the license steward.
+
+4.3. Modified Versions. When You are an Initial Developer and You want to
+create a new license for Your Original Software, You may create and use a
+modified version of this License if You: (a) rename the license and remove
+any references to the name of the license steward (except to note that the
+license differs from this License); and (b) otherwise make it clear that
+the license contains terms which differ from this License.
+
+5. DISCLAIMER OF WARRANTY. COVERED SOFTWARE IS PROVIDED UNDER THIS LICENSE
+ON AN AS IS BASIS, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+INCLUDING, WITHOUT LIMITATION, WARRANTIES THAT THE COVERED SOFTWARE IS FREE
+OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE OR NON-INFRINGING.
+THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE COVERED SOFTWARE
+IS WITH YOU. SHOULD ANY COVERED SOFTWARE PROVE DEFECTIVE IN ANY RESPECT,
+YOU (NOT THE INITIAL DEVELOPER OR ANY OTHER CONTRIBUTOR) ASSUME THE COST
+OF ANY NECESSARY SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF
+WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS LICENSE. NO USE OF ANY
+COVERED SOFTWARE IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER.
+
+6. TERMINATION.
+
+6.1. This License and the rights granted hereunder will terminate automatically
+if You fail to comply with terms herein and fail to cure such breach within
+30 days of becoming aware of the breach. Provisions which, by their nature,
+must remain in effect beyond the termination of this License shall survive.
+
+6.2. If You assert a patent infringement claim (excluding declaratory judgment
+actions) against Initial Developer or a Contributor (the Initial Developer or
+Contributor against whom You assert such claim is referred to as Participant)
+alleging that the Participant Software (meaning the Contributor Version where
+the Participant is a Contributor or the Original Software where the Participant
+is the Initial Developer) directly or indirectly infringes any patent, then any
+and all rights granted directly or indirectly to You by such Participant, the
+Initial Developer (if the Initial Developer is not the Participant) and all
+Contributors under Sections 2.1 and/or 2.2 of this License shall, upon 60
+days notice from Participant terminate prospectively and automatically at
+the expiration of such 60 day notice period, unless if within such 60 day
+period You withdraw Your claim with respect to the Participant Software
+against such Participant either unilaterally or pursuant to a written agreement
+with Participant.
+
+6.3. In the event of termination under Sections 6.1 or 6.2 above, all end user
+licenses that have been validly granted by You or any distributor hereunder
+prior to termination (excluding licenses granted to You by any distributor)
+shall survive termination.
+
+7. LIMITATION OF LIABILITY. UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY,
+WHETHER TORT (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL YOU, THE
+INITIAL DEVELOPER, ANY OTHER CONTRIBUTOR, OR ANY DISTRIBUTOR OF COVERED SOFTWARE,
+OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE TO ANY PERSON FOR ANY INDIRECT,
+SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT
+LIMITATION, DAMAGES FOR LOST PROFITS, LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER
+FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR LOSSES, EVEN
+IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES. THIS
+LIMITATION OF LIABILITY SHALL NOT APPLY TO LIABILITY FOR DEATH OR PERSONAL INJURY
+RESULTING FROM SUCH PARTYS NEGLIGENCE TO THE EXTENT APPLICABLE LAW PROHIBITS SUCH
+LIMITATION. SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF
+INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THIS EXCLUSION AND LIMITATION MAY NOT
+APPLY TO YOU.
+
+8. U.S. GOVERNMENT END USERS. The Covered Software is a commercial item, as that
+term is defined in 48 C.F.R. 2.101 (Oct. 1995), consisting of commercial computer
+software (as that term is defined at 48 C.F.R.  252.227-7014(a)(1)) and commercial
+computer software documentation as such terms are used in 48 C.F.R. 12.212 (Sept. 1995).
+Consistent with 48 C.F.R. 12.212 and 48 C.F.R. 227.7202-1 through 227.7202-4 (June 1995),
+all U.S. Government End Users acquire Covered Software with only those rights set
+forth herein. This U.S. Government Rights clause is in lieu of, and supersedes,
+any other FAR, DFAR, or other clause or provision that addresses Government rights
+in computer software under this License.
+
+9. MISCELLANEOUS. This License represents the complete agreement concerning subject
+matter hereof. If any provision of this License is held to be unenforceable, such
+provision shall be reformed only to the extent necessary to make it enforceable.
+This License shall be governed by the law of the jurisdiction specified in a notice
+contained within the Original Software (except to the extent applicable law, if any,
+provides otherwise), excluding such jurisdictions conflict-of-law provisions. Any
+litigation relating to this License shall be subject to the jurisdiction of the courts
+located in the jurisdiction and venue specified in a notice contained within the
+Original Software, with the losing party responsible for costs, including, without
+limitation, court costs and reasonable attorneys fees and expenses. The application
+of the United Nations Convention on Contracts for the International Sale of Goods
+is expressly excluded. Any law or regulation which provides that the language of
+a contract shall be construed against the drafter shall not apply to this License.
+You agree that You alone are responsible for compliance with the United States export
+administration regulations (and the export control laws and regulation of any other
+countries) when You use, distribute or otherwise make available any Covered Software.
+
+10. RESPONSIBILITY FOR CLAIMS. As between Initial Developer and the Contributors,
+each party is responsible for claims and damages arising, directly or indirectly,
+out of its utilization of rights under this License and You agree to work with Initial
+Developer and Contributors to distribute such responsibility on an equitable basis.
+Nothing herein is intended or shall be deemed to constitute any admission of liability.
+
+NOTICE PURSUANT TO SECTION 9 OF THE COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL)
+The code released under the CDDL shall be governed by the laws of the State of California
+(excluding conflict-of-law provisions). Any litigation relating to this License shall be
+subject to the jurisdiction of the Federal Courts of the Northern District of California
+and the state courts of the State of California, with venue lying in Santa Clara County,
+California.
+
+

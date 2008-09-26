@@ -220,7 +220,12 @@
         <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>registration-impl</artifactId>
-           <version>${project.version}</version>
+	   <version>${project.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish.registration</groupId>
+           <artifactId>glassfish-registration</artifactId>
+	   <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.api</groupId>
