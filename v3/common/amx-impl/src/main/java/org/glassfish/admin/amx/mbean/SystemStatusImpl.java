@@ -170,12 +170,6 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
                 final PropertyChangeEvent pce = event.getEvent();
                 final long when = event.getWhen();
                 
-                if ( reason.startsWith("no ConfigListener listening") )
-                {
-                    // ugly kludge; see org.jvnet.hk2.config.Transactions.ConfigListenerJob.process()
-                    continue;
-                }
-                
                 final ObjectName objectName = sourceToObjectName(pce.getSource());
                 
                 final UnprocessedConfigChange ucc = new UnprocessedConfigChange(
