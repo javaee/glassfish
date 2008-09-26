@@ -35,7 +35,7 @@
 -->
 <!-- updateCenter/ucTable.inc -->
 
-<sun:table id="ucTable" title="AA$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
+<sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
         selectMultipleButton="$boolean{true}"
         selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
