@@ -107,7 +107,7 @@
                  <!afterCreate
                         getClientId(component="$this{component}" clientId=>$attribute{formId})
                         getUIComponent(clientId="#{formId}"  component=>$attribute{component})
-                        includeIntegrations(type="org.glassfish.admingui:masthead" root="#{component}");
+                        includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{component}");
                   /> 
                 
 	     </sun:form>
