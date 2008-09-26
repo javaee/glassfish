@@ -37,16 +37,18 @@
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- dochez : these 2 dependencies need to be removed at some point -->
+        <!-- these 2 dependencies are for compilation only  -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.soap</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>        
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.ws</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -138,11 +140,6 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.bind</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

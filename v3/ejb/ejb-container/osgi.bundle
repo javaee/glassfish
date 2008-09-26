@@ -11,3 +11,8 @@
                         com.sun.ejb.spi.stats, \
                         com.sun.enterprise, \
                         org.glassfish.ejb.startup
+Import-Package: \
+                        javax.xml.soap;resolution:=optional, \
+                        javax.xml.ws;resolution:=optional, \
+                        javax.xml.ws.handler;resolution:=optional, \
+                        *

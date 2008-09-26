@@ -449,9 +449,10 @@ public class EjbInvocation
      */
     public Map<String, Object> getContextData() {
         if (this.contextData == null) {
-            this.contextData = (webServiceContext != null) ?
-                webServiceContext.getMessageContext() : 
-                new HashMap<String, Object>();
+            if (webServiceContext != null)
+                this.contextData = webServiceContext.getMessageContext();
+            else
+                this.contextData = new HashMap<String, Object>();
         }
         return contextData;
     }
