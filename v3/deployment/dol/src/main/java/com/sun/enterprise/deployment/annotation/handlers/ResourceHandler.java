@@ -49,9 +49,6 @@ import java.util.HashSet;
 
 import javax.annotation.Resource;
 
-import javax.jms.Queue;
-import javax.jms.Topic;
-
 import com.sun.enterprise.deployment.*;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
@@ -287,26 +284,26 @@ public class ResourceHandler extends AbstractResourceHandler {
         }   catch(Exception e) {
             // we don't care, either we don't have the class, ot the bundled is not installed
         }
-        if( (resourceType == javax.jms.Queue.class) ||
-            (resourceType == javax.jms.Topic.class) ) {
+        if( (resourceType.getName().equals("javax.jms.Queue")) ||
+            (resourceType.getName().equals("javax.jms.Topic") )) {
             descriptorInfo.descriptors = 
                 getMessageDestinationReferenceDescriptors
                 (logicalName, rcContexts);
             descriptorInfo.dependencyType = 
                 DependencyType.MESSAGE_DESTINATION_REF;
         } else if ( resourceType == javax.sql.DataSource.class ||
-                    resourceType == javax.jms.ConnectionFactory.class || 
-                    resourceType == javax.jms.QueueConnectionFactory.class ||
-                    resourceType == javax.jms.TopicConnectionFactory.class || 
-                    resourceType == webServiceContext || 
-                    resourceType == javax.mail.Session.class || 
-                    resourceType == java.net.URL.class || 
-                    resourceType == javax.resource.cci.ConnectionFactory.class 
+                    resourceType.getName().equals("javax.jms.ConnectionFactory") ||
+                    resourceType.getName().equals("javax.jms.QueueConnectionFactory") ||
+                    resourceType.getName().equals("javax.jms.TopicConnectionFactory") ||
+                    resourceType == webServiceContext ||
+                    resourceType.getName().equals("javax.mail.Session") || 
+                    resourceType.getName().equals("java.net.URL") ||
+                    resourceType.getName().equals("javax.resource.cci.ConnectionFactory")
                     || resourceType == org.omg.CORBA_2_3.ORB.class || 
                     resourceType == org.omg.CORBA.ORB.class || 
-                    resourceType == javax.jms.XAConnectionFactory.class || 
-                    resourceType == javax.jms.XAQueueConnectionFactory.class ||
-                    resourceType == javax.jms.XATopicConnectionFactory.class ) {
+                    resourceType.getName().equals("javax.jms.XAConnectionFactory") ||
+                    resourceType.getName().equals("javax.jms.XAQueueConnectionFactory") ||
+                    resourceType.getName().equals("javax.jms.XATopicConnectionFactory") ) {
             descriptorInfo.descriptors = getResourceReferenceDescriptors
                 (logicalName, rcContexts);
             descriptorInfo.dependencyType = DependencyType.RESOURCE_REF;

@@ -37,7 +37,6 @@
 package com.sun.enterprise.deployment;
 
 import java.util.*;
-import javax.mail.Session;
 import javax.sql.DataSource;
 import java.util.logging.*;
 import com.sun.enterprise.deployment.util.LogDomains;

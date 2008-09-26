@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import javax.jms.Session;
 import java.lang.reflect.Method;     
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.*;
@@ -312,7 +311,7 @@ public final class EjbMessageBeanDescriptor extends EjbDescriptor
     }  
 
     /**
-     * @param messageDestiation the message destination to which I refer.
+     * @param newMsgDest the message destination to which I refer.
      */
     public void setMessageDestination(MessageDestinationDescriptor newMsgDest) {
         msgDestReferencer.setMessageDestination(newMsgDest);
@@ -502,10 +501,14 @@ public final class EjbMessageBeanDescriptor extends EjbDescriptor
 	return getActivationConfigValue(MESSAGE_SELECTOR_PROPERTY);
     }
 
+    static final int AUTO_ACKNOWLEDGE = 1;
+    static final int DUPS_OK_ACKNOWLEDGE = 3;
+
+
     public int getJmsAcknowledgeMode() {
         String ackModeStr = getActivationConfigValue(ACK_MODE_PROPERTY);
         return ( (ackModeStr != null) && ackModeStr.equals(DUPS_OK_ACK) ) ? 
-            Session.DUPS_OK_ACKNOWLEDGE : Session.AUTO_ACKNOWLEDGE;
+            DUPS_OK_ACKNOWLEDGE : AUTO_ACKNOWLEDGE;
     }
     
     public String getJmsAcknowledgeModeAsString() {
@@ -513,7 +516,7 @@ public final class EjbMessageBeanDescriptor extends EjbDescriptor
     }
     
     public void setJmsAcknowledgeMode(int acknowledgeMode) {
-        String ackModeValue = (acknowledgeMode == Session.AUTO_ACKNOWLEDGE) ?
+        String ackModeValue = (acknowledgeMode == AUTO_ACKNOWLEDGE) ?
             AUTO_ACK : DUPS_OK_ACK;
         EnvironmentProperty ackModeProp =
             new EnvironmentProperty(ACK_MODE_PROPERTY, ackModeValue, "");
@@ -524,10 +527,10 @@ public final class EjbMessageBeanDescriptor extends EjbDescriptor
     
     public void setJmsAcknowledgeMode(String acknowledgeMode) {
         if (AUTO_ACK.equals(acknowledgeMode)) {
-            setJmsAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
+            setJmsAcknowledgeMode(AUTO_ACKNOWLEDGE);
         } else {
             if (DUPS_OK_ACK.equals(acknowledgeMode)) {
-                setJmsAcknowledgeMode(Session.DUPS_OK_ACKNOWLEDGE);
+                setJmsAcknowledgeMode(DUPS_OK_ACKNOWLEDGE);
             } else {
                 throw new IllegalArgumentException
                     ("Invalid jms acknowledge mode : " + acknowledgeMode);
