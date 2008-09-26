@@ -199,7 +199,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 if (!Boolean.valueOf(listener.getEnabled())) {
                     logger.info("Network listener " + listener.getId() +
                                 " on port " + listener.getPort() +
-                                " has been disabled");
+                                " disabled per domain.xml");
                     continue;
                 }
 
