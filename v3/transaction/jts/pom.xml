@@ -89,7 +89,7 @@
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
             <version>${glassfish-corba.version}</version>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
