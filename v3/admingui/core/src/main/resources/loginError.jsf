@@ -57,7 +57,7 @@
 "    <tr class="LogTopBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
 "      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="30" alt="" /></td>
 "      <td nowrap="nowrap" valign="middle">
-    <sun:image icon="DOT" width="1" height="30" border="1" />
+    <sun:image icon="DOT" width="1" height="30" border="0" />
 "    </td>
 "      <td>&nbsp;</td>
 "    </tr>
@@ -178,7 +178,7 @@
 "      <td class="LogMidBnd" 
 "          style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
 "    </tr>
-" <tr><td><sun:image icon="DOT" width="1" height="500" border="1" /></td></tr>
+" <tr><td><sun:image icon="DOT" width="1" height="500" border="0" /></td></tr>
 "    <tr class="LogBotBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
 "      <td>&nbsp;</td>
 "      <td><div class="logCpy"><span class="logTxtCpy">
