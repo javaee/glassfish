@@ -1,0 +1,434 @@
+<!--Arbortext, Inc., 1988-2008, v.4002-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<!--
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+
+Use is subject to License Terms
+-->
+<head>
+<style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }    p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}   
+</style>
+<title>Sun GlassFish Enterprise Server v3 Prelude Quick Start Guide</title>
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
+cellspacing="4" cellpadding="2">
+<tbody>
+<tr>
+<td align="right" valign="top"> <a href="http://www.sun.com"></a> </td>
+</tr>
+<tr>
+<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>Sun
+GlassFish Enterprise Server v3 Prelude</b></font></td>
+</tr>
+</tbody>
+</table> <div class="maincontent"><a name="aboaa"></a><h3>Enterprise Server
+Quick Start Guide</h3><p>Sun GlassFish Enterprise Server v3 Prelude provides
+the following:</p> <ul>
+<li><p>A lightweight and extensible core based on OSGi Alliance standards</p></li>
+<li><p>A web and scripting container</p></li>
+<li><p>An easy-to-use Administration Console for configuration and management</p></li>
+<li><p>Update Center connectivity</p></li>
+</ul> <p>This document provides the following topics:</p> <ul>
+<li><p><a href="#ghgpe">How This Quick Start Guide Works</a></p></li>
+<li><p><a href="#ghgry">Obtaining Enterprise Server v3 Prelude Software</a></p></li>
+<li><p><a href="#ggono">Installing And Updating Enterprise Server v3 Prelude
+Software</a></p></li>
+<li><p><a href="#gglog">Starting and Stopping the Default Domain</a></p></li>
+<li><p><a href="#gglmh">Starting and Stopping the Database Server </a></p></li>
+<li><p><a href="#ggllq">Starting the Administration Console </a></p></li>
+<li><p><a href="#geyvr">Deploying and Undeploying Applications</a></p></li>
+<li><p><a href="#ghgqg">Removing Enterprise Server v3 Prelude Software</a></p></li>
+<li><p><a href="#ggkzh">For More Information</a></p></li>
+</ul>   <a name="ghgpe"></a><h3>How This Quick Start Guide Works</h3> <p>The <i>Sun
+GlassFish v3 Enterprise Server Quick Start Guide Technology Preview 2</i> provides
+basic instructions for quickly getting up and running with Sun GlassFish v3
+Prelude Enterprise Server software.</p><p>This document  provides basic instructions
+for installing, running, and removing Enterprise Server software. Step-by-step
+procedures introduce you to product features and allow you to learn about
+and use them immediately.</p><p>The instructions and examples in this document
+use the forward slash character (<tt>/</tt>) as path separators in all file
+and command names. Be sure to use the correct character for the system that
+Enterprise Server is installed on. For example:</p> <ul>
+<li><p><b>UNIX<sup>&reg;</sup> 				  systems or Linux systems</b> &mdash; <tt></tt><i>
+installation-directory</i><tt>/bin/asadmin</tt></p></li>
+<li><p><b>Windows systems or Mac OS X systems</b> &mdash; <tt></tt><i>installation-directory
+</i><tt>\bin\asadmin</tt></p></li>
+</ul> <p>This document provides fundamental information only. For links to
+comprehensive information about Enterprise Server or other entities mentioned
+in this document, see <a href="#ggkzh">For More Information</a>. When this
+guide is updated, the most recent version is available in the Enterprise Server
+v3 Prelude <a href="http://docs.sun.com/coll/1343.7">documentation collection</a>.
+</p>  <a name="ghgry"></a><h3>Obtaining Enterprise Server v3 Prelude Software</h3> <p>
+To read additional details about this release before you begin, review the <a
+href="http://docs.sun.com/doc/820-4494"><i>GlassFish v3 Application Server
+Release Notes</i></a>. The <b>Release Notes</b> provide recent information,
+limitations, and tips for installing and working with Sun GlassFish Enterprise
+Server v3 Prelude software.</p><p>To use this guide to explore the Enterprise
+Server features, Enterprise Server v3 Prelude software must be installed on
+your system. You have these options:</p> <ul>
+<li><p><b>Install Enterprise Server v3 Prelude</b>. If you do not have this
+software, select one of the following installation options:</p> <ul>
+<li><p>Download the demonstration version following the steps in this guide.
+For instructions, see <a href="#ggono">Installing And Updating Enterprise
+Server v3 Prelude Software</a>.</p></li>
+<li><p>Follow the installation instructions provided in <a
+href="http://docs.sun.com/doc/820-5968"><i>Sun GlassFish Enterprise Server
+v3 Prelude Installation Guide</i></a>.</p></li>
+</ul>  <hr><p><b>Note - </b>The Enterprise Server installation requires <a
+href="http://java.sun.com/javase/downloads/index_jdk5.jsp">JDK 5</a> release
+or <a href="http://java.sun.com/javase/downloads/index.jsp">JDK 6</a> release.
+Make sure that the JDK 5 release or JDK 6 release <tt>bin</tt> directory is
+in your <tt>PATH</tt> so that the <tt>java</tt> binary used with Enterprise
+Server comes from the JDK release rather than a Java<sup>TM</sup> Runtime
+Environment implementation.</p> <hr></li>
+<li><p><b>Use an existing installation of Enterprise Server v3 Prelude</b>.</p><p>
+If you already have the latest version of Enterprise Server v3 Prelude software,
+go to <a href="#gglog">Starting and Stopping the Default Domain</a> to start
+looking at key features of Enterprise Server.</p></li>
+<li><p><b>Update an existing installation of Enterprise Server v3 Prelude</b>.</p><p>
+If you have an older version of the software, update to the latest version.
+For instructions, see <a href="#ggkzs">Updating Enterprise Server Software</a>.</p></li>
+</ul>   <a name="ggono"></a><h3>Installing And Updating Enterprise Server
+v3 Prelude Software</h3> <p>This section provides instructions for installing
+and updating Enterprise Server software.</p> <ul>
+<li><p><a href="#ghgbq">Performing an Enterprise Server Installation</a></p></li>
+<li><p><a href="#ggkzs">Updating Enterprise Server Software</a></p></li>
+</ul>  <hr><p><b>Tip - </b>If Enterprise Server v3 Prelude software is already
+installed and updated, you can skip this section and go to <a href="#gglog">Starting
+and Stopping the Default Domain</a>.</p> <hr>   <a name="ghgbq"></a><h4>Performing
+an Enterprise Server Installation</h4> <p>This section provides instructions
+for installing Enterprise Server v3 Prelude software.</p>  <a name="ggotf"></a><h5><img
+src="graphics/procedure.gif" alt=""> To Install Enterprise Server Software</h5> <ol>
+<li><b>Select a directory to install Enterprise Server.</b><ul>
+<li><b>Use the default directory.</b><p>If you do not specify an installation
+directory, the software will be installed in the following directories:</p> <ul>
+<li><p><b>UNIX systems or Linux systems</b> &mdash; <tt></tt><i>user-home-directory
+</i><tt>/glassfishv3-prelude</tt></p></li>
+<li><p><b>Windows systems</b> &mdash; <tt>C:\Program Files\glassfishv3-prelude</tt></p></li>
+<li><p><b>MacOS X systems</b> &mdash; <tt>/Applications/glassfishv3-prelude</tt></p></li>
+</ul></li>
+<li><b>Set up a directory for installing Enterprise Server.</b></li>
+</ul><p>Throughout this document, the directory you choose for installing
+is referred to as <i>as-install</i>.</p></li>
+<li><b>Download the <a
+href="http://download.java.net/glassfish/v3/promoted/latest.zip">latest.zip</a> file
+to the installation directory.</b><p>This platform-independent ZIP file can
+be used on Windows, Linux, AIX, Mac OS, and Solaris<sup>TM</sup> platforms.</p></li>
+<li><b>Use the <tt>cd</tt> command to change to the installation directory.</b><p><tt><b>
+cd </b></tt><i>as-install</i><tt><b></b></tt></p></li>
+<li><b>Unzip the bundle.</b><p><tt><b>unzip gfv3-prelude.zip</b></tt></p><p>The
+v3 Prelude distribution is installed into a new <tt>glassfishv3-prelude</tt> directory
+under your current installation directory.</p></li>
+<li><b>To explore Enterprise Server features, go to <a href="#gglog">Starting
+and Stopping the Default Domain</a>.</b></li>
+</ol>  <a name="ggkzs"></a><h4>Updating Enterprise Server Software</h4> <p>Update
+Tool is a graphical utility that provides these functions:</p> <ul>
+<li><p>Facilitates management of plug-ins, extensions, and related applications
+that are available for Enterprise Server</p></li>
+<li><p>Provides <tt>pkg</tt> commands available for use in scripts and headless
+systems. </p></li>
+<li><p>Performs periodic checks and sends announcements about Enterprise Server
+update availability to your desktop notification utility, if you have one</p></li>
+</ul> <p>Update Tool is manually enabled following installation, to ensure
+explicit agreement of automated updates.</p><p>See the <a
+href="http://wiki.updatecenter.java.net/Wiki.jsp?page=About">Update Center</a> wiki
+for more information about this tool.</p><p>If you have already installed
+Enterprise Server and enabled Update Tool, skip this section and go to <a
+href="#gglog">Starting and Stopping the Default Domain</a>.</p>  <a name="ggrjy"></a><h5><img
+src="graphics/procedure.gif" alt=""> To Update an Existing Enterprise Server
+Installation</h5> <p>This task explains how to enable and start Update Tool.
+If Update Tool is already enabled, skip this section and go to <a href="#gglog">Starting
+and Stopping the Default Domain</a>.</p><ol>
+<li><b>Use the <tt>updatetool</tt> command to start Update Tool.</b><pre><tt><b></b></tt><i>
+as-install</i><tt>/bin/updatetool<b></b></tt></pre> <hr><p><b>Note - </b>If
+you have not executed this command before, you are prompted to install the
+required components by pressing any key and following the onscreen instructions
+to complete the installation. </p><p>Type the <tt>updatetool</tt> command
+again to open Update Tool:</p><pre><tt><b></b></tt><i>as-install</i><tt>/bin/updatetool<b></b></tt></pre> <hr></li>
+<li><b>Explore the Update Tool interface.</b><ul>
+<li><b>To view components that are installed:</b><ol
+style="list-style-type: lower-alpha">
+<li><b>From the navigation tree, click Installed Components under GlassFish
+v3 Prelude.</b></li>
+<li><b>In the list of components, click the name of any component to view
+a description of the component in the Description pane.</b></li>
+</ol></li>
+<li><b>To view add-on components that you can install:</b><ol
+style="list-style-type: lower-alpha">
+<li><b>From the navigation tree, click Available Add-ons under GlassFish v3
+Prelude.</b></li>
+<li><b>In the list of components, click the name of any component to view
+a description of the component in the Description pane.</b></li>
+</ol></li>
+</ul></li>
+<li><b>From the navigation tree, click Available Updates. </b><p>Components
+with available updates are listed.</p><p>If no components are listed, your
+Enterprise Server v3 Prelude installation is current.</p></li>
+<li><b>Select the components that you want to update and click Update.</b></li>
+<li><b>Accept license agreements that are presented.</b></li>
+<li><b>To apply the updates, restart Update Tool.</b></li>
+<li><b>To close Update Tool, select File &rarr; Quit. </b></li>
+</ol>  <a name="gglog"></a><h3>Starting and Stopping the Default Domain</h3> <p>By
+default, when you install Enterprise Server, a default domain named <tt>domain1</tt> is
+created.</p>  <a name="ggmpd"></a><h4><img src="graphics/procedure.gif" alt=""> To
+Start the Default Domain</h4><h6>Before You Begin</h6><p>Enterprise Server
+software must be installed before you start the domain.</p><ul>
+<li><b>To start the default domain, use the <tt>start-domain</tt> command. </b><ul>
+<li><b>Use the short form:</b><pre><tt><b></b></tt><i>as-install</i><tt>/bin/asadmin start-domain<b></b></tt></pre></li>
+<li><b>Use the long form:</b><pre><tt><b>java -jar </b></tt><i>as-install</i><tt>
+/modules/admin-cli-10.0-SNAPSHOT.jar start-domain<b></b></tt></pre></li>
+</ul><p>Either command starts the default domain, <tt>domain1</tt>.</p></li>
+</ul>  <a name="ggmsx"></a><h4><img src="graphics/procedure.gif" alt=""> To
+Stop the Default Domain</h4><ul>
+<li><b>To stop the default domain, use the <tt>asadmin stop-domain</tt> command.</b><ul>
+<li><b>Use the short form:</b><pre><tt><b></b></tt><i>as-install</i><tt>/bin/asadmin stop-domain<b></b></tt></pre></li>
+<li><b>Use the long form:</b><pre><tt><b>java -jar </b></tt><i>as-install</i><tt>
+/modules/admin-cli-10.0-SNAPSHOT.jar stop-domain<b></b></tt></pre></li>
+</ul><p>Either command stops the default domain, <tt>domain1</tt>.</p></li>
+</ul>  <a name="gglmh"></a><h3>Starting and Stopping the Database Server </h3> <p>
+A database server is not started by default when you start the Enterprise
+Server domain. If you have applications that need a database back end, you
+must start and stop the database server manually. </p>  <a name="ggncr"></a><h4><img
+src="graphics/procedure.gif" alt=""> To Start the Sun GlassFish Java DB Server</h4><p>
+The instructions in this procedure describe how to start the Java DB server
+that is bundled with Enterprise Server, but they apply for the most part to
+any database you want to use.</p><h6>Before You Begin</h6><p>At least one
+Enterprise Server domain must be started before you start the database server.</p><ul>
+<li><b>Use the <tt>asadmin start-database</tt> command.</b><p>The general
+form for the command is:</p><pre><i>as-install</i>/bin/asadmin start-database --dbhome <i>
+directory-path</i></pre><p>For example, to start the Sun GlassFish from its
+default location:</p><pre><tt><b></b></tt><i>as-install</i><tt>/bin/asadmin start-database --dbhome 
+</tt><i>as-install</i><tt>/javadb<b></b></tt></pre></li>
+</ul>  <a name="ggnez"></a><h4><img src="graphics/procedure.gif" alt=""> To
+Stop the Java DB Server</h4><ul>
+<li><b>Use the <tt>asadmin stop-database</tt> command:</b><pre><tt><b></b></tt><i>
+as-install</i><tt>/bin/asadmin stop-database<b></b></tt></pre></li>
+</ul>  <a name="ggllq"></a><h3>Starting the Administration Console </h3> <p>The
+Enterprise Server Administration Console provides a browser interface for
+configuring, administering, and monitoring the Enterprise Server and your
+domains.</p>  <a name="ggnbp"></a><h4><img src="graphics/procedure.gif" alt=""> To
+Launch the Administration Console</h4><h6>Before You Begin</h6><p>At least
+one Enterprise Server domain must be started before you launch the Administration
+Console.</p><ol>
+<li><b>To open the Administration Console, type the URL in a browser window.</b><p>
+The default URL for the Administration Console is:</p><pre><tt><b>http://localhost:4848
+</b></tt></pre></li>
+<li><b>Log in to the Administration Console.</b><p>By default, the user name
+is <tt>anonymous</tt> and the Password field is left blank (no password).</p></li>
+</ol><h6>See Also</h6><p>Refer to the Administration Console online help for
+further instructions.</p>  <a name="geyvr"></a><h3>Deploying and Undeploying
+Applications</h3> <p>The process of configuring and enabling an application
+to run within the Enterprise Server framework is referred to as <b>deployment</b>.
+</p> <hr><p><b>Note - </b>In the v3 Prelude release, applications can be packaged
+for deployment in web archive (WAR) format only.</p> <hr> <p>This section
+explains how to deploy, list, and undeploy applications.</p> <ul>
+<li><p><a href="#ghgis">Obtaining a Sample Application</a></p></li>
+<li><p><a href="#ghgjj">Deploying an Application from the Command Line</a></p></li>
+<li><p><a href="#ghgjn">Deploying an Application by Using the Administration
+Console</a></p></li>
+<li><p><a href="#ghgmi">Deploying an Application Automatically</a></p></li>
+</ul>   <a name="ghgis"></a><h4>Obtaining a Sample Application</h4> <p>The
+procedures in this section use the <tt>hello.war</tt> application.</p>  <a
+name="ggolx"></a><h5><img src="graphics/procedure.gif" alt=""> To Obtain a
+Sample Application</h5> <ol>
+<li><b>To download a copy of the <tt>hello.war</tt> sample, go to <a
+href="https://glassfish.dev.java.net/downloads/quickstart/hello.war">https://glassfish.dev.java.net/downloads/quickstart/hello.war
+</a>.</b></li>
+<li><b>Click Yes to save the <tt>hello.war</tt> file. </b></li>
+<li><b>Save the <tt>hello.war</tt> file in the directory of your choice. This
+document refers to this directory as <i>sample-dir</i>.</b></li>
+</ol>  <a name="ghgjj"></a><h4>Deploying an Application from the Command Line</h4> <p>
+You can deploy applications from the command line by using the <tt>asadmin
+deploy</tt> command.</p>  <a name="ggndq"></a><h5><img
+src="graphics/procedure.gif" alt=""> To Deploy the Sample Application From
+the Command Line</h5> <h6>Before You Begin</h6><p>The sample application must
+be available before you start this task. To download the sample, see <a
+href="#ghgis">Obtaining a Sample Application</a>. At least one Enterprise
+Server domain must be started before you deploy the sample application.</p><ol>
+<li><b>Use the <tt>asadmin deploy</tt> command.</b><p>The general form for
+the command is:</p><pre><i>as-install</i>/bin/asadmin deploy <i>war-name</i></pre><p>
+To deploy the <tt>hello.war</tt> sample, the command is:</p><pre><tt><b></b></tt><i>
+as-install</i><tt>/bin/asadmin deploy </tt><i>sample-dir</i><tt>/hello.war<b></b></tt></pre></li>
+<li><b>Access the <tt>hello</tt> application by typing the following URL in
+a browser window:</b><pre><tt><b>http://localhost:8080/hello</b></tt></pre><p>The
+application's start page is displayed, and you are prompted to type your name.</p><pre>
+Hi, my name is Duke. What's yours?</pre></li>
+<li><b>Type your name and click Submit.</b><p>The application displays a customized
+response, giving you a personal <tt>Hello</tt>.</p></li>
+</ol><h6>See Also</h6><p>See <a
+href="http://docs.sun.com/doc/820-4497/deploy-1?a=view"><tt>deploy</tt>(1)</a> for
+more information about the <tt>deploy</tt> command.</p><p>See <a
+href="http://docs.sun.com/doc/820-4502"><i>Sun GlassFish Enterprise Server
+v3 Prelude Application Deployment Guide</i></a> for more information about
+deploying applications from the command line.</p>  <a name="ggnco"></a><h5><img
+src="graphics/procedure.gif" alt=""> To List Deployed Applications From the
+Command Line</h5> <ul>
+<li><b>Use the <tt>asadmin list-applications</tt> command:</b><pre><tt><b></b></tt><i>
+as-install</i><tt>/bin/asadmin list-applications<b></b></tt></pre></li>
+</ul>  <a name="ggnbm"></a><h5><img src="graphics/procedure.gif" alt=""> To
+Undeploy the Sample Application From the Command Line</h5> <ul>
+<li><b>Use the <tt>asadmin undeploy</tt> command.</b><p>The general form for
+the command is:</p><pre><i>as-install</i>/bin/asadmin undeploy <i>war-name</i></pre><p>
+For <i>war-name</i>, use the literal <tt>hello</tt>, not the full <tt>hello.war</tt> name.
+</p><p>For the <tt>hello.war</tt> example, the command is:</p><pre><tt><b></b></tt><i>
+as-install</i><tt>/bin/asadmin undeploy hello<b></b></tt></pre></li>
+</ul><h6>See Also</h6><p>See <a
+href="http://docs.sun.com/doc/820-4497/undeploy-1?a=view"><tt>undeploy</tt>(1)</a> for
+more information about the <tt>undeploy</tt> command.</p>  <a name="ghgjn"></a><h4>
+Deploying an Application by Using the Administration Console</h4> <p>You can
+deploy applications from the graphical Administration Console.</p>  <a
+name="ggnbn"></a><h5><img src="graphics/procedure.gif" alt=""> To Deploy the
+Sample Application From the Administration Console </h5> <h6>Before You Begin</h6><p>
+The sample application must be available before you start this task. To download
+the sample, see <a href="#ghgis">Obtaining a Sample Application</a>. At least
+one Enterprise Server domain must be started before you deploy the sample
+application.</p><ol>
+<li><b>Open the Administration Console by typing the following URL in a browser
+window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
+<li><b>Click the Applications node in the tree on the left.</b><p>The node
+expands to display the Web Applications subnode.</p></li>
+<li><b>Click the Web Applications subnode.</b><p>The Web Applications page
+is displayed.</p></li>
+<li><b>Click Deploy.</b><p>The Deploy Enterprise Applications/Modules page
+is displayed.</p></li>
+<li><b>Select Packaged File to be Uploaded to the Server, and click Browse.</b></li>
+<li><b>Navigate to the location in which you saved the <tt>hello.war</tt> sample,
+and then click Open.</b><p>You are returned to the Deploy Enterprise Applications/Modules
+page.</p></li>
+<li><b>Specify a description in the Description field, for example:</b><p><tt>hello
+</tt></p></li>
+<li><b>Accept the other default settings, and click OK.</b><p>You are returned
+to the Web Applications page.</p></li>
+<li><b>Run the sample application.</b><ul>
+<li><b>Click the <tt>Launch</tt> link on the Web Applications page.</b></li>
+<li><b>Type the following URL in a browser window:</b><pre><tt><b>http://localhost:8080/hello/
+</b></tt></pre></li>
+</ul></li>
+</ol><h6>See Also</h6><p>Refer to the Administration Console online help for
+further instructions.</p>  <a name="ggncd"></a><h5><img
+src="graphics/procedure.gif" alt=""> To View Deployed Applications in the
+Administration Console </h5> <ol>
+<li><b>Open the Administration Console by typing the following URL in a browser
+window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
+<li><b>Click the Applications node in the tree on the left.</b><p>The node
+expands to display the Web Applications subnode.</p></li>
+<li><b>Click the Web Applications subnode.</b><p>The list of deployed web
+applications is displayed in the Deployed Web Applications table on the Web
+Applications page.</p></li>
+</ol>  <a name="ggneh"></a><h5><img src="graphics/procedure.gif" alt=""> To
+Undeploy the Sample Application From the Administration Console</h5> <ol>
+<li><b>Open the Administration Console by typing the following URL in a browser
+window:</b><pre><tt><b>http://localhost:4848</b></tt></pre></li>
+<li><b>Click the Applications node in the tree on the left.</b><p>The node
+expands to display the Web Applications subnode.</p></li>
+<li><b>Click the Web Applications subnode.</b><p>The Web Applications page
+is displayed.</p></li>
+<li><b>Select the check box next to the applications you want to undeploy.</b></li>
+<li><b>Remove or disable the application.</b><ul>
+<li><b>To remove the application, click Undeploy.</b></li>
+<li><b>To disable the application, click Disable.</b></li>
+</ul></li>
+</ol>  <a name="ghgmi"></a><h4>Deploying an Application Automatically</h4> <p>To
+use automatic deployment, you can deploy applications by placing the applications
+in the <tt></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy
+</tt> directory.</p>  <a name="geyvj"></a><h5><img src="graphics/procedure.gif"
+alt=""> To Deploy the Sample Application Automatically</h5> <h6>Before You
+Begin</h6><p>The sample application must be available before you start this
+task. To download the sample, see <a href="#ghgis">Obtaining a Sample Application
+</a>.</p><ol>
+<li><b>Create a directory named <tt></tt><i>as-install</i><tt>/domains/</tt><i>domain-name
+</i><tt>/autodeploy</tt></b><p><i>domain-name</i> is the name of the domain
+for which you want to configure automatic deployment. For this example, use
+the default <tt>domain1</tt> domain:</p><pre><i>as-install</i>/domains/domain1/autodeploy
+</pre></li>
+<li><b>Copy the application WAR file to the <tt></tt><i>as-install</i><tt>/domains/
+</tt><i>domain-name</i><tt>/autodeploy</tt> directory.</b><p><tt><b>cp </b></tt><i>
+sample-dir</i><tt>/hello.war </tt><i>as-install</i><tt>/domains/</tt><i>domain-name
+</i><tt>/autodeploy<b></b></tt></p><p>Enterprise Server automatically discovers
+and starts the application.</p></li>
+</ol>  <a name="ggncw"></a><h5><img src="graphics/procedure.gif" alt=""> To
+Undeploy the Sample Application</h5> <ol>
+<li><b>Use the <tt>cd</tt> command to change to the domain's <tt>autodeploy</tt> directory.
+</b><p><tt><b>cd </b></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>
+/autodeploy<b></b></tt> </p></li>
+<li><b>Use the <tt>rm</tt> command to delete the application.</b><p><tt><b>rm
+hello.war</b></tt></p></li>
+</ol>  <a name="ghgqg"></a><h3>Removing Enterprise Server v3 Prelude Software</h3> <p>
+Uninstall the Enterprise Server Software after you have completed using this
+guide, if you no longer want to use the software.</p>  <a name="ggrkk"></a><h4><img
+src="graphics/procedure.gif" alt=""> To Remove Enterprise Server Software</h4><h6>
+Before You Begin</h6><p>Stop all Enterprise Server processes that are running.</p><ol>
+<li><b>Delete the <tt></tt><i>as-install</i><tt></tt> directory, including
+all subdirectories.</b></li>
+<li><b>Examine the contents of your directories to verify that the Enterprise
+Server v3 Prelude software is removed.</b><p></p></li>
+</ol>  <a name="ggkzh"></a><h3>For More Information</h3> <p>This section provides
+links to commonly used resources in the following areas:</p> <ul>
+<li><p><a href="#ghhis">Communities</a></p></li>
+<li><p><a href="#ghhii">Development Tools</a></p></li>
+<li><p><a href="#ghhft">Scripting</a></p></li>
+<li><p><a href="#ghhir">Product Documentation</a></p></li>
+<li><p><a href="#ghhio">Tutorials</a></p></li>
+<li><p><a href="#ghhjb">User Forum</a></p></li>
+</ul> <p>Many other add-on components for Enterprise Server v3 Prelude are
+available through Update Tool. </p>  <a name="ghhis"></a><h4>Communities</h4>  <ul>
+<li><p><a href="http://wiki.glassfish.java.net/">Enterprise Server Wiki</a> &mdash;
+Open source development community site that provides a wide range of topics
+related to Enterprise Server.</p></li>
+</ul>  <ul>
+<li><p><a href="https://glassfish.dev.java.net/javaee5/docs/DocsIndex.html">Enterprise
+Server Documentation</a> &mdash; Open source documentation community site
+that provides details about Enterprise Server documentation.</p></li>
+</ul>   <a name="ghhii"></a><h4>Development Tools</h4>  <ul>
+<li><p>NetBeans 6.5 &mdash; An integrated development environment and application
+platform for web, enterprise, desktop, and mobile applications. Download NetBeans<sup>
+TM</sup> IDE 6.5 with GlassFish<sup>TM</sup> Application Server and MySQL<sup>TM</sup> Community
+Server from <a href="http://download.netbeans.org/netbeans/6.1/final">NetBeans
+IDE 6.1 Download</a> page.</p></li>
+</ul>  <ul>
+<li><p><a href="https://glassfishpubins.dev.java.net">Eclipse</a> &mdash;
+A development environment that provides a framework, tools, and runtime for
+deploying and managing software.</p></li>
+</ul>   <a name="ghhft"></a><h4>Scripting</h4>  <ul>
+<li><p><a href="http://wiki.glassfish.java.net/Wiki.jsp?page=JRuby">JRuby
+and Rails</a>&mdash; A scripting language and a framework for developing web
+applications.</p></li>
+<li><p><a href="https://grizzly.dev.java.net/">Grizzly</a>&mdash; A framework
+for building scalable and robust servers using New I/O (NIO) APIs. The ability
+to embed components that support HTTP, Bayeux Protocol, Servlet and Comet
+is provided.</p></li>
+</ul>  <ul>
+<li><p><a href="http://docs.sun.com/doc/820-4868"><i>Getting Started With
+Project jMaki for Sun GlassFish Enterprise Server v3 Prelude</i></a>&mdash;
+A framework for creating Ajax web applications.</p></li>
+</ul>   <a name="ghhir"></a><h4>Product Documentation</h4>  <ul>
+<li><p><a href="http://docs.sun.com/doc/820-4494"><i>GlassFish v3 Application
+Server Release Notes</i></a> &mdash; Recent information, limitations, and
+tips for installing and working with Enterprise Server.</p></li>
+<li><p> <a href="http://docs.sun.com/coll/1343.7">Enterprise Server documentation
+</a> &mdash; Collection of guides that document Enterprise Server features
+and functions.</p></li>
+<li><p><a href="http://wiki.glassfish.java.net/Wiki.jsp?page=Screencasts">Enterprise
+Server Screencasts</a> &mdash; Collection of video recordings that demonstrate
+numerous features and examples for working with Enterprise Server and related
+projects.</p></li>
+</ul>  <ul>
+<li><p><a href="http://wiki.glassfish.java.net/Wiki.jsp?page=GlassFishFAQIndex">Enterprise
+Server FAQs</a> &mdash; Frequently asked questions covering various Enterprise
+Server topics.</p></li>
+</ul>   <a name="ghhio"></a><h4>Tutorials</h4>  <ul>
+<li><p><a href="http://java.sun.com/javaee/5/docs/tutorial/doc/">Java EE 5
+Tutorial</a> &mdash; Instructions, examples, and sample code for working with
+all Java platform core technologies.</p></li>
+</ul>   <a name="ghhjb"></a><h4>User Forum</h4>  <ul>
+<li><p><a href="http://forums.java.net/jive/forum.jspa?forumID=56">Glass Fish
+community</a> &mdash; Public online discussions that provide community support
+and tips for working with Enterprise Server.</p></li>
+</ul> </div><hr style="width: 80%; height: 2px;"><p class="copy"><a
+href="http://www.sun.com/company/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="http://www.sun.com/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp; Copyright
+2008 Sun Microsystems <br></p></body></html>
