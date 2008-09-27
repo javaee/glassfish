@@ -247,6 +247,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 	else {
 	    startWrapperFile = new File(installDir + "/glassfish/lib/asadmin-start-domain");
 	    wrapperWriter = new FileWriter(startWrapperFile);
+            wrapperWriter.write ("#!/bin/sh\n");
 	    wrapperWriter.write ("#\n");
 	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
 	    wrapperWriter.write ("#\n");
@@ -260,6 +261,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
 	    stopWrapperFile = new File(installDir + "/glassfish/lib/asadmin-stop-domain");
 	    wrapperWriter = new FileWriter(stopWrapperFile);
+            wrapperWriter.write ("#!/bin/sh\n");        
 	    wrapperWriter.write ("#\n");
 	    wrapperWriter.write ("# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
 	    wrapperWriter.write ("#\n");
