@@ -152,7 +152,7 @@
          <echo message="Staging wrappers"/>
 
          <copy todir="${stage.dir}">
-               <fileset dir="${resources.dir}/wrappers" excludes=".svn,wrapper.sh,engine-wrapper"/>               
+               <fileset dir="${resources.dir}/wrappers" excludes=".svn,engine-wrapper"/>               
          </copy>
 
 	 <echo message="Staging registration jar files"/>
