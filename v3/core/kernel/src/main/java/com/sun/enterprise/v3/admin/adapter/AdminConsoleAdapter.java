@@ -43,7 +43,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.*;
 
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.event.EventListener;

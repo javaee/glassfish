@@ -147,6 +147,20 @@
             <artifactId>webtier-all</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet.jsp</groupId>
+					<artifactId>jsp-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet.jsp.jstl</groupId>
+					<artifactId>jstl-api</artifactId>
+				</exclusion>
+	        </exclusions>             
     	</dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>

@@ -65,7 +65,6 @@
             <url>http://blogs.sun.com/harpreet/</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
-                <role>Lead</role>
                 <role>Developer</role>
             </roles>
         </developer>
@@ -75,7 +74,6 @@
             <url>http://blogs.sun.com/prashanth/</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
-                <role>Lead</role>
                 <role>Developer</role>
             </roles>
         </developer>
@@ -96,11 +94,6 @@
 			<artifactId>stats77</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
