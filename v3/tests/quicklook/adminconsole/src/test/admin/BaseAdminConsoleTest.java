@@ -58,7 +58,7 @@ public class BaseAdminConsoleTest {
     protected String adminUrl;
     private HttpClient client;
     private static final int AC_TEST_DELAY = 1000; // One second
-    private static final int AC_TEST_ITERATIONS = 100; // Ten seconds
+    private static final int AC_TEST_ITERATIONS = 10; // Ten seconds
     private String host;
     private int port;
     private volatile MBeanServerConnection mMBeanServerConnection;
@@ -245,3 +245,4 @@ public class BaseAdminConsoleTest {
         return conn;
     }
 }
+
