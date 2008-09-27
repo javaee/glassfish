@@ -109,6 +109,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.1</include>
                     <include>**/*.1m</include>
+                    <include>**/*.5asc</include>
                 </includes>
             </resource>
             <resource>
