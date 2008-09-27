@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!--
- DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ The contents of this file are subject to the terms 
+ of the Common Development and Distribution License 
+ (the License).  You may not use this file except in
+ compliance with the License.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ You can obtain a copy of the license at 
+ https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ glassfish/bootstrap/legal/CDDLv1.0.txt.
+ See the License for the specific language governing 
+ permissions and limitations under the License.
  
- The contents of this file are subject to the terms of either the GNU
- General Public License Version 2 only ("GPL") or the Common Development
- and Distribution License("CDDL") (collectively, the "License").  You
- may not use this file except in compliance with the License. You can obtain
- a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- language governing permissions and limitations under the License.
+ When distributing Covered Code, include this CDDL 
+ Header Notice in each file and include the License file 
+ at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ If applicable, add the following below the CDDL Header, 
+ with the fields enclosed by brackets [] replaced by
+ you own identifying information: 
+ "Portions Copyrighted [year] [name of copyright owner]"
  
- When distributing the software, include this License Header Notice in each
- file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- Sun designates this particular file as subject to the "Classpath" exception
- as provided by Sun in the GPL Version 2 section of the License file that
- accompanied this code.  If applicable, add the following below the License
- Header, with the fields enclosed by brackets [] replaced by your own
- identifying information: "Portions Copyrighted [year]
- [name of copyright owner]"
- 
- Contributor(s):
- 
- If you wish your version of this file to be governed by only the CDDL or
- only the GPL Version 2, indicate your decision by adding "[Contributor]
- elects to include this software in this distribution under the [CDDL or GPL
- Version 2] license."  If you don't indicate a single choice of license, a
- recipient has the option to distribute your version of this file under
- either the CDDL, the GPL Version 2 or to extend the choice of license to
- its licensees as provided above.  However, if you add GPL Version 2 code
- and therefore, elected the GPL Version 2 license, then the option applies
- only if the new code is made subject to such option by the copyright
- holder.
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
 -->
 
 <!DOCTYPE web-app
@@ -130,89 +117,6 @@
   <!--                       between checks to see if a JSP page needs to   -->
   <!--                       be recompiled. [0]                             -->
   <!--                                                                      -->
-  <!--   classdebuginfo      Should the class file be compiled with         -->
-  <!--                       debugging information?  [true]                 -->
-  <!--                                                                      -->
-  <!--   classpath           What class path should I use while compiling   -->
-  <!--                       generated servlets?  [Created dynamically      -->
-  <!--                       based on the current web application]          -->
-  <!--                                                                      -->
-  <!--   compiler            Which compiler Ant should use to compile JSP   -->
-  <!--                       pages.  See the Ant documentation for more     -->
-  <!--                       information. [javac]                           -->
-  <!--                                                                      -->
-  <!--   compilerSourceVM    Provides source compatibility with the         -->
-  <!--                       specified JDK release (same as -source         -->
-  <!--                       javac command-line switch)                     -->
-  <!--                                                                      -->
-  <!--   compilerTargetVM    Generates class files for specified VM version -->
-  <!--                       (same as -target javac command-line switch)    -->
-  <!--                                                                      -->
-  <!--   defaultBufferNone   Should the default for the buffer attribute of -->
-  <!--                       the page directive be "none"?  [false]         -->
-  <!--                                                                      -->
-  <!--   development         Is Jasper used in development mode? If true,   -->
-  <!--                       the frequency at which JSPs are checked for    -->
-  <!--                       modification may be specified via the          -->
-  <!--                       modificationTestInterval parameter. [true]     -->
-  <!--                                                                      -->
-  <!--   dumpSmap            Should the SMAP info for JSR45 debugging be    -->
-  <!--                       dumped to a file? [false]                      -->
-  <!--                       False if suppressSmap is true                  -->
-  <!--                                                                      -->
-  <!--   enablePooling       Determines whether tag handler pooling is      -->
-  <!--                       enabled  [true]                                -->
-  <!--                                                                      -->
-  <!--   enableTldValidation If set to true, all Tag Library Descriptor     -->
-  <!--                       (TLD) files referenced by the web application  -->
-  <!--                       are validated against their underlying schema  -->
-  <!--                       or DTD file [false]                            -->
-  <!--                                                                      -->
-  <!--   errorOnUseBeanInvalidClassAttribute                                -->
-  <!--                       Should Jasper issue an error when the value of -->
-  <!--                       the class attribute in an useBean action is    -->
-  <!--                       not a valid bean class?  [false]               -->
-  <!--                                                                      -->
-  <!--   fork                Tell Ant to fork compiles of JSP pages so that -->
-  <!--                       JSP pages are compiled in their own JVM        -->
-  <!--                       (separate from the JVM that the application    -->
-  <!--                       server is running in). [true]                  -->
-  <!--                                                                      -->
-  <!--   genStrAsByteArray   Should text strings be generated as bytes      -->
-  <!--                       (encoded with the page encoding), if the page  -->
-  <!--                       is not buffered?                               -->
-  <!--                       [true]                                         -->
-  <!--                                                                      -->
-  <!--   genStrAsCharArray   Should text strings be generated as char       -->
-  <!--                       arrays, to improve performance in some cases?  -->
-  <!--                       [false]                                        -->
-  <!--                                                                      -->
-  <!--   httpMethods         Comma separated list of HTTP methods supported -->
-  <!--                       by the JspServlet. Wildcard ("*") denotes      -->
-  <!--                       "ALL METHODS". [ALL METHODS]                   -->
-  <!--                                                                      -->
-  <!--   ieClassId           The class-id value to be sent to Internet      -->
-  <!--                       Explorer when using <jsp:plugin> tags.         -->
-  <!--                       [clsid:8AD9C840-044E-11D1-B3E9-00805F499D93]   -->
-  <!--                                                                      -->
-  <!--   initialCapacity     Initial capacity of HashMap mapping JSPs to    -->
-  <!--                       their corresponding servlets [32]              -->
-  <!--                                                                      -->
-  <!--   initial-capacity    Same as initialCapacity. If both are specified,-->
-  <!--                       initialCapacity takes precedence               -->
-  <!--                                                                      -->
-  <!--   javaEncoding        Java file encoding to use for generating java  -->
-  <!--                       source files. [UTF8]                           -->
-  <!--                                                                      -->
-  <!--   keepgenerated       Should we keep the generated Java source code  -->
-  <!--                       for each page instead of deleting it?          -->
-  <!--                       [true with JDK 5 and before, or for jspc]      -->
-  <!--                       [false otherwise]                              -->
-  <!--                                                                      -->
-  <!--   mappedfile          Should we generate static content with one     -->
-  <!--                       print statement per input line, to ease        -->
-  <!--                       debugging?  [true]                             -->
-  <!--                                                                      -->
   <!--   modificationTestInterval                                           -->
   <!--                       Causes a JSP (and its dependent files) to not  -->
   <!--                       be checked for modification during the         -->
@@ -222,12 +126,41 @@
   <!--                       to be checked on every access.                 -->
   <!--                       Used in development mode only. [0]             -->
   <!--                                                                      -->
-  <!--   reload-interval     Specifies the frequency (in seconds) at which  -->
-  <!--                       JSP files are checked for modifications.       -->
-  <!--                       Setting this value to 0 checks JSPs for        -->
-  <!--                       modifications on every request. Setting this   -->
-  <!--                       value to -1 disables checks for JSP            -->
-  <!--                       modifications and JSP recompilation.           -->
+  <!--   compiler            Which compiler Ant should use to compile JSP   -->
+  <!--                       pages.  See the Ant documentation for more     -->
+  <!--                       information. [javac]                           -->
+  <!--                                                                      -->
+  <!--   classdebuginfo      Should the class file be compiled with         -->
+  <!--                       debugging information?  [true]                 -->
+  <!--                                                                      -->
+  <!--   classpath           What class path should I use while compiling   -->
+  <!--                       generated servlets?  [Created dynamically      -->
+  <!--                       based on the current web application]          -->
+  <!--                                                                      -->
+  <!--   development         Is Jasper used in development mode? If true,   -->
+  <!--                       the frequency at which JSPs are checked for    -->
+  <!--                       modification may be specified via the          -->
+  <!--                       modificationTestInterval parameter. [true]     -->
+  <!--                                                                      -->
+  <!--   enablePooling       Determines whether tag handler pooling is      -->
+  <!--                       enabled  [true]                                -->
+  <!--                                                                      -->
+  <!--   fork                Tell Ant to fork compiles of JSP pages so that -->
+  <!--                       JSP pages are compiled in their own JVM        -->
+  <!--                       (separate from the JVM that the application    -->
+  <!--                       server is running in). [true]                  -->
+  <!--                                                                      -->
+  <!--   ieClassId           The class-id value to be sent to Internet      -->
+  <!--                       Explorer when using <jsp:plugin> tags.         -->
+  <!--                       [clsid:8AD9C840-044E-11D1-B3E9-00805F499D93]   -->
+  <!--                                                                      -->
+  <!--   javaEncoding        Java file encoding to use for generating java  -->
+  <!--                       source files. [UTF8]                           -->
+  <!--                                                                      -->
+  <!--   keepgenerated       Should we keep the generated Java source code  -->
+  <!--                       for each page instead of deleting it?          -->
+  <!--                       [true with JDK 5 and before, or for jspc]      -->
+  <!--                       [false otherwise]                              -->
   <!--                                                                      -->
   <!--   saveBytecode        Should the generated byte code be saved to     -->
   <!--                       .class files?  This option is meaningful only  -->
@@ -235,15 +168,43 @@
   <!--                       JDK 6) is used for javac compilations.         -->
   <!--                       [false] [true for jspc]                        -->
   <!--                                                                      -->
-  <!--   scratchdir          What scratch directory should we use when      -->
-  <!--                       compiling JSP pages?  [default work directory  -->
-  <!--                       for the current web application]               -->
+  <!--   mappedfile          Should we generate static content with one     -->
+  <!--                       print statement per input line, to ease        -->
+  <!--                       debugging?  [true]                             -->
+  <!--                                                                      -->
+  <!--   trimSpaces          Should white spaces in template text between   -->
+  <!--                       actions or directives be trimmed?  [false]     -->
   <!--                                                                      -->
   <!--   suppressSmap        Should the generation of SMAP info for JSR45   -->
   <!--                       debugging be suppressed?  [false]              -->
   <!--                                                                      -->
-  <!--   trimSpaces          Should white spaces in template text between   -->
-  <!--                       actions or directives be trimmed?  [false]     -->
+  <!--   dumpSmap            Should the SMAP info for JSR45 debugging be    -->
+  <!--                       dumped to a file? [false]                      -->
+  <!--                       False if suppressSmap is true                  -->
+  <!--                                                                      -->
+  <!--   genStrAsCharArray   Should text strings be generated as char       -->
+  <!--                       arrays, to improve performance in some cases?  -->
+  <!--                       [false]                                        -->
+  <!--                                                                      -->
+  <!--   genStrAsByteArray   Should text strings be generated as bytes      -->
+  <!--                       (encoded with the page encoding), if the page  -->
+  <!--                       is not buffered?                               -->
+  <!--                       [true]                                         -->
+  <!--                                                                      -->
+  <!--   defaultBufferNone   Should the default for the buffer attribute of -->
+  <!--                       the page directive be "none"?  [false]         -->
+  <!--                                                                      -->
+  <!--   errorOnUseBeanInvalidClassAttribute                                -->
+  <!--                       Should Jasper issue an error when the value of -->
+  <!--                       the class attribute in an useBean action is    -->
+  <!--                       not a valid bean class?  [false]               -->
+  <!--                                                                      -->
+  <!--   scratchdir          What scratch directory should we use when      -->
+  <!--                       compiling JSP pages?  [default work directory  -->
+  <!--                       for the current web application]               -->
+  <!--                                                                      -->
+  <!--   xpoweredBy          Determines whether X-Powered-By response       -->
+  <!--                       header is added by generated servlet  [true]   -->
   <!--                                                                      -->
   <!--   usePrecompiled      If true, it is assumed that JSPs have been     -->
   <!--                       precompiled, and their corresponding servlet   -->
@@ -256,8 +217,29 @@
   <!--   use-precompiled     Same as usePrecompiled. If both are specified, -->
   <!--                       usePrecompiled takes precedence                -->
   <!--                                                                      -->
-  <!--   xpoweredBy          Determines whether X-Powered-By response       -->
-  <!--                       header is added by generated servlet  [true]   -->
+  <!--   initialCapacity     Initial capacity of HashMap mapping JSPs to    -->
+  <!--                       their corresponding servlets [32]              -->
+  <!--                                                                      -->
+  <!--   initial-capacity    Same as initialCapacity. If both are specified,-->
+  <!--                       initialCapacity takes precedence               -->
+  <!--                                                                      -->
+  <!--   httpMethods         Comma separated list of HTTP methods supported -->
+  <!--                       by the JspServlet. Wildcard ("*") denotes      -->
+  <!--                       "ALL METHODS". [ALL METHODS]                   -->
+  <!--                                                                      -->
+  <!--   reload-interval     Specifies the frequency (in seconds) at which  -->
+  <!--                       JSP files are checked for modifications.       -->
+  <!--                       Setting this value to 0 checks JSPs for        -->
+  <!--                       modifications on every request. Setting this   -->
+  <!--                       value to -1 disables checks for JSP            -->
+  <!--                       modifications and JSP recompilation.           -->
+  <!--                                                                      -->
+  <!--   compilerSourceVM    Provides source compatibility with the         -->
+  <!--                       specified JDK release (same as -source         -->
+  <!--                       javac command-line switch)                     -->
+  <!--                                                                      -->
+  <!--   compilerTargetVM    Generates class files for specified VM version -->
+  <!--                       (same as -target javac command-line switch)    -->
   <!--                                                                      -->
   <!-- If you wish to use Jikes to compile JSP pages:                       -->
   <!-- * Set the "classpath" initialization parameter appropriately         -->

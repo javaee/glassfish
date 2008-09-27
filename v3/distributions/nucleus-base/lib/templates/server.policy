@@ -67,6 +67,11 @@ grant codeBase "file:${com.sun.aas.instanceRoot}/jbi/-" {
     permission java.security.AllPermission;
 };
 
+// Composite applications get all permissions by default
+grant codeBase "file:${com.sun.aas.instanceRoot}/applications/composite-applications/-" {
+    permission java.security.AllPermission;
+};
+
 // iMQ classes get all permissions by default
 grant codeBase "file:${com.sun.aas.imqLib}/-" {
     permission java.security.AllPermission;
@@ -114,11 +119,11 @@ grant codeBase "file:${com.sun.aas.javaRoot}/lib/tools.jar" {
     permission java.security.AllPermission;
 };
 
-//Required to register MBeans, fails otherwise
+//Loading MBeans from anywhere, to take care of side effects of 6235678.
 grant {
     permission javax.management.MBeanTrustPermission "register" ;
 };
-//Required to register MBeans, fails otherwise
+//Loading MBeans from anywhere, to take care of side effects of 6235678.
 
 
 // Basic set of required permissions granted to all remaining code
