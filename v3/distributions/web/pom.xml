@@ -169,11 +169,6 @@
             <type>pom</type>
     	</dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-ajp</artifactId>
-            <version>${project.version}</version>
-    	</dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>cli-optional</artifactId>
             <version>${project.version}</version>
@@ -252,11 +247,6 @@
            <artifactId>schemas</artifactId>
            <version>9.0.1</version>
             <type>distribution-fragment</type>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
-            <version>${project.version}</version>
         </dependency>
          <dependency>
             <groupId>org.glassfish.flashlight</groupId>
