@@ -59,7 +59,7 @@ public class JRubyTestNG {
     private String contextRoot = "helloapp";
     String host=System.getProperty("http.host");
     String port=System.getProperty("http.port");
-    String fileName="/tmp/JRuby_deploy.output";
+    //String fileName="/tmp/JRuby_deploy.output";
     BufferedReader in = null;
 
     /*
@@ -72,6 +72,8 @@ public class JRubyTestNG {
     @Test(groups ={ "pulse"} )
     public void deployTest() throws Exception {
        boolean result=true;
+       File dir1 = new File (".");
+       String fileName = dir1.getCanonicalPath() + "/deploy.output";
        System.out.println("Deployment output file: " + fileName );
        try {
            in = new BufferedReader(new FileReader(fileName));
@@ -84,7 +86,7 @@ public class JRubyTestNG {
            String testLine = null;        
            try {
               while (( line = in.readLine() )  != null ) {
-                System.out.println("The line read is: " + line);
+                //System.out.println("The line read is: " + line);
             	if(line.indexOf("Command deploy failed")!=-1){
                   result=false;
              	  testLine = line;

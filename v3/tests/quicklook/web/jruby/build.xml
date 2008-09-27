@@ -23,11 +23,11 @@
 </target>
 
 <target name="deploy">
-   <record name="/tmp/JRuby_deploy.output" action="start"/>
+   <record name="deploy.output" action="start"/>
    <antcall target="deploy-v3-impl">
       <param name="deployed.app" value="helloapp"/>
    </antcall>
-   <record name="/tmp/JRuby_deploy.output" action="stop"/>
+   <record name="deploy.output" action="stop"/>
 </target>
 
 <target  name="runtest">
