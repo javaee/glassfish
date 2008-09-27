@@ -383,11 +383,29 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                         tn.addChild(vs);
                     }
                 } else {
-                    //Fix it!
-                    TreeNode vs = TreeNodeFactory.createTreeNode("server", null, "web");
-                    tn.addChild(vs);
+                    //When the app is deployed without virtual-servers mentioned,
+                    // then it is implicitly associated to all the user vitual-servers
+                    addUserVirtualServers(tn);
                 }
                 return;
+            }
+        }
+    }
+
+    private void addUserVirtualServers(TreeNode tn) {
+        List<Config> lc = domain.getConfigs().getConfig();
+        Config config = null;
+        for (Config cf : lc) {
+            if (cf.getName().equals("server-config")) {
+                config = cf;
+                break;
+            }
+        }
+        httpService = config.getHttpService();
+        for (VirtualServer vs : httpService.getVirtualServer()) {
+            if (!vs.getId().equals("__asadmin")) {
+                TreeNode vsNode = TreeNodeFactory.createTreeNode(vs.getId(), null, "web");
+                tn.addChild(vsNode);
             }
         }
     }
@@ -706,8 +724,8 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             for (HttpListener hl : httpService.getHttpListener()) {
                 if (hl.getPort().equals(listenerPort)) {
                     httpListener = hl;
+                    break;
                 }
-                break;
             }
             VirtualServer virtualServer = null;
             for (VirtualServer vs : httpService.getVirtualServer()) {
