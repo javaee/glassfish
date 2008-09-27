@@ -44,7 +44,7 @@
         <artifactId>admingui</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>console-branding-plugin</artifactId>
+    <artifactId>console-theme-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Custom Plugin</name>
     <description>Custom Theme Plugin for Glassfish V3 Admin Console</description>
@@ -72,6 +72,11 @@
 
     <build>
         <plugins>
+            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
+                 Please note: we use the manifest goal only and not the bundle goal.
+                  The bundle goal can lead to very surprising results if the
+                  package names are not correctly specified. So,
+                  we use the jar plugin to generate the jar.-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -79,60 +84,65 @@
                     <!-- Enable the plugin for hk2-jar packaging type -->
                     <supportedProjectTypes>
                         <supportedProjectType>hk2-jar</supportedProjectType>
+                        <supportedProjectType>jar</supportedProjectType>
                         <supportedProjectType>bundle</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-			<!--
-			<Bundle-Classpath>.</Bundle-Classpath>
-			-->
-<!--
-FIXME: This is needed in order to embed the Woodstock files in this bundle.
-       Commenting this out for now so build doesn't break
-			<Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=true</Embed-Dependency>
--->
-                        <Export-Package>org.glassfish.admingui.customtheme.*</Export-Package>
-<!--
-FIXME: The org.glassfish.admingui.customtheme.* and branding.* entries below are added to avoid the following error:
-
-    SEVERE: Caused by: org.osgi.framework.BundleException: Unresolved constraint in bundle 52: package; (&(package=branding)(version>=10.0.0.SNAPSHOT))
-    SEVERE:	    at org.apache.felix.framework.Felix._resolveBundle(Felix.java:1725)
-
-       The MANIFEST file specifies the version, if the version info is omitted (I don't know how to make it generate that), it works also.
-       This needs to be fixed.
--->
-                        <Import-Package>org.glassfish.admingui.customtheme.*;resolution:=optional,branding.*;resolution:=optional,com.sun.webui.theme.*;resolution:=optional,*</Import-Package>
-			<_exportcontents>*</_exportcontents>
-			<Include-Resource>META-INF/inhabitants/default=target/classes/META-INF/inhabitants/default,{maven-resources}</Include-Resource> 
-
-			<!-- The following are MANIFEST entries needed by Woodstock -->
-			<X-SJWUIC-SWAED-Version>4.0</X-SJWUIC-SWAED-Version>
-			<X-SJWUIC-Theme-Version>4.3</X-SJWUIC-Theme-Version>
-			<X-SJWUIC-Theme-Timestamp>200807161313</X-SJWUIC-Theme-Timestamp>
-			<X-SJWUIC-Theme-Name>suntheme</X-SJWUIC-Theme-Name>
-			<X-SJWUIC-Theme-Prefix>/theme</X-SJWUIC-Theme-Prefix>
-			<X-SJWUIC-Theme-Messages>woodstock4_3.suntheme.messages.messages</X-SJWUIC-Theme-Messages>
-			<X-SJWUIC-Theme-Images>woodstock4_3.suntheme.properties.images</X-SJWUIC-Theme-Images>
-			<X-SJWUIC-Theme-JavaScript>woodstock4_3.suntheme.properties.javascript</X-SJWUIC-Theme-JavaScript>
-			<X-SJWUIC-Theme-ClassMapper>woodstock4_3.suntheme.properties.styles</X-SJWUIC-Theme-ClassMapper>
-			<X-SJWUIC-Theme-Stylesheets>woodstock4_3.suntheme.properties.stylesheets</X-SJWUIC-Theme-Stylesheets>
-			<X-SJWUIC-Theme-Templates>woodstock4_3.suntheme.properties.templates</X-SJWUIC-Theme-Templates>
+                        <!-- _include does not work. See Felix-620.
+                        <_include>osgi.bundle</_include>
+                        -->
+                        <!--<Embed-Dependency>*;artifactId=webui-jsf-suntheme;inline=true</Embed-Dependency>-->
+                        <Export-Package>
+                        org.glassfish.admingui.customtheme
+                        </Export-Package>
                     </instructions>
-		    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
                         <goals>
-                            <goal>bundle</goal>
+                            <goal>manifest</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.jar</exclude>
+                </excludes>
+            </resource>
+        </resources>
     </build>
-
-    <dependencies>
+<repositories>
+        <repository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${glassfish-api.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
@@ -144,5 +154,7 @@ FIXME: The org.glassfish.admingui.customtheme.* and branding.* entries below are
 	    <version>4.3.0.7</version>
 	    <scope>compile</scope>
 	</dependency>
+
+
     </dependencies>
 </project>
