@@ -305,9 +305,9 @@
         <property name="test.report" value="${basedir}/test-output"/>
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
-            <!-- fileset dir="${basedir}/lib">
-                <include name="**/*.jar"/>
-            </fileset -->
+            <fileset dir="${glassfish.home}/modules">
+               <include name="**/*.jar"/>
+            </fileset>
 	    <pathelement path="${plugin_classpath}"/>
             <pathelement location="${build.class.dir}"/>
         </path>

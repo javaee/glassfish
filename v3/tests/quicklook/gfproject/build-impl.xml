@@ -69,13 +69,12 @@
     </path>
     
     <path id="class.path">
-        <fileset dir="${glassfish.home}">
-            <include name="**/javax*.jar"/>
+        <fileset dir="${glassfish.home}/modules">
+            <include name="**/*.jar"/>
         </fileset>
         <pathelement location="${class.output}"/>
         <pathelement location="${test.class.output}"/>
         <pathelement path="${plugin_classpath}"/>
-	<pathelement path="${amx-api.jarpath}"/>
     </path>
     
     <!-- TestNG class fileset -->
@@ -100,12 +99,9 @@
                  fork="true"
                  source="1.5"
 		 target="1.5"
+		 classpathref="class.path"
                  srcdir="src/test"
                  destdir="${test.class.output}">
-		 <classpath>
-		   <pathelement path="${plugin_classpath}"/>
-		   <pathelement path="${amx-api.jarpath}"/>
-      		 </classpath>
         </javac>
     </target>
     
@@ -316,7 +312,7 @@
     <testng outputdir="${result.output}"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
-            classpathref="${plugin.classpath}">
+            classpathref="${class.path}">
         <xmlfileset dir="." includes="testng.xml"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
