@@ -150,6 +150,15 @@ public class CreateHttpListener implements AdminCommand {
                 return;
             }
         }
+
+        //ensure port number is integer 
+        if(!isInteger(listenerPort)) {
+            report.setMessage(localStrings.getLocalString("create.http.listener.nonnumeric",
+                "Http Listener port {0} is not a valid integer.", listenerPort));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;                    
+        } 
+
         //no need to check the other things (e.g. id) for uniqueness
         // ensure that the specified default virtual server exists
         if(!defaultVirtualServerExists(httpService)) {
@@ -223,6 +232,7 @@ public class CreateHttpListener implements AdminCommand {
             report.setMessage(localStrings.getLocalString("create.http.listener.fail", "{0} create failed ", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
@@ -240,5 +250,15 @@ public class CreateHttpListener implements AdminCommand {
                 return true;
         }
         return false;
+    }
+
+    private boolean isInteger(String string)
+    {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch(Exception exception) {
+            return false;
+        }
     }
 }
