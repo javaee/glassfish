@@ -28,6 +28,7 @@ import com.sun.pkg.client.LicenseAction;
 import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.Version;
+import java.util.Properties;
 
 
 /**
@@ -215,8 +216,15 @@ public class UpdateCenterHandlers {
                 int portNo = Integer.parseInt(port);
                 SocketAddress address = new InetSocketAddress(host, portNo);
                 image.setProxy(new Proxy(Proxy.Type.HTTP, address));
+                String url="http://host"+":"+portNo;
+                Properties prop = new Properties();
+                prop.setProperty("proxy.URL", url);
+                SystemInfo.initUpdateToolProps(prop);
             }else{
                 image.setProxy(null);
+                Properties prop = new Properties();
+                prop.setProperty("proxy.URL", "");
+                SystemInfo.initUpdateToolProps(prop);
             }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
