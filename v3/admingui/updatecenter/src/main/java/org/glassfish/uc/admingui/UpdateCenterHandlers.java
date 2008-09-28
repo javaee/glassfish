@@ -216,7 +216,7 @@ public class UpdateCenterHandlers {
                 int portNo = Integer.parseInt(port);
                 SocketAddress address = new InetSocketAddress(host, portNo);
                 image.setProxy(new Proxy(Proxy.Type.HTTP, address));
-                String url="http://host"+":"+portNo;
+                String url="http://"+host+":"+portNo;
                 Properties prop = new Properties();
                 prop.setProperty("proxy.URL", url);
                 SystemInfo.initUpdateToolProps(prop);
@@ -269,8 +269,8 @@ public class UpdateCenterHandlers {
 //    }
     
     private static List<Fmri> getAddOnList(Image image){
-            List<String> installed = new ArrayList<String>();
-                    for (Image.FmriState each : image.getInventory(null, false)) {
+        List<String> installed = new ArrayList<String>();
+        for (Image.FmriState each : image.getInventory(null, false)) {
             installed.add(each.fmri.getName());
         }
         List<Fmri> result = new ArrayList();
