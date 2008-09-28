@@ -526,8 +526,7 @@ public class RegisterHandlers {
         try{
             String urn = RegistrationUtil.getGFProductURN();
             sessionMap.put("productInstanceURN", urn);
-            System.out.println("getGFProductURN returns  " + urn);
-            //sessionMap.put("productInstanceURN", "0000");
+            //System.out.println("getGFProductURN returns  " + urn);
         }catch(Exception ex){
             System.out.println("!!!!!! Cannot get ProductURN, set to '0000' ");
             sessionMap.put("productInstanceURN", "0000");
