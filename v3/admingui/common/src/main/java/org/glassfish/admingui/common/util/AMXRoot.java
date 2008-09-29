@@ -422,26 +422,6 @@ public class AMXRoot {
      }
 
 
-     public  String getAppType(String name){
-        Set<AMXConfig> applications = queryMgr.queryJ2EETypesSet(APP_TYPES);
-        for(AMXConfig app : applications){
-            if (app.getName().equals(name)){
-                return app.getJ2EEType();
-            }
-        }
-        return "";
-    }
-
-      final private Set<String> APP_TYPES = GSetUtil.newUnmodifiableStringSet(
-        J2EEApplicationConfig.J2EE_TYPE,
-        WebModuleConfig.J2EE_TYPE,
-        EJBModuleConfig.J2EE_TYPE,
-        LifecycleModuleConfig.J2EE_TYPE,
-        RARModuleConfig.J2EE_TYPE,
-        AppClientModuleConfig.J2EE_TYPE,
-        CustomMBeanConfig.J2EE_TYPE
-     );
-
 
      /*
       * Utility method to return the image and the state string for display.
