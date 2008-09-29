@@ -63,6 +63,7 @@ import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 
 import java.util.Set;
 import java.util.Map;
+import java.util.List;
 
 /** 
 	Basic AMX tests that verify connectivity and ability to
@@ -121,8 +122,7 @@ public final class BasicAMXTests extends AMXTestBase {
     		}
     		else
     		{
-    			System.out.println( attrsMap.keySet().size() + " attrs fetched ok: " +
-    				JMXUtil.toString(Util.getExtra(amx).getObjectName()) );
+    			//System.out.println( attrsMap.keySet().size() + " attrs fetched ok: " + JMXUtil.toString(Util.getExtra(amx).getObjectName()) );
     		}
     		//debug( "BasicAMXTests: millis to get verify attributes: " + timing.elapsedMillis() );
     	}
@@ -280,7 +280,7 @@ public final class BasicAMXTests extends AMXTestBase {
     {
     	final SystemStatus ss = getDomainRoot().getSystemStatus();
     	
-    	ss.getRestartRequiredChanges();
+    	final List<Object[]> changes = ss.getRestartRequiredChanges();
     	
     	final Set<JDBCConnectionPoolConfig> pools = getQueryMgr().queryJ2EETypeSet(JDBCConnectionPoolConfig.J2EE_TYPE);
     	
