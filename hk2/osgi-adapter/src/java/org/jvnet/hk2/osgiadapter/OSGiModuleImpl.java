@@ -51,12 +51,13 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.InputStream;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.*;
 import java.net.URL;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -265,28 +266,45 @@ public final class OSGiModuleImpl implements Module {
     /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException {
         Holder<ClassLoader> holder = new Holder<ClassLoader>() {
             public ClassLoader get() {
-                return new ClassLoader() {
-                    @Override public synchronized Class<?> loadClass(
-                            String name) throws ClassNotFoundException {
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
-                                new Object[]{name, bundle});
-                        }
-                        start();
-                        try {
-                            final Class aClass = bundle.loadClass(name);
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
-                                    name+".class.getClassLoader() = {0}",
-                                    aClass.getClassLoader());
+                //Fix for Issue:5493
+                ClassLoader ret = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
+                    public java.lang.Object run() {
+                        return new ClassLoader() {
+                            @Override
+                            public synchronized Class<?> loadClass(
+                                    final String name) throws ClassNotFoundException {
+                                if (logger.isLoggable(Level.FINE)) {
+                                    logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
+                                            new Object[]{name, bundle});
+                                }
+                                start();
+                                try {
+                                    final Class aClass = (Class)
+                                           AccessController.doPrivileged(new PrivilegedAction() {
+                                        public java.lang.Object run() {
+                                            try {
+                                                return bundle.loadClass(name);
+                                            } catch (Throwable e) {
+                                                logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    });
+                                    if (logger.isLoggable(Level.FINE)) {
+                                        logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
+                                                name + ".class.getClassLoader() = {0}",
+                                                aClass.getClassLoader());
+                                    }
+                                    return aClass;
+                                } catch (RuntimeException e) {
+                                    logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
+                                    throw new ClassNotFoundException(e.getCause().getMessage(), e.getCause());
+                                }
                             }
-                            return aClass;
-                        } catch(Throwable e) {
-                            logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
-                            throw new ClassNotFoundException(e.getMessage(),e);
-                        }
+                        };
                     }
-                };
+                });
+                return ret;
             }
         };
 
@@ -310,15 +328,35 @@ public final class OSGiModuleImpl implements Module {
             public static final String META_INF_SERVICES = "META-INF/services/";
 
             @Override
-            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {
                 try {
-                    return bundle.loadClass(name);
-                } catch (ClassNotFoundException e) {
-                    // punch in. find the provider class, no matter where we are.
-                    OSGiModuleImpl m =
-                            (OSGiModuleImpl)registry.getProvidingModule(name);
-                    if(m!=null)
-                        return m.bundle.loadClass(name);
+                    //Fix for Issue:5493
+                    Class<?> ret =(Class<?>)
+                    AccessController.doPrivileged(new PrivilegedAction() {
+                        public java.lang.Object run() {
+                            try {
+                                return bundle.loadClass(name);
+                            } catch (ClassNotFoundException e) {
+                                // punch in. find the provider class, no matter where we are.
+                                OSGiModuleImpl m =
+                                        (OSGiModuleImpl) registry.getProvidingModule(name);
+                                if (m != null) {
+                                    try {
+                                        return m.bundle.loadClass(name);
+                                    } catch (ClassNotFoundException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+                                }
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
+                    return ret;
+                    
+                } catch (RuntimeException e) {
+                    if (e.getCause() instanceof ClassNotFoundException) {
+                        throw (ClassNotFoundException)e.getCause();
+                    }
                     throw e;
                 }
 
