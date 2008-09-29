@@ -42,7 +42,8 @@ import org.jvnet.hk2.component.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PipedOutputStream;
+import java.io.FileInputStream;
+import java.util.Properties;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.logging.Handler;
@@ -90,7 +91,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         
         // logging.properties nassaging.
         final LogManager logMgr = LogManager.getLogManager();
-        File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
+        final File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileNAme);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
         try {
@@ -115,15 +116,15 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                     for (Handler handler : logger.getHandlers()) {
                         if (handler.getFormatter() instanceof UniformLogFormatter) {
                             ((UniformLogFormatter) handler.getFormatter()).setDelegate(agentDelegate);
-                        } 
+                        }
                     }
                 }
 
-                // add the new handlers
+                // add the new handlers to the root logger
                 for (Handler handler : handlers) {
                     Logger rootLogger = Logger.global.getParent();
                     if (rootLogger!=null) {
-                        rootLogger.addHandler(handler);
+                       rootLogger.addHandler(handler);
                     }
                 }
 
@@ -132,35 +133,40 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
         // redirect stderr and stdout
         LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
-        final PrintStream pout = new  PrintStream(los, true);
+        PrintStream pout = new  PrintStream(los, true);
         System.setOut(pout);
 
         los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
-        final PrintStream perr = new PrintStream(los, true);
+        PrintStream perr = new PrintStream(los, true);
         System.setErr(perr);
+        
 
         // finally listen to changes to the logging.properties file
         if (logging!=null) {
             fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
                 public void changed(File changedFile) {
                     try {
-                        //System.out.println("file changed");
-                        //temporarily reset system out and err before calling the log manager
+                        Properties props = new java.util.Properties();
 
-                        PrintStream p = new PrintStream(new PipedOutputStream());
-                        System.setOut(p);
-                        System.setErr(p);
+                        FileInputStream fis = new java.io.FileInputStream (new java.io.File( logging.getAbsolutePath()));
+                        props.load(fis);
+                        //reseting the log levels if needed
+                        Enumeration<String> loggerNames = logMgr.getLoggerNames();
+                        while(loggerNames.hasMoreElements()) {
+                            String loggerName = loggerNames.nextElement();
+                            String level = props.getProperty(loggerName+".level");
+                            if ( level != null) {
+                                Level l = Level.parse(level);
+                                logMgr.getLogger(loggerName).setLevel(l);
+                                if (loggerName.equals(""))    loggerName = "rootLogger";
+                                logger.log(Level.INFO,"Updated level for "+loggerName +" to "+logMgr.getLogger(loggerName).getLevel().toString());
+                             }
 
-                        logMgr.readConfiguration();
-                        logger.log(Level.INFO,  "Logger configuration updated");
-                        // redirect stderr and stdout back
-                        System.setOut(pout);
-                        System.setErr(perr);
-                        p.close();
-
-
+                        }
+                        fis.close();
+                        
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
+                        logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                     }
 
                 }
