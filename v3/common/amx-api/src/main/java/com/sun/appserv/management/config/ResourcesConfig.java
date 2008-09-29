@@ -464,7 +464,6 @@ public interface ResourcesConfig
 	public ResourceConfig				getResourceConfig( String name );
 
     /**
-	*/
 	public CustomMBeanConfig    createCustomMBeanConfig(
                         	        String name,
                         	        String implClassname,
@@ -472,15 +471,11 @@ public interface ResourcesConfig
                         	        @ResolveTo(Boolean.class) String enabled,
                         	        Map<String,String> reserved );
                         	        
-    /** 
-     */
 	public void                  removeCustomMBeanConfig( String name );
 	    
 	
-	/**
-	 */
 	public Map<String,CustomMBeanConfig>    getCustomMBeanConfigMap();
-
+	 */
 }
 
 

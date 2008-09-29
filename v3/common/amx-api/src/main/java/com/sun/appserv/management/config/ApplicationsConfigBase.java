@@ -68,20 +68,13 @@ public interface ApplicationsConfigBase
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
         @deprecated
-	 */
 	public Map<String,J2EEApplicationConfig>			getJ2EEApplicationConfigMap();
+	 */
     
     
 	/**
-		@return Map, keyed by name of {@link J2EEApplicationConfig}
-		@see #getEJBModuleConfigMap
-		@see #getWebModuleConfigMap
-		@see #getAppClientModuleConfigMap
-		@see #getRARModuleConfigMap
-		@see #getLifecycleModuleConfigMap
-		@see #getConnectorModuleConfigMap
-		@see #getExtensionModuleConfigMap
-		@see #getJ2EEApplicationConfigMap
+		@return Map, keyed by name of the item
+        
         @since Appserver V3
 	 */
 	public Map<String,ApplicationConfig>    getApplicationConfigMap();
@@ -96,8 +89,8 @@ public interface ApplicationsConfigBase
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,EJBModuleConfig>			getEJBModuleConfigMap( );
+	 */
 	
 	/**
 		@return Map, keyed by name of {@link WebModuleConfig}.
@@ -108,8 +101,8 @@ public interface ApplicationsConfigBase
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,WebModuleConfig>			getWebModuleConfigMap( );
+	 */
 	
 	/**
 		@return Map, keyed by name of {@link RARModuleConfig}.
@@ -120,8 +113,8 @@ public interface ApplicationsConfigBase
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,RARModuleConfig>			getRARModuleConfigMap();
+	 */
 	
 	/**
 		@return Map, keyed by name of {@link AppClientModuleConfig}.
@@ -132,8 +125,8 @@ public interface ApplicationsConfigBase
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,AppClientModuleConfig>			getAppClientModuleConfigMap();
+	 */
 	
 	/**
 		@return Map, keyed by name of {@link LifecycleModuleConfig}.
@@ -144,8 +137,8 @@ public interface ApplicationsConfigBase
 		@see #getAppClientModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,LifecycleModuleConfig>			getLifecycleModuleConfigMap();
+	 */
 	
 	/**
 		@return Map, keyed by name of {@link LifecycleModuleConfig}.
@@ -155,8 +148,8 @@ public interface ApplicationsConfigBase
 		@see #getRARModuleConfigMap
 		@see #getAppClientModuleConfigMap
 		@see #getConnectorModuleConfigMap
-	 */
 	public Map<String,ExtensionModuleConfig>			getExtensionModuleConfigMap();
+	 */
     
 
 	/**
@@ -168,8 +161,8 @@ public interface ApplicationsConfigBase
 		@see #getAppClientModuleConfigMap
 		@see #getLifecycleModuleConfigMap
 		@see #getExtensionModuleConfigMap
-	 */
 	public Map<String,ConnectorModuleConfig> getConnectorModuleConfigMap();
+	 */
     
 //-----------------------------------------------------------------------------------------
    /**
@@ -207,13 +200,13 @@ public interface ApplicationsConfigBase
 		new module
 		@param enabled whether the MBean should load
 		@param reserved reserved
-	*/
 	public CustomMBeanConfig    createCustomMBeanConfig(
                         	        String name,
                         	        String implClassname,
                         	        String objectName,
                                     @ResolveTo(Boolean.class) String enabled,
                         	        Map<String,String> reserved );
+	*/
                         	        
     /** 
         Remove a CustomMBeanConfig.  All references to it are also removed.
@@ -223,14 +216,14 @@ public interface ApplicationsConfigBase
         <li>Are running MBeans first stopped?</li>
         </ul>
         @param name    name as returned by {@link CustomMBeanConfig#getName}
-     */
 	public void                  removeCustomMBeanConfig( String name );
+     */
 	    
 	
 	/**
 		@return Map, keyed by name of {@link CustomMBeanConfig}.
-	 */
 	public Map<String,CustomMBeanConfig>    getCustomMBeanConfigMap();
+	 */
     
     
 //-----------------------------------------------------------------------------------------
@@ -262,7 +255,6 @@ public interface ApplicationsConfigBase
 		        this module does not load properly.   
 		@param enabled  whether to load the module at startup
 		@return a LifecycleModuleConfig
-	*/
 	public LifecycleModuleConfig	createLifecycleModuleConfig( String name,
 	                            String description,
 	                            String classname,
@@ -271,13 +263,14 @@ public interface ApplicationsConfigBase
 	                            @ResolveTo(Boolean.class) String isFailureFatal,
 	                            @ResolveTo(Boolean.class) String enabled,
 	                            Map<String,String>		reserved );
+	*/
 
 	/**
 		Removes an existing lifecycle module.
 		    
 		@param name the name of the lifecycle module to be removed.
-	*/
 	public void			removeLifecycleModuleConfig( String name );
+	*/
 
 
 }
