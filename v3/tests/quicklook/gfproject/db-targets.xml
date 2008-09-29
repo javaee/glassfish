@@ -35,6 +35,45 @@
  holder.
 -->
 <project name="db-targets" default="all" basedir=".">
+
+<target name="start-derby" depends="setOSConditions" if="v3">
+    <antcall target="start-derby-unix"/>
+    <antcall target="start-derby-windows"/>
+</target>
+
+<target name="start-derby-windows" if="isWindows">
+    <exec executable="cmd" spawn="true">
+        <arg value="/c"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
+        <arg value="start-database"/>
+    </exec>
+</target>
+
+<target name="start-derby-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <arg value="start-database"/>
+    </exec>
+</target>
+
+<target name="stop-derby" depends="setOSConditions" if="v3">
+    <antcall target="stop-derby-unix"/>
+    <antcall target="stop-derby-windows"/>
+</target>
+
+<target name="stop-derby-windows" if="isWindows">
+    <exec executable="cmd" spawn="true">
+        <arg value="/c"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
+        <arg value="stop-database"/>
+    </exec>
+</target>
+
+<target name="stop-derby-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <arg value="stop-database"/>
+    </exec>
+</target>
+
 <target name="startDerby" depends="initprop">
     <echo message="Starting Derby DB servers in the Network Mode"/>    
     
@@ -58,14 +97,7 @@
 </target>
 
 <target name="setup.toplink" if="v3">
-    <!--<property name="download.dir" value="."/>
-    <property name="toplink.url" 
-    value="http://download.java.net/javaee5/v2_branch/promoted/shared/glassfish-persistence/glassfish-persistence-installer-v2-b58g.jar"/>
-    <get src="${toplink.url}"    
-         dest="${download.dir}/toplink.jar" 
-         verbose="true"
-         usetimestamp="true"/>-->
-         
+    <property name="download.dir" value="."/>
          <echo message="as a temporary measure,toplink is checked in at ${basedir}/lib"/>
          <copy todir="${glassfish.home}/lib" verbose="true">
             <fileset dir="${basedir}/lib/toplink">
@@ -95,10 +127,10 @@
          autocommit="false"
          onerror="abort" >
         <transaction src="sql/create_${db.type}.sql"/>
-        <!--<transaction>
+        <transaction>
 		    select city from web_customer where cust_id=1;
 		    select * from web_customer where custname Like 'Alice_1';
-	    </transaction>-->
+	    </transaction>
 	    
     </sql>
     
