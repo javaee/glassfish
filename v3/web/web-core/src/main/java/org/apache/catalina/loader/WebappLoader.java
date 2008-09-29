@@ -1096,7 +1096,6 @@ public class WebappLoader
                                         classRepository.getAbsolutePath()));
 
             // Adding the repository to the class loader
-            classLoader.addRepository(classesPath + "/", classRepository);
             loaderRepositories.add(classesPath + "/" );
         }
 
@@ -1177,22 +1176,6 @@ public class WebappLoader
                             continue;
                     }
 
-                    /** IASRI 4670099
-                    JarFile jarFile = new JarFile(destFile);
-                    classLoader.addJar(filename, jarFile, destFile);
-                    **/
-
-                    // START OF IASRI 4670099
-                    try {
-                        JarFile jarFile = new JarFile(destFile);
-                        classLoader.addJar(filename, jarFile, destFile);
-                    } catch (Exception ex) {
-                        // Catch the exception if there is an empty jar file
-                        // Should ignore and continute loading other jar files 
-                        // in the dir
-                    }
-                    // END OF IASRI 4670099
-	
                     loaderRepositories.add( filename );
 
                 }

@@ -1353,8 +1353,6 @@ public class WebModule extends PwcWebModule {
         }
         // END S1AS 6178005
 
-        addLibs(loader);
-
         // START PE 4985680
         /**
          * Adds the given package name to the list of packages that may
@@ -1592,44 +1590,6 @@ public class WebModule extends PwcWebModule {
         }
     }
 
-    /**
-     * Adds all libraries specified via the --libraries deployment option to
-     * the given loader associated with the given web context.
-     *
-     * @param loader The loader to configure
-     */
-    private void addLibs(Loader loader) {
-
-        String list = ASClassLoaderUtil.getLibrariesForModule(WebModule.class,
-                                                              getID());
-        if (list == null) {
-            return;
-        }
-        String[] libs = list.split(",");
-        if (libs == null) {
-            return;
-        }
-
-        File libDir = webContainer.getLibPath();
-        String libDirPath = libDir.getAbsolutePath();
-        String appLibsPrefix = libDirPath + File.separator + "applibs"
-                + File.separator;
-
-        for (int i=0; i<libs.length; i++) {
-            try {
-                URL url = new URL(libs[i]);
-                loader.addRepository(libs[i]);
-            } catch (MalformedURLException e) {
-                // Not a URL, interpret as file
-                File file = new File(libs[i]);
-                if (file.isAbsolute()) {
-                    loader.addRepository("file:" + file.getAbsolutePath());
-                } else {
-                    loader.addRepository("file:" + appLibsPrefix + libs[i]);
-                }
-            }
-        }
-    }
 
     /**
      * Configure the session manager according to the persistence-type

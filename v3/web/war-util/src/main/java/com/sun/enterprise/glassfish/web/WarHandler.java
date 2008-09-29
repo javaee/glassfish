@@ -46,6 +46,8 @@ import org.apache.naming.resources.FileDirContext;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
@@ -73,7 +75,8 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 
-    Logger logger = LogDomains.getLogger(WarHandler.class, LogDomains.WEB_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(WarHandler.class, LogDomains.WEB_LOGGER);
+    private static final ResourceBundle rb = logger.getResourceBundle();
 
     public String getArchiveType() {
         return "war";               
@@ -117,13 +120,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
         boolean delegate = sunWebXmlParser.isDelegate();
         cloader.setDelegate(delegate);
-        //XXX
-        /*
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("WebModule[" + getPath() +
+            logger.fine("WebModule[" + sunWebXmlParser.getBase() +
                         "]: Setting delegate to " + delegate);
         }
-        */
 
         String extraClassPath = sunWebXmlParser.getExtraClassPath();
         if (extraClassPath != null) {
@@ -134,20 +134,16 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             if (pathElements != null) {
                 for (String path : pathElements) {
                     path = path.replace("\\:", ":");
-                    //XXX
-                    /*
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("WarHandler[" + archive.getURI() +
+                        logger.fine("WarHandler[" + sunWebXmlParser.getBase() +
                                     "]: Adding " + path +
                                     " to the classpath");
                     }
-                    */
 
                     try {
                         URL url = new URL(path);
                         cloader.addRepository(path);
                     } catch (MalformedURLException mue1) {
-                        System.out.println("mue1 ~~~");
                         mue1.printStackTrace();
                         // Not a URL, interpret as file
                         File file = new File(path);
@@ -164,14 +160,11 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             cloader.addRepository(url.toString());
                         } catch (MalformedURLException mue2) {
                             mue2.printStackTrace();
-                            //XXX
-                            /*
                             String msg = rb.getString(
                                 "webcontainer.classpathError");
                             Object[] params = { path };
                             msg = MessageFormat.format(msg, params);
                             logger.log(Level.SEVERE, msg, mue2);
-                            */
                         }
                     }
                 }
@@ -209,6 +202,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     private class SunWebXmlParser {
+        private String baseStr = null;
         private XMLStreamReader parser = null;
 
         //XXX need to compute the default delegate depending on the version of dtd
@@ -225,6 +219,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         private String extraClassPath = null;
 
         SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+            this.baseStr = baseStr;
             InputStream input = null;
             File f = new File(baseStr, "WEB-INF/sun-web.xml");
             if (f.exists()) {
@@ -273,12 +268,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                                 if (parser.getAttributeValue(i) != null) {
                                     // Log warning if dynamic-reload-interval is specified
                                     // in sun-web.xml since it is not supported
-                                    // XXX
-                                    /*
                                     if (logger.isLoggable(Level.WARNING)) {
                                         logger.log(Level.WARNING, "webcontainer.dynamicReloadInterval");
                                     }
-                                    */
                                 }
                             }
                         }
@@ -297,24 +289,18 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                         }
 
                         if (propName == null || value == null) {
-                            //XXX
-                            /*
                             throw new IllegalArgumentException(
-                                rb.getString("webcontainer.nullWebProperty")):
-                            */
+                                rb.getString("webcontainer.nullWebProperty"));
                         }
 
                         if ("ignoreHiddenJarFiles".equals(propName)) {
                             ignoreHiddenJarFiles = Boolean.valueOf(value);
                         } else {
-                            //XXX
-                            /*
                             Object[] params = { propName, value };
                             if (logger.isLoggable(Level.WARNING)) {
                                 logger.log(Level.WARNING, "webcontainer.invalidProperty",
                                            params);
                             }
-                            */
                         }
                     } else {
                         skipSubTree(name);
@@ -349,6 +335,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     return;
                 }
             }
+        }
+
+        String getBase() {
+            return baseStr;
         }
 
         boolean isDelegate() {
