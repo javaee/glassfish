@@ -42,12 +42,6 @@
 package org.glassfish.admingui.common.util;
 
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.Properties;
 
 //TODO-V3
@@ -58,28 +52,9 @@ import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
-import com.sun.appserv.management.config.J2EEApplicationConfig;
-import com.sun.appserv.management.config.EJBModuleConfig;
-import com.sun.appserv.management.config.WebModuleConfig;
-import com.sun.appserv.management.config.RARModuleConfig;
-import com.sun.appserv.management.config.AppClientModuleConfig;
-import com.sun.appserv.management.config.ResourceAdapterConfig;
 
-import com.sun.appserv.management.ext.runtime.RuntimeMgr;
-import com.sun.jsftemplating.annotation.Handler;
-import com.sun.jsftemplating.annotation.HandlerInput;
-import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-
 import java.net.URI;
-import javax.management.ObjectName;
-
-
-import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AMXRoot;
-import org.glassfish.admingui.common.util.TargetUtil;
-
-
 
 /**
  *
