@@ -40,8 +40,6 @@
     getAmxRoot(amxRoot=>$attribute{amxRoot});
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
-
-
 />
 
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->

@@ -47,6 +47,24 @@
         <sun:head id="head" title="$resource{i18n.common.restartRequired}">
             <sun:script url="/resource/js/adminjsf.js" />
             <sun:script url="/resource/js/restart.js" />
+            <f:verbatim>
+            <script type="text/javascript">
+			    var reasonsHidden = true;
+
+                function showRestartReasons() {
+                    var el = document.getElementById('restartReasons');
+                    var toggle = document.getElementById('form:title:restartReasonsToggle');
+                    if (reasonsHidden) {
+                        toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_expanded.gif";
+                        el.style.visibility = "visible";
+                    } else {
+                        toggle.src = "#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif";
+                        el.style.visibility = "hidden";
+                    }   
+                    reasonsHidden = !reasonsHidden;
+                }
+            </script>
+            </f:verbatim>
         </sun:head>
         <sun:body id="body" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form">      
@@ -55,7 +73,7 @@
                 <sun:title id="title" title="$resource{i18n.common.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
                     "<br/>
                     "<a href="#" onclick="showRestartReasons()">
-                    <sun:image id="restartReasonsToggle" alt="show reasons" url="/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif"/> 
+                    <sun:image id="restartReasonsToggle" alt="show reasons" url="#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif"/> 
                     "</a>
                     "$resource{i18n.restart.showRestartReasonList}
                     "<br/>

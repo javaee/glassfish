@@ -1,5 +1,4 @@
-/*
- * The contents of this file are subject to the terms 
+/* The contents of this file are subject to the terms 
  * of the Common Development and Distribution License 
  * (the License).  You may not use this file except in
  * compliance with the License.
@@ -24,25 +23,10 @@
 /*===========================================================================*/
 /* synchronizeRestartRequired */
 /*===========================================================================*/
-var reasonsHidden = true;
-
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
     if (currentRestartStatus != oldRestartStatus) {
         parent.parent.frames["header"].location.reload();
         parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '103,*', 0);
     }
     return true;
-}
-
-function showRestartReasons() {
-    var el = document.getElementById('restartReasons');
-    var toggle = document.getElementById('form:title:restartReasonsToggle');
-    if (reasonsHidden) {
-        toggle.src = "/admingui/theme/woodstock4_3/suntheme/images/table/grouprow_expanded.gif";
-        el.style.visibility = "visible";
-    } else {
-        toggle.src = "/admingui/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif";
-        el.style.visibility = "hidden";
-    }
-    reasonsHidden = !reasonsHidden;
 }
