@@ -398,7 +398,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-theme-plugin</artifactId>
+            <artifactId>console-branding-plugin</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
