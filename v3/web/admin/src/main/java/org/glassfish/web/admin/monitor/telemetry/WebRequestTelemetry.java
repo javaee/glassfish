@@ -121,15 +121,21 @@ public class WebRequestTelemetry implements PostConstruct {
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response) {
+        logger.finest("[TM]requestStartEvent Unprocessed received - virtual-server = " +
+                            request.getServerName() + ":" + request.getServerPort() + 
+                            ": application = " + request.getContextPath() + " : servlet = " +
+                            request.getServletPath() + " : Expecting (vsName, appName) = (" +
+                            virtualServerName + ", " + moduleName + ")");
         if ((virtualServerName != null) && (moduleName != null)) {
             String vs = WebTelemetryBootstrap.getVirtualServerName(request.getServerName(),
                                                 String.valueOf(request.getServerPort()));
             String contextPath = request.getContextPath();
-            String appName = WebTelemetryBootstrap.getAppName(contextPath);
-            if (vs.equals(virtualServerName) && appName.equals(moduleName)){
+            String appName = (contextPath == null)? null : 
+                                WebTelemetryBootstrap.getAppName(contextPath);
+            if ((appName != null) && vs.equals(virtualServerName) && appName.equals(moduleName)){
                 //increment counts
                 requestProcessTime.entry();
-                logger.finest("[TM]requestStartEvent received - virtual-server = " +
+                logger.finest("[TM]requestStartEvent resolved - virtual-server = " +
                                     request.getServerName() + ": application = " +
                                     contextPath + " :appName = " + appName + " : servlet = " +
                                     request.getServletPath() + " : port = " +
@@ -138,7 +144,7 @@ public class WebRequestTelemetry implements PostConstruct {
         }
         else {
             requestProcessTime.entry();
-            logger.finest("[TM]requestStartEvent received - virtual-server = " +
+            logger.finest("[TM]requestStartEvent resolved - virtual-server = " +
                                 request.getServerName() + ": application = " +
                                 request.getContextPath() + " : servlet = " +
                                 request.getServletPath());
@@ -150,17 +156,44 @@ public class WebRequestTelemetry implements PostConstruct {
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
         @ProbeParam("statusCode") int statusCode) {
-	//Do something with timeTaken, like calling Harry's TimeStats
-        requestProcessTime.exit();
-        if (statusCode > 400)
-            errorCount.increment();
-        
-        logger.finest("[TM]requestEndEvent received - virtual-server = " +
+        logger.finest("[TM]requestEndEvent Unprocessed received - virtual-server = " +
                             request.getServerName() + ": application = " +
                             request.getContextPath() + " : servlet = " +
                             request.getServletPath() + " :Response code = " +
+                            statusCode + " : Expecting (vsName, appName) = (" +
+                            virtualServerName + ", " + moduleName + ")");
+        if ((virtualServerName != null) && (moduleName != null)) {
+            String vs = WebTelemetryBootstrap.getVirtualServerName(request.getServerName(),
+                                                String.valueOf(request.getServerPort()));
+            String contextPath = request.getContextPath();
+            String appName = (contextPath == null)? null : 
+                                WebTelemetryBootstrap.getAppName(contextPath);
+            if ((appName != null) && vs.equals(virtualServerName) && appName.equals(moduleName)){
+                //increment counts
+                requestProcessTime.exit();
+                if (statusCode > 400)
+                    errorCount.increment();
+                logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
+                                    request.getServerName() + ": application = " +
+                                    contextPath + " :appName = " + appName + " : servlet = " +
+                                    request.getServletPath() + " : port = " +
+                                    request.getServerPort() + " :Response code = " +
                             statusCode + " :Response time = " +
                             requestProcessTime.getTime());
+            }
+        }
+        else {
+            requestProcessTime.exit();
+            if (statusCode > 400)
+                errorCount.increment();
+            logger.finest("[TM]requestEndEvent resolved - virtual-server = " +
+                                request.getServerName() + ": application = " +
+                                request.getContextPath() + " : servlet = " +
+                                request.getServletPath() + " : port = " +
+                                request.getServerPort()  + " :Response code = " +
+                                statusCode + " :Response time = " +
+                                requestProcessTime.getTime());
+        }
     }
 
     

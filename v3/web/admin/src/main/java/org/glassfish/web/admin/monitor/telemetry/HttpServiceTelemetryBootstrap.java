@@ -71,7 +71,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
         Level dbgLevel = Level.FINEST;
         Level defaultLevel = logger.getLevel();
         if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
-            logger.setLevel(dbgLevel);
+            //logger.setLevel(dbgLevel);
         }
         logger.finest("[Monitor]In the HttpServiceRequestTelemetry bootstrap ************");
 

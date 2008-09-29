@@ -341,7 +341,8 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
                 //Get all virtual servers for the app
                 Collection<TreeNode> vsNodes = appNode.getChildNodes();
                 for (TreeNode vsNode : vsNodes) {
-                    //Create sessionTM for each vsNode
+                    //Create TM's for each vsNode
+                    buildWebRequestTelemetryForVS(vsNode, appName);
                     buildJSPTelemetryForVS(vsNode, appNode.getName());
                     buildServletTelemetryForVS(vsNode, appName);
                     buildSessionTelemetryForVS(vsNode, appName);
@@ -731,6 +732,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             for (VirtualServer vs : httpService.getVirtualServer()) {
                 if (vs.getHosts().contains(hostName) && vs.getHttpListeners().contains(httpListener.getId())) {
                     virtualServer = vs;
+                    break;
                 }
             }
             return virtualServer.getId();
