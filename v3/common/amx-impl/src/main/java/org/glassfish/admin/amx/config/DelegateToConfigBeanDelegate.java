@@ -128,7 +128,8 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         final String xmlName = info.getXMLName();
         
-        //debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + amxName + " => " + xmlName );
+        //debug( "DelegateToConfigBeanDelegate.getAttribute: amx => xml: " + amxName + " => " + xmlName );
+        //debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
         if ( info instanceof ConfiguredHelper.AttributeInfo )
         {
             result = mConfigBean.rawAttribute( xmlName );
@@ -139,7 +140,14 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             {
                 final List<?> leaf = mConfigBean.leafElements(xmlName);
                 if ( leaf != null ) {
-                    result = (String)leaf.get(0);
+                    try
+                    {
+                        result = (String)leaf.get(0);
+                    }
+                    catch( final Exception e )
+                    {
+                        // doesn't exist, return null
+                    }
                 }
             }
             else if ( info.getReturnType() == List.class )
@@ -155,7 +163,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 throw new IllegalArgumentException("Unsupported return type: " + info.getReturnType().getName() );
             }
         }
-       // debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        //debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
