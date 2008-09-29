@@ -51,19 +51,12 @@
 
 package org.glassfish.web.admingui.handlers;
 
-import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.config.CustomMBeanConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
-import com.sun.appserv.management.config.EJBModuleConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.HTTPServiceConfig;
-import com.sun.appserv.management.config.J2EEApplicationConfig;
-import com.sun.appserv.management.config.LifecycleModuleConfig;
-import com.sun.appserv.management.config.ObjectTypeValues;
-import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
-import com.sun.appserv.management.config.WebModuleConfig;
+import com.sun.appserv.management.config.ObjectTypeValues;
 
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
