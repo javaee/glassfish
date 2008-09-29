@@ -77,8 +77,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.management.ObjectName;
 
@@ -445,25 +443,7 @@ public class WebAppHandlers {
     }
     
       static private Map<String, String> displayMap = new HashMap();
-      static private Map<String, String> editMap = new HashMap();
-      static private Map<String, String> typeMap = new HashMap();
       static{
-        editMap.put(J2EEApplicationConfig.J2EE_TYPE, "enterpriseApplicationsEdit.jsf");
-        editMap.put(WebModuleConfig.J2EE_TYPE, "webApplicationsEdit.jsf");
-        editMap.put(EJBModuleConfig.J2EE_TYPE, "ejbModulesEdit.jsf");
-        editMap.put(LifecycleModuleConfig.J2EE_TYPE, "lifecycleModulesEdit.jsf");
-        editMap.put(RARModuleConfig.J2EE_TYPE, "connectorModulesEdit.jsf");
-        editMap.put(AppClientModuleConfig.J2EE_TYPE, "appclientModulesEdit.jsf");
-        editMap.put(CustomMBeanConfig.J2EE_TYPE, "customMBeansEdit.jsf");
-        
-        typeMap.put(J2EEApplicationConfig.J2EE_TYPE, GuiUtil.getMessage("tree.enterpriseApps"));
-        typeMap.put(WebModuleConfig.J2EE_TYPE, GuiUtil.getMessage("tree.webApps"));
-        typeMap.put(EJBModuleConfig.J2EE_TYPE, GuiUtil.getMessage("tree.ejbModules"));
-        typeMap.put(LifecycleModuleConfig.J2EE_TYPE, GuiUtil.getMessage("tree.lifecycleModules"));
-        typeMap.put(RARModuleConfig.J2EE_TYPE, GuiUtil.getMessage("tree.connectorModules"));
-        typeMap.put(AppClientModuleConfig.J2EE_TYPE, GuiUtil.getMessage("tree.appclientModules"));
-        typeMap.put(CustomMBeanConfig.J2EE_TYPE, GuiUtil.getMessage("tree.customMBeans"));
-        
         displayMap.put("application", GuiUtil.getMessage("deploy.ear"));
         displayMap.put("webApp", GuiUtil.getMessage("deploy.war"));
         displayMap.put("ejbModule", GuiUtil.getMessage("deploy.ejb"));
