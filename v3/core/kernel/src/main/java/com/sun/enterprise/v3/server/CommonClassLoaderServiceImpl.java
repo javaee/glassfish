@@ -81,6 +81,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
 
     final static Logger logger = LogDomains.getLogger(CommonClassLoaderServiceImpl.class, LogDomains.LOADER_LOGGER);
     private ClassLoader APIClassLoader;
+    private String commonClassPath = "";
 
     public void postConstruct() {
         APIClassLoader = acls.getAPIClassLoader();
@@ -121,14 +122,20 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
                     domainLib.listFiles(new JarFileFilter()));
         }
         List<URL> urls = new ArrayList<URL>();
+        StringBuilder cp = new StringBuilder();
         for (File f : cpElements) {
             try {
                 urls.add(f.toURI().toURL());
+                if (cp.length() > 0) {
+                    cp.append(File.pathSeparator);
+                }
+                cp.append(f.getAbsolutePath());
             } catch (MalformedURLException e) {
                 logger.logp(Level.WARNING, "ClassLoaderManager",
                         "postConstruct", "e = {0}", new Object[]{e});
             }
         }
+        commonClassPath = cp.toString();
         if (!urls.isEmpty()) {
             // Skip creation of an unnecessary classloader in the hierarchy,
             // when all it would have done was to delegate up.
@@ -144,6 +151,10 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
 
     public ClassLoader getCommonClassLoader() {
         return commonClassLoader != null ? commonClassLoader : APIClassLoader;
+    }
+
+    public String getCommonClassPath() {
+        return commonClassPath;
     }
 
     private static class JarFileFilter implements FilenameFilter {

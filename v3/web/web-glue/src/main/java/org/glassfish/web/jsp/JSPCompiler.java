@@ -117,7 +117,7 @@ public final class JSPCompiler {
         }
 
         String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
-            serverContext.getDefaultHabitat(), appName, delegate);
+            serverContext.getDefaultHabitat(), appName);
         jspc.setSystemClassPath(sysClassPath);
         // END SJSAS 6311155
 

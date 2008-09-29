@@ -93,6 +93,10 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
         return commonCLS.getCommonClassLoader();
     }
 
+    public String getCommonClassPath() {
+        return commonCLS.getCommonClassPath();
+    }
+
     public DelegatingClassLoader getConnectorClassLoader(String application) {
         return connectorCLS.getConnectorClassLoader(application);
     }

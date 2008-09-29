@@ -31,8 +31,6 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Module;
 import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -320,7 +318,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             classpath.append(File.pathSeparatorChar);
             classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
                     sc.getDefaultHabitat(),
-                    wbd.getApplication().getName(), delegate));
+                    wbd.getApplication().getName()));
             JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
         } catch (DeploymentException de) {
             dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);

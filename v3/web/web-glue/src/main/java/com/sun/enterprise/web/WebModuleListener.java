@@ -38,7 +38,6 @@ package com.sun.enterprise.web;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -311,8 +310,8 @@ final class WebModuleListener
 
             // START SJSAS 6311155
             String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
-                    serverContext.getDefaultHabitat(), webModule.getID(),
-                    webModule.getLoader().getDelegate());
+                    serverContext.getDefaultHabitat(), webModule.getID()
+            );
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(" sysClasspath for " + webModule.getID() + " is \n" 
                                                                + sysClassPath + "\n");

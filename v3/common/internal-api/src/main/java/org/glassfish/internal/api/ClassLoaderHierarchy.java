@@ -77,6 +77,16 @@ public interface ClassLoaderHierarchy {
     ClassLoader getCommonClassLoader();
 
     /**
+     * Returns the classpath equiavalent to what is used by classloader
+     * returned by {@link #getCommonClassLoader()}. Classpath entries are
+     * separated by {@link java.io.File#separatorChar}, but don't assume
+     * there will be any leading or trailing separator char. It returns
+     * an empty string if there are no libraries installed.
+     * @return ClassPath separated by {@link java.io.File#pathSeparatorChar}
+     */
+    String getCommonClassPath();
+
+    /**
      * Returns the class loader which has visibility to appropriate list of
      * standalone RARs deployed in the server. Depending on a policy,
      * this can either return a singleton classloader for all applications or
@@ -124,4 +134,5 @@ public interface ClassLoaderHierarchy {
         */
        public ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContext context)
            throws ResolveError;
+
 }
