@@ -82,7 +82,7 @@ public interface SystemStatus extends AMX, Utility, Singleton
      */
     public List<Object[]>  getRestartRequiredChanges();
     
-    /** helper class, in particular to convert results from {@link #getUnprocessedConfigChanges} */
+    /** helper class, in particular to convert results from {@link #getRestartRequiredChanges} */
     public final class Helper {
         private Helper() {}
         public List<UnprocessedConfigChange>  toUnprocessedConfigChange( final List<Object[]> items) {

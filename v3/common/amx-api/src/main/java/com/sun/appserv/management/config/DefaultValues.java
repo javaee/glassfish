@@ -39,8 +39,9 @@ import java.util.Map;
 
 /**
     Mixin interface indicating a provider of default values.  Except for oddball cases
-    (probably none), only {@link Container}s should implement DefaultValues. The difference
-    between this interface and the getDefaultValues() methods provided by {@link AMXConfig}
+    (probably none), only {@link com.sun.appserv.management.base.Container}s should
+    implement DefaultValues. The difference between this interface
+    and the getDefaultValues() methods provided by {@link com.sun.appserv.management.config.AMXConfig}
     is that this one accomodates child (containee) elements that might not yet exist, hence
     the use of the 'j2eeType'.
  */
@@ -51,9 +52,9 @@ public interface DefaultValues
         The resulting Map is keyed by the XML attribute name, <em>not</em> the AMX Attribute name.
         @since Glassfish V3.
         @param j2eeType the J2EEType of the child
-        @param byXMLName whether to key the values by the XML attribute name vs the AMX Attribute name
+        @param useAMXAttributeName whether to key the values by the XML attribute name vs the AMX Attribute name
 	 */
-	public Map<String,String> getDefaultValues( final String jeeType, final boolean useAMXAttributeName);
+	public Map<String,String> getDefaultValues( final String j2eeType, final boolean useAMXAttributeName);
     
     /** deprecated, use getDefaultValues(j2eeType,true) */
     @Deprecated 

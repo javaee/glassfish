@@ -123,7 +123,7 @@ public final class XTypes
 	public final static String	DOMAIN_CONFIG				=  P + "DomainConfig";
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.CustomMBeanConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	CUSTOM_MBEAN_CONFIG				=  P + "CustomMBeanConfig";
 	
@@ -472,13 +472,13 @@ public final class XTypes
 
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.WebModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	WEB_MODULE_CONFIG			=  P + "WebModuleConfig";
 	
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.ConnectorModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	CONNECTOR_MODULE_CONFIG		=  P + "ConnectorModuleConfig";
 	
@@ -494,31 +494,31 @@ public final class XTypes
 	public final static String	EJB_TIMER_SERVICE_CONFIG		=  P + "EJBTimerServiceConfig";
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.EJBModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	EJB_MODULE_CONFIG			=  P + "EJBModuleConfig";
 	
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.RARModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	RAR_MODULE_CONFIG			=  P + "RARModuleConfig";
 	
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.J2EEApplicationConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	J2EE_APPLICATION_CONFIG		=  P + "J2EEApplicationConfig";
 	
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.LifecycleModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	LIFECYCLE_MODULE_CONFIG		=  P + "LifecycleModuleConfig";
 	
 	
 	/**
-		ID for {@link com.sun.appserv.management.config.ExtensionModuleConfig}
+		@deprecated  no longer available in GlassFish V3
 	 */
 	public final static String	EXTENSION_MODULE_CONFIG		=  P + "ExtensionModuleConfig";
 	

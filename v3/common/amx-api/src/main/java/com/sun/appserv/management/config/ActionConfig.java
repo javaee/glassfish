@@ -46,6 +46,7 @@ import com.sun.appserv.management.base.XTypes;
 	@since Appserver 9.0
 	@see ManagementRuleConfig
 	@see EventConfig
+    @deprecated
 */
 public interface ActionConfig extends ConfigElement  
 {
@@ -54,7 +55,7 @@ public interface ActionConfig extends ConfigElement
 	
 	/**                              
         Identifies the classname of the action MBean as given
-        by {@link CustomMBeanConfig#getName}.
+        by CustomMBeanConfig.getName().
 	 */
 	public String   getActionMBeanName();
 	public void     setActionMBeanName( String name );

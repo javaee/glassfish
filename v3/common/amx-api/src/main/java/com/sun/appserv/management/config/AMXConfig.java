@@ -89,7 +89,7 @@ public interface AMXConfig extends AMX, AttributeResolver
         Return a Map of default values for the specified child type (Containee) j2eeType.
         The resulting Map is keyed by the XML attribute name, <em>not</em> the AMX Attribute name.
         @since Glassfish V3.
-        @param byXMLName whether to key the values by the XML attribute name vs the AMX Attribute name
+        @param useAMXAttributeName whether to key the values by the XML attribute name vs the AMX Attribute name
         @see DefaultValues
 	 */
     public Map<String,String> getDefaultValues(final boolean useAMXAttributeName);
