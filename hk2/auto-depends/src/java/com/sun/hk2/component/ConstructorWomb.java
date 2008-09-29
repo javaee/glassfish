@@ -85,7 +85,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
         ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
         AccessController.doPrivileged(new PrivilegedAction() {
-            //Fix for 5493 : revisit after prelude
+            //doprivileged required for running with SecurityManager ON
             public java.lang.Object run() {
                 inject(habitat, t, onBehalfOf);
                 return null;
