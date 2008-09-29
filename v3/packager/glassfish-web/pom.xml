@@ -75,18 +75,21 @@
             <artifactId>webtier-all</artifactId>
 	    <version>${project.version}</version>
 	    <type>pom</type>
+	    <exclusions>
+	        <exclusion>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+	        </exclusion>
+	        <exclusion>
+		    <groupId>javax.servlet.jsp</groupId>
+		    <artifactId>jsp-api</artifactId>
+	        </exclusion>
+	        <exclusion>
+		    <groupId>javax.servlet.jsp.jstl</groupId>
+		    <artifactId>jstl-api</artifactId>
+		</exclusion>
+	    </exclusions>   
         </dependency>
-	<dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
-            <version>${project.version}</version>
-      	</dependency> 
-	<dependency>
-           <groupId>org.glassfish.web</groupId>
-           <artifactId>web-ajp</artifactId>
-           <version>${project.version}</version>
-        </dependency> 
-    
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
