@@ -220,6 +220,15 @@ public class CoyoteAdapter
                 (connector.getURIEncoding());
         }
 
+        if (v3Enabled) {
+            // Grizzly already parsed, decoded, and mapped the request.
+            // Let's re-use this info here, before firing the
+            // requestStartEvent probe, so that the mapping data will be
+            // available to any probe event listener via standard
+            // ServletRequest APIs (such as getContextPath())
+            request.setMappingData((MappingData)req.getNote(MAPPING_DATA));
+        }
+
         connector.requestStartEvent(request.getRequest(),
                                     response.getResponse());
         try {
@@ -462,10 +471,8 @@ public class CoyoteAdapter
                 (uriCC.getBuffer(), uriCC.getStart(), semicolon);
         }
         
-        // Grizzly already parsed and decoded the request. Let's just re-use it.
-        if (v3Enabled){
-            request.setMappingData((MappingData)req.getNote(MAPPING_DATA));
-        } else { /*mod_jk*/
+        if (!v3Enabled) {
+            /*mod_jk*/
             connector.getMapper().map(req.serverName(), decodedURI, 
                                   request.getMappingData());
         }
