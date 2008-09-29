@@ -214,8 +214,11 @@ public class CreateJdbcConnectionPool implements AdminCommand {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
             rs = connPoolMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
+            String actual = e.getMessage();
+            String def = "JDBC connection pool: " + jdbc_connection_pool_id + "could not be created, reason: " + actual;
             report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
-                    "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
+                    def, jdbc_connection_pool_id, actual));
+            //sreeni -- add second replace param to create.jdbc.connectoon.pool.fail in LocalStrings.properties
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
