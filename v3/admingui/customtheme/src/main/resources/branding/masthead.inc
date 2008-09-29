@@ -1,4 +1,4 @@
-		<sun:masthead id="Masthead" productImageURL="{request.contextPath}/resource/images/masthead-product_name_open1.png" 
+		<sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/customTheme/images/masthead-product_name_open1.png" 
                      productImageDescription="Glassfish V3 Prelude Administration Console" 
                      productImageWidth="385" 
                      productImageHeight="18" 
