@@ -202,11 +202,9 @@ public class JDBCConnectionPoolManager implements ResourceManager{
             }, resources);
 
         } catch(TransactionFailure tfe) {
-            //String msg = localStrings.getLocalString(
-              //      "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed ", 
-                //    jdbcconnectionpoolid);
-            //this is broken at the moment, km@dev.java.net, I am replacing it with plain English messages
-            String msg = "JDBC connection pool: " + jdbcconnectionpoolid + " could not be created, reason:" + tfe.getMessage();
+            String msg = localStrings.getLocalString(
+                  "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed: {1}",
+                jdbcconnectionpoolid, tfe.getMessage());
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         } /*catch(PropertyVetoException pve) {
             return (localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", id));

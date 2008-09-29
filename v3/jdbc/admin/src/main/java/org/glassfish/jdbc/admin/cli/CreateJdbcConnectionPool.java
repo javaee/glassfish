@@ -215,10 +215,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
             rs = connPoolMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
             String actual = e.getMessage();
-            String def = "JDBC connection pool: " + jdbc_connection_pool_id + "could not be created, reason: " + actual;
+            String def = "JDBC connection pool: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
                     def, jdbc_connection_pool_id, actual));
-            //sreeni -- add second replace param to create.jdbc.connectoon.pool.fail in LocalStrings.properties
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
@@ -230,7 +229,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
                 report.setMessage(rs.getMessage());
             } else {
                  report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
-                    "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
+                    "JDBC connection pool {0} creation failed", jdbc_connection_pool_id, ""));
             }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
