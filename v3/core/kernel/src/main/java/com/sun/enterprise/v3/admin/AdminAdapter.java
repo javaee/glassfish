@@ -60,9 +60,11 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.BASE64Decoder;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
+import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.hk2.component.ConstructorWomb;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -72,6 +74,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigListener;
 
 /**
  * Listen to admin commands...
@@ -111,6 +116,9 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     Config config;
 
     private AdminEndpointDecider epd = null;
+    
+    @Inject
+    ServerContext sc;
 
     private boolean isRegistered = false;
             
@@ -120,6 +128,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         events.register(this);
         
         epd = new AdminEndpointDecider(config, logger);
+        registerJavaConfigListener();
     }
 
     /**
@@ -490,5 +499,12 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
      */
     public void setRegistered(boolean isRegistered) {
 	this.isRegistered = isRegistered;
+    }
+    
+    private void registerJavaConfigListener() {
+        Habitat habitat = sc.getDefaultHabitat();
+        ConstructorWomb<GenericJavaConfigListener> womb = new 
+                ConstructorWomb<GenericJavaConfigListener>(GenericJavaConfigListener.class, habitat, null);
+        ConfigListener jcl = womb.get(null);
     }
 }
