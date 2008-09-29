@@ -266,7 +266,7 @@ public final class OSGiModuleImpl implements Module {
     /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException {
         Holder<ClassLoader> holder = new Holder<ClassLoader>() {
             public ClassLoader get() {
-                //Fix for Issue:5493
+                //doprivileged needed for running with SecurityManager
                 ClassLoader ret = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
                     public java.lang.Object run() {
                         return new ClassLoader() {
@@ -330,7 +330,7 @@ public final class OSGiModuleImpl implements Module {
             @Override
             protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {
                 try {
-                    //Fix for Issue:5493
+                    //doprivileged needed for running with SecurityManager
                     Class<?> ret =(Class<?>)
                     AccessController.doPrivileged(new PrivilegedAction() {
                         public java.lang.Object run() {
