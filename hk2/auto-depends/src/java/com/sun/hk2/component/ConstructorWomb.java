@@ -49,6 +49,8 @@ import org.jvnet.hk2.component.Singleton;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * Creates an object from its constructor.
@@ -78,12 +80,17 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     }
 
 
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+    public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
 
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
-        ScopeInstance si = (scoped==null?singletonScope:getScope(scoped));
-
-        inject(habitat, t, onBehalfOf);
+        ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
+        AccessController.doPrivileged(new PrivilegedAction() {
+            //Fix for 5493 : revisit after prelude
+            public java.lang.Object run() {
+                inject(habitat, t, onBehalfOf);
+                return null;
+            }
+        });
 
         if(si!=null)
             // extraction amounts to no-op if this is prototype scope. so skip that.
