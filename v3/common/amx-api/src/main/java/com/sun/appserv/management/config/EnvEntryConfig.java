@@ -35,7 +35,7 @@
  */
 package com.sun.appserv.management.config;
 
-@AMXCreateInfo(paramNames={"env-entry-name", "env-entry-value", "env-entry-type", "description"})
+@AMXCreateInfo(paramNames={"env-entry-name", "env-entry-value", "env-entry-type", "description", "ignore-descriptor-item" })
 public interface EnvEntryConfig extends NamedConfigElement
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
@@ -52,4 +52,7 @@ public interface EnvEntryConfig extends NamedConfigElement
     
     public String getEnvEntryValue();
     public void setEnvEntryValue(String value);
+    
+    public String getIgnoreDescriptorItem();
+    public void setIgnoreDescriptorItem(String ignore);
 }
