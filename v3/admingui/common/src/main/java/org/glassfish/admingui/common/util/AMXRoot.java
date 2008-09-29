@@ -141,7 +141,7 @@ public class AMXRoot {
      *	    MBeanServer to initialize when this is called, if it hasn't already
      *	    been initialized.</p>
      */
-    public static AMXRoot getInstance() {
+    public synchronized static AMXRoot getInstance() {
 	if (amxRoot == null) {
 	    // Get the ServletContext
 	    ServletContext servletCtx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
@@ -161,20 +161,6 @@ public class AMXRoot {
             AMXBooter.bootAMX(mbs);
             DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot(); 
 	    domainRoot.waitAMXReady();
-	    amxRoot = new AMXRoot(domainRoot, mbs);
-            
-            /*
-            MBeanServerConnection msc = mbs;
-            Object[] params = null;
-            String[] sig = null;
-            try{
-                Object apps = msc.invoke(new ObjectName("com.sun.appserv:type=Manager,path=/docroot,host=server"), "listSessionIds", null, null);
-                System.out.println(apps);
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-             */
-
 	}
         return amxRoot;
     }
