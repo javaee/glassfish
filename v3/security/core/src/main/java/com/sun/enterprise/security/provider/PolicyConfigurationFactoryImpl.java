@@ -80,6 +80,8 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
     private  Lock rLock = rwLock.readLock();
     private  Lock wLock = rwLock.writeLock();
     private String repository = null;
+    
+    private static PolicyConfigurationFactoryImpl singleton = null;
  
     // set in PolicyLoader from domain.xml
     private static final String REPOSITORY_HOME_PROP =
@@ -87,6 +89,7 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
     
     public PolicyConfigurationFactoryImpl(){
         repository = initializeRepository();
+        singleton = this;
     }
 
    /**
@@ -211,17 +214,6 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
         File f = new File(getContextDirectoryName(contextId));
         if (f.exists()) {
             pci = new PolicyConfigurationImpl(f, open, remove, this);
-            try {
-                if (!(PolicyConfigurationFactory.getPolicyConfigurationFactory() 
-                        instanceof PolicyConfigurationFactoryImpl)) {
-                    pci.refresh(true);
-                }
-            } catch (ClassNotFoundException ex) {
-                //ignore 
-            } catch (PolicyContextException ex) {
-               // ignore
-            }
-
             if (pci != null) {
                 putPolicyConfigurationImpl(contextId, pci);
             }
@@ -386,5 +378,9 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
 	}
 
 	return repository;
+    }
+    
+    static PolicyConfigurationFactoryImpl getInstance() {
+        return singleton;
     }
 }

@@ -137,8 +137,6 @@ public class BasePolicyWrapper extends java.security.Policy {
         }
     }
 
-    // if not available in the habitat, delegate to JDK's system-wide factory
-    private PolicyConfigurationFactoryImpl pcf= null;
     private boolean isMyPolicyFactory = true;
     
     /** Creates a new instance of BasePolicyWrapper */
@@ -150,8 +148,6 @@ public class BasePolicyWrapper extends java.security.Policy {
 	defaultContextChanged();
         String policyFactoryName = System.getProperty(FACTORY_NAME);
         isMyPolicyFactory = myFactoryName.equals(policyFactoryName) ? true : false;
-        pcf = getPolicyFactory();
-        
     }
     
     /** gets the underlying PolicyFile implementation
@@ -281,9 +277,11 @@ public class BasePolicyWrapper extends java.security.Policy {
 
 	boolean force = defaultContextChanged();
 
-	PolicyConfigurationImpl pciArray[] 
-	    = pcf.getPolicyConfigurationImpls();
-
+	PolicyConfigurationImpl pciArray[] = null;
+        PolicyConfigurationFactoryImpl pcf = getPolicyFactory();
+        if (pcf != null) {
+	    pciArray = pcf.getPolicyConfigurationImpls();
+        }
 	if (pciArray != null) {
 
 	    for (PolicyConfigurationImpl pci : pciArray) {
@@ -306,7 +304,8 @@ public class BasePolicyWrapper extends java.security.Policy {
 
     private  PolicyConfigurationImpl getPolicyConfigForContext(String contextId) {
 	PolicyConfigurationImpl pci = null;
-	if (contextId != null) {
+        PolicyConfigurationFactoryImpl pcf = getPolicyFactory();
+	if (contextId != null && pcf != null) {
 	    pci = pcf.getPolicyConfigurationImpl(contextId);
 	}
 	return pci;
@@ -650,7 +649,9 @@ public class BasePolicyWrapper extends java.security.Policy {
             //using this might violate the JACC contract
             //But this occurs when someone is trying to explicitly create our Factory
             //to use it as a Delegate. In this case we cannot call PolicyConfigurationFactory API
-            pcf = Globals.get(PolicyConfigurationFactoryImpl.class);
+            //pcf = Globals.get(PolicyConfigurationFactoryImpl.class);
+            PolicyConfigurationFactoryImpl pcf = 
+                PolicyConfigurationFactoryImpl.getInstance();
             return pcf;
         } else {
             PolicyConfigurationFactory pcfimpl = null;
