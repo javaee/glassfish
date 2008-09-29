@@ -969,36 +969,6 @@ char **pAlternateRoot, jboolean *pStoreAnswerFile, char **pAnswerFileLocation, j
             argv++; --argc;
         }
 
-	/*Check if -R is passed, if so validate the directory and set Alternate-Root property.
-	if not, then set it to "-p Alternate-Root=<Directory>".
-	TODO: Validate the given directory for readability */
-	else if (strcmp(arg, "-R") == 0)
-        {
-            if (argc < 1)
-            {
-                char *message = GetLocalizedMessage("missing_alternate_root_argument");
-                fprintf(stderr, message, arg);
-                free(message);
-                message = NULL;
-                PrintUsage();
-                goto error;
-            }
-            *pUseAlternateRootOption = JNI_TRUE;
-            *pAlternateRoot = StrDup(*argv);
-    	    if (access(*pAlternateRoot, R_OK) != 0) 
-	    {
-        	char *message = GetLocalizedMessage("alternate_root_directory_not_accessible");
-                fprintf(stderr, message, arg);
-                free(message);
-                message = NULL;
-                /* PrintUsage();*/
-                goto error;
-	    }
-            appArgc += 2;
-            argv++; --argc;
-        }
-
-
 	/*Check if -l is passed, if so validate the file and set Logs-Location property.
 	if not, then set it to "-p Logs-Location=<Directory>".
 	TODO: Validate the given directory for readability */

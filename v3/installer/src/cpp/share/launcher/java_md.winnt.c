@@ -294,13 +294,16 @@ found:
     {
         char *java = NULL;
         char *javaw = NULL;
+        char *keytool = NULL;
 
         /* Check that executables exist */
         java = (char *)MemAlloc(strlen(libjava) + strlen(JAVA_EXE) + 1);
         javaw = (char *)MemAlloc(strlen(libjava) + strlen(JAVAW_EXE) + 1);
+        keytool = (char *)MemAlloc(strlen(libjava) + strlen(KEYTOOL_EXE) + 1);
         sprintf(java, "%s" JAVA_EXE, libjava);
         sprintf(javaw, "%s" JAVAW_EXE, libjava);
-        if (access(java, R_OK) != 0 || access(javaw, R_OK) != 0)
+        sprintf(keytool, "%s" KEYTOOL_EXE, libjava);
+        if (access(java, R_OK) != 0 || access(javaw, R_OK) != 0 || access(keytool, R_OK) != 0)
         {
             free(libjava);
             libjava = NULL;
@@ -309,6 +312,8 @@ found:
         java = NULL;
         free(javaw);
         javaw = NULL;
+        free(keytool);
+        keytool = NULL;
     }
     return libjava;
 }
@@ -1464,7 +1469,7 @@ ExecuteJava(const char *jrepath, int numOptions, const JavaVMOption *options,int
     char *command = NULL;
     char *cmdline = NULL;
     size_t len = 0;
-    const char *bundledlibpath = GetBundledLibraryPath();
+    const char *bundledlibpath = jrepath;
     const char *oldpath = getenv("PATH");
     char *newpath = NULL;
     PROCESS_INFORMATION pi;
@@ -1542,11 +1547,12 @@ ExecuteJava(const char *jrepath, int numOptions, const JavaVMOption *options,int
     }
 
 
-    newpath = (char *)MemAlloc(strlen("PATH=") + (bundledlibpath ? strlen(bundledlibpath) + 1 : 0) + (oldpath ? strlen(oldpath) + 1 : 0) + 1);
+    newpath = (char *)MemAlloc(strlen("PATH=") + (bundledlibpath ? strlen(bundledlibpath) + 1 : 0) + (oldpath ? strlen(oldpath) + 1 : 0) + 10);
     strcpy(newpath, "PATH=");
     if (bundledlibpath)
     {
         strcat(newpath, bundledlibpath);
+        strcat(newpath, "\\bin");
         strcat(newpath, PATH_SEPARATOR);
     }
     if (oldpath)
