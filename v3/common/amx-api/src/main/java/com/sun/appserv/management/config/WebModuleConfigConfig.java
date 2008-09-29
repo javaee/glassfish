@@ -33,39 +33,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.appserv.management.config;
 
-package org.glassfish.web.plugin.common;
+import java.util.Map;
 
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
-import java.util.List;
-import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
 
-
-/**
- * Corresponds to the web-app-config element used for recording web
- * application configuration customizations.
- *
- * @author tjquinn
- */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfigConfig", singleton=true )
-@Configured
-public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Injectable {
-
+@AMXCreateInfo( paramNames={} )
+public interface WebModuleConfigConfig extends ApplicationConfigConfig
+{
+    /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
+	public static final String	J2EE_TYPE = "X-WebModuleConfigConfig";
+    
+    public Map<String, EnvEntryConfig> getEnvEntryConfigMap();
+    
+    public Map<String, ContextParamConfig> getContextParamConfigMap();
+    
     /**
-     * Returns the env-entry objects, if any.
-     * @return
+        @param name
+        @param value
+        @param type
+        @param description may be null
      */
-    @Element
-    public List<EnvEntry> getEnvEntry();
-
+    public EnvEntryConfig createEnvEntryConfig( String name, String value, String type, String description);
+    public void removeEnvEntryConfig( String name );
+    
     /**
-     * Returns the context-param objects, if any.
-     * @return
+        @param name
+        @param value
+        @param description may be null
      */
-    @Element
-    public List<ContextParam> getContextParam();
+    public ContextParamConfig createContextParamConfig( String name, String value, String description);
+    public void removeContextParamConfig( String name );
 
 }
