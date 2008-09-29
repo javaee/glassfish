@@ -46,7 +46,6 @@
 
 #define JAVA_EXE FILE_SEPARATOR "bin" FILE_SEPARATOR "java.exe"
 #define JAVAW_EXE FILE_SEPARATOR "bin" FILE_SEPARATOR "javaw.exe"
-#define KEYTOOL_EXE FILE_SEPARATOR "bin" FILE_SEPARATOR "keytool.exe"
 
 /*
  * Make this a Windows application by default. Defining a main function makes
