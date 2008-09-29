@@ -35,7 +35,7 @@
  */
 package com.sun.appserv.management.config;
 
-@AMXCreateInfo(paramNames={"param-name", "param-value", "description"})
+@AMXCreateInfo(paramNames={"param-name", "param-value", "description", "ignore-descriptor-item"})
 public interface ContextParamConfig extends NamedConfigElement
 {
     /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
@@ -49,4 +49,7 @@ public interface ContextParamConfig extends NamedConfigElement
     
     public String getParamValue();
     public void setParamValue(String value);
+    
+    public String getIgnoreDescriptorItem();
+    public void setIgnoreDescriptorItem(String ignore);
 }
