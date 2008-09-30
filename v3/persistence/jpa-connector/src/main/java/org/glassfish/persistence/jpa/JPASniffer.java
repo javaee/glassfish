@@ -31,7 +31,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.InputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Enumeration;

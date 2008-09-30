@@ -82,10 +82,27 @@ public class JPAApplication implements ApplicationContainer {
    JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
        this.referencedPus = allReferencedPus;
        this.providerContainerContractInfo = providerContainerContractInfo;
+
+       // A hack to work around EclipseLink issue https://bugs.eclipse.org/bugs/show_bug.cgi?id=248328 for prelude
+       // This should be removed once version of EclipseLink which fixes the issue is integrated.
+       // set the system property required by EclipseLink before we load it.
+       setSystemPropertyToEnableDoPrivilegedInEclipseLink();
+
        //PUs need to be loaded here so that transformers can be registered into Deploymentcontext in correct phase
        loadAllPus();
 
    }
+
+    private void setSystemPropertyToEnableDoPrivilegedInEclipseLink() {
+        final String PROPERTY_NAME = "eclipselink.security.usedoprivileged";
+        // Need not invoke in doPrivileged block as the whole call stack consist of trusted code when this code
+        // is invoked
+        if(System.getProperty(PROPERTY_NAME) == null) {
+            // property not set. Set it to true
+            System.setProperty(PROPERTY_NAME, String.valueOf(Boolean.TRUE) );
+        }
+    }
+
 
     //-------------- Begin Methods implementing ApplicationContainer interface -------------- //
     public Object getDescriptor() {
