@@ -106,7 +106,7 @@ public class HK2Main extends Main implements
 
         // Create StartupContext
         contextRootDir = getContextRootDir(context);
-        logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
+        logger.logp(Level.FINE, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
 
         // get the startup context from the System properties
         String lineformat = System.getProperty("glassfish.startup.context");

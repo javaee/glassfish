@@ -53,7 +53,8 @@ public class OSGiFactoryImpl extends AbstractFactory {
 
     /* package */ static synchronized void initialize(BundleContext ctx) {
         if (Instance != null) {
-            logger.logp(Level.INFO, "OSGiFactoryImpl", "initialize",
+            // TODO : this is somehow invoked twice during gf startup, we need to investigate.
+            logger.logp(Level.FINE, "OSGiFactoryImpl", "initialize",
                     "Singleton already initialized as {0}", getInstance());
         }
         Instance = new OSGiFactoryImpl(ctx);
