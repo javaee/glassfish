@@ -47,7 +47,7 @@
     />
 #include "/shared/restart.inc"
     <sun:html id="html2"> 
-        <sun:head id="propertyhead" title="$resource{i18n.jvm.ProfilerPageName}" parseOnLoad="true">
+        <sun:head id="propertyhead" title="$resource{i18n.jvm.ProfilerPageName}" parseOnLoad="false">
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
