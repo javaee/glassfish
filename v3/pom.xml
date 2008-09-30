@@ -125,8 +125,8 @@
 
 	<!-- Note: if you are attempting to change hk2 version.. please change at build/pom.xml location too. Thanks!
          -->
-        <hk2.version>0.3.29</hk2.version>
-        <hk2.plugin.version>0.3.29</hk2.plugin.version>
+        <hk2.version>0.3.30</hk2.version>
+        <hk2.plugin.version>0.3.30</hk2.plugin.version>
 
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
@@ -146,7 +146,7 @@
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 	<dataprovider.version>4.2</dataprovider.version>
 	<jsftemplating.version>1.2.4</jsftemplating.version>
-    	<glassfish-api.version>10.0.420</glassfish-api.version>        
+    	<glassfish-api.version>10.0.421</glassfish-api.version>        
     	<glassfish-corba.version>3.0.0-b001</glassfish-corba.version>        
 	<uc-pkg-client.version>1.0.7-15.1196</uc-pkg-client.version>
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
