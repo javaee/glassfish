@@ -44,8 +44,7 @@
               helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
               i18nBundle="org.glassfish.admingui.core.Strings"
               useBottomTitle="true"
-              helpkey="uc.licensePage"
-              >
+              helpKey="$resource{help_web.uc.licensePage}">
     
     <!define name="pageButtonsBottom">
         "<div style="width: 25px; margin: auto">

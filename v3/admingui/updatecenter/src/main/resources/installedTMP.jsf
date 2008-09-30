@@ -44,7 +44,7 @@
     helpText="$resource{i18nUC.updateCenter.installed.pageTitleHelp}"
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-    helpkey="help.uc.installed"
+    helpKey="$resource{help_web.uc.installed}"
     bodyOnLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');"
     >
     

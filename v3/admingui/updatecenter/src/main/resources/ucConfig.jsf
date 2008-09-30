@@ -44,7 +44,7 @@
     helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}"
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-    helpkey="help.uc.config"
+    helpKey="$resource{help_web.uc.config}"
     bodyOnLoad="admingui.nav.refreshTree('form:tree:updateCenterPlugIN'); showSection('#{proxyGroup}');"
     >
     

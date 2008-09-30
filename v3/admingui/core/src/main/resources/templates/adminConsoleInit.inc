@@ -15,3 +15,4 @@ if (#{pageSession.configName}) {
         }
     }
 }
+setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");

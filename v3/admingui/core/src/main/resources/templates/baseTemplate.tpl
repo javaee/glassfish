@@ -43,7 +43,8 @@
                 </facet>
             </sun:title>
 
-            <!insert name="helpkey" />
+            //<!insert name="helpkey" />
+            <sun:hidden id="helpKey" value="#{helpKey}" />
         </sun:form>
     </sun:body>
     <!insert name="htmlExtra" />

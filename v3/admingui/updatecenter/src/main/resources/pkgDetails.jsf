@@ -46,7 +46,7 @@
               helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
               i18nBundle="org.glassfish.admingui.core.Strings"
               useBottomTitle="false"
-              helpkey="uc.pkgDetails"
+              helpKey="$resource{help_web.uc.pkgDetails}"
               >
   
     <!define name="pageButtonsTop">
