@@ -47,6 +47,15 @@
     <sun:head id="head" debug="true" parseOnLoad="false" title="$resource{i18n.peTree}">
         <sun:script url="/resource/js/adminjsf.js" />
 	<jsfExt:scripts />
+
+	// The following Style is required to avoid the tree nodes from
+	// moving around when selected.
+	<f:verbatim>
+	<style type="text/css">
+	    .TreeSelRow_sun4 {clear:both}
+	</style>
+	</f:verbatim>
+
         <sun:script>
 <f:verbatim>
     function fixedExpandCollapse(treeNode, imageId, event) {
