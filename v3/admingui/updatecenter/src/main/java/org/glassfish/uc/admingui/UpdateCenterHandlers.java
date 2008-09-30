@@ -352,7 +352,25 @@ public class UpdateCenterHandlers {
         }
      }
         
-    
+     
+     //returns -1 for any error condition, otherwise the #of component that has update available.
+     @Handler(id="getUpdateComponentCount",
+        output={
+        @HandlerOutput(name="count", type=Integer.class)})
+    public static void getUpdateComponentCount(HandlerContext handlerCtx) {
+         int count = -1;
+         try{
+            Image image = getUpdateCenterImage();
+            List<Fmri>updateList =  getUpdateList(image);
+            count = updateList.size();
+         }catch(Exception ex){
+            System.out.println("!!!!!!!!! error in getting update component list");
+            System.out.println(ex.getMessage());
+         }
+         handlerCtx.setOutputValue("count", Integer.valueOf(count));
+     }
+        
+     
     private static String getLicense(Image img, Fmri fmri){
         StringBuffer licenseText = new StringBuffer();
         try{
