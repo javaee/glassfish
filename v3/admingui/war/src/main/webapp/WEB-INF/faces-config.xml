@@ -58,13 +58,25 @@
         </locale-config>
 	<el-resolver>com.sun.webui.jsf.faces.UIComponentELResolver</el-resolver>
     </application>
+
+    <!-- These two components override the default Woodstock implementations
+	 to allow their internal ImageComponent to be preserved across requests
+	 to obtain that image.  It should have always been that way, but it
+	 wasn't and it made it impossible to modify it -->
+    <component>
+	<component-type>com.sun.webui.jsf.ImageHyperlink</component-type>
+	<component-class>org.glassfish.admingui.util.ImageHyperlink</component-class>
+    </component>
+    <component>
+	<component-type>com.sun.webui.jsf.IconHyperlink</component-type>
+	<component-class>org.glassfish.admingui.util.IconHyperlink</component-class>
+    </component>
 <!--
 <component>
 <component-type>com.sun.enterprise.tools.admingui.Tail</component-type>
 <component-class>com.sun.enterprise.tools.admingui.jsf.component.Tail</component-class>
 </component>
 -->
-
 <!--
     <render-kit>
 	<renderer>
