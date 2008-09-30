@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.glassfish.admin.monitor.httpservice.telemetry;
+package org.glassfish.web.admin.monitor.telemetry;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -56,10 +56,10 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
     private TreeNode httpServiceNode =  null;
     private static HttpService httpService = null;
     private List<HttpServiceRequestTelemetry> vsRequestTMs = null;
-    private boolean threadPoolProviderRegistered = false;
-    private boolean isThreadPoolTreeBuilt = false;
-    private TreeNode threadPoolNode =  null;
-    private List<ThreadPoolTelemetry> threadPoolTMs = null;
+    //private boolean threadPoolProviderRegistered = false;
+    //private boolean isThreadPoolTreeBuilt = false;
+    //private TreeNode threadPoolNode =  null;
+    //private List<ThreadPoolTelemetry> threadPoolTMs = null;
     
     public HttpServiceTelemetryBootstrap() {
     }
@@ -137,6 +137,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
                 }
                 buildRequestMonitoringTree();
             }
+            /*
             if (providerName.equals("threadpool")){
                 logger.finest("[Monitor]and it is Thread Pool");
                 threadPoolProviderRegistered = true;
@@ -147,6 +148,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
                 }
                 buildThreadPoolMonitoringTree();
             }
+            */
         }catch (Exception e) {
             //Never throw an exception as the Web container startup will have a problem
             //Show warning
@@ -218,6 +220,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
     }
 
     //builds the thread pool sub nodes
+    /*
     private void buildThreadPoolMonitoringTree() {
         if (isThreadPoolTreeBuilt || !httpServiceMonitoringEnabled)
             return;
@@ -247,7 +250,8 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
         }
         isThreadPoolTreeBuilt = true;
     }
-
+    */
+    
     private boolean getEnabledValue(String enabledStr) {
         if ("OFF".equals(enabledStr)) {
             return false;
@@ -266,6 +270,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
                 }
             }
         }
+        /*
         if (threadPoolProviderRegistered) {
             //Enable/Disable thread-pool telemetry
             threadPoolNode.setEnabled(isEnabled);
@@ -274,26 +279,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
                     threadPoolTM.enableMonitoring(isEnabled);
             }
         }
-    }
-
-    public static String getAppName(String contextRoot) {
-        if (contextRoot == null)
-            return null;
-        // first check in web modules
-        List<WebModule> lm = domain.getApplications().getModules(WebModule.class);
-        for (WebModule wm : lm) {
-            if (contextRoot.equals(wm.getContextRoot())) {
-                return (wm.getName());
-            }
-        }
-        // then check under applications (introduced in V3 not j2ee app)
-        List<Application> la = domain.getApplications().getModules(Application.class);
-        for (Application sapp : la) {
-            if (contextRoot.equals(sapp.getContextRoot())) {
-                return (sapp.getName());
-            }
-        }
-        return null;
+        */
     }
 
     public static String getVirtualServer(String hostName, String listenerPort) {
