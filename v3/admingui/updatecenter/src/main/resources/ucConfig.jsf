@@ -38,13 +38,14 @@
     
 <!initPage 
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+        setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
 <!composition template="/templates/baseTemplate.tpl" 
     pageTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" 
     helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}"
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-    helpKey="$resource{help_web.uc.config}"
+    helpKey="$resource{help.uc.config}"
     bodyOnLoad="admingui.nav.refreshTree('form:tree:updateCenterPlugIN'); showSection('#{proxyGroup}');"
     >
     
