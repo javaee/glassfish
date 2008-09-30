@@ -52,7 +52,7 @@
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18nSecurity.auditModule.PageTitle}">
+        <sun:head id="propertyhead"  title="$resource{i18nSecurity.auditModule.PageTitle}" parseOnLoad="false">
             <sun:script url="/resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -74,5 +74,6 @@
                 <sun:hidden id="helpKey" value="$resource{help.auditModules}" />
             </sun:form>
         </sun:body>
+#include "/shared/changeButtonsJS.inc"  
     </sun:html>
 </sun:page>
