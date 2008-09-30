@@ -207,12 +207,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             // Let this pass to the admin console (do nothing)
             handleLoadedState();
         } else {
-            // Console is not yet running...
-
-            // Only worry about auth before the console is running
-            handleAuth(req, res);
-
-            // See what type of request this is...
             InteractionResult ir = getUserInteractionResult(req);
             if (ir == InteractionResult.CANCEL) {
 // FIXME: What if they clicked Cancel?
@@ -234,6 +228,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 			handleLoadedState();
 		    } else if (!hasPermission(ir)) {
 			// Ask for permission
+                        handleAuth(req, res);
 			sendConsentPage(req, res);
 		    }else {
                         if (redeployNeeded()){
@@ -521,7 +516,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         //do this quickly as this is going to block the grizzly worker thread!
         //check for returning user?
         if (ir == InteractionResult.OK) {
-// FIXME: I need to "remember" this answer in a persistent way!! Or it will popup this message EVERY time after the server restarts.
             isOK = true;
         }
         return isOK;
