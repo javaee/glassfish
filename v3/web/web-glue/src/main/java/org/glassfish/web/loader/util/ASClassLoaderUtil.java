@@ -86,7 +86,7 @@ public class ASClassLoaderUtil {
                 habitat.getByContract(ClassLoaderHierarchy.class);
         final String commonClassPath = clh.getCommonClassPath();
         if (commonClassPath != null && commonClassPath.length() > 0) {
-            classpath.append(commonClassPath).append(File.separatorChar);
+            classpath.append(commonClassPath).append(File.pathSeparator);
         }
         addLibrariesForWebModule(classpath, moduleId);
         if (_logger.isLoggable(Level.FINE)) {
@@ -103,8 +103,8 @@ public class ASClassLoaderUtil {
             final URL[] libs = getLibraries(specifiedLibraries);
             if (libs != null) {
                 for (final URL u : libs) {
-                    sb.append(u);
-                    sb.append(File.pathSeparator);
+                    sb.append(u.getPath());
+                    sb.append(File.pathSeparator);                    
                 }
             }
         }
