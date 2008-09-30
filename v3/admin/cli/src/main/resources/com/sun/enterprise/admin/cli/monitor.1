@@ -2,8 +2,8 @@
 Administration Commands                                monitor(1)
 
 NAME
-     monitor - displays monitoring data for commonly-used  Enter-
-     prise Server components
+     monitor - displays monitoring data for commonly used  Enter-
+     prise Server components and services
 
 SYNOPSIS
      monitor
@@ -16,18 +16,15 @@ SYNOPSIS
      instance_name
 
 DESCRIPTION
-     This command prints out  commonly  monitored  attributes  of
-     Enterprise  Server components, and has options for filtering
-     out statistics and capturing the output in a Comma Separated
-     Values  (CSV) file. The output appears in a table format. To
-     view the legend of the table header, type h.
+     This command  displays  commonly  monitored  statistics  for
+     Enterprise Server components and services.
 
      Note -
 
-       To  monitor  information  for  a  given   attribute,   the
-       attribute's  monitoring  level must be set to HIGH or LOW.
-       Set the monitoring level through the  Administration  Con-
-       sole, or use the set command.
+       Before a given component or service can be monitored,  the
+       monitoring  level  of the component or service must be set
+       to HIGH or LOW. To  set  the  monitoring  level,  use  the
+       Administration Console or the set(1) command.
 
 OPTIONS
      -t --terse
@@ -50,7 +47,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5          Last change: 17 April 2007                   1
+Java EE 5           Last change: 29 Sep 2008                    1
 
 Administration Commands                                monitor(1)
 
@@ -104,7 +101,7 @@ Administration Commands                                monitor(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5          Last change: 17 April 2007                   2
+Java EE 5           Last change: 29 Sep 2008                    2
 
 Administration Commands                                monitor(1)
 
@@ -138,147 +135,195 @@ Administration Commands                                monitor(1)
          Displays the help text for the command.
 
      --type
-         The type of statistics to monitor. Valid values are:
+         The component or service  to  monitor.  This  option  is
+         required.  No default value is defined.
 
-             o    connection
+         The valid values are as follows:
 
-             o    connectionqueue
+         httplistener
 
-             o    connectorpool
+             For  this  type,  the  attribute  server.monitoring-
+             service.module-monitoring-levels.http-service   must
+             be set to LOW or HIGH.
 
-             o    endpoint
+             Displays  the  following  statistics  for  the  HTTP
+             listener service:
 
-             o    entitybean
+             ec
+                 The total number errors  in  the  processing  of
+                 HTTP requests.
 
-             o    filecache
-
-             o    httplistener
-
-             o    httpservice
-
-             o    jdbcpool
-
-Java EE 5          Last change: 17 April 2007                   3
+Java EE 5           Last change: 29 Sep 2008                    3
 
 Administration Commands                                monitor(1)
 
-             o    jvm
+             mt
 
-             o    keepalive
+                 The longest response time (in milliseconds)  for
+                 the processing of a single HTTP request.
 
-             o    messagedriven
+             pt
+                 The total amount of time (in milliseconds)  that
+                 the  HTTP listener service has spent in process-
+                 ing HTTP requests.
 
-             o    servlet
+             rc
 
-             o    statefulsession
+                 The total  number  of  requests  that  the  HTTP
+                 listener service has processed.
 
-             o    statelesssession
+         jvm
+             For  this   type,   the   attribute   server.server-
+             config.monitoring-service.module-monitoring-
+             levels.jvm must be set to LOW or HIGH.
 
-             o    threadpool
+             Displays the following statistics for   the  Virtual
+             Machine   for  the  JavaTM  platform  (Java  Virtual
+             Machine or JVMTM machine):
 
-             o    webmodule
+             The terms "Java Virtual Machine" and  "JVM"  mean  a
+             Virtual Machine for the Java platform.
+
+             UpTime
+
+                 The number of milliseconds that the JVM  machine
+                 has been running since it was last started.
+
+             min
+                 The initial amount of memory (in bytes) that the
+                 JVM  machine  requests from the operating system
+                 for memory management during startup.
+
+             low
+
+                 Retained for compatibility with other releases.
+
+             high
+                 Retained for compatibility with other releases.
+
+Java EE 5           Last change: 29 Sep 2008                    4
+
+Administration Commands                                monitor(1)
+
+             count
+
+                 The  amount  of  memory  (in  bytes)   that   is
+                 guaranteed  to  be  available for use by the JVM
+                 machine.
+
+         webmodule
+             For  this   type,   the   attribute   server.server-
+             config.monitoring-service.module-monitoring-
+             levels.web-container must be set to LOW or HIGH.
+
+             Displays the following statistics for all   deployed
+             web modules:
+
+             asc
+
+                 The number of currently active sessions.
+
+             ast
+                 The total number of sessions that are  currently
+                 active or have been active previously.
+
+             rst
+
+                 The total number of rejected sessions.
+
+             st
+                 The total number  of  sessions  that  have  been
+                 created.
+
+             ajlc
+
+                 The  TMmber  oTM currently   active   JavaServer
+                 Pages     (JSP  )   technology  pages  that  are
+                 loaded.
+
+             mjlc
+                 The maximum number of JSP technology pages  that
+                 were active at any time simultaneously.
+
+             tjlc
+
+                 Total number of JSP technology pages  that  have
+                 been loaded.
+
+Java EE 5           Last change: 29 Sep 2008                    5
+
+Administration Commands                                monitor(1)
+
+             aslc
+
+                 The number of  currently  active  Java  servlets
+                 that are loaded.
+
+             mslc
+                 The maximum number of Java  servlets  that  were
+                 active at any time simultaneously.
+
+             tslc
+
+                 The total number of Java servlets that have been
+                 loaded.
 
      --filename
-
-         Saves output to a file in CSV format.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
      --interval
+
          The interval  in  seconds  before  capturing  monitoring
-         attributes.  If the interval must be greater than 0. The
+         attributes.   The  interval  must be greater than 0. The
          monitoring attributes are displayed on stdout until  you
-         type ctrl-c or q.  The default value is 30.
+         type Control-C or q.  The default value is 30.
 
      --filter
-
-         If there is more than one  monitorable  element  in  the
-         given type, use this option to filter the results to get
-         the information you want.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the com-
+         mand  runs  successfully  and  the  option  is  silently
+         ignored.
 
 OPERANDS
      instance_name               The server instance for which to
                                  view monitoring data.
 
 EXAMPLES
-     For the following examples, enable monitoring for  the  type
-     before running the commands. For example:
+     Example 1 Displaying Statistics for the JVM Machine
 
-       asadmin set server.monitoring-service.module-monitoring-levels.jvm=LOW
-
-     Example 1 Sending output to the screen:
-
-       asadmin> monitor --type jvm --user admin --passwordfile password.txt server
-                                     JVM Monitoring
-
-Java EE 5          Last change: 17 April 2007                   4
+Java EE 5           Last change: 29 Sep 2008                    6
 
 Administration Commands                                monitor(1)
 
-       UpTime(ms)                                    HeapSize(bytes)
-       current                   min        max        low        high       count
-       327142979                 0          531628032  0          45940736   45940736
+     This example shows the sequence of commands  for  displaying
+     statistics for the JVM machine every 2000 seconds.
 
-     Example 2 Using the filter option:
+         1.   This   command    sets    the    server.monitoring-
+              service.module-monitoring-levels.jvm  attribute  to
+              HIGH.
 
-     The following example shows a type for which there are  mul-
-     tiple monitoring options when the filter option is not used:
+                asadmin> set
+                "server.server-config.monitoring-service.module-monitoring-levels.jvm=HIGH"
+                monitoring-service.module-monitoring-levels.jvm=HIGH
 
-       asadmin> monitor --type httplistener --user admin --passwordfile password.txt server
+                Command set executed successfully.
 
-       There are more than one monitoring elements. Please consider using the filter option.
-       The following are available elements to monitor:
-           http-listener-1
-           http-listener-2
-       CLI137 Command monitor failed.
+         2.   This command displays monitoring data for  the  JVM
+              machine every 2000 seconds.
 
-     Using the filter option:
+                asadmin> monitor --type=jvm --interval 2000 server
+                                              JVM Monitoring
+                UpTime(ms)                          Heap and NonHeap Memory(bytes)
+                current                   min        max        low        high       count
+                957843                    29523968   188284928  0          0          60370944
 
-       asadmin> monitor --type httplistener --filter http-listener-1
-       --user admin --passwordfile password.txt server
-
-                          HTTP Listener Monitoring: http-listener-1
-       br   bs   c200 c2xx c302 c304 c3xx c400 c401 c403 c404 c4xx c503 c5xx coc  co
-       ctc  ctb  ec   moc  mst  mt   mtm  mst  pt   rc
-       0    0    0    0    0    3    3    0    0    0    0    0    0    0    0    0
-       2    0    0    1    20   20   2    2    6    3
-
-     Enter h to see the legend for the table headings:
-
-       ******************************************************************************************
-       * br   = Cumulative value of the Bytes received by each of the Request Processors        *
-       * bs   = Cumulative value of the Bytes sent by each of the Request Processors            *
-       * c200 = Number of responses with a status code equal to 200                             *
-       * c2xx = Number of responses with a status code in the 2xx range                         *
-       * c302 = Number of responses with a status code equal to 302                             *
-
-Java EE 5          Last change: 17 April 2007                   5
-
-Administration Commands                                monitor(1)
-
-       * c304 = Number of responses with a status code equal to 304                             *
-       * c3xx = Number of responses with a status code in the 3xx range                         *
-       * c400 = Number of responses with a status code equal to 400                             *
-       * c401 = Number of responses with a status code equal to 401                             *
-       * c403 = Number of responses with a status code equal to 403                             *
-       * c404 = Number of responses with a status code equal to 404                             *
-       * c4xx = Number of responses with a status code equal to 4xx                             *
-       * c504 = Number of responses with a status code equal to 504                             *
-       * c5xx = Number of responses with a status code equal to 5xx                             *
-       * coc  = Number of open connections                                                      *
-       * co   = Number of responses with a status code outside the 2xx, 3xx, 4xx, and 5xx range *
-       * ctc  = Number of request processing threads currently in the listener thread pool      *
-       * ctb  = Number of request processing threads currently in use in the listener thread    *
-       *        pool serving requests                                                           *
-       * ec   = Number of responses with a status code equal to 400                             *
-       * moc  = Maximum number of open connections                                              *
-       * mst  = Minimum number of request processing threads that will be created at listener   *
-       *        startup time and maintained as spare threads above the current thread count     *
-       * mt   = Maximum number of request processing threads that are created by the listener   *
-       * mtm  = Provides the longest response time for a request - not a cumulative value, but  *
-       *        the largest response time from among the response times                         *
-       * pt   = Cumulative value of the times taken to process each request. The processing     *
-       *        time is the average of request processing times over the request count          *
-       * rc   = Cumulative number of the requests processed so far                              *
-       ******************************************************************************************
+                q
+                Command monitor executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -286,7 +331,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     get(1), list(1)
+     get(1), list(1), set(1)
 
-Java EE 5          Last change: 17 April 2007                   6
+Java EE 5           Last change: 29 Sep 2008                    7
 
