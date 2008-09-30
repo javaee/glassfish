@@ -353,9 +353,15 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                     resourcesBinder.deployAllConnectorResourcesAndPools(new ConnectorResource[]{resource},
                             new ConnectorConnectionPool[]{pool});
                 }
+                else if ( instance instanceof Property )
+                {
+                    final Property prop = (Property)instance;
+                    np = new NotProcessed( "ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue() );
+                }
                 else
                 {
-                    np = new NotProcessed( "handleAddEvent: unknown instance: " + instance.getClass().getName() );
+                    np = new NotProcessed( "ResourceManager: configuration " +
+                                Dom.unwrap(instance).getProxyType().getName() + " was added" );
                 }
                 return np;
             }
