@@ -20,12 +20,13 @@ btnBack_text=Back
 btnNext_text=Next
 
 # stuff that's used by templates regardless of viewmode
-mainpanel_bgcolor=WHITE
-navigpanel_image=/templates/openInstaller_sidebar_Orange_180x480.gif
-logopanel_image=/templates/openInstaller_logo_banner_540x81.gif
+mainpanel_bgcolor=e8e9ed
+navigpanel_image=/templates/LeftPanel.jpg
+logopanel_image=/templates/LogoPanel.jpg
+top_left_image=/templates/glassfish_logo.png
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=Arial Narrow-BOLD-11
+leftpanel_font=Arial-BOLD-13
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -36,7 +37,7 @@ dynamic_component_border_color=BLACK
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=Arial Narrow-BOLD-14
+title1_font=Arial-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 title2_font=Arial Narrow-BOLD-20
 
@@ -49,9 +50,9 @@ title1_text=Welcome to
 title2_text=GlassFish v3
 # Colors for content panel
 contentpanel_bordercolor=587993
-contentpanel_bgcolor=FFFFFF
+contentpanel_bgcolor==e8e9ed
 
-btnpanel_bgcolor=WHITE
+btnpanel_bgcolor=e8e9ed
 
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*

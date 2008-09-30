@@ -52,13 +52,13 @@
       <apt:visual>
         <apt:slideShow timePerSlide="5">
           <apt:updateURL>http://www.sun.com/foo</apt:updateURL>
-          <apt:slideResource>/view/jwsdp_1.gif</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_2.gif</apt:slideResource> 
-	  <apt:slideResource>/view/jwsdp_3.gif</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_4.gif</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_5.gif</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_6.gif</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_7.gif</apt:slideResource>
+          <apt:slideResource>/view/jwsdp_1.png</apt:slideResource>
+	  <apt:slideResource>/view/jwsdp_2.png</apt:slideResource> 
+	  <apt:slideResource>/view/jwsdp_3.png</apt:slideResource>
+	  <apt:slideResource>/view/jwsdp_4.png</apt:slideResource>
+	  <apt:slideResource>/view/jwsdp_5.png</apt:slideResource>
+	  <apt:slideResource>/view/jwsdp_6.png</apt:slideResource>
+	  <apt:slideResource>/view/jwsdp_7.png</apt:slideResource>
         </apt:slideShow>
       </apt:visual>
     </apt:property>

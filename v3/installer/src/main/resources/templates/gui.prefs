@@ -12,12 +12,12 @@
 dynamic_component_viewportborder_color=WHITE
 
 # Size for panels
-frame_size=745,512
-contentpanel_size=460,315
-contentpanel_size_m1=458,313
-contentpanel_size_m2=456,311
-contentpanel_size_m3=454,309
-contentpanel_size_m4=452,307
+frame_size=850,690
+contentpanel_size=714,513
+contentpanel_size_m1=712,511
+contentpanel_size_m2=710,509
+contentpanel_size_m3=708,507
+contentpanel_size_m4=706,505
 sizeAttr=minimumSize
 
 # Insets (GridBagConstraints) for panels
@@ -48,9 +48,9 @@ btnBack_constraints=ipady="3" ipadx="40" insets="0,0,0,10"
 btnNext_constraints=ipady="3" ipadx="40"
 
 # left nav colors
-leftpanel_done_textcolor=E0E0E0
-leftpanel_active_textcolor=333333
-leftpanel_remaining_textcolor=WHITE
+leftpanel_done_textcolor=595a5e
+leftpanel_active_textcolor=587993
+leftpanel_remaining_textcolor=595a5e
 
 # Desired wrap width for messages in dialog boxes
 wrap_width=80
