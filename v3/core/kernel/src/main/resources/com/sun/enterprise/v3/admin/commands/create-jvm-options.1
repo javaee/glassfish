@@ -17,9 +17,9 @@ SYNOPSIS
 
 DESCRIPTION
      The create-jvm-options command creates command-line  options
-     that  are  passed  to  the  JavaTM application launcher when
-     Enterprise Server is started. These options  are  stored  in
-     the  Java  configuration  element or profiler element of the
+     that are passed to the Java application launcher when Enter-
+     prise Server is started. These options  are  stored  in  the
+     Java  configuration  element  or  profiler  element  of  the
      domain.xml file. If options are created for a profiler, they
      are used to record the settings that are required to start a
      particular profiler.
@@ -38,7 +38,7 @@ DESCRIPTION
              o    -Denvironment=Production
 
          o    Startup parameters for the Virtual Machine for  the
-              Java   platform  (Java  Virtual  Machine  or  JVMTM
+              Java   platform   (Java   Virtual  Machine  or  JVM
               machine).
 
          The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
@@ -84,7 +84,7 @@ Administration Commands                     create-jvm-options(1)
      see the reference page for the operating system that you are
      using:
 
-         o    SolarisTM Operating System (Solaris OS) and  Linux:
+         o    Solaris Operating System (Solaris  OS)  and  Linux:
               java    -    the    Java    application    launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
@@ -240,7 +240,7 @@ EXAMPLES
      backslash (\fR) to escape the dash delimiter.
 
        asadmin> create-jvm-options --interactive=true
-       --secure=true --passwordfile passwords.txt --terse=false
+       --passwordfile passwords.txt --terse=false
        --user admin --host localhost --port 4848 --target server
        -Dunixlocation=/root/example:
        -Dvariable=OME:
