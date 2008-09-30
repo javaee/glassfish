@@ -313,7 +313,7 @@ public class CLIRemoteCommand {
             return;
         }
         catch (RemoteException rfe) {
-            if (rfe.getMessage().indexOf("CommandNotFoundException")>0) {
+            if (rfe.getRemoteCause().indexOf("CommandNotFoundException")>0) {
                     //CommandNotFoundException from the server, then display the closest matching
                     //commands
                 throw new CommandException(rfe.getMessage(), new InvalidCommandException());

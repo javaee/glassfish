@@ -101,7 +101,7 @@ class ManifestManager implements ResponseManager {
             if(CLILogger.isDebug() && ok(cause)){
                 sb.append(cause);
             }
-            throw new RemoteFailureException(sb.toString());
+            throw new RemoteFailureException(sb.toString(), cause);
         }        
 
         throw new RemoteSuccessException(sb.toString());

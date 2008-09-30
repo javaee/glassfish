@@ -48,8 +48,16 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author bnevins
  */
 public abstract class RemoteException extends Exception {
+        //save the cause string from server 
+    private String remoteCause = "";
+    
     RemoteException(String msg) {
             super(RemoteUtils.getString(msg));
+    }
+
+    RemoteException(String msg, String cause) {
+        super(RemoteUtils.getString(msg));
+        remoteCause = cause;
     }
     
     RemoteException(String msg, Object... objs) {
@@ -58,5 +66,9 @@ public abstract class RemoteException extends Exception {
     
     RemoteException(Throwable t) {
             super(t.getMessage(), t);
+    }
+
+    public String getRemoteCause() {
+        return remoteCause;
     }
 }
