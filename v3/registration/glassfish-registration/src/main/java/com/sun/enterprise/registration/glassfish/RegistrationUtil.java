@@ -35,23 +35,37 @@
  */
 package com.sun.enterprise.registration.glassfish;
 
+import org.jvnet.hk2.annotations.Inject;
+import java.util.logging.Logger;
+
+
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-
 import java.util.Properties;
 import java.io.InputStream;
-import java.util.ResourceBundle;
 
 import com.sun.enterprise.registration.impl.SysnetRegistrationService;
+import com.sun.enterprise.registration.impl.RepositoryManager;
 import com.sun.enterprise.registration.impl.ServiceTag;
 import com.sun.enterprise.registration.RegistrationException;
+import com.sun.enterprise.registration.impl.RegistrationLogger;
+
+import com.sun.pkg.client.Image;
+import com.sun.pkg.client.Fmri;
+import com.sun.pkg.client.Manifest;
+import com.sun.pkg.client.SystemInfo;
+import com.sun.pkg.client.Version;
+
+//import org.glassfish.server.ServerEnvironmentImpl;
 
 public class RegistrationUtil {
 
+
+    private static final Logger logger = RegistrationLogger.getLogger();
     private static final String REGISTRATION = "registration";
     private static final String LIB = "lib";
     private static final String SERVICE_TAG_REGISTRY_BASE = "servicetag-registry";
@@ -114,14 +128,14 @@ public class RegistrationUtil {
             } else {
                 //the link also does not exist. Fall through and return serviceTagRegistry as the
             }
-        }
+          }
         return serviceTagRegistry;
     }
 
     public static String getGFProductURN() throws RegistrationException {
         try {
             InputStream is = RegistrationUtil.class.getClassLoader().getResourceAsStream(
-                GLASSFISH_REGISTRY_PROPERTIES);
+                    GLASSFISH_REGISTRY_PROPERTIES);
             Properties props = new Properties();
             props.load(is);
             return props.getProperty("product_urn");
@@ -137,9 +151,51 @@ public class RegistrationUtil {
         if (st.isEmpty()) {
             throw new RegistrationException("Instance URN for " +
                     getGFProductURN() + " not found"); // i18n
+
         }
         return st.get(0).getInstanceURN();
     }
+    
+    public static void synchUUID() throws RegistrationException {
+        RepositoryManager rm = new RepositoryManager(getServiceTagRegistry());
+        String gfProductURN = getGFProductURN();
+        String gfInstanceURN = rm.getInstanceURN(gfProductURN);
+        
+        if (gfInstanceURN == null) {
+            gfInstanceURN = ServiceTag.getNewInstanceURN();
+            boolean updated = rm.setInstanceURN(gfProductURN, 
+                    gfInstanceURN);
+            if (!updated) {
+                // couldn't set instance urn in servicetag file. This shouldn't
+                // happen, but if it does, ignore it and do not update the UC
+                // file
+                logger.info("GlassFish instance URN not found");
+                return;
+            }
+        }
+        
+        setUpdateCenterUUID(gfInstanceURN);
+    }
+
+    public static Image getUpdateCenterImage() throws Exception {
+        File ucDir = new File(System.getProperty("com.sun.aas.installRoot"));
+        return new Image (ucDir);
+    }
+
+    public static void setUpdateCenterUUID(String instanceURN)
+            throws RegistrationException {
+        final String prefix = "urn:st:";
+        try {
+            Image image = getUpdateCenterImage();
+            String[] authorities = image.getAuthorityNames();
+            if (instanceURN.startsWith(prefix))
+                instanceURN = instanceURN.substring(prefix.length());
+            for (String authority : authorities) {
+                image.setAuthority(authority, null, instanceURN);
+            }
+            image.saveConfig();
+        } catch(Exception ex) {
+            throw new RegistrationException(ex);
+        }
+    }
 }
-
-

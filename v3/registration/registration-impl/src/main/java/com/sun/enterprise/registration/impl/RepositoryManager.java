@@ -271,11 +271,40 @@ public class RepositoryManager {
         return ServiceTag.Status.valueOf(getSubElementValue(st, ServiceTag.STATUS));
     }
     
+    public String getInstanceURN(String productURN) throws RegistrationException {
+        NodeList nodes = document.getElementsByTagName(ServiceTag.SERVICE_TAG);
+        for(int i = 0 ; i < nodes.getLength();i++) {
+            Element elem = (Element)nodes.item(i);
+            String productURN1 = getSubElementValue(elem, ServiceTag.PRODUCT_URN);
+            if (productURN.equals(productURN1))
+                return getSubElementValue(elem, ServiceTag.INSTANCE_URN);            
+        }
+        return null;
+    }
+
+    public boolean setInstanceURN(String productURN, String instanceURN) 
+            throws RegistrationException {
+        NodeList nodes = document.getElementsByTagName(ServiceTag.SERVICE_TAG);
+        for(int i = 0 ; i < nodes.getLength();i++) {
+            Element elem = (Element)nodes.item(i);
+            String productURN1 = getSubElementValue(elem, ServiceTag.PRODUCT_URN);
+            if (productURN.equals(productURN1)) {
+                setSubElementValue(elem, ServiceTag.INSTANCE_URN, instanceURN);
+                writeToFile();
+                return true;
+            }
+        }
+        //throw new RegistrationException("No such productURN : " + productURN);
+        return false;
+    }
+    
     /**
      * Goes through all service tags in the repository, and updates runtime
      * values if necessary. 
      * @throws RegistrationException in case of errors writing the output
      */
+    
+    
     public void updateRuntimeValues() throws RegistrationException {
         NodeList nodes = document.getElementsByTagName(ServiceTag.SERVICE_TAG);
         

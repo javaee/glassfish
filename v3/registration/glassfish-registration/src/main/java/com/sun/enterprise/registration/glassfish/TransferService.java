@@ -20,7 +20,6 @@
  *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.registration.glassfish;
 
 import org.jvnet.hk2.annotations.Service;
@@ -29,21 +28,26 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
 import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.impl.SysnetRegistrationService;
+
+
 
 /* Service to attempt transfer of tags to the central stclient servicetag
  * repository
  * 
-*/
-
-@Service(name="SysnetTransferService")
+ */
+@Service(name = "SysnetTransferService")
 @Async
 public class TransferService implements Startup, PostConstruct {
-    
+
     @Inject
     Logger logger;
 
+    private static final long TIMER_INTERVAL = 
+            Long.getLong("com.sun.enterprise.registration.TRANSFER_TIMER_INTERVAL", 7 * 24  * 60 * 60 * 1000);
 
     /**
      * Returns the life expectency of the service
@@ -53,23 +57,32 @@ public class TransferService implements Startup, PostConstruct {
     public Lifecycle getLifecycle() {
         return Lifecycle.SERVER;
     }
-    
+
     public int priority() {
         return Thread.MIN_PRIORITY;
-    }    
-    
+    }
+
     public void postConstruct() {
-        SysnetRegistrationService srs = 
+        final SysnetRegistrationService srs =
                 new SysnetRegistrationService(
                 RegistrationUtil.getServiceTagRegistry());
         if (srs.isRegistrationEnabled()) {
-            try {
-                srs.transferEligibleServiceTagsToSysNet();
-            } catch (RegistrationException re) {
-                logger.info(re.getMessage());
-            }
+            final Timer registrationTimer = new Timer("registration", true); //Mark the timer as daemon so that it does not hold up appserver shutdown
+
+            TimerTask registrationTask = new TimerTask() {
+
+                public void run() {
+                    try {
+                        srs.transferEligibleServiceTagsToSysNet();
+                        // Transfer was succseeful cancel the timer thread
+                        registrationTimer.cancel();
+                    } catch (RegistrationException e) {
+                        //Log exception.  
+                        logger.info(e.getMessage());
+                    }
+                }
+            };
+            registrationTimer.schedule(registrationTask, 0L, TIMER_INTERVAL);
         }
     }
-    
-
 }
