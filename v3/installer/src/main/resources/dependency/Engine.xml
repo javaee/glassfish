@@ -73,14 +73,14 @@
 
        <Realization>
         <OS>
-          <Type>Mac</Type>
-          <Name>MacOS</Name>
+          <Type>unix</Type>
+          <Name>MacOSX</Name>
           <OtherName>UNDEFINED</OtherName>
           <Arch>i386</Arch>
           <OtherArch>x86_64</OtherArch>
           <OtherArch>PowerPC</OtherArch>
           <VersionCertified>
-            <VersionBaseline>10.3</VersionBaseline>
+            <VersionBaseline>0.3</VersionBaseline>
           </VersionCertified>
           <RequirementsRealization>
             <Item type="disk">3Mb</Item>
