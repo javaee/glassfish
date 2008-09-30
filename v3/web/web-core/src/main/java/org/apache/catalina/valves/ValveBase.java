@@ -556,7 +556,9 @@ public abstract class ValveBase
 
     private void unregisterMBean() {
         try {
-            if ((oname != null) && (oname == controller)) {
+            if ((oname != null) && 
+                (oname == controller) &&
+                (Registry.getRegistry().getMBeanServer().isRegistered(oname))) {
                 Registry.getRegistry().getMBeanServer().unregisterMBean(oname);
                 setObjectName(null);
                 setController(null);
