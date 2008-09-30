@@ -414,6 +414,30 @@ public class CLIRemoteCommand {
     }
 
     /**
+     * See if DAS can be contacted with the present authentication info.
+     * @return true if DAS can be reached with this authentication info
+     */
+    public static boolean pingDASWithAuth(CommandInvoker invoker) {
+        try {
+            invoker.invoke();
+            return true;
+        }
+        catch (Exception ex) {
+            ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
+            if (ea.getFirstInstanceOf(java.net.ConnectException.class) != null) {
+                CLILogger.getInstance().printDebugMessage("Got java.net.ConnectException");
+                return false; // this definitely means server is not up
+            } else if (ea.getFirstInstanceOf(java.io.IOException.class) != null) {
+                CLILogger.getInstance().printDebugMessage("Auth info is incorrect" 
+                    + ex.getMessage());
+                return false;
+            } else {
+                return false; //unknown error, shouldn't really happen
+            }
+        }
+    }
+
+    /**
      * Do not print out the results of the version command from the server 
      * @param port The admin port of DAS
      * @return true if DAS can be reached and can handle commands, otherwise false.
@@ -600,6 +624,7 @@ public class CLIRemoteCommand {
             }
         }
         
+        // this is for asadmin-login command's special processing.        
         if (params.get("password") != null) {
             password = params.get("password");
             params.remove("password");
@@ -618,7 +643,7 @@ public class CLIRemoteCommand {
         if (!ok(password) && li != null) { // not in passwordfile and in .asadminpass
             password = li.getPassword();
         }                
-    }
+   }
     
     private String confirmInteractivelyAliasPassword(
         Map<String, String> encodedPasswords) 
