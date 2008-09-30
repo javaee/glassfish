@@ -56,8 +56,9 @@
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:applications:webApplications'); admingui.nav.refreshTree('form:tree:webServices');;
-        synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
+// This node doesn't exist yet...
+//  admingui.nav.refreshTree('form:tree:webServices', 'fixme');
+        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:applications:webApplications', 'web/webApp/webAppNode.jsf', 'webApplications'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
