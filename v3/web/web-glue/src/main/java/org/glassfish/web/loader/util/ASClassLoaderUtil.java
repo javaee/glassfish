@@ -9,7 +9,7 @@
  * may not use this file except in compliance with the License. You can obtain
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
+ * language governing permissions and limisubtations under the License.
  * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
@@ -36,7 +36,6 @@
 
 package org.glassfish.web.loader.util;
 
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -118,7 +117,7 @@ public class ASClassLoaderUtil {
      * @return A comma separated list representing the libraries
      *         specified by the deployer.
      */
-    public static <T extends Container> String getLibrariesForModule(Class<T> type, String moduleId) {
+    private static <T extends Container> String getLibrariesForModule(Class<T> type, String moduleId) {
 
         ApplicationInfo app = Globals.get(ApplicationRegistry.class).get(moduleId);
         if (app==null) {
