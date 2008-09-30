@@ -213,6 +213,8 @@ public class ASMainHelper {
 
         if(domainRoot == null)
             msg = "Internal Error: The domain dir is null.";
+        else if (!domainRoot.exists())
+            msg = "the domain directory does not exist";
         else if(!domainRoot.isDirectory())
             msg = "the domain directory is not a directory.";
         else if(!domainRoot.canWrite())
@@ -353,14 +355,24 @@ public class ASMainHelper {
         }
 
         long recordedLastModified = 0;
+        Properties persistedInfo = new Properties();
         File lastModifiedFile = new File(cacheDir.getParentFile(), cacheDir.getName()+".lastmodified");
         if (lastModifiedFile.exists()) {
 
             InputStream is = null;
             try {
                 is = new BufferedInputStream(new FileInputStream(lastModifiedFile));
-                ObjectInputStream ois = new ObjectInputStream(is);
-                recordedLastModified = ois.readLong();
+                persistedInfo.load(is);
+                try {
+                    recordedLastModified = Long.parseLong(persistedInfo.getProperty("LastModified"));
+                    // check that we have not moved our domain's directory, felix is sensitive to absolute path
+                    String location = persistedInfo.getProperty("Location");
+                    if (!cacheDir.toURI().toURL().toString().equals(location)) {
+                        recordedLastModified=0;
+                    }
+                } catch (NumberFormatException e) {
+                    recordedLastModified = 0;
+                }
             } catch(IOException e) {
                 logger.info("Cannot read recorded lastModified, felix cache will be flushed");
             } finally {
@@ -395,7 +407,10 @@ public class ASMainHelper {
                     return;
                 }
                 os = new ObjectOutputStream(new FileOutputStream(lastModifiedFile));
-                os.writeLong(lastModified);
+                persistedInfo.clear();
+                persistedInfo.put("LastModified", (new Long(lastModified).toString()));
+                persistedInfo.put("Location", cacheDir.toURI().toURL().toString());
+                persistedInfo.store(os, null);
 
             } catch(IOException e) {
                 logger.info("Cannot create record of lastModified file");

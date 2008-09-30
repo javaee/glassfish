@@ -71,7 +71,7 @@ public class PingService implements Startup, PostConstruct {
          try {
             RegistrationUtil.synchUUID();
          } catch (RegistrationException ex) {
-                logger.info(ex.getMessage());
+                logger.fine(ex.getMessage());
                 //logger.finer(ex);
              return; 
          }
