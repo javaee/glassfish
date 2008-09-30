@@ -622,6 +622,14 @@ admingui.nav = {
             // Make sure the TreeFrame exists with DF support
             var df = window.parent.frames.index.DynaFaces;
             if (df) {
+		if (!viewId) {
+		    // Supply best guess defaults...
+		    viewId = 'peTree.jsf';
+		}
+		if (!relId) {
+		    // Supply best guess defaults...
+		    relId = refreshNodeId;
+		}
                 var refreshNode = null;
                 //alert('refreshNodeId='+refreshNodeId);
                 if (refreshNodeId) {
