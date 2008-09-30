@@ -169,10 +169,15 @@ public class KeystoreManager {
      * @throws RepositoryException
      */    
     protected void createSSLCertificateDatabase(RepositoryConfig config, 
-        String masterPassword) throws RepositoryException    
+        String masterPassword)    
     {
-        createKeyStore(config, masterPassword);                
-        createTrustStore(config, masterPassword);
+        try {
+            createKeyStore(config, masterPassword);                
+            createTrustStore(config, masterPassword);
+        } catch(RepositoryException re) {
+            String msg = _strMgr.getString("SomeProblemWithKeytool", re.getMessage());
+            System.err.println(msg);
+        }
     }
     
     /**
