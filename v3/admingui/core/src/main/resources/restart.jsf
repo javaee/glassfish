@@ -76,7 +76,7 @@
                     <sun:image id="restartReasonsToggle" alt="show reasons" url="#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/grouprow_collapsed.gif"/> 
                     "</a>
                     "$resource{i18n.restart.showRestartReasonList}
-                    "<br/>
+                    "<br /><br /><br />
                     <sun:button id="stopInstance" style="margin-left: 8pt"
                         onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmStop}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
                         text="$resource{i18n.button.stopInstance}"
