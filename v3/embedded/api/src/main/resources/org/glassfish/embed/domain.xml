@@ -58,6 +58,10 @@
        <session-properties/>
      </session-config>
    </web-container>
+   
+   
+   <java-config>
+   </java-config>
 
     </config>
   </configs>
