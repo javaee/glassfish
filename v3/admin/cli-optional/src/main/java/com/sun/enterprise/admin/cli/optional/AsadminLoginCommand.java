@@ -71,6 +71,9 @@ public class AsadminLoginCommand extends BaseLifeCycleCommand {
                 adminPassword = getAdminPassword();
             }
         }
+        setOption(USER, adminUser);
+        setOption(PASSWORD, adminPassword);
+        
         // Step 2: Invoke version command to validate the authentication info
         if (!verifyAuth()) {
             // this would mean authentication failed.
@@ -91,7 +94,7 @@ public class AsadminLoginCommand extends BaseLifeCycleCommand {
         invoker.put(PORT, ""+getOption(PORT));
         invoker.put(USER, adminUser);
         invoker.put(PASSWORD, adminPassword);
-        return (CLIRemoteCommand.pingDAS(invoker));
+        return (CLIRemoteCommand.pingDASWithAuth(invoker));
     }
         
     /**
@@ -112,7 +115,7 @@ public class AsadminLoginCommand extends BaseLifeCycleCommand {
      * Saves the login information to the login store. Usually this is the file
      * ".asadminpass" in user's home directory.
      */
-    private void saveLogin(final String host, final int port, 
+    private void saveLogin(String host, final int port, 
                            final String user, final String passwd) {
         final CLILogger logger = CLILogger.getInstance();
         LoginInfo login = null;
@@ -120,7 +123,9 @@ public class AsadminLoginCommand extends BaseLifeCycleCommand {
             // By definition, the host name will default to "localhost" and 
             // entry is overwritten
             final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
-            login = new LoginInfo("localhost", port, user, passwd);
+            if (host == null || host.equals(""))
+                host = "localhost";
+            login = new LoginInfo(host, port, user, passwd);
             if (store.exists(login.getHost(), login.getPort())) {
                 // Let the user know that the user has chosen to overwrite the 
                 // login information. This is non-interactive, on purpose
