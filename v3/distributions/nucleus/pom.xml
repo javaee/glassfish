@@ -79,9 +79,27 @@
            <type>distribution-fragment</type>
        </dependency>
        <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>hk2</artifactId>
+           <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+       </dependency> 
+       <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>api-exporter</artifactId>
            <version>${glassfish.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>hk2</artifactId>
+                  <exclusions>
+            	<groupId>javax.xml.stream</groupId>
+            	<artifactId>stax-api</artifactId>
+           </exclusions>
        </dependency>
        <dependency>
            <groupId>com.sun.enterprise</groupId>

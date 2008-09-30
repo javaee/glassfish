@@ -47,9 +47,7 @@ import com.sun.logging.LogDomains;
 import java.util.Iterator;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentProperties;
-import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
 
@@ -61,12 +59,12 @@ import java.util.logging.Logger;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
-    private static final String ADMIN_VS = "__asadmin";
     final Logger logger = LogDomains.getLogger(WebApplication.class, LogDomains.WEB_LOGGER);
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
     Properties props = null;
+    String libraries = null;
 
     public WebApplication(WebContainer container, WebModuleConfig config, Properties props) {
         this.container = container;
@@ -167,6 +165,14 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     WebContainer getContainer() {
         return container;
+    }
+
+    public void setLibraries(String libraries) {
+        this.libraries = libraries;
+    }
+
+    public String getLibraries() {
+        return libraries;
     }
 
 

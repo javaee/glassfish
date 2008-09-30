@@ -142,6 +142,16 @@
             <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
+    <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>hk2</artifactId>
+           <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+    </dependency>         
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-all</artifactId>

@@ -25,6 +25,8 @@ package org.glassfish.internal.data;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.Container;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -97,5 +99,27 @@ public class ApplicationInfo {
         }
         return sniffers;
     }
+
+    /*
+     * Returns the ModuleInfo for a particular container type
+     * @param type the container type
+     * @return the module info is this application as a module implemented with
+     * the passed container type
+     */
+    public <T extends Container> ModuleInfo getModuleInfo(Class<T> type) {
+        for (ModuleInfo info : modules) {
+            T container = null;
+            try {
+                container = type.cast(info.getContainerInfo().getContainer());
+            } catch (Exception e) {
+                // ignore, wrong container
+            }
+            if (container!=null) {
+                return info;
+            }
+        }
+        return null;
+    }
+
     
 }

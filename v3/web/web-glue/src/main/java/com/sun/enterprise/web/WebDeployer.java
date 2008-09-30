@@ -200,9 +200,15 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
-        return new WebApplication(container, wmInfo,
+        WebApplication webApp = new WebApplication(container, wmInfo,
             (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
                 dc.getProps():null));
+        // we need to save the libraries in our application context since JSPC can occur at any
+        // time during the lifetime of the web application
+        if (dc.getProps().containsKey(ServerTags.LIBRARIES)) {
+            webApp.setLibraries(dc.getProps().getProperty(ServerTags.LIBRARIES));            
+        }
+        return webApp;
     }
 
     
