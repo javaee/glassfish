@@ -64,7 +64,7 @@
         <dependency>
            <groupId>org.openinstaller</groupId>
            <artifactId>resources</artifactId>
-           <version>0.9.4.1</version>
+           <version>0.9.4.2</version>
            <type>zip</type>
         </dependency> 
         <dependency>
