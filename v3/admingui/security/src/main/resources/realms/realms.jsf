@@ -56,15 +56,7 @@
             <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-	    <!beforeCreate
-		if ("#{supportCluster}") {
-		    setAttribute(key="refreshId" value="'form:tree:configurations'");
-		}
-		if ("!#{supportCluster}") {
-		    setAttribute(key="refreshId" value="null");
-		}
-	    />
+        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:security', 'security/securityServiceNode.jsf', 'security'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"

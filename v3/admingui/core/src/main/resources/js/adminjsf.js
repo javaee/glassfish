@@ -626,10 +626,6 @@ admingui.nav = {
 		    // Supply best guess defaults...
 		    viewId = 'peTree.jsf';
 		}
-		if (!relId) {
-		    // Supply best guess defaults...
-		    relId = refreshNodeId;
-		}
                 var refreshNode = null;
                 //alert('refreshNodeId='+refreshNodeId);
                 if (refreshNodeId) {
@@ -642,6 +638,10 @@ admingui.nav = {
                     refreshNode = admingui.nav.getSelectedTreeNode();
                     refreshNodeId = refreshNode.id;
                 }
+		if (!relId) {
+		    // Supply best guess defaults...
+		    relId = refreshNodeId;
+		}
                 var updateTreeAction = admingui.nav.getTreeFrameElementById("form:update");
                 if (refreshNode && updateTreeAction) {
                     df.fireAjaxTransaction(refreshNode,{

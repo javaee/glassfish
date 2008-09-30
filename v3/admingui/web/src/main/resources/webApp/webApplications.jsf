@@ -57,7 +57,7 @@
         </sun:head>
 
 // This node doesn't exist yet...
-//  admingui.nav.refreshTree('form:tree:webServices', 'fixme');
+//  admingui.nav.refreshTree('form:tree:webServices', 'fixme', 'fixme');
         <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:applications:webApplications', 'web/webApp/webAppNode.jsf', 'webApplications'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
             <sun:form id="propertyForm">
 <f:verbatim>

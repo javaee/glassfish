@@ -63,7 +63,7 @@
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree(null); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:resources:JDBC:jdbcResources', 'jdbc/jdbcTreeNode.jsf', 'JDBC:jdbcResources'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
