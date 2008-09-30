@@ -161,7 +161,7 @@ public class RegistrationUtil {
         String gfProductURN = getGFProductURN();
         String gfInstanceURN = rm.getInstanceURN(gfProductURN);
         
-        if (gfInstanceURN == null) {
+        if (gfInstanceURN == null || gfInstanceURN.length() == 0) {
             gfInstanceURN = ServiceTag.getNewInstanceURN();
             boolean updated = rm.setInstanceURN(gfProductURN, 
                     gfInstanceURN);

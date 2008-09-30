@@ -71,7 +71,7 @@ public class PingService implements Startup, PostConstruct {
          try {
             RegistrationUtil.synchUUID();
          } catch (RegistrationException ex) {
-                logger.warning(ex.getMessage());
+                logger.info(ex.getMessage());
                 //logger.finer(ex);
              return; 
          }
@@ -94,10 +94,11 @@ public class PingService implements Startup, PostConstruct {
                     int numUpdates = ip.getProposedFmris().length;
                     logger.info("Number of available updates : " +
                             numUpdates); // FIX i18n
-                    logger.info("Available updates : ");
-                    
-                    for (Fmri fmri : ip.getProposedFmris()) {
-                        logger.info(fmri.toString());
+                    if (numUpdates > 0) {
+                        logger.info("Available updates : ");                    
+                        for (Fmri fmri : ip.getProposedFmris()) {
+                            logger.info(fmri.toString());
+                        }
                     }
                 } catch (Exception e) {
                     // should the timer schedule be changed in case of
