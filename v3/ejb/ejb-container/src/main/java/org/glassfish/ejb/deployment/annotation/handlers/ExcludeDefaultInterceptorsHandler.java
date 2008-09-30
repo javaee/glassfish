@@ -71,8 +71,12 @@ public class ExcludeDefaultInterceptorsHandler
      */
     public Class<? extends Annotation> getAnnotationType() {
         return ExcludeDefaultInterceptors.class;
-    }    
-        
+    }
+
+    protected boolean supportTypeInheritance() {
+        return true;
+    }
+
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
