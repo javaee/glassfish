@@ -1085,6 +1085,8 @@ public class ServerHandlers {
             if (names != null && names.size() > 0) {
                 String[] options = (String[]) names.toArray(new String[names.size()]);
                 profilerConfig.setJVMOptions(options);
+            }else{
+                profilerConfig.setJVMOptions(new String[0]);
             }
 
         } catch (Exception ex) {
