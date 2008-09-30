@@ -78,16 +78,18 @@ function disableComponent(componentName, type) {
     var component = null;
     if (type != null && type == 'file') {
         component = getFileInputElement(componentName);
-    }
-    else if(type != null && type == 'select') {
+    } else if(type != null && type == 'select') {
         component = getSelectElement(componentName);
-    }
-    else {
+    } else {
         component = getTextElement(componentName);
-        component.value='';
+	if (component != null) {
+	    component.value='';
+	}
     }
-    component.disabled=true;
-    component.className='TxtFldDis_sun4';
+    if (component != null) {
+	component.disabled=true;
+	component.className='TxtFldDis_sun4';
+    }
 }
 
 
