@@ -426,13 +426,18 @@ public class ApplicationLifecycle {
             // get the deployer
             Deployer<?,?> deployer = containerInfo.getDeployer();
 
-            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             final MetaData metadata = deployer.getMetaData();
             try {
                 if (metadata!=null) {
-                    for (Class<?> provide : metadata.provides()) {
-                        context.addModuleMetaData(deployer.loadMetaData(provide, context));
+                    if (metadata.provides()==null || metadata.provides().length==0) {
+                        deployer.loadMetaData(null, context);
+                    } else {
+                        for (Class<?> provide : metadata.provides()) {
+                            context.addModuleMetaData(deployer.loadMetaData(provide, context));
+                        }
                     }
+                } else {
+                    deployer.loadMetaData(null, context);
                 }
             } catch(Exception e) {
                 report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);

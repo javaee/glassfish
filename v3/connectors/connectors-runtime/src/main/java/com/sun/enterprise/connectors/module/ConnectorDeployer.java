@@ -93,6 +93,15 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     }
 
     /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <T> T loadMetaData(Class<T> type, DeploymentContext context) {
+        return null;
+    }    
+
+    /**
      * Loads a previously prepared application in its execution environment and
      * return a ContractProvider instance that will identify this environment in
      * future communications with the application's container runtime.

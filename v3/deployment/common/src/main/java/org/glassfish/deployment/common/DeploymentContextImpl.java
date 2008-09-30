@@ -146,6 +146,9 @@ public class DeploymentContextImpl implements DeploymentContext {
     public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException {
 
+        if (cloader!=null && sharableTemp!=null) {
+            return;
+        }
         // first we create the appLib class loader, this is non shared libraries class loader
         final String appName = getCommandParameters().getProperty(ParameterNames.NAME);
         ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs());
