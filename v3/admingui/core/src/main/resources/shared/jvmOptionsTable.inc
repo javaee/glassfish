@@ -51,13 +51,13 @@
          <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-        <sun:button id="addSharedTableButton" immediate="true" text="$resource{i18n.jvmOptions.AddJvmOption}">   
+        <sun:button id="addSharedTableButton" text="$resource{i18n.jvmOptions.AddJvmOption}">   
             <!command
             getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
             addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"option"});
             />                                 
         </sun:button>
-        <sun:button id="button1" immediate="true" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"> 
+        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"> 
             <!command
                 getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{trg});      
                 getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
@@ -80,7 +80,7 @@
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{75}" id="col1St" value="#{td.value.option}" />
+            <sun:textField columns="$int{100}" id="col1St" value="#{td.value.option}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>    
