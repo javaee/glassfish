@@ -131,22 +131,16 @@ own identifying information: Portions Copyright [yyyy]
     <delete
         file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
 
-    <!-- copy pkg-java -->
-    <unzip dest="${image.dir}/..">
-        <fileset dir="../target">
-            <include name="pkg-java*.zip"/>
-        </fileset>
-    </unzip>
-
     <!-- copy uc client scripts -->
     <unzip dest="${image.dir}/bin">
         <fileset dir="../target">
             <include name="ucbootstrap*.zip"/>
         </fileset>
     </unzip>
-    <copy file="${image.dir}/bin/ucbootstub.sh" tofile="${image.dir}/bin/updatetool"/>
-    <copy file="${image.dir}/bin/ucbootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
-    <move file="${image.dir}/bin/ucbootstub.sh" tofile="${image.dir}/bin/pkg"/>
-    <move file="${image.dir}/bin/ucbootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
+
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/updatetool"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/pkg"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
 </target>
 </project>
