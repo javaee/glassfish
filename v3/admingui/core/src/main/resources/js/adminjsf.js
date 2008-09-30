@@ -612,11 +612,11 @@ admingui.nav = {
      *	    navigation frame to be "refreshed".  This means that it and its
      *	    children will be deleted, recreated, and redisplayed.</p> 
      */
-    refreshTree: function(refreshNodeId, viewId) {
+    refreshTree: function(refreshNodeId, viewId, relId) {
         if (window.parent && window.parent.frames.index) {
             if (document != window.parent.frames.index.document) {
                 //ensure we call from index frame
-                window.parent.frames.index.admingui.nav.refreshTree(refreshNodeId, viewId);
+                window.parent.frames.index.admingui.nav.refreshTree(refreshNodeId, viewId, relId);
                 return;
             }
             // Make sure the TreeFrame exists with DF support
@@ -626,10 +626,11 @@ admingui.nav = {
                 //alert('refreshNodeId='+refreshNodeId);
                 if (refreshNodeId) {
                     refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
-                    //alert('refreshNode='+refreshNode);
+		    if (!refreshNode) {
 // FIXME: Warn if not found... How do you log a warning in JavaScript?  I don't want an alert().
-                }
-                else {
+			//alert('refreshNode not found:'+refreshNode);
+		    }
+                } else {
                     refreshNode = admingui.nav.getSelectedTreeNode();
                     refreshNodeId = refreshNode.id;
                 }
@@ -639,7 +640,7 @@ admingui.nav = {
                                            execute: updateTreeAction.id,
                                            inputs: updateTreeAction.id,
                                            parameters: "updateTreeNode=" + refreshNodeId
-					       + "&viewId=" + viewId,
+					       + "&viewId=" + viewId + "&relId=" + relId,
                                            replaceElement: admingui.nav.updateTreeNodeAjaxCallback,
                                            immediate: false,
                                            render: refreshNodeId

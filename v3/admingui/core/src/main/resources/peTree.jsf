@@ -185,10 +185,9 @@
 		replaceUIComponent(old="${oldComp}" new="$attribute{temp}");
 
 		// Rengenerate it
-//FIXME: viewId="$requestParameter{viewId}"
 		getLayoutComponent(
-		    viewId="web/webApp/webAppNode.jsf"
-		    clientId="$requestParameter{updateTreeNode}"
+		    viewId="$requestParameter{viewId}"
+		    clientId="$requestParameter{relId}"
 		    component=>$attribute{desc});
 		buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
 		replaceUIComponent(old="${temp}" new="$attribute{newComp}");
