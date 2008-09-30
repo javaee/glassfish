@@ -179,10 +179,10 @@ Utility Commands                                      asadmin(1M)
          o    Meta characters in  the  UNIX    operating  system.
               These  characters  have special meaning in a shell.
               Meta  characters  in  the  UNIX  operating   system
-              include: /,.!$%^&*|{}[]"'`~;.
+              include: \/,.!$%^&*|{}[]"'`~;.
 
               To disable these characters, use the escape charac-
-              ter backslash (\fR).
+              ter backslash (\).
 
               The following examples illustrate the effect of the
               escape character on the * character. In these exam-
@@ -200,12 +200,12 @@ Utility Commands                                      asadmin(1M)
                   character  precedes the * character, echoes the
                   * character:
 
-                    prompt% echo
+                    prompt% echo \*
                     *
 
                                            TM
          o    The escape character for Java   technology  special
-              characters.  The  escape  character backslash (\fR)
+              characters.  The  escape  character  backslash  (\)
               identifies Java technology special characters  such
 
 Java EE 5           Last change: 19 Sep 2008                    4
@@ -214,19 +214,19 @@ Utility Commands                                      asadmin(1M)
 
               as:
 
-             o    0or new line
-                  f
-             o    obackspace
-                  r
-             o     for tab
+             o    \n for new line
 
-             o
+             o    \b for backspace
+
+             o    \t for tab
+
+             o    \" for double quote
           An extra escape character is required to represent  the
-         literal \fR character.
+         literal \ character.
 
          o    Option delimiters. The  asadmin  utility  uses  the
               colon  character  (:)   as a delimiter for options.
-              The escape character backslash (\fR) is required if
+              The escape character backslash (\) is  required  if
               the colon is part of any of the following items:
 
              o    A property
@@ -247,18 +247,18 @@ Utility Commands                                      asadmin(1M)
          Multiple JVM machine  options  in  the  operand  of  the
          create-jvm-options  command  are  separated by the colon
          (:) delimiter.  If jvm-option-name  or  jvm-option-value
-         contains  a  colon, the escape character backslash (\fR)
-         is required before the colon.
+         contains  a colon, the escape character backslash (\) is
+         required before the colon.
 
      The escape character disables the delimiter in the  command-
      line  interface,  and  is  a  special  character in the UNIX
      operating system and in Java technology.  Therefore, in  the
-     UNIX  operating  system , you must apply an escape character
-     to every escape character in the command line. This require-
-     ment does not apply to the Windows operating system.Tip -
+     UNIX operating system, you must apply an escape character to
+     every escape character in the command line. This requirement
+     does not apply to the Windows operating system.Tip -
 
-     Instead of using the backslash (\fR) escape  character,  you
-     can use the double quote character ("). However, because the
+     Instead of using the backslash (\) escape character, you can
+     use  the  double  quote  character ("). However, because the
      double quote is a special character in Java technology,  you
 
 Java EE 5           Last change: 19 Sep 2008                    5
@@ -297,8 +297,7 @@ Utility Commands                                      asadmin(1M)
      item,  you  must  restart  the  DAS  for  the change to take
      effect. To restart the DAS, use the start-domain(1) command.
 
-  Usage Information for asadmin Utility
-     Subcommands"
+  Usage Information for asadmin Utility Subcommands
 
      To obtain usage information for an asadmin  utility  subcom-
      mand,  specify  the  --help option. If you specify a subcom-
@@ -320,29 +319,29 @@ Utility Commands                                      asadmin(1M)
      in an Option
 
      The commands in this example show how to  specify  the  UNIX
-     operating  system  meta  character  backslash  (\fR)  in the
-     option argument TestEscapeCharacter.
+     operating  system meta character backslash (\) in the option
+     argument Test\Escape\Character.
 
-     For the  UNIX  operating  system,  the  backslash  (\fR)  is
-     required to escape the meta character backslash (\fR):
+     For the UNIX operating system, the backslash (\) is required
+     to escape the meta character backslash (\):
 
        asadmin create-jdbc-connection-pool -u admin --passwordfile mypasswordfile
-       --datasourceclassname --description Test\Escape\Character sampleJDBCConnectionPool
+       --datasourceclassname --description Test\\Escape\\Character sampleJDBCConnectionPool
 
      For the Windows operating system,  no  escape  character  is
      required:
 
        asadmin create-jdbc-connection-pool -u --passwordfile mypasswordfile
-       --datasourceclassname sampleClassName --description TestEscapeCharacter
+       --datasourceclassname sampleClassName --description Test\Escape\Character
        sampleJDBCConnectionPool
 
      Example 2 Specifying a Meta Character and an  Option  Delim-
      iter Character in a Property
 
      The commands in this example show how to  specify  the  UNIX
-     operating  system  meta  character  backslash  (\fR) and the
-     option delimiter  character  colon  (:)  in  the  --property
-     option of the create-jdbc-connection-pool(1) command.
+     operating system meta character backslash (\) and the option
+     delimiter character colon (:) in the  --property  option  of
+     the create-jdbc-connection-pool(1) command.
 
      The name and value pairs for the --property  option  are  as
      follows:
@@ -356,22 +355,22 @@ Java EE 5           Last change: 19 Sep 2008                    7
 
 Utility Commands                                      asadmin(1M)
 
-     For the UNIX operating system, a backslash (\fR) is required
-     to escape the colon (:)  and the backslash (\fR):
+     For the UNIX operating system, a backslash (\)  is  required
+     to escape the colon (:)  and the backslash (\):
 
        asadmin create-jdbc-connection-pool --user --passwordfile mypasswordfile
        --port 4848 --host localhost --datasourceclassname com.derby.jdbc.jdbcDataSource
        --property user=dbuser:passwordfile=dbpasswordfile:
-       DatabaseName=jdbc\:derby:server=http\://localhost\:9092 sqe-jdbc-pool
+       DatabaseName=jdbc\\:derby:server=http\\://localhost\\:9092 sqe-jdbc-pool
 
-     For the Windows  operating  system,  a  backslash  (\fR)  is
+     For  the  Windows  operating  system,  a  backslash  (\)  is
      required to escape only the colon (:), but not the backslash
-     (\fR):
+     (\):
 
        asadmin create-jdbc-connection-pool --user admin --passwordfile mypasswordfile
        --port 4848 --host localhost --datasourceclassname com.derby.jdbc.jdbcDataSource
        --property user-dbuser:passwordfile-dbpasswordfile:
-       DatabaseName=jdbc:derby:server=http://localhost:9092 sqe-jdbc-pool
+       DatabaseName=jdbc\:derby:server=http\://localhost\:9092 sqe-jdbc-pool
 
      For all operating systems, the need to escape the colon  (:)
      in  a value can be obviated by enclosing the value in double
@@ -380,28 +379,27 @@ Utility Commands                                      asadmin(1M)
        asadmin create-jdbc-connection-pool --user --passwordfile mypasswordfile
        --port 4848 --host localhost --datasourceclassname com.derby.jdbc.jdbcDataSource
        --property user=dbuser:passwordfile=dbpasswordfile:
-       DatabaseName=
+       DatabaseName=\"jdbc:derby\":server=\"http://localhost:9092\" sqe-jdbc-pool
 
      Example 3 Specifying an Option Delimiter and a Java Technol-
      ogy Escape Character in a JVM Machine Option
 
      The commands in this example show how to specify the follow-
      ing     characters     in    the    JVM    machine    option
-     -Dlocation=c:nppserver:
+     -Dlocation=c:\sun\appserver:
 
          o    The option delimiter colon (:)
 
-         o    The  Java  technology  escape  character  backslash
-              (\fR)
+         o    The Java technology escape character backslash (\)
 
 Java EE 5           Last change: 19 Sep 2008                    8
 
 Utility Commands                                      asadmin(1M)
 
-     For the UNIX  operating  system,  two  backslashes  (\)  are
-     required  to  escape  the  colon  (:)  and three backslashes
-     (\\fR) are required to escape  the  backslash  (\fR).  As  a
-     result, a total of four backslashes are required:
+     For the UNIX operating  system,  two  backslashes  (\\)  are
+     required to escape the colon (:) and three backslashes (\\\)
+     are required to escape the backslash (\).  As  a  result,  a
+     total of four backslashes are required:
 
          1.    The first backslash  escapes  the  UNIX  operating
               system meta character.
@@ -416,34 +414,34 @@ Utility Commands                                      asadmin(1M)
 
      The resulting command is as follows:
 
+       asadmin create-jvm-options --target test-server -e -Dlocation=c\\:\\\\sun\\\\appserver
+
+     For  the  Windows  operating  system,  a  backslash  (\)  is
+     required to escape the colon (:)  and the backslash (\):
+
        asadmin create-jvm-options --target test-server -e -Dlocation=c\:\\sun\\appserver
-
-     For the Windows  operating  system,  a  backslash  (\fR)  is
-     required to escape the colon (:)  and the backslash (\fR):
-
-       asadmin create-jvm-options --target test-server -e -Dlocation=c:\sun\appserver
 
      Example 4 Specifying an Option That Contains an Escape Char-
      acter
 
      The commands  in  this  example  show  how  to  specify  the
-     backslash character in the option argument "admindmin".
+     backslash character in the option argument "admin\admin".
 
-     For the UNIX operating system, a backslash (\fR) is required
-     to escape the double quote (") and the backslash (\fR):
+     For the UNIX operating system, a backslash (\)  is  required
+     to escape the double quote (") and the backslash (\):
 
-       asadmin list-jdbc-resources --user
+       asadmin list-jdbc-resources --user \"admin\\admin\" --passwordfile mypasswordfile
        --host localhost --port 4848
 
 Java EE 5           Last change: 19 Sep 2008                    9
 
 Utility Commands                                      asadmin(1M)
 
-     For the Windows  operating  system,  a  backslash  (\fR)  is
+     For  the  Windows  operating  system,  a  backslash  (\)  is
      required  to  escape  only the double quote ("), but not the
-     backslash (\fR):
+     backslash (\):
 
-       asadmin list-jdbc-resources --user
+       asadmin list-jdbc-resources --user \"admin\admin\" --passwordfile mypasswordfile
        --host localhost --port 4848
 
 ATTRIBUTES
