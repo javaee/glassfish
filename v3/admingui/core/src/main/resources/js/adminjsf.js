@@ -590,6 +590,7 @@ admingui.nav = {
         var node2 = admingui.nav.getTreeFrameElementById('form:tree:clusters2');
         var node3 = admingui.nav.getTreeFrameElementById('form:tree:clusters2_children');
         var tree = admingui.nav.getTreeFrameElementById("form:tree");
+	// FIXME: This needs the viewId where clusters2 is defined
         admingui.nav.refreshTree('form:tree:clusters2');
         if (hasCluster=='true' || hasCluster=='TRUE') {
             node1.style.display='none';
@@ -611,11 +612,11 @@ admingui.nav = {
      *	    navigation frame to be "refreshed".  This means that it and its
      *	    children will be deleted, recreated, and redisplayed.</p> 
      */
-    refreshTree: function(refreshNodeId) {
+    refreshTree: function(refreshNodeId, viewId) {
         if (window.parent && window.parent.frames.index) {
             if (document != window.parent.frames.index.document) {
                 //ensure we call from index frame
-                window.parent.frames.index.admingui.nav.refreshTree(refreshNodeId);
+                window.parent.frames.index.admingui.nav.refreshTree(refreshNodeId, viewId);
                 return;
             }
             // Make sure the TreeFrame exists with DF support
@@ -637,7 +638,8 @@ admingui.nav = {
                     df.fireAjaxTransaction(refreshNode,{
                                            execute: updateTreeAction.id,
                                            inputs: updateTreeAction.id,
-                                           parameters: "updateTreeNode=" + refreshNodeId,
+                                           parameters: "updateTreeNode=" + refreshNodeId
+					       + "&viewId=" + viewId,
                                            replaceElement: admingui.nav.updateTreeNodeAjaxCallback,
                                            immediate: false,
                                            render: refreshNodeId
