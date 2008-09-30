@@ -161,6 +161,7 @@ public class AMXRoot {
             AMXBooter.bootAMX(mbs);
             DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot(); 
 	    domainRoot.waitAMXReady();
+            amxRoot = new AMXRoot(domainRoot, mbs);
 	}
         return amxRoot;
     }
