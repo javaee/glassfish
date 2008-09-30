@@ -988,7 +988,7 @@ public class WebappClassLoader
                 }
             } catch (UnsupportedClassVersionError ucve) {
                 throw new UnsupportedClassVersionError(
-                    sm.getString("webappLoader.unsupportedVersion", name,
+                    sm.getString("webappClassLoader.unsupportedVersion", name,
                                  getJavaVersion()));
             } catch(AccessControlException ace) {
                 throw new ClassNotFoundException(name, ace);
