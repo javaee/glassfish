@@ -241,6 +241,7 @@ public class AppServerStartup implements ModuleStartup {
                         final Throwable t = future.get().exception();
                         logger.log(Level.SEVERE, "Shutting down v3 due to startup exception : " + t.getMessage());
                         logger.log(Level.FINE, future.get().exception().getMessage(), t);
+                        events.send(new Event(EventTypes.SERVER_SHUTDOWN));
                         shutdown(startups, executedStartups);
                         return;
                     }

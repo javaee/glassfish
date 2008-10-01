@@ -91,7 +91,7 @@ public class SnifferAdapter implements Adapter {
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<ContainerInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
-                    if (containersInfo != null || containersInfo.size() > 0) {
+                    if (containersInfo != null && containersInfo.size() > 0) {
                         // force the start on each container
                         for (ContainerInfo info : containersInfo) {
                             if (logger.isLoggable(Level.FINE)) {
