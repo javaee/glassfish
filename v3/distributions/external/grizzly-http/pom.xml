@@ -69,18 +69,9 @@
                         <Embed-Dependency>
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
-                        <Export-Package>com.sun.grizzly.*; version=${grizzly.original-version};-split-package:=merge-first</Export-Package>
-                        <!-- Import everything but this. This is a temporary
-                             change needed until we separate comet stuff
-                             to grizzly-optionals module. Remove this after
-                             tp2 branch is merged.
-                        -->
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>com.sun.grizzly.*; version=${grizzly.package-version}, *</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
-                        <_exportcontents>*</_exportcontents>
-                        <!-- !* matches with nothing, so no other class will be included in this bundle,
-                         other than what is specified above -->
-                        <Private-Package>!*</Private-Package>
+                        <_exportcontents>com.sun.grizzly.*; version=${grizzly.package-version}</_exportcontents>
                         <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
                          This is needed because we don't want to change the packaging type to
                          hk2-jar. -->

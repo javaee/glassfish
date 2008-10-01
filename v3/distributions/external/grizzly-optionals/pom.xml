@@ -69,18 +69,13 @@
                         <Embed-Dependency>
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
-                        <Export-Package>com.sun.enterprise.web.connector.grizzly.comet*; version=${grizzly.package-version};split-package:=error,com.sun.grizzly.comet*; version=${grizzly.package-version};split-package:=error</Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <!-- Package everything from the embedded jar in the final bundle -->
-                        <_exportcontents>*</_exportcontents>
-                        <!-- !* matches with nothing, so no other class will be included in this bundle,
-                         other than what is specified above -->
-                        <Private-Package>!*</Private-Package>
+                        <_exportcontents>!WEB-INF, !com.sun.grizzly.http, *; version=${grizzly.package-version}</_exportcontents>
+                        <Import-Package>com.sun.grizzly.*; version=${grizzly.package-version}, *</Import-Package>
                         <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
                          This is needed because we don't want to change the packaging type to
                          hk2-jar. -->
                         <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
-                        <HK2-Import-Bundles>org.glassfish.external:grizzly-module</HK2-Import-Bundles>                        
+                        <HK2-Import-Bundles>org.glassfish.external:grizzly-module</HK2-Import-Bundles>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
