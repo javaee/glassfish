@@ -111,7 +111,7 @@
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>${project.version}</grizzly.version>        
-        <grizzly.original-version>1.8.6</grizzly.original-version>        
+        <grizzly.original-version>1.8.6.1</grizzly.original-version>
         <jsp-impl.version>2.1-SNAPSHOT</jsp-impl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
