@@ -28,7 +28,7 @@
 
     <target name="setup-appserv" depends="init-common">
         <javac srcdir="./shared/test"
-               classpath="${env.S1AS_HOME}/modules/javax.servlet-10.0-SNAPSHOT.jar"
+               classpath="${env.S1AS_HOME}/modules/javax.servlet.jar"
                destdir="./shared" includes="*.java"/>
         <jar destfile="shared.jar" basedir="shared"/>
         <copy file="shared.jar" 
