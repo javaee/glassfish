@@ -24,8 +24,8 @@ own identifying information: Portions Copyright [yyyy]
 <property name="image.root" value="target/local_image"/>
 <property name="installer.image.dir" value="${image.root}/installer"/>
 <property name="glassfish.image.dir" value="${image.root}/glassfish"/>
-<property name="build.repo.url" value="http://repine.sfbay.sun.com:40000"/>
-<!-- property name="build.repo.url" value="http://localhost:10000"/ -->
+<property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
+<!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="authority" value="release.glassfish.org"/>
 <property name="title" value="GlassFish v3 Prelude"/>
@@ -111,8 +111,8 @@ own identifying information: Portions Copyright [yyyy]
 </target>
 
 <target name="create-local-image" depends="check-ips"
-    description="Create local IPS image using ${build.repo.url}">
-    <echo message="Creating local IPS image for ${build.repo.url} to ${image.dir}"/>
+    description="Create local IPS image using ${repo.url}">
+    <echo message="Creating local IPS image for ${repo.url} to ${image.dir}"/>
     <mkdir dir="${image.dir}"/>
     <exec executable="pkg" failonerror="true">
         <arg line="image-create -U -a ${dev.authority}=${dev.repository.url} ${image.dir}" />
@@ -148,8 +148,8 @@ own identifying information: Portions Copyright [yyyy]
 </target>
 
 <target name="install-package" depends="check-ips"
-    description="Install Package ${package.name} from ${build.repo.url}">
-    <echo message="Install Package ${package.name} from ${build.repo.url} to ${image.dir}"/>
+    description="Install Package ${package.name} from ${repo.url}">
+    <echo message="Install Package ${package.name} from ${repo.url} to ${image.dir}"/>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="install ${package.name}" />
     </exec>
@@ -162,7 +162,7 @@ own identifying information: Portions Copyright [yyyy]
 
 <target name="update-cfg-cache" depends="check-ips">
     <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
-    <echo message="Updating cfg_cache in local IPS image with ${build.repo.url}"/>
+    <echo message="Updating cfg_cache in local IPS image with ${repo.url}"/>
     <echo message="image.dir: ${image.dir}"/>
     <echo message="cfg_cache: ${image.cache}"/>
     <available file="${image.dir}/.org.opensolaris,pkg/cfg_cache" property="cache.present"/>
