@@ -111,7 +111,7 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
     @Override
     protected DFCommandRunner getDFCommandRunner(
             final String commandName,
-            final Map<String,String> commandOptions,
+            final Map<String,Object> commandOptions,
             final String[] operands) {
         return new LocalDFCommandRunner(commandName, commandOptions, operands);
     }
@@ -122,12 +122,12 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
     private class LocalDFCommandRunner implements DFCommandRunner {
 
         private final String commandName;
-        private final Map<String,String> commandOptions;
+        private final Map<String,Object> commandOptions;
         private final String [] operands;
 
         private LocalDFCommandRunner(
                 final String commandName,
-                final Map<String,String> commandOptions,
+                final Map<String,Object> commandOptions,
                 final String[] operands) {
             this.commandOptions = commandOptions;
             this.commandName = commandName;
@@ -150,12 +150,12 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
          * @param operands
          * @return Properties object suitable for passing to the command runner
          */
-        private Properties prepareParameters(final Map<String,String> commandOptions, final String[] operands) {
+        private Properties prepareParameters(final Map<String,Object> commandOptions, final String[] operands) {
             final Properties result = new Properties();
             if (commandOptions != null) {
-                for (Map.Entry<String,String> entry : commandOptions.entrySet()) {
+                for (Map.Entry<String,Object> entry : commandOptions.entrySet()) {
                     if ( ! ignoredParameters.contains(entry.getKey() )) {
-                        result.setProperty(entry.getKey(), entry.getValue());
+                        result.put(entry.getKey(), entry.getValue());
                     }
                 }
             }
