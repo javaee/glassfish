@@ -36,12 +36,15 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
 import javax.enterprise.deploy.shared.ModuleType;
@@ -65,6 +68,9 @@ public class ArchivistFactory implements ContractProvider {
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    Habitat habitat;
 
     public Archivist getArchivist(ReadableArchive archive, 
         ClassLoader cl) throws IOException {
@@ -92,7 +98,7 @@ public class ArchivistFactory implements ContractProvider {
         for (PrivateArchivist pa : privateArchivists) {
             Archivist a = Archivist.class.cast(pa);
             if (a.getModuleType().equals(moduleType)) {
-                return a;
+                return copyOf(a);
             }
         }
         return null;
@@ -111,9 +117,9 @@ public class ArchivistFactory implements ContractProvider {
             Archivist a = Archivist.class.cast(pa);
             if (a.hasStandardDeploymentDescriptor(archive) ||
                     a.hasRuntimeDeploymentDescriptor(archive)) {
-                return a;
+                return copyOf(a);
+                }
             }
-        }
 
         // Java EE 5 Specification: Section EE.8.4.2.1
 
@@ -125,7 +131,7 @@ public class ArchivistFactory implements ContractProvider {
             for (PrivateArchivist pa : privateArchivists) {
                 Archivist a = Archivist.class.cast(pa);
                 if (uri.endsWith(a.getArchiveExtension())) {
-                    return a;
+                    return copyOf(a);
                 }
             }
         }
@@ -134,10 +140,19 @@ public class ArchivistFactory implements ContractProvider {
         for (PrivateArchivist pa : privateArchivists) {
             Archivist a = Archivist.class.cast(pa);
             if (a.postHandles(archive)) {
-                return a;
+                return copyOf(a);
             }
         }
  
         return null;
+    }
+
+    private Archivist copyOf(Archivist a) {
+        try {
+            return habitat.getComponent(a.getClass());
+//            return a.getClass().newInstance();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
