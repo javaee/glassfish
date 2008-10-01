@@ -206,7 +206,7 @@ public class CLIMain
         catch (Exception e)
         {
             if (commandUsageText == null) {
-                displayClosestMatch(helpCommandName, null, null);
+                    //displayClosestMatch(helpCommandName, null, null);
                 throw new InvalidCommandException(helpCommandName);
             }
             else
