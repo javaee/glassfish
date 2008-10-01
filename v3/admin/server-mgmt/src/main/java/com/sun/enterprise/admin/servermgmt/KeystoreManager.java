@@ -177,6 +177,18 @@ public class KeystoreManager {
         } catch(RepositoryException re) {
             String msg = _strMgr.getString("SomeProblemWithKeytool", re.getMessage());
             System.err.println(msg);
+            try {
+                PEFileLayout lo = getFileLayout(config);
+                File src  = lo.getKeyStoreTemplate();
+                File dest = lo.getKeyStore();
+                FileUtils.copy(src, dest); //keystore goes first
+                src  = lo.getTrustStoreTemplate();
+                dest = lo.getTrustStore();
+                FileUtils.copy(src, dest); //and then cacerts with CA-signed certs
+            } catch(Exception e) {
+                e.printStackTrace(); //this was best case effort, anyway
+            }
+            
         }
     }
     
