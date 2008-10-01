@@ -47,6 +47,10 @@ pkg = {
                         "pkg.description" : "GlassFish JTS package provides XA transaction support. For more information on Java Transaction Service (JTS), please refer to http://java.sun.com/javaee/technologies/jts/. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                        "pkg:/glassfish-corba-omgapi" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

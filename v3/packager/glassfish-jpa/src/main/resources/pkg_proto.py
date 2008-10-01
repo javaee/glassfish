@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "GlassFish Java EE ORM technology. This provides implementation for Java Persistence API (JPA). For more information on JPA, please refer to http://java.sun.com/javaee/technologies/persistence.jsp.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-jca" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

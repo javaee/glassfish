@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "GlassFish JDBC Management package provides administration and monitoring support for Java Database Connectivity (JDBC) software resources. The administration includes creation/deletion and listing of commands for jdbc connection pool, and jdbc resource. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-amx" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

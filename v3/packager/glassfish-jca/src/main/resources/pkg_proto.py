@@ -47,6 +47,10 @@ pkg = {
                         "pkg.description" : "GlassFish connector and connection pooling module provides runtime infrastructure to use resource-adapters in GlassFish. For more information on Java EE Connector Architecture (JCA), please refer to http://java.sun.com/j2ee/connector/.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                        "pkg:/glassfish-jta" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

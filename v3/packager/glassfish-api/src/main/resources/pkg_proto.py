@@ -47,6 +47,10 @@ pkg = {
                         "pkg.description" : "GlassFish API  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/felix" : {"type" : "require" },
+                        "pkg:/glassfish-hk2" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

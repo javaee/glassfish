@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "Runtime module for EJB container implementation. This module contains (partial) implementation of some of the EJB 3.1 features. Refer to JSR 318 (http://www.jcp.org/en/jsr/detail?id=318) for more details on EJB 3.1.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

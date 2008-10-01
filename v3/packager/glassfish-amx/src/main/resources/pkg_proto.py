@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "Application Server Management Extension (AMX) provides JMX interfaces for comprehensive management of GlassFish configuration, monitoring and runtime. This also includes the basic structure defined by the Java EE Management specification (JSR 77). For more information, see https://glassfish.dev.java.net/javaee5/amx/.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

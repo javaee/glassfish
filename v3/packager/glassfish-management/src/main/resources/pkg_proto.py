@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "GlassFish administration and monitoring base module. The base monitoring includes JVM and Threadpool monitoring. It also provides the core monitoring infrastructre needed by other monitoring modules. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

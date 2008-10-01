@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "GlassFish Scripting package provide multi-language scripting support. Scripting developers will benefit from the ease-of-deployment and rapid development features offered with GlassFish. For more information, please refer to  https://glassfish-scripting.dev.java.net/. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-nucleus" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

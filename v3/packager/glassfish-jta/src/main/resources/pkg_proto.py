@@ -47,6 +47,9 @@ pkg = {
                         "pkg.description" : "GlassFish JTA package provides support for local (non-xa) transactions. For more information on Java Transaction API (JTA), please refer to http://java.sun.com/javaee/technologies/jta/.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-common" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},

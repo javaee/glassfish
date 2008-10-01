@@ -47,6 +47,10 @@ pkg = {
                         "pkg.description" : "GlassFish Nucleus package contains core server infrastrucutre such as GlassFish kernel, etc. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
+    "depends"       : { 
+                        "pkg:/glassfish-api" : {"type" : "require" },
+                        "pkg:/glassfish-grizzly" : {"type" : "require" },
+                      },
     "dirtrees"      : [ "glassfish", "bin" ],
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
