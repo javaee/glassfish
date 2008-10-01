@@ -43,7 +43,6 @@ public class RegistrationException extends Exception{
     
     public RegistrationException(Throwable t) {            
         super(t.getMessage(), t);
-        System.out.println("message = " + t.getMessage());
     }
 
     public RegistrationException(String message, Throwable t) {        
