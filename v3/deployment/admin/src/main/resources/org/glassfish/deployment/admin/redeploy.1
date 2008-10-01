@@ -14,7 +14,7 @@ SYNOPSIS
      [--contextroot context-root]
      [--precompilejsp={true|false}]
      [ --virtualservers  virtual-servers]
-     [archive-path]
+     [--properties(name=value)[:name=value]*][archive-path]
 
 DESCRIPTION
      The  redeploy  command  redeploys  an  application  that  is
@@ -46,7 +46,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5           Last change: 10 Apr 2008                    1
+Java EE 5           Last change: 30 Sep 2008                    1
 
 Administration Commands                               redeploy(1)
 
@@ -100,7 +100,7 @@ Administration Commands                               redeploy(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5           Last change: 10 Apr 2008                    2
+Java EE 5           Last change: 30 Sep 2008                    2
 
 Administration Commands                               redeploy(1)
 
@@ -152,7 +152,7 @@ Administration Commands                               redeploy(1)
          precomplied  during deployment. Possible values  are  as
          follows:
 
-Java EE 5           Last change: 10 Apr 2008                    3
+Java EE 5           Last change: 30 Sep 2008                    3
 
 Administration Commands                               redeploy(1)
 
@@ -169,8 +169,47 @@ Administration Commands                               redeploy(1)
          One  or  more  virtual  server  IDs.  Multiple  IDs  are
          separated by commas.
 
+     --properties
+         Optional keyword-value  pairs  that  specify  additional
+         properties  for  the redeployment. The following proper-
+         ties are available:
+
+         keepSessions={false|true}
+
+             Specifies whether active sessions of the application
+             that  is  being  redeployed  are  preserved and then
+             restored when the redeployment is complete. Possible
+             values are as follows:
+
+             false
+                 Active  sessions  of  the  application  are  not
+                 preserved and restored (default).
+
+             true
+
+                 Active sessions of the application are preserved
+                 and restored.
+
+                 If any active session of the  application  fails
+                 to  be  preserved  or restored, none of the ses-
+                 sions will be available when the redeployment is
+                 complete.  However,  the  redeployment continues
+                 and a warning is logged.
+
+                 To  preserve  active  sessions,  the  Enterprise
+                 Server serializes the sessions and saves them in
+                 memory.  To  restore  the  sessions,  the  class
+                 loader   of  the  newly  redeployed  application
+                 deserializes any sessions that  were  previously
+                 saved.
+
+Java EE 5           Last change: 30 Sep 2008                    4
+
+Administration Commands                               redeploy(1)
+
 OPERANDS
      archive-path
+
          The path to the archive that  contains  the  application
          that  is  being  redeployed. This path can be a relative
          path or an absolute path.
@@ -194,27 +233,30 @@ OPERANDS
                   optional.
 
                   If  this  operand  is  omitted,  the  path   is
-                  retrieved  from the domain.xml file. Otherwise,
+                  retrieved from the domain.xml file.  Otherwise,
                   the operand  can  specify  a  directory  or  an
                   archive file.
 
 EXAMPLES
      Example 1 Redeploying a Web Application From a File
 
-Java EE 5           Last change: 10 Apr 2008                    4
-
-Administration Commands                               redeploy(1)
-
      This example redeploys the web application  hello  from  the
-     hello.war  file in the current working directory. The appli-
-     cation was originally deployed from a file.
+     hello.war file in the current working directory.  The appli-
+     cation was originally deployed from a file. Active  sessions
+     of  the  application  are  to be preserved and then restored
+     when the redeployment is complete.
 
-       asadmin> redeploy --user admin --passwordfile myfile --name hello hello.war
+       asadmin> redeploy --user admin --passwordfile myfile --name hello
+       --properties keepSessions=true hello.war
        Command redeploy executed successfully
 
      Example 2 Redeploying a Web Application From a Directory
 
-     This example redeploys the  web  application  hellodir.  The
+Java EE 5           Last change: 30 Sep 2008                    5
+
+Administration Commands                               redeploy(1)
+
+     This example redeploys the web  application  hellodir.   The
      application  was  originally  deployed from a directory. The
      path is retrieved from the domain.xml file.
 
@@ -229,5 +271,5 @@ EXIT STATUS
 SEE ALSO
      deploy(1), undeploy(1), list-components(1)
 
-Java EE 5           Last change: 10 Apr 2008                    5
+Java EE 5           Last change: 30 Sep 2008                    6
 
