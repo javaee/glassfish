@@ -98,7 +98,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
 
 <target name="setS1ASclassPath" unless="s1as.classpath">
   <path id="s1as_classpath_jars">
-    <fileset dir="${env.S1AS_HOME}/modules" includes="*.jar"/>
+    <fileset dir="${env.S1AS_HOME}/modules" includes="**/*.jar"/>
     <!-- fileset dir="${env.S1AS_HOME}/imq/lib" includes="*.jar"/ -->
   </path>
   <pathconvert pathsep=":" 
