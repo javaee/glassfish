@@ -137,7 +137,9 @@ public final class SSIFsize implements SSICommand {
             DecimalFormat decimalFormat = new DecimalFormat("#,##0");
             retString = decimalFormat.format(size);
         } else {
-            if (size == 0) {
+            if (size < 0) {
+                retString = "-1k";
+            } else if (size == 0) {
                 retString = "0k";
             } else if (size < ONE_KILOBYTE) {
                 retString = "1k";
