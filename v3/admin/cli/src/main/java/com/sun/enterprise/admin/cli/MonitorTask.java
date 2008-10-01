@@ -79,7 +79,7 @@ public class MonitorTask extends TimerTask
             title = String.format("%1$-10s %2$-10s %3$-10s", 
             "ActSess", "SessTtl", "SrvltLdC");
         } else if ("httplistener".equals(type)) {
-            title = String.format("%1$-4s %2$-4s %3$-4s %4$-4s", 
+            title = String.format("%1$-4s %2$-4s %3$-6s %4$-4s", 
             "ec", "mt", "pt", "rc");
         } else if ("jvm".equals(type)) {
             title = String.format("%1$45s", "JVM Monitoring");

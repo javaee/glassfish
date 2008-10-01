@@ -76,7 +76,7 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
         new LocalStringManagerImpl(HTTPListenerStatsImpl.class);
 
     private final String name = "httplistener";
-    private final String displayFormat = "%1$-4s %2$-4s %3$-4s %4$-4s";
+    private final String displayFormat = "%1$-4s %2$-4s %3$-6.2f %4$-4s";
 
     public String getName() {
         return name;
@@ -103,7 +103,7 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
 
         long errorCount = 0;
         long maxTime = 0;
-        long processingTime = 0;
+        double processingTime = 0;
         long requestCount = 0;
 
         List<TreeNode> tnL = serverNode.getNodes("server.web.request.*");
@@ -123,7 +123,7 @@ public class HTTPListenerStatsImpl implements HTTPListenerStats, MonitorContract
                 maxTime = (Long) tn.getValue(); 
             } else if ("processingTime".equals(tn.getName())) {
                 if (tn.getValue() != null)
-                processingTime = (Long) tn.getValue(); 
+                processingTime = (((Double) tn.getValue()).isNaN() ? 0.0 : (Double) tn.getValue()); 
             } else if ("requestCount".equals(tn.getName())) {
                 if (tn.getValue() != null)
                 requestCount = (Long) tn.getValue(); 
