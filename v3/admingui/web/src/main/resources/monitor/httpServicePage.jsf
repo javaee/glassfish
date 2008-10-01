@@ -46,7 +46,7 @@
                    </sun:tableRowGroup>
                 </sun:table>
             "</td>-->
-            "<td width="1%"></td>
+<!--            "<td width="1%"></td>
             "<td width="25%" valign="top">
                 <sun:dropDown id="tpDD" label="$resource{i18n_web.monitoring.ThreadPool}" selected="#{tpVal}" values="$attribute{tpList}" labels="$attribute{tpList}" submitForm="#{true}" immediate="#{true}" >
                     <!beforeCreate
@@ -92,7 +92,7 @@
                         <sun:tableColumn id="col3" spacerColumn="true" width="30%"/>
                    </sun:tableRowGroup>
                 </sun:table>
-            "</td>
+            "</td>-->
         "<td width="1%"></td>
         "<td width="25%" valign="top">
         <sun:dropDown id="virtualServer" label="$resource{i18n_web.monitoring.VirtualServer}:" selected="#{vsVal}" values="$attribute{vsList}" labels="$attribute{vsList}" submitForm="#{true}" immediate="#{true}" >
