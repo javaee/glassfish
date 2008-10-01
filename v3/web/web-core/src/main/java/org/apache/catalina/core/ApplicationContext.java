@@ -928,7 +928,8 @@ public class ApplicationContext
             attributes.put(name, value);
         }
         
-        if ( name.equals(Globals.CLASS_PATH_ATTR)){
+        if (name.equals(Globals.CLASS_PATH_ATTR) ||
+                name.equals(Globals.JSP_TLD_URI_TO_LOCATION_MAP)) {
             setAttributeReadOnly(name);
         }
         
