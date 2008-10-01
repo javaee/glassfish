@@ -101,6 +101,19 @@ public class Employee implements java.io.Serializable {
     public Department getDepartment() {
         return department;
     }
+
+    @Transient
+    public Department getDepartmentNoWeaving() {
+        try {
+            java.lang.reflect.Field f = Employee.class.getDeclaredField("department");
+            return (Department) f.get(this);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Please change argument to getDeclaredField", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void setDepartment(Department department) {
         this.department = department;
     }

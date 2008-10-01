@@ -101,10 +101,7 @@ public class JpaTest {
 
       try {
 	// 1. get Department before loading
-	java.lang.reflect.Field f = Employee.class.getDeclaredField("department"); 
-	out.println("f="+f);
-        f.setAccessible(true);
-	Department deptBL = (Department) f.get(emp); 
+	Department deptBL = emp.getDepartmentNoWeaving();
 	out.println("1. before loading: deptBL="+deptBL);
 	String deptNameBL = null;
 	if (deptBL != null) {
@@ -121,7 +118,7 @@ public class JpaTest {
 	out.println("2. loading, deptName = " + deptName);
 
 	// 3. get Department after loading
-	Department deptAL = (Department) f.get(emp);
+	Department deptAL = emp.getDepartmentNoWeaving();
 	out.println("3. after loading: deptAL="+deptAL);
 	String deptNameAL = deptAL.getName();
 	System.out.println("deptNameAL="+deptNameAL);
@@ -153,10 +150,7 @@ public class JpaTest {
 
       try {
 	// 1. get Department before loading
-	java.lang.reflect.Field f = Employee.class.getDeclaredField("department"); 
-	out.println("f="+f);
-        f.setAccessible(true);
-	Department deptBL = (Department) f.get(emp); 
+	Department deptBL = emp.getDepartmentNoWeaving();
 	out.println("1. before loading: deptBL="+deptBL);
 	String deptNameBL = null;
 	if (deptBL != null) {
@@ -173,7 +167,7 @@ public class JpaTest {
 	System.out.println("2. loading, deptName = " + deptName);
 
 	// 3. get Department after loading
-	Department deptAL = (Department) f.get(emp);
+	Department deptAL = emp.getDepartmentNoWeaving();
 	out.println("3. after loading: deptAL="+deptAL);
 	String deptNameAL = deptAL.getName();
 	out.println("deptNameAL="+deptNameAL);
