@@ -64,10 +64,14 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <!-- embed all first level dependencies with groupId=com.sun.grizzly.
+                        <!-- embed all first level dependencies with groupId=com.sun.grizzly
+                             except grizzly-compat. grizzly-compat has a split-package called
+                             com.sun.grizzly.http. So, we only include com.sun.grizzly.http classs from
+                             grizzly-compat in grizzly-module.jar and the rest here.
                         -->
                         <Embed-Dependency>
-                            *;groupId=com.sun.grizzly;inline=true
+                            *;groupId=com.sun.grizzly;artifactId=!grizzly-compat;inline=true,
+                            grizzly-compat;inline=com/sun/enterprise/web/connector/grizzly/comet/**
                         </Embed-Dependency>
                         <_exportcontents>!WEB-INF, !com.sun.grizzly.http, *; version=${grizzly.package-version}</_exportcontents>
                         <Import-Package>com.sun.grizzly.*; version=${grizzly.package-version}, *</Import-Package>
