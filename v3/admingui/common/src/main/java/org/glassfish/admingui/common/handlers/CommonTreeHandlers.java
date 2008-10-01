@@ -85,7 +85,7 @@ public class CommonTreeHandlers {
 	FacesContext ctx = FacesContext.getCurrentInstance();
 	hackComp = (UIComponent) currComp.getAttributes().get("turnerImageHyperlink");
 	if (hackComp != null) {
-	    // FIXME: Replace with glassfish.ImageHyperlink (see our faces-config.xml)
+	    // Replace with glassfish.ImageHyperlink (see our faces-config.xml)
 	    hackComp = ctx.getApplication().createComponent("com.sun.webui.jsf.IconHyperlink");
 	    hackComp.setId(currComp.getId().concat("_turner"));
 	    hackComp.setRendererType(hackComp.getFamily());
@@ -96,7 +96,7 @@ public class CommonTreeHandlers {
 	// Node Image: (NOTE: only calling the next method to see if I should replace the image)
 	hackComp = (UIComponent) currComp.getAttributes().get("nodeImageHyperlink");
 	if (hackComp != null) {
-	    // FIXME: Replace with glassfish.ImageHyperlink (see our faces-config.xml)
+	    // Replace with glassfish.ImageHyperlink (see our faces-config.xml)
 	    hackComp = ctx.getApplication().createComponent("com.sun.webui.jsf.ImageHyperlink");
 	    hackComp.setId(currComp.getId().concat("_image"));
 	    hackComp.setRendererType(hackComp.getFamily());
