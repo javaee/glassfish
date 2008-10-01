@@ -2,8 +2,8 @@
 Administration Commands                     delete-jvm-options(1)
 
 NAME
-     delete-jvm-options - removes JVM options from the Java  con-
-     figuration or profiler elements of the domain.xml file
+     delete-jvm-options - removes options from  the  Java  confi-
+     guration or profiler elements of the domain.xml file
 
 SYNOPSIS
      delete-jvm-options
@@ -16,14 +16,103 @@ SYNOPSIS
      [:jvm_option_name[=jvm_option_name]]*
 
 DESCRIPTION
-     The delete-jvm-options command removes JVM options from  the
-     Java  configuration  or  profiler elements of the domain.xml
-     file.
+     The delete-jvm-options command removes command-line  options
+     for the Java application launcher. These options are removed
+     from the Java configuration element or profiler  element  of
+     the domain.xml file.
 
      Note -
 
-       In the syntax, there can be  more  than  one  JVM  option,
+       In  the  syntax,  there  can  be  more  than  one  option,
        separated by a colon.
+
+     This command is supported in remote mode only.
+
+     The  deleete-jvm-options  command  deletes   the   following
+     options:
+
+         o    Java system properties. System properties  are  set
+              through  the  -D  option  of  the  Java application
+              launcher, for example:
+
+             o    -Djava.security.manager
+
+             o    -Denvironment=Production
+
+         o    Startup parameters for the Virtual Machine for  the
+              Java   platform   (Java   Virtual  Machine  or  JVM
+              machine).
+
+         The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
+         tual  Machine  for  the Java platform.Startup parameters
+         are preceded by the dash character (-) , for example:
+
+             o    --XX:PermSize=size
+
+Java EE 5           Last change: 30 Sep 2008                    1
+
+Administration Commands                     delete-jvm-options(1)
+
+             o    -Xmx1024m
+
+             o    -client
+
+             o    -d64
+
+     In the following situations, you must terminate the  command
+     with a double-dash (--) before the options:
+
+         o    You are specifying only one  system  property  with
+              just   a   name   and   no   value,   for  example,
+              -Djava.security.manager.
+
+         o    You are specifying a startup parameter for the  JVM
+              machine without a value, for example, -Xmx1024m
+
+     The removal of some options requires a restart of the domain
+     administration  server  (DAS)  to  become  effective.  Other
+     options become immediately unavailable in the environment of
+     the DAS and do not require a restart.
+
+     Whether a restart is required depends on  the  type  of  the
+     option.
+
+         o    Restart is not required for Java system  properties
+              whose  names  do  not start with -Djava or -Djavax.
+              For example, restart is not required for  the  Java
+              system property -Denvironment=Production.
+
+         o    Restart is required for the following options:
+
+             o    System properties whose names start with -Djava
+                  or         -Djavax,         for        example,
+                  -Djava.security.manager
+
+             o    Startup parameters for  the  JVM  machine,  for
+                  example, -Xmx1024m, -client or -d64
+
+      To restart the DAS, use  the  following  commands  in  this
+     order:
+
+         1.   stop-domain(1)
+
+         2.   start-domain(1)
+
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
+
+Java EE 5           Last change: 30 Sep 2008                    2
+
+Administration Commands                     delete-jvm-options(1)
+
+     using:
+
+         o    Solaris Operating System (Solaris  OS)  and  Linux:
+              java    -    the    Java    application    launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+
+         o    Windows:  java  -  the  Java  application  launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
 OPTIONS
      -t --terse
@@ -49,11 +138,6 @@ OPTIONS
      -p --port
 
          The HTTP port or HTTPS  port  for  administration.  This
-
-Java EE 5            Last change: 2 Sep 2008                    1
-
-Administration Commands                     delete-jvm-options(1)
-
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:4848.
@@ -61,13 +145,17 @@ Administration Commands                     delete-jvm-options(1)
          The default port number for administration is 4848.
 
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
          The default is false.
 
+Java EE 5           Last change: 30 Sep 2008                    3
+
+Administration Commands                     delete-jvm-options(1)
+
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -76,7 +164,6 @@ Administration Commands                     delete-jvm-options(1)
          option for subsequent operations on the domain.
 
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -104,10 +191,6 @@ Administration Commands                     delete-jvm-options(1)
 
              o    Through the --passwordfile option
 
-Java EE 5            Last change: 2 Sep 2008                    2
-
-Administration Commands                     delete-jvm-options(1)
-
              o    Through the asadmin login command
 
              o    Interactively at the command prompt
@@ -122,6 +205,11 @@ Administration Commands                     delete-jvm-options(1)
          quent  operations  on  the  domain.  However,  only  the
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
+
+Java EE 5           Last change: 30 Sep 2008                    4
+
+Administration Commands                     delete-jvm-options(1)
+
          AS_ADMIN_USERPASSWORD, when required by individual  com-
          mands, such as update-file-user.
 
@@ -154,15 +242,25 @@ OPERANDS
          option value. A colon (:) is a  delimiter  for  multiple
          options.
 
-Java EE 5            Last change: 2 Sep 2008                    3
+         Note -
 
-Administration Commands                     delete-jvm-options(1)
+           If an option name or option value  contains  a  colon,
+           the  backslash  (\fR) must be used to escape the colon
+           in the name or value.   Other  characters  might  also
+           require  an  escape  character.  For  more information
+           about escape characters in command  options,  see  the
+           asadmin(1M) man page.
 
 EXAMPLES
      Example 1 Using the delete-jvm-options command
 
      To remove more than one JVM option,  use  a  colon  (:)   to
      separate  the  options.  If the JVM option itself contains a
+
+Java EE 5           Last change: 30 Sep 2008                    5
+
+Administration Commands                     delete-jvm-options(1)
+
      colon (:), use the backslash (\fR) to offset the  colon  (:)
      delimiter.
 
@@ -186,7 +284,17 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     create-jvm-options(1), list-jvm-options(1)
+     create-jvm-options(1), list-jvm-options(1), start-domain(1),
+     stop-domain(1)
 
-Java EE 5            Last change: 2 Sep 2008                    4
+     asadmin(1M)
+
+     java  - the Java application launcher reference page for the
+     Solaris               OS              and              Linux
+     (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html),
+     java  -  the  Java  application launcher  reference page for
+     Windows
+     (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 5           Last change: 30 Sep 2008                    6
 
