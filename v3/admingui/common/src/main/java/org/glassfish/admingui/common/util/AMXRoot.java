@@ -114,7 +114,7 @@ public class AMXRoot {
     //private  final LBConfigHelper lbConfigHelper;
 
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
-        System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
+        //System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
         domainRoot = dd;
         domainConfig = dd.getDomainConfig();
         configsConfig = (ConfigsConfig) domainRoot.getQueryMgr().querySingletonJ2EEType("X-ConfigsConfig");
