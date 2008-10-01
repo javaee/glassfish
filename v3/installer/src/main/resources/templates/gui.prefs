@@ -12,7 +12,7 @@
 dynamic_component_viewportborder_color=WHITE
 
 # Size for panels
-frame_size=850,690
+frame_size=807,632
 contentpanel_size=714,513
 contentpanel_size_m1=712,511
 contentpanel_size_m2=710,509
@@ -24,7 +24,7 @@ sizeAttr=minimumSize
 mainpanel_insets=0,25,0,0
 leftpanel_insets=5,0,55,0
 logopanel_insets=0,25,0,0
-contentpanel_insets=0,25,0,80
+contentpanel_insets=11,11,0,36
 buttonpanel_insets=25,0,25,0
 leftpanel_button_insets=0,5,0,0
 

@@ -1,31 +1,52 @@
 <#--
- # DO NOT ALTER OR REMOVE COPYRIGHT NOTICE OR THIS HEADER.
- #
- # Copyright 2006, 2007 Sun Microsystems, Inc. All rights reserved.
- # Use is subject to license terms.
- #
- # The contents of this file are subject to the terms of the Common Development
- # and Distribution License("CDDL") (the "License"). You may not use this file
- # except in compliance with the License.
- #
- # You can obtain a copy of the License at https://openinstaller.dev.java.net/license.html
- # or http://openinstaller.dev.java.net/license.txt . See the License for the
- # specific language governing permissions and limitations under the License.
- #
- # When distributing the Covered Code, include this CDDL Header Notice in each
- # file and include the License file at http://openinstaller.dev.java.net/license.txt .
- # If applicable, add the following below this CDDL Header, with the fields
- # enclosed by brackets [] replaced by your own identifying information:
- # "Portions Copyrighted [year] [name of copyright owner]"
- #
- # ident "@(#)%Name% %Revision% %Date% SMI"
+/* 
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
+* 
+* Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved. 
+* 
+* The contents of this file are subject to the terms of either the GNU 
+* General Public License Version 2 only ("GPL") or the Common Development 
+* and Distribution License("CDDL") (collectively, the "License").  You 
+* may not use this file except in compliance with the License. You can obtain 
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* language governing permissions and limitations under the License. 
+* 
+* When distributing the software, include this License Header Notice in each 
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+* Sun designates this particular file as subject to the "Classpath" exception 
+* as provided by Sun in the GPL Version 2 section of the License file that 
+* accompanied this code.  If applicable, add the following below the License 
+* Header, with the fields enclosed by brackets [] replaced by your own 
+* identifying information: "Portions Copyrighted [year] 
+* [name of copyright owner]" 
+* 
+* Contributor(s): 
+* 
+* If you wish your version of this file to be governed by only the CDDL or 
+* only the GPL Version 2, indicate your decision by adding "[Contributor] 
+* elects to include this software in this distribution under the [CDDL or GPL 
+* Version 2] license."  If you don't indicate a single choice of license, a 
+* recipient has the option to distribute your version of this file under 
+* either the CDDL, the GPL Version 2 or to extend the choice of license to 
+* its licensees as provided above.  However, if you add GPL Version 2 code 
+* and therefore, elected the GPL Version 2 license, then the option applies 
+* only if the new code is made subject to such option by the copyright 
+* holder. 
+*/ 
 -->
-  <panel id="gMainPanel" name="gMainPanel" background="${mainpanel_bgcolor}" constraints="BorderLayout.CENTER" insets="0,0,0,0" Layout="GridBagLayout">
+  <panel id="gMainPanel" name="gMainPanel" background="${mainpanel_bgcolor}" constraints="BorderLayout.CENTER" insets="12,12,12,12" Layout="GridBagLayout">
 
     <#--      L E F T   N A V I G A T I O N   P A N E L    -->
     <bgimagepanel id="gLeftPanelHolder" bgImage="${navigpanel_image}" Layout="GridBagLayout">
       <gridbagconstraints gridx="0" gridy="0" gridwidth="1" gridheight="3" weightx="0" weighty="1" fill="GridBagConstraints.VERTICAL" anchor="GridBagConstraints.NORTHWEST"/>
+      <bgimagepanel name="topImagePanel"  bgImage="${top_left_image}" >
+            <gridbagconstraints gridx="0" gridy="0" gridwidth="1" gridheight="1" weightx="0" weighty="0" insets="20,0,20,0" />
+      </bgimagepanel>
       <#include "leftpanel.ftl">
+      <bgimagepanel name="bottomImagePanel"  bgImage="${bottom_left_image}" >
+            <gridbagconstraints gridx="0" gridy="2" gridwidth="1" gridheight="1" weightx="1" weighty="1" anchor="GridBagConstraints.SOUTH" insets="20,5,60,0" />
+         </bgimagepanel>
     </bgimagepanel>
 
     <#--      T O P   L O G O   P A N E L    -->

@@ -24,6 +24,7 @@ mainpanel_bgcolor=e8e9ed
 navigpanel_image=/templates/LeftPanel.jpg
 logopanel_image=/templates/LogoPanel.jpg
 top_left_image=/templates/glassfish_logo.png
+bottom_left_image=/templates/community-logo.png
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 leftpanel_font=Arial-BOLD-13
@@ -42,7 +43,7 @@ title1_font=Arial-BOLD-18
 title2_font=Arial Narrow-BOLD-20
 
 # Text color for titles
-title1_color=3E647E
+title1_color=587993
 title2_color=BLACK
 
 # Text for titles
@@ -50,7 +51,7 @@ title1_text=Welcome to
 title2_text=GlassFish v3
 # Colors for content panel
 contentpanel_bordercolor=587993
-contentpanel_bgcolor==e8e9ed
+contentpanel_bgcolor=e8e9ed
 
 btnpanel_bgcolor=e8e9ed
 
