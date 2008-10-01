@@ -57,7 +57,9 @@ public abstract class RemoteException extends Exception {
 
     RemoteException(String msg, String cause) {
         super(RemoteUtils.getString(msg));
-        remoteCause = cause;
+        if (cause != null) {
+            remoteCause = cause;
+        }
     }
     
     RemoteException(String msg, Object... objs) {
