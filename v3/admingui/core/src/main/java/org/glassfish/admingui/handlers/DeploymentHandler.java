@@ -78,6 +78,9 @@ import org.glassfish.admingui.common.util.TargetUtil;
  */
 public class DeploymentHandler {
 
+    //should be the same as in DeploymentProperties in deployment/common
+    public static final String KEEP_SESSIONS = "keepSessions";
+
         /**
      *	<p> This method deploys the uploaded file </p>
      *      to a give directory</p>
@@ -214,22 +217,30 @@ public class DeploymentHandler {
         input={
         @HandlerInput(name="filePath", type=String.class, required=true),
         @HandlerInput(name="origPath", type=String.class, required=true),
-        @HandlerInput(name="appName", type=String.class, required=true)})
+        @HandlerInput(name="appName", type=String.class, required=true),
+        @HandlerInput(name="keepSessions", type=Boolean.class)})
         
     public static void redeploy(HandlerContext handlerCtx) {
          try{
              String filePath = (String) handlerCtx.getInputValue("filePath");
              String origPath = (String) handlerCtx.getInputValue("origPath");
              String appName = (String) handlerCtx.getInputValue("appName");
-             Properties deploymentProps = new Properties();
+             Boolean keepSessions = (Boolean) handlerCtx.getInputValue("keepSessions");
+             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
              //If we are redeploying a web app, we want to preserve context root.
              ApplicationConfig appConfig = AMXUtil.getApplicationConfigByName(appName);
              if (appConfig != null){
-                 deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, appConfig.getContextRoot());
+                 deploymentProps.setContextRoot(appConfig.getContextRoot());
              }
-             deploymentProps.setProperty(DFDeploymentProperties.FORCE, "true");
-             deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
-             deploymentProps.setProperty(DFDeploymentProperties.NAME, appName);
+             deploymentProps.setForce(true);
+             deploymentProps.setUpload(false);
+             deploymentProps.setName(appName);
+             
+             Properties prop = new Properties();
+             String ks = (keepSessions==null) ? "false" : keepSessions.toString();
+             prop.setProperty(KEEP_SESSIONS, ks);
+             deploymentProps.setProperties(prop);
+             
              DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
                 GuiUtil.handleException(handlerCtx, ex);

@@ -42,6 +42,7 @@
         getRequestValue(key="appName" value=>$page{appName});
         getRequestValue(key="nextPage" value=>$page{nextPage});
         setAttribute(key="chooseType" value="$boolean{false}");
+        setAttribute(key="keepSessions" value="$boolean{false}");
         getAppTypeForDisplay(appType="$pageSession{appType}" displayType=>$page{displayType});
     />
 #include "/shared/restart.inc"    
@@ -68,7 +69,7 @@
                                     setAttribute(key="filePath", value="#{dirPath}");
                                 }
                                 
-                                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" );
+                                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" keepSessions="#{keepSessions}");
                                 redirect(page="webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                             />
                     </sun:button>
@@ -87,9 +88,12 @@
             </sun:property>
             <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}">
                 <sun:staticText id="type" text="#{displayType}"/>
-                "<br /><br />
-            </sun:property> 
-            
+            </sun:property>
+            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
+                            label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
+                <sun:checkbox selected="#{keepSessions}" />  
+           </sun:property>
+            "<br /><br />
         </sun:propertySheetSection>
     </sun:propertySheet>
 #include "uploadComponent.inc"
