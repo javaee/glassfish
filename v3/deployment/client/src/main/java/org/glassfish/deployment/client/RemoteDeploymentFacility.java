@@ -51,6 +51,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Implements DeploymentFacility, currently using the CLIRemoteCommand to work with the
@@ -96,7 +97,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
     @Override
     protected DFCommandRunner getDFCommandRunner(
             String commandName, 
-            Map<String,String> commandOptions,
+            Map<String,Object> commandOptions,
             String[] operands) throws CommandException {
         return new RemoteCommandRunner(commandName, commandOptions, operands);
     }
@@ -104,12 +105,12 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
     private class RemoteCommandRunner implements DFCommandRunner {
 
         private final String commandName;
-        private final Map<String,String> commandOptions;
+        private final Map<String,Object> commandOptions;
         private final String[] operands;
 
         private RemoteCommandRunner(
                 String commandName,
-                Map<String,String> commandOptions,
+                Map<String,Object> commandOptions,
                 String[] operands) {
             this.commandOptions = commandOptions;
             this.commandName = commandName;
@@ -144,7 +145,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
      */
     protected String[] prepareRemoteCommandArguments(
             String commandName,
-            Map<String,String> options,
+            Map<String,Object> options,
             String[] operands) {
 
         ArrayList<String> result = new ArrayList<String>();
@@ -152,8 +153,8 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
         if (options == null) {
             options = Collections.EMPTY_MAP;
         }
-        for (Map.Entry<String,String> entry : options.entrySet()) {
-            result.add("--" + entry.getKey() + "=" + entry.getValue());
+        for (Map.Entry<String,Object> entry : options.entrySet()) {
+            result.add("--" + entry.getKey() + "=" + convertValue(entry.getValue()));
         }
         /*
          * Add the authentication information from the
@@ -182,5 +183,21 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
             }
         }
         return result.toArray(new String[result.size()]);
+    }
+
+    private Object convertValue(Object value) {
+        if (value instanceof Properties) {
+            StringBuilder sb = new StringBuilder();
+            Properties p = (Properties) value;
+            for (Map.Entry<Object,Object> entry : p.entrySet()) {
+                if (sb.length() > 0) {
+                    sb.append(":");
+                }
+                sb.append((String) entry.getKey() + "=" + (String) entry.getValue());
+            }
+            return sb.toString();
+        } else {
+            return value;
+        }
     }
 }

@@ -251,6 +251,14 @@ public class DFDeploymentProperties extends Properties {
     public boolean getExternallyManaged() {
         return Boolean.valueOf(getProperty(EXTERNALLY_MANAGED, DEFAULT_EXTERNALLY_MANAGED)).booleanValue();
     }
+
+    public void setProperties(Properties props) {
+        put(PROPERTIES, props);
+    }
+
+    public Properties getProperties() {
+        return (Properties) get(PROPERTIES);
+    }
     
     public static final String WSDL_TARGET_HINT = "wsdlTargetHint";
     public static final String TARGET = "target";
@@ -285,6 +293,8 @@ public class DFDeploymentProperties extends Properties {
     public static final String PATH = "path";
     public static final String DEFAULT_JAVA_WEB_START_ENABLED = "true";
     public static final String DEPLOYMENT_PLAN = "deploymentplan";
+
+    public static final String PROPERTIES = "properties";
     
     public static final String DEFAULT_UPLOAD = "true";
     public static final String DEFAULT_EXTERNALLY_MANAGED = "false";

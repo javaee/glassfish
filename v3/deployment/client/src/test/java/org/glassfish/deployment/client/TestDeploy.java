@@ -42,6 +42,7 @@
 package org.glassfish.deployment.client;
 
 import java.io.File;
+import java.util.Properties;
 import javax.enterprise.deploy.spi.Target;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -54,6 +55,8 @@ import static org.junit.Assert.*;
  * @author tjquinn
  */
 public class TestDeploy {
+
+    private static final String APP_NAME = "servletonly";
 
     public TestDeploy() {
     }
@@ -78,20 +81,26 @@ public class TestDeploy {
         DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
         ServerConnectionIdentifier sci = new ServerConnectionIdentifier();
         sci.setHostName("localhost");
-        sci.setHostPort(8080); // 8080 for the REST client
+        sci.setHostPort(4848); // 8080 for the REST client
         sci.setUserName("admin");
         sci.setPassword("adminadmin");
         
         df.connect(sci);
         
-        File archive = new File("C:\\tim\\asgroup\\dev-9p-fcs\\glassfish\\appserv-tests\\devtests\\deployment\\build\\servletonly.war");
+//        File archive = new File("C:\\tim\\asgroup\\dev-9p-fcs\\glassfish\\appserv-tests\\devtests\\deployment\\build\\servletonly.war");
+        File archive = new File("/Users/Tim/asgroup/v3/warWithPlan/servletonly-portable.war");
+        File plan = new File("/Users/Tim/asgroup/v3/warWithPlan/servletonly-deployplan.jar");
         DFDeploymentProperties options = new DFDeploymentProperties();
         options.setForce(true);
-        options.setUpload(false);
+        options.setUpload(true);
+        options.setName(APP_NAME);
+        Properties props = new Properties();
+        props.setProperty("keepSessions", "true");
+        options.setProperties(props);
         DFProgressObject prog = df.deploy(
                 new Target[0] /* ==> deploy to the default target */, 
                 archive.toURI(), 
-                null, 
+                plan.toURI(),
                 options);
         DFDeploymentStatus ds = prog.waitFor();
         
@@ -107,7 +116,7 @@ public class TestDeploy {
         DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
         ServerConnectionIdentifier sci = new ServerConnectionIdentifier();
         sci.setHostName("localhost");
-        sci.setHostPort(8080); // 8080 for the REST client
+        sci.setHostPort(4848); 
         sci.setUserName("admin");
         sci.setPassword("adminadmin");
         
@@ -115,7 +124,7 @@ public class TestDeploy {
         
         DFProgressObject prog = df.undeploy(
                 new Target[0] /* ==> deploy to the default target */, 
-                "servletonly");
+                APP_NAME);
         DFDeploymentStatus ds = prog.waitFor();
         
         if (ds.getStatus() == DFDeploymentStatus.Status.FAILURE) {

@@ -63,7 +63,7 @@ import org.glassfish.deployapi.TargetModuleIDImpl;
  */
 public abstract class AbstractDeploymentFacility implements DeploymentFacility, TargetOwner {
     private static final String DEFAULT_SERVER_NAME = "server";
-    private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
+    protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
     private boolean connected;
     private TargetImpl domain;
     private ServerConnectionIdentifier targetDAS;
@@ -94,7 +94,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      */
     protected abstract DFCommandRunner getDFCommandRunner(
             String commandName,
-            Map<String,String> commandOptions,
+            Map<String,Object> commandOptions,
             String[] operands) throws CommandException;
 
     /**
@@ -223,7 +223,20 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         boolean isDirectoryDeploy = tmpFile.isDirectory();
         try {
             if (deploymentPlan != null) {
-                deploymentOptions.put(DFDeploymentProperties.DEPLOYMENT_PLAN, deploymentPlan);
+                File dp = new File(deploymentPlan);
+                if (!dp.exists()) {
+                    po.setupForAbnormalExit(localStrings.getLocalString(
+                            "enterprise.deployment.client.plan_not_in_location",
+                            "Unable to find the deployment plan in specified location."), domain);
+                    return po;
+                }
+                if (!dp.canRead()) {
+                    po.setupForAbnormalExit(localStrings.getLocalString(
+                            "enterprise.deployment.client.plan_no_read_permission",
+                            "Deployment plan does not have read permission."), domain);
+                    return po;
+                }
+                deploymentOptions.put(DFDeploymentProperties.DEPLOYMENT_PLAN, dp.getAbsolutePath());
             }
             DFCommandRunner commandRunner = getDFCommandRunner(
                     "deploy", deploymentOptions, new String[]{tmpFile.getAbsolutePath()});
