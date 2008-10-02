@@ -48,7 +48,7 @@ pkg = {
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
-                        "pkg:/glassfish-common" : {"type" : "require" },
+                        "pkg:/glassfish-jta" : {"type" : "require" },
                         "pkg:/glassfish-corba-omgapi" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
