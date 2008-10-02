@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="320"/>
+    <property name="TOTAL_EXPECTED" value="321"/>
 
     &commonSetup;
     &commonBuild;
@@ -270,6 +270,7 @@
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
+        <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
         <ant dir="pipelineQueueFull" target="all"/>
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
