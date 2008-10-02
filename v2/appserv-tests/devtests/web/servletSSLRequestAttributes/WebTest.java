@@ -74,6 +74,7 @@ public class WebTest {
             in = new BufferedReader(new InputStreamReader(
                             connection.getInputStream()));
             String line = in.readLine();
+            System.out.println("Response: " + line);
             if (line != null
                     && (line.indexOf(SSL_CIPHER_SUITE) >= 0)
                     && (line.indexOf(SSL_KEY_SIZE) >= 0)
