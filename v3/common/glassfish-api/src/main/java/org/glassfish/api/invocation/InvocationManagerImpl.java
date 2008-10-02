@@ -88,7 +88,7 @@ public class InvocationManagerImpl
                     if (parentInv.getInvocationType() == ComponentInvocationType.SERVLET_INVOCATION) {
 
                         ComponentInvocation inv = new ComponentInvocation();
-                        inv.componentId = null;
+                        inv.componentId = parentInv.getComponentId();
                         inv.setComponentInvocationType(parentInv.getInvocationType());
                         inv.instance = null;
                         inv.container = parentInv.getContainerContext();
