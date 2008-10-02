@@ -41,7 +41,7 @@
           </RequirementsRealization>
 
         </OS>
-        <InstallableUnit>updatetool.zip</InstallableUnit>
+ 
 
       </Realization>
 
@@ -61,7 +61,7 @@
             <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>updatetool.zip</InstallableUnit>
+
         
       </Realization>
 
@@ -80,7 +80,7 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>updatetool.zip</InstallableUnit>
+ 
       </Realization>
 
       <Realization>
@@ -100,7 +100,7 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
       </OS> 
-      <InstallableUnit>updatetool.zip</InstallableUnit>
+ 
 
       </Realization>
 
@@ -122,7 +122,7 @@
              <Item type="speed">800MHz</Item>
           </RequirementsRealization>
         </OS>
-        <InstallableUnit>updatetool.zip</InstallableUnit>
+ 
 
       </Realization>
 

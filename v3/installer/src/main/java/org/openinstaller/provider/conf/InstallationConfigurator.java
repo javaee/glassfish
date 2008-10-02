@@ -44,6 +44,7 @@ import org.openinstaller.config.PropertySheet;
 import org.openinstaller.util.EnhancedException;
 import org.openinstaller.util.ExecuteCommand;
 import org.openinstaller.util.ClassUtils;
+import com.sun.pkg.bootstrap.Bootstrap;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.File;
@@ -52,6 +53,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Properties;
 import java.lang.*;
 
 public final class InstallationConfigurator implements Configurator, NotificationListener {
@@ -180,7 +182,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
     boolean success = true;
 
-    // set executable permissions on asadmin, stopserv, startserv 
+    // set executable permissions on asadmin, stopserv, startserv, jspc 
 
     boolean isWindows = false;
     if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
@@ -195,7 +197,7 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
     if (!isWindows) {
 
-        String CLInames[] = {"asadmin", "stopserv", "startserv"};
+        String CLInames[] = {"asadmin", "stopserv", "startserv", "jspc"};
         for (int i = 0; i < CLInames.length; i++) {
             Runtime.getRuntime().exec("/bin/chmod a+x " +
                                installDir + "/glassfish/bin/" + CLInames[i]);
@@ -410,12 +412,27 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
             productError = asadminExecuteCommand.getErrors();
             if (productError != null && productError.trim().length() > 0) {
-                success = false;
+		// special case for keytool related asadmin "failure" 
+		// installation should still be reported as successful
+		if (productError.indexOf("keytool") != -1) {
+	            success=true;
+		} else {
+                    success = false;
+		}
             }
        } catch (Exception e) {
             LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput()); 
             LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
-            success = false;
+	    if (productError != null && productError.trim().length() > 0) {
+		// special case for keytool related asadmin "failure" 
+		// installation should still be reported as successful
+		if (productError.indexOf("keytool") != -1) {
+	            success=true;
+		} else {
+                    success = false;
+		}
+            }
+            
        }
 
        return success;
@@ -517,88 +534,28 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
     
         
     
-    //create temporary property file for bootstrap
+    //populate bootstrap properties
 
-        FileWriter writer = null;
-        File propertiesFile = null;        
-        try {            
-            propertiesFile = File.createTempFile("bootstrapTmp", null);  
-	    propertiesFile.deleteOnExit();            
-            writer = new FileWriter(propertiesFile); 
-            writer.write("image.path=" + installDirForward + "\n");
-            writer.write("install.pkg=true\n");
-            writer.write("install.updatetool=true\n");
-            //writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
-            writer.write("optin.update.notification=false\n");
-            writer.write("optin.usage.reporting=" + allowUpdateCheck + "\n");
-            if (proxyURL != null) {
-                writer.write("proxy.URL=" + proxyURL + "\n");
-            }
-            writer.close();
-            writer = null;
-                 
+	Properties props = new Properties();
+
+	props.setProperty("image.path", installDirForward);
+	props.setProperty("install.pkg", "true");
+	props.setProperty("install.updatetool", "true");
+	props.setProperty("optin.update.notification", allowUpdateCheck);
+	props.setProperty("optin.usage.reporting", allowUpdateCheck);
+	if (proxyURL != null) {
+	    props.setProperty("proxy.URL", proxyURL);
+	}
             
-        } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Error while creating properties file: " + ex.getMessage());
-            // ensure that we delete the file should any exception occur
-            if (propertiesFile != null) {
-                try {
-                    propertiesFile.delete();
-                } catch (Exception ex2) {
-                    //ignore we are cleaning up on error
-                }                
-            }
-            throw ex; 
-        } finally {
-            //ensure that we close the file no matter what.
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception ex2) {
-                    //ignore we are cleaning up on error
-                }                
-            }
-        }
 
     if (allowUpdateCheck.equalsIgnoreCase("true")) {
         LOGGER.log(Level.INFO, "Enabling Updatetool");
     }
  
-    //construct the bootstrap command
+    //invoke bootstrap
+    
+    Bootstrap.main(props, LOGGER);
 
-        try {
-
-            String javaCommand;
-            String bootstrapJar;
-        
-            if (isWindows) {
-                 javaCommand = System.getProperty("java.home") + "\\bin\\javaw.exe";
-                 bootstrapJar = installDir + "\\pkg\\lib\\pkg-bootstrap.jar";
-            }
-            else {
-                javaCommand = System.getProperty("java.home") + "/bin/java";
-                bootstrapJar = installDir + "/pkg/lib/pkg-bootstrap.jar";
-            }
-
-            String[] javaCommandArray = { javaCommand, 
-                "-jar" ,
-                bootstrapJar,
-                propertiesFile.getAbsolutePath()};
-            
-            LOGGER.log(Level.INFO, "Bootstrapping updatetool packages");
-            
-            ExecuteCommand javaExecuteCommand = new ExecuteCommand(javaCommandArray);
-            javaExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
-            javaExecuteCommand.setCollectOutput(true);
-        
-            javaExecuteCommand.execute();
-
-            productError = javaExecuteCommand.getErrors();
-       } catch (Exception e) {
-
-            LOGGER.log(Level.INFO, "Exception while boostrapping updatetool: " + e.getMessage()); 
-            success = false;
-       }
 
     //notifier is now being registered as part of bootstrap, so explicit
     //call to updatetoolconfig is being removed

@@ -68,12 +68,16 @@
            <type>zip</type>
         </dependency> 
         <dependency>
-           <groupId>com.sun.pkg.client</groupId>
-           <artifactId>ucbootstrap</artifactId>
-	   <version>${ucbootstrap.version}</version>
-           <type>zip</type>
-        </dependency>
-        <dependency>
+           <groupId>com.sun.pkg.bootstrap</groupId>
+           <artifactId>pkg-bootstrap</artifactId>
+           <version>0.0.0.15</version>
+         </dependency>
+         <dependency>
+           <groupId>com.sun.pkg.bootstrap</groupId>
+           <artifactId>pkg-client</artifactId>
+           <version>0.0.0.15</version>
+	</dependency> 
+	<dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>registration-api</artifactId>
             <version>${project.parent.version}</version>

@@ -68,11 +68,19 @@
 
     </target>
 
-    <target name="extract.uc"  description="Extracting UC bootstrap files">
+    <target name="extract.uc"  description="Extracting UC bootstrap libs">
 	<mkdir dir="${uc.stage.dir}"/>
-	<resolveArtifact groupID="com.sun.pkg.client" artifactId="ucbootstrap" property="ucbootstrap.zip"/>
-       
-	<unzip src="${ucbootstrap.zip}" dest="${uc.stage.dir}"/>
+
+
+	<!--unzip src="${gf.zip.dir}/web-ips-installer.zip" dest="${uc.stage.dir}">
+             <patternset>
+		     <include name="**/pkg/lib/pkg-client.jar"/>
+	     </patternset>
+        </unzip-->
+
+	<resolveArtifact groupID="com.sun.pkg.bootstrap" artifactId="pkg-bootstrap" property="pkg-bootstrap.jar"/>
+
+	<resolveArtifact groupID="com.sun.pkg.bootstrap" artifactId="pkg-client" property="pkg-client.jar"/>
 
 
     </target>
@@ -87,7 +95,8 @@
                <classpath>              
                    <pathelement location="${engine.stage.dir}/install/lib/engine.jar"/>
                    <pathelement location="${engine.stage.dir}/install/lib/config.jar"/>
-                   <pathelement location="${engine.stage.dir}/install/lib/providers/providers.jar"/>
+		   <pathelement location="${engine.stage.dir}/install/lib/providers/providers.jar"/>
+		   <pathelement location="${pkg-bootstrap.jar}"/>
                </classpath>
         </javac>
  
@@ -177,6 +186,12 @@
        
 	 <copy tofile="${stage.dir}/commons-codec-1.3.jar"
 		 file="${commons-codec.jar}"/>
+
+	 <copy tofile="${stage.dir}/pkg-client.jar"
+		 file="${pkg-client.jar}"/> 
+
+	 <copy tofile="${stage.dir}/pkg-bootstrap.jar"
+		 file="${pkg-bootstrap.jar}"/> 
 	 
 
          <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
@@ -198,22 +213,6 @@
              basedir="${tmp.dir}" />
 
          <delete dir="${tmp.dir}/glassfish" />
-
-         <echo message="Creating updatetool bootstrap zip file"/>
-
-                
-         <copy tofile="${tmp.dir}/bin/updatetool"
-		 file="${uc.stage.dir}/ucbootstub.sh"/>  
-         <copy tofile="${tmp.dir}/bin/updatetool.bat"
-		 file="${uc.stage.dir}/ucbootstub.bat"/> 
-         <copy tofile="${tmp.dir}/bin/pkg"
-		 file="${uc.stage.dir}/ucbootstub.sh"/>  
-         <copy tofile="${tmp.dir}/bin/pkg.bat"
-                 file="${uc.stage.dir}/ucbootstub.bat"/>	 
-         <zip destfile="${stage.dir}/Product/Packages/updatetool.zip"
-             basedir="${tmp.dir}" />
-
-         <delete dir="${tmp.dir}" />        
 
     </target>
 
