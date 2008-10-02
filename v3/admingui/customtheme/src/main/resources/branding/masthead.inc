@@ -25,24 +25,26 @@
 			</sun:button>
 		   </facet>
                    <!facet statusArea>
-                  <sun:panelGroup id="statusPanel" separator="" rendered="$session{restartRequired}">
-                      "<table border="0" cellpadding="0" cellspacing="0"><td valign="top">&nbsp;&nbsp;&nbsp;&nbsp;
-                      <sun:image id="alertImage" rendered="$session{restartRequired}"
-                        alt="restart required" height="$int{17}"  width="$int{17}" 
-                        url="/theme/woodstock4_3/suntheme/images/alerts/warning_medium.gif"/>
-                        "&nbsp;&nbsp;</td><td>
-                      <sun:hyperlink id="restartLink" rendered="$session{restartRequired}"
-                        style="color:white;"
-                        text="$resource{i18n.masthead.restartRequired}"
-                        toolTip="$resource{i18n.masthead.restartStatusMsg}"
-                        onMouseOver="window.status=getMessage('masthead.restartStatusMsg'); return true"
-                        onMouseOut="window.status=''; return true"
-                        onBlur="window.status=''; return true"
-                        onFocus="window.status=getMessage('masthead.restartStatusMsg'); return true"
-                        target="main"
-                        url="restart.jsf">
-                      </sun:hyperlink>
-                     "</td></table>
+                  <sun:panelGroup id="statusPanel" separator="">
+                      "<span style="margin: 5px 5px 0px 5px">
+                          <sun:image id="alertImage" rendered="$session{restartRequired}" alt="$resource{i18n.masthead.restartRequired}" icon="ALERT_WARNING_MEDIUM"/>
+                          <sun:hyperlink id="restartLink" rendered="$session{restartRequired}"
+                            style="color:white; margin-left: 5px;"
+                            text="$resource{i18n.masthead.restartRequired}"
+                            toolTip="$resource{i18n.masthead.restartStatusMsg}"
+                            onMouseOver="window.status='$resource{i18n.masthead.restartStatusMsg}'; return true"
+                            onMouseOut="window.status=''; return true"
+                            onBlur="window.status=''; return true"
+                            onFocus="window.status='$resource{i18n.masthead.restartStatusMsg}'; return true"
+                            target="main"
+                            url="#{request.contextPath}/restart.jsf">
+                          </sun:hyperlink>
+                     "</span>
+                     <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$attribute{panelGroupId})
+                            getUIComponent(clientId="#{panelGroupId}"  component=>$attribute{pg})
+                            includeIntegrations(type="org.glassfish.admingui:mastheadStatusArea" root="#{pg}");
+                      />
                    </sun:panelGroup>
                  </facet>
 		</sun:masthead>

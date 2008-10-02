@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <console-config id="updateCenter">
-        <integration-point 
-                id="uc" 
-                type="org.glassfish.admingui:treeNode" 
-                priority="100" 
-                parentId="tree" 
-                content="updateCenterNode.jsf" 
+        <integration-point
+                id="uc"
+                type="org.glassfish.admingui:treeNode"
+                priority="100"
+                parentId="tree"
+                content="updateCenterNode.jsf"
         />
-       <integration-point 
-                id="ucCommonTask" 
-                type="org.glassfish.admingui:commonTask" 
+       <integration-point
+                id="ucCommonTask"
+                type="org.glassfish.admingui:commonTask"
                 priority="100"
                 parentId="commonTasksSection"
-                content="ucCommonTask.jsf" 
+                content="ucCommonTask.jsf"
+        />
+       <integration-point
+                id="ucUpdatesAvailable"
+                type="org.glassfish.admingui:mastheadStatusArea"
+                priority="200"
+                content="updatesAvailable.inc"
         />
 </console-config>

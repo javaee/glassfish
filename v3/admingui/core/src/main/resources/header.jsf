@@ -43,15 +43,15 @@
     <!beforeCreate
         if(! $session{supportCluster}){
             checkRestart(RestartRequired=>$session{restartRequired},
-                unprocessedChanges=>$session{unprocessChanges});
+                unprocessedChanges=>$session{unprocessedChanges});
         }
         if($session{supportCluster}){
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
     />
     <sun:html>
-	<sun:head id="propertyhead" >
-                <sun:script url="/resource/js/adminjsf.js" />
+	<sun:head id="propertyhead" parseOnLoad="false">
+            <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
 	<sun:body>
 	    <sun:form id="propertyForm">

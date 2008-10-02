@@ -1629,11 +1629,19 @@ function checkForSelectedValue(fieldId) {
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
     if (currentRestartStatus != oldRestartStatus) {
         reloadHeaderFrame();
-        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '103,*', 0);
+        showLargeHeaderFrame(true);
     }
     return true;
 }
 
 function reloadHeaderFrame() {
        parent.parent.frames["header"].location.reload();
+}
+
+function showLargeHeaderFrame(showLarge) {
+    if (showLarge == true) {
+        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '94,*', 0);
+    } else {
+        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '71,*', 0);
+    }
 }
