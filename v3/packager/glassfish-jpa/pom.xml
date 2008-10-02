@@ -150,6 +150,13 @@
    	</dependency> 
     </dependencies>
 
+    <repositories>
+        <repository>
+           <id>EclipseLink Repo</id>
+             <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
+             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+        </repository>
+    </repositories>
     <profiles>
         <profile>
             <!--
