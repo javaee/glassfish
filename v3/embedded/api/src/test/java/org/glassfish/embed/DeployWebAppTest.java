@@ -20,9 +20,14 @@ public class DeployWebAppTest {
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
+        try {
         System.out.println("Starting AppServer on port 9999");
         myGF = new AppServer(9999);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterClass
