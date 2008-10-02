@@ -42,8 +42,8 @@ Top Level:</span><br>
 <ul>
   <li>For <span style="font-weight: bold;">web.zip</span> bundle of
 V3, {V3 Installation Dir} is equivelent to <span
- style="font-weight: bold;">/test/glassfish</span> in the example above.
-  </li>
+ style="font-weight: bold;">/test/glassfish</span> in the example
+above. </li>
   <ul style="font-style: italic;">
     <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
   </ul>
@@ -132,20 +132,8 @@ of the following ways to point to your specific maven repository:<br>
 -Dmaven.repo.local={Local_Maven}"</span></li>
     <li>Make a symbolic link from&nbsp;${user.home}/.m2/repository to
 the actuall maven repository.</li>
-    <li>Another option is to use ${user.home}/.m2/settings.xml which
-points to the repository location<br>
-      <div style="margin-left: 40px; font-style: italic;">&lt;settings&gt;
-      <br>
-&lt;localRepository&gt;<span class="moz-txt-slash"><span
- class="moz-txt-tag">/</span>abc<span class="moz-txt-tag">/</span></span>.m2/repository&lt;/localRepository&gt;
-      <br>
-&lt;/settings&gt; <br>
-      </div>
-    </li>
   </ul>
 </ul>
-The finial report will be available under directory
-quicklook/test-output-felix.<br>
 <p style="margin-bottom: 0in;"><big><big style="font-weight: bold;">II.
 Adding Tests to QuickLook</big></big><br>
 </p>
