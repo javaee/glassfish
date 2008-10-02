@@ -44,9 +44,9 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-jsf</artifactId>
-    <name>Glassfish JSF Connector Package</name>
+    <name>Glassfish JSF Package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish JSF Connector package</description>
+    <description>This pom describes how to assemble the GlassFish JSF package</description>
 
     <build>
         <plugins>
@@ -70,16 +70,17 @@
         <!--
           modules to be included in this bundle
         -->       
-       <dependency>        
-           <groupId>org.glassfish.web</groupId>
-           <artifactId>jsf-connector</artifactId>
-           <version>${project.version}</version>
-       </dependency>
+ 
        <dependency>
            <groupId>javax.faces</groupId>
            <artifactId>jsf-api</artifactId>
            <version>${jsf-api.version}</version>
        </dependency>
+       <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>${jsf-impl.version}</version>
+        </dependency>
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

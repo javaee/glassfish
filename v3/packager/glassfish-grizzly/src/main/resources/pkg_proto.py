@@ -41,7 +41,7 @@ conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
     "name"          : "glassfish-grizzly",
-    "version"       : conf.glassfish_version,
+    "version"       : conf.grizzly_version,
     "attributes"    : {
                         "pkg.summary" : "Grizzly",
                         "pkg.description" : "Grizzly is an Java NIO framework for building scalable application. It also offers embeddable components supporting HTTP, Bayeux Protocol, Servlet (Partially) and Comet. For more information, see: https://grizzly.dev.java.net/.  "+conf.glassfish_description_long,
