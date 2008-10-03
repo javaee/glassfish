@@ -178,7 +178,9 @@
         <ant dir="setMultiValuedResponseHeader" target="all"/>
         <ant dir="servletContextNullPathArgument" target="all"/>
         <ant dir="servletRequestParamsPreserveOrder" target="all"/>
+        <!--
         <ant dir="servletRequestGetPathInfoCollapseContiguousSlashes" target="all"/>
+        -->
         <ant dir="servletRequestSetCharEncodingIllegalStateException" target="all"/>
         <ant dir="servletRequestGetPathInfoGetPathTranslated" target="all"/>
         <ant dir="servletFilterMappingWithServletNameAndURLPattern" target="all"/>
