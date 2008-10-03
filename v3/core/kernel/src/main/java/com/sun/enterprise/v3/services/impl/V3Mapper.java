@@ -114,7 +114,16 @@ public class V3Mapper extends Mapper {
                 (!ADMIN_LISTENER.equals(id) && ADMIN_VS.equals(hostName))) {
             return;
         }
-
+        
+        // The WebContainer is registering new Context. In that case, we must
+        // clean all the previously added information, specially the 
+        // MappingData.wrapper info as this information cannot apply
+        // to this Container.
+        if (adapter != null && adapter.getClass().getName()
+                .equals("org.apache.catalina.connector.CoyoteAdapter")) {
+            super.removeContext(hostName, path);
+        }
+        
         super.addContext(hostName, path, context, welcomeResources, resources);
     }
 
