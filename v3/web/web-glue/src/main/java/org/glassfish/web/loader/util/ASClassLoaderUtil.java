@@ -47,6 +47,7 @@ import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
@@ -73,7 +74,7 @@ public class ASClassLoaderUtil {
      *         defined for the web module.
      */
     public static String getWebModuleClassPath(Habitat habitat,
-                                               String moduleId) {
+                                               String moduleId, String deploymentLibs) {
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "ASClassLoaderUtil.getWebModuleClassPath " +
@@ -87,7 +88,7 @@ public class ASClassLoaderUtil {
         if (commonClassPath != null && commonClassPath.length() > 0) {
             classpath.append(commonClassPath).append(File.pathSeparator);
         }
-        addLibrariesForWebModule(classpath, moduleId);
+        addLibrariesForWebModule(classpath, moduleId, deploymentLibs);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Final classpath: " + classpath.toString());
         }
@@ -96,9 +97,12 @@ public class ASClassLoaderUtil {
     }
 
     private static void addLibrariesForWebModule(StringBuilder sb,
-                                                 String moduleId) {
+                                                 String moduleId, final String deploymentLibs) {
         if (moduleId != null) {
-            final String specifiedLibraries = getLibrariesForModule(WebContainer.class, moduleId);
+            String specifiedLibraries = getLibrariesForModule(WebContainer.class, moduleId);
+            if (specifiedLibraries==null && deploymentLibs!=null) {
+                specifiedLibraries = deploymentLibs;
+            }
             final URL[] libs = getLibraries(specifiedLibraries);
             if (libs != null) {
                 for (final URL u : libs) {

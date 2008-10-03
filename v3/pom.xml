@@ -125,8 +125,8 @@
 
 	<!-- Note: if you are attempting to change hk2 version.. please change at build/pom.xml location too. Thanks!
          -->
-        <hk2.version>0.3.30</hk2.version>
-        <hk2.plugin.version>0.3.30</hk2.plugin.version>
+        <hk2.version>0.3.31</hk2.version>
+        <hk2.plugin.version>0.3.31</hk2.plugin.version>
 
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>

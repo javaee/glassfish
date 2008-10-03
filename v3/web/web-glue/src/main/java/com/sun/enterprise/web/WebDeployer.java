@@ -324,7 +324,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             classpath.append(File.pathSeparatorChar);
             classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
                     sc.getDefaultHabitat(),
-                    wbd.getApplication().getName()));
+                    wbd.getApplication().getName(), dc.getProps().getProperty(ServerTags.LIBRARIES)));
             JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
         } catch (DeploymentException de) {
             dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);

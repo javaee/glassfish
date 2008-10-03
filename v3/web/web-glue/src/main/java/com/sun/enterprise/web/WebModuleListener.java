@@ -310,7 +310,7 @@ final class WebModuleListener
 
             // START SJSAS 6311155
             String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
-                    serverContext.getDefaultHabitat(), webModule.getID()
+                    serverContext.getDefaultHabitat(), webModule.getID(), null
             );
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(" sysClasspath for " + webModule.getID() + " is \n" 
