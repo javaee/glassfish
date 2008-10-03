@@ -88,7 +88,7 @@ public final class Globals {
     /**
      * SSL Certificate Request Attributite.
      */
-    public static final String SSL_CERTIFICATE_ATTR = "com.sun.grizzly.tcp.request.X509Certificate";
+    public static final String SSL_CERTIFICATE_ATTR = "org.apache.coyote.request.X509Certificate";
 
     /**
      * The request attribute under which we store the name of the cipher suite

@@ -82,7 +82,7 @@ public final class Constants {
     /**
      * SSL Certificate Request Attributite.
      */
-    public static final String SSL_CERTIFICATE_ATTR = "com.sun.grizzly.tcp.request.X509Certificate";
+    public static final String SSL_CERTIFICATE_ATTR = "javax.servlet.request.X509Certificate";
 
 
     // S1AS 4703023
