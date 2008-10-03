@@ -115,17 +115,18 @@ public class UpdateCenterHandlers {
                 handlerCtx.setOutputValue("result", result);
                 return;
             }
-            String state= (String)handlerCtx.getInputValue("state");	
-
+            String state= (String)handlerCtx.getInputValue("state");
+            if (state.equals("update")){
+                handlerCtx.setOutputValue("result", getUpdateDisplayList(img));
+                return;
+            }
+            
             List<Fmri> displayList = null;
             if (state.equals("installed"))
                 displayList = getInstalledList(img);
             else
             if (state.equals("addOn"))
                 displayList = getAddOnList(img);
-            else
-                displayList = getUpdateList(img);
-            
             
             for (Fmri fmri : displayList){
                 Map oneRow = new HashMap();
@@ -136,6 +137,7 @@ public class UpdateCenterHandlers {
                     oneRow.put("fmriStr", fmri.toString());
                     putInfo(oneRow, "pkgName", fmri.getName());
                     putInfo(oneRow, "version", getPkgVersion(fmri.getVersion()));
+                    putInfo(oneRow, "newVersion", "");
                     putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
                     putInfo(oneRow, "pkgSize", getPkgSize(manifest));
                     oneRow.put( "size", Integer.valueOf(manifest.getPackageSize()));
@@ -246,28 +248,6 @@ public class UpdateCenterHandlers {
 
     }
     
-//    private static List<Fmri> getAddOnList(Image image){
-//        ArrayList<String> allFmriName = new ArrayList();
-//        Catalog catalog = image.getCatalog();
-//        List<Fmri> allList = catalog.getFmris();
-//        for(Fmri each : allList){
-//            if (allFmriName.contains(each.getName()))
-//                continue;
-//            allFmriName.add(each.getName());
-//        }
-//        List<Image.FmriState> installedList = image.getInventory(null, false);
-//        for (Image.FmriState fs : installedList){
-//            if (allFmriName.contains(fs.fmri.getName())){
-//                allFmriName.remove(fs.fmri.getName());
-//            }
-//        }
-//        List<Fmri> result = new ArrayList();
-//        for(String eachAddOn : allFmriName){
-//            result.add(catalog.getMatchingFmri(eachAddOn));
-//             }
-//        return result;
-//    }
-    
     private static List<Fmri> getAddOnList(Image image){
         List<String> installed = new ArrayList<String>();
         for (Image.FmriState each : image.getInventory(null, false)) {
@@ -282,16 +262,49 @@ public class UpdateCenterHandlers {
         }
         return result;
     }
-
    
-    private static List<Fmri> getUpdateList(Image image){
-        List<Image.FmriState> fList = image.getInventory(null, false);
-        ArrayList<Fmri> result = new ArrayList();
-        for(Image.FmriState fs: fList){
-            if (fs.upgradable)
-                result.add(fs.fmri);
+    private static List getUpdateDisplayList(Image image){
+        List<Image.FmriState> installed = image.getInventory(null, false);
+        Map<String, Fmri> updateListMap = new HashMap();
+        List<String> nameList = new ArrayList();
+        for(Image.FmriState fs: installed){
+            if (fs.upgradable){
+                Fmri fmri = fs.fmri;
+                updateListMap.put(fmri.getName(),fmri);
+                nameList.add(fmri.getName());
+            }
         }
-        return result;
+        List result = new ArrayList();
+        String[] pkgsName = nameList.toArray(new String[nameList.size()]);
+        try{
+            Image.ImagePlan ip = image.makeInstallPlan(pkgsName);
+            Fmri[] proposed = ip.getProposedFmris();
+            for( Fmri newPkg : proposed){
+                Map oneRow = new HashMap();
+                try{
+                    String name = newPkg.getName();
+                    Fmri oldPkg = updateListMap.get(name);
+                    Manifest manifest = image.getManifest(newPkg);
+                    int changedSize = manifest.getPackageSize() - image.getManifest(oldPkg).getPackageSize();
+                    oneRow.put("selected", false);
+                    oneRow.put("fmri", newPkg);
+                    oneRow.put("fmriStr", newPkg.toString());
+                    putInfo(oneRow, "pkgName", name);
+                    putInfo(oneRow, "newVersion", getPkgVersion(newPkg.getVersion()));
+                    putInfo(oneRow, "version", getPkgVersion(oldPkg.getVersion()));
+                    putInfo(oneRow, "category", manifest.getAttribute(CATEGORY));
+                    putInfo(oneRow, "pkgSize", convertSizeForDispay(changedSize));
+                    oneRow.put( "size", Integer.valueOf(changedSize));
+                    putInfo(oneRow, "auth", newPkg.getAuthority());
+                    result.add(oneRow);
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+       return result;
     }
     
     
@@ -319,9 +332,11 @@ public class UpdateCenterHandlers {
             }
             if (install){
                 image.installPackages(fList);
+                updateCountInSession(image);      //ensure the # of update component count is updated.
             }else{
                 image.uninstallPackages(fList);
             }
+            GuiUtil.setSessionValue("restartRequired", Boolean.TRUE);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
             ex.printStackTrace();
@@ -353,21 +368,38 @@ public class UpdateCenterHandlers {
      }
         
      
-     //returns -1 for any error condition, otherwise the #of component that has update available.
-     @Handler(id="getUpdateComponentCount",
-        output={
-        @HandlerOutput(name="count", type=Integer.class)})
+    private static final String UPDATE_COUNT = "__gui_uc_update_count";
+    //returns -1 for any error condition, otherwise the #of component that has update available.
+    @Handler(id = "getUpdateComponentCount", output = {
+        @HandlerOutput(name = "count", type = Integer.class)
+    })
     public static void getUpdateComponentCount(HandlerContext handlerCtx) {
-         int count = -1;
-         try{
+        Integer countInt = (Integer) GuiUtil.getSessionValue(UPDATE_COUNT);
+        if (countInt == null) {
             Image image = getUpdateCenterImage();
-            List<Fmri>updateList =  getUpdateList(image);
-            count = updateList.size();
+            countInt = updateCountInSession(image);
+        }
+        handlerCtx.setOutputValue("count", countInt);
+    }
+
+     
+     private static Integer updateCountInSession(Image image){
+         int count = 0;
+         try{
+            List<Image.FmriState> installed = image.getInventory(null, false);
+            for(Image.FmriState fs: installed){
+                if (fs.upgradable){
+                    count++;
+                }
+            }
          }catch(Exception ex){
+            count = -1;
             System.out.println("!!!!!!!!! error in getting update component list");
-            System.out.println(ex.getMessage());
+            //System.out.println(ex.getMessage());
          }
-         handlerCtx.setOutputValue("count", Integer.valueOf(count));
+         Integer countInt = Integer.valueOf(count);
+         GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
+         return countInt ;
      }
         
      
@@ -401,7 +433,11 @@ public class UpdateCenterHandlers {
     
     private static String getPkgSize(Manifest manifest){
         int size = manifest.getPackageSize();
-        String sizep = (size <= MB) ? 
+        return convertSizeForDispay(size);
+    }
+    
+    private static String convertSizeForDispay(int size){
+        String sizep = (size <= MB) ?
             size/1024 + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeKB") :
             size/MB + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeMB")  ;
         return sizep;
@@ -419,31 +455,17 @@ public class UpdateCenterHandlers {
     
     
     private static Image getUpdateCenterImage(){
-        if (GuiUtil.getSessionValue("_uc_Image_Error") != null)
-            return null;
-        Image image = (Image) GuiUtil.getSessionValue("_uc_Image");
+        
         String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); //this will only give the glassfish installation. need to get its parent for UC info
         String ucDir = (new File (installDir)).getParent();
-        if (ucDir == null) ucDir = installDir;
-        if ( image == null ){
-            try{        
-                image = new Image (new File (ucDir));
-                GuiUtil.setSessionValue("_uc_Image", image);
-            }catch(Exception ex){
-                System.out.println("!!! Cannot create update center Image for " + ucDir );
-                ex.printStackTrace();
-                try{
-                    image = new Image (new File (installDir));
-                    GuiUtil.setSessionValue("_uc_Image", image);
-                }catch(Exception ex1){
-                    GuiUtil.setSessionValue("_uc_image_Error", "Cannot create update center Image");
-                    System.out.println("!!! Cannot create update center Image for " +  installDir);
-                    ex1.printStackTrace();
-                    return null;
-                }
-            }
+        try{        
+            Image image = new Image (new File (ucDir));
+            return image;
+        }catch(Exception ex){
+            System.out.println("!!!! Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
+            //ex.printStackTrace();
+            return null;
         }
-        return image;
     }
     
     

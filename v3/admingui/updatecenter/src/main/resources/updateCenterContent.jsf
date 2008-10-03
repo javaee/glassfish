@@ -42,7 +42,7 @@
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
-        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
+        <sun:body id="body3" onLoad="reloadHeaderFrame(); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">

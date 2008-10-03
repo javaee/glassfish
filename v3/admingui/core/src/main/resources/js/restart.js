@@ -25,8 +25,20 @@
 /*===========================================================================*/
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
     if (currentRestartStatus != oldRestartStatus) {
-        parent.parent.frames["header"].location.reload();
-        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '94,*', 0);
+        reloadHeaderFrame();
+        showLargeHeaderFrame(true);
     }
     return true;
+}
+
+function reloadHeaderFrame() {
+       parent.parent.frames["header"].location.reload();
+}
+
+function showLargeHeaderFrame(showLarge) {
+    if (showLarge == true) {
+        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '94,*', 0);
+    } else {
+        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '71,*', 0);
+    }
 }

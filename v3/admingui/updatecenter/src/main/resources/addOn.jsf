@@ -48,6 +48,9 @@
         setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.addOn.tableTitle}");
         setPageSessionAttribute(key="fromPage" value="addOn.jsf");
         setPageSessionAttribute(key="forInstall" value="true");
+        setPageSessionAttribute(key="showNewVersion" value="#{false}");
+        setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.version}");
+        setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.installSize}");
         setAttribute(key="helpKey" value="$resource{help.uc.addOn}");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
         setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")

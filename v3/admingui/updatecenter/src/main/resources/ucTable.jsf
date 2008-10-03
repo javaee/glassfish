@@ -102,11 +102,15 @@
         <staticText id="Colc" value="#{td.value.category}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nUC.ucTable.version}"  sort="version" rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="#{versonColHeader}"  sort="version" rowHeader="$boolean{true}" id="col2">
         <staticText id="col2" value="#{td.value.version}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18nUC.ucTable.installedSize}" sort="size" align="right" rowHeader="$boolean{true}" id="colize">
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.newVersion}" rendered="#{showNewVersion}" sort="newVersion" rowHeader="$boolean{true}" id="colnv">
+        <staticText id="col2" value="#{td.value.newVersion}" />
+    </sun:tableColumn>
+    
+    <sun:tableColumn headerText="#{sizeColHeader}" sort="size" align="right" rowHeader="$boolean{true}" id="colize">
         <staticText id="colsize" value="#{td.value.pkgSize}" />
     </sun:tableColumn>
     
