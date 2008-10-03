@@ -136,6 +136,8 @@ public final class WebContainerListener
                 preInvoke((Context) event.getContainer());
             } else if (afterEvents.contains(type)) {
                 postInvoke((Context) event.getContainer());
+            } else if (ContainerEvent.PRE_DESTROY.equals(type)) {
+                preDestroy(event);
             }
         } catch (Exception ex) {
             String msg = null;
@@ -148,7 +150,8 @@ public final class WebContainerListener
             }
             throw new RuntimeException(msg, ex);
         } finally {
-            if (type.equals(ContainerEvent.AFTER_FILTER_DESTROYED)) {
+            if (type.equals(ContainerEvent.AFTER_FILTER_DESTROYED) ||
+                    type.equals(ContainerEvent.AFTER_CONTEXT_DESTROYED)) {
                 preDestroy(event);
             }
         } 

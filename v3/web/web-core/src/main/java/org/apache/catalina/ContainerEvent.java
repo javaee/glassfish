@@ -70,6 +70,8 @@ import java.util.EventObject;
 
 public final class ContainerEvent extends EventObject {
 
+    public static final String PRE_DESTROY = "predestroy";
+
     public static final String BEFORE_CONTEXT_INITIALIZED
         = "beforeContextInitialized";
 

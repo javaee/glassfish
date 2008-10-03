@@ -4656,17 +4656,28 @@ public class StandardContext
             log.fine("Sending application stop events");
 
         boolean ok = true;
-        Object listeners[] = getApplicationLifecycleListeners();
-        if (listeners == null)
+        Object[] listeners = getApplicationLifecycleListeners();
+        Object[] eventListeners = getApplicationEventListeners();
+        if (listeners == null && eventListeners == null) {
             return (ok);
+        }
         ServletContextEvent event =
-          new ServletContextEvent(getServletContext());
+            new ServletContextEvent(getServletContext());
+        for (int i=0; i<eventListeners.length; i++) {
+            if (eventListeners[i] != null) {
+                fireContainerEvent(ContainerEvent.PRE_DESTROY, 
+                                   eventListeners[i]);
+            }
+        }
         for (int i = 0; i < listeners.length; i++) {
             int j = (listeners.length - 1) - i;
-            if (listeners[j] == null)
+            if (listeners[j] == null) {
                 continue;
-            if (!(listeners[j] instanceof ServletContextListener))
+            }
+            if (!(listeners[j] instanceof ServletContextListener)) {
+                fireContainerEvent(ContainerEvent.PRE_DESTROY, listeners[j]);
                 continue;
+            }
             ServletContextListener listener =
                 (ServletContextListener) listeners[j];
             try {
@@ -4684,10 +4695,11 @@ public class StandardContext
                 ok = false;
             }
         }
+
         setApplicationEventListeners(null);
         setApplicationLifecycleListeners(null);
-        return (ok);
 
+        return (ok);
     }
 
 
