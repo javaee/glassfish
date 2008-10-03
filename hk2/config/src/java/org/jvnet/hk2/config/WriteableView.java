@@ -85,6 +85,20 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         }
     }
 
+    public String getPropertyValue(String propertyName) {
+
+        ConfigModel.Property prop = this.getProperty(propertyName);
+        if (prop!=null) {
+            if (changedAttributes.containsKey(prop.xmlName())) {
+                // serve masked changes.
+                return (String) changedAttributes.get(prop.xmlName()).getNewValue();
+            } else {
+                return (String) getter(prop, String.class);
+            }
+        }
+        return null;
+    }
+
     public Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
         Object value =  bean._getter(property, t);
         if (value instanceof List) {
@@ -332,14 +346,42 @@ private class ProtectedList extends AbstractList {
     @Override
     public synchronized boolean add(Object object) {
         Object param = object;
+        Object handler = null;
         try {
-            Object handler = Proxy.getInvocationHandler(object);
-            if (handler instanceof WriteableView) {
-                ConfigBean master = ((WriteableView) handler).getMasterView();
-                param = ((WriteableView) handler).getMasterView().createProxy(master.type());
-            }
+            handler = Proxy.getInvocationHandler(object);
         } catch(IllegalArgumentException e) {
             // ignore, this is a leaf
+        }
+        if (handler!=null && handler instanceof WriteableView) {
+            ConfigBean master = ((WriteableView) handler).getMasterView();
+            String key = master.model.key;
+            if (key!=null) {
+                // remove leading @
+                key = key.substring(1);
+                // check that we are not adding a duplicate key element
+                String keyValue = ((WriteableView) handler).getPropertyValue(key);
+                for (Object o : proxied) {
+                    // the proxied object can be a read-only or a writeable view, we need
+                    // to be careful
+                    // ToDo : we need to encasulate this test.
+                    String value;
+                    if (Proxy.getInvocationHandler(o) instanceof WriteableView) {
+                        value = ((WriteableView) Proxy.getInvocationHandler(o)).getPropertyValue(key);
+                    }  else {
+                        Dom cbo = Dom.unwrap((ConfigBeanProxy) o);
+                        value = cbo.attribute(key);
+                    }
+                    if (keyValue!=null && keyValue.equals(value)) {
+                        Dom parent = Dom.unwrap(readView);
+                        throw new IllegalArgumentException("A " + master.getProxyType().getSimpleName() +
+                                " with the same key \"" + keyValue + "\" already exists in " +
+                                parent.getProxyType().getSimpleName() + " " + parent.getKey()) ;
+
+                    }
+                }
+            }
+            param = ((WriteableView) handler).getMasterView().createProxy(master.type());
+
         }
         changeEvents.add(new PropertyChangeEvent(defaultView, id, null, param));
         return proxied.add(object);
