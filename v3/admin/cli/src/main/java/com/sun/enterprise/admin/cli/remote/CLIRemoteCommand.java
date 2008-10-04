@@ -615,8 +615,9 @@ public class CLIRemoteCommand {
             }
         }
         
-        if (commandName.equalsIgnoreCase("create-password-alias") || 
-                commandName.equalsIgnoreCase("update-password-alias")) {
+        if (  (commandName.equalsIgnoreCase("create-password-alias") || 
+                commandName.equalsIgnoreCase("update-password-alias"))
+	    && params.get("help") == null) {
             try {
                 password = confirmInteractivelyAliasPassword(encodedPasswords);
                 base64encode(encodedPasswords);                
