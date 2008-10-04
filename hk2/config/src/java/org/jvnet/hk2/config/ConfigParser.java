@@ -197,5 +197,10 @@ public class ConfigParser {
         return dom;
     }
 
-    private static final XMLInputFactory xif = XMLInputFactory.newInstance();
+    // We pass the classloader that loaded XMLInputFactory otherwise
+    // it does not work when Thread's context class loader is used to locate
+    private static final XMLInputFactory xif = XMLInputFactory.newInstance(
+            XMLInputFactory.class.getName(),
+            XMLInputFactory.class.getClassLoader()
+    );
 }
