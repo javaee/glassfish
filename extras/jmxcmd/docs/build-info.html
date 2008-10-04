@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>jmxcmd</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">jcmd/jmxadmin build-info</h1>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 15 March 2004</font></p>
+<h2>1. Introduction</h2>
+<p>This document defines the built targets and their dependencies for jcmd and 
+  jmxcmd.</p>
+<p>The source tree is rooted at <font face="Courier New, Courier, mono" size="-1">com.sun.cli</font>, 
+  which is the namespace granted and approved within sun for Java CLIs. The subtrees 
+  of <font face="Courier New, Courier, mono" size="-1">com.sun.cli.jcmd</font> 
+  and <font face="Courier New, Courier, mono" size="-1">com.sun.cli.jmxcmd</font> 
+  are the only subpackages the author is aware of at this time. There are three 
+  source directories: &quot;src&quot;, &quot;tests&quot;, and &quot;optional&quot;.</p>
+<h2>2. Build targets</h2>
+<h3>2.1 jcmd</h3>
+<p><i>Build jar</i>: <font face="Courier New, Courier, mono" size="-1">jcmd.jar</font></p>
+<p><i>Source files</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">src/com/sun/cli/jcmd/</font>*</p>
+<p><i>Dependencies</i>:</p>
+<p>JDK 1.4.x, jsse.jar</p>
+<p>&nbsp;</p>
+<h3>2.2 jmxcmd</h3>
+<p><i>Build jar</i>: <font face="Courier New, Courier, mono" size="-1">jmxcmd.jar</font></p>
+<p><i>Source files</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">src/com/sun/cli/jmxcmd/*</font></p>
+<p><i>Dependencies</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">JDK 1.4.x,<br>
+  jsse.jar,<br>
+  jcmd.jar*,<br>
+  jmxri.jar*+,<br>
+  jmxremote.jar*+,<br>
+  jmxremote_optional.jar*+,<br>
+  javax77.jar*+,<br>
+  sasl.jar*+,<br>
+  sunsasl.jar*+</font></p>
+<p>* = incorporate the contents of this jar into the resulting built jar.<br>
+  + = these jars should be taken from JDMK 5.1</p>
+<h4>2.2.1 jmxcmd Java Enterprise System Application Server 8 support</h4>
+<p><i>Build jar</i>: <font face="Courier New, Courier, mono" size="-1">jmxcmd-jesas8.jar</font><br>
+</p>
+<p><i>Source files</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">optional/cmd/com/sun/enterprise/s1as8/*<br>
+  </font><font face="Courier New, Courier, mono" size="-1">optional/providers/com/sun/enterprise/jmx/providers/SunOneHttpProvider.java</font></p>
+<p><i>Dependencies</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jcmd.jar,<br>
+  jmxcmd.jar,<br>
+  jmxri.jar,<br>
+  jmxremote.jar,<br>
+  s1as-jsr160-client.jar</font></p>
+<p>&nbsp;</p>
+<h4>2.2.2 JUnit Test support</h4>
+<p><i>Build jar</i>: <font face="Courier New, Courier, mono" size="-1">jmxcmd-tests.jar</font><br>
+</p>
+<p><i>Source files</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">tests/com/sun/cli/*</font></p>
+<p><i>Dependencies</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jcmd.jar<br>
+  jmxcmd.jar<br>
+  jmxri.jar<br>
+  jmxremote.jar<br>
+  </font><font face="Courier New, Courier, mono" size="-1">junit.jar*<br>
+  <br>
+  * = incorporate the contents of this jar into the resulting built jar. </font></p>
+<p>&nbsp;</p>
+<h4>2.2.3 Optional MBeans</h4>
+<p><i>Build jar</i>: <font face="Courier New, Courier, mono" size="-1">jmxcmd-mbeans.jar</font><br>
+</p>
+<p><i>Source files</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">optional/mbeans/*</font></p>
+<p><i>Dependencies</i>:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jcmd.jar<br>
+  jmxri.jar</font></p>
+<p>&nbsp;</p>
+</body>
+</html>

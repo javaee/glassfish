@@ -1,0 +1,5 @@
+-exportcontents: \
+                        com.sun.enterprise.deploy.shared, \
+                        com.sun.enterprise.deployment.deploy.shared, \
+                        org.glassfish.deployment.common
+

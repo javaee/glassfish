@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>JCmd Optional Facilities</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JCmd</h1>
+<h4 align="center"><i>optional facilities</i></h4>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 23 Feb 2004</font></p>
+<h2>1. Introduction</h2>
+<p>Please familiarize yourself with the <a href="./jcmd-index.html">jcmd overview</a>.</p>
+<p>JmxCmd supports pluggable commands. Implementation notes follow.</p>
+<p><b>Optional commands, including a sample command, may be loaded by running 
+  the 'add-optional' script.</b></p>
+<p>&nbsp;</p>
+<h2>2. Adding Commands<a name="Commands"></a></h2>
+<h3>2.1 Commands Overview</h3>
+<p>New commands may be added or removed to/from jcmd. If you have a jar file containing 
+  commands, you can configure jcmd to use them via the <a href="./jcmd-commands.html#configure">add-cmd-source</a> 
+  command. Once configured, jcmd remembers this configuration.</p>
+<p>Commands are loaded explicitly; none are built-in. When you use JCmd, the so-called 
+  &quot;built-in&quot; commands are loaded only because code runs that causes 
+  them to load. The JCmd framework uses <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgrImpl.html">CmdMgrImpl</a> 
+  by default unless the <font face="Courier New, Courier, mono" size="-1">--cmd-mgr-classname</font> 
+  option specifies a different <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>. 
+  For example, <a href="./jmxcmd-index.html">JmxCmd</a> uses a different <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a> 
+  to load additional commands.</p>
+<h3>2.2 Commands implementation notes</h3>
+<h4><font color="#000000"><b>2.2.1 Sample command</b></font></h4>
+<p><font color="#000000"><b>For a working command,</b> see the sample command 
+  <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jcmd/framework/SampleCmd.html">com.sun.cli.jcmd.framework.SampleCmd</a></font></font><font face="Courier New, Courier, mono" size="-1" color="#000000"> 
+  and <a href="./javadoc/com/sun/cli/jcmd/framework/SampleCmdSource.html">com.sun.cli.jcmd.framework.SampleCmdSource</a>.</font><font color="#000000"> 
+  The source code is linked into the Javadoc if you wish to see it. You can load 
+  and execute this sample command as follows:</font></p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; add-cmd-source 
+  com.sun.cli.jcmd.framework.SampleCmdSource<br>
+  Added: com.sun.cli.jcmd.framework.SampleCmd, names = sample-cmd<br>
+  jmxcmd&gt; sample-cmd -?<br>
+  </font><font face="Courier New, Courier, mono" size="-1">demonstrate a sample 
+  command<br>
+  </font><font face="Courier New, Courier, mono" size="-1">sample-cmd [--boolean|-b] 
+  [--integer|-i &lt;any-integer&gt;] [--string|-s &lt;any-string&gt;] [--antisocial|-a]<br>
+  [value[ value]*]</font></p>
+<p><font face="Courier New, Courier, mono" size="-1">Demonstrates a sample command.<br>
+  Also known as: sample-cmd</font></p>
+<h4>2.2.2 Framework classes to use</h4>
+<p>The minimal requirement for writing a new command is to implement <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jcmd/framework/Cmd.html">com.sun.cli.jcmd.framework.Cmd</a></font> 
+  and to implement a <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jcmd/framework/CmdSource.html">CmdSource</a> 
+  </font>which provides the command(s) classes to load. In implementing your commands, 
+  you will want to refer to the JavaDoc for the <a href="./javadoc/com/sun/cli/jcmd/framework/package-summary.html">command 
+  framework</a>.</p>
+<p>For most commands you will want to extend <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jcmd/framework/CmdBase.html">com.sun.cli.jcmd.framework.CmdBase</a></font> 
+  or <font face="Courier New, Courier, mono" size="-1"><a href="./javadoc/com/sun/cli/jmxcmd/cmd/JMXCmd.html">com.sun.cli.jmxcmd.cmd.JMXCmd</a></font> 
+  (which extends <font face="Courier New, Courier, mono" size="-1">CmdBase</font>). 
+  By extending one of these classes, you will inherit many useful facilities that 
+  do most of the work you, leaving it to you to implement just your application-specific 
+  functionality..</p>
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<h3>&nbsp;</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>

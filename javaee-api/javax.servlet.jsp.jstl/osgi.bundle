@@ -1,0 +1,1 @@
+Import-Package: javax.servlet; javax.servlet.http; version="2.5", *

@@ -1,0 +1,11 @@
+<sun:treeNode	id="tabtest"
+		text="Test Node #1"
+		url="tabtest/jdbcLists.jsf"
+                target="main"
+		imageURL="resource/images/instance.gif" />
+<sun:treeNode	id="tabtest2"
+		text="Test Node #2"
+		url="tabtest/jdbcLists.jsf"
+                target="main"
+		imageURL="resource/images/instance.gif" >
+</sun:treeNode>

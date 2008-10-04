@@ -1,0 +1,2069 @@
+<html><body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">jmxcmd Commands</h1>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 28 May 2004</font></p>
+<p><b><font color="#FF0000">Note: the command set has some new and changed functionality 
+  not yet reflected in this document. The <i>create-proxies</i> command is one 
+  example. Use the built-in jmxcmd help if there is any question.</font></b></p>
+<h2>1. Commands overview</h2>
+<p>This table gives a brief overview of the command set. Click on each command 
+  name for details. Additional <a href="optional.html#Commands">optional commands</a> 
+  may also be available. The commands that are shaded are derived from <a href="./jcmd-commands.html#source">JCmd</a>.</p>
+<table width="98%" border="1">
+  <tr> 
+    <td><b>Command</b></td>
+    <td><b>Capabilities/Functions</b></td>
+  </tr>
+  <tr> 
+    <td><a href="#connect">connect</a></td>
+    <td>connect to an MBeanServer</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#configure">configure</a></td>
+    <td>configure the CLI framework</td>
+  </tr>
+  <tr> 
+    <td><a href="#count">count</a></td>
+    <td>count the number of registered MBeans</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p><a href="#target-aliases">create-target-alias<br>
+        </a><a href="#delete-alias">delete-</a><a href="#target-aliases">target-</a><a href="#delete-alias">alias</a><br>
+        <a href="#list-aliases">list-</a><a href="#create-alias">target-</a><a href="#target-aliases">aliases</a> 
+        <br>
+        <a href="#resolve-alias">resolve-</a><a href="#create-alias">target-</a><a href="#target-aliases">alias</a> 
+      </p>
+    </td>
+    <td>Manage persistent alias names for MBeans.</td>
+  </tr>
+  <tr>
+    <td> 
+      <p><a href="./jcmd-commands.html#cmd-aliases">create-cmd-alias<br>
+        delete-cmd-alias<br>
+        list-cmd-aliases<br>
+        show-cmd-alias</a></p>
+      </td>
+    <td>Manage persistent alternate names for commands.</td>
+  </tr>
+  <tr> 
+    <td><a href="#create-proxies">create-proxies</a></td>
+    <td>Create local proxies of MBeans</td>
+  </tr>
+  <tr> 
+    <td><a href="#domains">domains</a></td>
+    <td>display the available domains</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#echo">echo</a></td>
+    <td>echo arguments to output</td>
+  </tr>
+  <tr> 
+    <td><a href="#find">find</a></td>
+    <td>display MBeans matching name, pattern, or alias</td>
+  </tr>
+  <tr> 
+    <td><a href="#get">get</a></td>
+    <td>display one or more attributes on the specified target(s)</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="#help">help</a></td>
+    <td>displays help</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#history">history<br>
+      repeat </a></td>
+    <td>show command history and repeat previous commands</td>
+  </tr>
+  <tr> 
+    <td><a href="#inspect">inspect</a></td>
+    <td>display attributes, operations, constructors, etc</td>
+  </tr>
+  <tr> 
+    <td><a href="#invoke">invoke</a></td>
+    <td> invokes an MBean operation</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p><a href="#listen">define-listener<br>
+        start-listening<br>
+        stop-listening<br>
+        delete-listener<br>
+        list-listeners </a></p>
+    </td>
+    <td>Manager listeners.</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p><a href="#mbs">start-mbs<br>
+        stop-mbs<br>
+        list-mbs<br>
+        load-jmxmp-connector<br>
+        load-rmi-connector </a><a href="#mbs"><br>
+        load-html-adapter</a></p>
+    </td>
+    <td>manage in-process MBeanServers, load connectors and adapters into them</td>
+  </tr>
+  <tr> 
+    <td><a href="#monitor">monitor</a></td>
+    <td>monitor MBeans for changes in their attributes</td>
+  </tr>
+  <tr> 
+    <td><a href="#providers">providers</a></td>
+    <td>manage pluggable protocols</td>
+  </tr>
+  <tr> 
+    <td height="20"> 
+      <p><a href="#unregister-mbean">register-mbean<br>
+        </a><a href="#unregister-mbean">unregister-mbean</a></p>
+    </td>
+    <td height="20">register or unregister MBean(s)</td>
+  </tr>
+  <tr> 
+    <td><a href="#set">set</a></td>
+    <td>set one or more attributes on the specified target(s)</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#setenv">setenv</a></td>
+    <td>sets a jmxcmd variable</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#source">source</a></td>
+    <td>read commands file a file</td>
+  </tr>
+  <tr> 
+    <td><a href="#target">target</a></td>
+    <td>displays or sets the target MBean(s)</td>
+  </tr>
+  <tr> 
+    <td><a href="#validate-mbeans">validate-mbeans</a></td>
+    <td>performs various checks on the specified MBeans</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td height="24"><a href="./jcmd-commands.html#version">version</a></td>
+    <td height="24">displays the version of the cli</td>
+  </tr>
+</table>
+<p>&nbsp;</p><h2>2. Commands detail</h2>
+<h3>2.1 get --display one or more attributes on the specified target(s)<a name="get"></a></h3>
+<p><font face="Courier New, Courier, mono" size="-1">get [--verbose|-v] <i>attr</i>[,<i>attr</i>]* 
+  [<i>target</i>]+</font></p>
+<p>The 'get' command displays MBean attributes for all specified target(s). If 
+  no targets are specified, then the default target it used, as last set by the 
+  'target' command. Attributes should be specified in a comma-separated list. 
+  In addition, the following special targets are supported:</p>
+<table width="62%" border="1">
+  <tr> 
+    <td width="11%"><b>Target</b></td>
+    <td width="89%"><b>Meaning</b></td>
+  </tr>
+  <tr> 
+    <td width="11%">*</td>
+    <td width="89%">All attributes</td>
+  </tr>
+  <tr> 
+    <td width="11%">*r</td>
+    <td width="89%">all read-only attributes</td>
+  </tr>
+  <tr> 
+    <td width="11%">*w</td>
+    <td width="89%">all writeable attributes</td>
+  </tr>
+</table>
+<p>The get command is robust in the face of failures; failures in getting some 
+  Attributes of an MBean will not prevent the other Attributes from being accessed. 
+  Situations that can cause this include non-serializable Attributes or Attributes 
+  for cannot be deserialized due to the absence of client-side classes for them. 
+</p>
+<h5>Examples</h5>
+<p>1. Get all attributes on all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; get * *</font></p>
+<p>Note that if you invoke jmxcmd from within a command shell, then you will 
+  need to quote the &quot;*&quot;.</p>
+<p>2. Get the 'Count' and 'Timeout' attributes on the MBean(s) referred to by 
+  the alias 'MyMBean':</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; get Count,Timeout 
+  MyMBean</font><br>
+</p>
+<h4>&nbsp;</h4>
+<h3>2.2 set --set one or more attributes on the specified target(s)<a name="set"></a></h3>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; set <i>attr</i>=<i>value</i>[,<i>attr</i>=<i>value</i>]* 
+  [<i>target</i>]+</font></p>
+<p>The 'set' command sets the specified MBean attributes for all specified target(s). 
+  If no targets are specified, then the default target it used, as last set by 
+  the 'target' command. Attributes should be specified as a series of name-value 
+  pairs in a comma-separated list. In addition, the following special targets 
+  are supported:</p>
+<h5>Examples</h5>
+<p>1. Set the 'Count' and 'Timeout' attributes on the MBean(s) referred to by 
+  the alias 'MyMBean':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; set Timeout=10,Count=20 
+  MyMBean</font></p>
+<p>Note that the comma-separated list of name-value pairs must not include white 
+  space before or after the ','.</p>
+<h4>&nbsp;</h4>
+<h3>2.3 find --display MBeans matching name, pattern, or alias<a name="find"></a></h3>
+<p><font size="-1" face="Courier New, Courier, mono">find [--terse] [--wild-prop|-w=&lt;<i>expr</i>=<i>expr</i>&gt; 
+  | --jregex-prop|-j=&lt;<i>expr</i>=<i>expr</i>&gt;] [--current|-c ] [--add|-a] 
+  [--remove|-r] [<i>target</i>]*</font></p>
+<p><font size="-1" face="Courier New, Courier, mono">find --current|-c [--terse] 
+  </font></p>
+<p>Finds mbeans within the set of MBeans denoted by the target(s). Each operand 
+  to the find command may be a fully qualified ObjectName, an ObjectName pattern, 
+  or an alias. The set of these operands and ultimately what they resolve to defines 
+  the starting set upon which any further selection is done. Certain special characters 
+  may be used with the targets:</p>
+<ul>
+  <li>the '!' character may be used to reverse the set that the target selects.</li>
+  <li>with more than one operand, the '+', '-' and '&amp;' characters modify the 
+    set of targets so far, from left to right. The '-' operator substracts the 
+    target from the set so far, the '+' operator adds to it (same as no qualifier), 
+    and the '&amp;' character performs a logical and of the target and the set 
+    so far.</li>
+</ul>
+<p>The MBeans found will be displayed unless the --terse option is used, in which 
+  case only a total count will be given.</p>
+<p>The 'find' command automatically maintains the alias &quot;last-found&quot; 
+  with the results of its last invocation.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--terse | -t</td>
+    <td width="80%">display a count only of the MBeans found</td>
+  </tr>
+  <tr> 
+    <td width="20%">--current | -c</td>
+    <td width="80%">display the results of the last find (current set). This will 
+      be the same as the contents of the alias &quot;last-found&quot;.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--add | -a</td>
+    <td width="80%">add the results of this invocation to the current set</td>
+  </tr>
+  <tr> 
+    <td width="20%">--remove | -r</td>
+    <td width="80%">remove the results of this invocation from the current set</td>
+  </tr>
+  <tr> 
+    <td width="20%">--wild-prop | -w</td>
+    <td width="80%">utilize a wildcard expression for MBean Property name(s) or 
+      value(s). The only allowed wildcard is the '*' character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--jregex-prop | -j</td>
+    <td width="80%">utilize a regular expression for MBean Property name(s) or 
+      value(s) based on java.util.regex patterns</td>
+  </tr>
+  <tr> 
+    <td width="20%">--operations | -o</td>
+    <td width="80%">comma-separated list of (possibly wildcarded) expression(s) 
+      for operation names</td>
+  </tr>
+  <tr>
+    <td width="20%">--attributes | -a</td>
+    <td width="80%">comma-separated list of (possibly wildcarded) expression(s) 
+      for Attribute names</td>
+  </tr>
+</table>
+<p>When specifying --attributes or --operations, MBeans that match any of the 
+  operations or attributes are selected (logical OR). The same holds true for 
+  --regex and --jave-regex.</p>
+<h5>Examples</h5>
+<p>1. Display all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; find</font></p>
+<p>2. Display all MBean in the default domain:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; find :* </font></p>
+<p>3. Display all MBeans whose ObjectName contains the property 'type' with value 
+  'test'</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find type=test</font></p>
+<p>4. Displays all MBeans whose ObjectName contains a property whose name starts 
+  with 'n' and whose value starts with 'test'</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --wild-prop=n*=test* 
+  *:*</font></p>
+<p>5. Displays all MBeans not denoted by the alias &quot;MyMBeans&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find !MyMBeans</font></p>
+<p>6. Displays all MBeans which have the property-pair &quot;category=config&quot; 
+  and that are also in the domain &quot;Test&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find category=config 
+  &amp;Test:*</font></p>
+<p>7. Displays all MBeans that have an operation containing the string &quot;Test&quot;, 
+  &quot;test&quot;, or &quot;TEST&quot; or an attribute containing &quot;Count&quot; 
+  or &quot;count&quot; in the default domain that don't have an ObjectName property 
+  &quot;category=config&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --operations=*Test*,*test*,*TEST* 
+  --attributes=*count*,*Count* :* -category=config</font></p>
+<p>9. Inspects all MBeans last found with the find command</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect last-found</font></p>
+<h4>&nbsp;</h4>
+<h3>2.4 inspect --display MBeanInfo (attributes, operations, constructors, notifications)<a name="inspect"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">inspect [--all|-A] [--no-description|-d] 
+  [--attributes|-a=<i>attr</i>[,<i>attr</i>]*] [--operations|-o=<i>op</i>[,<i>op</i>]* 
+  ] [--constructors|-c] [--notifications|-n=<i>notif</i>[,<i>notif</i>]*] [--include--nomatch|-i] 
+  [<i>target</i>]*</font></p>
+<p>One or more targets may be specified. If no targets are specified, then the 
+  default target is used. All matching MBeans will be displayed with their fully-qualified 
+  names.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--all | -A</td>
+    <td width="80%">display all available information</td>
+  </tr>
+  <tr> 
+    <td width="20%">--no-description | -d</td>
+    <td width="80%">omit descriptions (avoids clutter if there are none)</td>
+  </tr>
+  <tr> 
+    <td width="20%">--attributes | -a</td>
+    <td width="80%">display the specified attributes (* = all attributes). A comma-separated 
+      list of attribute names may be used, and each of them may be wildcarded 
+      using the &quot;*&quot; character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--operations | -o</td>
+    <td width="80%">display the specified operations (* = all operations). A comma-separated 
+      list of operation names may be used, and each of them may be wildcarded 
+      using the &quot;*&quot; character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--constructors | -c</td>
+    <td width="80%">display all available constructors</td>
+  </tr>
+  <tr> 
+    <td width="20%">--notifications | -n</td>
+    <td width="80%">display the specified notifications (* = all notifications)</td>
+  </tr>
+  <tr>
+    <td width="20%">--include-nomatch | -i</td>
+    <td width="80%">include all MBeans specified by the targets, even if no attributes, 
+      operations, constructors or notifications are found that match the request. 
+      A summary only of those MBeans will be displayed.</td>
+  </tr>
+</table>
+<h5>&nbsp;</h5>
+<h5>Examples</h5>
+<p>1. Display all information on all MBean(s) referred to by the alias 'MyMBean':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; inspect --all 
+  MyMBeans</font></p>
+<p>2. Display all attributes available on all MBeans:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect --attrs 
+  * all</font></p>
+<p>2. Display attributes containing &quot;count&quot; or &quot;Count&quot; on 
+  all MBeans</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect --attrs 
+  *count*,*Count* *</font></p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+<h3>2.5 invoke --invoke an MBean operation<a name="invoke"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*] 
+  [<i>target</i>[ <i>target</i>]*]<br>
+  <i>alias-name.opname</i>:[<i>arg</i>[,<i>arg</i>]*]<br>
+  </font><font face="Courier New, Courier, mono" size="-1"><br>
+  <i>opname</i>([<i>arg</i>[,<i>arg</i>]*) [<i>target</i>[ <i>target</i>]*]<br>
+  <i>alias-name.opname</i>([<i>arg</i>[,<i>arg</i>]*)</font></p>
+<p>In this syntax, '<i>opname</i>' is an operation name, <i>alias-name</i> is 
+  an alias as created by the <a href="#target-aliases">create-target-alias</a> 
+  command, '<i>arg</i>' is an argument value or a named-argument (name/value pair) 
+  and '<i>target</i>' is either an alias or ObjectName. An invocation uses wither 
+  Ordered Invocation, in which the order of the parameters is explicit according 
+  to the order they are listed, or Named Invocation, in which parameter order 
+  is determined by the MBeanParamerInfo using the parameter names. Note that Named 
+  invocation is not available if an MBean does not supply parameter names. You 
+  can use the <a href="#inspect">inspect</a> command to see if parameters have 
+  names.</p>
+<p>Named invocation also works for operations taking a Properties object; excess 
+  parameters are supplied to the operation in the Properties object.<br>
+  All forms of invocation use the MBeanInfo to determine the correct match for 
+  an operation.</p>
+<p>For an operation to be available for invocation, it must restrict its use of 
+  data types to the following:</p>
+<ul>
+  <li>char, byte, short, int, long, float, double</li>
+  <li>Character, Byte, Short, Integer, Long, Float, Double, Number, BigNumber</li>
+  <li>String</li>
+  <li>Object</li>
+  <li>Properties</li>
+  <li>[] all arrays of the above types</li>
+</ul>
+<p><br>
+  Type-casts may be used, but are rarely needed. Use a type cast to force a number 
+  to a String or int to Integer, etc. Arrays are denoted using curly braces, and 
+  may be nested. Examples of arrays:<br>
+</p>
+<p> <font size="-1" face="Courier New, Courier, mono">{1,2,3}<br>
+  {hello,there}<br>
+  {hello,1,there,2}<br>
+  {{1,2},{3,4}}</font></p>
+<p>If a type-cast is applied to an array, then all elements of that array must 
+  be compatible with it. The following type-cast <br>
+  forces the value to be converted to an array of String (which would match 'String 
+  []' in an operation):</p>
+<p><font face="Courier New, Courier, mono" size="-1">(String){1,2,3}</font></p>
+<p><br>
+  Strings may be quoted with the double-quote character '&quot;'. This is not 
+  required, but can be useful to force a value's type <br>
+  to be a String where it could otherwise be interpreted as a number.</p>
+<p>Target(s) of the invocation may be specified in three ways:</p>
+<ul>
+  <li>implicitly by omission (the default target will be used as set by the <a href="#target">target</a> 
+    command);</li>
+  <li>explicitly as operands ;</li>
+  <li>explicitly as an alias name preceeding the invoked operation.</li>
+</ul>
+<p>The operation may be specified using two syntactical forms:</p>
+<ul>
+  <li>the ':' form</li>
+  <li>the method invocation form ()</li>
+</ul>
+<p>All forms are equivalent in function. </p>
+<p>This table lists all variants:</p>
+<table width="89%" border="1">
+  <tr> 
+    <td width="3%">#</td>
+    <td width="38%"><b>Variant</b></td>
+    <td width="59%"><b>Comments</b></td>
+  </tr>
+  <tr> 
+    <td width="3%">1</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*] 
+      [<i>target</i>]+</font></td>
+    <td width="59%">invokes on one or more specified targets, which may be aliases 
+      or ObjectNames</td>
+  </tr>
+  <tr> 
+    <td width="3%">2</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*]</font></td>
+    <td width="59%">invokes on the default target(s) as set by the <a href="#target">target</a> 
+      command.</td>
+  </tr>
+  <tr> 
+    <td width="3%">3</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>([<i>arg</i>[,<i>arg</i>]*]) 
+      [<i>target</i>]+</font></td>
+    <td width="59%">same as variant 1, but with () instead of ':'</td>
+  </tr>
+  <tr> 
+    <td width="3%">4</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname(arg</i>[,<i>arg</i>]*])</font></td>
+    <td width="59%">same as variant 2, but with () instead of ':'</td>
+  </tr>
+  <tr> 
+    <td width="3%">5</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>alias-name.</i><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*]</font></td>
+    <td width="59%">invokes on the target(s) defined by the alias '<i>alias-name</i>'.</td>
+  </tr>
+  <tr>
+    <td width="3%">6</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>alias-name.opname([arg</i>[,<i>arg</i>]*])</font></td>
+    <td width="59%">Same as variant 5, but with () instead of ':'</td>
+  </tr>
+</table>
+<p><br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Invoke the start() operation an an object named &quot;<font face="Courier New, Courier, mono" size="-1">mydomain:name=controller</font>&quot;:</p>
+<p> <font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; start() mydomain:name=controller<br>
+  <br>
+  jmxcmd&gt; start: mydomain:name=controller </font></p>
+<p>2. Invoke the add( int x, int y) operation on an mbean with the alias 'math'<font face="Courier New, Courier, mono" size="-1"><br>
+  <br>
+  jmxcmd&gt; add:3,4 math<br>
+  <br>
+  jmxcmd&gt; math.add(3,4)</font></p>
+<p>&nbsp;</p>
+<h3>2.6 register-mbean--create and register an MBean<a name="register-mbean"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">register-mbean --class|-c=&lt;<i>classame</i>&gt; 
+  [--args=<i>arg</i>[,<i>arg</i>]*] &lt;<i>object-name</i>&gt;</font></p>
+<p>Create an MBean of the specified class with optional constructor arguments, 
+  giving it the ObjectName &lt;<i>name</i>&gt;. The MBean is created in the MBeanServer 
+  corresponding to the current connection.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--class | -c</td>
+    <td width="80%">the classname for the class to instantiate</td>
+  </tr>
+  <tr>
+    <td width="20%">--args | -a </td>
+    <td width="80%">optional arguments to be used to instantiate the instance. 
+      The format is the same as with the <a href="#invoke">invoke</a> command.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Do...</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create --class=com.myco.mystuff.MyMBean 
+  --args=1 test:name=test,type=type</font></p>
+<p>&nbsp;</p>
+<h3>2.7 unregister-mbean--unregister an MBean<a name="unregister-mbean"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">unregister-mbean &lt;object-name&gt;</font></p>
+<p>Unregister the MBean with the specified name. The MBean is removed from the 
+  MBeanServer corresponding to the current connection.</p>
+<h5>Examples</h5>
+<p>1. Do...</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; delete test:name=test,type=type</font></p>
+<p>&nbsp;</p>
+<h3>2.8 count--count MBeans<a name="count"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">count</font></p>
+<p>Counts MBeans within the current server.</p>
+<h5>Examples</h5>
+<p>1. Count them:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; count</font></p>
+<p>&nbsp;</p>
+<h3>2.9 domains--display domains in the MBeanServer<a name="domains"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">domains</font></p>
+<p>Display all available JMX domains within the current MBeanServer</p>
+<h5>Examples</h5>
+<p>1. Display them:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; domains</font></p>
+<h3>2.10 target--set the default MBeans upon which to operate<a name="target"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">target [[target]+]<br>
+  clear-target </font></p>
+<p>With no arguments, displays the current target(s) (&quot;target&quot;). Otherwise, 
+  the targets are taken as specified. The &quot;clear-target&quot; command removes 
+  the default target from the environment and as an alias.</p>
+<h5>Examples</h5>
+<p>1. Display the current default target:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target</font></p>
+<h5></h5>
+<p>1. Set the default target to the alias 'MyMBeans':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target MyMBeans</font></p>
+<p>&nbsp;</p>
+<h3>2.11 providers--add new protocol providers<a name="providers"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">add-provider <i>classname</i><br>
+  remove-provider <i>classname</i><br>
+  show-providers</font></p>
+<p>Providers are used to provide interoperability with MBeanServers and/or with 
+  JSR 160 Connectors.</p>
+<h5>Examples</h5>
+<p>1. Add a new provider:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; add-provider 
+  com.sun.enterprise.jmx.providers.SunOneHttpProvider</font></p>
+<p>&nbsp;</p>
+<h3>2.12 connect--manage connections to MBeanServers<a name="connect"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">connect [--host|-h <i>host-or-ip</i>] 
+  [--port|-p <i>port-number</i>]<br>
+  [--user|-u <i>username</i>] [--password-file|-f <i>path</i>] [--prompt|-P] <br>
+  [--truststore-file|-t <i>path</i>] [--protocol|-r <i>protocol-id</i>] [--options|-o 
+  <i>name</i>=<i>value</i>[,<i>name</i>=<i>value</i>]*] [<i>connection-name</i>]<br>
+  </font><font size="-1" face="Courier New, Courier, mono"><br>
+  list-connections<br>
+  close-connection [<i>connection-name</i>]</font></p>
+<p>There are several variants here, described in the following table:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">connect</font></td>
+    <td width="68%">Connect to the default server. The default server is the one 
+      last accessed.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">connect 
+      <i>connection-name</i></font></td>
+    <td width="68%">Connect to a server, using the parameters with the name <i>connection-name</i>. 
+      The <i>connection-name</i> must have been previously created.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">connect 
+      [&lt;<i>options</i>&gt;]</font></td>
+    <td width="68%">Make a new connection using the specified parameters and name 
+      it. </td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">list-connections 
+      </font></td>
+    <td width="68%">Same as &quot;connect -l&quot; above.</td>
+  </tr>
+  <tr> 
+    <td width="32%">close-connection [<i>connection-name</i>]</td>
+    <td width="68%">Close the named connection, or close the default one if no 
+      name is supplied</td>
+  </tr>
+</table>
+<p>When jmxcmd makes a connection to an MBeanServer, it relies on pluggable modules 
+  implementing the JMXConnectorProvider interface (<font size="-1" face="Courier New, Courier, mono">com.sun.cli.jmxcmd.spi.JMXConnectorProvider</font>). 
+  Each connector has its own parameters, which may be a subset, superset, or alternative 
+  set to the ones shown in the above syntax. However, for user convenience when 
+  working with more than one connector, certain options are made available as 
+  common names. These include host, port, user, and password-file. The protocol 
+  option is always used to specify the protocol, but defaults to jmxmp, the TCP/IP 
+  based JSR 160 protocol for accessing remote MBeanServers.</p>
+<p>The following options apply to the connect command:</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="30%"><b>Option</b></td>
+    <td width="70%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--user|-u 
+      <i>username</i></font></td>
+    <td width="70%">The username to authenticate with.</td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--password-file|-f 
+      <i>path</i></font></td>
+    <td width="70%">The password file containing username/password pairs.</td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">[--prompt|-P]</font></td>
+    <td width="70%">Prompts for passwords as needed. No prompting will occur if 
+      <code>--password-file</code> is used and the password is found.</td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--host|-h 
+      <i>host-or-ip</i></font></td>
+    <td width="70%">The hostname or IP addresss to pass to the Provider used in 
+      connecting to the server.</td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--port|-p 
+      <i>port-number</i></font></td>
+    <td width="70%">The port number to pass to the Provider used in connecting 
+      to the server.</td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--truststore-file|-t 
+      <i>path</i></font></td>
+    <td width="70%">
+      <p>The file containing trusted certificates. Because this file usually itself 
+        has a password, you can specify that password as the special user <font face="Courier New, Courier, mono" size="-1">TRUSTSTORE_PASSWORD</font> 
+        within the password file. Alternately, you may be prompted for it if the 
+        --prompt option is used.</p>
+      <p>This option is used for TLS connections (if the Provider supports them). 
+        You may use the Java keytool program to create a truststore file.</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--protocol|-r 
+      <i>protocol-id</i></font></td>
+    <td width="70%">The <font size="-1" face="Courier New, Courier, mono"><i>protocol-id</i></font> 
+      selects the particular Provider that will be used to establish the connection.</td>
+  </tr>
+  <tr>
+    <td width="30%"><font size="-1" face="Courier New, Courier, mono">--options|-o 
+      <i>name</i>=<i>value</i>[,<i>name</i>=<i>value</i>]*</font></td>
+    <td width="70%">An arbitrarily long list of options to pass to the protocol 
+      Provider. The names and values of these options are protocol-specific. See 
+      the documentation for the Provider for details.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>Notes:</p>
+<ul>
+  <li>if --host is not specified, then localhost is used.</li>
+  <li>if --protocol is not specified, the jmxmp is used.</li>
+  <li>if user and password-file are not specified, no user and password are supplied 
+    to the JMXConnectorProvider</li>
+  <li>additional options as name/value pairs may be specified and will be passed 
+    to the JMX connector as additional configuration data. <br>
+  </li>
+</ul>
+<p>If specified, the --user option is used to lookup a password in the password 
+  file. The file specified by --password-file option should be of the following 
+  format:</p>
+<p><font size="-1" face="Courier New, Courier, mono">user1=password1<br>
+  user2=password2</font><br>
+  <br>
+</p>
+<h5>Examples</h5>
+<p>1. Connect to a server using jmxmp at port 9377 with no username/password and 
+  give it the name 'test':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect --host=myhost 
+  --port=9377 --protocol=jmxmp test</font></p>
+<p>2. Connect to a server using &quot;funny&quot; protocol and having several 
+  additional options:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect --host=myhost 
+  --port=9377 --protocol=funny --user=admin --password-file=test.pf --options=fastmode=true,secure=true,timeout=120 
+  test</font></p>
+<h3>&nbsp;</h3>
+<h3>2.13 listen--listen for JMX Notifications<a name="listen"></a></h3>
+<p><font face="Courier New, Courier, mono" size="-1">define-listener --name|-n 
+  <i>name</i> [--file|-f=<i>filename</i>] [--stdout|-t] [<i>target</i>[ <i>target</i>]*]<br>
+  delete-listener <i>name</i><br>
+  start-listener <i>name</i><br>
+  stop-listener<i> name</i><br>
+  list-listeners</font></p>
+<p>The listen command listens for notifications emitted by MBeans. This command 
+  is to be preferred over the <a href="#monitor">monitor</a> command when it is 
+  known that an MBean uses notifications. Information about an MBean's notifications 
+  can be obtained by using the <a href="#inspect">inspect</a> command.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--name|-n</td>
+    <td width="80%">Name of the listener eg &quot;listener1&quot;</td>
+  </tr>
+  <tr> 
+    <td width="20%">--file | -f <i>filename</i></td>
+    <td width="80%">Emits all notifications to the specified file.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--stdout</td>
+    <td width="80%">Emits all notifications to stdout. If --file is not specified, 
+      this need not be specified. However, if --file is specified, then this option 
+      can force dual output to both a file and to stdout.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Start listening to notifications on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-listener 
+  --name listener1 MyMBeans<br>
+  jmxcmd&gt; start-listening listener1</font></p>
+<p>&nbsp;</p>
+<h3>2.14 monitor--watch MBean attributes for changes<a name="monitor"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">define-monitor --name|-n 
+  <i>name</i> [--attributes|-a=<i>attr-expr</i>[,<i>attr-</i><i>expr</i>]*]</font> 
+  <font size="-1" face="Courier New, Courier, mono">[--interval|-i <i>seconds</i>] 
+  [--file|-f=<i>filename</i>] [--stdout|-t] <i>target</i>[ <i>target</i>]*<br>
+  start-monitor <i>name</i><br>
+  stop-monitor <i>name</i><br>
+  list-monitors </font></p>
+<p>The monitor command polls for changes to MBean Attributes This command can 
+  be used on any MBean, but is the only option for monitoring MBeans that do not 
+  support notifications. If an MBean supports notifications, the <a href="#listen">listen</a> 
+  command is more efficient.</p>
+<p>If no attributes are specified, then all attributes are monitored. Attributes 
+  may be specified that apply to only some of the target MBeans; only Attributes 
+  that actually exist are monitored for a particular MBean. The Attribute list 
+  is evaluated once only; if an MBean acquires new Attributes while it is being 
+  monitoring, they will not be included.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr>
+    <td width="20%" height="98">--name | -n <i>name</i></td>
+    <td width="80%" height="98">Required option for specifying the name of the 
+      monitor being defined eg &quot;monitor1&quot;.</td>
+  </tr>
+  <tr> 
+    <td width="20%" height="98">--attributes | -a</td>
+    <td width="80%" height="98"> 
+      <p>A comma-separated list of Attribute names to be monitored. The following 
+        special values are available:</p>
+      <ul>
+        <li>* = all Attributes</li>
+        <li>*r = all read-only Attributes</li>
+        <li>*w = all writeable Attributes</li>
+        <li>a &quot;*&quot; is interpreted as a wildcard character in any other 
+          situation </li>
+      </ul>
+      <p>Note that use of &quot;*&quot; may require quoting from within a command-line 
+        shell (but not within jmxcmd shell).</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="20%">--file | -f <i>filename</i></td>
+    <td width="80%">Emits all notifications to the specified file.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--stdout</td>
+    <td width="80%">Emits all notifications to stdout. If --file is not specified, 
+      this need not be specified. However, if --file is specified, then this option 
+      can force dual output to both a file and to stdout.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--interval | -i</td>
+    <td width="80%">The interval, in seconds between polling of the MBeans.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Start monitoring all Attributes on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-monitor 
+  --name m1 --attributes=* MyMBeans<br>
+  jmxcmd&gt; start-monitor m1</font></p>
+<p>2. Start monitoring all read-only Attributes on MBeans denoted by the alias 
+  MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-monitor 
+  --name m2 --attributes=*r MyMBeans<br>
+  jmxcmd&gt; start-monitor m2</font></p>
+<p>3. Start monitoring all writeable Attributes on MBeans denoted by the alias 
+  MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-monitor 
+  --name m3 --attributes=*w MyMBeans<br>
+  jmxcmd&gt; start-monitor m3</font></p>
+<p>4. Start monitoring the Attribute &quot;RequestCount&quot; and &quot;PoolSize&quot; 
+  on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-monitor 
+  --name m4 -a=RequestCount,PoolSize MyMBeans<br>
+  jmxcmd&gt; start-monitor m4</font></p>
+<p>5. Start monitoring all Attributes containing &quot;Count&quot; on MBeans denoted 
+  by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; define-monitor 
+  --name m5 -a=*Count* MyMBeans<br>
+  jmxcmd&gt; start-monitor m5</font></p>
+<h3>&nbsp;</h3>
+<h3>2.15 create-target-alias/delete-target-alias/list-target-aliases--manage persistent 
+  names for MBean(s)<a name="target-aliases"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">create-target-alias [--replace|-R] 
+  [--resolve] <i>name</i>=<i>value</i>[ <i>name</i>=<i>value</i>]*<br>
+  delete-target-alias <i>alias-name</i>[ <i>alias-name</i>]*<br>
+  show-target-alias <i>alias-name</i><br>
+  resolve-target-alias <i>alias-name</i> </font></p>
+<p> A target alias is a name for one or more values, each of which may be an ObjectName, 
+  and ObjectName pattern, or another target-alias. While no special interpretation 
+  is given to the value supplied when creating an alias, an alias must ultimately 
+  resolve to an ObjectName or ObjectName pattern. Aliases may contain other aliases 
+  in any combination with ObjectNames. </p>
+<p>Once created, an alias may be used anywhere an ObjectName may be used. Aliases 
+  are persisted in the file system, typically in the user's home directory.</p>
+<h5>Options for create-target-alias:</h5>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--replace | -k</td>
+    <td width="80%">Replaces an existing alias. If not specified, it is an error 
+      to try to create an alias name that already exists.</td>
+  </tr>
+  <tr>
+    <td width="20%">--resolve | -r</td>
+    <td width="80%">Interpret the value part of the alias immediately, resolving 
+      to fully-qualified ObjectNames. The resulting ObjectName(s) become the value(s) 
+      of the alias and are the same as what would be returned from resolve-alias.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Create an alias named &quot;test&quot; with value &quot;<font size="-1" face="Courier New, Courier, mono">:type=test,name=TestStandard</font>&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-target-alias 
+  test=:type=test,name=TestStandard</font></p>
+<h5></h5>
+<p>2. Create an alias named &quot;system&quot; with value &quot;system:*&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-target-alias 
+  system=system:*</font></p>
+<p>3. Create an alias named &quot;all-test&quot; with value &quot;*:type=test&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-target-alias 
+  all-test=*:type=test </font></p>
+<p>4. Delete the alias &quot;MyMBeans&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; delete-target-alias 
+  MyMBeans</font></p>
+<p>5. Show the value of the alias MyMBeans, but without resolving the value to 
+  ObjectNames. </p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; show-target-alias 
+  MyMBeans</font></p>
+<p>6. Show the ObjectNames to which the alias ultimately resolves. </p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; resolve-target-alias 
+  MyMBeans</font></p>
+<h3>&nbsp;</h3>
+<h3>2.17 resolve-alias--display ObjectNames to which an alias resolves<a name="resolve-alias"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono"><br>
+  </font></p>
+<p>There are two variants to this command:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">show-alias 
+      <i>alias-name</i></font></td>
+    <td width="68%">Show the uninterpreted value of an alias, as set by the user</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">resolve-alias 
+      <i>alias-name</i> </font></td>
+    <td width="68%">Like show-alias, but also completely evaluates the alias and 
+      displays all ObjectNames to which the alias ultimately refers.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Show the value of the alias &quot;MyMBeans&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; show-alias 
+  MyMBeans </font></p>
+<h5></h5>
+<p>1. Show all ObjectNames to which &quot;MyMBeans&quot; refers:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; resolve-alias 
+  MyMBeans </font></p>
+<p>&nbsp;</p>
+<h3>2.18 list-aliases--list aliases and their values<a name="list-aliases"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">list-aliases</font></p>
+<p>List all aliases and their corresponding values.</p>
+<h5>Examples</h5>
+<p>1. List all aliases</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; list-aliases</font></p>
+<p>&nbsp;</p>
+<h3>2.19 mbs--manage in-process MBeanServers<a name="#mbs"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">start-mbs [--init|i=<i>init-classname</i>[,<i>init-classname</i>]*] 
+  [--mbeans|m=<i>mbean-classname[,mbean-classname]*]</i> <i>server-name</i><br>
+  stop-mbs <i>server-name</i><br>
+  list-mbs</font><font face="Courier New, Courier, mono" size="-1"><br>
+  <br>
+  load-jmxmp-connector [--port|-p <i>port</i>] [--keystore-file|-k <i>path</i>] 
+  [--acl-file|-a <i>path</i>] [--auth-file|-u <i>path</i>] [--password-file|-f 
+  <i>path</i>] [--prompt|-P] [object-name] <br>
+  <br>
+  load-rmi-connector [--rmi-registry-port|-R <i>port</i>]</font><font face="Courier New, Courier, mono" size="-1"></font><font face="Courier New, Courier, mono" size="-1"><br>
+  <br>
+  load-html-adapter [--port|-p <i>port</i>]</font><font face="Courier New, Courier, mono" size="-1"></font><font face="Courier New, Courier, mono" size="-1"><br>
+  </font></p>
+<p>There are several variants here, described in the following table:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="27%"><b>Name</b></td>
+    <td width="73%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="27%" height="2"><font size="-1" face="Courier New, Courier, mono">start-mbs</font></td>
+    <td width="73%" height="2"> 
+      <p>Start an MBeanServer, optionally running an MBeanServerIniter and/or 
+        loading MBeans</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">stop-mbs</font></td>
+    <td width="73%">Unregister all MBeans in the specified in-process MBeanServer, 
+      and remove it from the list </td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">list-mbs</font></td>
+    <td width="73%">List all in-process MBeanServers.</td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-jmxmp-connector</font></td>
+    <td width="73%">Loads the JSR160 jmxmp connector as an MBean into the current 
+      connection's MBeanServer and starts it. This operation requires that the 
+      current connection be to an in-process MBeanServer if security is to be 
+      used </td>
+  </tr>
+  <tr>
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-rmi-connector</font></td>
+    <td width="73%">Loads the JSR160 rmi connector as an MBean into the current 
+      connection's MBeanServer and starts it. This operation requires that the 
+      current connection be to an in-process MBeanServer.</td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-html-adapter</font></td>
+    <td width="73%">
+      <p>Loads the JMX RI html adapter as an MBean into the current connection's 
+        MBeanServer and starts it. This operation requires that the current connection 
+        be to an in-process MBeanServer. After loading, a browser may be used 
+        to observe the MBeans using:</p>
+      <p>http://host:port</p>
+    </td>
+  </tr>
+</table>
+<h4>start-mbs</h4>
+<p>The initer(s) (if any) must implement MBeanServerIniter. The MBeans (if any) 
+  must have a no-argument constructor. They will be registered with a default 
+  name of &quot;:server=<i>server-name</i>,classname=<i>classname</i>,id=nnn&quot;, 
+  where <i>server-name</i> is server-name as specified to mbs-start, <i>classname</i> 
+  is the name of the mbean's java class, and <i>id</i> is an arbitrary identitifier. 
+  Of course, the MBean may choose to override this name in preRegister().</p>
+<h5>Examples</h5>
+<p>1. Create an MBeanServer named &quot;MyServer&quot; and then connect to it:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbs MyServer<br>
+  jmxcmd&gt; connect MyServer</font> <font size="-1" face="Courier New, Courier, mono"> 
+  </font></p>
+<p>2. Same as (1), but run an initer and load 2 mbeans:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbs --init=com.myco.MyIniter 
+  --mbeans=com.myco.mbeans.MyMBean1,com.myco.mbeans.MyMBean2 MyServer</font> </p>
+<h4>load-jmxmp-connector</h4>
+<p>Load the JSR 160 jmxmp Connector. The Connector may be loaded with no security 
+  by omitting all options (--port may still be used). To use without SSL/TLS, 
+  specify the --acl-file only. To use with TLS, you must include additional options.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--port|-p 
+      <i>port</i></font></td>
+    <td width="68%">The port number to use</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--keystore-file|-k 
+      <i>path</i></font></td>
+    <td width="68%">The file path to a Java KeyStore file, which must contain 
+      a key pair.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--acl-file|-a 
+      <i>path</i></font></td>
+    <td width="68%">The file path to an access-control-list file, consisting of 
+      pairs of role names and passwords.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--auth-file|-u 
+      <i>path</i></font></td>
+    <td width="68%">The file path to an authorization file, consisting of role 
+      names and valid operations.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--password-file|-f 
+      <i>path</i></font></td>
+    <td width="68%">The file path to a password file. An entry with the name &quot;keystore-password&quot; 
+      and &quot;key-password&quot; should be present so as to be able to unlock 
+      the keystore and the key within it. Alternately, the --prompt option may 
+      be used.</td>
+  </tr>
+  <tr>
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--prompt|-P</font></td>
+    <td width="68%">Prompt for the keystore and key passwords instead of reading 
+      from a file.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h3>2.20 validate-mbeans--perform various checks on specified MBeans<a name="validate-mbeans"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">validate-mbeans [--verbose|-v] 
+  [target[ target ]*]<br>
+  </font></p>
+<p>Performs several validity checks on the specified MBean(s):</p>
+<ul>
+  <li>verifies that the MBeanInfo has no obvious errors (such as nulls in any 
+    of the Info arrays)</li>
+  <li>verifies that all advertised Attributes can actually be fetched.<br>
+  </li>
+</ul>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">verbose</font></td>
+    <td width="68%">Emit additional information while validating</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Validate all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; validate-mbeans 
+  *</font></p>
+<p>&nbsp;</p>
+<h3>2.21 create-proxies--create local proxy MBeans<a name="create-proxies"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">create-proxies [--new-names|-n] 
+  --mbean-server|-m <i>local-mbeanserver-nametarget</i> [ target]*<br>
+  </font><br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--mbean-server|-m</font></td>
+    <td width="68%">Specify the name of the local MBeanServer which should contain 
+      the new proxy MBeans. You can create an MBeanServer using <a href="#start-mbs">start-mbs</a>.</td>
+  </tr>
+  <tr> 
+    <td width="32%">--new-names | -n</td>
+    <td width="68%">By default MBean proxy creation will fail if an MBean with 
+      the same name already exists in the target (destination) MBeanServer. If 
+      this option is specified, then each proxy ObjectName will contain an additional 
+      key to make it unique. This allows the proxying of MBeans with identical 
+      names from multiple servers (such as Sun's Java System Appserver) into the 
+      same MBeanServer.</td>
+  </tr>
+</table>
+<p>You should first connect to the MBeanServer that contains the MBean(s) for 
+  which you want proxies. Then, if you don't already have an in-process MBeanServer, 
+  you should create one. Finally, issue the create-proxies command. See the example 
+  below. </p>
+<h5>Examples</h5>
+<p>1. Create a local MBeanServer &quot;mbs1&quot; and then create proxies for 
+  all MBeans found in the server &quot;MyServer&quot;.</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect MyServer<br>
+  jmxcmd&gt; start-mbs mbs1<br>
+  jmxcmd&gt; create-proxies --mbean-server mbs1 *</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h1 align="center">jmxcmd Commands</h1>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 08 Dec 2003</font></p>
+<h2>1. Commands overview</h2>
+<p>This table gives a brief overview of the command set. Click on each command 
+  name for details. Additional <a href="optional.html#Commands">optional commands</a> 
+  may also be available. The commands that are shaded are derived from <a href="./jcmd-commands.html#source">JCmd</a>.</p>
+<table width="98%" border="1">
+  <tr> 
+    <td><b>Command</b></td>
+    <td><b>Capabilities/Functions</b></td>
+  </tr>
+  <tr> 
+    <td><a href="#connect">connect</a></td>
+    <td>connect to an MBeanServer</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#configure">configure</a></td>
+    <td>configure the CLI framework</td>
+  </tr>
+  <tr> 
+    <td><a href="#count">count</a></td>
+    <td>count the number of registered MBeans</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p><a href="#create-alias">create-alias<br>
+        </a><a href="#delete-alias">delete-alias</a><br>
+        <a href="#list-aliases">list-aliases</a> <br>
+        <a href="#resolve-alias">resolve-alias</a> </p>
+    </td>
+    <td>Manage aliases</td>
+  </tr>
+  <tr>
+    <td><a href="#create-proxies">create-proxies</a></td>
+    <td>Create local proxies of MBeans</td>
+  </tr>
+  <tr> 
+    <td><a href="#domains">domains</a></td>
+    <td>display the available domains</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#echo">echo</a></td>
+    <td>echo arguments to output</td>
+  </tr>
+  <tr> 
+    <td><a href="#find">find</a></td>
+    <td>display MBeans matching name, pattern, or alias</td>
+  </tr>
+  <tr> 
+    <td><a href="#get">get</a></td>
+    <td>display one or more attributes on the specified target(s)</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="#help">help</a></td>
+    <td>displays help</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#history">history<br>
+      repeat </a></td>
+    <td>show command history and repeat previous commands</td>
+  </tr>
+  <tr> 
+    <td><a href="#inspect">inspect</a></td>
+    <td>display attributes, operations, constructors, etc</td>
+  </tr>
+  <tr> 
+    <td><a href="#invoke">invoke</a></td>
+    <td> invokes an MBean operation</td>
+  </tr>
+  <tr> 
+    <td><a href="#listen">listen</a></td>
+    <td>listen for notifications</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p><a href="#mbs">start-mbs<br>
+        stop-mbs<br>
+        list-mbs<br>
+        load-jmxmp-connector<br>
+        load-rmi-connector </a><a href="#mbs"><br>
+        load-html-adapter</a></p>
+      </td>
+    <td>manage in-process MBeanServers, load connectors and adapters into them</td>
+  </tr>
+  <tr> 
+    <td><a href="#monitor">monitor</a></td>
+    <td>monitor MBeans for changes in their attributes</td>
+  </tr>
+  <tr> 
+    <td><a href="#providers">providers</a></td>
+    <td>manage pluggable protocols</td>
+  </tr>
+  <tr> 
+    <td height="20"> 
+      <p><a href="#unregister-mbean">register-mbean<br>
+        </a><a href="#unregister-mbean">unregister-mbean</a></p>
+    </td>
+    <td height="20">register or unregister MBean(s)</td>
+  </tr>
+  <tr> 
+    <td><a href="#set">set</a></td>
+    <td>set one or more attributes on the specified target(s)</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#setenv">setenv</a></td>
+    <td>sets a jmxcmd variable</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td><a href="./jcmd-commands.html#source">source</a></td>
+    <td>read commands file a file</td>
+  </tr>
+  <tr> 
+    <td><a href="#target">target</a></td>
+    <td>displays or sets the target MBean(s)</td>
+  </tr>
+  <tr> 
+    <td><a href="#validate-mbeans">validate-mbeans</a></td>
+    <td>performs various checks on the specified MBeans</td>
+  </tr>
+  <tr bgcolor="#EEEEEE"> 
+    <td height="24"><a href="./jcmd-commands.html#version">version</a></td>
+    <td height="24">displays the version of the cli</td>
+  </tr>
+</table>
+<p>&nbsp;</p><h2>2. Commands detail</h2>
+<h3>2.1 get --display one or more attributes on the specified target(s)<a name="get"></a></h3>
+<p><font face="Courier New, Courier, mono" size="-1">get <i>attr</i>[,<i>attr</i>]* 
+  [<i>target</i>]+</font></p>
+<p>The 'get' command displays MBean attributes for all specified target(s). If 
+  no targets are specified, then the default target it used, as last set by the 
+  'target' command. Attributes should be specified in a comma-separated list. 
+  In addition, the following special targets are supported:</p>
+<table width="62%" border="1">
+  <tr> 
+    <td width="11%"><b>Target</b></td>
+    <td width="89%"><b>Meaning</b></td>
+  </tr>
+  <tr> 
+    <td width="11%">*</td>
+    <td width="89%">All attributes</td>
+  </tr>
+  <tr> 
+    <td width="11%">*r</td>
+    <td width="89%">all read-only attributes</td>
+  </tr>
+  <tr> 
+    <td width="11%">*w</td>
+    <td width="89%">all writeable attributes</td>
+  </tr>
+</table>
+<p>The get command is robust in the face of failures; failures in getting some 
+  Attributes of an MBean will not prevent the other Attributes from being accessed. 
+  Situations that can cause this include non-serializable Attributes or Attributes 
+  for cannot be deserialized due to the absence of client-side classes for them. 
+</p>
+<h5>Examples</h5>
+<p>1. Get all attributes on all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; get * *</font></p>
+<p>Note that if you invoke jmxcmd from within a command shell, then you will 
+  need to quote the &quot;*&quot;.</p>
+<p>2. Get the 'Count' and 'Timeout' attributes on the MBean(s) referred to by 
+  the alias 'MyMBean':</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; get Count,Timeout 
+  MyMBean</font><br>
+</p>
+<h4>&nbsp;</h4>
+<h3>2.2 set --set one or more attributes on the specified target(s)<a name="set"></a></h3>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; set <i>attr</i>=<i>value</i>[,<i>attr</i>=<i>value</i>]* 
+  [<i>target</i>]+</font></p>
+<p>The 'set' command sets the specified MBean attributes for all specified target(s). 
+  If no targets are specified, then the default target it used, as last set by 
+  the 'target' command. Attributes should be specified as a series of name-value 
+  pairs in a comma-separated list. In addition, the following special targets 
+  are supported:</p>
+<h5>Examples</h5>
+<p>1. Set the 'Count' and 'Timeout' attributes on the MBean(s) referred to by 
+  the alias 'MyMBean':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; set Timeout=10,Count=20 
+  MyMBean</font></p>
+<p>Note that the comma-separated list of name-value pairs must not include white 
+  space before or after the ','.</p>
+<h4>&nbsp;</h4>
+<h3>2.3 find --display MBeans matching name, pattern, or alias<a name="find"></a></h3>
+<p><font size="-1" face="Courier New, Courier, mono">find [--terse] [--wild-prop|-w=&lt;<i>expr</i>=<i>expr</i>&gt; 
+  | --jregex-prop|-j=&lt;<i>expr</i>=<i>expr</i>&gt;] [--current|-c ] [--add|-a] 
+  [--remove|-r] [<i>target</i>]*</font></p>
+<p><font size="-1" face="Courier New, Courier, mono">find --current|-c [--terse] 
+  </font></p>
+<p>Finds mbeans within the set of MBeans denoted by the target(s). Each operand 
+  to the find command may be a fully qualified ObjectName, an ObjectName pattern, 
+  or an alias. The set of these operands and ultimately what they resolve to defines 
+  the starting set upon which any further selection is done. Certain special characters 
+  may be used with the targets:</p>
+<ul>
+  <li>the '!' character may be used to reverse the set that the target selects.</li>
+  <li>with more than one operand, the '+', '-' and '&amp;' characters modify the 
+    set of targets so far, from left to right. The '-' operator substracts the 
+    target from the set so far, the '+' operator adds to it (same as no qualifier), 
+    and the '&amp;' character performs a logical and of the target and the set 
+    so far.</li>
+</ul>
+<p>The MBeans found will be displayed unless the --terse option is used, in which 
+  case only a total count will be given.</p>
+<p>The 'find' command automatically maintains the alias &quot;last-found&quot; 
+  with the results of its last invocation.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--terse | -t</td>
+    <td width="80%">display a count only of the MBeans found</td>
+  </tr>
+  <tr> 
+    <td width="20%">--current | -c</td>
+    <td width="80%">display the results of the last find (current set). This will 
+      be the same as the contents of the alias &quot;last-found&quot;.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--add | -a</td>
+    <td width="80%">add the results of this invocation to the current set</td>
+  </tr>
+  <tr> 
+    <td width="20%">--remove | -r</td>
+    <td width="80%">remove the results of this invocation from the current set</td>
+  </tr>
+  <tr> 
+    <td width="20%">--wild-prop | -w</td>
+    <td width="80%">utilize a wildcard expression for MBean Property name(s) or 
+      value(s). The only allowed wildcard is the '*' character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--jregex-prop | -j</td>
+    <td width="80%">utilize a regular expression for MBean Property name(s) or 
+      value(s) based on java.util.regex patterns</td>
+  </tr>
+  <tr> 
+    <td width="20%">--operations | -o</td>
+    <td width="80%">comma-separated list of (possibly wildcarded) expression(s) 
+      for operation names</td>
+  </tr>
+  <tr>
+    <td width="20%">--attributes | -a</td>
+    <td width="80%">comma-separated list of (possibly wildcarded) expression(s) 
+      for Attribute names</td>
+  </tr>
+</table>
+<p>When specifying --attributes or --operations, MBeans that match any of the 
+  operations or attributes are selected (logical OR). The same holds true for 
+  --regex and --jave-regex.</p>
+<h5>Examples</h5>
+<p>1. Display all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; find</font></p>
+<p>2. Display all MBean in the default domain:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; find :* </font></p>
+<p>3. Display all MBeans whose ObjectName contains the property 'type' with value 
+  'test'</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find type=test</font></p>
+<p>4. Displays all MBeans whose ObjectName contains a property whose name starts 
+  with 'n' and whose value starts with 'test'</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --wild-prop=n*=test* 
+  *:*</font></p>
+<p>5. Displays all MBeans not denoted by the alias &quot;MyMBeans&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find !MyMBeans</font></p>
+<p>6. Displays all MBeans which have the property-pair &quot;category=config&quot; 
+  and that are also in the domain &quot;Test&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find category=config 
+  &amp;Test:*</font></p>
+<p>7. Displays all MBeans that have an operation containing the string &quot;Test&quot;, 
+  &quot;test&quot;, or &quot;TEST&quot; or an attribute containing &quot;Count&quot; 
+  or &quot;count&quot; in the default domain that don't have an ObjectName property 
+  &quot;category=config&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --operations=*Test*,*test*,*TEST* 
+  --attributes=*count*,*Count* :* -category=config</font></p>
+<p>9. Inspects all MBeans last found with the find command</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect last-found</font></p>
+<h4>&nbsp;</h4>
+<h3>2.4 inspect --display MBeanInfo (attributes, operations, constructors, notifications)<a name="inspect"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">inspect [--all|-A] [--no-description|-d] 
+  [--attributes|-a=<i>attr</i>[,<i>attr</i>]*] [--operations|-o=<i>op</i>[,<i>op</i>]* 
+  ] [--constructors|-c] [--notifications|-n=<i>notif</i>[,<i>notif</i>]*] [--include--nomatch|-i] 
+  [<i>target</i>]*</font></p>
+<p>One or more targets may be specified. If no targets are specified, then the 
+  default target is used. All matching MBeans will be displayed with their fully-qualified 
+  names.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--all | -A</td>
+    <td width="80%">display all available information</td>
+  </tr>
+  <tr> 
+    <td width="20%">--no-description | -d</td>
+    <td width="80%">omit descriptions (avoids clutter if there are none)</td>
+  </tr>
+  <tr> 
+    <td width="20%">--attributes | -a</td>
+    <td width="80%">display the specified attributes (* = all attributes). A comma-separated 
+      list of attribute names may be used, and each of them may be wildcarded 
+      using the &quot;*&quot; character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--operations | -o</td>
+    <td width="80%">display the specified operations (* = all operations). A comma-separated 
+      list of operation names may be used, and each of them may be wildcarded 
+      using the &quot;*&quot; character.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--constructors | -c</td>
+    <td width="80%">display all available constructors</td>
+  </tr>
+  <tr> 
+    <td width="20%">--notifications | -n</td>
+    <td width="80%">display the specified notifications (* = all notifications)</td>
+  </tr>
+  <tr>
+    <td width="20%">--include-nomatch | -i</td>
+    <td width="80%">include all MBeans specified by the targets, even if no attributes, 
+      operations, constructors or notifications are found that match the request. 
+      A summary only of those MBeans will be displayed.</td>
+  </tr>
+</table>
+<h5>&nbsp;</h5>
+<h5>Examples</h5>
+<p>1. Display all information on all MBean(s) referred to by the alias 'MyMBean':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; inspect --all 
+  MyMBeans</font></p>
+<p>2. Display all attributes available on all MBeans:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect --attrs 
+  * all</font></p>
+<p>2. Display attributes containing &quot;count&quot; or &quot;Count&quot; on 
+  all MBeans</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; inspect --attrs 
+  *count*,*Count* *</font></p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+<h3>2.5 invoke --invoke an MBean operation<a name="invoke"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*] 
+  [<i>target</i>[ <i>target</i>]*]<br>
+  <i>alias-name.opname</i>:[<i>arg</i>[,<i>arg</i>]*]<br>
+  </font><font face="Courier New, Courier, mono" size="-1"><br>
+  <i>opname</i>([<i>arg</i>[,<i>arg</i>]*) [<i>target</i>[ <i>target</i>]*]<br>
+  <i>alias-name.opname</i>([<i>arg</i>[,<i>arg</i>]*)</font></p>
+<p>In this syntax, '<i>opname</i>' is an operation name, <i>alias-name</i> is 
+  an alias as created by the <a href="#create-alias">create-alias</a> command, 
+  '<i>arg</i>' is an argument value or a named-argument (name/value pair) and 
+  '<i>target</i>' is either an alias or ObjectName. An invocation uses wither 
+  Ordered Invocation, in which the order of the parameters is explicit according 
+  to the order they are listed, or Named Invocation, in which parameter order 
+  is determined by the MBeanParamerInfo using the parameter names. Note that Named 
+  invocation is not available if an MBean does not supply parameter names. You 
+  can use the <a href="#inspect">inspect</a> command to see if parameters have 
+  names.</p>
+<p>Named invocation also works for operations taking a Properties object; excess 
+  parameters are supplied to the operation in the Properties object.<br>
+  All forms of invocation use the MBeanInfo to determine the correct match for 
+  an operation.</p>
+<p>For an operation to be available for invocation, it must restrict its use of 
+  data types to the following:</p>
+<ul>
+  <li>char, byte, short, int, long, float, double</li>
+  <li>Character, Byte, Short, Integer, Long, Float, Double, Number, BigNumber</li>
+  <li>String</li>
+  <li>Object</li>
+  <li>Properties</li>
+  <li>[] all arrays of the above types</li>
+</ul>
+<p><br>
+  Type-casts may be used, but are rarely needed. Use a type cast to force a number 
+  to a String or int to Integer, etc. Arrays are denoted using curly braces, and 
+  may be nested. Examples of arrays:<br>
+</p>
+<p> <font size="-1" face="Courier New, Courier, mono">{1,2,3}<br>
+  {hello,there}<br>
+  {hello,1,there,2}<br>
+  {{1,2},{3,4}}</font></p>
+<p>If a type-cast is applied to an array, then all elements of that array must 
+  be compatible with it. The following type-cast <br>
+  forces the value to be converted to an array of String (which would match 'String 
+  []' in an operation):</p>
+<p><font face="Courier New, Courier, mono" size="-1">(String){1,2,3}</font></p>
+<p><br>
+  Strings may be quoted with the double-quote character '&quot;'. This is not 
+  required, but can be useful to force a value's type <br>
+  to be a String where it could otherwise be interpreted as a number.</p>
+<p>Target(s) of the invocation may be specified in three ways:</p>
+<ul>
+  <li>implicitly by omission (the default target will be used as set by the <a href="#target">target</a> 
+    command);</li>
+  <li>explicitly as operands ;</li>
+  <li>explicitly as an alias name preceeding the invoked operation.</li>
+</ul>
+<p>The operation may be specified using two syntactical forms:</p>
+<ul>
+  <li>the ':' form</li>
+  <li>the method invocation form ()</li>
+</ul>
+<p>All forms are equivalent in function. </p>
+<p>This table lists all variants:</p>
+<table width="89%" border="1">
+  <tr> 
+    <td width="3%">#</td>
+    <td width="38%"><b>Variant</b></td>
+    <td width="59%"><b>Comments</b></td>
+  </tr>
+  <tr> 
+    <td width="3%">1</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*] 
+      [<i>target</i>]+</font></td>
+    <td width="59%">invokes on one or more specified targets, which may be aliases 
+      or ObjectNames</td>
+  </tr>
+  <tr> 
+    <td width="3%">2</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*]</font></td>
+    <td width="59%">invokes on the default target(s) as set by the <a href="#target">target</a> 
+      command.</td>
+  </tr>
+  <tr> 
+    <td width="3%">3</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname</i>([<i>arg</i>[,<i>arg</i>]*]) 
+      [<i>target</i>]+</font></td>
+    <td width="59%">same as variant 1, but with () instead of ':'</td>
+  </tr>
+  <tr> 
+    <td width="3%">4</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>opname(arg</i>[,<i>arg</i>]*])</font></td>
+    <td width="59%">same as variant 2, but with () instead of ':'</td>
+  </tr>
+  <tr> 
+    <td width="3%">5</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>alias-name.</i><i>opname</i>:[<i>arg</i>[,<i>arg</i>]*]</font></td>
+    <td width="59%">invokes on the target(s) defined by the alias '<i>alias-name</i>'.</td>
+  </tr>
+  <tr>
+    <td width="3%">6</td>
+    <td width="38%"><font face="Courier New, Courier, mono" size="-1"><i>alias-name.opname([arg</i>[,<i>arg</i>]*])</font></td>
+    <td width="59%">Same as variant 5, but with () instead of ':'</td>
+  </tr>
+</table>
+<p><br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Invoke the start() operation an an object named &quot;<font face="Courier New, Courier, mono" size="-1">mydomain:name=controller</font>&quot;:</p>
+<p> <font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; start() mydomain:name=controller<br>
+  <br>
+  jmxcmd&gt; start: mydomain:name=controller </font></p>
+<p>2. Invoke the add( int x, int y) operation on an mbean with the alias 'math'<font face="Courier New, Courier, mono" size="-1"><br>
+  <br>
+  jmxcmd&gt; add:3,4 math<br>
+  <br>
+  jmxcmd&gt; math.add(3,4)</font></p>
+<p>&nbsp;</p>
+<h3>2.6 register-mbean--create and register an MBean<a name="register-mbean"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">register-mbean --class|-c=&lt;<i>classame</i>&gt; 
+  [--args=<i>arg</i>[,<i>arg</i>]*] &lt;<i>object-name</i>&gt;</font></p>
+<p>Create an MBean of the specified class with optional constructor arguments, 
+  giving it the ObjectName &lt;<i>name</i>&gt;. The MBean is created in the MBeanServer 
+  corresponding to the current connection.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--class | -c</td>
+    <td width="80%">the classname for the class to instantiate</td>
+  </tr>
+  <tr>
+    <td width="20%">--args | -a </td>
+    <td width="80%">optional arguments to be used to instantiate the instance. 
+      The format is the same as with the <a href="#invoke">invoke</a> command.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Do...</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create --class=com.myco.mystuff.MyMBean 
+  --args=1 test:name=test,type=type</font></p>
+<p>&nbsp;</p>
+<h3>2.7 unregister-mbean--unregister an MBean<a name="unregister-mbean"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">unregister-mbean &lt;object-name&gt;</font></p>
+<p>Unregister the MBean with the specified name. The MBean is removed from the 
+  MBeanServer corresponding to the current connection.</p>
+<h5>Examples</h5>
+<p>1. Do...</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; delete test:name=test,type=type</font></p>
+<p>&nbsp;</p>
+<h3>2.8 count--count MBeans<a name="count"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">count</font></p>
+<p>Counts MBeans within the current server.</p>
+<h5>Examples</h5>
+<p>1. Count them:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; count</font></p>
+<p>&nbsp;</p>
+<h3>2.9 domains--display domains in the MBeanServer<a name="domains"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">domains</font></p>
+<p>Display all available JMX domains within the current MBeanServer</p>
+<h5>Examples</h5>
+<p>1. Display them:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; domains</font></p>
+<h3>2.10 target--set the default MBeans upon which to operate<a name="target"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">target [[target]+]<br>
+  clear-target </font></p>
+<p>With no arguments, displays the current target(s) (&quot;target&quot;). Otherwise, 
+  the targets are taken as specified. The &quot;clear-target&quot; command removes 
+  the default target from the environment and as an alias.</p>
+<h5>Examples</h5>
+<p>1. Display the current default target:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target</font></p>
+<h5></h5>
+<p>1. Set the default target to the alias 'MyMBeans':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target MyMBeans</font></p>
+<p>&nbsp;</p>
+<h3>2.11 providers--add new protocol providers<a name="providers"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">add-provider <i>classname</i><br>
+  remove-provider <i>classname</i><br>
+  show-providers</font></p>
+<p>The configure </p>
+<h5>Examples</h5>
+<p>1. Add a new provider:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; add-provider 
+  com.sun.enterprise.jmx.providers.SunOneHttpProvider</font></p>
+<p>&nbsp;</p>
+<h3>2.12 connect--manage connections to MBeanServers<a name="connect"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">connect [--host|-h <i>host</i>] 
+  [--port|-p <i>port</i>] [--protocol|-r <i>prot</i>] [--user|-u <i>username</i> 
+  --password-file|-f <i>filename</i>] [--options|-o <i>key</i>=<i>value</i>[,<i>key</i>=<i>value</i>]*] 
+  [<i>connection-name</i>]<br>
+  connect<br>
+  connect <i>connection-name</i><br>
+  connect --list|-l</font><font size="-1" face="Courier New, Courier, mono"><br>
+  list-connections<br>
+  close-connection [<i>connection-name</i>]</font></p>
+<p>There are several variants here, described in the following table:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">connect</font></td>
+    <td width="68%">Connect to the default server. The default server is the one 
+      last accessed.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">connect 
+      <i>connection-name</i></font></td>
+    <td width="68%">Connect to a server, using the parameters with the name <i>connection-name</i>. 
+      The <i>connection-name</i> must have been previously created.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">connect 
+      [&lt;<i>options</i>&gt;]</font></td>
+    <td width="68%">Make a new connection using the specified parameters and optionally 
+      name it. </td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">connect 
+      --list | -l<br>
+      </font></td>
+    <td width="68%">List all connections configurations and open connections.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">list-connections 
+      </font></td>
+    <td width="68%">Same as &quot;connect -l&quot; above.</td>
+  </tr>
+  <tr>
+    <td width="32%">close-connection [<i>connection-name</i>]</td>
+    <td width="68%">Close the named connection, or close the default one if no 
+      name is supplied</td>
+  </tr>
+</table>
+<p>When jmxcmd makes a connection to an MBeanServer, it relies on pluggable 
+  modules implementing the JMXConnectorProvider interface (<font size="-1" face="Courier New, Courier, mono">com.sun.cli.jmxcmd.spi.JMXConnectorProvider</font>). 
+  Each connector has its own parameters, which may be a subset, superset, or alternative 
+  set to the ones shown in the above syntax. However, for user convenience when 
+  working with more than one connector, certain options are made available as 
+  common names. These include host, port, user, and password-file. The protocol 
+  option is always used to specify the protocol, but defaults to jmxmp, the TCP/IP 
+  based JSR 160 protocol for accessing remote MBeanServers.</p>
+<p>Notes:</p>
+<ul>
+  <li>if --host is not specified, then localhost is used.</li>
+  <li>if --protocol is not specified, the jmxmp is used.</li>
+  <li>if user and password-file are not specified, no user and password are supplied 
+    to the JMXConnectorProvider</li>
+  <li>additional options as name/value pairs may be specified and will be passed 
+    to the JMX connector as additional configuration data. <br>
+  </li>
+</ul>
+<p>If specified, the --user option is used to lookup a password in the password 
+  file. The file specified by --password-file option should be of the following 
+  format:</p>
+<p><font size="-1" face="Courier New, Courier, mono">user1=password1<br>
+  user2=password2</font><br>
+  <br>
+</p>
+<h5>Examples</h5>
+<p>1. Connect to a server using jmxmp at port 9377 with no username/password and 
+  give it the name 'test':</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect --host=myhost 
+  --port=9377 --protocol=jmxmp test</font></p>
+<p>2. Connect to a server using &quot;funny&quot; protocol and having several 
+  additional options:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect --host=myhost 
+  --port=9377 --protocol=funny --user=admin --password-file=test.pf --options=fastmode=true,secure=true,timeout=120 
+  test</font></p>
+<h3>&nbsp;</h3>
+<h3>2.13 listen--listen for JMX Notifications<a name="listen"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">listen [ --stop|-s | --pause|-p 
+  ] [--file|-f=filename] [--stdout|-t] target [[target]+]</font></p>
+<p>The listen command listens for notifications emitted by MBeans. This command 
+  is to be preferred over the <a href="#monitor">monitor</a> command when it is 
+  known that an MBean uses notifications. Information about an MBean's notifications 
+  can be obtained by using the <a href="#inspect">inspect</a> command.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%">--stop | -s</td>
+    <td width="80%">Stops listening to the specified target(s). </td>
+  </tr>
+  <tr> 
+    <td width="20%">--pause | -p</td>
+    <td width="80%">Pauses all listening for all targets.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--file | -f <i>filename</i></td>
+    <td width="80%">Emits all notifications to the specified file.</td>
+  </tr>
+  <tr>
+    <td width="20%">--stdout</td>
+    <td width="80%">Emits all notifications to stdout. If --file is not specified, 
+      this need not be specified. However, if --file is specified, then this option 
+      can force dual output to both a file and to stdout.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Start listening to notifications on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; listen --start 
+  MyMBeans</font></p>
+<p>&nbsp;</p>
+<h3>2.14 monitor--watch MBean attributes for changes<a name="monitor"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">monitor [ --stop|-s | --pause|-p 
+  ] [--attributes=attr-name[,attr-name]*] [--file|-f=filename] [--stdout|-t] [--status|-u] 
+  target [[target]+]</font></p>
+<p>The monitor command polls for changes to MBean Attributes This command can 
+  be used on any MBean, but is the only option for monitoring MBeans that do not 
+  support notifications. If an MBean supports notifications, the <a href="#listen">listen</a> 
+  command is more efficient.</p>
+<p>If no attributes are specified, then all attributes are monitored. Attributes 
+  may be specified that apply to only some of the target MBeans; only Attributes 
+  that actually exist are monitored for a particular MBean. The Attribute list 
+  is evaluated once only; if an MBean acquires new Attributes they will not be 
+  included.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="20%" height="98">--attributes | -a</td>
+    <td width="80%" height="98"> 
+      <p>A comma-separated list of Attribute names to be monitored. The following 
+        special values are available:</p>
+      <ul>
+        <li>* = all Attributes</li>
+        <li>*r = all read-only Attributes</li>
+        <li>*w = all writeable Attributes</li>
+      </ul>
+      <p>Note that use of &quot;*&quot; may require quoting from within a command-line 
+        shell (but not within jmxcmd shell).</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="20%">--file | -f <i>filename</i></td>
+    <td width="80%">Emits all notifications to the specified file.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--stdout</td>
+    <td width="80%">Emits all notifications to stdout. If --file is not specified, 
+      this need not be specified. However, if --file is specified, then this option 
+      can force dual output to both a file and to stdout.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--status | -s</td>
+    <td width="80%">Show what is being monitored. This option may only be used 
+      by itself.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--poll-interval | -i</td>
+    <td width="80%">The interval, in seconds between polling of the MBeans.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--stop | -s</td>
+    <td width="80%">Stops monitoring everything.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--pause | -p</td>
+    <td width="80%">Pauses monitoring for everything.</td>
+  </tr>
+  <tr> 
+    <td width="20%">--resume | -r</td>
+    <td width="80%">Resumes monitoring for everything.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Start monitoring all Attributes on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; monitor --attributes=* 
+  MyMBeans</font></p>
+<p>2. Start monitoring all read-only Attributes on MBeans denoted by the alias 
+  MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; monitor --attributes=*r 
+  MyMBeans</font></p>
+<p>3. Start monitoring all writeable Attributes on MBeans denoted by the alias 
+  MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; monitor -a=*w 
+  MyMBeans</font></p>
+<p>4. Start monitoring the Attribute &quot;RequestCount&quot; and &quot;PoolSize&quot; 
+  on MBeans denoted by the alias MyMBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; monitor -a=RequestCount,PoolSize 
+  MyMBeans</font></p>
+<h3>&nbsp;</h3>
+<h3>2.15 create-alias--create a persistent name for an alias, MBean name or pattern<a name="create-alias"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">create-alias [--replace|-R] 
+  <i>name</i>=<i>value</i>[ <i>name</i>=<i>value</i>]*</font></p>
+<p> Creates aliases--one for each name/value pair. No interpretation is given 
+  to the value supplied when creating an alias. However, an alias must ultimately 
+  resolve to an ObjectName or ObjectName pattern. Aliases may contain other aliases 
+  in any combination with ObjectNames. The only restriction is that the space 
+  character is reserved as a delimiter. Therefore, ObjectNames containing spaces 
+  may not be aliased.</p>
+<p>Once created, an alias may be used anywhere an ObjectName may be used. Aliases 
+  are persisted in the file system, typically in the user's home directory.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="20%"><b>Option</b></td>
+    <td width="80%"><b>Explanation</b></td>
+  </tr>
+  <tr>
+    <td width="20%">--replace | -R</td>
+    <td width="80%">Replaces an existing alias. If not specified, it is an error 
+      to try to use an alias name that already exists.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Create an alias named &quot;test&quot; with value &quot;<font size="-1" face="Courier New, Courier, mono">:type=test,name=TestStandard</font>&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-alias 
+  test=:type=test,name=TestStandard</font></p>
+<h5></h5>
+<p>2. Create an alias named &quot;system&quot; with value &quot;system:*&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-alias 
+  system=system:*</font></p>
+<h5></h5>
+<p>2. Create an alias named &quot;all-test&quot; with value &quot;*:type=test&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; create-alias 
+  all-test=*:type=test </font></p>
+<h3>&nbsp;</h3>
+<h3>2.16 delete-alias--delete an alias<a name="delete-alias"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">delete-alias <i>alias-name</i>[ 
+  <i>alias-name</i>]* </font></p>
+<p>Permanently remove an alias name from the list of aliases.</p>
+<h5>Examples</h5>
+<p>1. Delete the alias &quot;MyMBeans&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; delete-alias 
+  MyMBeans</font></p>
+<h3>&nbsp;</h3>
+<h3>2.17 resolve-alias--display ObjectNames to which an alias resolves<a name="resolve-alias"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">show-alias <i>alias-name</i><br>
+  resolve-alias <i>alias-name</i><br>
+  </font></p>
+<p>There are two variants to this command:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">show-alias 
+      <i>alias-name</i></font></td>
+    <td width="68%">Show the uninterpreted value of an alias, as set by the user</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">resolve-alias 
+      <i>alias-name</i> </font></td>
+    <td width="68%">Like show-alias, but also completely evaluates the alias and 
+      displays all ObjectNames to which the alias ultimately refers.</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Show the value of the alias &quot;MyMBeans&quot;</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; show-alias 
+  MyMBeans </font></p>
+<h5></h5>
+<p>1. Show all ObjectNames to which &quot;MyMBeans&quot; refers:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; resolve-alias 
+  MyMBeans </font></p>
+<p>&nbsp;</p>
+<h3>2.18 list-aliases--list aliases and their values<a name="list-aliases"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">list-aliases</font></p>
+<p>List all aliases and their corresponding values.</p>
+<h5>Examples</h5>
+<p>1. List all aliases</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; list-aliases</font></p>
+<p>&nbsp;</p>
+<h3>2.19 mbs--manage in-process MBeanServers<a name="#mbs"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">start-mbs [--init|i=<i>init-classname</i>[,<i>init-classname</i>]*] 
+  [--mbeans|m=<i>mbean-classname[,mbean-classname]*]</i> <i>server-name</i><br>
+  stop-mbs <i>server-name</i><br>
+  list-mbs<br>
+  load-jmxmp-connector [--port|-p <i>port</i>]</font><font face="Courier New, Courier, mono" size="-1"><br>
+  load-rmi-connector [--rmi-registry-port|-R <i>port</i>]</font><font face="Courier New, Courier, mono" size="-1"></font><font face="Courier New, Courier, mono" size="-1"><br>
+  load-html-adapter [--port|-p <i>port</i>]</font><font face="Courier New, Courier, mono" size="-1"></font><font face="Courier New, Courier, mono" size="-1"><br>
+  </font></p>
+<p>There are several variants here, described in the following table:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="27%"><b>Name</b></td>
+    <td width="73%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="27%" height="2"><font size="-1" face="Courier New, Courier, mono">start-mbs</font></td>
+    <td width="73%" height="2"> 
+      <p>Start an MBeanServer, optionally running an MBeanServerIniter and/or 
+        loading MBeans</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">stop-mbs</font></td>
+    <td width="73%">Unregister all MBeans in the specified in-process MBeanServer, 
+      and remove it from the list </td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">list-mbs</font></td>
+    <td width="73%">List all in-process MBeanServers.</td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-jmxmp-connector</font></td>
+    <td width="73%">Loads the JSR160 jmxmp connector as an MBean into the current 
+      connection's MBeanServer and starts it. This operation will work locally 
+      or remotely.</td>
+  </tr>
+  <tr>
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-rmi-connector</font></td>
+    <td width="73%">Loads the JSR160 rmi connector as an MBean into the current 
+      connection's MBeanServer and starts it. This operation requires that the 
+      current connection be to an in-process MBeanServer.</td>
+  </tr>
+  <tr> 
+    <td width="27%"><font face="Courier New, Courier, mono" size="-1">load-html-adapter</font></td>
+    <td width="73%"> 
+      <p>Loads the JMX RI html adapter as an MBean into the current connection's 
+        MBeanServer and starts it. This operation will work locally or remotely. 
+        After loading, a browser may be used to observe the MBeans using the URL: 
+        <font size="-1"> <font face="Courier New, Courier, mono"> http://host:port</font></font> 
+      </p>
+      <p>&nbsp;</p>
+    </td>
+  </tr>
+</table>
+<h4>start-mbs</h4>
+<p>The initer(s) (if any) must implement MBeanServerIniter. The MBeans (if any) 
+  must have a no-argument constructor. They will be registered with a default 
+  name of &quot;:server=<i>server-name</i>,classname=<i>classname</i>,id=nnn&quot;, 
+  where <i>server-name</i> is server-name as specified to mbs-start, <i>classname</i> 
+  is the name of the mbean's java class, and <i>id</i> is an arbitrary identitifier. 
+  Of course, the MBean may choose to override this name in preRegister().</p>
+<h5>Examples</h5>
+<p>1. Create an MBeanServer named &quot;MyServer&quot; and then connect to it:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbs MyServer<br>
+  jmxcmd&gt; connect MyServer</font> <font size="-1" face="Courier New, Courier, mono"> 
+  </font></p>
+<p>2. Same as (1), but run an initer and load 2 mbeans:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbs --init=com.myco.MyIniter 
+  --mbeans=com.myco.mbeans.MyMBean1,com.myco.mbeans.MyMBean2 MyServer</font> </p>
+<p>&nbsp;</p>
+<h3>2.20 validate-mbeans--perform various checks on specified MBeans<a name="validate-mbeans"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">validate-mbeans [--verbose|-v] 
+  [target[ target ]*]<br>
+  </font></p>
+<p>Performs several validity checks on the specified MBean(s):</p>
+<ul>
+  <li>verifies that the MBeanInfo has no obvious errors (such as nulls in any 
+    of the Info arrays)</li>
+  <li>verifies that all advertised Attributes can actually be fetched.<br>
+  </li>
+</ul>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">verbose</font></td>
+    <td width="68%">Emit additional information while validating</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Validate all MBeans:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; validate-mbeans 
+  *</font></p>
+<p>&nbsp;</p>
+<h3>2.21 create-proxies--create local proxy MBeans<a name="create-proxies"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">create-proxies [--new-names|-n] 
+  --mbean-server|-m <i>local-mbeanserver-nametarget</i> [ target]*<br>
+  </font><br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">--mbean-server|-m</font></td>
+    <td width="68%">Specify the name of the local MBeanServer which should contain 
+      the new proxy MBeans. You can create an MBeanServer using <a href="#start-mbs">start-mbs</a>.</td>
+  </tr>
+  <tr> 
+    <td width="32%">--new-names | -n</td>
+    <td width="68%">By default MBean proxy creation will fail if an MBean with 
+      the same name already exists in the target (destination) MBeanServer. If 
+      this option is specified, then each proxy ObjectName will contain an additional 
+      key to make it unique. This allows the proxying of MBeans with identical 
+      names from multiple servers (such as Sun's Java System Appserver) into the 
+      same MBeanServer.</td>
+  </tr>
+</table>
+<p>You should first connect to the MBeanServer that contains the MBean(s) for 
+  which you want proxies. Then, if you don't already have an in-process MBeanServer, 
+  you should create one. Finally, issue the create-proxies command. See the example 
+  below. </p>
+<h5>Examples</h5>
+<p>1. Create a local MBeanServer &quot;mbs1&quot; and then create proxies for 
+  all MBeans found in the server &quot;MyServer&quot;.</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; connect MyServer<br>
+  jmxcmd&gt; start-mbs mbs1<br>
+  jmxcmd&gt; create-proxies --mbean-server mbs1 *</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

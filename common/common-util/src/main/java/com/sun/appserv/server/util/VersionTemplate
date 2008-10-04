@@ -1,0 +1,139 @@
+package com.sun.appserv.server.util;
+
+import org.glassfish.api.branding.Branding;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PostConstruct;
+
+/**
+*
+* This class provides static methods to make accessable the version 
+* as well as the individual parts that make up the version
+*
+*/
+@Service
+@Scoped(Singleton.class)
+public class Version implements PostConstruct {
+
+    /**
+     * Name of the properties used to override build time values.
+     */
+    private static final String PRODUCT_NAME = "product.name";
+    private static final String ABBREV_PRODUCT_NAME = "abbrev.product.name";
+    private static final String FULL_VERSION = "full.version";
+    private static final String MAJOR_VERSION = "major.version";
+    private static final String MINOR_VERSION = "minor.version";
+    private static final String BUILD_ID = "build.id";
+
+    /**
+     * version strings populated during build
+     */
+    private static final String product_name          = "@PRODUCT_NAME@";
+    private static final String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
+    private static final String full_version          = "@FULL_VERSION@";
+    private static final String major_version         = "@MAJOR_VERSION@";
+    private static final String minor_version         = "@MINOR_VERSION@"; 
+    private static final String build_id              = "@BUILD_ID@";
+
+    /**
+     * Check if Branding implementation exists and set the value for
+     * Branding interface variable
+     */
+    private static Branding br = null;
+
+    @Inject
+    private static Habitat mHabitat;
+
+    public void postConstruct() {
+        if (br == null) {
+            if (mHabitat != null) {
+                br = mHabitat.getByContract(Branding.class);
+            }
+        }
+    }
+
+    /**
+    * Returns version
+    */ 
+    public static String getVersion() {
+        if (br != null) {
+            return br.getVersion();
+        }
+        return product_name + " " + full_version;
+    }
+
+    /**
+    * Returns full version including build id
+    */
+    public static String getFullVersion() {
+        if (br != null) {
+            return br.getFullVersion();
+        }
+        return (getVersion() + " (build " + build_id + ")");
+    }
+
+    /**
+    * Returns abbreviated version.
+    */
+    public static String getAbbreviatedVersion() {
+        if (br != null) {
+            return br.getAbbreviatedVersion();
+        }
+        return abbrev_product_name + major_version +
+               "." + minor_version;
+    }
+
+    /**
+    * Returns Major version
+    */ 
+    public static String getMajorVersion() {
+        if (br != null) {
+            return br.getMajorVersion();
+        }
+    	return major_version;
+    }
+
+    /**
+    * Returns Minor version
+    */ 
+    public static String getMinorVersion() {
+        if (br != null) {
+            return br.getMinorVersion();
+        }
+    	return minor_version;
+    }
+
+    /**
+    * Returns Build version
+    */ 
+    public static String getBuildVersion() {
+        if (br != null) {
+            return br.getBuildVersion();
+        }
+    	return build_id;
+    }
+
+    /**
+    * Returns Proper Product Name
+    */
+    public static String getProductName() {
+        if (br != null) {
+            return br.getProductName();
+        }
+    	return product_name;
+    }
+
+    /**
+    * Returns Abbreviated Product Name
+    */
+    public static String getAbbrevProductName() {
+        if (br != null) {
+            return br.getAbbrevProductName();
+        }
+    	return abbrev_product_name;
+    }
+
+}

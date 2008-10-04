@@ -1,0 +1,4 @@
+-exportcontents: \
+                        com.sun.enterprise.connectors.work,\
+                        com.sun.enterprise.connectors.work.monitor
+

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="web">
+        <integration-point 
+                id="web" 
+                type="org.glassfish.admingui:treeNode" 
+                priority="300" 
+                parentId="configuration" 
+                content="configuration/webContainerNode.jsf" 
+        />
+        <integration-point 
+                id="web" 
+                type="org.glassfish.admingui:treeNode" 
+                priority="100" 
+                parentId="applications" 
+                content="webApp/webAppNode.jsf" 
+        />
+        <integration-point 
+                id="monitor" 
+                type="org.glassfish.admingui:treeNode" 
+                priority="350"
+                parentId="configuration" 
+                content="monitor/monitoringNode.jsf"/>
+                
+        <!-- Add a link under the Applications Page for showing all the web Applications. -->
+        <integration-point 
+                id="webAppLink" 
+                type="org.glassfish.admingui:applications" 
+                priority="100"
+                content="webApp/webAppLink.jsf"/>
+                
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point 
+                id="webConfigurationLink" 
+                type="org.glassfish.admingui:configuration" 
+                priority="100"
+                parentId="propSheetSection"
+                content="configuration/configurationLink.jsf"/>
+                
+        <!-- Add a Common Task under the 'Deployment' Task group -->
+        <integration-point 
+                id="webAppDeployment" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="100"
+                parentId="deployment"
+                content="webApp/webAppDeploymentTask.jsf"/>
+                
+        <!-- Add view monitoring data under the 'Monitoring' Task group -->
+        <integration-point 
+                id="webViewMonitor" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="100"
+                parentId="monitoring"
+                content="monitor/webViewMonitoringDataTask.jsf"/>
+                
+        <!-- Adding Tabs to the Server Instance General page -->        
+        <integration-point
+                id="monitoring" 
+                type="org.glassfish.admingui:serverInstTab" 
+                priority="20" 
+                parentId="serverInstTabs" 
+                content="monitor/monitoringTab.jsf" />
+        <integration-point
+                id="monitor_web" 
+                type="org.glassfish.admingui:serverInstTab" 
+                priority="20" 
+                parentId="monitoring" 
+                content="monitor/webContainerTab.jsf" />
+       <integration-point
+                id="monitor_http" 
+                type="org.glassfish.admingui:serverInstTab" 
+                priority="30" 
+                parentId="monitoring" 
+                content="monitor/httpServiceTab.jsf" />
+       <integration-point
+                id="monitor_jvm" 
+                type="org.glassfish.admingui:serverInstTab" 
+                priority="40" 
+                parentId="monitoring" 
+                content="monitor/jvmTab.jsf" />
+</console-config>

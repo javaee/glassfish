@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+ANT_LIB=$AS_INSTALL_LIB/ant.jar
+SERVLET_API=$AS_INSTALL_LIB/servlet-api.jar
+JSP_API=$AS_INSTALL_LIB/jsp-api.jar
+JSP_IMPL=$AS_INSTALL_LIB/jsp-impl.jar
+EL_IMPL=$AS_INSTALL_LIB/el-impl.jar
+JSTL_API=$AS_INSTALL_LIB/jstl-api.jar
+JSTL_IMPL=$AS_INSTALL_LIB/jstl-impl.jar
+JSF_API=$AS_INSTALL_LIB/jsf-api.jar
+JSF_IMPL=$AS_INSTALL_LIB/jsf-impl.jar
+
+java -cp "$SERVLET_API:$JSP_API:$JSTL_API:$JSF_API:$ANT_LIB:$EL_IMPL:$JSP_IMPL" org.apache.jasper.JspC -classpath "$JSTL_IMPL:$JSF_IMPL" "$@"
+

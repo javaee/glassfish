@@ -1,0 +1,6 @@
+*.ipr
+nbproject
+.classpath
+*.iws
+.project
+*.iml

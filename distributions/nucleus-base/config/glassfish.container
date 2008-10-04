@@ -1,0 +1,4 @@
+containers=jruby, web, php
+jruby.application=app/controllers/application.rb
+web.application=WEB-INF/web.xml
+php.urlpattern=.*php$

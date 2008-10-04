@@ -1,0 +1,2 @@
+-exportcontents: com.sun.appserv.connectors.internal.api, \
+                 com.sun.appserv.connectors.internal.spi

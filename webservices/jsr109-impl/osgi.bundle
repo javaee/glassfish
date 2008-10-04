@@ -1,0 +1,9 @@
+-exportcontents: \
+                        org.glassfish.webservices, \
+                        org.glassfish.webservices.monitoring
+Import-Package: \
+                       com.sun.enterprise.deployment.*, \
+                       com.sun.enterprise.deployment.annotation.*, \
+                       javax.ejb;resolution:=optional, \
+                       * 
+

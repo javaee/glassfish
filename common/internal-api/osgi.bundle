@@ -1,0 +1,4 @@
+-exportcontents: \
+                        org.glassfish.internal.api, \
+                        org.glassfish.internal.data, \
+                        org.glassfish.internal.deployment

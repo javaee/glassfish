@@ -1,0 +1,5 @@
+name: 		 jmx-remote.
+description: To Initialize/Configure/Test JSR-160 Connectors.
+			 Our Http Implementation of JSR 160's client
+			 side is here. The unit test classes also reside here.
+

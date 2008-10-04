@@ -1,0 +1,3 @@
+-exportcontents: \
+                        org.glassfish.web.admin.cli, \
+                        org.glassfish.web.admin.monitor
