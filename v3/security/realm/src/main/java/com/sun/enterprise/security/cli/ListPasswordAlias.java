@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,24 +63,24 @@ import com.sun.enterprise.security.store.PasswordAdapter;
 import java.beans.PropertyVetoException;
 
 /**
- * Create Password Alias Command
+ * List Password Aliases Command
  *
- * Usage: create-password-alias [--terse=false] [--echo=false] 
- *        [--interactive=true] [--host localhost] [--port 4848|4849] 
- *        [--secure | -s] [--user admin_user] [--passwordfile file_name] aliasname
- *  
+ * Usage: list-password-aliases [--terse=false] [--echo=false]
+ *        [--interactive=true] [--host localhost] [--port 4848|4849]
+ *        [--secure | -s] [--user admin_user] [--passwordfile file_name]
+ *
  * Result of the command is that:
- * <domain-dir>/<domain-name>/config/domain-passwords file gets appended with 
+ * <domain-dir>/<domain-name>/config/domain-passwords file gets appended with
  * the entry of the form: aliasname=<password encrypted with masterpassword>
  *
- * A user can use this aliased password now in setting passwords in domin.xml. 
+ * A user can use this aliased password now in setting passwords in domin.xml.
  * Benefit is it is in NON-CLEAR-TEXT
  *
  * domain.xml example entry is:
- * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" 
+ * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule"
  *                  provider-id="XWS_ClientProvider" provider-type="client">
  *      <property name="password" value="${ALIAS=myalias}/>
- * </provider-config> 
+ * </provider-config>
  *
  * @author Nandini Ektare
  */
@@ -89,9 +89,9 @@ import java.beans.PropertyVetoException;
 @Scoped(PerLookup.class)
 @I18n("list.password.alias")
 public class ListPasswordAlias implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(ListPasswordAlias.class);    
+
+    final private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(ListPasswordAlias.class);
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -101,25 +101,25 @@ public class ListPasswordAlias implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+
         try {
             String mp = System.getProperty(
                         SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY);
-            if (mp == null) 
+            if (mp == null)
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-            
-            // TODO : remove the hardcoded masterpassword when the issue of 
+
+            // TODO : remove the hardcoded masterpassword when the issue of
             // fetching the correct values of above system property is resolved
-            if (mp == null) 
-                mp = "changeit";            
-            
+            if (mp == null)
+                mp = "changeit";
+
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
             Enumeration e = pa.getAliases();
             while (e.hasMoreElements()) {
-                ActionReport.MessagePart part = 
+                ActionReport.MessagePart part =
                     report.getTopMessagePart().addChild();
-                part.setMessage((String)e.nextElement());                
+                part.setMessage((String)e.nextElement());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -127,11 +127,11 @@ public class ListPasswordAlias implements AdminCommand {
                "list.password.alias.fail", "Listing of Password Alias failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
-            return;            
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString(
             "list.password.alias.success",
-            "List password aliases executed successfully"));        
-    }       
+            "List password aliases executed successfully"));
+    }
 }

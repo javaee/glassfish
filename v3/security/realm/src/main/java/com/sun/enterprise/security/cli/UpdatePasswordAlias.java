@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,24 +62,22 @@ import com.sun.enterprise.security.store.PasswordAdapter;
 import java.beans.PropertyVetoException;
 
 /**
- * Create Password Alias Command
+ * Update Password Alias Command
  *
- * Usage: update-password-alias [--terse=false] [--echo=false] 
- *        [--interactive=true] [--host localhost] [--port 4848|4849] 
+ * Usage: update-password-alias [--terse=false] [--echo=false]
+ *        [--interactive=true] [--host localhost] [--port 4848|4849]
  *        [--secure | -s] [--user admin_user] [--passwordfile file_name] aliasname
- *  
- * Result of the command is that:
- * <domain-dir>/<domain-name>/config/domain-passwords file gets appended with 
- * the entry of the form: aliasname=<password encrypted with masterpassword>
  *
- * A user can use this aliased password now in setting passwords in domin.xml. 
- * Benefit is it is in NON-CLEAR-TEXT
+ * Result of the command is that:
+ * the entry of the form: aliasname=<password-encrypted-with-masterpassword> in
+ * <domain-dir>/<domain-name>/config/domain-passwords file gets updated with the
+ * new alias password
  *
  * domain.xml example entry is:
- * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" 
+ * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule"
  *                  provider-id="XWS_ClientProvider" provider-type="client">
  *      <property name="password" value="${ALIAS=myalias}/>
- * </provider-config> 
+ * </provider-config>
  *
  * @author Nandini Ektare
  */
@@ -88,16 +86,16 @@ import java.beans.PropertyVetoException;
 @Scoped(PerLookup.class)
 @I18n("update.password.alias")
 public class UpdatePasswordAlias implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(CreatePasswordAlias.class);    
+
+    final private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(CreatePasswordAlias.class);
 
     @Param(name="aliasname", primary=true)
     String aliasName;
-    
+
     @Param(name="aliaspassword", password=true)
     String aliasPassword;
-    
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are paramter names and the values the parameter values
@@ -106,44 +104,44 @@ public class UpdatePasswordAlias implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+
         try {
             String mp = System.getProperty(
                         SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY);
-            if (mp == null) 
+            if (mp == null)
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-            
-            // TODO : remove the hardcoded masterpassword when the issue of 
+
+            // TODO : remove the hardcoded masterpassword when the issue of
             // fetching the correct values of above system property is resolved
-            if (mp == null) 
-                mp = "changeit";            
-            
+            if (mp == null)
+                mp = "changeit";
+
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
-            
+
             if (pa.getPasswordForAlias(aliasName) == null) {
                 report.setMessage(localStrings.getLocalString(
-                    "update.password.alias.notfound", 
-                    "Password alias for the alias {0} does not exist.", 
+                    "update.password.alias.notfound",
+                    "Password alias for the alias {0} does not exist.",
                     aliasName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                
+                return;
             }
-                
+
             pa.setPasswordForAlias(aliasName,aliasPassword.getBytes());
         } catch (Exception ex) {
             ex.printStackTrace();
             report.setMessage(localStrings.getLocalString(
-                "update.password.alias.fail", 
+                "update.password.alias.fail",
                 "Update of Password Alias {0} failed", aliasName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
-            return;            
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString(
             "update.password.alias.success",
-            "Encrypted password for the alias {0} updated successfully", 
-            aliasName));        
-    }       
+            "Encrypted password for the alias {0} updated successfully",
+            aliasName));
+    }
 }

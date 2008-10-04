@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,24 +62,21 @@ import com.sun.enterprise.security.store.PasswordAdapter;
 import java.beans.PropertyVetoException;
 
 /**
- * Create Password Alias Command
+ * Delete Password Alias Command
  *
- * Usage: delete-password-alias [--terse=false] [--echo=false] 
- *        [--interactive=true] [--host localhost] [--port 4848|4849] 
+ * Usage: delete-password-alias [--terse=false] [--echo=false]
+ *        [--interactive=true] [--host localhost] [--port 4848|4849]
  *        [--secure | -s] [--user admin_user] [--passwordfile file_name] aliasname
- *  
- * Result of the command is that:
- * <domain-dir>/<domain-name>/config/domain-passwords file gets appended with 
- * the entry of the form: aliasname=<password encrypted with masterpassword>
  *
- * A user can use this aliased password now in setting passwords in domin.xml. 
- * Benefit is it is in NON-CLEAR-TEXT
+ * Result of the command is that:
+ * The entry of the form: aliasname=<password-encrypted-with-masterpassword>
+ * in <domain-dir>/<domain-name>/config/domain-passwords file is removed
  *
  * domain.xml example entry is:
- * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" 
+ * <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule"
  *                  provider-id="XWS_ClientProvider" provider-type="client">
  *      <property name="password" value="${ALIAS=myalias}/>
- * </provider-config> 
+ * </provider-config>
  *
  * @author Nandini Ektare
  */
@@ -88,13 +85,13 @@ import java.beans.PropertyVetoException;
 @Scoped(PerLookup.class)
 @I18n("delete.password.alias")
 public class DeletePasswordAlias implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(DeletePasswordAlias.class);    
+
+    final private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(DeletePasswordAlias.class);
 
     @Param(name="aliasname", primary=true)
     String aliasName;
-    
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are paramter names and the values the parameter values
@@ -103,44 +100,44 @@ public class DeletePasswordAlias implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+
         try {
             String mp = System.getProperty(
                         SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY);
-            if (mp == null) 
+            if (mp == null)
                 mp = System.getProperty(
                         SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-            
-            // TODO : remove the hardcoded masterpassword when the issue of 
+
+            // TODO : remove the hardcoded masterpassword when the issue of
             // fetching the correct values of above system property is resolved
-            if (mp == null) 
-                mp = "changeit";            
-            
+            if (mp == null)
+                mp = "changeit";
+
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
-            
+
             if (pa.getPasswordForAlias(aliasName) == null) {
                 report.setMessage(localStrings.getLocalString(
-                    "delete.password.alias.notfound", 
-                    "Password alias for the alias {0} does not exist.", 
+                    "delete.password.alias.notfound",
+                    "Password alias for the alias {0} does not exist.",
                     aliasName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                
+                return;
             }
-            
+
             pa.removeAlias(aliasName);
         } catch (Exception ex) {
             ex.printStackTrace();
             report.setMessage(localStrings.getLocalString(
-                "delete.password.alias.fail", 
+                "delete.password.alias.fail",
                 "Deletion of Password Alias {0} failed", aliasName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
-            return;            
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString(
             "delete.password.alias.success",
-            "Password alias for the alias {0} deleted successfully", 
-            aliasName));        
-    }       
+            "Password alias for the alias {0} deleted successfully",
+            aliasName));
+    }
 }
