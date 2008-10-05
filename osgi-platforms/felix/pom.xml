@@ -7,7 +7,8 @@
           felix.jar
        bundle/
           org.apache.felix.shell.jar 
-          org.apache.felix.shell.tui.jar 
+	  org.apache.felix.shell.tui.jar 
+          org.apache.felix.shell.remote.jar 
        conf/
           config.properties
           system.properties
@@ -68,6 +69,13 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.tui</artifactId>
+                               <version>1.0.2</version>
+                               <type>jar</type>
+                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                             </artifactItem>
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.shell.remote</artifactId>
                                <version>1.0.2</version>
                                <type>jar</type>
                                <outputDirectory>${felix.outdir}/bundle</outputDirectory>
