@@ -74,17 +74,25 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
+            <!-- HK2 has compile time dependnecy on these two, but
+                 we don't need them as we use stax-osgi which has both.
+                 So, we need to exclude them -->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>woodstox</groupId>
+                    <artifactId>wstx-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-	<dependency>
-           <groupId>woodstox</groupId>
-           <artifactId>wstx-asl</artifactId>
-           <version>3.2.3</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish</groupId>
-           <artifactId>javax.xml.stream</artifactId>
-           <version>${glassfish.version}</version>
-       </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>stax-osgi</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
    </dependencies>
 
     <profiles>

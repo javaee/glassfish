@@ -168,7 +168,11 @@ public class MiniXmlParser {
     }
     private void createParser() throws FileNotFoundException, XMLStreamException {
         domainXmlstream = new FileInputStream(domainXml);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
+        // We pass the classloader that loaded XMLInputFactory otherwise
+        // it does not work when Thread's context class loader is used to locate
+        XMLInputFactory xif = XMLInputFactory.newInstance(
+                XMLInputFactory.class.getName(),
+                XMLInputFactory.class.getClassLoader());
         parser = xif.createXMLStreamReader(domainXml.toURI().toString(), domainXmlstream);
     }
 

@@ -80,6 +80,7 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.stream</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

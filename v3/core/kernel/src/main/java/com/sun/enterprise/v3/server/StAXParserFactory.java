@@ -59,7 +59,12 @@ import javax.xml.stream.XMLInputFactory;
 @Service
 @FactoryFor(XMLInputFactory.class)
 public class StAXParserFactory implements Factory {
-    private final XMLInputFactory xif = XMLInputFactory.newInstance();
+    // We pass the classloader that loaded XMLInputFactory otherwise
+    // it does not work when Thread's context class loader is used to locate
+    private final XMLInputFactory xif = XMLInputFactory.newInstance(
+            XMLInputFactory.class.getName(),
+            XMLInputFactory.class.getClassLoader()
+    );
 
     public XMLInputFactory getObject() throws ComponentException {
         return xif;

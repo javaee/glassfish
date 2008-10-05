@@ -76,7 +76,6 @@ public abstract class ASMainOSGi {
      * <p/>
      */
     private String[] additionalJars = {
-        "javax.xml.stream.jar", "wstx-asl.jar" // needed by config module in HK2
     };
 
 

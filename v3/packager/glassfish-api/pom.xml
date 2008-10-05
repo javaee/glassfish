@@ -125,11 +125,6 @@
             <artifactId>javax.transaction</artifactId>
             <version>${project.version}</version>
 	    </dependency>
-	<dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.stream</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
