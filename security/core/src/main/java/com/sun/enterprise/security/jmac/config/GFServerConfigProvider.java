@@ -87,7 +87,9 @@ import com.sun.enterprise.security.jauth.HttpServletAuthParam;
 import com.sun.enterprise.security.jauth.PendingException;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 
+import com.sun.enterprise.security.jmac.WebServicesDelegate;
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 
 /**
  * This class implements the interface AuthConfigProvider.
@@ -894,6 +896,10 @@ public class GFServerConfigProvider implements AuthConfigProvider {
                     return getOpName((SOAPMessage)messageInfo.getRequestMessage());
                 } 
 		V3: Send Comment SOAP Layer support */
+                WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
+                if (delegate != null) {
+                    return delegate.getAuthContextID(messageInfo);
+                }
 		return null;
             } else {
                 return null;
@@ -1005,6 +1011,10 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 		/*V3: Start Comment SOAP Layer support
 		return new SOAPAuthParam(info);
 		V3: End Comment SOAP Layer support*/
+                WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
+                if (delegate != null) {
+                    return delegate.newSOAPAuthParam(info);
+                }
 	    } 
 	    throw new AuthException("unsupported AuthParam type");
 	}

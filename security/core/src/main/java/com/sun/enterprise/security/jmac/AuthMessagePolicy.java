@@ -57,6 +57,7 @@ import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
+import org.glassfish.internal.api.Globals;
 import static com.sun.enterprise.security.jmac.config.GFServerConfigProvider.SOAP;
 //V3:Commented webservices support
 //import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -103,6 +104,10 @@ public class AuthMessagePolicy {
 	    ServiceReferenceDescriptor s = (ServiceReferenceDescriptor) 
 		properties.get("SERVICE_REF");
 	    if (s != null) {
+                WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
+                if (delegate != null) {
+                    binding = delegate.getBinding(s, properties);
+                }
                 /*V3:Commented
 		WSDLPort p = (WSDLPort) properties.get("WSDL_MODEL");
 		QName portName = null;
