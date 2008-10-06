@@ -266,7 +266,7 @@ public class SecuritySupportImpl implements SecuritySupport {
     }
 
     public void synchronizeKeyFile(Object configContext, String fileRealmName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet in V3.");
+        //throw new UnsupportedOperationException("Not supported yet in V3.");
     }
 
     public CallbackHandler getAppContainerCallbackHandler() {
