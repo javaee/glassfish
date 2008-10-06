@@ -220,7 +220,7 @@ public class CoyoteAdapter
                 (connector.getURIEncoding());
         }
 
-        if (v3Enabled) {
+        if (v3Enabled && !compatWithTomcat) {
             // Grizzly already parsed, decoded, and mapped the request.
             // Let's re-use this info here, before firing the
             // requestStartEvent probe, so that the mapping data will be
@@ -382,11 +382,6 @@ public class CoyoteAdapter
             request.setSecure(connector.getSecure());
         }
 
-        // IF mod_jk is enabled, swicth to the normal mode.
-        if (compatWithTomcat){
-            v3Enabled = false;
-        }
-        
         // FIXME: the code below doesnt belongs to here, 
         // this is only have sense 
         // in Http11, not in ajp13..
@@ -403,7 +398,7 @@ public class CoyoteAdapter
 
         // URI decoding
         MessageBytes decodedURI = req.decodedURI();
-        if (!v3Enabled) {           
+        if (compatWithTomcat || !v3Enabled) {           
             decodedURI.duplicate(req.requestURI());
             try {
               req.getURLDecoder().convert(decodedURI, false);
@@ -470,8 +465,8 @@ public class CoyoteAdapter
             decodedURI.setChars
                 (uriCC.getBuffer(), uriCC.getStart(), semicolon);
         }
-        
-        if (!v3Enabled) {
+ 
+        if (compatWithTomcat || !v3Enabled) {
             /*mod_jk*/
             connector.getMapper().map(req.serverName(), decodedURI, 
                                   request.getMappingData());
