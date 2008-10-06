@@ -67,12 +67,12 @@ public class ServerPipeCreator extends ServerPipelineHook {
 	      (endpoint.getProtocolBinding())) ? true : false); 
     }
     
-  /*  TODO BM fixme
+
   public Pipe createMonitoringPipe(ServerPipeAssemblerContext ctxt, Pipe tail) {
         return new MonitoringPipe(ctxt, tail, endpoint);
     }    
     
-    public Pipe createSecurityPipe(PolicyMap map, SEIModel sei,
+  /*  public Pipe createSecurityPipe(PolicyMap map, SEIModel sei,
             WSDLPort port, WSEndpoint owner, Pipe tail) {
 
 	HashMap props = new HashMap();

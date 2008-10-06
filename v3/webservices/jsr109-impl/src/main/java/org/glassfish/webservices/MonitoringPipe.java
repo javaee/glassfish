@@ -67,9 +67,9 @@ public class MonitoringPipe extends AbstractFilterPipeImpl {
     private final WSEndpoint owner;
     private final WebServiceEndpoint endpoint;
     private final WebServiceEngineImpl wsEngine;
-    
+
     public MonitoringPipe(ServerPipeAssemblerContext ctxt, Pipe tail,
-                            WebServiceEndpoint ep) {
+                          WebServiceEndpoint ep) {
         super(tail);
         this.endpoint = ep;
         this.seiModel = ctxt.getSEIModel();
@@ -90,7 +90,7 @@ public class MonitoringPipe extends AbstractFilterPipeImpl {
     public final Pipe copy(PipeCloner cloner) {
         return new MonitoringPipe(this, cloner);
     }
-    
+
     public Packet process(Packet request) {
         // if it is a JBI request then skip the monitoring logic. This is done 
         // as HTTPServletRequest/Response is not available when the invocation 
@@ -101,66 +101,57 @@ public class MonitoringPipe extends AbstractFilterPipeImpl {
             return next.process(request);
         } */
         // No monitoring available for restful services
-        if(HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding())) {
+        if("http://www.w3.org/2004/08/wsdl/http".equals(endpoint.getProtocolBinding())) {
             return next.process(request);
         }
         SOAPMessageContext ctxt = new SOAPMessageContextImpl(request);
-        HttpServletRequest httpRequest = 
+        HttpServletRequest httpRequest =
                 (HttpServletRequest) request.get(javax.xml.ws.handler.MessageContext.SERVLET_REQUEST);
-        HttpServletResponse httpResponse = 
+        HttpServletResponse httpResponse =
                 (HttpServletResponse) request.get(javax.xml.ws.handler.MessageContext.SERVLET_RESPONSE);
 
         String messageId=null;
-        if (wsEngine.getGlobalMessageListener()!=null) {
-            Endpoint endpt;
-            if(endpoint.implementedByWebComponent()) {
-                endpt = wsEngine.getEndpoint(httpRequest.getServletPath());
-            } else {
-                endpt = wsEngine.getEndpoint(httpRequest.getRequestURI());
-            }             
-            messageId = wsEngine.preProcessRequest(endpt);  
-            if (messageId!=null) {
-                ctxt.put(EndpointImpl.MESSAGE_ID, messageId);
-                ThreadLocalInfo config = new ThreadLocalInfo(messageId, httpRequest);
-                wsEngine.getThreadLocal().set(config);
-            }
+
+        JAXWSEndpointImpl endpt1;
+        if(endpoint.implementedByWebComponent()) {
+            endpt1 = (JAXWSEndpointImpl)wsEngine.getEndpoint(httpRequest.getServletPath());
+        } else {
+            endpt1 = (JAXWSEndpointImpl)wsEngine.getEndpoint(httpRequest.getRequestURI());
         }
-                                
-        JAXWSEndpointImpl endpt = null;
+        messageId = wsEngine.preProcessRequest(endpt1);
+        if (messageId!=null) {
+            ctxt.put(EndpointImpl.MESSAGE_ID, messageId);
+            ThreadLocalInfo config = new ThreadLocalInfo(messageId, httpRequest);
+            wsEngine.getThreadLocal().set(config);
+        }
+
         try {
-            if (wsEngine.getGlobalMessageListener()!=null) {
-                if(endpoint.implementedByWebComponent()) {
-                    endpt = 
-                        (JAXWSEndpointImpl)wsEngine.getEndpoint(httpRequest.getServletPath());
-                } else {
-                    endpt = 
-                        (JAXWSEndpointImpl)wsEngine.getEndpoint(httpRequest.getRequestURI());
-                }             
-                endpt.processRequest(ctxt);
-            }
+
+            endpt1.processRequest(ctxt);
+
         } catch (Exception e) {
             // temporary - need to send back SOAP fault message
         }
 
-	Packet pipeResponse = next.process(request);
-       
+        Packet pipeResponse = next.process(request);
+
         //Make the response packet available in the MessageContext
         ((SOAPMessageContextImpl)ctxt).setPacket(pipeResponse);
-        
-        
+
+
         try {
-            if (endpt != null) {
-                endpt.processResponse(ctxt);
+            if (endpt1 != null) {
+                endpt1.processResponse(ctxt);
             }
-    
+
         } catch (Exception e) {
             // temporary - need to send back SOAP fault message
         }
- 
+
         if (messageId!=null) {
             HttpResponseInfoImpl info = new HttpResponseInfoImpl(httpResponse);
             wsEngine.postProcessResponse(messageId, info);
-        }        
+        }
         return pipeResponse;
-    }    
+    }
 }
