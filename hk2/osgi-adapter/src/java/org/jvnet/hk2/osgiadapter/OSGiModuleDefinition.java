@@ -51,6 +51,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -102,10 +106,45 @@ public class OSGiModuleDefinition implements ModuleDefinition {
                         "hence not supported");
     }
 
+    /**
+     * @return List of bundles on which this bundle depends on using Require-Bundle
+     */
     public ModuleDependency[] getDependencies() {
-        throw new UnsupportedOperationException(
-                "This method should not be called in OSGi environment, " +
-                        "hence not supported");
+        List<ModuleDependency> mds = new ArrayList<ModuleDependency>();
+        String requiredBundles =
+                manifest.getMainAttributes().getValue(Constants.REQUIRE_BUNDLE);
+        if (requiredBundles!=null) {
+            Logger.logger.log(Level.INFO, name + " -> " + requiredBundles);
+            // The string looks like
+            // Require-Bundle: b1; version="[1.0, 2.0)", b2, b3;visbility:=reexport; version="1.0",...
+            // First remove the regions that appear between a pair of quotes (""), as that
+            // can confuse the tokenizer.
+            // Then, tokenize using comma(,) as that separates one bundle from another.
+            while (true) {
+                int i1 = requiredBundles.indexOf('\"');
+                if (i1 == -1) break;
+                int i2 = requiredBundles.indexOf('\"', i1 + 1);
+                StringBuilder sb = new StringBuilder();
+                sb.append(requiredBundles.substring(0, i1));
+                sb.append(requiredBundles.substring(i2 + 1));
+                requiredBundles = sb.toString();
+            }
+            StringTokenizer st =
+                    new StringTokenizer(requiredBundles, ",", false);
+            while (st.hasMoreTokens()) {
+                String requireBundle = st.nextToken();
+                String requiredBundleName;
+                int idx = requireBundle.indexOf(';');
+                if (idx==-1) {
+                    requiredBundleName = requireBundle;
+                } else {
+                    requiredBundleName = requireBundle.substring(0, idx);
+                    // TODO(Sahoo): parse version and other stuff
+                }
+                mds.add(new ModuleDependency(requiredBundleName, null));
+            }
+        }
+        return mds.toArray(new ModuleDependency[mds.size()]);
     }
 
     public URI[] getLocations() {
