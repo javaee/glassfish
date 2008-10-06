@@ -76,16 +76,16 @@ public class HelloSecurityTestNG {
 
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/hello.jsp";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode == 401) {
             //security constraint enforced
             Assert.assertEquals(true, true, "Anonymous Client access Denied");
-            echo("Anonymous Client access Denied");
+            //echo("Anonymous Client access Denied");
         } else {
             echo("ERROR: Anonymous Client access was Allowed, security-constraint not Enforced correctly");
             Assert.assertEquals(false, true,"Anonymous Client acess was Allowed, security-constraint not Enforced");
@@ -123,9 +123,9 @@ public class HelloSecurityTestNG {
 	    //Your server is up and running!
 	    //
 	String testurl = "http://" + host  + ":" + port;
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -140,7 +140,7 @@ public class HelloSecurityTestNG {
             if(line.indexOf("Your Application Server is now running")!=-1){
                 result=true;
              testLine = line;
-           echo(testLine);
+           //echo(testLine);
             }
 
         }
@@ -156,9 +156,9 @@ public class HelloSecurityTestNG {
 
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/first.html";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -166,7 +166,7 @@ public class HelloSecurityTestNG {
         if (responseCode == 401) {
             //security constraint enforced
             Assert.assertEquals(true, true, "Anonymous Client access Denied");
-            echo("Anonymous Client access Denied");
+            //echo("Anonymous Client access Denied");
         } else {
             echo("ERROR: Anonymous Client access was Allowed, security-constraint not Enforced correctly");
             Assert.assertEquals(false, true,"Anonymous Client acess was Allowed, security-constraint not Enforced");
@@ -204,16 +204,16 @@ public class HelloSecurityTestNG {
 
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/simpleservlet";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode == 401) {
             //security constraint enforced
             Assert.assertEquals(true, true, "Anonymous Client access Denied");
-            echo("Anonymous Client access Denied");
+            //echo("Anonymous Client access Denied");
         } else {
             echo("ERROR: Anonymous Client access was Allowed, security-constraint not Enforced correctly");
             Assert.assertEquals(false, true,"Anonymous Client acess was Allowed, security-constraint not Enforced");

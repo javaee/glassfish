@@ -167,7 +167,7 @@ public class BasicAuthTestNG {
 
         while ((line = bis.readLine()) != null) {
             if (line.indexOf(result) != -1) {
-                System.out.println("  Found: "+line);
+                //System.out.println("  Found: "+line);
                 s.close();
                 return;
             }

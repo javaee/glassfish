@@ -76,9 +76,9 @@ public class HelloJSPTestNG {
          
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/hello.jsp";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -95,7 +95,7 @@ public class HelloJSPTestNG {
             if(line.indexOf(EXPECTED_RESPONSE)!=-1){
                 result=true;
              testLine = line;
-           System.out.println(testLine);
+           //System.out.println(testLine);
             }
           
         }        
@@ -115,9 +115,9 @@ public class HelloJSPTestNG {
 	    //Your server is up and running!
 	    //
 	String testurl = "http://" + host  + ":" + port;
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -132,7 +132,7 @@ public class HelloJSPTestNG {
             if(line.indexOf("now running")!=-1){
                 result=true;
              testLine = line;
-           echo(testLine);
+           //echo(testLine);
             }
           
         }        
@@ -147,9 +147,9 @@ public class HelloJSPTestNG {
          
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/first.html";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -166,7 +166,7 @@ public class HelloJSPTestNG {
             if(line.indexOf("Welcome to HTML Test Program")!=-1){
                 result=true;
              testLine = line;
-           System.out.println(testLine);
+           //System.out.println(testLine);
             }
           
         }        
@@ -187,9 +187,9 @@ public class HelloJSPTestNG {
          
 
         String testurl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/simpleservlet";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -205,7 +205,7 @@ public class HelloJSPTestNG {
             if(line.indexOf("Sample Application Servlet")!=-1){
                 result=true;
              testLine = line;
-           echo(testLine);
+           //echo(testLine);
             }
           
         }        

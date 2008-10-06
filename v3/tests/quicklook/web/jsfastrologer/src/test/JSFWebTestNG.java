@@ -86,12 +86,12 @@ public class JSFWebTestNG {
     public void jsfAppDeployedFirstPagetest() throws Exception{
         
         try{
-        System.out.println("Running TestMethod webtest");
+        //System.out.println("Running TestMethod webtest");
 
         String testurl = "http://" + m_host  + ":" + m_port + "/"+ strContextRoot + "/faces/greetings.jsp";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -127,13 +127,13 @@ public class JSFWebTestNG {
     public void jsfIndexPageBasicTest() throws Exception{
          try{
              
-             System.out.println("Running TestMethod SimpleHTMLTest");
+             //System.out.println("Running TestMethod SimpleHTMLTest");
          
 
         String testurl = "http://" + m_host  + ":" + m_port + "/"+ strContextRoot + "/index.jsp";
-        System.out.println("URL is: "+testurl);
+        //System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -149,7 +149,7 @@ public class JSFWebTestNG {
             if(line.indexOf("JavaServer Faces Greetings Page")!=-1){
                 result=true;
              testLine = line;
-           System.out.println(testLine);
+           //System.out.println(testLine);
             }
           
         }        
@@ -172,12 +172,12 @@ public class JSFWebTestNG {
     @Test(groups={"pulse"})
     public void testRequestResponse() throws Exception{
         try{
-            System.out.println("Running method testRequestResponse");
+            //System.out.println("Running method testRequestResponse");
             String testurl = "http://" + m_host  + ":" + m_port +
                     "/"+ strContextRoot + "/index.jsp";
             String name="testuser";
             String birthday="121212";
-            System.out.println("URL is: "+testurl);
+            //System.out.println("URL is: "+testurl);
             GetMethod httpget=null;
             PostMethod post=null;
             httpget = new GetMethod(testurl);
@@ -194,7 +194,7 @@ public class JSFWebTestNG {
             
             post.setRequestBody(mydata);
             int statusCode = httpclient.executeMethod(post);
-            System.out.println("print status ok "+statusCode);
+            //System.out.println("print status ok "+statusCode);
              Assert.assertEquals(statusCode, 200);
             
             if (statusCode != HttpStatus.SC_OK) {
@@ -203,7 +203,7 @@ public class JSFWebTestNG {
             post.getStatusLine();
         
         String response=post.getResponseBodyAsString();
-        System.out.println(response);
+        //System.out.println(response);
             
             
         }catch(Exception e){

@@ -75,7 +75,7 @@ public class JdbcUserTxTestNG {
           String testurl = "http://" + host  + ":" + port + "/"+ 
 	    strContextRoot + "/MyServlet?testcase=usertx";
 	  URL url = new URL(testurl);
-	  echo("Connecting to: " + url.toString());
+	  //echo("Connecting to: " + url.toString());
 	  HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	  conn.connect();
 	  int responseCode = conn.getResponseCode();
@@ -93,7 +93,7 @@ public class JdbcUserTxTestNG {
             if(line.indexOf(EXPECTED_RESPONSE)!=-1 &&
                line.indexOf(EXPECTED_RESPONSE2)!=-1){
 	      testLine = line;
-	      echo(testLine);
+	      //echo(testLine);
 	      result=true;
 	      break;
             }
@@ -116,7 +116,7 @@ public class JdbcUserTxTestNG {
           String testurl = "http://" + host  + ":" + port + "/"+ 
 	    strContextRoot + "/MyServlet?testcase=noleak";
 	  URL url = new URL(testurl);
-	  echo("Connecting to: " + url.toString());
+	  //echo("Connecting to: " + url.toString());
 	  HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	  conn.connect();
 	  int responseCode = conn.getResponseCode();
@@ -132,7 +132,7 @@ public class JdbcUserTxTestNG {
 	    // echo(line);
    	    if(line.indexOf(EXPECTED_RESPONSE)!=-1){
 	      testLine = line;
-	      echo(testLine);
+	      //echo(testLine);
 	      result=true;
 	      break;
             }

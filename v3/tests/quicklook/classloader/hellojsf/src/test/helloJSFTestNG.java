@@ -86,12 +86,9 @@ public class helloJSFTestNG {
     public void jsfAppDeployedFirstPagetest() throws Exception{
         
         try{
-        System.out.println("Running TestMethod webtest");
-
         String testurl = "http://" + m_host  + ":" + m_port + "/"+ strContextRoot + "/index.jsp";
-        System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();

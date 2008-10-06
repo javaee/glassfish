@@ -100,7 +100,7 @@ public class JpaInjectEMFTestNG {
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/jpa?testcase=" + c;
-        System.out.println("url="+url);
+        //System.out.println("url="+url);
 
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();

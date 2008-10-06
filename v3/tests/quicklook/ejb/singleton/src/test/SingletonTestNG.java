@@ -95,7 +95,7 @@ public class SingletonTestNG {
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/test?tc=" + c;
-        System.out.println("url="+url);
+        //System.out.println("url="+url);
 
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();

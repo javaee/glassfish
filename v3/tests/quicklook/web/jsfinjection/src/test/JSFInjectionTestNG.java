@@ -77,14 +77,14 @@ public class JSFInjectionTestNG {
         boolean testPass = false;
 
         String testUrl = "http://" + host  + ":" + port + "/"+ strContextRoot + "/jsfHello.jsf";
-        echo("URL is: " + testUrl);
+        //echo("URL is: " + testUrl);
         URL url = new URL(testUrl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
         if ( responseCode != 200 ) {
-          echo("ERROR: http response code is " + responseCode);
+          //echo("ERROR: http response code is " + responseCode);
           errorText = errorText + "ERROR: http response code is " + responseCode + ".\n";
         } else {
           echo("Connected: " + responseCode);
@@ -102,11 +102,11 @@ public class JSFInjectionTestNG {
           //echo (line);
           if (line.indexOf(EXPECTED_RESPONSE)!= -1) {
             testPass = true;
-            echo("Received: " + line);
+            //echo("Received: " + line);
           }
           if (line.indexOf(DIVIDER)!= -1) {
             line2 = line;
-            echo("Received: " + line2);
+            //echo("Received: " + line2);
           }
         }
 
