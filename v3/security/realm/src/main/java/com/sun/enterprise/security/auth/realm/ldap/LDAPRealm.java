@@ -192,20 +192,18 @@ public final class LDAPRealm extends IASRealm
     {
         super.init(props);
         String url = props.getProperty(PARAM_DIRURL);
-        this.setProperty(PARAM_DIRURL, url);
-        ldapBindProps.setProperty(Context.PROVIDER_URL, url);
-        
         String dn = props.getProperty(PARAM_USERDN);
-        this.setProperty(PARAM_USERDN, dn);
-
         String jaasCtx = props.getProperty(IASRealm.JAAS_CONTEXT_PARAM);
-        this.setProperty(IASRealm.JAAS_CONTEXT_PARAM, jaasCtx);
-        
+       
         if (url==null || dn==null || jaasCtx==null) {
             String msg = sm.getString("ldaprealm.badconfig", url, dn, jaasCtx);
             throw new BadRealmException(msg);
         }
-
+        this.setProperty(PARAM_DIRURL, url);
+        ldapBindProps.setProperty(Context.PROVIDER_URL, url);
+        this.setProperty(PARAM_USERDN, dn);
+        this.setProperty(IASRealm.JAAS_CONTEXT_PARAM, jaasCtx);
+        
         String mode = props.getProperty(PARAM_MODE, MODE_DEFAULT);
         if (!MODE_DEFAULT.equals(mode)) {
             String msg = sm.getString("ldaprealm.badmode", mode);
