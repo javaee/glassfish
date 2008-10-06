@@ -65,6 +65,8 @@ import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.jvnet.hk2.osgiadapter.OSGiDirectoryBasedRepository;
+
 /**
  * A class that inspects module definitions of a bundle and processes them
  * to come up with package dependency matrix, split-packages, etc.
@@ -516,7 +518,7 @@ public class PackageAnalyser {
                 return files.toArray(new File[files.size()]);
             }
         };
-        Repository moduleRepository = new DirectoryBasedRepository("repo", f);
+        Repository moduleRepository = new OSGiDirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
 
         PackageAnalyser analyser = new PackageAnalyser(moduleRepository);
