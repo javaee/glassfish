@@ -302,9 +302,7 @@ public class SSLHandlers {
                         String vs = (String) props.get("virtualServer");
                         String httpName = (String) props.get("httpName");
                         String serverName = (String)props.get("serverName");
-                        //issue 3714. we need to pass in a String with a space, instead of empty string so backend will take it.
-                        //server-name is allowed to be empty. see admin-core/admin/dtds/admin-mbeans-descriptors.xml
-                        if (GuiUtil.isEmpty(serverName))serverName = " ";
+                        if (GuiUtil.isEmpty(serverName))serverName = "";
                         
                         HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().createHTTPListenerConfig(
                                 httpName,
