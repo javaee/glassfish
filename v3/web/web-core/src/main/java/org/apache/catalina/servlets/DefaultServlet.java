@@ -139,7 +139,7 @@ public class DefaultServlet
     /**
      * Should we generate directory listings?
      */
-    protected boolean listings = true;
+    protected boolean listings = false;
 
 
     /**
@@ -195,12 +195,24 @@ public class DefaultServlet
      * the platform default is used.
      */
     protected String fileEncoding = null;
+
+
+    /**
+     * Minimum size for sendfile usage in bytes.
+     */
+    protected int sendfileSize = 48 * 1024;
     
     
     /**
+     * Should the Accept-Ranges: bytes header be send with static resources?
+     */
+    protected boolean useAcceptRanges = true;
+
+
+    /**
      * Full range marker.
      */
-    protected static final ArrayList FULL = new ArrayList();
+    protected static final ArrayList<Range> FULL = new ArrayList<Range>();
     
     
     // ----------------------------------------------------- Static Initializer
@@ -258,50 +270,32 @@ public class DefaultServlet
      * Initialize this servlet.
      */
     public void init() throws ServletException {
+        if (getServletConfig().getInitParameter("debug") != null)
+            debug = Integer.parseInt(getServletConfig().getInitParameter("debug"));
 
-        // Set our properties from the initialization parameters
-        String value = null;
-        try {
-            value = getServletConfig().getInitParameter("debug");
-            debug = Integer.parseInt(value);
-        } catch (Throwable t) {
-            ;
-        }
-        try {
-            value = getServletConfig().getInitParameter("input");
-            input = Integer.parseInt(value);
-        } catch (Throwable t) {
-            ;
-        }
-        try {
-            value = getServletConfig().getInitParameter("listings");
-            listings = (Boolean.valueOf(value)).booleanValue();
-        } catch (Throwable t) {
-            ;
-        }
-        try {
-            value = getServletConfig().getInitParameter("readonly");
-            if (value != null)
-                readOnly = (Boolean.valueOf(value)).booleanValue();
-        } catch (Throwable t) {
-            ;
-        }
-        try {
-            value = getServletConfig().getInitParameter("output");
-            output = Integer.parseInt(value);
-        } catch (Throwable t) {
-            ;
-        }
-        try {
-            value = getServletConfig().getInitParameter("fileEncoding");
-            fileEncoding = value;
-        } catch (Throwable t) {
-            ;
-        }
+        if (getServletConfig().getInitParameter("input") != null)
+            input = Integer.parseInt(getServletConfig().getInitParameter("input"));
+
+        if (getServletConfig().getInitParameter("output") != null)
+            output = Integer.parseInt(getServletConfig().getInitParameter("output"));
+
+        listings = Boolean.parseBoolean(getServletConfig().getInitParameter("listings"));
+
+        if (getServletConfig().getInitParameter("readonly") != null)
+            readOnly = Boolean.parseBoolean(getServletConfig().getInitParameter("readonly"));
+
+        if (getServletConfig().getInitParameter("sendfileSize") != null)
+            sendfileSize = 
+                Integer.parseInt(getServletConfig().getInitParameter("sendfileSize")) * 1024;
+
+        fileEncoding = getServletConfig().getInitParameter("fileEncoding");
 
         globalXsltFile = getServletConfig().getInitParameter("globalXsltFile");
         localXsltFile = getServletConfig().getInitParameter("localXsltFile");
         readmeFile = getServletConfig().getInitParameter("readmeFile");
+
+        if (getServletConfig().getInitParameter("useAcceptRanges") != null)
+            useAcceptRanges = Boolean.parseBoolean(getServletConfig().getInitParameter("useAcceptRanges"));
 
         // Sanity check on the specified buffer sizes
         if (input < 256)
@@ -315,19 +309,15 @@ public class DefaultServlet
         }
 
         // Load the proxy dir context.
-        try {
-            resources = (ProxyDirContext) getServletContext()
+        resources = (ProxyDirContext) getServletContext()
                 .getAttribute(Globals.RESOURCES_ATTR);
-        } catch(ClassCastException e) {
-            // Failed : Not the right type
-        }
         if (resources == null) {
             try {
                 resources =
                     (ProxyDirContext) new InitialContext()
                     .lookup(RESOURCES_JNDI_NAME);
             } catch (NamingException e) {
-                // Failed
+                throw new ServletException("No resources", e);
             } catch (ClassCastException e) {
                 // Failed : Not the right type
             }
@@ -539,6 +529,7 @@ public class DefaultServlet
             if (obj instanceof Resource)
                 oldResource = (Resource) obj;
         } catch (NamingException e) {
+            // Ignore
         }
 
         // Copy data in oldRevisionContent to contentFile
@@ -801,7 +792,7 @@ public class DefaultServlet
             cacheEntry.attributes.setMimeType(contentType);
         }
 
-        ArrayList ranges = null;
+        ArrayList<Range> ranges = null;
         long contentLength = -1L;
 
         if (cacheEntry.context != null) {
@@ -821,9 +812,12 @@ public class DefaultServlet
             contentType = "text/html;charset=UTF-8";
 
         } else {
+            if (useAcceptRanges) {
+                // Accept ranges header
+                response.setHeader("Accept-Ranges", "bytes");
+            }
 
             // Parse range specifier
-
             ranges = parseRange(request, response, cacheEntry.attributes);
 
             // ETag header
@@ -856,7 +850,8 @@ public class DefaultServlet
                 // If it fails, we try to get a Writer instead if we're
                 // trying to serve a text file
                 if ( (contentType == null)
-                     || (contentType.startsWith("text")) ) {
+                     || (contentType.startsWith("text"))
+                     || (contentType.startsWith("xml")) ) {
                     writer = response.getWriter();
                 } else {
                     throw e;
@@ -908,7 +903,8 @@ public class DefaultServlet
                     // Silent catch
                 }
                 if (ostream != null) {
-                    copy(cacheEntry, renderResult, ostream);
+                    if (!checkSendfile(request, response, cacheEntry, contentLength, null))
+                        copy(cacheEntry, renderResult, ostream);
                 } else {
                     copy(cacheEntry, renderResult, writer);
                 }
@@ -925,7 +921,7 @@ public class DefaultServlet
 
             if (ranges.size() == 1) {
 
-                Range range = (Range) ranges.get(0);
+                Range range = ranges.get(0);
                 response.addHeader("Content-Range", "bytes "
                                    + range.start
                                    + "-" + range.end + "/"
@@ -952,7 +948,8 @@ public class DefaultServlet
                         // Silent catch
                     }
                     if (ostream != null) {
-                        copy(cacheEntry, ostream, range);
+                        if (!checkSendfile(request, response, cacheEntry, range.end - range.start + 1, range))
+                            copy(cacheEntry, ostream, range);
                     } else {
                         copy(cacheEntry, writer, range);
                     }
@@ -1053,10 +1050,9 @@ public class DefaultServlet
      * @param response The servlet response we are creating
      * @return Vector of ranges
      */
-    protected ArrayList parseRange(HttpServletRequest request,
-                                HttpServletResponse response,
-                                ResourceAttributes resourceAttributes)
-        throws IOException {
+    protected ArrayList<Range> parseRange(HttpServletRequest request,
+        HttpServletResponse response,
+        ResourceAttributes resourceAttributes) throws IOException {
 
         // Checking If-Range
         String headerValue = request.getHeader("If-Range");
@@ -1066,8 +1062,8 @@ public class DefaultServlet
             long headerValueTime = (-1L);
             try {
                 headerValueTime = request.getDateHeader("If-Range");
-            } catch (Exception e) {
-                ;
+            } catch (IllegalArgumentException e) {
+                // Ignore
             }
 
             String eTag = getETag(resourceAttributes);
@@ -1115,7 +1111,7 @@ public class DefaultServlet
 
         // Vector which will contain all the ranges which are successfully
         // parsed.
-        ArrayList result = new ArrayList();
+        ArrayList<Range> result = new ArrayList<Range>();
         StringTokenizer commaTokenizer = new StringTokenizer(rangeHeader, ",");
 
         // Parsing the range list
@@ -1189,8 +1185,9 @@ public class DefaultServlet
     /**
      *  Decide which way to render. HTML or XML.
      */
-    protected InputStream render
-        (String contextPath, CacheEntry cacheEntry) {
+    protected InputStream render(String contextPath, CacheEntry cacheEntry)
+        throws IOException, ServletException {
+
         InputStream xsltInputStream =
             findXsltInputStream(cacheEntry.context);
 
@@ -1211,7 +1208,8 @@ public class DefaultServlet
      */
     protected InputStream renderXml(String contextPath,
                                     CacheEntry cacheEntry,
-                                    InputStream xsltInputStream) {
+                                    InputStream xsltInputStream)
+        throws IOException, ServletException {
 
         StringBuffer sb = new StringBuffer();
 
@@ -1231,14 +1229,15 @@ public class DefaultServlet
         try {
 
             // Render the directory entries within this directory
-            NamingEnumeration enumeration = resources.list(cacheEntry.name);
+            NamingEnumeration<NameClassPair> enumeration =
+                resources.list(cacheEntry.name);
             
             // rewriteUrl(contextPath) is expensive. cache result for later reuse
             String rewrittenContextPath =  rewriteUrl(contextPath);
 
             while (enumeration.hasMoreElements()) {
 
-                NameClassPair ncPair = (NameClassPair) enumeration.nextElement();
+                NameClassPair ncPair = enumeration.nextElement();
                 String resourceName = ncPair.getName();
                 String trimmed = resourceName/*.substring(trim)*/;
                 if (trimmed.equalsIgnoreCase("WEB-INF") ||
@@ -1280,7 +1279,7 @@ public class DefaultServlet
 
         } catch (NamingException e) {
             // Something went wrong
-            e.printStackTrace();
+            throw new ServletException("Error accessing resource", e);
         }
 
         sb.append("</entries>");
@@ -1322,8 +1321,8 @@ public class DefaultServlet
      * @param contextPath Context path to which our internal paths are
      *  relative
      */
-    protected InputStream renderHtml
-        (String contextPath, CacheEntry cacheEntry) {
+    protected InputStream renderHtml (String contextPath, CacheEntry cacheEntry)
+        throws IOException, ServletException {
 
         String name = cacheEntry.name;
 
@@ -1409,11 +1408,12 @@ public class DefaultServlet
         try {
 
             // Render the directory entries within this directory
-            NamingEnumeration enumeration = resources.list(cacheEntry.name);
+            NamingEnumeration<NameClassPair> enumeration =
+                resources.list(cacheEntry.name);
             boolean shade = false;
             while (enumeration.hasMoreElements()) {
 
-                NameClassPair ncPair = (NameClassPair) enumeration.nextElement();
+                NameClassPair ncPair = enumeration.nextElement();
                 String resourceName = ncPair.getName();
                 String trimmed = resourceName/*.substring(trim)*/;
                 if (trimmed.equalsIgnoreCase("WEB-INF") ||
@@ -1461,7 +1461,7 @@ public class DefaultServlet
 
         } catch (NamingException e) {
             // Something went wrong
-            e.printStackTrace();
+            throw new ServletException("Error accessing resource", e);
         }
 
         // Render the page footer
@@ -1507,7 +1507,9 @@ public class DefaultServlet
     /**
      * Get the readme file as a string.
      */
-    protected String getReadme(DirContext directory) {
+    protected String getReadme(DirContext directory)
+        throws IOException, ServletException {
+
         if (readmeFile!=null) {
             try {
                 Object obj = directory.lookup(readmeFile);
@@ -1524,6 +1526,8 @@ public class DefaultServlet
                  ; /* Should only be IOException or NamingException
                     * can be ignored
                     */
+                 if (debug > 10)
+                    log("readme '" + readmeFile + "' not found", e);
              }
         }
 
@@ -1534,7 +1538,8 @@ public class DefaultServlet
     /**
      * Return the xsl template inputstream (if possible)
      */
-    protected InputStream findXsltInputStream(DirContext directory) {
+    protected InputStream findXsltInputStream(DirContext directory)
+        throws IOException, ServletException {
 
         if (localXsltFile!=null) {
             try {
@@ -1548,6 +1553,10 @@ public class DefaultServlet
                  ; /* Should only be IOException or NamingException
                     * can be ignored
                     */
+                if (debug > 10)
+                    log("localXsltFile '" + localXsltFile + "' not found", e);
+
+                return null;
              }
         }
 
@@ -1565,16 +1574,9 @@ public class DefaultServlet
                     fis.read(b);
                     return new ByteArrayInputStream(b);
                 }
-            } catch(Throwable e) {
-                log("This shouldn't happen (?)...", e);
-                return null;
             } finally {
-                try {
-                    if (fis!=null)
-                        fis.close();
-                } catch(Throwable e){
-                    ;
-                }
+                if (fis!=null)
+                    fis.close();
             }
         }
 
@@ -1584,6 +1586,36 @@ public class DefaultServlet
 
 
     // -------------------------------------------------------- protected Methods
+
+
+    /**
+     * Check if sendfile can be used.
+     */
+    protected boolean checkSendfile(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  CacheEntry entry,
+                                  long length, Range range) {
+        if ((sendfileSize > 0)
+            && (entry.resource != null)
+            && ((length > sendfileSize) || (entry.resource.getContent() == null))
+            && (entry.attributes.getCanonicalPath() != null)
+            && (Boolean.TRUE == request.getAttribute("org.apache.tomcat.sendfile.support"))
+            && (request.getClass().getName().equals("org.apache.catalina.connector.RequestFacade"))
+            && (response.getClass().getName().equals("org.apache.catalina.connector.ResponseFacade"))) {
+            request.setAttribute("org.apache.tomcat.sendfile.filename", entry.attributes.getCanonicalPath());
+            if (range == null) {
+                request.setAttribute("org.apache.tomcat.sendfile.start", new Long(0L));
+                request.setAttribute("org.apache.tomcat.sendfile.end", new Long(length));
+            } else {
+                request.setAttribute("org.apache.tomcat.sendfile.start", new Long(range.start));
+                request.setAttribute("org.apache.tomcat.sendfile.end", new Long(range.end + 1));
+            }
+            request.setAttribute("org.apache.tomcat.sendfile.token", this);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
     /**
@@ -1653,7 +1685,7 @@ public class DefaultServlet
                 // If an If-None-Match header has been specified, if modified since
                 // is ignored.
                 if ((request.getHeader("If-None-Match") == null)
-                    && (lastModified <= headerValue + 1000)) {
+                    && (lastModified < headerValue + 1000)) {
                     // The entity has not been modified since the date
                     // specified by the client. This is not an error case.
                     response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
@@ -1746,7 +1778,7 @@ public class DefaultServlet
             long lastModified = resourceAttributes.getLastModified();
             long headerValue = request.getDateHeader("If-Unmodified-Since");
             if (headerValue != -1) {
-                if ( lastModified > (headerValue + 1000)) {
+                if ( lastModified >= (headerValue + 1000)) {
                     // The entity has not been modified since the date
                     // specified by the client. This is not an error case.
                     response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
@@ -1798,11 +1830,7 @@ public class DefaultServlet
         exception = copyRange(istream, ostream);
 
         // Clean up the input stream
-        try {
-            istream.close();
-        } catch (Throwable t) {
-            ;
-        }
+        istream.close();
 
         // Rethrow any exception that has occurred
         if (exception != null)
@@ -1845,11 +1873,7 @@ public class DefaultServlet
         exception = copyRange(reader, writer);
 
         // Clean up the reader
-        try {
-            reader.close();
-        } catch (Throwable t) {
-            ;
-        }
+        reader.close();
 
         // Rethrow any exception that has occurred
         if (exception != null)
@@ -1880,11 +1904,7 @@ public class DefaultServlet
         exception = copyRange(istream, ostream, range.start, range.end);
 
         // Clean up the input stream
-        try {
-            istream.close();
-        } catch (Throwable t) {
-            ;
-        }
+        istream.close();
 
         // Rethrow any exception that has occurred
         if (exception != null)
@@ -1922,11 +1942,7 @@ public class DefaultServlet
         exception = copyRange(reader, writer, range.start, range.end);
 
         // Clean up the input stream
-        try {
-            reader.close();
-        } catch (Throwable t) {
-            ;
-        }
+        reader.close();
 
         // Rethrow any exception that has occurred
         if (exception != null)
@@ -1947,7 +1963,7 @@ public class DefaultServlet
      * @exception IOException if an input/output error occurs
      */
     protected void copy(CacheEntry cacheEntry, ServletOutputStream ostream,
-                      Iterator ranges, String contentType)
+                      Iterator<Range> ranges, String contentType)
         throws IOException {
 
         IOException exception = null;
@@ -1958,7 +1974,7 @@ public class DefaultServlet
             InputStream istream =
                 new BufferedInputStream(resourceInputStream, input);
 
-            Range currentRange = (Range) ranges.next();
+            Range currentRange = ranges.next();
 
             // Writing MIME header.
             ostream.println();
@@ -1974,11 +1990,7 @@ public class DefaultServlet
             exception = copyRange(istream, ostream, currentRange.start,
                                   currentRange.end);
 
-            try {
-                istream.close();
-            } catch (Throwable t) {
-                ;
-            }
+            istream.close();
 
         }
 
@@ -2004,7 +2016,7 @@ public class DefaultServlet
      * @exception IOException if an input/output error occurs
      */
     protected void copy(CacheEntry cacheEntry, PrintWriter writer,
-                      Iterator ranges, String contentType)
+                      Iterator<Range> ranges, String contentType)
         throws IOException {
 
         IOException exception = null;
@@ -2021,7 +2033,7 @@ public class DefaultServlet
                                                fileEncoding);
             }
 
-            Range currentRange = (Range) ranges.next();
+            Range currentRange = ranges.next();
 
             // Writing MIME header.
             writer.println();
@@ -2037,12 +2049,7 @@ public class DefaultServlet
             exception = copyRange(reader, writer, currentRange.start,
                                   currentRange.end);
 
-            try {
-                reader.close();
-            } catch (Throwable t) {
-                ;
-            }
-
+            reader.close();  
         }
 
         writer.println();

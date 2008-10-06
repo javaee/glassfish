@@ -81,7 +81,10 @@
   <!--                       resources to be served.  [2048]                -->
   <!--                                                                      -->
   <!--   listings            Should directory listings be produced if there -->
-  <!--                       is no welcome file in this directory?  [true]  -->
+  <!--                       is no welcome file in this directory?  [false] -->
+  <!--                       WARNING: Listings for directories with many    -->
+  <!--                       entries can be slow and may consume            -->
+  <!--                       significant proportions of server resources.   -->
   <!--                                                                      -->
   <!--   output              Output buffer size (in bytes) when writing     -->
   <!--                       resources to be served.  [2048]                -->
@@ -89,6 +92,29 @@
   <!--   readonly            Is this context "read only", so HTTP           -->
   <!--                       commands like PUT and DELETE are               -->
   <!--                       rejected?  [true]                              -->
+  <!--                                                                      -->
+  <!--   readmeFile          File name to display with the directory        -->
+  <!--                       contents. [null]                               -->
+  <!--                                                                      -->
+  <!--   sendfileSize        If the connector used supports sendfile, this  -->
+  <!--                       represents the minimal file size in KB for     -->
+  <!--                       which sendfile will be used. Use a negative    -->
+  <!--                       value to always disable sendfile.  [48]        -->
+  <!--                                                                      -->
+  <!--   useAcceptRanges     Should the Accept-Ranges header be included    -->
+  <!--                       in responses where appropriate? [true]         -->
+  <!--                                                                      -->
+  <!--  For directory listing customization. Checks localXsltFile, then     -->
+  <!--  globalXsltFile, then defaults to original behavior.                 -->
+  <!--                                                                      -->
+  <!--   localXsltFile       Make directory listings an XML doc and         -->
+  <!--                       pass the result to this style sheet residing   -->
+  <!--                       in that directory. This overrides              -->
+  <!--                        globalXsltFile[null]                          -->
+  <!--                                                                      -->
+  <!--   globalXsltFile      Site wide configuration version of             -->
+  <!--                       localXsltFile This argument is expected        -->
+  <!--                       to be a physical file. [null]                  -->
 
   <servlet>
     <servlet-name>default</servlet-name>
@@ -99,7 +125,7 @@
     </init-param>
     <init-param>
       <param-name>listings</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

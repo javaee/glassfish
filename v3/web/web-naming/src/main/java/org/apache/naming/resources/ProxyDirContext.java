@@ -63,8 +63,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
+import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.Name;
+import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
@@ -502,7 +504,7 @@ public class ProxyDirContext implements DirContext {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(Name name)
+    public NamingEnumeration<NameClassPair> list(Name name)
         throws NamingException {
         return dirContext.list(parseName(name));
     }
@@ -517,7 +519,7 @@ public class ProxyDirContext implements DirContext {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(String name)
+    public NamingEnumeration<NameClassPair> list(String name)
         throws NamingException {
         return dirContext.list(parseName(name));
     }
@@ -536,7 +538,7 @@ public class ProxyDirContext implements DirContext {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(Name name)
+    public NamingEnumeration<Binding> listBindings(Name name)
         throws NamingException {
         return dirContext.listBindings(parseName(name));
     }
@@ -551,7 +553,7 @@ public class ProxyDirContext implements DirContext {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(String name)
+    public NamingEnumeration<Binding> listBindings(String name)
         throws NamingException {
         return dirContext.listBindings(parseName(name));
     }

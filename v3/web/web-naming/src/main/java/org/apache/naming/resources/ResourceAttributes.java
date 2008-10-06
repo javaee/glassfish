@@ -794,6 +794,18 @@ public class ResourceAttributes implements Attributes {
     }
 
     
+    /**
+     * Return the canonical path of the resource, to possibly be used for 
+     * direct file serving. Implementations which support this should override
+     * it to return the file path.
+     * 
+     * @return The canonical path of the resource
+     */
+    public String getCanonicalPath() {
+        return null;
+    }
+
+
     // ----------------------------------------------------- Attributes Methods
 
 
