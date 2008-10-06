@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.jmac.config;
 
+import com.sun.enterprise.security.jmac.WebServicesDelegate;
 import java.lang.reflect.Constructor;
 
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import javax.security.auth.message.config.AuthConfigProvider;
 import javax.security.auth.message.config.RegistrationListener;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
     
 /**
  * This class implements methods in the abstract class AuthConfigFactory.
@@ -431,6 +433,15 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      */
     static List<EntryInfo> getDefaultProviders() {
         //TODO:V3 TP2 uncomment later List<EntryInfo> entries = new ArrayList<EntryInfo>(2);
+        WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
+        if (delegate != null) {
+            List<EntryInfo> entries = new ArrayList<EntryInfo>(2);
+            entries.add(new EntryInfo(
+                    delegate.getDefaultWebServicesProvider(), null));
+            entries.add(new EntryInfo(
+                    GFServerConfigProvider.class.getName(), null));
+            return entries;
+        }
         List<EntryInfo> entries = new ArrayList<EntryInfo>(1);
         /*TODO: V3 uncomment later entries.add(new EntryInfo(
             "com.sun.xml.wss.provider.wsit.WSITAuthConfigProvider", null));*/

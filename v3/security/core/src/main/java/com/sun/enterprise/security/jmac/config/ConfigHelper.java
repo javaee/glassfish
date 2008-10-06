@@ -57,7 +57,9 @@ import javax.security.auth.message.config.ServerAuthContext;
 import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
+import com.sun.enterprise.security.jmac.WebServicesDelegate;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -350,6 +352,10 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
         public void disableWithRefCount() {
             if (referenceCount <= 1) {
                disable();
+               WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
+               if (delegate != null) {
+                   delegate.removeListener(this);
+               }
                /*TODO:V3 commented due to unsatisfied dependency, uncomment later
                ClientPipeCloser.getInstance().removeListenerWrapper(this);
                 */
