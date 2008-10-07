@@ -168,11 +168,17 @@ public class MiniXmlParser {
     }
     private void createParser() throws FileNotFoundException, XMLStreamException {
         domainXmlstream = new FileInputStream(domainXml);
-        // We pass the classloader that loaded XMLInputFactory otherwise
-        // it does not work when Thread's context class loader is used to locate
-        XMLInputFactory xif = XMLInputFactory.newInstance(
-                XMLInputFactory.class.getName(),
-                XMLInputFactory.class.getClassLoader());
+        // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
+        // newInstance(), where as on JDK 1.5, we use two argument version of
+        // newInstance() so that we can pass the classloader that loads
+        // XMLInputFactory to load the factory, otherwise by default StAX uses
+        // Thread's context class loader to locate the factory. See:
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
+        XMLInputFactory xif =
+                XMLInputFactory.class.getClassLoader() == null ?
+                        XMLInputFactory.newInstance() :
+                        XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
+                                XMLInputFactory.class.getClassLoader());
         parser = xif.createXMLStreamReader(domainXml.toURI().toString(), domainXmlstream);
     }
 
