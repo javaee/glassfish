@@ -216,33 +216,35 @@ final class StandardHostValve
         throws IOException, ServletException
         // END SJSAS 6374691
     {
-        // START SJSAS 6374990
-        if (((ServletResponse) response).isCommitted()) {
-            return;
+        try {
+            // START SJSAS 6374990
+            if (((ServletResponse) response).isCommitted()) {
+                return;
+            }
+            // END SJSAS 6374990
+
+            HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
+
+            // Error page processing
+            response.setSuspended(false);
+
+            Throwable t = (Throwable) hreq.getAttribute(Globals.EXCEPTION_ATTR);
+
+            if (t != null) {
+                throwable(request, response, t);
+            } else {
+                status(request, response);
+            }
+
+            // START SJSAS 6374691
+            if (errorReportValve != null) {
+                errorReportValve.postInvoke(request, response);
+            }
+            // END SJSAS 6374691
+        } finally {
+            Thread.currentThread().setContextClassLoader
+                (standardHostValveClassLoader);
         }
-        // END SJSAS 6374990
-
-        HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
-
-        // Error page processing
-        response.setSuspended(false);
-
-        Throwable t = (Throwable) hreq.getAttribute(Globals.EXCEPTION_ATTR);
-
-        if (t != null) {
-            throwable(request, response, t);
-        } else {
-            status(request, response);
-        }
-
-        Thread.currentThread().setContextClassLoader
-            (standardHostValveClassLoader);
-
-        // START SJSAS 6374691
-        if (errorReportValve != null) {
-            errorReportValve.postInvoke(request, response);
-        }
-        // END SJSAS 6374691
     }
 
 
