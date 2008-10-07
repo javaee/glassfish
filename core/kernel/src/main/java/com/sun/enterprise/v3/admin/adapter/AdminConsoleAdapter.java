@@ -290,7 +290,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             if (currentDeployedDir.renameTo(backupDir))
                 return true;
         }catch(Exception ex){
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Exception in prepareRedeploy() " + ex.getMessage());
+            //ex.printStackTrace();
         }
         logger.log(Level.SEVERE, "Cannot backup previous version of __admingui ");
         setStateMsg(AdapterState.APPLICATION_BACKUP_FALED);
@@ -715,8 +716,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 log.log(Level.WARNING, "!!!! No information relating to update center.");
             }
         }catch(Exception ex){
-            log.log(Level.WARNING, "!!!!! Cannot create Update Center Image" );
-            ex.printStackTrace();
+            log.log(Level.WARNING, "!!!!! Cannot create Update Center Image for " + ipsRoot );
+            //ex.printStackTrace();
         }
     }
     
@@ -782,7 +783,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             }
         }catch(Exception ex){
             log.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
     }
     
