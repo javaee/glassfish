@@ -184,7 +184,8 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     new FileFilter() {
                         public boolean accept(File pathname) {
                             String fileName = pathname.getName();
-                            return (fileName.endsWith("jar") &&
+                            return ((fileName.endsWith(".jar") ||
+                                        fileName.endsWith(".zip")) &&
                                     (!ignoreHiddenJarFiles ||
                                     !fileName.startsWith(".")));
                         }
