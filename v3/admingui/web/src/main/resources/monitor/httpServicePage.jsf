@@ -16,6 +16,7 @@
                         setAttribute(key="hlList" value="#{hlList}");
                         setAttribute(key="vsVal" value="#{vsVal}");
                         setAttribute(key="tpStatsNode" value="#{tpStatsNode}");
+                        setAttribute(key="requestStatsNode" value="#{requestStatsNode}");
                         navigate(page="monitor/httpServicePage.jsf");
                     />              
                     </sun:button>
