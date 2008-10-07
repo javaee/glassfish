@@ -4567,16 +4567,8 @@ public class StandardContext
         Object results[] = new Object[listeners.length];
         boolean ok = true;
         for (int i = 0; i < results.length; i++) {
-            if (log.isLoggable(Level.FINE))
-                log.fine(" Configuring event listener class '" +
-                         listeners[i] + "'");
             try {
-                Class clazz = loader.loadClass(listeners[i]);
-                results[i] = clazz.newInstance();
-                // START PWC 1.2 6310695
-                fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
-                                   results[i]);
-                // END PWC 1.2 6310695
+                results[i] = loadListener(loader, listeners[i]);
             } catch (Throwable t) {
                 getServletContext().log
                     (sm.getString("standardContext.applicationListener",
@@ -4642,6 +4634,33 @@ public class StandardContext
         }
         return (ok);
 
+    }
+
+
+    /**
+     * Instantiates and returns the listener with the specified classname
+     *
+     * @param loader the classloader to use
+     * @param listenerClassName the fully qualified classname to instantiate
+     *
+     * @return the instantiated listener
+     *
+     * @throws Exception if the specified classname fails to be loaded or
+     * instantiated
+     */
+    protected Object loadListener(ClassLoader loader, String listenerClassName)
+            throws Exception {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine(" Configuring event listener class '" +
+                     listenerClassName + "'");
+        }
+        Class clazz = loader.loadClass(listenerClassName);
+        Object listener = clazz.newInstance();
+            // START PWC 1.2 6310695
+        fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
+                           listener);
+        // END PWC 1.2 6310695
+        return listener;
     }
 
 
