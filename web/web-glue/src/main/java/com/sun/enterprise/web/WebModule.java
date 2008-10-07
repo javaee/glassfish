@@ -119,6 +119,9 @@ public class WebModule extends PwcWebModule {
     private static final BASE64Encoder gfEncoder = new BASE64Encoder();
     private static final BASE64Decoder gfDecoder = new BASE64Decoder();
 
+    private static final String WS_SERVLET_CONTEXT_LISTENER =
+        "com.sun.xml.ws.transport.http.servlet.WSServletContextListener";
+
     // ----------------------------------------------------- Instance Variables
 
     // Object containing sun-web.xml information
@@ -1433,6 +1436,31 @@ public class WebModule extends PwcWebModule {
 
             }
             deploymentProperties.remove(getObjectName());
+        }
+    }
+
+
+    /**
+     * Instantiates and returns the listener with the specified classname
+     *
+     * @param loader the classloader to use
+     * @param listenerClassName the fully qualified classname to instantiate
+     *
+     * @return the instantiated listener
+     *
+     * @throws Exception if the specified classname fails to be loaded or
+     * instantiated
+     */
+    @Override
+    protected Object loadListener(ClassLoader loader, String listenerClassName)
+            throws Exception {
+        try {
+            return super.loadListener(loader, listenerClassName);
+        } catch (Exception e) {
+            if (WS_SERVLET_CONTEXT_LISTENER.equals(listenerClassName)) {
+                logger.log(Level.WARNING, "webcontainer.missingmetro", e);
+            }
+            throw e;
         }
     }
 
