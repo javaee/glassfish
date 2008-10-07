@@ -76,8 +76,8 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     public double getAverage() {
         double total = sum.doubleValue();
         double count = times.doubleValue();
-        return total / count;
-
+        double avg =  total / count;
+	return (Double.isNaN(avg) ? 0 : avg);
     }
 
     public void setReset() {

@@ -296,8 +296,8 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             for (HttpListener hl : httpService.getHttpListener()) {
                 if (hl.getPort().equals(listenerPort)) {
                     httpListener = hl;
+                    break;
                 }
-                break;
             }
             VirtualServer virtualServer = null;
             for (VirtualServer vs : httpService.getVirtualServer()) {
