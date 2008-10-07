@@ -90,9 +90,20 @@ public class UpdateCenterHandlers {
                 details.put("category", manifest.getAttribute(CATEGORY));
                 details.put("bytes", "" + manifest.getPackageSize() );
                 details.put("pkgSize", getPkgSize(manifest));
-                details.put("desc", manifest.getAttribute(DESC_LONG));
+                // look for description in the following order:
+                // pkg.description, description_long, pkg.summary, description
+                // since description_long and description has been deprecated.
+                String desc = manifest.getAttribute(PKG_DESC);
+                if (GuiUtil.isEmpty(desc)){
+                    desc = manifest.getAttribute(DESC_LONG);
+                    if (GuiUtil.isEmpty(desc)){
+                        desc = manifest.getAttribute(PKG_SUMMARY);
+                        if (GuiUtil.isEmpty(desc))
+                            desc = manifest.getAttribute(DESC);
+                    }
+                }
+                details.put("desc", desc);
             }
-            
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -512,5 +523,9 @@ public class UpdateCenterHandlers {
 //    
     final private static String CATEGORY = "info.classification";
     final private static String DESC_LONG = "description_long";
+    final private static String PKG_DESC = "pkg.description";
+    final private static String PKG_SUMMARY = "pkg.summary";
+    final private static String DESC = "description";
+    
     final private static int MB = 1024*1024;
 }

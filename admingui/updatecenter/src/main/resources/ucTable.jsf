@@ -114,7 +114,7 @@
         <staticText id="colsize" value="#{td.value.pkgSize}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18nUC.ucTable.source}" sort="source" rowHeader="$boolean{true}" id="source">
+    <sun:tableColumn headerText="$resource{i18nUC.ucTable.source}" sort="auth" rowHeader="$boolean{true}" id="source">
         <staticText id="source" value="#{td.value.auth}" />
     </sun:tableColumn>
     
