@@ -1,9 +1,0 @@
-?                   diffs.txt
-?                   ejb\target
-?                   jdbc\target
-?                   jpa\target
-?                   nucleus\target
-?                   scripting\target
-?                   sup.txt
-?                   web\target
-Status against revision:  22929
