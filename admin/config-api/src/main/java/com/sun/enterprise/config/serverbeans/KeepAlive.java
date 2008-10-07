@@ -45,7 +45,7 @@ import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
 /**
  *
@@ -96,7 +96,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
     public String getTimeoutInSeconds();
 
     /**
