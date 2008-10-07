@@ -5469,7 +5469,15 @@ public class StandardContext
         // Binding thread
         ClassLoader oldCCL = bindThread();
 
-        try{
+        try {
+
+            // Stop our child containers, if any
+            Container[] children = findChildren();
+            for (int i = 0; i < children.length; i++) {
+                if (children[i] instanceof Lifecycle)
+                    ((Lifecycle) children[i]).stop();
+            }
+
             // Stop our filters
             filterStop();
             
@@ -5480,6 +5488,9 @@ public class StandardContext
                 ((Lifecycle) manager).stop();
             }
             
+            // Stop our application listeners
+            listenerStop();
+
             // Finalize our character set mapper
             setCharsetMapper(null);
 
@@ -5494,21 +5505,11 @@ public class StandardContext
             if (pipeline instanceof Lifecycle) {
                 ((Lifecycle) pipeline).stop();
             }
-
-            // Stop our child containers, if any
-            Container[] children = findChildren();
-            for (int i = 0; i < children.length; i++) {
-                if (children[i] instanceof Lifecycle)
-                    ((Lifecycle) children[i]).stop();
-            }
         
             // Clear all application-originated servlet context attributes
             if (context != null)
                 context.clearAttributes();
             
-            // Stop our application listeners
-            listenerStop();
-
             // Stop resources
             resourcesStop();
             alternateResourcesStop();
