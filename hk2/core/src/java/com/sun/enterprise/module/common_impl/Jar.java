@@ -56,7 +56,7 @@ import java.net.URL;
  * @author Kohsuke Kawaguchi
  */
 public abstract class Jar {
-    private Jar() {}
+    protected Jar() {}
 
     /**
      * See {@link JarFile#getManifest()} for the contract.

@@ -42,19 +42,25 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.common_impl.Jar;
-import org.osgi.framework.Constants;
+import com.sun.enterprise.module.common_impl.LogHelper;
+import com.sun.hk2.component.InhabitantsFile;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -69,16 +75,16 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     private ModuleMetadata metadata = new ModuleMetadata();
 
     public OSGiModuleDefinition(File jar) throws IOException {
-        this(Jar.create(jar), jar);
+        this(Jar.create(jar), jar.toURI());
     }
 
-    public OSGiModuleDefinition(Jar jarFile, File jar) throws IOException {
+    public OSGiModuleDefinition(Jar jarFile, URI location) throws IOException {
         /*
         * When we support reading metadata from external manifest.mf file,
-        * we can create a custom URI and the uRL handler can merge the
+        * we can create a custom URI and the URL handler can merge the
         * manifest info. For now, just use the standard URI.
         */
-        location = jar.toURI();
+        this.location = location;
         manifest = jarFile.getManifest();
         Attributes mainAttr = manifest.getMainAttributes();
         name = mainAttr.getValue(Constants.BUNDLE_SYMBOLICNAME);
@@ -89,11 +95,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     }
 
     public OSGiModuleDefinition(Bundle b) throws IOException, URISyntaxException {
-        /*
-         * TODO: We should create an adapter to Jar using Bundle.getEntryPaths
-         * and use that instead of relying on getLocation.
-         */
-        this(new File(new URI(b.getLocation()).getPath()));
+        this(new BundleJar(b), new URI(b.getLocation()));
     }
 
     public String getName() {
@@ -113,7 +115,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         List<ModuleDependency> mds = new ArrayList<ModuleDependency>();
         String requiredBundles =
                 manifest.getMainAttributes().getValue(Constants.REQUIRE_BUNDLE);
-        if (requiredBundles!=null) {
+        if (requiredBundles != null) {
             Logger.logger.log(Level.INFO, name + " -> " + requiredBundles);
             // The string looks like
             // Require-Bundle: b1; version="[1.0, 2.0)", b2, b3;visbility:=reexport; version="1.0",...
@@ -135,7 +137,7 @@ public class OSGiModuleDefinition implements ModuleDefinition {
                 String requireBundle = st.nextToken();
                 String requiredBundleName;
                 int idx = requireBundle.indexOf(';');
-                if (idx==-1) {
+                if (idx == -1) {
                     requiredBundleName = requireBundle;
                 } else {
                     requiredBundleName = requireBundle.substring(0, idx);
@@ -180,7 +182,104 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     public String toString() {
         String bundleDescriptiveName =
                 manifest.getMainAttributes().getValue(Constants.BUNDLE_NAME);
-        return name + "(" + bundleDescriptiveName + ")" +':'+version;
+        return name + "(" + bundleDescriptiveName + ")" + ':' + version;
     }
 
+    private static class BundleJar extends Jar {
+        private static final String SERVICE_LOCATION = "META-INF/services";
+        Bundle b;
+        Manifest m;
+
+        private BundleJar(Bundle b) throws IOException {
+            this.b = b;
+            InputStream is = b.getEntry(JarFile.MANIFEST_NAME).openStream();
+            try {
+                m = new Manifest(is);
+            } finally {
+                is.close();
+            }
+        }
+
+        public Manifest getManifest() throws IOException {
+            return m;
+        }
+
+        public void loadMetadata(ModuleMetadata result) {
+            parseInhabitantsDescriptors(result);
+            parseServiceDescriptors(result);
+        }
+
+        private void parseInhabitantsDescriptors(ModuleMetadata result) {
+            if (b.getEntry(InhabitantsFile.PATH) == null) return;
+            Enumeration<String> entries = b.getEntryPaths(InhabitantsFile.PATH);
+            if (entries != null) {
+                while (entries.hasMoreElements()) {
+                    String entry = entries.nextElement();
+                    String habitatName = entry.substring(InhabitantsFile.PATH.length() + 1);
+                    final URL url = b.getEntry(entry);
+                    try {
+                        result.addHabitat(habitatName,
+                                new ModuleMetadata.InhabitantsDescriptor(
+                                        url, loadFully(url)
+                                ));
+                    } catch (IOException e) {
+                        LogHelper.getDefaultLogger().log(Level.SEVERE,
+                                "Error reading inhabitants list in " + b.getLocation(), e);
+                    }
+                }
+            }
+        }
+
+        private void parseServiceDescriptors(ModuleMetadata result) {
+            if (b.getEntry(SERVICE_LOCATION) == null) return;
+            Enumeration<String> entries;
+            entries = b.getEntryPaths(SERVICE_LOCATION);
+            if (entries != null) {
+                while (entries.hasMoreElements()) {
+                    String entry = entries.nextElement();
+                    String serviceName = entry.substring(SERVICE_LOCATION.length()+1);
+                    InputStream is = null;
+                    final URL url = b.getEntry(entry);
+                    try {
+                        is = url.openStream();
+                        result.load(url, serviceName, is);
+                    } catch (IOException e) {
+                        LogHelper.getDefaultLogger().log(Level.SEVERE,
+                                "Error reading service provider in " + b.getLocation(), e);
+                    } finally {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException e) {}
+                        }
+                    }
+                }
+            }
+        }
+
+        private byte[] loadFully(URL url) throws IOException {
+            InputStream in = url.openStream();
+            byte[] buf = new byte[0];
+            try {
+                int chunkSize = 512;
+                byte[] chunk = new byte[chunkSize];
+                while (true) {
+                    int count = in.read(chunk, 0, chunkSize);
+                    if (count == -1) break; // EOF
+                    final int curLength = buf.length;
+                    byte[] newbuf = new byte[curLength + count];
+                    System.arraycopy(buf, 0, newbuf, 0, curLength);
+                    System.arraycopy(chunk, 0, newbuf, curLength, count);
+                    buf = newbuf;
+                }
+                return buf;
+            } finally {
+                in.close();
+            }
+        }
+
+        public String getBaseName() {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+    }
 }
