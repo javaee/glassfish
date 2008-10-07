@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish Nucleus",
-                        "pkg.description" : "GlassFish Nucleus package contains core server infrastrucutre such as GlassFish kernel, etc. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish Nucleus package contains core server infrastructure such as GlassFish kernel, etc. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
