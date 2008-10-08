@@ -77,6 +77,18 @@ public interface Branding {
     public String getMinorVersion();
 
     /**
+     * Returns version prefix
+     * example: v
+     */ 
+    public String getVersionPrefix();
+
+    /**
+     * Returns version suffix
+     * example: prelude
+     */ 
+    public String getVersionSuffix();
+
+    /**
      * Returns Build Id
      * example: b17
      */ 
