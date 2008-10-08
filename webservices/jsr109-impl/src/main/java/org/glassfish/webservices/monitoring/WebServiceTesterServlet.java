@@ -66,11 +66,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.webservices.WebServiceContractImpl;
+import com.sun.enterprise.module.*;
 
 /**
  * This servlet is responsible for testing web-services.
@@ -564,6 +565,34 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         URLClassLoader urlClassLoader = new  URLClassLoader(urls,parentCl);
         Thread.currentThread().setContextClassLoader(urlClassLoader);
        */ File classesDir = new File(System.getProperty("java.io.tmpdir"));
+
+
+        /**
+         * JAXWS uses the System.getProperty(java.class.path) to pass on to apt during wsgen
+         * In V2 this would have
+         * tools.jar, webservices-rt and webservices-api.jar and webservices-tools.jar so there was no issue
+         * In V3 the apt cannot see JSR 250, JAXB api and JAXWS apis so I have to pass them
+         * explicitly to apt using the classpath option
+         * This will be changed after prelude once I move to asm as it is not thoroughly tested right now
+         */
+
+        WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+        ModulesRegistry modulesRegistry = wscImpl.getModulesRegistry();
+        Collection<Module> modules1 = modulesRegistry.getModules();
+        Iterator it= modules1.iterator();
+        String classpath1 = classesDir.getAbsolutePath();
+        while(it.hasNext()){
+            Module m = (Module) it.next();
+            String name = m.getName();
+            if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") ){
+                ModuleDefinition modDef= m.getModuleDefinition();
+                java.net.URI[] location = modDef.getLocations();
+                classpath1+=(File.pathSeparator + new File(location[0]).getAbsolutePath())  ;
+
+            }
+        }
+
+        System.setProperty("java.class.path",classpath1);
         // create a dumy file to have a unique temporary name for a directory
         classesDir = File.createTempFile("jax-ws", "tester", classesDir);
         classesDir.delete();
