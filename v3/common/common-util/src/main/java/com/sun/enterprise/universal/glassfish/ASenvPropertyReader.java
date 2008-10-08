@@ -36,6 +36,8 @@
 package com.sun.enterprise.universal.glassfish;
 
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+
 import java.util.HashMap;
 
 import java.io.*;
@@ -63,6 +65,18 @@ public class ASenvPropertyReader {
     public ASenvPropertyReader() {
         this(GFLauncherUtils.getInstallDir());
     }
+    
+    /**
+     * Read and process the information in asenv
+     * This should be called upon normal glassfish installation where the installation
+     * directory was calculated and specified through the startup context
+     *
+     * @param context the startup context.
+     */
+    public ASenvPropertyReader(StartupContext context) {
+        this(context.getRootDirectory().getParentFile());
+    }
+    
     /**
      * Read and process the information in asenv.[bat|conf]
      * This constructor should normally not be called.  It is designed for

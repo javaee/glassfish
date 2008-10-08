@@ -25,6 +25,8 @@ package org.glassfish.server;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+
 import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
@@ -65,7 +67,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     private /*almost final*/ File root;
     private /*almost final*/ boolean verbose;
     private /*almost final*/ boolean debug;
-    private static final ASenvPropertyReader asenv = new ASenvPropertyReader();
+    private ASenvPropertyReader asenv;
     private /*almost final*/ String domainName;
     private /*almost final*/ String instanceName;
 
@@ -81,17 +83,30 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         // the getParentFile() that we do later fails to work correctly if
         // root is for example "new File(".")
         this.root = root.getAbsoluteFile();
+        asenv = new ASenvPropertyReader();
     }
 
     /**
      * This is where the real initialization happens.
      */
     public void postConstruct() {
+
+        asenv = new ASenvPropertyReader(startupContext);
+
         // default
         if(this.root==null)
             this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
 
         asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root.getAbsolutePath());
+        for (Map.Entry<String, String> entry : asenv.getProps().entrySet()) {
+
+            File location = new File(entry.getValue());
+            if (!location.isAbsolute()) {
+                location = new File(asenv.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY), entry.getValue());
+            }
+            System.setProperty(entry.getKey(), location.getAbsolutePath());
+        }
+        
         Properties args = startupContext.getArguments();
 
         verbose = Boolean.parseBoolean(args.getProperty("-verbose"));
