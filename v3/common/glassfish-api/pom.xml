@@ -64,10 +64,10 @@
     <properties>
     	<glassfish-api.version>10.0.422</glassfish-api.version>
         <!-- When you change the following property, please change grizzly.package-version as well -->
-        <grizzly.original-version>1.8.6.1</grizzly.original-version>
+        <grizzly.original-version>1.8.6.2</grizzly.original-version>
         <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
              we map it manually -->
-        <grizzly.package-version>1.8.6.1</grizzly.package-version>
+        <grizzly.package-version>1.8.6.2</grizzly.package-version>
         <hk2.plugin.version>0.3.30</hk2.plugin.version>    
         <hk2.version>0.3.30</hk2.version>    
     </properties>

@@ -52,10 +52,10 @@
     <description>Grizzly Optionals Module for GlassFish</description>
     <properties>
         <!-- When you change the following property, please change grizzly.package-version as well -->
-        <grizzly.original-version>1.8.6.1</grizzly.original-version>
+        <grizzly.original-version>1.8.6.2</grizzly.original-version>
         <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
              we map it manually -->
-        <grizzly.package-version>1.8.6.1</grizzly.package-version>
+        <grizzly.package-version>1.8.6.2</grizzly.package-version>
     </properties>    
     <build>
         <plugins>
