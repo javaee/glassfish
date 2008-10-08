@@ -602,9 +602,8 @@ public class JavaEETransactionManagerSimplified
             _logger.log(Level.FINE,"TM: componentDestroyed" + instance);
 
         // Access resourceTable directly to avoid adding an empty list then removing it
-        List l = (List)resourceTable.get(getResourceTableKey(instance, inv));
+        List l = (List)resourceTable.remove(getResourceTableKey(instance, inv));
         if (l != null && l.size() > 0) {
-            resourceTable.remove(getResourceTableKey(instance, inv));
             Iterator it = l.iterator();
             while (it.hasNext()) {
                 TransactionalResource h = (TransactionalResource) it.next();
