@@ -198,6 +198,11 @@
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
+        <!-- for Servlet 3.0
+        <ant dir="webServletAnnotation" target="all"/>
+        <ant dir="servletFilterAnnotation" target="all"/>
+        <ant dir="webServletContextListenerAnnotation" target="all"/>
+        -->
     </target>
 
     <target name="web-container">
