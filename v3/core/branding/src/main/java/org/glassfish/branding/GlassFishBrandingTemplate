@@ -58,14 +58,18 @@ public class GlassFishBranding implements Branding, PostConstruct {
     /**
     * version strings populated during build
     */
-    private String product_name          = "@PRODUCT_NAME@ Prelude";
+    private String product_name          = "@PRODUCT_NAME@";
     private String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
     private String full_version          = "@FULL_VERSION@";
     private String major_version         = "@MAJOR_VERSION@";
     private String minor_version         = "@MINOR_VERSION@"; 
     private String build_id              = "@BUILD_ID@";
+    private String version_prefix        = "@VERSION_PREFIX@";
+    private String version_suffix        = "@VERSION_SUFFIX@";
 
-	public void postConstruct() {
+    private boolean fullVersionSet = false;
+
+    public void postConstruct() {
 	    // check for resource bundle
 	    try {
                 PropertyResourceBundle vRes =
@@ -81,6 +85,7 @@ public class GlassFishBranding implements Branding, PostConstruct {
 	        str = vRes.getString("full_version");
                 if ((str != null) && (str.length() > 0)) {
 	            full_version = vRes.getString("full_version");
+                    fullVersionSet = true;
                 }
 	        str = vRes.getString("major_version");
                 if ((str != null) && (str.length() > 0)) {
@@ -94,17 +99,50 @@ public class GlassFishBranding implements Branding, PostConstruct {
                 if ((str != null) && (str.length() > 0)) {
 	            build_id = vRes.getString("build_id");
                 }
+	        str = vRes.getString("version_prefix");
+                if ((str != null) && (str.length() > 0)) {
+	            version_prefix = vRes.getString("version_prefix");
+                }
+	        str = vRes.getString("version_suffix");
+                if ((str != null) && (str.length() > 0)) {
+	            version_suffix = vRes.getString("version_suffix");
+                }
             } catch(MissingResourceException mre) {
                 // cannot use logger because this may have been called from logger itself
                 System.out.println("no resource bundle found for version, using default GlassFish version");
             }
-	}
+
+        // construct full version
+        if ((!fullVersionSet) && (minor_version != null) && (minor_version.length() > 0)) {
+            try {
+                if (Integer.parseInt(minor_version) > 0) {
+                    full_version = major_version + "." + minor_version;
+                } else {
+                    full_version = major_version;
+                }
+            } catch (NumberFormatException nfe) {
+                    full_version = major_version;
+            }
+        }
+    }
 
     /**
      * Returns version
      */ 
     public String getVersion() {
-        return product_name + " " + full_version;
+        StringBuffer sb = new StringBuffer("");
+        if (product_name == null) {
+            return null;
+        } else {
+            sb.append(product_name);
+        }
+        if (version_prefix != null)
+            sb.append(" " + version_prefix);
+        if (full_version != null)
+            sb.append(full_version);
+        if (version_suffix != null)
+            sb.append(" " + version_suffix);
+        return sb.toString();
     }
 
     /**
@@ -118,8 +156,7 @@ public class GlassFishBranding implements Branding, PostConstruct {
      * Returns abbreviated version.
      */
     public String getAbbreviatedVersion() {
-        return abbrev_product_name + major_version +
-               "." + minor_version;
+        return abbrev_product_name;
     }
 
     /**
@@ -141,6 +178,20 @@ public class GlassFishBranding implements Branding, PostConstruct {
      */ 
     public String getBuildVersion() {
     	return build_id;
+    }
+
+     /**
+    * Returns version prefix
+    */
+    public String getVersionPrefix() {
+        return version_prefix;
+    }
+
+    /**
+    * Returns version suffix
+    */
+    public String getVersionSuffix() {
+        return version_suffix;
     }
 
     /**

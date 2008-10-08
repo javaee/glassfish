@@ -19,24 +19,16 @@ import org.jvnet.hk2.component.PostConstruct;
 public class Version implements PostConstruct {
 
     /**
-     * Name of the properties used to override build time values.
-     */
-    private static final String PRODUCT_NAME = "product.name";
-    private static final String ABBREV_PRODUCT_NAME = "abbrev.product.name";
-    private static final String FULL_VERSION = "full.version";
-    private static final String MAJOR_VERSION = "major.version";
-    private static final String MINOR_VERSION = "minor.version";
-    private static final String BUILD_ID = "build.id";
-
-    /**
      * version strings populated during build
      */
     private static final String product_name          = "@PRODUCT_NAME@";
     private static final String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
-    private static final String full_version          = "@FULL_VERSION@";
+    private static String full_version                = "@FULL_VERSION@";
     private static final String major_version         = "@MAJOR_VERSION@";
     private static final String minor_version         = "@MINOR_VERSION@"; 
     private static final String build_id              = "@BUILD_ID@";
+    private static final String version_prefix        = "@VERSION_PREFIX@";
+    private static final String version_suffix        = "@VERSION_SUFFIX@";
 
     /**
      * Check if Branding implementation exists and set the value for
@@ -53,6 +45,19 @@ public class Version implements PostConstruct {
                 br = mHabitat.getByContract(Branding.class);
             }
         }
+
+        // construct full version
+        if ((minor_version != null) && (minor_version.length() > 0)) {
+            try {
+                if (Integer.parseInt(minor_version) > 0) {
+                    full_version = major_version + "." + minor_version;
+                } else {
+                    full_version = major_version;
+                }
+            } catch (NumberFormatException nfe) {
+                    full_version = major_version;
+            }
+        }
     }
 
     /**
@@ -62,7 +67,19 @@ public class Version implements PostConstruct {
         if (br != null) {
             return br.getVersion();
         }
-        return product_name + " " + full_version;
+        StringBuffer sb = new StringBuffer("");
+        if (product_name == null) {
+            return null;
+        } else {
+            sb.append(product_name);
+        }
+        if (version_prefix != null) 
+            sb.append(" " + version_prefix);
+        if (full_version != null) 
+            sb.append(full_version);
+        if (version_suffix != null) 
+            sb.append(" " + version_suffix);
+        return sb.toString();
     }
 
     /**
@@ -82,8 +99,7 @@ public class Version implements PostConstruct {
         if (br != null) {
             return br.getAbbreviatedVersion();
         }
-        return abbrev_product_name + major_version +
-               "." + minor_version;
+        return abbrev_product_name;
     }
 
     /**
@@ -114,6 +130,26 @@ public class Version implements PostConstruct {
             return br.getBuildVersion();
         }
     	return build_id;
+    }
+
+    /**
+    * Returns version prefix
+    */ 
+    public static String getVersionPrefix() {
+        if (br != null) {
+            return br.getVersionPrefix();
+        }
+    	return version_prefix;
+    }
+
+    /**
+    * Returns version suffix
+    */ 
+    public static String getVersionSuffix() {
+        if (br != null) {
+            return br.getVersionSuffix();
+        }
+    	return version_suffix;
     }
 
     /**

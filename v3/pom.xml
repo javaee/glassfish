@@ -134,9 +134,11 @@
         <dist.version>10.0-SNAPSHOT</dist.version>
         <product.name>GlassFish</product.name>
         <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
-        <abbrev_product_name>GlassFish</abbrev_product_name>
-        <major_version>10</major_version>
+        <abbrev_product_name>glassfish</abbrev_product_name>
+        <major_version>3</major_version>
         <minor_version>0</minor_version>
+        <version_prefix>v</version_prefix>
+        <version_suffix></version_suffix>
         <nucleus.version>0.1-SNAPSHOT</nucleus.version>
         <jruby-scripting.version>0.6.26</jruby-scripting.version>
         <jmac-api.version>1.0-rev-1</jmac-api.version>
