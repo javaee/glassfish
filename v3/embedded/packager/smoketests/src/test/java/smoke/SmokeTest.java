@@ -34,14 +34,8 @@ public class SmokeTest {
     @Test
     public void deploySimpleWar() {
         try {
-            File qqq = new File("target/test-classes/simple.war");
-            
-            if(!qqq.exists())
-                qqq = new File("smoketests/target/test-classes/simple.war");
-            
-            assertTrue(qqq.exists());
             AppServer myGF = new AppServer(9999);
-            App app = myGF.deploy(qqq);
+            App app = myGF.deploy(simpleWar);
             
             // TODO -- get output at port 9999
             
