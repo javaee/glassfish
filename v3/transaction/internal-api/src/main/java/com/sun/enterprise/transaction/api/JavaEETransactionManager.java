@@ -51,6 +51,7 @@ import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.ResourceHandler;
 
 /**
  *
@@ -153,9 +154,9 @@ public interface JavaEETransactionManager extends TransactionManager {
      * callback to calculate the resource table key.
      *
      * @param instance The component instance
+     * @param inv The ComponentInvocation
      */
     public void componentDestroyed(Object instance, ComponentInvocation inv);
-
 
     /**
      * This is called by Container to indicate that a component
@@ -166,7 +167,14 @@ public interface JavaEETransactionManager extends TransactionManager {
      */
     public void componentDestroyed(Object instance);
 
-    public void ejbDestroyed(ComponentInvocation context);
+    /**
+     * This is called by Container to indicate that a component
+     * is being destroyed. All resources registered with this ResourceHandler
+     * should be released. 
+     *
+     * @param rh The ResourceHandler
+     */
+    public void componentDestroyed(ResourceHandler rh);
 
     /**
      * Called by InvocationManager

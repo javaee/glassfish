@@ -598,48 +598,25 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void componentDestroyed(Object instance, ComponentInvocation inv) {
-        if (_logger.isLoggable(Level.FINE))
+        if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,"TM: componentDestroyed" + instance);
+            _logger.log(Level.FINE,"TM: resourceTable before: " + resourceTable.getEntryCount());
+        }
 
         // Access resourceTable directly to avoid adding an empty list then removing it
         List l = (List)resourceTable.remove(getResourceTableKey(instance, inv));
-        if (l != null && l.size() > 0) {
-            Iterator it = l.iterator();
-            while (it.hasNext()) {
-                TransactionalResource h = (TransactionalResource) it.next();
-                try {
-                    h.closeUserConnection();
-                } catch (Exception ex) {
-                    if (_logger.isLoggable(Level.FINE))
-                        _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
-                }
-            }
-            l.clear();
-        }
+        processResourceList(l);
+
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: resourceTable after: " + resourceTable.getEntryCount());
     }
 
-    public void ejbDestroyed(ComponentInvocation inv) {
+    public void componentDestroyed(ResourceHandler rh) {
         if (_logger.isLoggable(Level.FINE))
-            _logger.log(Level.FINE, " ejbDestroyed: " + inv);
+            _logger.log(Level.FINE, " componentDestroyed: " + rh);
 
-        List l = null;
-        ResourceHandler rh = inv.getResourceHandler();
         if (rh != null) {
-            l = rh.getResourceList();
-
-            if (l != null && l.size() > 0) {
-                Iterator it = l.iterator();
-                while (it.hasNext()) {
-                    TransactionalResource h = (TransactionalResource) it.next();
-                    try {
-                        h.closeUserConnection();
-                    } catch (Exception ex) {
-                        if (_logger.isLoggable(Level.FINE))
-                            _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
-                    }
-                }
-                l.clear();
-            }
+            processResourceList(rh.getResourceList());
         }
     }
 
@@ -1351,6 +1328,25 @@ public class JavaEETransactionManagerSimplified
             }
         } catch (Exception ex) {
             _logger.log(Level.SEVERE,"enterprise_distributedtx.excep_in_enlist",ex);
+        }
+    }
+
+    /**
+     * Called by #componentDestroyed()
+     */
+    private void processResourceList(List l) {
+        if (l != null && l.size() > 0) {
+            Iterator it = l.iterator();
+            while (it.hasNext()) {
+                TransactionalResource h = (TransactionalResource) it.next();
+                try {
+                    h.closeUserConnection();
+                } catch (Exception ex) {
+                    if (_logger.isLoggable(Level.FINE))
+                        _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
+                }
+            }
+            l.clear();
         }
     }
 
