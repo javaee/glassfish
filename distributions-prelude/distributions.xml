@@ -27,21 +27,16 @@ own identifying information: Portions Copyright [yyyy]
 <property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
-<property name="authority" value="release.glassfish.org"/>
 <property name="title" value="GlassFish v3 Prelude"/>
 <property name="description" value="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0)."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
-<property name="release.authority" value="release.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
 <property name="repository.url" value="http://pkg.glassfish.org/v3prelude"/>
 <property name="dev.repository.url" value="${repository.url}/dev"/>
-<property name="release.repository.url" value="${repository.url}/release"/>
 <property name="contrib.repository.url" value="${repository.url}/contrib"/>
-<property name="sun.dev.authority" value="dev.glassfish.sun.com"/>
 <property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
 <property name="sun.repository.url" value="http://mercurial1.foundry.sun.com/glassfish/v3prelude"/>
-<property name="sun.dev.repository.url" value="${sun.repository.url}/dev"/>
 <property name="sun.contrib.repository.url" value="${sun.repository.url}/contrib"/>
 
 <target name="init"> 
@@ -134,13 +129,7 @@ own identifying information: Portions Copyright [yyyy]
         <arg line="set-authority -P -O ${repo.url} '${dev.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -O ${repo.url} '${release.authority}'"/>
-    </exec>
-    <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${repo.url} '${contrib.authority}'"/>
-    </exec>
-    <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-authority -O ${repo.url} '${sun.dev.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="set-authority -O ${repo.url} '${sun.contrib.authority}'"/>
@@ -170,11 +159,7 @@ own identifying information: Portions Copyright [yyyy]
 
     <antcall target="update-cfg-cache-for-dev-repository-urls"/> 
 
-    <antcall target="update-cfg-cache-for-release-repository-urls"/> 
-
     <antcall target="update-cfg-cache-for-contrib-repository-urls"/> 
-
-    <antcall target="update-cfg-cache-for-sun-dev-repository-urls"/> 
 
     <antcall target="update-cfg-cache-for-sun-contrib-repository-urls"/> 
 </target>
@@ -204,31 +189,6 @@ origin-for-darwin-universal-dev]]>
     </replace>
 </target>
 
-<target name="update-cfg-cache-for-release-repository-urls">
-    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${release.authority}">
-        <replacevalue><![CDATA[prefix = release.glassfish.org
-origin-for-windows-i386-release
-origin-for-sunos-i386-release
-origin-for-sunos-sparc-release
-origin-for-linux-i386-release
-origin-for-darwin-universal-release]]>
-        </replacevalue>
-    </replace>
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
-        <replacefilter token="origin-for-windows-i386-release"
-            value="origin-for-windows-i386 = http://pkg.glassfish.org/v3prelude/release/windows/"/>
-        <replacefilter token="origin-for-sunos-i386-release"
-            value="origin-for-sunos-i386 = http://pkg.glassfish.org/v3prelude/release/solaris-x86/"/>
-        <replacefilter token="origin-for-sunos-sparc-release"
-            value="origin-for-sunos-sparc = http://pkg.glassfish.org/v3prelude/release/solaris-sparc/"/>
-        <replacefilter token="origin-for-linux-i386-release"
-            value="origin-for-linux-i386 = http://pkg.glassfish.org/v3prelude/release/linux/"/>
-        <replacefilter token="origin-for-darwin-universal-release"
-            value="origin-for-darwin-universal = http://pkg.glassfish.org/v3prelude/release/mac/"/>
-    </replace>
-</target>
-
 <target name="update-cfg-cache-for-contrib-repository-urls">
     <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
     <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${contrib.authority}">
@@ -253,32 +213,6 @@ origin-for-darwin-universal-contrib]]>
             value="origin-for-darwin-universal = http://pkg.glassfish.org/v3prelude/contrib/mac/"/>
     </replace>
 </target>
-
-<target name="update-cfg-cache-for-sun-dev-repository-urls">
-    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${sun.dev.authority}">
-        <replacevalue><![CDATA[prefix = dev.glassfish.sun.com 
-origin-for-windows-i386-sun-dev
-origin-for-sunos-i386-sun-dev
-origin-for-sunos-sparc-sun-dev
-origin-for-linux-i386-sun-dev
-origin-for-darwin-universal-sun-dev]]>
-        </replacevalue>
-    </replace>
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
-        <replacefilter token="origin-for-windows-i386-sun-dev"
-            value="origin-for-windows-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/dev/windows/"/>
-        <replacefilter token="origin-for-sunos-i386-sun-dev"
-            value="origin-for-sunos-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/dev/solaris-x86/"/>
-        <replacefilter token="origin-for-sunos-sparc-sun-dev"
-            value="origin-for-sunos-sparc = http://mercurial1.foundry.sun.com/glassfish/v3prelude/dev/solaris-sparc/"/>
-        <replacefilter token="origin-for-linux-i386-sun-dev"
-            value="origin-for-linux-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/dev/linux/"/>
-        <replacefilter token="origin-for-darwin-universal-sun-dev"
-            value="origin-for-darwin-universal = http://mercurial1.foundry.sun.com/glassfish/v3prelude/dev/mac/"/>
-    </replace>
-</target>
-
 
 <target name="update-cfg-cache-for-sun-contrib-repository-urls">
     <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
