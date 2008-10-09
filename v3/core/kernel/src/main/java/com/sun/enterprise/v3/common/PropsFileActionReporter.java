@@ -56,16 +56,17 @@ public class PropsFileActionReporter extends ActionReporter {
         Attributes mainAttr = out.getMainAttributes();
         mainAttr.put(Attributes.Name.SIGNATURE_VERSION, "1.0");
         mainAttr.putValue("exit-code", exitCode.toString());
+        mainAttr.putValue("use-main-children-attribute", Boolean.toString(useMainChildrenAttr));
         
         if(exitCode == ExitCode.FAILURE)
             writeCause(mainAttr);
-
+        
         writeReport(null, topMessage, out, mainAttr);
         out.write(os);
     }
 
     public void writeReport(String prefix, MessagePart part, Manifest m,  Attributes attr) {
-
+        
         attr.putValue("message", part.getMessage());
         if (part.getProps().size()>0) {
             String keys=null;
@@ -101,5 +102,15 @@ public class PropsFileActionReporter extends ActionReporter {
         String causeMessage = t.toString();
         mainAttr.putValue("cause", causeMessage);
     }
+
+   /* Issue 5918 Keep output sorted. If set to true ManifestManager will grab 
+    * "children" from main attributes. "children" is in original order of
+    * output set by server-side
+    */
+    public void useMainChildrenAttribute(boolean useMainChildrenAttr) {
+        this.useMainChildrenAttr = useMainChildrenAttr;
+    }
+
+    private boolean useMainChildrenAttr = false;
 }
 

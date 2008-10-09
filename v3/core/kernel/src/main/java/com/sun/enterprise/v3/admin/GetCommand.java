@@ -51,6 +51,7 @@ import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.datatree.TreeNode;
@@ -66,7 +67,7 @@ import org.glassfish.flashlight.datatree.MethodInvoker;
 @Service(name="get")
 @Scoped(PerLookup.class)
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
-
+    
     @Inject
     Domain domain;
 
@@ -84,12 +85,21 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         ActionReport report = context.getActionReport();
 
+        /* Issue 5918 Used in ManifestManager to keep output sorted */
+        try {
+            PropsFileActionReporter reporter = (PropsFileActionReporter) report;
+            reporter.useMainChildrenAttribute(true);
+        } catch(ClassCastException e) {
+            context.logger.severe("Sort failed in get command: " + e.toString());
+            e.printStackTrace();
+        }
+        
         if (monitor) {
             getMonitorAttributes(report);
             return;
         }
-        
 
+        
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
         Map<Dom, String> dottedNames =  new HashMap<Dom, String>();
@@ -155,10 +165,10 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             //No monitoring data, so nothing to list
             report.setActionExitCode(ExitCode.SUCCESS);
             return;
-        }
+        }        
         TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
-        for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
+        for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
             if ((! tn1.hasChildNodes()) && 
                     ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
                 //Counter c = (Counter)tn1;
@@ -171,7 +181,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
           obj = it.next();
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(obj + " = " + map.get(obj));
-        }        
+        }
         report.setActionExitCode(ExitCode.SUCCESS);
     }
 }

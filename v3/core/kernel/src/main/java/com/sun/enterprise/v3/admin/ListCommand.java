@@ -10,12 +10,11 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 
 import java.util.Map;
-import org.glassfish.api.ActionReport.ExitCode;
 import java.util.HashMap;
 
 import java.util.*;
 
-import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
@@ -47,6 +46,15 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
+        
+        /* Issue 5918 Used in ManifestManager to keep output sorted */
+        try {
+            PropsFileActionReporter reporter = (PropsFileActionReporter) report;
+            reporter.useMainChildrenAttribute(true);
+        } catch(ClassCastException e) {
+            context.logger.severe("Sort failed in list command: " + e.toString());
+            e.printStackTrace();
+        }
 
         if (monitor) {
             listMonitorElements(report);

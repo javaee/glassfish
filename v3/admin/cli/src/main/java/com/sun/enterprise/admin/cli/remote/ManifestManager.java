@@ -94,7 +94,13 @@ class ManifestManager implements ResponseManager {
         if(ok(msg))
             sb.append(msg).append(EOL);
 
-        processOneLevel("", null, response.getMainAtts(), sb);
+        boolean useMainChildrenAttr = Boolean.valueOf(response.getMainAtts().get("use-main-children-attribute"));
+
+        if (useMainChildrenAttr) {
+            sb = processMainChildrenAttribute(response.getMainAtts(), sb);
+        } else {
+            processOneLevel("", null, response.getMainAtts(), sb);
+        }
 
         if(!response.wasSuccess()) {
             final String cause = response.getCause();
@@ -174,6 +180,20 @@ class ManifestManager implements ResponseManager {
             }
             processOneLevel(prefix + TAB, container, entry.getValue(), sb);
         }
+    }
+
+   /* Issue 5918 Keep output sorted. Grab "children" from main attributes
+    * which has the original order of output returned from server-side
+    */
+    private StringBuilder processMainChildrenAttribute(Map<String,String> atts, StringBuilder sb) {
+        String allChildren = atts.get("children");
+        if (ok(allChildren)) {
+            String[] children = allChildren.split(";");
+            for (String child : children) {
+                sb.append(child).append(EOL);
+            }
+        }
+        return sb;
     }
 
     private void dump() {
