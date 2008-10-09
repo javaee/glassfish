@@ -37,6 +37,7 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
+import com.sun.ejb.containers.builder.StatefulContainerBuilder;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
@@ -45,10 +46,17 @@ import com.sun.enterprise.security.SecurityContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.ArrayList;
 
+@Service
 public final class ContainerFactoryImpl implements ContainerFactory {
+
+    @Inject
+    private Habitat habitat;
 
     public Container createContainer(EjbDescriptor ejbDescriptor,
 				     ClassLoader loader, 
@@ -87,16 +95,10 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                         container = new StatelessSessionContainer(ejbDescriptor, loader);
                     }
                 } else {
-                    /*TODO
-                    //container = new StatefulSessionContainer(ejbDescriptor, loader);
-		    BaseContainerBuilder builder =
-			new StatefulContainerBuilder();
-		    builder.buildContainer(ejbDescriptor, loader,
-			dynamicConfigContext);
-		    container = builder.getContainer();
-		    //containers.put(ejbDescriptor.getUniqueId(), container);
-		    //builder.completeInitialization(sm);
-                */
+                    StatefulContainerBuilder sfsbBuilder = habitat.getComponent(
+                            StatefulContainerBuilder.class);
+                    sfsbBuilder.createContainer(ejbDescriptor, loader);
+                    container = sfsbBuilder.getContainer();
                 }
             } else if ( ejbDescriptor instanceof EjbMessageBeanDescriptor) {
                 //TODO container = new MessageBeanContainer(ejbDescriptor, loader);

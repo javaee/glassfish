@@ -52,17 +52,19 @@ import java.util.Collection;
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
 
-    String appName;
-    ContainerFactory ejbContainerFactory;
-    Collection<EjbDescriptor> ejbs;
-    Collection<Container> containers = new ArrayList();
-    ClassLoader ejbAppClassLoader;
-    DeploymentContext dc;
+    private String appName;
+    private Collection<EjbDescriptor> ejbs;
+    private Collection<Container> containers = new ArrayList();
+    private ClassLoader ejbAppClassLoader;
+    private DeploymentContext dc;
 
     @Inject
-    EJBSecurityManagerFactory ejbSMF;
+    private EJBSecurityManagerFactory ejbSMF;
 
-    SingletonLifeCycleManager singletonLCM;
+    @Inject
+    private ContainerFactory ejbContainerFactory;
+
+    private SingletonLifeCycleManager singletonLCM;
 
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
@@ -72,7 +74,6 @@ public class EjbApplication
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
             ClassLoader cl) {
-        this.ejbContainerFactory = new ContainerFactoryImpl();
         this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
         this.appName = ""; //TODO

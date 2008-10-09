@@ -33,50 +33,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
-
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+package com.sun.ejb.base.sfsb.store;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * FileStoreManagerConstants defines a set of "keys"
+ * that can be used to populate / query values that
+ * will be needed during SFSBStoreManager initialization.
+ * 
+ * FilePersistenceStragtegyBuilder populates the map with the
+ *  following keys which is consumed by the FileStoreManager
  *
+ * @author Mahesh Kannan
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+public interface FileStoreManagerConstants {
 
     /**
-     * Get the resources associated with this Context.
+     * Name of the store manager. Used mainly for logging / debugging
      */
-    List getResourceList();
-    
+    public static String STORE_MANAGER_NAME =
+        "com.sun.ejb.spi.sfsb.store.name";
+
+    /**
+     * The containerId used to differentiate each container in 
+     *	the server.
+     */
+    public static String CONTAINER_ID =
+        "com.sun.ejb.spi.sfsb.store.containerid";
+
+    /**
+     * Defines the session timeout in seconds. Sessions not accessed
+     *  for this duration can be removed and will no longer
+     *  be available to clients
+     */
+    public static String SESSION_TIMEOUT_IN_SECONDS =
+        "com.sun.ejb.spi.sfsb.store.timeout";
+
+    /**
+     * Defines the grace period for session timeout in seconds.
+     *	Sessions not accessed for (SESSION_TIMEOUT_IN_SECONDS + thisValue)
+     *  can be removed and will no longer be available to clients
+     */
+    public static String GRACE_SESSION_TIMEOUT_IN_SECONDS =
+        "com.sun.ejb.spi.sfsb.store.grace.timeout";
+
+    /**
+    /**
+     * This will be used by File system sfsbManager
+     *  This param could be null
+     */
+    public static String PASSIVATION_DIRECTORY_NAME =
+        "com.sun.ejb.spi.sfsb.store.directory";
+
 }
 

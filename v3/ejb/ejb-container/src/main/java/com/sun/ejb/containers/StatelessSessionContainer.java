@@ -142,7 +142,7 @@ public class StatelessSessionContainer
         this(ContainerType.STATELESS, desc, loader);
     }
 
-    StatelessSessionContainer(ContainerType conType, EjbDescriptor desc, ClassLoader loader)
+    protected StatelessSessionContainer(ContainerType conType, EjbDescriptor desc, ClassLoader loader)
         throws Exception
         {
             super(conType, desc, loader);

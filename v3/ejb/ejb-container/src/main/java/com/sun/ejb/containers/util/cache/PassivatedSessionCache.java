@@ -33,50 +33,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
-
-/**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
- *
- */
-
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+public class PassivatedSessionCache
+    extends LruCache
+{
 
     /**
-     * Get the resources associated with this Context.
+     * default constructor
      */
-    List getResourceList();
-    
+    public PassivatedSessionCache() {
+        super();
+    }
+
+    /**
+     * constructor with specified timeout
+     */
+    public PassivatedSessionCache(long timeout) {
+        super(timeout);
+    }
+
+    /**
+     * this item is just added to the cache
+     * @param item <code>CacheItem</code> that was created
+     * @return a overflow item; may be null
+     *
+     * Cache bucket is already synchronized by the caller
+     */
+    protected CacheItem itemAdded(CacheItem item) {
+        CacheItem overflow = null;
+        LruCacheItem lc = (LruCacheItem) item;
+
+        // set the timestamp
+        lc.lastAccessed = ((Long) item.value).longValue();
+
+        // update the LRU
+        synchronized (this) {
+            if (head != null) {
+                head.lPrev = lc;
+                lc.lNext = head;
+            }
+            else {
+                tail = lc;
+            }
+            head = lc;
+
+            listSize++;
+
+        }
+
+        return overflow;
+    }
+
+    protected boolean isThresholdReached() {
+        return false;
+    }
+
 }
 

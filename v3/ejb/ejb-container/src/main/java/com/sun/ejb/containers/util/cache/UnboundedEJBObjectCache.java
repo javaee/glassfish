@@ -33,50 +33,74 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import com.sun.appserv.util.cache.Cache;
+import com.sun.appserv.util.cache.CacheListener;
+import com.sun.appserv.util.cache.Constants;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * An EJB(Local)Object cache that does not impose any limit on the 
+ * number of entries
  *
+ * @author Mahesh Kannan
  */
-
-public interface ComponentContext
-    extends ResourceHandler {
+public class UnboundedEJBObjectCache
+    extends BaseCache
+    implements EJBObjectCache
+{
+    /**
+     * default constructor
+     */
+    public UnboundedEJBObjectCache(String name) { super(); }
     
     /**
-     * Get the EJB instance associated with this context.
+     * constructor with specified timeout
      */
-    Object getEJB();
+    public UnboundedEJBObjectCache(String name, long timeout) {
+        super();
+    }
     
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
+    public void init(int maxEntries, int numberOfVictimsToSelect,
+            long timeout, float loadFactor, Properties props)
+    {
+        super.init(maxEntries, loadFactor, props);
+    }
     
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
+    public Object get(Object key, boolean incrementRefCount) {
+        return super.get(key);
+    }
     
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
-
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
+    public Object put(Object key, Object value, boolean linkWithLru) {
+        return super.put(key, value);
+    }
+    
+    public Object remove(Object key, boolean decrementRefCount) {
+        return super.remove(key);
+    }
+    
+    public void setEJBObjectCacheListener(EJBObjectCacheListener listener) {
+        //do nothing
+    }
+    
+    protected void trimItem(CacheItem item) {
+        
+    }
+    
+    public Map getStats() {
+        Map map = new HashMap();
+        StringBuffer sbuf = new StringBuffer();
+        sbuf.append("(listSize = 0")
+        .append("; cacheSize = ").append(getEntryCount())
+        .append(")");
+        map.put("_UnBoundedEJBObject ==> ", sbuf.toString());
+        return map;
+    }
     
 }
-

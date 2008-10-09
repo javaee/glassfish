@@ -33,50 +33,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.util.ArrayList;
 
-/**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
- *
- */
 
-public interface ComponentContext
-    extends ResourceHandler {
+public interface Cache {
+
+    public Object get(Object key);
+    
+    public Object put(Object key, Object obj);
+    
+    public Object remove(Object key);
+    
+    public boolean contains(Object key);
+    
+    public Enumeration elements();
+    
+    public void clear();
+    
+    public int size();
+    
+    public int getMaxCacheSize();
+    
+    public int getCacheHits();
+    
+    public int getCacheMisses();
+    
+    public void incrementCacheFailures(Object key);
+    
+    public void incrementCacheSuccess(Object key);
+    
+    public void incrementCacheFailures();
+    
+    public void incrementCacheSuccess();
     
     /**
-     * Get the EJB instance associated with this context.
+     * Destroys this cache. This method should perform final clean ups.
      */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+    public void destroy();
 
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
-    
 }
 

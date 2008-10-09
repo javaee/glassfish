@@ -33,50 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * An interface for handling overflow from EJB(Local)Object caches
  *
+ * @author Mahesh Kannan
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
+public interface EJBObjectCacheListener {
     
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
+    public void handleOverflow(Object key);
     
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
-
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
+    public void handleBatchOverflow(ArrayList keys);
     
 }
-

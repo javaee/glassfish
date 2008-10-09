@@ -36,6 +36,7 @@
 package com.sun.ejb.containers;
 
 import com.sun.ejb.EjbInvocation;
+import com.sun.ejb.spi.container.StatefulEJBContext;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -50,6 +51,10 @@ import javax.transaction.UserTransaction;
 import javax.xml.rpc.handler.MessageContext;
 import java.util.*;
 
+
+import static com.sun.ejb.containers.StatefulSessionContainer.EEMRefInfo;
+import static com.sun.ejb.containers.StatefulSessionContainer.EEMRefInfoKey;
+
 /**
  * Implementation of EJBContext for SessionBeans
  *
@@ -58,7 +63,7 @@ import java.util.*;
 
 public final class SessionContextImpl
     extends EJBContextImpl
-    implements SessionContext//TODO, StatefulEJBContext
+    implements SessionContext, StatefulEJBContext
 {
     private Object instanceKey;
     private boolean completedTxStatus;
@@ -85,7 +90,7 @@ public final class SessionContextImpl
 
     //Used during activation to populate entries in the above maps
     //Also, EEMRefInfo implements IndirectlySerializable
-    //TODO private Collection<EEMRefInfo> eemRefInfos = new HashSet<EEMRefInfo>();
+    private Collection<EEMRefInfo> eemRefInfos = new HashSet<EEMRefInfo>();
     
     
     SessionContextImpl(Object ejb, BaseContainer container) {
@@ -110,7 +115,7 @@ public final class SessionContextImpl
         return extendedEntityManagerMap;
     }
 
-    /*TODO
+
     Collection<EEMRefInfo> getAllEEMRefInfos() {
         return eemRefInfos;
     }
@@ -125,7 +130,7 @@ public final class SessionContextImpl
 		    EEMRefInfo refInfo) {
         getExtendedEntityManagerMap().put(emf, refInfo.getEntityManager());
     }
-    */
+
 
     public EntityManager getExtendedEntityManager(EntityManagerFactory emf) {
         return getExtendedEntityManagerMap().get(emf);

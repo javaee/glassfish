@@ -48,6 +48,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -62,6 +63,8 @@ import java.util.logging.Logger;
  */
 @Contract
 public interface EjbContainerUtil {
+
+    public Habitat getDefaultHabitat();
 
     public  Logger getLogger();
 
@@ -113,5 +116,7 @@ public interface EjbContainerUtil {
     public Vector getBeans(Transaction jtx);
 
     public void addWork(Runnable task);
+
+    public String getHAPersistenceType();
     
 }

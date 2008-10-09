@@ -47,12 +47,14 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.logging.LogDomains;
+import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -76,6 +78,9 @@ public class EjbContainerUtilImpl
     implements PostConstruct, EjbContainerUtil {
 
     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
+
+    @Inject
+    private Habitat habitat;
 
     @Inject
     private ServerContext serverContext;
@@ -114,7 +119,14 @@ public class EjbContainerUtilImpl
     @Inject(optional=true)
     private Agent callFlowAgent;
 
+    @Inject //Note:- Not specific to any ejb descriptor
+    private EJBServerConfigLookup ejbServerConfigLookup;
+
     private  static EjbContainerUtil _me;
+
+    public String getHAPersistenceType() {
+        return ejbServerConfigLookup.getSfsbHaPersistenceTypeFromConfig();
+    }
 
     public void postConstruct() {
         if (callFlowAgent == null) {
@@ -127,6 +139,10 @@ public class EjbContainerUtilImpl
                     });
         }
         _me = this;
+    }
+
+    public Habitat getDefaultHabitat() {
+        return habitat;
     }
 
     public static EjbContainerUtil getInstance() {

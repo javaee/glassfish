@@ -33,50 +33,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import com.sun.appserv.util.cache.Cache;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * An interface for accessing EJB(Local)Object caches
  *
+ * @author Mahesh Kannan
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
+public interface EJBObjectCache
+    extends Cache 
+{
+    public Object get(Object key, boolean incrementRefCount);
     
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
+    public Object put(Object key, Object value, boolean incrementRefCount);
     
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
+    public Object remove(Object key, boolean decrementRefCount);
     
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
+    public void init(int maxEntries, int numberOfVictimsToSelect,
+       long timeout, float loadFactor, java.util.Properties props);
     
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
-
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
-    
+    public void setEJBObjectCacheListener(EJBObjectCacheListener listener);
 }
-

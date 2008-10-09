@@ -33,50 +33,70 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.util.Properties;
 
-/**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
- *
- */
+import com.sun.ejb.spi.container.SFSBContainerCallback;
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+public class NRUSessionCache
+    extends LruSessionCache
+{ 
 
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
+    protected boolean doOrdering = false;
+    protected int orderingThreshold = 0;
+
+    public NRUSessionCache(String cacheName, 
+        SFSBContainerCallback container, int cacheIdleTime, int removalTime)
+    {
+        super("NRU-" + cacheName, container, cacheIdleTime, removalTime);
+    }
+
+    public void init(int maxEntries, float loadFactor, Properties props) {
+        super.init(maxEntries, loadFactor, props);
+        orderingThreshold = (int) (0.75 * threshold);
+    }
     
+    protected CacheItem itemAdded(CacheItem item) {
+        CacheItem addedItem = super.itemAdded(item);
+        doOrdering = (entryCount >= orderingThreshold);
+        return addedItem;
+    }
+    
+    protected void itemAccessed(CacheItem item) {
+        LruCacheItem lc = (LruCacheItem) item;
+        synchronized (this) {
+            if (lc.isTrimmed) {
+                lc.isTrimmed = false;
+                CacheItem overflow = super.itemAdded(item);
+                if (overflow != null) {
+                    trimItem(overflow);
+                }
+            } else if (doOrdering) {
+                super.itemAccessed(item);
+            }
+        }
+    }
+
+    protected void itemRefreshed(CacheItem item, int oldSize) {
+    }
+    
+    protected void itemRemoved(CacheItem item) {
+        super.itemRemoved(item);
+        doOrdering = (entryCount >= orderingThreshold);
+    }
+
+    public void trimTimedoutItems(int  maxCount) {
+        // If we are maintaining an ordered list use 
+        // the superclass method for trimming
+        if (doOrdering) {
+            super.trimTimedoutItems(maxCount);
+        } else {
+            // we don't have an ordered list, 
+            // so go through the whole cache and pick victims
+            trimUnSortedTimedoutItems(maxCount);
+        }
+    }
+
 }
-

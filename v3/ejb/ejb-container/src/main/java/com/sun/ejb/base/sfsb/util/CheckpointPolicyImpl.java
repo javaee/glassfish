@@ -33,50 +33,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.base.sfsb.util;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.lang.reflect.Method;
+
+import com.sun.ejb.spi.sfsb.util.CheckpointPolicy;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
- *
+ * @author Mahesh Kannan
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+public class CheckpointPolicyImpl
+    implements CheckpointPolicy
+{
 
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
-    
+    private boolean haEnabled;
+
+    public CheckpointPolicyImpl(boolean haEnabled) {
+	this.haEnabled = haEnabled;
+    }
+
+    public boolean isHAEnabled() {
+	return haEnabled;
+    }
+
+    public boolean needsCheckpoint(Method method) {
+	return false;
+    }
+
 }
-

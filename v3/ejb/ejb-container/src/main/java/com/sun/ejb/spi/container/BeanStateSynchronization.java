@@ -33,50 +33,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.spi.container;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import javax.ejb.DuplicateKeyException;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * There are cases where the container would need to interact with the 
+ * persistence manager. Some known cases are listed below
+ * 1. provide the user with a mechanism to flush changes to the database 
+ *    at the end of a method with out waiting until the end of the transaction. 
+ * 2. for read only beans provide a mechanism to have the master copy of the bean  
+ *    sync up with the database record.
  *
+ * Currently the bean concrete implementation that is created as part of the codegen
+ * would implement this interface. 
+ *
+ * @author Pramod Gopinath
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
+
+public interface BeanStateSynchronization {
     /**
-     * Get the EJB instance associated with this context.
+     * Provides a mechanism to flush changes to the database w/o waiting for
+     * the end of the transaction, based on some descriptor values set by the user. 
+     * The container would call this method in the postInvoke(), only if the flush
+     * is enabled for the current method and there were no other exceptions set 
+     * into inv.exception.
      */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+    public void ejb__flush() 
+        throws DuplicateKeyException;
 
     /**
-     * Get the resources associated with this Context.
+     * On receiving this message the PM would update its master copy
+     * by fetching the latest information for the primary key from the database
      */
-    List getResourceList();
-    
+    public void ejb__refresh(Object primaryKey);
+
+
+    /**
+     * On receiving this message the PM would delete from its master copy
+     * the details related to the primaryKey
+     */
+    public void ejb__remove(Object primaryKey);
 }
-

@@ -33,34 +33,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import com.sun.enterprise.deployment.EjbDescriptor;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.ejb.security.application.EJBSecurityManager;
+package com.sun.ejb.spi.sfsb.util;
+
 import org.jvnet.hk2.annotations.Contract;
 
-/**
- * ContainerFactory creates the appropriate Container instance
- * (StatefulSessionContainer, StatelessSessionContainer, EntityContainer, 
- * MessageBeanContainer) and initializes it.
- *
- * It is also a factory for EJBObject/Home instances which are needed
- * by the Protocol Manager when a remote invocation arrives.
- *
- */
 @Contract
-public interface ContainerFactory {
-    /**
-     * Create the appropriate Container instance and initialize it.
-     * @param ejbDescriptor the deployment descriptor of the EJB
-			    for which a container is to be created.
-     */
-    Container createContainer(EjbDescriptor ejbDescriptor, 
-			      ClassLoader loader, 
-			      EJBSecurityManager sm,
-			      DeploymentContext deployContext)
-	throws Exception;
+public interface SFSBVersionManager {
 
+    public long NO_VERSION = -404;
 
+    public long getRequestClientVersion();
+    
+    public void setRequestClientVersion(long val);
+    
+    public void clearRequestClientVersion();
+    
+    public long getResponseClientVersion();
+
+    public void setResponseClientVersion(long val);
+    
+    public void clearResponseClientVersion();
+
+    public void removeAll(long containerId);
+    
 }

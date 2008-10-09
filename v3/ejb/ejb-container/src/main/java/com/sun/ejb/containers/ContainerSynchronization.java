@@ -42,6 +42,8 @@ import javax.transaction.*;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 
 
 /**
@@ -71,7 +73,7 @@ final class ContainerSynchronization implements Synchronization
     private Transaction tx; // the tx with which this Sync was registered
     private EjbContainerUtil ejbContainerUtilImpl;
 
-    //TODO private SFSBTxCheckpointCoordinator sfsbTxCoordinator;
+    SFSBTxCheckpointCoordinator sfsbTxCoordinator;
 
     // Note: this must be called only after a Tx is begun.
     ContainerSynchronization(Transaction tx, 
@@ -205,10 +207,10 @@ final class ContainerSynchronization implements Synchronization
                 _logger.log(Level.SEVERE, "ejb.after_completion_error", ex);
             }
         }
-    /*TODO
-	if (sfsbTxCoordinator != null) {
-	    sfsbTxCoordinator.doTxCheckpoint();
-	}*/
+
+        if (sfsbTxCoordinator != null) {
+            sfsbTxCoordinator.doTxCheckpoint();
+        }
 
         for ( Iterator iter = timerSyncs.values().iterator(); 
               iter.hasNext(); ) {
@@ -224,13 +226,17 @@ final class ContainerSynchronization implements Synchronization
         ejbContainerUtilImpl.removeContainerSync(tx);
     }
 
-    /*TODO
     void registerForTxCheckpoint(SessionContextImpl sessionCtx) {
-    //No need to synchronize
-	if (sfsbTxCoordinator == null) {
-	    sfsbTxCoordinator = new SFSBTxCheckpointCoordinator();
-	}
+        //No need to synchronize
+        if (sfsbTxCoordinator == null) {
+            EjbDescriptor desc = sessionCtx.getContainer().getEjbDescriptor();
+            EJBServerConfigLookup ejbLookup = ejbContainerUtilImpl.getDefaultHabitat().
+                    getComponent(EJBServerConfigLookup.class);
+            ejbLookup.initWithEjbDescriptor(desc);
+            sfsbTxCoordinator = new SFSBTxCheckpointCoordinator(
+                    ejbLookup.getSfsbHaPersistenceTypeFromConfig());
+        }
 
-	sfsbTxCoordinator.registerContext(sessionCtx);
-    }*/
+        sfsbTxCoordinator.registerContext(sessionCtx);
+    }
 }

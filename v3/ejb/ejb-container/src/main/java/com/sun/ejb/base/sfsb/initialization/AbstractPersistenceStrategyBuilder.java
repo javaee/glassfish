@@ -33,50 +33,64 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.base.sfsb.initialization;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.util.logging.Logger;
+
+import com.sun.ejb.spi.sfsb.initialization.PersistenceStrategyBuilder;
+import com.sun.ejb.spi.container.SFSBContainerInitialization;
+
+import com.sun.enterprise.deployment.EjbDescriptor;
+
+import com.sun.logging.LogDomains;
+
+import com.sun.ejb.base.container.util.CacheProperties;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * (Abstract)Base class for all the PersistenceStrategyBuilders.
+ * Any code that is common to both HADB and File StoreManagers
+ * can be put here.
  *
+ * @author Mahesh Kannan
  */
+public abstract class AbstractPersistenceStrategyBuilder
+        implements PersistenceStrategyBuilder {
+    protected static final Logger _logger =
+            LogDomains.getLogger(AbstractPersistenceStrategyBuilder.class, LogDomains.EJB_LOGGER);
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+    protected SFSBContainerInitialization container;
+    protected EjbDescriptor descriptor;
+    private int removalGracePeriodInSeconds = 0;
+    protected String passedInPersistenceType = null;
 
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
-    
-}
+    public AbstractPersistenceStrategyBuilder() {
+    }
 
+    public void initializeStrategy(
+            SFSBContainerInitialization container, EjbDescriptor descriptor,
+            CacheProperties cacheProps) {
+        this.container = container;
+        this.descriptor = descriptor;
+
+        cacheProps.init(descriptor);
+        int removalTimeout = cacheProps.getRemovalTimeoutInSeconds();
+        if (removalTimeout > 0) {
+            this.removalGracePeriodInSeconds = removalTimeout / 2;
+        }
+        container.setRemovalGracePeriodInSeconds(removalGracePeriodInSeconds);
+    }
+
+    public String getPassedInPersistenceType() {
+        return passedInPersistenceType;
+    }
+
+    public void setPassedInPersistenceType(String persistenceType) {
+        passedInPersistenceType = persistenceType;
+    }
+
+    protected int getRemovalGracePeriodInSeconds() {
+        return this.removalGracePeriodInSeconds;
+    }
+
+}  

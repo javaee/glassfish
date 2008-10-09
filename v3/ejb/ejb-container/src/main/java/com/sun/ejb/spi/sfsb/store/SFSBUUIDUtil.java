@@ -33,50 +33,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
-
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
-
-/**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+/*
+ * SFSBUUIDUtil.java
  *
+ * Created on May 12, 2003, 4:14 PM
  */
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+package com.sun.ejb.spi.sfsb.store;
 
+/**
+ *
+ * @author  lwhite
+ */
+public interface SFSBUUIDUtil {
+    
+   /**
+    * Create and return the sessionKey.
+    * @return the sessionKey object
+    */
+    public Object createSessionKey();
+    
+   /**
+    * Called from the Container before publishing an IOR. The method must convert the sessionKey into a byte[]
+    * @return A byte[] representation of the key. The byte[] could be created using serialization.
+    */
+    public byte[] keyToByteArray(Object sessionKey);
+    
     /**
-     * Get the resources associated with this Context.
+     * Return the sessionKey that represents the sessionKey. This has to be super efficient as the container
+     *    calls this method on every invocation. Two objects obtained from identical byte[] must
+     *    satisfy both o1.equals(o2) and o1.hashCode() == o2.hashCode()
+     * @return the sessionKey object
      */
-    List getResourceList();
+     public Object byteArrayToKey(byte[] array, int startIndex, int len);    
     
 }
-

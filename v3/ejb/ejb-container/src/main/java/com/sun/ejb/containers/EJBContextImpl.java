@@ -150,7 +150,7 @@ public abstract class EJBContextImpl
     }
 
     
-    <T extends EJBObject> void setEJBObjectImpl(T ejbo) {
+    <T extends EJBObject> void setEJBObjectImpl(EJBObject ejbo) {
         this.ejbObjectImpl = ejbo;
     }
     

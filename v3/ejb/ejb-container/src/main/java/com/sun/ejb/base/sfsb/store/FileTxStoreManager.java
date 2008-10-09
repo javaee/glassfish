@@ -33,50 +33,65 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.base.sfsb.store;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import com.sun.logging.LogDomains;
+
+import com.sun.ejb.spi.sfsb.store.SFSBTxStoreManager;
+import com.sun.ejb.spi.sfsb.store.SFSBStoreManager;
+import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
+import com.sun.ejb.spi.sfsb.store.SFSBStoreManagerException;
+
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
+ * A SFSBTxStoreManager that <b>CANNOT</b> save multiple SFSBBeanStates
+ *  as a single transactional unit (Example file system).
  *
+ * This implementation simply stores each BeanState separately by
+ *  calling the appropriate StoreManager's checkpointSave method
+ *
+ * @author Mahesh Kannan
  */
+public class FileTxStoreManager
+    implements SFSBTxStoreManager
+{
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+    private static final Level TRACE_LEVEL = Level.FINE;
 
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
-    
+    protected static final Logger _logger =
+        LogDomains.getLogger(FileTxStoreManager.class, LogDomains.EJB_LOGGER);
+
+    public FileTxStoreManager() {
+    }
+
+    public void checkpointSave(SFSBBeanState[] beanStates)
+        throws SFSBStoreManagerException
+    {
+	int sz = beanStates.length;
+	for (int i=0; i<sz; i++) {
+	    SFSBStoreManager manager = beanStates[i].getSFSBStoreManager();
+	    try {
+		if (manager == null) {
+		    _logger.log(Level.WARNING,
+			"StoreManager is null. Cannot checkpoint");
+		} else {
+		    manager.checkpointSave(beanStates[i]);
+		    if (_logger.isLoggable(TRACE_LEVEL)) {
+			_logger.log(TRACE_LEVEL, "Successfully txCheckpointed "
+			    + beanStates.length + " beans...");
+		    }
+		}
+	    } catch (SFSBStoreManagerException smEx) {
+		_logger.log(Level.WARNING,
+			"StoreManagerException during checkpointSave", smEx);
+	    } catch (Throwable th) {
+		_logger.log(Level.WARNING,
+			"Exception during checkpointSave", th);
+	    }
+	}
+    }
+
 }
-

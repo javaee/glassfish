@@ -33,50 +33,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
+package com.sun.ejb.containers.util.cache;
 
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+public class CacheEntry {
 
-/**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
- *
- */
+    public Object 	key;
+    public Object 	value;
+    public int		keyHashCode;
+    public CacheEntry 	next;
 
-public interface ComponentContext
-    extends ResourceHandler {
-    
-    /**
-     * Get the EJB instance associated with this context.
-     */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
+    public CacheEntry	before;
+    public CacheEntry	after;
 
     /**
-     * Get the resources associated with this Context.
+     * Create new entry.
      */
-    List getResourceList();
+    public CacheEntry(Object k, Object v, CacheEntry n) { 
+        key = k;
+        keyHashCode = k.hashCode();
+        value = v; 
+        next = n;
+    }
+
+    public CacheEntry(Object k, int kh, Object v, CacheEntry n) { 
+        key = k;
+        keyHashCode = kh;
+        value = v; 
+        next = n;
+    }
+
+    public CacheEntry initialize(Object k, Object v, CacheEntry n) { 
+        key = k;
+        keyHashCode = k.hashCode();
+        value = v; 
+        next = n;
+        
+        return this;
+    }
     
+    public CacheEntry initialize(Object k, int kh, Object v, CacheEntry n) { 
+        key = k;
+        keyHashCode = kh;
+        value = v; 
+        next = n;
+        
+        return this;
+        
+    }
+    
+    public int hashCode() {
+        return keyHashCode;
+    }
+    
+    public String toString() {
+        return key + "=" + value;
+    }
+
 }
+
 

@@ -33,50 +33,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
 
-import org.glassfish.api.invocation.ResourceHandler;
-
-import javax.ejb.EnterpriseBean;
-import javax.transaction.Transaction;
-import java.util.List;
+package com.sun.ejb.spi.sfsb.store;
 
 /**
- * The ComponentContext contains context information about an EJB instance.
- * EJBContextImpl implements ComponentContext in addition to EJBContext.
  *
+ * A Store to checkpoint bean states at the end of Tx
+ *
+ * @author Mahesh Kannan
  */
-
-public interface ComponentContext
-    extends ResourceHandler {
+public interface SFSBTxStoreManager {
     
     /**
-     * Get the EJB instance associated with this context.
+     * Store session data in these beanStates
+     * This method used only for aggregate checkpointing
+     * i.e. at the end of a transaction, collecting beanStates
+     * from all the beans that have participated in a transaction
+     * Note: if the underlying implementation involves a transactional
+     * data store, then the attempt should be made to store all the 
+     * bean states in a single transactional unit-of-work
      */
-    Object getEJB();
-    
-    /**
-     * Get the Container instance which created this Context.
-     */
-    Container getContainer();
-    
-    /**
-     * Get the Transaction object associated with this Context.
-     */
-    Transaction getTransaction();
-    
-    /**
-     * The EJB spec makes a distinction between access to the TimerService
-     * object itself (via EJBContext.getTimerService) and access to the
-     * methods on TimerService, Timer, and TimerHandle.  The latter case
-     * is covered by this check.
-     */
-    void checkTimerServiceMethodAccess() throws IllegalStateException;
-
-    /**
-     * Get the resources associated with this Context.
-     */
-    List getResourceList();
+    public void checkpointSave(SFSBBeanState[] beanStates)
+        throws SFSBStoreManagerException;    
     
 }
-
