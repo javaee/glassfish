@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="admin-cli-test" default="all" basedir=".">
+
+<property file="build.properties"/>
+<property file="${ws.root}/build.properties"/>
+ 
+<description>Builds, tests, and runs the JRuby Applications</description>
+    <import file="${ws.root}/gfproject/build-impl.xml"/>
+    <import file="${ws.root}/gfproject/v3-targets.xml"/>
+    <import file="${ws.root}/gfproject/db-targets.xml"/>
+
+<target name="all" depends="start-derby,start-server,build,deploy,runtest,undeploy,stop-server,stop-derby"/>
+
+<target name="build" depends="compile-tests">
+   <record name="admincli-restart.output" action="start"/>
+   <antcall target="create-jdbc-connection-pool"/>
+   <antcall target="ping-connection-pool"/>
+   <antcall target="stop-server"/>
+   <antcall target="start-server"/>
+   <record name="admincli-restart.output" action="stop"/>
+</target>
+
+<target name="deploy">
+   <antcall target="ping-jdbc"/>
+</target>
+
+<target name="ping-jdbc">
+   <record name="admincli-ping-jdbc.output" action="start"/>
+   <antcall target="ping-connection-pool"/>
+   <record name="admincli-ping-jdbc.output" action="stop"/>
+</target>
+
+<target  name="runtest">
+   <antcall target="runtest-impl">
+       <param name="testng.test.name" value="${testng.test.name}"/>
+       <param name="testng.testclient" value="RestartDomainTests"/>
+   </antcall>
+</target>
+
+<target name="undeploy">
+   <antcall target="delete-jdbc-connection-pool"/>
+   <antcall target="cleanup"/>
+</target>
+
+<target name="cleanup">
+   <!-- delete dir="${ws.root}/classes"/ -->
+   <delete includeemptydirs="true">
+	<fileset dir="${basedir}">
+	  <include name="**/admincli*.output"/>
+	</fileset>
+   </delete>
+</target>
+    
+</project>

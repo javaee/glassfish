@@ -42,6 +42,12 @@
   <parameter name="admin.console.url" value="http://localhost:4848/"/>
   <parameter name="resources.xml.relative.path" value="admin/resources/resources.xml"/>
   
+  <test name="admincli_restart">
+        <classes>
+                <class name="test.admin.admincli.RestartDomainTests"/>
+        </classes>
+  </test>
+
 <!-- AMX -->
   <parameter name="amx.debug" value="true"/>
 <!-- AMX: port of the JMX RMI -->

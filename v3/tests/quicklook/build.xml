@@ -112,6 +112,7 @@
     <target name="build">  
         <record name="build.output" action="start"/>
         <echo message="ANT PROJECT ${ant.project.name}"/>
+        <ant dir="admincli" target="build"/>
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
         <ant dir="adminconsole" target="build"/>
@@ -147,6 +148,7 @@
     
     <target name="deploy">
         <record name="deploy.output" action="start"/>
+        <ant dir="admincli" target="deploy"/>
         <ant dir="classloader/hellojsf" target="deploy"/>
         <ant dir="web/helloworld" target="deploy"/>
         <ant dir="web/jsfastrologer" target="deploy"/>
@@ -162,6 +164,7 @@
     
     <target name="undeploy">
         <record name="undeploy.output" action="start"/>
+        <ant dir="admincli" target="undeploy"/>
         <ant dir="classloader/hellojsf" target="undeploy"/>
         <ant dir="web/helloworld" target="undeploy"/>
         <ant dir="web/jsfastrologer" target="undeploy"/>
@@ -393,7 +396,7 @@
 </target>
 
 <target name="start-server-felix-windows" if="isWindows">
-    <exec executable="cmd" spawn="true">
+    <exec executable="cmd" spawn="true" failonerror="true">
         <env key="GlassFish_Platform" value="Felix"/>
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
@@ -402,7 +405,7 @@
 </target>
 
 <target name="start-server-felix-unix" if="isUnix">
-    <exec executable="${glassfish.home}/bin/asadmin">
+    <exec executable="${glassfish.home}/bin/asadmin" failonerror="true">
         <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>

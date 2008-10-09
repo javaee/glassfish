@@ -54,10 +54,33 @@
 
 <target name="asenv-unix" if="isUnix">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.conf"/>
+    <property name="ASADMIN" value="${glassfish.home}/bin/asadmin"/>
 </target>
 
 <target name="asenv-windows" if="isWindows">
     <property name="asenv_conf" value="${glassfish.home}/config/asenv.bat"/>
+    <property name="ASADMIN" value="${glassfish.home}\bin\asadmin.bat"/>
+</target>
+
+<target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix">
+    <exec executable="${ASADMIN}" outputproperty="message">
+	<arg line="create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.ClientDataSource --property DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:connectionAttributes=\;create\=true:Password=APP:User=APP QLJdbcPool"/>
+    </exec>
+    <echo message="${message}"/>
+</target>
+
+<target name="ping-connection-pool" depends="setOSConditions,asenv-unix">
+    <exec executable="${ASADMIN}" outputproperty="message1">
+        <arg line="ping-connection-pool QLJdbcPool"/>
+    </exec>
+    <echo message="${message1}"/>
+</target>
+
+<target name="delete-jdbc-connection-pool" depends="setOSConditions,asenv-unix">
+    <exec executable="${ASADMIN}" outputproperty="message1">
+	<arg line="delete-jdbc-connection-pool QLJdbcPool"/>
+    </exec>
+    <echo message="${message1}"/>
 </target>
 
 <target name="jrubyHomeCon"  depends="setOSConditions,asenv-unix,asenv-windows">
@@ -107,11 +130,10 @@
 </target>
 
 <target name="start-server-unix" if="isUnix">
-    <exec executable="${glassfish.home}/bin/asadmin">        
-	<env key="GlassFish_Platform" value="Felix"/>
+    <exec executable="${glassfish.home}/bin/asadmin">
+    <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>
-
 </target>
 
 <target name="start-server-windows" if="isWindows">

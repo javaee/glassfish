@@ -296,7 +296,7 @@
 <target name="runtest-impl-class" depends="compile-tests,checkTestNGXML" unless="testng.xml.present">
     <echo message="=============Starting TestNG test at ${test.class.output}  ============"/>    
     <mkdir dir="${result.output}"/>
-    <testng outputdir="${result.output}"
+    <testng outputdir="${result.output}" verbose="2"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
             classpathref="class.path">
@@ -312,7 +312,7 @@
     <testng outputdir="${result.output}"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
-            classpathref="${class.path}">
+            classpathref="class.path">
         <xmlfileset dir="." includes="testng.xml"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
