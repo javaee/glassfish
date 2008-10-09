@@ -75,7 +75,7 @@
             <artifactId>webtier-all</artifactId>
 	    <version>${project.version}</version>
 	    <type>pom</type>
-	    <exclusions>
+	    <!--exclusions>
 	        <exclusion>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>servlet-api</artifactId>
@@ -88,7 +88,7 @@
 		    <groupId>javax.servlet.jsp.jstl</groupId>
 		    <artifactId>jstl-api</artifactId>
 		</exclusion>
-	    </exclusions>   
+	    </exclusions-->   
         </dependency>
 
     	<!-- now, listing package dependencies so that their content

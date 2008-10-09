@@ -155,24 +155,30 @@ own identifying information: Portions Copyright [yyyy]
 				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-web-management"/>			                         
 			 </subtract>
                  </scope>		 
-	 </graphDef> 
-	
+	 </graphDef>
+
+
          <graphDef id="web-modules" tolerateBrokenPOMs="true">
                 <scope level="compile,runtime">
                     <subtract>
                         <subGraph artifactId="webtier-all" />
                         <scope level="compile,runtime"><!-- = subgraph X -->
                             <excludeArtifactsTransitively>
-                                <artifact artifactId="webtier-all" />
+				    <artifact artifactId="webtier-all" />
                             </excludeArtifactsTransitively>
                         </scope>
-                    </subtract>
+		    </subtract>
                 </scope>
             </graphDef>
 
 	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules/web" tolerateBrokenPOMs="true"
                         stripVersion="true">
-	        <graphRef refid="web-modules"/>
+			<graphRef refid="web-modules"/>
+			<excludeArtifactsTransitively>
+				    <artifact groupID="javax.servlet" artifactId="servlet-api" />
+			            <artifact groupID="javax.servlet.jsp" artifactId="jsp-api" />
+			            <artifact groupID="javax.servlet.jsp.jstl" artifactId="jstl-api" />
+                            </excludeArtifactsTransitively>
     	</resolveAll>
 
 	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true"
