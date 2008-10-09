@@ -100,7 +100,9 @@ public class ASMainEquinox extends ASMainOSGi {
         // use a top level dir.
         System.setProperty("osgi.configuration.area",
                 new File(fwDir, "configuration").getCanonicalPath());
-        System.setProperty("osgi.clean", "true"); // clean framework cache at startup
+//        System.setProperty("osgi.clean", "true"); // clean framework cache at startup
+        File cacheProfileDir = new File(domainDir, "equinox-cache/gf/");
+        setUpOSGiCache(cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});

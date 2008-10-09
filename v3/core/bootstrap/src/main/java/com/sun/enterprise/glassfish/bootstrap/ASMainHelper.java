@@ -41,17 +41,11 @@ import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.LineNumberReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -343,112 +337,4 @@ public class ASMainHelper {
             }
         }
     }
-
-    void setUpOSGiCache(File glassfishDir, File fwDir, File cacheDir)  {
-
-        // let's find our more recent entry, we'll need it anyway
-        long lastModified = getLastModified(new File(glassfishDir, "modules"), 0);
-        long settingsLastModified = getLastModified( new File(fwDir, "conf"), 0);
-
-        if (settingsLastModified>lastModified) {
-            lastModified = settingsLastModified;
-        }
-
-        long recordedLastModified = 0;
-        Properties persistedInfo = new Properties();
-        File lastModifiedFile = new File(cacheDir.getParentFile(), cacheDir.getName()+".lastmodified");
-        if (lastModifiedFile.exists()) {
-
-            InputStream is = null;
-            try {
-                is = new BufferedInputStream(new FileInputStream(lastModifiedFile));
-                persistedInfo.load(is);
-                try {
-                    recordedLastModified = Long.parseLong(persistedInfo.getProperty("LastModified"));
-                    // check that we have not moved our domain's directory, felix is sensitive to absolute path
-                    String location = persistedInfo.getProperty("Location");
-                    if (!cacheDir.toURI().toURL().toString().equals(location)) {
-                        recordedLastModified=0;
-                    }
-                } catch (NumberFormatException e) {
-                    recordedLastModified = 0;
-                }
-            } catch(IOException e) {
-                logger.info("Cannot read recorded lastModified, felix cache will be flushed");
-            } finally {
-                if (is!=null) {
-                    try {
-                        is.close();
-                    } catch(IOException e){};
-                }
-            }
-        }
-
-
-        // if the recordedLastModified is different than our most recent entry,
-        // we flush the felix cache, otherwise we reuse it.
-        if (recordedLastModified!=lastModified) {
-            if (cacheDir.exists() && cacheDir.isDirectory()) {
-                // remove this old cache so felix creates a new one.
-                logger.info("Removing Felix cache profile dir " + cacheDir+ " left from a previous run");
-                boolean deleted = deleteRecursive(cacheDir);
-                if (!deleted) {
-                    logger.warning("Not able to delete " + cacheDir);
-                }
-            }
-            cacheDir.mkdirs();
-
-            // now record our new LastModified
-            ObjectOutputStream os = null;
-            try {
-                lastModifiedFile.delete();
-                if (!lastModifiedFile.createNewFile()) {
-                    logger.warning("Cannot create new lastModified file");
-                    return;
-                }
-                os = new ObjectOutputStream(new FileOutputStream(lastModifiedFile));
-                persistedInfo.clear();
-                persistedInfo.put("LastModified", (new Long(lastModified).toString()));
-                persistedInfo.put("Location", cacheDir.toURI().toURL().toString());
-                persistedInfo.store(os, null);
-
-            } catch(IOException e) {
-                logger.info("Cannot create record of lastModified file");
-            } finally {
-                if (os!=null) {
-                    try {
-                        os.close();
-                    } catch(IOException e) {}
-                }
-            }
-        }
-    }
-    
-
-    long getLastModified(File directory, long current) {
-
-        for (File file : directory.listFiles()) {
-            long lastModified;
-            if (file.isDirectory()) {
-                lastModified = getLastModified(file, current);
-            } else {
-                lastModified = file.lastModified();
-            }
-            if (lastModified>current) {
-                current=lastModified;
-            }
-        }
-        return current;
-    }
-
-    boolean deleteRecursive(File dir) {
-        for (File f : dir.listFiles()) {
-            if(f.isFile()) {
-                f.delete();
-            } else {
-                deleteRecursive(f);
-            }
-        }
-        return dir.delete();
-    }    
 }

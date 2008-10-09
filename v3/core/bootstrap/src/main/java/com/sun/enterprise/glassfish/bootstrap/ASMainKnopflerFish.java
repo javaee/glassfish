@@ -70,8 +70,8 @@ public class ASMainKnopflerFish extends ASMainOSGi {
     protected void launchOSGiFW() throws Exception {
         // Refere to http://www.knopflerfish.org/running.html for more details about
         // options and properties used here
-        File cacheProfileDir = new File(fwDir, "fwdir");
-        helper.setUpOSGiCache(glassfishDir, cacheProfileDir, cacheProfileDir);
+        File cacheProfileDir = new File(domainDir, "kf-cache/gf/");
+        setUpOSGiCache(cacheProfileDir);
         System.setProperty("org.osgi.framework.dir", cacheProfileDir.getCanonicalPath());
         String jars = new File(fwDir, "jars/").toURI().toString();
         System.setProperty("org.knopflerfish.gosg.jars", jars);
