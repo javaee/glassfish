@@ -95,7 +95,22 @@ public class OSGiModuleDefinition implements ModuleDefinition {
     }
 
     public OSGiModuleDefinition(Bundle b) throws IOException, URISyntaxException {
-        this(new BundleJar(b), new URI(b.getLocation()));
+        this(new BundleJar(b), toURI(b));
+    }
+
+    private static URI toURI(Bundle b) throws URISyntaxException {
+        try {
+            return new URI(b.getLocation());
+        } catch (URISyntaxException ue) {
+            // On Equinox, bundles started via autostart have a strange location.
+            // It is of the format: initial@reference:file:...
+            // It can't be turned into an URI, so we take out initial@.
+            if (b.getLocation().startsWith("initial@")) {
+                return new URI(b.getLocation().substring("initial@".length()));
+            } else {
+                throw ue;
+            }
+        }
     }
 
     public String getName() {
