@@ -175,23 +175,23 @@ public class GrizzlyListenerConfigurator {
 
         if (sslConfig != null) {
             // client-auth
-            if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
+            if (Boolean.parseBoolean(sslConfig.getClientAuthEnabled())) {
                 grizzlyEmbeddedHttps.setNeedClientAuth(true);
             }
 
             // ssl protocol variants
-            if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
+            if (Boolean.parseBoolean(sslConfig.getSsl2Enabled())) {
                 tmpSSLArtifactsList.add("SSLv2");
             }
 
-            if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
+            if (Boolean.parseBoolean(sslConfig.getSsl3Enabled())) {
                 tmpSSLArtifactsList.add("SSLv3");
             }
-            if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+            if (Boolean.parseBoolean(sslConfig.getTlsEnabled())) {
                 tmpSSLArtifactsList.add("TLSv1");
             }
-            if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || 
-                    Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+            if (Boolean.parseBoolean(sslConfig.getSsl3Enabled()) || 
+                    Boolean.parseBoolean(sslConfig.getTlsEnabled())) {
                 tmpSSLArtifactsList.add("SSLv2Hello");
             }
         }
