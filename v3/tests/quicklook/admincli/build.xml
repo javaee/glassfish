@@ -46,7 +46,7 @@
 <target name="cleanup">
    <!-- delete dir="${ws.root}/classes"/ -->
    <delete includeemptydirs="true">
-	<fileset dir="${basedir}">
+	<fileset dir="${ws.root}">
 	  <include name="**/admincli*.output"/>
 	</fileset>
    </delete>

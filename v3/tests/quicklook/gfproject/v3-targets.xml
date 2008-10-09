@@ -62,21 +62,21 @@
     <property name="ASADMIN" value="${glassfish.home}\bin\asadmin.bat"/>
 </target>
 
-<target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix">
+<target name="create-jdbc-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message">
 	<arg line="create-jdbc-connection-pool --datasourceclassname=org.apache.derby.jdbc.ClientDataSource --property DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:connectionAttributes=\;create\=true:Password=APP:User=APP QLJdbcPool"/>
     </exec>
     <echo message="${message}"/>
 </target>
 
-<target name="ping-connection-pool" depends="setOSConditions,asenv-unix">
+<target name="ping-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
         <arg line="ping-connection-pool QLJdbcPool"/>
     </exec>
     <echo message="${message1}"/>
 </target>
 
-<target name="delete-jdbc-connection-pool" depends="setOSConditions,asenv-unix">
+<target name="delete-jdbc-connection-pool" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
 	<arg line="delete-jdbc-connection-pool QLJdbcPool"/>
     </exec>

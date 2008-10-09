@@ -396,7 +396,7 @@
 </target>
 
 <target name="start-server-felix-windows" if="isWindows">
-    <exec executable="cmd" spawn="true" failonerror="true">
+    <exec executable="cmd" spawn="true">
         <env key="GlassFish_Platform" value="Felix"/>
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
