@@ -59,7 +59,7 @@ public class RestartDomainTests {
      *Each method can act as one test within one test suite
      */
 
-    @BeforeTest
+/*
     @Test
     public void restartTest() throws Exception {
 	outPutFile = "admincli-restart.output";
@@ -67,7 +67,9 @@ public class RestartDomainTests {
 	testErr = "Restart domain failed.";
 	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
+*/
 
+    @BeforeTest
     @Test
     public void createJdbcPoolTest() throws Exception {
 	outPutFile = "admincli-restart.output";

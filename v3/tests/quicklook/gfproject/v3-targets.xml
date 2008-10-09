@@ -145,8 +145,7 @@
     </exec>
     <!-- JRuby deplyment needs GF start server to be fully done. 
          Introduce a delay for now and will investigate futher.  -->
-    <echo message="Sleeping for 20 seconds while the server is starting. JRuby tests on windows only."/>
-    <sleep seconds="20"/>
+    <!-- sleep seconds="20"/ -->
 </target>
 
 <target name="stop-server" depends="setOSConditions">
