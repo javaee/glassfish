@@ -8,14 +8,14 @@
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_LIB=$AS_INSTALL/modules
 ANT_LIB=$AS_INSTALL_LIB/ant.jar
-SERVLET_API=$AS_INSTALL_LIB/servlet-api.jar
-JSP_API=$AS_INSTALL_LIB/jsp-api.jar
-JSP_IMPL=$AS_INSTALL_LIB/jsp-impl.jar
-EL_IMPL=$AS_INSTALL_LIB/el-impl.jar
-JSTL_API=$AS_INSTALL_LIB/jstl-api.jar
-JSTL_IMPL=$AS_INSTALL_LIB/jstl-impl.jar
+SERVLET_API=$AS_INSTALL_LIB/javax.servlet.jar
+JSP_API=$AS_INSTALL_LIB/javax.servlet.jsp.jar
+JSP_IMPL=$AS_INSTALL_LIB/web/jsp-impl.jar
+EL_IMPL=$AS_INSTALL_LIB/web/el-impl.jar
+JSTL_API=$AS_INSTALL_LIB/web/javax.servlet.jsp.jstl.jar
+JSTL_IMPL=$AS_INSTALL_LIB/web/jstl-impl.jar
 JSF_API=$AS_INSTALL_LIB/jsf-api.jar
-JSF_IMPL=$AS_INSTALL_LIB/jsf-impl.jar
+JSF_IMPL=$AS_INSTALL_LIB/web/jsf-impl.jar
 
 java -cp "$SERVLET_API:$JSP_API:$JSTL_API:$JSF_API:$ANT_LIB:$EL_IMPL:$JSP_IMPL" org.apache.jasper.JspC -classpath "$JSTL_IMPL:$JSF_IMPL" "$@"
 
