@@ -59,6 +59,7 @@ public class DeployWebAppTest {
         fail("Did not get expected Exception from deploying garbage!");
     }
 
+    @Ignore
     @Test
     public void foo() throws Exception{
         File simpleWar = SmartFile.sanitize(new File("target/test-classes/simple.war"));
