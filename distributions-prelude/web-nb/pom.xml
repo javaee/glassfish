@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>10.0-b28</version>
     </parent>
     <artifactId>web-nb</artifactId>
     <name>Glassfish v3 Web-NB Distribution(</name>
