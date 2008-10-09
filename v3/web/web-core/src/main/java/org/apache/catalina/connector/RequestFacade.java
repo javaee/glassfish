@@ -70,9 +70,11 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Locale;
 import java.net.Socket;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -794,6 +796,30 @@ public class RequestFacade
         }
 
         return request.getPathTranslated();
+    }
+
+
+    /**
+     * Gets the servlet context to which this servlet request was last
+     * dispatched.
+     *
+     * @return the servlet context to which this servlet request was last
+     * dispatched
+     */
+    public ServletContext getServletContext() {
+        return request.getServletContext();
+    }
+
+
+    /**
+     * Gets the servlet response with which this servlet request has been
+     * associated.
+     *
+     * @return the servlet response with which this servlet request has been
+     * associated
+     */
+    public ServletResponse getServletResponse() {
+        return request.getServletResponse();
     }
 
 
