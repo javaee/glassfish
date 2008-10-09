@@ -63,6 +63,9 @@ public class ServletFilterDescriptor
     /** initialization parameters */
     private Vector initParms = new Vector();
 
+    /** supportsAsync */
+    private boolean supportsAsync = false;
+
     /* ----
     */
 
@@ -150,6 +153,15 @@ public class ServletFilterDescriptor
     /* remove a single initialization parameter */
     public void removeInitializationParameter(InitializationParameter ref) {
 	this.initParms.removeElement(ref);
+    }
+
+    /* set supportsAsync */
+    public void setSupportsAsync(boolean supportsAsync) {
+        this.supportsAsync = supportsAsync;
+    }
+
+    public boolean isSupportsAsync() {
+        return supportsAsync;
     }
 
     /* ----

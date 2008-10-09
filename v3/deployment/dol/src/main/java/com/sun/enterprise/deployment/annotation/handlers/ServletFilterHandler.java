@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import javax.servlet.DispatcherType;
@@ -108,8 +109,22 @@ public class ServletFilterHandler extends AbstractWebHandler {
             filterName = filterClass.getName();
         }
 
-        com.sun.enterprise.deployment.web.ServletFilter servletFilterDesc =
-                new ServletFilterDescriptor();
+        com.sun.enterprise.deployment.web.ServletFilter servletFilterDesc = null;
+        for (com.sun.enterprise.deployment.web.ServletFilter sfDesc :
+                webBundleDesc.getServletFilters()) {
+            if (filterName.equals(sfDesc.getName())) {
+                servletFilterDesc = sfDesc;
+                break;
+            }
+        }
+
+        //XXX only support complete override in this moment
+        if (servletFilterDesc != null) {
+            return getDefaultProcessedResult();
+        }
+
+        servletFilterDesc = new ServletFilterDescriptor();
+
         ServletFilterMapping servletFilterMappingDesc =
                 new ServletFilterMappingDescriptor();
 
@@ -117,6 +132,33 @@ public class ServletFilterHandler extends AbstractWebHandler {
         servletFilterDesc.setClassName(filterClass.getName());
         servletFilterDesc.setDescription(servletFilterAn.description());
         servletFilterDesc.setDisplayName(servletFilterAn.displayName());
+
+        String[] urlPatterns = servletFilterAn.urlPatterns();
+        if (urlPatterns == null || urlPatterns.length == 0) {
+            urlPatterns = servletFilterAn.value();
+        }
+
+        boolean validUrlPatterns = false;
+        if (urlPatterns != null && urlPatterns.length > 0) {
+            validUrlPatterns = true;
+            for (String up : urlPatterns) {
+                if (up == null || up.length() == 0) {
+                    validUrlPatterns = false;
+                }
+                servletFilterMappingDesc.addURLPattern(up);
+            }
+        }
+
+        if (!validUrlPatterns) {
+            String urlPatternString =
+                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+            throw new IllegalArgumentException(localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                    "Invalid url patterns: {0}.",
+                    urlPatternString));
+        }
+
 
         InitParam[] initParams = servletFilterAn.initParams();
         if (initParams != null && initParams.length > 0) {
@@ -128,28 +170,17 @@ public class ServletFilterHandler extends AbstractWebHandler {
             }
         }
 
-
         //XXX small vs large
         servletFilterDesc.setSmallIconUri(servletFilterAn.icon());
         servletFilterDesc.setLargeIconUri(servletFilterAn.icon());
+
+        servletFilterDesc.setSupportsAsync(servletFilterAn.supportsAsync());
 
         servletFilterMappingDesc.setName(filterName);
         String[] servletNames = servletFilterAn.servletNames();
         if (servletNames != null && servletNames.length > 0) {
             for (String sn : servletNames) {
                 servletFilterMappingDesc.addServletName(sn);
-            }
-        }
-
-        //XXX validate
-        String[] urlPatterns = servletFilterAn.urlPatterns();
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            urlPatterns = servletFilterAn.value();
-        }
-
-        if (urlPatterns != null && urlPatterns.length > 0) {
-            for (String up : urlPatterns) {
-                servletFilterMappingDesc.addURLPattern(up);
             }
         }
 

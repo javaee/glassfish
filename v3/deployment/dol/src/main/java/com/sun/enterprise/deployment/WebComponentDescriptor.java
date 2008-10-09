@@ -85,6 +85,8 @@ public class WebComponentDescriptor extends Descriptor {
 
     private RunAsIdentityDescriptor runAs;
     private WebBundleDescriptor webBundleDescriptor = null;
+    private boolean supportsAsync = false;
+    private long timeout = 0;
 
     /**
      * The default constructor.
@@ -337,6 +339,22 @@ public class WebComponentDescriptor extends Descriptor {
 
     public void setServlet(boolean isServlet) {
         this.isServlet = isServlet;
+    }
+
+    public boolean isSupportsAsync() {
+        return supportsAsync;
+    }
+
+    public void setSupportsAsync(boolean supportsAsync) {
+        this.supportsAsync = supportsAsync;
+    }
+    
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 
     /* -----------

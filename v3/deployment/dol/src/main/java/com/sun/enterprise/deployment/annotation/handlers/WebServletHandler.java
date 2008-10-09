@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -94,27 +95,51 @@ public class WebServletHandler extends AbstractWebHandler {
         }
         WebServlet webServletAn = (WebServlet)ainfo.getAnnotation();
 
-        WebComponentDescriptor webCompDesc = new WebComponentDescriptor();
-        webCompDesc.setServlet(true);
-        webCompDesc.setWebComponentImplementation(webCompClass.getName());
-
         String servletName = webServletAn.name();
         if (servletName == null || servletName.length() == 0) {
             servletName = webCompClass.getName();
         }
-        webCompDesc.setName(servletName);
 
-        //XXX validate or default
+        WebComponentDescriptor webCompDesc =
+            webBundleContext.getDescriptor().getWebComponentByCanonicalName(servletName);
+        //XXX only support complete override in this moment
+        if (webCompDesc != null) {
+            return getDefaultProcessedResult();
+        } 
+
+        webCompDesc = new WebComponentDescriptor();
+        webCompDesc.setName(servletName);
+        webCompDesc.setCanonicalName(servletName);
+        webCompDesc.setServlet(true);
+
+        webCompDesc.setWebComponentImplementation(webCompClass.getName());
+
         String[] urlPatterns = webServletAn.urlPatterns();
         if (urlPatterns == null || urlPatterns.length == 0) {
             urlPatterns = webServletAn.value();
         }
 
+        boolean validUrlPatterns = false;
         if (urlPatterns != null && urlPatterns.length > 0) {
+            validUrlPatterns = true;
             Set<String> urlPatternsSet = webCompDesc.getUrlPatternsSet();
             for (String up : urlPatterns) {
+                if (up == null || up.length() == 0) {
+                    validUrlPatterns = false;
+                    break;
+                }
                 urlPatternsSet.add(up);
             }
+        }
+
+        if (!validUrlPatterns) {
+            String urlPatternString =
+                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+            throw new IllegalArgumentException(localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                    "Invalid url patterns: {0}.",
+                    urlPatternString));
         }
 
         webCompDesc.setLoadOnStartUp(webServletAn.loadOnStartup());
@@ -132,7 +157,11 @@ public class WebServletHandler extends AbstractWebHandler {
         //XXX small vs large
         webCompDesc.setSmallIconUri(webServletAn.icon());
         webCompDesc.setLargeIconUri(webServletAn.icon());
+
         webCompDesc.setDescription(webServletAn.description());
+
+        webCompDesc.setSupportsAsync(webServletAn.supportsAsync());
+        webCompDesc.setTimeout(webServletAn.timeout());
 
         webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);
         WebComponentContext webCompContext = new WebComponentContext(webCompDesc);
