@@ -278,6 +278,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    //We will try to backup the old bits, if the old directory doesn't exist, 
+    //issue warning, and continue. see issue# 6477
     private boolean prepareRedeploy(){
         try{
             if (! stopAndCleanup()){
@@ -286,6 +288,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             }
             File parentFile = warFile.getParentFile();
             File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
+            if (! currentDeployedDir.exists()){
+                logger.log(Level.WARNING, currentDeployedDir + " does not exist. Will not do backup for this.");
+                return true;
+            }
             File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
             if (currentDeployedDir.renameTo(backupDir))
                 return true;
