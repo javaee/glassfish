@@ -75,10 +75,10 @@
         apt:type="xs:string">
       <apt:prop-value >0</apt:prop-value>
       <apt:visual>
-        <apt:progressBar apt:determinate="true" apt:toolTip="Progress" apt:progressMax="100"/>
+        <apt:progressBar apt:determinate="true" apt:toolTip="Progress" apt:progressMax="100" />
       </apt:visual>
     </apt:property>
-    <apt:property apt:name="BOTTOM_MESSAGE"
+    <!--apt:property apt:name="BOTTOM_MESSAGE"
                   apt:dataPath=""
                   apt:type="xs:string">
       <apt:prop-value><![CDATA[<HTML><BODY>Please wait</BODY></HTML>]]>
@@ -86,7 +86,7 @@
       <apt:visual>
         <apt:htmlPanel/>
       </apt:visual>
-    </apt:property>
+    </apt:property-->
   </apt:section>
    <apt:scriptHandler apt:scriptLanguage="beanshell">
     <apt:scriptCode><![CDATA[
@@ -163,12 +163,12 @@ run() {
   // Get the Progress Bar instance
   theProgressBar = getComponentByName(content, "PROGRESS");
   theTopMsg = getComponentByName(content, "TOP_MESSAGE");
-  theBottomMsg = getComponentByName(content, "BOTTOM_MESSAGE");
+  
 
   ProgressReporter theReporter = null;
   String theOldProgressStr = "";
   String theOldTopMsgStr = "";
-  String theOldBottomMsgStr = "";
+ 
   while (theTaskResp.isMore()) {
     theObject = theTaskResp.getResult();
     if (theObject != null) {
@@ -198,14 +198,6 @@ run() {
           theTopMsg.setText("...");
         } else {
           theTopMsg.setText(theOldTopMsgStr);
-        }
-      }
-      if (!theOldBottomMsgStr.equals(theProgReporter.subtotalString)) {
-        theOldBottomMsgStr = theProgReporter.subtotalString;
-        if (theOldBottomMsgStr == null || theOldBottomMsgStr.equals("")) {
-          theBottomMsg.setText("...");
-        } else {
-          theBottomMsg.setText(theOldBottomMsgStr);
         }
       }
     } else {
