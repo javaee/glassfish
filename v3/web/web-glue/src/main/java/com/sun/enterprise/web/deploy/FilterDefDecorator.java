@@ -52,7 +52,7 @@ import java.io.Serializable;
  * @author Jean-Francois Arcand
  */
 
-public class FilterDefDecorator extends FilterDef{
+public class FilterDefDecorator extends FilterDef {
 
     /**
      * The set of initialization parameters for this filter, keyed by
@@ -68,7 +68,7 @@ public class FilterDefDecorator extends FilterDef{
         InitializationParameter initParam; 
         for (int i=0; i < initParams.size(); i++){
            initParam = (InitializationParameter)initParams.get(i);
-           addInitParameter( initParam.getName(),initParam.getValue() );              
+           addInitParameter( initParam.getName(),initParam.getValue() );
         }  
     }
 
@@ -84,8 +84,7 @@ public class FilterDefDecorator extends FilterDef{
     public String getDisplayName() {
         return decoree.getDisplayName();
     }
- 
- 
+  
     public String getFilterClass() {
         return decoree.getClassName();
     }
@@ -98,12 +97,11 @@ public class FilterDefDecorator extends FilterDef{
         return decoree.getLargeIconUri();
     }
 
-
     public String getSmallIcon() {
         return decoree.getSmallIconUri();
     }
 
-
-
-   
+    public boolean isSupportsAsync() {
+        return decoree.isSupportsAsync();
+    }   
 }

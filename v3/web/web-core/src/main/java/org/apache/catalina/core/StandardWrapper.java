@@ -290,6 +290,11 @@ public class StandardWrapper
 
     private String description;
 
+
+    /** supportsAsync */
+    private boolean supportsAsync = false;
+
+
     /**
      * Static class array used when the SecurityManager is turned on and 
      * <code>Servlet.init</code> is invoked.
@@ -579,6 +584,17 @@ public class StandardWrapper
         this.runAs = runAs;
         support.firePropertyChange("runAs", oldRunAs, this.runAs);
 
+    }
+
+
+    /* set supportsAsync */
+    public void setSupportsAsync(boolean supportsAsync) {
+        this.supportsAsync = supportsAsync;
+    }
+
+
+    public boolean isSupportsAsync() {
+        return supportsAsync;
     }
 
 

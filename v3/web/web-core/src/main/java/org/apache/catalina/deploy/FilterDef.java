@@ -105,6 +105,9 @@ public class FilterDef implements Serializable {
      */
     private Map parameters = new HashMap();
 
+    /** supportsAsync */
+    private boolean supportsAsync = false;
+
 
     // ------------------------------------------------------------- Properties
 
@@ -170,6 +173,17 @@ public class FilterDef implements Serializable {
 
     public void setSmallIcon(String smallIcon) {
         this.smallIcon = smallIcon;
+    }
+
+
+    /* set supportsAsync */
+    public void setSupportsAsync(boolean supportsAsync) {
+        this.supportsAsync = supportsAsync;
+    }
+
+
+    public boolean isSupportsAsync() {
+        return supportsAsync;
     }
 
 

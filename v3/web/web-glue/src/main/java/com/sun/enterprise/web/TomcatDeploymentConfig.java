@@ -880,6 +880,9 @@ public class TomcatDeploymentConfig{
                 }
 
                 wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
+
+                wrapper.setSupportsAsync(webComponentDesc.isSupportsAsync());
+
                 if (webComponentDesc.getRunAsIdentity() != null)
                     wrapper.setRunAs(webComponentDesc.getRunAsIdentity().getRoleName());
 
