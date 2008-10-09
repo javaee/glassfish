@@ -124,6 +124,8 @@ public class CreateVirtualServer implements AdminCommand {
 
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
                     boolean docrootAdded = false;
+                    boolean accessLogAdded = false;
+                    
                     VirtualServer newVirtualServer = ConfigSupport.createChildOf(param, VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
@@ -132,7 +134,10 @@ public class CreateVirtualServer implements AdminCommand {
                     newVirtualServer.setState(state);
                     newVirtualServer.setLogFile(logFile);
 
-                    //add properties
+                    // 1. add properties
+                    // 2. check if the access-log and docroot properties have
+                    //    been specified. We need to add those with default 
+                    //    values if the properties have not been specified.
                     if (properties != null) {
                         for (java.util.Map.Entry entry : properties.entrySet()) {
                             Property property =
@@ -143,6 +148,8 @@ public class CreateVirtualServer implements AdminCommand {
                             newVirtualServer.getProperty().add(property);
                             if ("docroot".equals(pn))
                                 docrootAdded = true;
+                            if ("accesslog".equals(pn))
+                                accessLogAdded = true;
                         }
                     }
                     if (!docrootAdded) {
@@ -151,6 +158,15 @@ public class CreateVirtualServer implements AdminCommand {
                         drp.setValue("${com.sun.aas.instanceRoot}/docroot");
                         newVirtualServer.getProperty().add(drp);
                     }
+                    
+                    if (!accessLogAdded) {
+                        Property alp = ConfigSupport.createChildOf(
+                                        newVirtualServer, Property.class);
+                        alp.setName("accesslog");
+                        alp.setValue("${com.sun.aas.instanceRoot}/logs/access");
+                        newVirtualServer.getProperty().add(alp);
+                    }
+                    
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }
