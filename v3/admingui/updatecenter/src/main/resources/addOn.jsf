@@ -49,6 +49,7 @@
         setPageSessionAttribute(key="fromPage" value="addOn.jsf");
         setPageSessionAttribute(key="forInstall" value="true");
         setPageSessionAttribute(key="showNewVersion" value="#{false}");
+        setPageSessionAttribute(key="doReloadHeader" value="false");
         setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.version}");
         setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.installSize}");
         setAttribute(key="helpKey" value="$resource{help.uc.addOn}");

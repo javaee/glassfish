@@ -27,6 +27,7 @@ import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.LicenseAction;
 import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
+import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
 import java.util.Properties;
 
@@ -49,7 +50,7 @@ public class UpdateCenterHandlers {
     public static void getInstalledPath(HandlerContext handlerCtx) {
         Image image = getUpdateCenterImage();
         handlerCtx.setOutputValue("result",  (image == null) ? 
-            GuiUtil.getMessage("updateCenter.NoImageDirectory") : image.getRootDirectory());
+            GuiUtil.getMessage(BUNDLE, "updateCenter.NoImageDirectory") : image.getRootDirectory());
     }
     
     
@@ -119,6 +120,7 @@ public class UpdateCenterHandlers {
         @HandlerOutput(name="result", type=java.util.List.class)})
     public static void getUcList(HandlerContext handlerCtx) {
         
+        GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
         List result = new ArrayList();
         try {
             Image img = getUpdateCenterImage();
@@ -153,6 +155,10 @@ public class UpdateCenterHandlers {
                     putInfo(oneRow, "pkgSize", getPkgSize(manifest));
                     oneRow.put( "size", Integer.valueOf(manifest.getPackageSize()));
                     putInfo(oneRow, "auth", fmri.getAuthority());
+                    String tooltip = manifest.getAttribute(PKG_SUMMARY);
+                    if (GuiUtil.isEmpty(tooltip))
+                        tooltip = manifest.getAttribute(DESC);
+                    putInfo(oneRow, "tooltip", tooltip);
                     result.add(oneRow);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -264,11 +270,30 @@ public class UpdateCenterHandlers {
         for (Image.FmriState each : image.getInventory(null, false)) {
             installed.add(each.fmri.getName());
         }
-        List<Fmri> result = new ArrayList();
+        String pAuth = image.getPreferredAuthorityName();
+        Map<String, Fmri> pMap = new HashMap();
+        List<Fmri> allList = new ArrayList();
         for (Image.FmriState each : image.getInventory(null, true)) {
+            Fmri fmri = each.fmri;
             if (!each.upgradable && !each.installed &&
-                    !installed.contains(each.fmri.getName())) {
-                result.add(each.fmri);
+                    !installed.contains(fmri.getName())) {
+                allList.add(fmri);
+                if (fmri.getAuthority().equals(pAuth)){
+                    pMap.put(fmri.getName(), fmri);
+                }
+            }
+        }
+        
+        //If the package exist in different repo, only show the one thats from
+        //the preferred repo.
+        List result = new ArrayList();
+        for(Fmri test: allList){
+            if (pMap.get(test.getName()) == null){
+                result.add(test);
+                continue;
+            }
+            if (test.getAuthority().equals(pAuth)){
+                result.add(test);
             }
         }
         return result;
@@ -307,6 +332,10 @@ public class UpdateCenterHandlers {
                     putInfo(oneRow, "pkgSize", convertSizeForDispay(changedSize));
                     oneRow.put( "size", Integer.valueOf(changedSize));
                     putInfo(oneRow, "auth", newPkg.getAuthority());
+                    String tooltip = manifest.getAttribute(PKG_SUMMARY);
+                    if (GuiUtil.isEmpty(tooltip))
+                        tooltip = manifest.getAttribute(DESC);
+                    putInfo(oneRow, "tooltip", tooltip);
                     result.add(oneRow);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -374,17 +403,35 @@ public class UpdateCenterHandlers {
             handlerCtx.setOutputValue("license", ""+allLicense);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
      }
         
      
-    private static final String UPDATE_COUNT = "__gui_uc_update_count";
     //returns -1 for any error condition, otherwise the #of component that has update available.
     @Handler(id = "getUpdateComponentCount", output = {
         @HandlerOutput(name = "count", type = Integer.class)
     })
     public static void getUpdateComponentCount(HandlerContext handlerCtx) {
+        Boolean userOK = (Boolean) GuiUtil.getSessionValue(USER_OK);
+        if (userOK == null){
+            UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
+            boolean donotping = userPreference == UpdateCheckFrequency.NEVER;
+            if(donotping){
+//                System.out.println("!!!!!!!!!!!!!!!! In do NOT PING");
+                GuiUtil.setSessionValue(USER_OK, Boolean.FALSE);
+                handlerCtx.setOutputValue("count", -1);
+                return;
+            }else{
+//                System.out.println("!!!!!!!!!!!!OK TO ping");
+                GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
+            }
+        }else{
+            if (! userOK.booleanValue()){
+                handlerCtx.setOutputValue("count", -1);
+                return;
+            } 
+        }
         Integer countInt = (Integer) GuiUtil.getSessionValue(UPDATE_COUNT);
         if (countInt == null) {
             Image image = getUpdateCenterImage();
@@ -405,7 +452,7 @@ public class UpdateCenterHandlers {
             }
          }catch(Exception ex){
             count = -1;
-            System.out.println("!!!!!!!!! error in getting update component list");
+            System.out.println("error in getting update component list");
             //System.out.println(ex.getMessage());
          }
          Integer countInt = Integer.valueOf(count);
@@ -449,8 +496,8 @@ public class UpdateCenterHandlers {
     
     private static String convertSizeForDispay(int size){
         String sizep = (size <= MB) ?
-            size/1024 + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeKB") :
-            size/MB + GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "sizeMB")  ;
+            size/1024 + GuiUtil.getMessage(BUNDLE, "sizeKB") :
+            size/MB + GuiUtil.getMessage(BUNDLE, "sizeMB")  ;
         return sizep;
     }
     
@@ -466,66 +513,46 @@ public class UpdateCenterHandlers {
     
     
     private static Image getUpdateCenterImage(){
-        
-        String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); //this will only give the glassfish installation. need to get its parent for UC info
-        String ucDir = (new File (installDir)).getParent();
-        try{        
-            Image image = new Image (new File (ucDir));
-            return image;
-        }catch(Exception ex){
-            System.out.println("!!!! Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
-            //ex.printStackTrace();
-            return null;
+        String ucDir = (String) GuiUtil.getSessionValue(UCDIR);
+        if (ucDir == null){
+            String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); 
+            //installDir will only give the glassfish installation. need to get its parent for UC info
+            ucDir = (new File (installDir)).getParent();
+            GuiUtil.setSessionValue(UCDIR, ucDir);
         }
+        Image image = null;
+        try{
+            image = new Image (new File (ucDir));
+            refreshCatalog(image);
+        }catch(Exception ex){
+            System.out.println("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
+            //ex.printStackTrace();
+        }
+        return image;
     }
     
-    
-//    @Handler(id="testUCAPI",
-//    output={
-//        @HandlerOutput(name="installedList", type=String.class)})
-//        public static void testUCAPI(HandlerContext handlerCtx) {
-//        
-//        File dir = new File("/Users/anilam/Sun/v3/glassfishv3-express-0709-pb14");
-//        try{
-//            Image img = new Image(dir);
-//            java.util.List<Fmri> listFmri = img.getInventory();
-//            for( Fmri one : listFmri ){
-//                System.out.println(" Fmri Name = " + one.getName() + 
-//                        ";  URLPath = " + one.getURLPath() + 
-//                        ";  Version = " + one.getVersion());
-//            }
-//            System.out.println("!!!!!!!!!!! ========================  getInventory");
-//            List<Image.FmriState> list2 = img.getInventory(null, false);
-//            for (Image.FmriState fs : list2){
-//                Fmri fmri = fs.fmri;
-//                System.out.println("NAME = " + fmri.getName() +
-//                        ";  VERSION = " + fmri.getVersion());
-//            }
-//            
-//            String pkgs[] = { "jmaki" };
-//            img.uninstallPackages(pkgs);
-//            
-//            System.out.println("After un-installation ---------");
-//            List<Image.FmriState> list3 = img.getInventory(null, false);
-//
-//            for (Image.FmriState fs : list3){
-//                Fmri fmri = fs.fmri;
-//                System.out.println("NAME = " + fmri.getName() +
-//                        ";  VERSION = " + fmri.getVersion());
-//            }
-//            
-//
-//            
-//        }catch(Exception ex){
-//            System.out.println("!!!!!!!  cannot create Image") ;
-//        }
-//    }
-//    
+   
+    private static synchronized void refreshCatalog (Image image){
+        try{
+            if (GuiUtil.getSessionValue(CATALOG_REFRESHED) == null){
+                GuiUtil.setSessionValue(CATALOG_REFRESHED, "TRUE");
+                image.refreshCatalogs();
+            }
+        }catch(Exception ex){
+            System.out.println("Cannot refresh Catalog : " + ex.getMessage());
+        }
+    } 
+
     final private static String CATEGORY = "info.classification";
     final private static String DESC_LONG = "description_long";
     final private static String PKG_DESC = "pkg.description";
     final private static String PKG_SUMMARY = "pkg.summary";
     final private static String DESC = "description";
-    
+    final private static String UPDATE_COUNT = "__gui_uc_update_count";
+    final private static String CATALOG_REFRESHED = "__gui_uc_catalog_refreshed";
+    final private static String UCDIR = "__gui_uc_installation_dir";
+    final private static String USER_OK = "__gui_uc_userok";
+    final private static String BUNDLE = "org.glassfish.updatecenter.admingui.Strings";
     final private static int MB = 1024*1024;
+    
 }
