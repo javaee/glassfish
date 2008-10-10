@@ -39,8 +39,10 @@
     text="$resource{i18n.tree.security}"
     url="/security/security.jsf?configName=#{configName}"
     target="main"
-    imageURL="resource/security/images/security.gif"
     >
+    <!facet image>
+	<sun:imageHyperlink imageURL="resource/security/images/security.gif" url="/security/security.jsf?configName=#{configName}" target="main" border="0" immediate="true" />
+    </facet>
     <dynamicTreeNode id="realms"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
