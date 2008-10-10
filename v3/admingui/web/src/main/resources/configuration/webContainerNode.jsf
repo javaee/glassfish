@@ -50,9 +50,12 @@
     <sun:treeNode id="httpService"
         text="$resource{i18n.tree.httpService}"
         url="/web/configuration/httpService.jsf?configName=#{configName}"
-        imageURL="resource/web/images/httpservice.gif"
+        imageURL="/resource/web/images/httpservice.gif"
         target="main"
         >
+	<!facet image>
+	    <sun:imageHyperlink imageURL="/resource/web/images/httpservice.gif" url="/web/configuration/httpListeners.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+	</facet>
         <dynamicTreeNode id="httpListeners"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:j2eeType=X-HTTPServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   

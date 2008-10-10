@@ -55,7 +55,7 @@
             <sun:script url="/resource/js/adminjsf.js" />
 #include "/shared/alertMsg.inc"        
         </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configurations:httpService', 'web/configuration/webContainerNode.jsf', 'httpService'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:httpService', 'web/configuration/webContainerNode.jsf', 'httpService'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.httpListeners.ListPageTitle}"
