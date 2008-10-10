@@ -88,6 +88,7 @@
     <module>scripting</module>
     <module>jpa</module>
     <module>all</module>
+    <module>smoketests</module>
   </modules>
 
 
