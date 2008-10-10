@@ -145,7 +145,7 @@
     </exec>
     <!-- JRuby deplyment needs GF start server to be fully done. 
          Introduce a delay for now and will investigate futher.  -->
-    <!-- sleep seconds="20"/ -->
+    <sleep seconds="10"/>
 </target>
 
 <target name="stop-server" depends="setOSConditions">
