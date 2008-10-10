@@ -1629,7 +1629,7 @@ function checkForSelectedValue(fieldId) {
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
     if (currentRestartStatus != oldRestartStatus) {
         reloadHeaderFrame();
-        showLargeHeaderFrame(true);
+        //showLargeHeaderFrame(true);
     }
     return true;
 }

@@ -94,7 +94,7 @@
     </sun:tableColumn>    
     
     <sun:tableColumn headerText="$resource{i18nUC.ucTable.component}" sort="pkgName" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.pkgName}" 
+        <sun:hyperlink id="link" text="#{td.value.pkgName}" toolTip="#{td.value.tooltip}"
             url="/updateCenter/pkgDetails.jsf?fmriStr=#{td.value.fmriStr}&auth=#{td.value.auth}&fromPage=#{fromPage}" />
     </sun:tableColumn>
     
