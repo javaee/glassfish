@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -45,32 +45,32 @@ import java.util.Properties;
  * <p>
  * Heavily inspired by the original from common-utils but copied here to
  * minimize dependencies.
- * 
+ *
  * @author tjquinn
  */
 public class DFDeploymentProperties extends Properties {
 
 //    private Properties deplProps = new Properties();
-    
+
     public String getWsdlTargetHint() throws IllegalArgumentException {
         return getProperty(WSDL_TARGET_HINT, null);
     }
-    
+
     public void setWsdlTargetHint(String target) {
         if(target != null) {
             setProperty(WSDL_TARGET_HINT, target);
         }
     }
-    
+
     public String getTarget() throws IllegalArgumentException {
         return getProperty(TARGET, null);
     }
-    
+
     public void setTarget(String target) {
         if (target != null)
             setProperty(TARGET, target);
     }
-    
+
     public boolean getRedeploy() {
         return Boolean.valueOf(getProperty(REDEPLOY, DEFAULT_REDEPLOY)).booleanValue();
     }
@@ -82,16 +82,16 @@ public class DFDeploymentProperties extends Properties {
     public String getArchiveName() throws IllegalArgumentException{
         return getProperty(ARCHIVE_NAME, null);
     }
-    
+
     public void setArchiveName(String archiveName) {
         if(archiveName != null)
             setProperty(ARCHIVE_NAME, archiveName);
     }
-        
+
     public boolean getForce() {
         return Boolean.valueOf(getProperty(FORCE,DEFAULT_FORCE)).booleanValue();
     }
-    
+
     public void setForce(boolean force) {
         setProperty(FORCE, Boolean.valueOf(force).toString());
     }
@@ -107,62 +107,62 @@ public class DFDeploymentProperties extends Properties {
     public boolean getCascade() {
         return Boolean.valueOf(getProperty(CASCADE,DEFAULT_CASCADE)).booleanValue();
     }
-    
+
     public void setCascade(boolean cascade) {
         setProperty(CASCADE, Boolean.valueOf(cascade).toString());
     }
-    
+
     public boolean getPrecompileJSP() {
         return Boolean.valueOf(getProperty(PRECOMPILE_JSP,DEFAULT_PRECOMPILE_JSP)).booleanValue();
     }
-    
+
     public void setPrecompileJSP(boolean precompileJSP) {
         setProperty(PRECOMPILE_JSP, Boolean.valueOf(precompileJSP).toString());
     }
-    
+
     public boolean getVerify() {
         return Boolean.valueOf(getProperty(VERIFY,DEFAULT_VERIFY)).booleanValue();
     }
-    
+
     public void setVerify(boolean verify) {
         setProperty(VERIFY, Boolean.valueOf(verify).toString());
     }
-    
+
     public String getVirtualServers() {
         return getProperty(VIRTUAL_SERVERS , DEFAULT_VIRTUAL_SERVERS);
     }
-    
+
     public void setVirtualServers(String virtualServers) {
         if(virtualServers != null)
 	        setProperty(VIRTUAL_SERVERS, virtualServers);
     }
-    
+
     public boolean getEnabled() {
         return Boolean.valueOf(getProperty(ENABLED,DEFAULT_ENABLED)).booleanValue();
     }
-    
+
     public void setEnabled(boolean enabled) {
         setProperty(ENABLED, Boolean.valueOf(enabled).toString());
     }
-    
+
     public String getContextRoot() {
         return getProperty(CONTEXT_ROOT, null);
     }
-    
+
     public void setContextRoot(String contextRoot) {
         if(contextRoot != null)
             setProperty(CONTEXT_ROOT, contextRoot);
     }
-    
+
     public String getName(String filePath) {
         return getProperty(NAME);
     }
-    
+
     public void setName(String name) {
         if(name != null)
             setProperty(NAME, name);
     }
-    
+
     public String getDescription() {
         return getProperty(DESCRIPTION, "");
     }
@@ -193,16 +193,16 @@ public class DFDeploymentProperties extends Properties {
     public boolean getJavaWebStartEnabled() {
         return Boolean.valueOf(getProperty(DEPLOY_OPTION_JAVA_WEB_START_ENABLED, DEFAULT_JAVA_WEB_START_ENABLED)).booleanValue();
     }
-    
+
     public void setJavaWebStartEnabled(boolean javaWebStartEnabled) {
         setProperty(DEPLOY_OPTION_JAVA_WEB_START_ENABLED,
-                    Boolean.valueOf(javaWebStartEnabled).toString()); 
+                    Boolean.valueOf(javaWebStartEnabled).toString());
     }
 
     public String getLibraries() {
         return getProperty(DEPLOY_OPTION_LIBRARIES, null  );
     }
-        
+
     public void setLibraries(String libraries) {
         if(libraries != null) {
             setProperty(DEPLOY_OPTION_LIBRARIES, libraries);
@@ -232,7 +232,7 @@ public class DFDeploymentProperties extends Properties {
     public void setUpload(boolean uploadEnabled) {
         setProperty(UPLOAD, Boolean.toString(uploadEnabled));
     }
-    
+
     public boolean getUpload() {
         return Boolean.valueOf(getProperty(UPLOAD, DEFAULT_UPLOAD)).booleanValue();
     }
@@ -240,11 +240,11 @@ public class DFDeploymentProperties extends Properties {
     public void setExternallyManaged(boolean isExternallyManaged) {
         setProperty(EXTERNALLY_MANAGED, Boolean.toString(isExternallyManaged));
     }
-              
+
     public void setPath(String path) {
         setProperty(PATH, path);
     }
-    
+
     public String getPath() {
         return getProperty(PATH);
     }
@@ -253,13 +253,28 @@ public class DFDeploymentProperties extends Properties {
     }
 
     public void setProperties(Properties props) {
-        put(PROPERTIES, props);
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Object,Object> prop : props.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append(PROPERTIES_SEPARATOR);
+            }
+            sb.append(prop.getKey()).append("=").append(prop.getValue());
+        }
+        setProperty(PROPERTIES, sb.toString());
     }
 
     public Properties getProperties() {
-        return (Properties) get(PROPERTIES);
+        Properties result = new Properties();
+        String[] settings = getProperty(PROPERTIES).split(PROPERTIES_SEPARATOR);
+        for (String setting : settings) {
+            int equals = setting.indexOf('=');
+            if (equals != -1) {
+                result.setProperty(setting.substring(0, equals), setting.substring(equals + 1));
+            }
+        }
+        return result;
     }
-    
+
     public static final String WSDL_TARGET_HINT = "wsdlTargetHint";
     public static final String TARGET = "target";
     public static final String REDEPLOY = "redeploy";
@@ -295,7 +310,8 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEPLOYMENT_PLAN = "deploymentplan";
 
     public static final String PROPERTIES = "properties";
-    
+    private static final String PROPERTIES_SEPARATOR = ":";
+
     public static final String DEFAULT_UPLOAD = "true";
     public static final String DEFAULT_EXTERNALLY_MANAGED = "false";
     // resource constants
@@ -315,16 +331,17 @@ public class DFDeploymentProperties extends Properties {
     public Map<String,String> asMap() {
         return new HashMap<String,String>();
     }
-    
+
 //    private String getProperty(String propertyName, String defaultValue) {
 //        return deplProps.getProperty(propertyName, defaultValue);
 //    }
-//    
+//
 //    private String getProperty(String propertyName) {
 //        return deplProps.getProperty(propertyName);
 //    }
-//    
+//
 //    private void setProperty(String propertyName, String value) {
 //        deplProps.setProperty(propertyName, value);
 //    }
 }
+
