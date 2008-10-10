@@ -214,16 +214,18 @@
               <!afterCreate
                   getClientId(component="$this{component}" clientId=>$page{treeId});
               />
-      <!--  ===================================== Registration  ======================  -->
+
+	    <!--  ===================================== Registration  ======================  -->
             <sun:treeNode id="registration"
                 rendered="$session{showRegistration}"
                 text="#{registrationNodeText}"
                 url="/sysnet/#{registrationNodePage}.jsf"
-                imageURL="resource/images/#{registrationNodePage}.png"
                 target="main">
+		<!facet image>
+		    <sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.png" url="/sysnet/#{registrationNodePage}.jsf" target="main" border="0" immediate="true" />
+		</facet>
             </sun:treeNode>
-                           
-              
+
 	    <!--  ===================================== Application Server  ======================  -->
 	    <sun:treeNode id="applicationServer" 
 			  text="$resource{i18n.tree.appServer}"
