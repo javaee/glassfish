@@ -317,7 +317,7 @@
 
     <target name="quicklook-summary">
         <tstamp>
-           <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss" />
+           <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss zz" />
         </tstamp>
         <echo file="quicklook_summary.txt" message="   ${end.timestamp} ${line.separator}" />
         <loadfile srcfile="runtestng.output" property="testng_output">
