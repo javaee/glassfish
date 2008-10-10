@@ -25,18 +25,17 @@ package org.glassfish.ejb.startup;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
-import com.sun.ejb.containers.ContainerFactoryImpl;
 import com.sun.ejb.containers.SingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
@@ -58,10 +57,10 @@ public class EjbApplication
     private ClassLoader ejbAppClassLoader;
     private DeploymentContext dc;
 
-    @Inject
+    private Habitat habitat;
+
     private EJBSecurityManagerFactory ejbSMF;
 
-    @Inject
     private ContainerFactory ejbContainerFactory;
 
     private SingletonLifeCycleManager singletonLCM;
@@ -73,11 +72,13 @@ public class EjbApplication
 
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
-            ClassLoader cl) {
+            ClassLoader cl, Habitat habitat) {
         this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
         this.appName = ""; //TODO
         this.dc = dc;
+        this.habitat = habitat;
+        this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
     }
 
     public Collection<EjbDescriptor> getDescriptor() {

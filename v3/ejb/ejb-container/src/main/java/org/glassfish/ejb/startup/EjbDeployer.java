@@ -171,7 +171,7 @@ public class EjbDeployer
         Collection<EjbDescriptor> ebds =
                 (Collection<EjbDescriptor>) app.getEjbDescriptors();
 
-        EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader());
+        EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat);
 
         String appName = dc.getCommandParameters().getProperty(ParameterNames.NAME);
         ejbApps.put(appName, ejbApp);

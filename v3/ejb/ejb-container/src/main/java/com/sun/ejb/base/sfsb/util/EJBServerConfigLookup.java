@@ -87,7 +87,7 @@ public final class EJBServerConfigLookup {
 
     private static final String REPLICATED_TYPE = "replicated";
 
-    @Inject
+    //@Inject
     AvailabilityService availabilityService;
 
     @Inject
