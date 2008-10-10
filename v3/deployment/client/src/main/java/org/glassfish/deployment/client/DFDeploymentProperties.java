@@ -253,11 +253,26 @@ public class DFDeploymentProperties extends Properties {
     }
 
     public void setProperties(Properties props) {
-        put(PROPERTIES, props);
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Object,Object> prop : props.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append(PROPERTIES_SEPARATOR);
+            }
+            sb.append(prop.getKey()).append("=").append(prop.getValue());
+        }
+        setProperty(PROPERTIES, sb.toString());
     }
 
     public Properties getProperties() {
-        return (Properties) get(PROPERTIES);
+        Properties result = new Properties();
+        String[] settings = getProperty(PROPERTIES).split(PROPERTIES_SEPARATOR);
+        for (String setting : settings) {
+            int equals = setting.indexOf('=');
+            if (equals != -1) {
+                result.setProperty(setting.substring(0, equals), setting.substring(equals + 1));
+            }
+        }
+        return result;
     }
     
     public static final String WSDL_TARGET_HINT = "wsdlTargetHint";
@@ -295,6 +310,7 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEPLOYMENT_PLAN = "deploymentplan";
 
     public static final String PROPERTIES = "properties";
+    private static final String PROPERTIES_SEPARATOR = ":";
     
     public static final String DEFAULT_UPLOAD = "true";
     public static final String DEFAULT_EXTERNALLY_MANAGED = "false";
