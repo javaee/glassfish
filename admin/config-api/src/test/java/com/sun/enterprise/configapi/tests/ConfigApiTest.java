@@ -41,6 +41,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.DomDocument;
 import org.junit.Ignore;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 /**
  * User: Jerome Dochez
  * Date: Mar 25, 2008
@@ -52,7 +55,15 @@ public class ConfigApiTest extends org.glassfish.tests.utils.ConfigApiTest {
     public DomDocument getDocument(Habitat habitat) {
         DomDocument doc = habitat.getByType(GlassFishDocument.class);
         if (doc==null) {
-            return new GlassFishDocument(habitat);
+            return new GlassFishDocument(habitat, Executors.newCachedThreadPool(new ThreadFactory() {
+
+                        public Thread newThread(Runnable r) {
+                            Thread t = Executors.defaultThreadFactory().newThread(r);
+                            t.setDaemon(true);
+                            return t;
+                        }
+
+                    }));
         }
         return doc;
     }

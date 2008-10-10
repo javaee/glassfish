@@ -41,6 +41,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.io.IOException;
 
 /**
@@ -51,11 +52,11 @@ import java.io.IOException;
  */
 public class GlassFishDocument extends DomDocument {
 
-    public GlassFishDocument(final Habitat habitat) {
+    public GlassFishDocument(final Habitat habitat, final ExecutorService executor) {
         super(habitat);
 
         final DomDocument doc = this;
-        Transactions.get().addTransactionsListener(new TransactionListener() {
+        Transactions.get(executor).addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
                     try {

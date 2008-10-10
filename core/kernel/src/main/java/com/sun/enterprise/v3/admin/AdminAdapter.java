@@ -85,7 +85,8 @@ import org.jvnet.hk2.config.ConfigListener;
 @Service
 public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
-    public final static String PREFIX_URI = "/__asadmin";
+    public final static String VS_NAME="__asadmin";
+    public final static String PREFIX_URI = "/" + VS_NAME;
     public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
     public final static String GFV3 = "gfv3";
