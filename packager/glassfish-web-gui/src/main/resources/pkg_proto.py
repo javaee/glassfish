@@ -43,7 +43,7 @@ pkg = {
     "name"          : "glassfish-web-gui",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Web Container Administration Console Plugin",
+                        "pkg.summary" : "GlassFish Web Container Console Plugin",
                         "pkg.description" : "An extension to the administration console that enables administration of the web container, HTTP listeners, and virtual servers. This package also enables you to deploy and undeploy web applications, and to list web applications that are already deployed. This package requires the administration console. If the administration console is not already installed, it is installed with this package. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
