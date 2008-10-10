@@ -86,6 +86,7 @@ public class RestartDomainTests {
         parseTestResults(outPutFile, expectedOutPut, testErr);
     }
 
+/*
     @Test
     public void pingJdbcPoolAfter() throws Exception {
 	outPutFile = "admincli-ping-jdbc.output";
@@ -93,6 +94,7 @@ public class RestartDomainTests {
 	testErr = "Ping-jdbc failed.";
 	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
+*/
 
 
     public void parseTestResults(String outPutFile, String expectedOutPut, String testErr) throws Exception {
