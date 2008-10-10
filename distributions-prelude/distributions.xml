@@ -36,7 +36,7 @@ own identifying information: Portions Copyright [yyyy]
 <property name="dev.repository.url" value="${repository.url}/dev"/>
 <property name="contrib.repository.url" value="${repository.url}/contrib"/>
 <property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
-<property name="sun.repository.url" value="http://mercurial1.foundry.sun.com/glassfish/v3prelude"/>
+<property name="sun.repository.url" value="http://pkg.sun.com/glassfish/v3prelude"/>
 <property name="sun.contrib.repository.url" value="${sun.repository.url}/contrib"/>
 
 <target name="init"> 
@@ -227,15 +227,15 @@ origin-for-darwin-universal-sun-contrib]]>
     </replace>
     <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
         <replacefilter token="origin-for-windows-i386-sun-contrib"
-            value="origin-for-windows-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/contrib/windows/"/>
+            value="origin-for-windows-i386 = http://pkg.sun.com/glassfish/v3prelude/contrib/windows/"/>
         <replacefilter token="origin-for-sunos-i386-sun-contrib"
-            value="origin-for-sunos-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/contrib/solaris-x86/"/>
+            value="origin-for-sunos-i386 = http://pkg.sun.com/glassfish/v3prelude/contrib/solaris-x86/"/>
         <replacefilter token="origin-for-sunos-sparc-sun-contrib"
-            value="origin-for-sunos-sparc = http://mercurial1.foundry.sun.com/glassfish/v3prelude/contrib/solaris-sparc/"/>
+            value="origin-for-sunos-sparc = http://pkg.sun.com/glassfish/v3prelude/contrib/solaris-sparc/"/>
         <replacefilter token="origin-for-linux-i386-sun-contrib"
-            value="origin-for-linux-i386 = http://mercurial1.foundry.sun.com/glassfish/v3prelude/contrib/linux/"/>
+            value="origin-for-linux-i386 = http://pkg.sun.com/glassfish/v3prelude/contrib/linux/"/>
         <replacefilter token="origin-for-darwin-universal-sun-contrib"
-            value="origin-for-darwin-universal = http://mercurial1.foundry.sun.com/glassfish/v3prelude/contrib/mac/"/>
+            value="origin-for-darwin-universal = http://pkg.sun.com/glassfish/v3prelude/contrib/mac/"/>
     </replace>
 </target>
 
