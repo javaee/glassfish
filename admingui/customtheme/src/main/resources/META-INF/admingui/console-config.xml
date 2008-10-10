@@ -25,6 +25,12 @@
                 priority="100"
                 content="branding/loginform.inc"
         />          
+        <integration-point
+                id="customtheme"
+                type="org.glassfish.admingui:versioninfo"
+                priority="100"
+                content="branding/versioninfo.inc"
+        />
         <integration-point 
                 id="customtheme" 
                 type="org.glassfish.admingui:upsellframepe" 
