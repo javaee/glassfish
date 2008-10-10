@@ -35,7 +35,7 @@
 -->
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
  
-<suite name="FunctionalTests" verbose="2" >
+<suite name="QuickLookTests" verbose="2" >
   <parameter name="admin.url" value="http://localhost:4848/__asadmin"/>
   <parameter name="admin.user" value="anonymous"/>
   <parameter name="admin.password" value=""/>

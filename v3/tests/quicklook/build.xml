@@ -55,6 +55,7 @@
         <antcall target="stop-derby"/>
 	<move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/>
         <antcall target="testng-summary"/>
+        <antcall target="quicklook-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -312,6 +313,19 @@
 	   </filterchain>
 	</loadfile>
         <echo message="${testng_output}"/>
+    </target>
+
+    <target name="quicklook-summary">
+        <tstamp>
+           <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss" />
+        </tstamp>
+        <echo file="quicklook_summary.txt" message="   ${end.timestamp} ${line.separator}" />
+        <loadfile srcfile="runtestng.output" property="testng_output">
+           <filterchain>
+              <tailfilter lines="4" skip="1"/>
+           </filterchain>
+        </loadfile>
+        <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
     </target>
 
     <target name="archive" depends="initprops,clean">
