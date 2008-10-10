@@ -156,6 +156,14 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
 
     /**
+     * @return true if this filter support async dispatches, false otherwise
+     */
+    public boolean isSupportsAsync() {
+        return filterDef.isSupportsAsync();
+    }
+
+
+    /**
      * Return a <code>String</code> containing the value of the named
      * initialization parameter, or <code>null</code> if the parameter
      * does not exist.
