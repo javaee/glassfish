@@ -514,19 +514,34 @@ public class UpdateCenterHandlers {
     
     private static Image getUpdateCenterImage(){
         String ucDir = (String) GuiUtil.getSessionValue(UCDIR);
+        if (ucDir == null){
+            String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); 
+            //installDir will only give the glassfish installation. need to get its parent for UC info
+            ucDir = (new File (installDir)).getParent();
+            GuiUtil.setSessionValue(UCDIR, ucDir);
+        }
+        Image image = null;
         try{
-            Image image = new Image (new File (ucDir));
+            image = new Image (new File (ucDir));
+            refreshCatalog(image);
+        }catch(Exception ex){
+            System.out.println("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
+            //ex.printStackTrace();
+        }
+        return image;
+    }
+    
+   
+    private static synchronized void refreshCatalog (Image image){
+        try{
             if (GuiUtil.getSessionValue(CATALOG_REFRESHED) == null){
                 GuiUtil.setSessionValue(CATALOG_REFRESHED, "TRUE");
                 image.refreshCatalogs();
             }
-            return image;
         }catch(Exception ex){
-            System.out.println("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
-            //ex.printStackTrace();
-            return null;
+            System.out.println("Cannot refresh Catalog : " + ex.getMessage());
         }
-    }
+    } 
 
     final private static String CATEGORY = "info.classification";
     final private static String DESC_LONG = "description_long";
@@ -539,12 +554,5 @@ public class UpdateCenterHandlers {
     final private static String USER_OK = "__gui_uc_userok";
     final private static String BUNDLE = "org.glassfish.updatecenter.admingui.Strings";
     final private static int MB = 1024*1024;
-    
-    static {
-        String installDir = AMXRoot.getInstance().getDomainRoot().getInstallDir(); 
-        //installDir will only give the glassfish installation. need to get its parent for UC info
-        String ucDir = (new File (installDir)).getParent();
-        GuiUtil.setSessionValue(UCDIR, ucDir);
-    }
     
 }

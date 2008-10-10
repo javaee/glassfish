@@ -42,7 +42,7 @@
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
-        <sun:body id="body3" onLoad="reloadHeaderFrame(); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
+        <sun:body id="body3" onLoad="reloadHeader('#{pageSession.doReloadHeader}'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
@@ -76,4 +76,16 @@
             </sun:form>
         </sun:body>
 #include "/shared/changeButtonsJS.inc"
+
+<f:verbatim>
+    <script type="text/javascript">
+       function reloadHeader(value) {
+            if (value == 'true') {
+                reloadHeaderFrame();
+            }
+        }
+    </script>
+</f:verbatim>
+            
+
     </sun:html>

@@ -48,6 +48,7 @@
         setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.update.tableTitle}");
         setPageSessionAttribute(key="fromPage" value="update.jsf");
         setPageSessionAttribute(key="forInstall" value="true");
+        setPageSessionAttribute(key="doReloadHeader" value="true");
         setPageSessionAttribute(key="showNewVersion" value="#{true}");
         setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.installedVersion}");
         setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.change}");
