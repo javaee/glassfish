@@ -138,14 +138,6 @@ public final class ApplicationFilterFactory {
     public ApplicationFilterChain createFilterChain
         (ServletRequest request, Wrapper wrapper, Servlet servlet) {
         
-        HttpServletRequest hreq = null;
-        /* GlassFish 6386229
-        if (request instanceof HttpServletRequest) 
-            hreq = (HttpServletRequest)request;
-        */
-        // START GlassFish 6386229
-        hreq = (HttpServletRequest)request;
-        // END GlassFish 6386229
         // If there is no servlet to execute, return null
         if (servlet == null)
             return (null);
@@ -428,6 +420,8 @@ public final class ApplicationFilterFactory {
         }
 
         filterChain.setServlet(servlet);
+
+        filterChain.setServletSupportsAsync(wrapper.isSupportsAsync());
 
         filterChain.setSupport
             (((StandardWrapper)wrapper).getInstanceSupport());

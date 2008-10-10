@@ -456,13 +456,13 @@ final class StandardWrapperValve
             */
             // START IASRI 4665318
             if (servlet != null) {
-                if (filterChain != null)
+                if (filterChain != null) {
+                    filterChain.setRequest(request);
                     filterChain.doFilter(hreq, hres);
-                else {
-                    ApplicationFilterChain.servletService(hreq,
-                                                          hres,
-                                                          servlet,
-                                                          wrapper.getInstanceSupport());
+                } else {
+                    ApplicationFilterChain.servletService(
+                        hreq, hres, servlet, wrapper.isSupportsAsync(),
+                        wrapper.getInstanceSupport(), request);
 
                 }
             }

@@ -73,6 +73,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.InstanceEvent;
+import org.apache.catalina.Request;
 import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
@@ -141,6 +142,16 @@ final class ApplicationFilterChain implements FilterChain {
      * The servlet instance to be executed by this chain.
      */
     private Servlet servlet = null;
+
+
+    // The request implementation object on which this FilterChain will be
+    // executed
+    private Request coyoRequest = null;
+
+
+    // Indicates whether the servlet at the end of the filter chain supports
+    // async
+    private boolean servletSupportsAsync = false;
 
 
     /**
@@ -226,6 +237,9 @@ final class ApplicationFilterChain implements FilterChain {
         // Call the next filter if there is one
         if (pos < n) {
             ApplicationFilterConfig filterConfig = filters[pos++];
+            if (coyoRequest != null && !filterConfig.isSupportsAsync()) {
+                coyoRequest.disableAsyncSupport();
+            }
             Filter filter = null;
             try {
                 filter = filterConfig.getFilter();
@@ -334,7 +348,8 @@ final class ApplicationFilterChain implements FilterChain {
 
         */
         // START IASRI 4665318
-        servletService(request, response, servlet, support);
+        servletService(request, response, servlet, servletSupportsAsync,
+                       support, coyoRequest);
         // END IASRI 4665318
     }
 
@@ -370,7 +385,8 @@ final class ApplicationFilterChain implements FilterChain {
         pos = 0;
         servlet = null;
         support = null;
-
+        coyoRequest = null;
+        servletSupportsAsync = false;
     }
 
 
@@ -380,9 +396,25 @@ final class ApplicationFilterChain implements FilterChain {
      * @param wrapper The Wrapper for the servlet to be executed
      */
     void setServlet(Servlet servlet) {
-
         this.servlet = servlet;
+    }
 
+
+    /**
+     * @param servletSupportsAsync true if the servlet at the end of the
+     * filter chain supports async, false otherwise
+     */
+    void setServletSupportsAsync(boolean servletSupportsAsync) {
+        this.servletSupportsAsync = servletSupportsAsync;
+    }
+
+
+    /**
+     * Sets the request implementation object on which this FilterChain will
+     * be executed.
+     */
+    void setRequest(Request coyoRequest) {
+        this.coyoRequest = coyoRequest;
     }
 
 
@@ -403,11 +435,15 @@ final class ApplicationFilterChain implements FilterChain {
 
     static void servletService(ServletRequest request, 
                                ServletResponse response,
-                               Servlet serv, InstanceSupport supp)
+                               Servlet serv, boolean servletSupportsAsync,
+                               InstanceSupport supp, Request coyoRequest)
         throws IOException, ServletException {
         try {
             supp.fireInstanceEvent(BEFORE_SERVICE_EVENT,
                                    serv, request, response);
+            if (coyoRequest != null && !servletSupportsAsync) {
+                coyoRequest.disableAsyncSupport();
+            }
             if ((request instanceof HttpServletRequest) &&
                 (response instanceof HttpServletResponse)) {
                     

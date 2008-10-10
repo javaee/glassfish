@@ -337,6 +337,7 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         return httpRequest.getJrouteId();
     }
 
+
     /**
      * Generate and return a new session ID.
      *
@@ -346,4 +347,27 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
     public String generateSessionId() {
         return httpRequest.generateSessionId();
     }
+
+
+    /**
+     * Disables async support on this request.
+     */
+    public void disableAsyncSupport() {
+        httpRequest.disableAsyncSupport();
+    }
+
+
+    /**
+     * Tests whether this request supports async mode.
+     *
+     * Async mode is disabled as soon as the request has passed a filter
+     * or servlet that does not support async (either via the designated
+     * annotation or declaratively).
+     *
+     * @return true if this request supports async mode, false otherwise
+     */
+    public boolean isAsyncSupported() {
+        return httpRequest.isAsyncSupported();
+    }
+
 }

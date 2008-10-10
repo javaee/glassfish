@@ -366,7 +366,8 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public String getLocalName() { return null; }
     public int getLocalPort() { return -1; }
     public int getRemotePort() { return -1; }
-
+    public boolean isAsyncSupported() { return false; }
+    public void disableAsyncSupport() {}
 
     // START CR 6415120
     /**

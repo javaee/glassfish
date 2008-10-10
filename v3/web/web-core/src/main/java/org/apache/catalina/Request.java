@@ -414,4 +414,22 @@ public interface Request {
      * ID generators.
      */
     public String generateSessionId();
+
+
+    /**
+     * Disables async support on this request.
+     */
+    public void disableAsyncSupport();
+
+
+    /**
+     * Tests whether this request supports async mode.
+     *
+     * Async mode is disabled as soon as the request has passed a filter
+     * or servlet that does not support async (either via the designated
+     * annotation or declaratively).
+     *
+     * @return true if this request supports async mode, false otherwise
+     */
+    public boolean isAsyncSupported();
 }
