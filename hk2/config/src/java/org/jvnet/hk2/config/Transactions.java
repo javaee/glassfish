@@ -41,17 +41,14 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Logger;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
+
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -60,25 +57,16 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Jerome Dochez
  */
 
-@Service
 public final class Transactions {
-    
-    private static final Transactions singleton = new Transactions();
+
+    private static Transactions singleton;
     
     // NOTE: synchronization on the object itself
-    final List<ListenerInfo<TransactionListener>> listeners = new ArrayList<ListenerInfo<TransactionListener>>();
+    List<ListenerInfo<TransactionListener>> listeners;
 
-    final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
-
-        public Thread newThread(Runnable r) {
-            Thread t = Executors.defaultThreadFactory().newThread(r);
-            t.setDaemon(true);
-            return t;
-        }
+    ExecutorService executor;
         
-    });
-        
-    final private ListenerInfo<Object> configListeners = new ListenerInfo<Object>(null);
+    private ListenerInfo<Object> configListeners;
     
     private final class ListenerInfo<T> {
         
@@ -96,6 +84,9 @@ public final class Transactions {
                 
             // NOTE that this is put() which blocks, *not* add() which will not block and will
             // throw an IllegalStateException if the queue is full.
+            if (latch.getCount()==0) {
+                throw new RuntimeException("TransactionListener is inactive, yet jobs are published to it");
+            }
             try {
                 pendingJobs.put(job);
             } catch (InterruptedException e ) {
@@ -351,7 +342,17 @@ public final class Transactions {
         // at this point all prior transactions are guaranteed to have cleared
     }
     
-    private Transactions() { 
+    private Transactions(ExecutorService executor) {
+        this.executor = executor;
+        listeners = new ArrayList<ListenerInfo<TransactionListener>>();
+        configListeners = new ListenerInfo<Object>(null);
+    }
+
+    public static synchronized Transactions get(ExecutorService executor) {
+        if (singleton==null) {
+            singleton=new Transactions(executor);
+        }
+        return singleton;
     }
     
     public static final Transactions get() {
