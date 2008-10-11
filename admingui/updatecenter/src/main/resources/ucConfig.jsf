@@ -46,7 +46,7 @@
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
     helpKey="$resource{help.uc.config}"
-    bodyOnLoad="admingui.nav.refreshTree('form:tree:updateCenterPlugIN'); showSection('#{proxyGroup}');"
+    bodyOnLoad="showSection('#{proxyGroup}');"
     >
     
     <!define name="headExtra">
@@ -55,8 +55,8 @@
     
     <!define name="formExtra">
 #include "/shared/treeBreadcrumbs.inc"
-#include "/shared/alertMsg.inc"
 #include "/updateCenter/ucTabs.inc"
+#include "/shared/alertMsg.inc"
     </define>
     <!define name="pageButtonsTop">
         <sun:button id="button" text="$resource{i18n.button.Save}" 
@@ -64,8 +64,9 @@
                 return submitAndDisable(this, '$resource{i18n.button.Processing}'); } 
                 else{ return false;}" onKeyPress="javascript: return true;" > 
             <!command
+                prepareSuccessfulMsg();
                 setProxyInfo(connection="#{proxyGroup}", host="#{host}", port="#{port}");
-                redirect("/updateCenter/ucConfig.jsf");
+                redirect(page="/updateCenter/ucConfig.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
         </sun:button>
     </define>
