@@ -88,6 +88,7 @@ own identifying information: Portions Copyright [yyyy]
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
         <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <exec dir="${installer.image.dir}/glassfishv3-prelude" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
@@ -98,6 +99,7 @@ own identifying information: Portions Copyright [yyyy]
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
         <fileset dir="${glassfish.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${glassfish.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <exec dir="${glassfish.image.dir}" executable="zip">
         <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-prelude"/>
