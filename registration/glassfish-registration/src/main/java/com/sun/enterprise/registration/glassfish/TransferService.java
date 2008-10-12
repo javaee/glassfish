@@ -47,7 +47,7 @@ public class TransferService implements Startup, PostConstruct {
     Logger logger;
 
     private static final long TIMER_INTERVAL = 
-            Long.getLong("com.sun.enterprise.registration.TRANSFER_TIMER_INTERVAL", 7 * 24  * 60 * 60 * 1000);
+            Long.getLong("com.sun.enterprise.registration.TRANSFER_TIMER_INTERVAL", 7 * 24  * 60) * 60 * 1000;
 
     /**
      * Returns the life expectency of the service
@@ -63,6 +63,8 @@ public class TransferService implements Startup, PostConstruct {
     }
 
     public void postConstruct() {
+        if (TIMER_INTERVAL < 0)
+            return;
         final SysnetRegistrationService srs =
                 new SysnetRegistrationService(
                 RegistrationUtil.getServiceTagRegistry());
