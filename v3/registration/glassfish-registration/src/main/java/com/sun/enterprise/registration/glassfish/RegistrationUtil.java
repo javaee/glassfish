@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.registration.glassfish;
 
-import org.jvnet.hk2.annotations.Inject;
 import java.util.logging.Logger;
 
 
@@ -55,12 +54,6 @@ import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.impl.RegistrationLogger;
 
 import com.sun.pkg.client.Image;
-import com.sun.pkg.client.Fmri;
-import com.sun.pkg.client.Manifest;
-import com.sun.pkg.client.SystemInfo;
-import com.sun.pkg.client.Version;
-
-//import org.glassfish.server.ServerEnvironmentImpl;
 
 public class RegistrationUtil {
 
@@ -160,7 +153,6 @@ public class RegistrationUtil {
         RepositoryManager rm = new RepositoryManager(getServiceTagRegistry());
         String gfProductURN = getGFProductURN();
         String gfInstanceURN = rm.getInstanceURN(gfProductURN);
-        
         if (gfInstanceURN == null || gfInstanceURN.length() == 0) {
             gfInstanceURN = ServiceTag.getNewInstanceURN();
             boolean updated = rm.setInstanceURN(gfProductURN, 
@@ -178,8 +170,9 @@ public class RegistrationUtil {
     }
 
     public static Image getUpdateCenterImage() throws Exception {
-        File ucDir = new File(System.getProperty("com.sun.aas.installRoot"));
-        return new Image (ucDir);
+        File installRoot = 
+            new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        return new Image (installRoot.getParent());
     }
 
     public static void setUpdateCenterUUID(String instanceURN)
