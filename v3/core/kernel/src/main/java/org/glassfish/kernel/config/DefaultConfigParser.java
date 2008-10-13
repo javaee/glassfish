@@ -3,13 +3,14 @@ package org.glassfish.kernel.config;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.api.admin.config.ConfigParser;
 import org.glassfish.api.admin.config.Container;
 import org.glassfish.config.support.GlassFishDocument;
+import org.glassfish.config.support.GlassFishConfigBean;
 
 import java.net.URL;
 import java.io.IOException;
@@ -24,6 +25,8 @@ import com.sun.hk2.component.Holder;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.config.serverbeans.Config;
+
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * @author Jerome Dochez
@@ -40,8 +43,13 @@ public class DefaultConfigParser implements ConfigParser {
 
 
         org.jvnet.hk2.config.ConfigParser configParser = new org.jvnet.hk2.config.ConfigParser(habitat);
-        // I don't use the GlassFish document here as I don't need persistence or translated views etc...
-        final DomDocument doc = new DomDocument(habitat);
+        // I don't use the GlassFish document here as I don't need persistence
+        final DomDocument doc = new DomDocument(habitat) {
+            public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
+                // by default, people get the translated view.
+                return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
+            }
+        };
 
         (new Populator() {
 
