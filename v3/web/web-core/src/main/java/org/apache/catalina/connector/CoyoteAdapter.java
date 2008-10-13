@@ -243,6 +243,7 @@ public class CoyoteAdapter
         } catch (IOException e) {
             connector.requestEndEvent(request.getRequest(),
                                       response.getResponse(),
+                                      hostName,
                                       response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
@@ -251,6 +252,7 @@ public class CoyoteAdapter
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
             connector.requestEndEvent(request.getRequest(),
                                       response.getResponse(),
+                                      hostName,
                                       response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();
@@ -354,8 +356,14 @@ public class CoyoteAdapter
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
         } finally {
+            String hostName = null;
+            MappingData md = request.getMappingData();
+            if (md != null && md.host != null) {
+                hostName = ((Host) md.host).getName();
+            }
             connector.requestEndEvent(request.getRequest(),
                                       response.getResponse(),
+                                      hostName,
                                       response.getStatus());
             // Recycle the wrapper request and response
             request.recycle();

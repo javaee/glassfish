@@ -156,6 +156,7 @@ public class WebRequestTelemetry implements PostConstruct {
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName,
         @ProbeParam("statusCode") int statusCode) {
         logger.finest("[TM]requestEndEvent Unprocessed received - virtual-server = " +
                             request.getServerName() + ": application = " +
@@ -164,8 +165,8 @@ public class WebRequestTelemetry implements PostConstruct {
                             statusCode + " : Expecting (vsName, appName) = (" +
                             virtualServerName + ", " + moduleName + ")");
         if ((virtualServerName != null) && (moduleName != null)) {
-            String vs = WebTelemetryBootstrap.getVirtualServerName(request.getServerName(),
-                                                String.valueOf(request.getServerPort()));
+            String vs = WebTelemetryBootstrap.getVirtualServerName(
+                hostName, String.valueOf(request.getServerPort()));
             String contextPath = request.getContextPath();
             String appName = (contextPath == null)? null : 
                                 WebTelemetryBootstrap.getAppName(contextPath);

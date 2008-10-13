@@ -188,10 +188,11 @@ public class HttpServiceRequestTelemetry implements PostConstruct {
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName,
         @ProbeParam("statusCode") int statusCode) {
 
-        String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(request.getServerName(),
-                                                String.valueOf(request.getServerPort()));
+        String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(
+            hostName, String.valueOf(request.getServerPort()));
         if ((vsName != null) && (vsName.equals(virtualServerName))) {
             requestProcessTime.exit();
             incrementStatsCounter(statusCode);

@@ -55,6 +55,7 @@ public interface RequestProbeProvider {
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName,
         @ProbeParam("statusCode") int statusCode
     );        
 }

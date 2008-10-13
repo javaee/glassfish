@@ -1397,15 +1397,34 @@ public class Connector
 
     // -------------------------------------------------- Monitoring Methods
 
+    /**
+     * Fires probe event related to the fact that the given request has
+     * been entered the web container.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @param hostName the name of the virtual server to which the request
+     * was mapped
+     */
     public void requestStartEvent(HttpServletRequest request,
                                   HttpServletResponse response,
                                   String hostName) {
         // Deliberate noop
     };
 
-
+    /**
+     * Fires probe event related to the fact that the given request is about
+     * to exit from the web container.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @param hostName the name of the virtual server to which the request
+     * was mapped
+     * @param statusCode the response status code
+     */
     public void requestEndEvent(HttpServletRequest request,
                                 HttpServletResponse response,
+                                String hostName,
                                 int statusCode) {
         // Deliberate noop
     };

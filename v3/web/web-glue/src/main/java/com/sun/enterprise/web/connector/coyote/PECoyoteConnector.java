@@ -1530,14 +1530,17 @@ public class PECoyoteConnector extends Connector {
      *
      * @param request the request object
      * @param response the response object
+     * @param hostName the name of the virtual server to which the request
+     * was mapped
      * @param statusCode the response status code
      */
     public void requestEndEvent(HttpServletRequest request,
                                 HttpServletResponse response,
+                                String hostName,
                                 int statusCode) {
         if (requestProbeProvider != null) {
             requestProbeProvider.requestEndEvent(request, response,
-                                                 statusCode);
+                                                 hostName, statusCode);
         }
     };
 
