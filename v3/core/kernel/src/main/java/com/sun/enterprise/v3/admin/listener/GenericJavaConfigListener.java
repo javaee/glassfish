@@ -21,10 +21,13 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
-/** Listens for the changes to the configuration of JVM and Java system
- *  properties (including the Java VM options). This class is implemented so
- *  that the server restart is NOT required if a deployer wants to deploy an
- *  application and the application depends on a particular Java system property
+/**
+ *  Listens for the changes to the configuration of JVM and Java system
+ *  properties (including the Java VM options).  Most of the effort involves the jvm-options
+ *  list, but restart is also required for any changes to the java-config.
+ *  <p>
+ *  This class is implemented so that the server restart is NOT required if a deployer wants to deploy 
+ *  an application and the application depends on a particular Java system property
  *  (-D) to be specified. As of now, the deployer specifies the system property
  *  and deploys the application and the application should find it when it does
  *  System.getProperty("property-name"). Here is the complete algorithm:
@@ -55,7 +58,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 
 public final class GenericJavaConfigListener implements PostConstruct, ConfigListener {
-
     @Inject JavaConfig jc;
     List<String> oldProps;
     /* Implementation note: See 6028*/
@@ -69,16 +71,23 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         }
     }
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
                 JavaConfig njc = (JavaConfig) t; //this must not throw ClassCastException
                 logFine(type, njc);
-                NotProcessed result = handle(oldProps, njc.getJvmOptions());
-                oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
-                if (result != null)
-                    return result;
-                return null;
+                
+                NotProcessed result = null;
+                if ( oldProps.size() == njc.getJvmOptions().size() )
+                {
+                    // the JavaConfig itself has changed 
+                    result = new NotProcessed("A java-config attribute was changed, restart required");
+                }
+                else
+                {
+                    result = handle(oldProps, njc.getJvmOptions());
+                    oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
+                }
+                return result;
             }
         }
         , null);
@@ -86,15 +95,16 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     }
     
     private void logFine(TYPE ct, JavaConfig njc) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "<java-config> changed");
+        final Level level = Level.FINE;
+        if (logger.isLoggable(level)) {
+            logger.log(level, "<java-config> changed");
             int os = oldProps.size(), ns = njc.getJvmOptions().size();
             if (os > ns) {
-                logger.log(Level.FINE, "a system property or a JVM option was removed (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
+                logger.log(level, "a system property or a JVM option was removed (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
             } else if(os < ns) {
-                logger.log(Level.FINE, "a system property or a JVM option was added, (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
+                logger.log(level, "a system property or a JVM option was added, (old size = " + os + "), new size: (" + ns + "), restart is required, based on the property");
             } else {
-                logger.log(Level.FINE, "an attribute was changed, restart required");
+                logger.log(level, "an attribute was changed, restart required");
             }
         }
     }
