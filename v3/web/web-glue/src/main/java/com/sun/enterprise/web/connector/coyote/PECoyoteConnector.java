@@ -1506,14 +1506,32 @@ public class PECoyoteConnector extends Connector {
      * Request/response related probe events
      */
 
+    /**
+     * Fires probe event related to the fact that the given request has
+     * been entered the web container.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @param hostName the name of the virtual server to which the request
+     * was mapped
+     */
     public void requestStartEvent(HttpServletRequest request,
-                                  HttpServletResponse response) {
+                                  HttpServletResponse response,
+                                  String hostName) {
         if (requestProbeProvider != null) {
-            requestProbeProvider.requestStartEvent(request, response);
+            requestProbeProvider.requestStartEvent(request, response,
+                                                   hostName);
         }
     };
 
-
+    /**
+     * Fires probe event related to the fact that the given request is about
+     * to exit from the web container.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @param statusCode the response status code
+     */
     public void requestEndEvent(HttpServletRequest request,
                                 HttpServletResponse response,
                                 int statusCode) {

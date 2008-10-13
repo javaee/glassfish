@@ -65,6 +65,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
+import org.apache.catalina.Host;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.StringManager;
@@ -220,17 +221,23 @@ public class CoyoteAdapter
                 (connector.getURIEncoding());
         }
 
+        String hostName = null;
         if (v3Enabled && !compatWithTomcat) {
             // Grizzly already parsed, decoded, and mapped the request.
             // Let's re-use this info here, before firing the
             // requestStartEvent probe, so that the mapping data will be
             // available to any probe event listener via standard
             // ServletRequest APIs (such as getContextPath())
-            request.setMappingData((MappingData)req.getNote(MAPPING_DATA));
+            MappingData md = (MappingData)req.getNote(MAPPING_DATA);
+            if (md != null) {
+                request.setMappingData(md);
+                hostName = ((Host) md.host).getName();
+            }
         }
 
         connector.requestStartEvent(request.getRequest(),
-                                    response.getResponse());
+                                    response.getResponse(),
+                                    hostName);
         try {
             doService(req, request, res, response);
         } catch (IOException e) {

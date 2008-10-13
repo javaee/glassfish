@@ -1398,7 +1398,8 @@ public class Connector
     // -------------------------------------------------- Monitoring Methods
 
     public void requestStartEvent(HttpServletRequest request,
-                                  HttpServletResponse response) {
+                                  HttpServletResponse response,
+                                  String hostName) {
         // Deliberate noop
     };
 

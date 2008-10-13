@@ -120,15 +120,16 @@ public class WebRequestTelemetry implements PostConstruct {
     @ProbeListener("web:request::requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response) {
+        @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName) {
         logger.finest("[TM]requestStartEvent Unprocessed received - virtual-server = " +
                             request.getServerName() + ":" + request.getServerPort() + 
                             ": application = " + request.getContextPath() + " : servlet = " +
                             request.getServletPath() + " : Expecting (vsName, appName) = (" +
                             virtualServerName + ", " + moduleName + ")");
         if ((virtualServerName != null) && (moduleName != null)) {
-            String vs = WebTelemetryBootstrap.getVirtualServerName(request.getServerName(),
-                                                String.valueOf(request.getServerPort()));
+            String vs = WebTelemetryBootstrap.getVirtualServerName(
+                hostName, String.valueOf(request.getServerPort()));
             String contextPath = request.getContextPath();
             String appName = (contextPath == null)? null : 
                                 WebTelemetryBootstrap.getAppName(contextPath);
