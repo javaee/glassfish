@@ -133,11 +133,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     if (container!=null) {
                         cl = container.getClassLoader();
                     }
-                    dispatcher.dispath(dispatchTo, cl, req, res);
-
-                    if (res.getStatus()!=200) {
-                        sendError(res, "GlassFish v3 Error " + res.getStatus());
-                    }
+                    dispatcher.dispath(dispatchTo, cl, req, res);                   
                     dispatchTo.afterService(req, res);
                     return;
                 }
