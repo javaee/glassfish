@@ -172,10 +172,12 @@ public class HttpServiceRequestTelemetry implements PostConstruct {
     @ProbeListener("web:request::requestStartEvent")
     public void requestStartEvent(
         @ProbeParam("request") HttpServletRequest request,
-        @ProbeParam("response") HttpServletResponse response) {
-        String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(request.getServerName(),
-                                                String.valueOf(request.getServerPort()));
-        if ((vsName != null) && (vsName.equals(virtualServerName))) {
+        @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName) {
+        //String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(
+        //    hostName, String.valueOf(request.getServerPort()));
+        //if ((vsName != null) && (vsName.equals(virtualServerName))) {
+        if ((hostName != null) && (hostName.equals(virtualServerName))) {
             requestProcessTime.entry();
             logger.finest("[TM]requestStartEvent received - virtual-server = " +
                                 request.getServerName() + " : port = " +
@@ -187,11 +189,13 @@ public class HttpServiceRequestTelemetry implements PostConstruct {
     public void requestEndEvent(
         @ProbeParam("request") HttpServletRequest request,
         @ProbeParam("response") HttpServletResponse response,
+        @ProbeParam("hostName") String hostName,
         @ProbeParam("statusCode") int statusCode) {
 
-        String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(request.getServerName(),
-                                                String.valueOf(request.getServerPort()));
-        if ((vsName != null) && (vsName.equals(virtualServerName))) {
+    //    String vsName = HttpServiceTelemetryBootstrap.getVirtualServer(
+    //        hostName, String.valueOf(request.getServerPort()));
+   //     if ((vsName != null) && (vsName.equals(virtualServerName))) {
+        if ((hostName != null) && (hostName.equals(virtualServerName))) {
             requestProcessTime.exit();
             incrementStatsCounter(statusCode);
             logger.finest("[TM]requestEndEvent received - virtual-server = " +
