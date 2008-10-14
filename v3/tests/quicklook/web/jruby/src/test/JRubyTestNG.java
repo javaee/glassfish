@@ -74,7 +74,7 @@ public class JRubyTestNG {
        boolean result=true;
        File dir1 = new File (".");
        String fileName = dir1.getCanonicalPath() + "/deploy.output";
-       System.out.println("Deployment output file: " + fileName );
+       //System.out.println("Deployment output file: " + fileName );
        try {
            in = new BufferedReader(new FileReader(fileName));
        } catch (FileNotFoundException e) {
@@ -91,7 +91,7 @@ public class JRubyTestNG {
                   result=false;
              	  testLine = line;
                   Assert.fail("Deployment failed.");
-           	  System.out.println(testLine);
+           	  //System.out.println(testLine);
                 } } 
            }catch(Exception e){
               e.printStackTrace();
@@ -108,9 +108,8 @@ public class JRubyTestNG {
         try{
 
         String testurl = "http://" + host  + ":" + port + "/"+ contextRoot+"/";
-        System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -122,13 +121,11 @@ public class JRubyTestNG {
         String line = null;
         boolean result=false;
         String testLine = null;        
-        System.out.println("Reading HTML output..");
         while ((line = input.readLine()) != null) {
               //System.out.println(line);
             if(line.indexOf(EXPECTED_RESPONSE)!=-1){
                 result=true;
              testLine = line;
-           System.out.println(testLine);
             }
           
         }        
@@ -149,9 +146,8 @@ public class JRubyTestNG {
 
         String testurl = "http://" + host  + ":" + port + "/"+ contextRoot
                 +"/mycontroller/testview";
-        System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
-        echo("Connecting to: " + url.toString());
+        //echo("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -163,13 +159,11 @@ public class JRubyTestNG {
         String line = null;
         boolean result=false;
         String testLine = null;        
-        System.out.println("Reading HTML output..");
         while ((line = input.readLine()) != null) {
               //System.out.println(line);
             if(line.indexOf("Mycontroller#testview")!=-1){
                 result=true;
              testLine = line;
-           System.out.println(testLine);
             }
           
         }        
