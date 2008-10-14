@@ -29,6 +29,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.CommandRunner;
+import java.net.URI;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -73,6 +74,8 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 public class DeployCommand extends ApplicationLifecycle implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
+
+    private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
 
     @Inject
     Applications apps;
@@ -287,7 +290,19 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
                 Properties moduleProps = deploymentContext.getProps();
                 moduleProps.setProperty(ServerTags.NAME, name);
-                moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toURL().toString());
+                /*
+                 * If the app's location is within the domain's directory then
+                 * express it in the config as ${com.sun.aas.instanceRootURI}/rest-of-path
+                 * so users can relocate the entire installation without having
+                 * to modify the app locations.  Leave the location alone if
+                 * it does not fall within the domain directory.
+                 */
+                URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
+                URI appURI = instanceRootURI.relativize(deploymentContext.getSource().getURI());
+                String appLocation = (appURI.isAbsolute()) ?
+                    appURI.toString() :
+                    "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
+                moduleProps.setProperty(ServerTags.LOCATION, appLocation);
                 // set to default "user", deployers can override it
                 // during processing
                 moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");

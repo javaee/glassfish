@@ -80,6 +80,9 @@ public class ASMainFelix extends ASMainOSGi {
         String installRoot = System.getProperty("com.sun.aas.installRoot");
         URI installRootURI = new File(installRoot).toURI();
         System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
+        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+        URI instanceRootURI = new File(instanceRoot).toURI();
+        System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());
         String sysFileURL = new File(fwDir, "conf/system.properties").toURI().toURL().toString();
         System.setProperty("felix.system.properties", sysFileURL);
         String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
