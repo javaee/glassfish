@@ -147,9 +147,9 @@ public class ServerHandlers {
     @Handler(id = "getServerAppsConfigAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
     }, output = {
-        @HandlerOutput(name = "Reload", type = String.class),
+        @HandlerOutput(name = "Reload", type = Boolean.class),
         @HandlerOutput(name = "ReloadInterval", type = String.class),
-        @HandlerOutput(name = "AutoDeploy", type = String.class),
+        @HandlerOutput(name = "AutoDeploy", type = Boolean.class),
         @HandlerOutput(name = "AdminTimeout", type = String.class),
         @HandlerOutput(name = "AutoDeployInterval", type = String.class),
         @HandlerOutput(name = "AutoDeployTimeout", type = String.class),
