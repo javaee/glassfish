@@ -71,6 +71,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -87,6 +88,7 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
@@ -2490,6 +2492,26 @@ public class StandardContext
      *  is malformed
      */
     public void addFilterMap(FilterMap filterMap) {
+        addFilterMap(filterMap, false);
+    }
+    
+    
+    /**
+     * Add a filter mapping to this Context.
+     *
+     * @param filterMap The filter mapping to be added
+     *
+     * @param isMatchAfter true if the given filter mapping should be matched
+     * against requests after any declared filter mappings of this servlet
+     * context, and false if it is supposed to be matched before any declared
+     * filter mappings of this servlet context
+     *
+     * @exception IllegalArgumentException if the specified filter name
+     *  does not match an existing filter definition, or the filter mapping
+     *  is malformed
+     *
+     */
+    public void addFilterMap(FilterMap filterMap, boolean isMatchAfter) {
 
         // Validate the proposed filter mapping
         String filterName = filterMap.getFilterName();
@@ -2510,20 +2532,25 @@ public class StandardContext
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.pattern",
                               urlPattern));
-
+    
         // Add this filter mapping to our registered set
         synchronized (filterMaps) {
             FilterMap results[] =new FilterMap[filterMaps.length + 1];
-            System.arraycopy(filterMaps, 0, results, 0, filterMaps.length);
-            results[filterMaps.length] = filterMap;
+            if (isMatchAfter) {     
+                System.arraycopy(filterMaps, 0, results, 0, filterMaps.length);
+                results[filterMaps.length] = filterMap;
+            } else {               
+                results[0] = filterMap;
+                System.arraycopy(filterMaps, 0, results, 1, filterMaps.length);
+            }
             filterMaps = results;
         }
 
         if (notifyContainerListeners) {
             fireContainerEvent("addFilterMap", filterMap);
         }
-    }
-
+    }   
+    
 
     /**
      * Adds the filter with the given name, description, and class name to
@@ -2548,7 +2575,113 @@ public class StandardContext
 
         addFilterDef(filterDef);
     }
+   
+    
+    /**
+     * Adds a filter mapping with the given servlet names, and
+     * dispatcher types for the filter with the given filter name to this
+     * servlet context.
+     *
+     * @param filterName the name of the filter for which the filter
+     * mapping is added
+     *
+     * @param dispatcherTypes the dispatcher types of the filter mapping,
+     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
+     *
+     * @param isMatchAfter true if the given filter mapping should be matched
+     * against requests after any declared filter mappings of this servlet
+     * context, and false if it is supposed to be matched before any declared
+     * filter mappings of this servlet context
+     *
+     * @param servletNames the servlet names of the filter mapping
+     *
+     * @throws IllegalArgumentException if <tt>servletNames</tt> is 
+     * null or empty
+     *
+     * @throws IllegalStateException if this servlet context has already
+     * been initialized
+     */
+    public void addFilterMappingForServletNames(String filterName,
+                                    EnumSet<DispatcherType> dispatcherTypes,
+                                    boolean isMatchAfter,
+                                    String... servletNames) {
+        if ((servletNames==null) || (servletNames.length==0)) {
+            throw new IllegalArgumentException
+                    (sm.getString("standardContext.filterMap.either"));
+        }
+        if (initialized) {
+            throw new IllegalStateException
+                    (sm.getString("standardContext.filterMap.initialized"));
+        }
+        for (String servletName : servletNames) { 
+            FilterMap fmap = new FilterMap();
+            fmap.setFilterName(filterName);
+            fmap.setServletName(servletName);
+            for (DispatcherType dispatcherType : dispatcherTypes) {
+                switch (dispatcherType) {
+                    case FORWARD : fmap.setDispatcher("FORWARD"); break;
+                    case INCLUDE : fmap.setDispatcher("INCLUDE"); break;
+                    case REQUEST : fmap.setDispatcher("REQUEST"); break;
+                    case ERROR : fmap.setDispatcher("ERROR"); break;
+                }
+            }
+            addFilterMap(fmap, isMatchAfter);
+        }
+     }
 
+     
+    /**
+     * Adds a filter mapping with the given url patterns, and
+     * dispatcher types for the filter with the given filter name to this
+     * servlet context.
+     *
+     * @param filterName the name of the filter for which the filter
+     * mapping is added
+     *
+     * @param dispatcherTypes the dispatcher types of the filter mapping,
+     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
+     *
+     * @param isMatchAfter true if the given filter mapping should be matched
+     * against requests after any declared filter mappings of this servlet
+     * context, and false if it is supposed to be matched before any declared
+     * filter mappings of this servlet context
+     *
+     * @param urlPatterns the url patterns of the filter mapping
+     *
+     * @throws IllegalArgumentException if <tt>urlPatterns</tt>
+     * is both null or empty
+     *
+     * @throws IllegalStateException if this servlet context has already
+     * been initialized
+     */
+    public void addFilterMappingForUrlPatterns(String filterName,
+                                  EnumSet<DispatcherType> dispatcherTypes,
+                                  boolean isMatchAfter,
+                                  String... urlPatterns) {  
+        if ((urlPatterns==null) || (urlPatterns.length==0)) {
+            throw new IllegalArgumentException
+                    (sm.getString("standardContext.filterMap.either"));
+        }
+        if (initialized) {
+            throw new IllegalStateException
+                    (sm.getString("standardContext.filterMap.initialized"));
+        }
+        for (String urlPattern : urlPatterns) { 
+            FilterMap fmap = new FilterMap();
+            fmap.setFilterName(filterName);
+            fmap.setURLPattern(urlPattern);    
+            for (DispatcherType dispatcherType : dispatcherTypes) {
+                switch (dispatcherType) {
+                    case FORWARD : fmap.setDispatcher("FORWARD"); break;
+                    case INCLUDE : fmap.setDispatcher("INCLUDE"); break;
+                    case REQUEST : fmap.setDispatcher("REQUEST"); break;
+                    case ERROR : fmap.setDispatcher("ERROR"); break;
+                }
+            }
+            addFilterMap(fmap, isMatchAfter);
+        }      
+     }
+     
 
     /**
      * Add the classname of an InstanceListener to be added to each

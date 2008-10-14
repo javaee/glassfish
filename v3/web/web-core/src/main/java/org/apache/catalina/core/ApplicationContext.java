@@ -62,6 +62,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -74,6 +75,7 @@ import java.security.SecurityPermission;
 import javax.naming.Binding;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -1022,8 +1024,56 @@ public class ApplicationContext
                           Map<String, String> initParameters) {
         context.addFilter(filterName, description, className, initParameters);
     }
+    
+    
+    /**
+     * Adds a filter mapping with the given servlet names, and
+     * dispatcher types for the filter with the given filter name to this
+     * servlet context.
+     *
+     * @param filterName the name of the filter for which the filter
+     * mapping is added
+     * @param dispatcherTypes the dispatcher types of the filter mapping,
+     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
+     * @param isMatchAfter true if the given filter mapping should be matched
+     * against requests after any declared filter mappings of this servlet
+     * context, and false if it is supposed to be matched before any declared
+     * filter mappings of this servlet context
+     * @param servletNames the servlet names of the filter mapping
+     */
+    public void addFilterMappingForServletNames(String filterName,
+                                    EnumSet<DispatcherType> dispatcherTypes,
+                                    boolean isMatchAfter,
+                                    String... servletNames) {
+        context.addFilterMappingForServletNames(filterName, dispatcherTypes, isMatchAfter, 
+                            servletNames);
+    }
 
+     
+    /**
+     * Adds a filter mapping with the given url patterns, and
+     * dispatcher types for the filter with the given filter name to this
+     * servlet context.     
+     *
+     * @param filterName the name of the filter for which the filter
+     * mapping is added
+     * @param dispatcherTypes the dispatcher types of the filter mapping,
+     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
+     * @param isMatchAfter true if the given filter mapping should be matched
+     * against requests after any declared filter mappings of this servlet
+     * context, and false if it is supposed to be matched before any declared
+     * filter mappings of this servlet context
+     * @param urlPatterns the url patterns of the filter mapping
+     */
+    public void addFilterMappingForUrlPatterns(String filterName,
+                                  EnumSet<DispatcherType> dispatcherTypes,
+                                  boolean isMatchAfter,
+                                  String... urlPatterns) {
+        context.addFilterMappingForUrlPatterns(filterName, dispatcherTypes,
+                                        isMatchAfter, urlPatterns);
+    }
 
+     
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this ApplicationContext is
