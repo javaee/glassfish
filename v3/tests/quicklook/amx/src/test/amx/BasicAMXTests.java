@@ -126,7 +126,7 @@ public final class BasicAMXTests extends AMXTestBase {
     		}
     		//debug( "BasicAMXTests: millis to get verify attributes: " + timing.elapsedMillis() );
     	}
-    	debug( "BasicAMXTests.iterateAllSanityCheck() millis: " + overall.elapsedMillis() );
+    	//debug( "BasicAMXTests.iterateAllSanityCheck() millis: " + overall.elapsedMillis() );
     }
     
     /*

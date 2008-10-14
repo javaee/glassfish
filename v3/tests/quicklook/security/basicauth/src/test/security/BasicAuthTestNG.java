@@ -76,7 +76,7 @@ public class BasicAuthTestNG {
 
         // GET with a user who maps directly to role
         testName="BASIC auth: Role Mapped User, testuser3";
-        log(testName);
+        //log(testName);
         try {
 
             String result="RESULT: principal: testuser3";
@@ -94,7 +94,7 @@ public class BasicAuthTestNG {
         
         // GET with a user who maps through group
         testName="BASIC auth: Group mapped user, testuser42";
-        log(testName);
+        //log(testName);
         try {
 
             String result="RESULT: principal: testuser42";
@@ -112,7 +112,7 @@ public class BasicAuthTestNG {
 
         // GET with a valid user who is not authorized
         testName="BASIC auth: Not authorized user, testuser42";
-        log(testName);
+        //log(testName);
         try {
 
             String result="HTTP/1.1 403";
@@ -130,7 +130,7 @@ public class BasicAuthTestNG {
 
         // GET with a valid user,bad password
         testName="BASIC auth: Valid user and invalid password";
-        log(testName);
+        //log(testName);
         try {
 
             String result="HTTP/1.1 401";

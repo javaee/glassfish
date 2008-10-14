@@ -87,7 +87,7 @@ public class JSFInjectionTestNG {
           //echo("ERROR: http response code is " + responseCode);
           errorText = errorText + "ERROR: http response code is " + responseCode + ".\n";
         } else {
-          echo("Connected: " + responseCode);
+          //echo("Connected: " + responseCode);
         }
 
         InputStream is = conn.getInputStream();
@@ -118,7 +118,7 @@ public class JSFInjectionTestNG {
         if (line2 != null) {
           String [] injection2Array = line2.split(DIVIDER);
           String injectedNumber = injection2Array[1].trim();
-          echo("injectedNumber = " + injectedNumber);
+          //echo("injectedNumber = " + injectedNumber);
           int num = Integer.parseInt(injectedNumber);
   
           if ( num < 0 ) {

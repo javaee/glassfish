@@ -117,11 +117,11 @@ public class AMXTestBase {
     	try
     	{
 			mMBeanServerConnection = _getMBeanServerConnection();
-    		debug( "AMXTestBase.setup(): millis to connect: " + timing.elapsedMillis() );
+    		//debug( "AMXTestBase.setup(): millis to connect: " + timing.elapsedMillis() );
 			mDomainRoot = _getDomainRoot(mMBeanServerConnection);
-    		debug( "AMXTestBase.setup(): millis to boot AMX: " + timing.elapsedMillis() );
+    		//debug( "AMXTestBase.setup(): millis to boot AMX: " + timing.elapsedMillis() );
 			mQueryMgr   = getDomainRoot().getQueryMgr();
-    		debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
+    		//debug( "AMXTestBase.setup(): millis to get QueryMgr: " + timing.elapsedMillis() );
     		
     		mAllAMX = getQueryMgr().queryAllSet();
     	}
@@ -129,7 +129,7 @@ public class AMXTestBase {
     	{
     		throw new RuntimeException(e);
     	}
-    	debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
+    	//debug( "AMXTestBase.setup(): total setup millis: " + overall.elapsedMillis() );
     }
         
     protected QueryMgr getQueryMgr()
@@ -188,7 +188,7 @@ public class AMXTestBase {
     	final JMXServiceURL url = new JMXServiceURL(urlStr);
     	
         final JMXConnector jmxConn = JMXConnectorFactory.connect(url);
-        debug( "BaseAMXTest: connecting to: " + url );
+        //debug( "BaseAMXTest: connecting to: " + url );
     	final MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
     	conn.getDomains();	// sanity check
     	return conn;
