@@ -225,9 +225,8 @@ final class InstallerThread extends Thread {
                 app.setDirectoryDeployed("true");
                 app.setContextRoot(contextRoot);
 		File warFile = getWarFile();
-                File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
                 try {
-                    app.setLocation(expFolder.toURI().toString());
+                    app.setLocation("${com.sun.aas.installRootURI}/lib/install/applications/"+AdminConsoleAdapter.ADMIN_APP_NAME);
                 } catch (Exception me) {
 		    // can't do anything
 		    throw new RuntimeException(me);
