@@ -130,6 +130,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
     protected static AuthConfigProvider slaveProvider = null;
 
     protected AuthConfigFactory factory = null;
+    private WebServicesDelegate wsdelegate = null;
 
     public GFServerConfigProvider(Map properties, AuthConfigFactory factory) {
         this.factory = factory;
@@ -174,6 +175,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
                 rwLock.writeLock().unlock();
             }
         }
+        wsdelegate =Globals.get(WebServicesDelegate.class);
     }
 
     private void initializeParser() {
@@ -896,9 +898,8 @@ public class GFServerConfigProvider implements AuthConfigProvider {
                     return getOpName((SOAPMessage)messageInfo.getRequestMessage());
                 } 
 		V3: Send Comment SOAP Layer support */
-		WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
-                if (delegate != null) {
-                    return delegate.getAuthContextID(messageInfo);
+                if (wsdelegate != null) {
+                    return wsdelegate.getAuthContextID(messageInfo);
                 }
                 return null;
             } else {
@@ -1011,6 +1012,10 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 		/*V3: Start Comment SOAP Layer support
 		return new SOAPAuthParam(info);
 		V3: End Comment SOAP Layer support*/
+                if (wsdelegate != null) {
+                    return wsdelegate.newSOAPAuthParam(info);
+                }
+                
 	    } 
 	    throw new AuthException("unsupported AuthParam type");
 	}
