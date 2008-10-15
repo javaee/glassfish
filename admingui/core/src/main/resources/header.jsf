@@ -54,7 +54,7 @@
             <sun:script url="/resource/js/adminjsf.js" />
             <jsfExt:scripts/>
 	</sun:head>
-         <sun:body onLoad="hasOptions(null);">
+         <sun:body style="background-color: #5B87A5" onLoad="hasOptions(null);">
 	    <sun:form id="propertyForm">
                  Customizing the masthead --> 
                  <!afterCreate
