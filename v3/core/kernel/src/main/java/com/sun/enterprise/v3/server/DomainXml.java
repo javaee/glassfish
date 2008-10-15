@@ -42,10 +42,12 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.config.support.GlassFishDocument;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.Transactions;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -55,6 +57,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.net.URL;
 
 
@@ -126,7 +130,18 @@ public class DomainXml implements Populator {
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
             DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
-            parser.parse(xsr, new GlassFishDocument(habitat));
+            parser.parse(xsr, new GlassFishDocument(habitat,
+                    Executors.newCachedThreadPool(new ThreadFactory() {
+
+                        public Thread newThread(Runnable r) {
+                            Thread t = Executors.defaultThreadFactory().newThread(r);
+                            t.setDaemon(true);
+                            t.setContextClassLoader(habitat.getComponent(ClassLoaderHierarchy.class).getCommonClassLoader());
+                            return t;
+                        }
+
+                    }
+                )));
             xsr.close();
             if(!xsr.foundConfig)
                 throw new RuntimeException("No <config> seen for name="+xsr.configName);

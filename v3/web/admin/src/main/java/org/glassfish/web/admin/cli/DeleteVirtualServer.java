@@ -45,16 +45,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
+import org.jvnet.hk2.config.*;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Delete virtual server command
@@ -72,6 +70,9 @@ public class DeleteVirtualServer implements AdminCommand {
 
     @Inject
     HttpService httpService;
+
+    @Inject
+    Server server;
 
     //xxx
     
@@ -100,7 +101,22 @@ public class DeleteVirtualServer implements AdminCommand {
         }
 
         try {
-            ConfigSupport.apply(new Config(vsid), httpService);
+
+            // we need to determine which deployed applications reference this virtual-server
+            List<ApplicationRef> appRefs = new ArrayList<ApplicationRef>();
+            for (ApplicationRef appRef : server.getApplicationRef()) {
+                if (appRef.getVirtualServers()!=null && appRef.getVirtualServers().contains(vsid)) {
+                    appRefs.add(appRef);
+                }
+            }
+            // transfer into the array of arguments
+            ConfigBeanProxy[] proxies = new ConfigBeanProxy[appRefs.size()+1];
+            proxies[0] = httpService;
+            for (int i=0;i<appRefs.size();i++) {
+                proxies[i+1] = appRefs.get(i);
+            }
+
+            ConfigSupport.apply(new Config(vsid), proxies);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
@@ -137,17 +153,36 @@ public class DeleteVirtualServer implements AdminCommand {
         return null;
     }
 
-    private static class Config implements SingleConfigCode<HttpService> {
+    private static class Config implements ConfigCode {
         private Config(String vsid) {
             this.vsid = vsid;
         }
-        public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-            List<VirtualServer> list = param.getVirtualServer();
+        public Object run(ConfigBeanProxy... proxies) throws PropertyVetoException, TransactionFailure {
+            List<VirtualServer> list = ((HttpService) proxies[0]).getVirtualServer();
             for(VirtualServer item : list) {
                 String currId = item.getId();
                 if (currId != null && currId.equals(vsid)) {
                     list.remove(item);
                     break;
+                }
+            }
+            // we now need to remove the virtual server id from all application-ref passed.
+            if (proxies.length>1) {
+                // we have some appRefs to clean.
+                for (int i=1;i<proxies.length;i++) {
+                    ApplicationRef appRef = (ApplicationRef) proxies[i];
+                    StringBuilder newList = new StringBuilder();
+                    StringTokenizer st = new StringTokenizer(appRef.getVirtualServers(), ",");
+                    while (st.hasMoreTokens()) {
+                        final String id = st.nextToken();
+                        if (!id.equals(vsid)) {
+                            if (newList.length()>0) {
+                                newList.append(",");
+                            }
+                            newList.append(id);
+                        }
+                    }
+                    appRef.setVirtualServers(newList.toString());
                 }
             }
             return list;

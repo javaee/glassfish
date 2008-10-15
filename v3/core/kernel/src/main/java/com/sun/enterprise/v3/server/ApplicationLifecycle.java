@@ -24,15 +24,7 @@
 package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -40,6 +32,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterNames;
@@ -894,6 +887,20 @@ public class ApplicationLifecycle {
                         ServerTags.VIRTUAL_SERVERS) != null) {
                         appRef.setVirtualServers(moduleProps.getProperty(
                             ServerTags.VIRTUAL_SERVERS));
+                    } else {
+                        // deploy to all virtual-servers, we need to get the list.
+                        HttpService httpService = habitat.getComponent(HttpService.class);
+                        StringBuilder sb = new StringBuilder();
+                        for (VirtualServer s : httpService.getVirtualServer()) {
+                            if (s.getId().equals(AdminAdapter.VS_NAME)) {
+                                continue;
+                            }
+                            if (sb.length()>0) {
+                                sb.append(',');
+                            }
+                            sb.append(s.getId());
+                        }
+                        appRef.setVirtualServers(sb.toString());
                     }
                     appRef.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
