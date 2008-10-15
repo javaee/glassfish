@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.webservices</groupId>
         <artifactId>webservices</artifactId>
-        <version>10.0-b28</version>
+        <version>3.0-Prelude-SNAPSHOT</version>
     </parent>
 
     <artifactId>jsr109-impl</artifactId>

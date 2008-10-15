@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-b28</version>
+        <version>3.0-Prelude-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-hk2</artifactId>
     <name>GlassFish HK2 Package</name>
@@ -89,7 +89,7 @@
        <dependency>
            <groupId>org.glassfish</groupId>
            <artifactId>javax.xml.stream</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
    </dependencies>
 

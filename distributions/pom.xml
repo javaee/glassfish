@@ -54,7 +54,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>10.0-b28</version>
+        <version>3.0-Prelude-SNAPSHOT</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -75,13 +75,6 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jvnet.poormans-installer</groupId>
-                <artifactId>installer-builder</artifactId>
-                <configuration>
-                    <licenseFile>pom.xml</licenseFile>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.glassfish.build</groupId>
