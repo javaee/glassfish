@@ -118,7 +118,7 @@
        <dependency>
            <groupId>org.glassfish.docs</groupId>
            <artifactId>basedocs</artifactId>
-           <version>0.1</version> <!-- TODO: Upgrade to next release version -->
+           <version>3.0-Prelude</version>
 	   <type>distribution-fragment</type>
         </dependency> 
 	<!-- now, listing package dependencies so that their content
