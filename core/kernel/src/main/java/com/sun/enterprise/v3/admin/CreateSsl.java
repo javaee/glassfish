@@ -74,6 +74,9 @@ import java.beans.PropertyVetoException;
  * <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" 
  * ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
  *
+ * For the default ssl config 
+ * @see #populateSslElement(Ssl)
+ * 
  * @author Nandini Ektare
  */
 
@@ -90,7 +93,7 @@ public class CreateSsl implements AdminCommand {
     @Param(name="type", acceptableValues="http-listener, iiop-listener")
     String type;
 
-    @Param(name="ssl2enabled", optional=true, defaultValue="true")
+    @Param(name="ssl2enabled", optional=true, defaultValue="false")
     Boolean ssl2Enabled;
     
     @Param(name="ssl2ciphers", optional=true)
@@ -108,7 +111,7 @@ public class CreateSsl implements AdminCommand {
     @Param(name="tlsrollbackenabled", optional=true, defaultValue="true")
     Boolean tlsrollbackenabled;
         
-    @Param(name="clientauthenabled", optional=true, defaultValue="true")
+    @Param(name="clientauthenabled", optional=true, defaultValue="false")
     Boolean clientauthenabled;
 
     @Param(optional=true)
@@ -238,14 +241,46 @@ public class CreateSsl implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
     
-    private void populateSslElement(Ssl newSsl) throws PropertyVetoException {
+    /* defaults per v2 DTD are :
+     *
+     * <!ATTLIST ssl
+     *    cert-nickname CDATA #REQUIRED
+     *    ssl2-enabled %boolean; "false"
+     *    ssl2-ciphers CDATA #IMPLIED
+     *    ssl3-enabled %boolean; "true"
+     *    ssl3-tls-ciphers CDATA #IMPLIED
+     *    tls-enabled %boolean; "true"
+     *    tls-rollback-enabled %boolean; "true"
+     * 	  client-auth-enabled %boolean; "false">
+     *
+     *  In v3 defaults are not written out
+     *  So an ssl element with all defaults would look as follows:
+     *
+     *  	<ssl cert-nickname="s1as" />
+     *
+     */
+    private void populateSslElement(Ssl newSsl)
+    throws PropertyVetoException {
+
         newSsl.setCertNickname(certName);
-        newSsl.setClientAuthEnabled(clientauthenabled.toString());                                       
+
+        if (ssl2Enabled)
+            newSsl.setSsl2Enabled(ssl2Enabled.toString());
+
         newSsl.setSsl2Ciphers(ssl2ciphers);
-        newSsl.setSsl2Enabled(ssl2Enabled.toString());
-        newSsl.setSsl3Enabled(ssl3Enabled.toString());                    
+
+        if (!ssl3Enabled)
+            newSsl.setSsl3Enabled(ssl3Enabled.toString());
+
         newSsl.setSsl3TlsCiphers(ssl3tlsciphers);
-        newSsl.setTlsEnabled(tlsenabled.toString());
-        newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
-    }    
+
+        if (!tlsenabled)
+            newSsl.setTlsEnabled(tlsenabled.toString());
+
+        if (!tlsrollbackenabled)
+            newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
+
+        if (clientauthenabled)
+	    newSsl.setClientAuthEnabled(clientauthenabled.toString());
+    }
 }
