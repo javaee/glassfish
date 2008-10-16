@@ -57,18 +57,14 @@ import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
+import org.glassfish.internal.api.Globals;
 
 import com.sun.enterprise.deployment.annotation.context.AppClientContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.ServiceReferenceContainerContext;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
-import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
@@ -80,7 +76,7 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
  */
 @Service
 public class WebServiceRefHandler extends AbstractHandler  {
-    
+
     /** Creates a new instance of WebServiceRefHandler */
     public WebServiceRefHandler() {
     }
@@ -101,11 +97,8 @@ public class WebServiceRefHandler extends AbstractHandler  {
         // on the context stack. It won't hurt when @WebServiceRef
         // is used in appclients or web app since references are
         // declared at the bundle level.
-        Class<? extends Annotation>[] dependencies = new Class[3];
-        dependencies[0] = javax.ejb.Stateless.class;
-        dependencies[1] = javax.ejb.Stateful.class;
-        dependencies[2] = javax.persistence.Entity.class;
-        return dependencies;
+        //todo BM add javax.persistence.Entity
+        return getEjbAnnotationTypes();
     }
 
     protected HandlerProcessingResult processAWsRef(AnnotationInfo annInfo, WebServiceRef annotation)

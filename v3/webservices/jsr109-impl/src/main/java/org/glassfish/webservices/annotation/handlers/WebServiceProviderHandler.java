@@ -59,6 +59,7 @@ import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.glassfish.apf.context.AnnotationContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
@@ -80,7 +81,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jerome Dochez
  */
 @Service
-public class WebServiceProviderHandler implements AnnotationHandler {
+public class WebServiceProviderHandler extends AbstractHandler implements AnnotationHandler {
     
     /** Creates a new instance of WebServiceHandler */
     public WebServiceProviderHandler() {
@@ -98,7 +99,7 @@ public class WebServiceProviderHandler implements AnnotationHandler {
     public Class<? extends Annotation>[] getTypeDependencies() {
         /*Class dependencies[] = { javax.ejb.Stateless.class };
         return dependencies;*/
-        return null;
+        return getEjbAnnotationTypes();
     }
     
     public HandlerProcessingResult processAnnotation(AnnotationInfo annInfo) 

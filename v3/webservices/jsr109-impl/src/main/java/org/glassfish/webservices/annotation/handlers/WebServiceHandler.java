@@ -96,7 +96,7 @@ public class WebServiceHandler extends AbstractHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
 
-        return null;
+        return getEjbAnnotationTypes();
     }
     
     public HandlerProcessingResult processAnnotation(AnnotationInfo annInfo) 

@@ -61,6 +61,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.MessageFormat;
 
 
 /**
@@ -72,9 +73,12 @@ import java.util.logging.Logger;
 @Service
 public class WebServicesDeployer extends WebDeployer {
 
-    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.DPL_LOGGER);
+    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
-    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
+    private ResourceBundle rb = logger.getResourceBundle()   ;
+
+
+   private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
     
     /**
@@ -113,8 +117,8 @@ public class WebServicesDeployer extends WebDeployer {
 
             if (app==null) {
                 // hopefully the DOL gave a good message of the failure...
-                dc.getLogger().severe(localStrings.getLocalString("failed.loading.dd",
-                        "Failed to load deployment descriptor, aborting"));
+                logger.severe(format(rb.getString("failed.loading.dd"),"foo","bar"));
+
                 return false;
             }
             WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
@@ -214,9 +218,10 @@ public class WebServicesDeployer extends WebDeployer {
                             wsdlFile = new File(moduleDir, wsdlFileUri);
                         }
                         if (!wsdlFile.exists()) {
-                            throw new DeploymentException(localStrings.getLocalString("wsdl.notfound",
-                                    "WebService wsdl file not found in archive", ws.getName()
-                                    , ws.getWsdlFileUri(),  bundle.getModuleDescriptor().getArchiveUri()));
+                            String errorMessage =  format(rb.getString("wsdl.notfound"),ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
+                            logger.severe(errorMessage);
+                            throw new DeploymentException(errorMessage);
+
                         }
                     }
 
@@ -242,8 +247,8 @@ public class WebServicesDeployer extends WebDeployer {
                     try {
                         implClass = dc.getClassLoader().loadClass(implClassName);
                     } catch(Exception e) {
-                            throw new DeploymentException(localStrings.getLocalString("impl.notfound",
-                                    "WebService {0} implementation {1} not found in archive {2}" , ws.getName()
+                            throw new DeploymentException(format(rb.getString("impl.notfound"),
+                                     ws.getName()
                                     , implClassName ,bundle.getModuleDescriptor().getArchiveUri()));
                     }
 
@@ -252,9 +257,8 @@ public class WebServicesDeployer extends WebDeployer {
                             // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
                             // in the same service
                             if(jaxrpcEndPtFound) {
-                                throw new DeploymentException(localStrings.getLocalString("jaxws-jaxrpc.error",
-                                        "WebService {0} has a JAXWS and a JAXRPC endpoint; this is not supported now",
-                                        ws.getName()  ));
+                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
+                                         ws.getName()  ));
                             }
                             //This is a JAXWS endpoint with @WebServiceProvider
                             //Do not run wsgen for this endpoint
@@ -266,8 +270,7 @@ public class WebServicesDeployer extends WebDeployer {
                             // if we already found a jaxrpcendpoint, flag error since we do not support jaxws+jaxrpc endpoint
                             // in the same service
                             if(jaxrpcEndPtFound) {
-                                throw new DeploymentException(localStrings.getLocalString("jaxws-jaxrpc.error",
-                                        "WebService {0} has a JAXWS and a JAXRPC endpoint; this is not supported now",
+                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
                                         ws.getName()  ));
                             }
                             // This is a JAXWS endpoint with @WebService; Invoke wsgen
@@ -290,26 +293,23 @@ public class WebServicesDeployer extends WebDeployer {
                                 if(!wsdlFile.exists()) {
                                     throw new DeploymentException("WSGEN FAILED");
                                 } else {
-                                    logger.log(Level.WARNING,
-                                       localStrings.getLocalString("wsgen.failed.cont",
-                                               "wsgen failed- proceeding under the assumption" +
-                                                " that the user packaged all required objects properly"));
+                                    logger.warning(rb.getString("wsgen.failed.cont"));
+
                                 }
                             }
                             try {
                                 endpoint.getWebService().setWsdlFileUrl(wsdlFile.toURI().toURL());
                             } catch(java.net.MalformedURLException mue) {
-                                throw new DeploymentException(localStrings.getLocalString("wsgen.failed","WSGEN Failed") , mue);
+                                throw new DeploymentException(rb.getString("wsgen.failed") , mue);
                             }
-                            logger.log(Level.INFO, localStrings.getLocalString("wsgen.success","wsgen successful"));
+                            logger.info(rb.getString("wsgen.success"));
                         } else {
                             // this is a jaxrpc endpoint
                             // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
                             // in the same service
                             if(jaxwsEndPtFound) {
-                                throw new DeploymentException(localStrings.getLocalString("jaxws-jaxrpc.error",
-                                        "WebService {0} has a JAXWS and a JAXRPC endpoint; this is not supported now",
-                                        ws.getName()  ));
+                                throw new DeploymentException(format(rb.getString("jaxws-jaxrpc.error"),
+                                                ws.getName()  ));
                             }
                             // Set spec version to 1.1 to indicate later the wscompile should be run
                             // We do this here so that jaxrpc endpoint having J2EE1.4 or JavaEE5
@@ -411,7 +411,7 @@ public class WebServicesDeployer extends WebDeployer {
                 if(mappedEntry.startsWith("file:")) {
                     File f = new File(mappedEntry.substring(mappedEntry.indexOf(":")+1));
                     if(!f.exists()) {
-                        throw new DeploymentException("File " + mappedEntry + " not found");
+                        throw new DeploymentException(format(rb.getString("catalog.resolver.error"),mappedEntry));
                     }
                     retVal = f.toURI().toURL();
                     if(ws != null) {
@@ -428,8 +428,8 @@ public class WebServicesDeployer extends WebDeployer {
             return retVal;
 
         } catch (Throwable t) {
-            throw new DeploymentException(localStrings.getLocalString("catalog.error",
-                    "Exception while processing catalog {0} Reason " + t.getMessage(),catalogFile.getAbsolutePath()));
+            throw new DeploymentException(format(rb.getString("catalog.error"),
+                     t.getMessage(),catalogFile.getAbsolutePath()));
         }
       
     }
@@ -499,8 +499,8 @@ public class WebServicesDeployer extends WebDeployer {
             procesWsdlIncludes(document, wsdlIncludes);
         } catch (SAXParseException spe) {
             // Error generated by the parser
-            logger.log(Level.SEVERE,localStrings.getLocalString("parsing.error","Parsing error  line {0}, uri {1}",
-                spe.getLineNumber() ,spe.getSystemId()));
+            logger.severe(format(rb.getString("parsing.error"),
+                   "" + spe.getLineNumber() ,spe.getSystemId()));
             // Use the contained exception, if any
             Exception x = spe;
             if (spe.getException() != null) {
@@ -508,15 +508,14 @@ public class WebServicesDeployer extends WebDeployer {
             }
             x.printStackTrace();
         } catch (Exception sxe) {
-            logger.log(Level.SEVERE, localStrings.getLocalString("wsdl.parsing.error","Error parsing WSDL {0}"
-                    , sxe.getMessage()));
+            logger.severe(format(rb.getString("wsdl.parsing.error"), sxe.getMessage()));
         } finally {
             try {
                 if(is != null) {
                     is.close();
                 }
             } catch (IOException io) {
-                logger.log(Level.FINE, io.getMessage());
+                logger.fine( io.getMessage());
             }
         }
     }
@@ -661,14 +660,14 @@ public class WebServicesDeployer extends WebDeployer {
             }
 
         } catch (Exception e) {
-            throw new DeploymentException(localStrings.getLocalString("exception.manifest",
-                    "Exception : {0} when trying to process MANIFEST file under {1}",e.getMessage() , moduleDir));
+            throw new DeploymentException(format(rb.getString("exception.manifest"),
+                   e.getMessage() , moduleDir));
         } finally {
             if(is != null) {
                 try {
                     is.close();
                 } catch(IOException t) {
-                    logger.log(Level.FINE, t.getMessage());
+                    logger.fine( t.getMessage());
                 }
             }
         }
@@ -691,9 +690,8 @@ public class WebServicesDeployer extends WebDeployer {
                 }
             }
         } catch (IOException ioex) {
-            throw new DeploymentException(localStrings.getLocalString("io.exception",
-                    "IOException : {0} when trying to get list of files under {1}",ioex.getMessage()
-                    , dirName));
+            throw new DeploymentException(format(rb.getString("io.exception"),
+                    ioex.getMessage() , dirName));
         }
         return cp;
     }
@@ -719,7 +717,6 @@ public class WebServicesDeployer extends WebDeployer {
         argsList.add("-cp");
         argsList.add(classPath);
         argsList.add("-keep");
-        argsList.add("-verbose");
         if(!skipGenWsdl) {
             argsList.add("-wsdl");
             argsList.add("-r");
@@ -741,8 +738,8 @@ public class WebServicesDeployer extends WebDeployer {
             return wsTools.wsgen(System.out, wsgenargs);
         } catch (Exception e ) {
             e.printStackTrace();
-            throw new RuntimeException (localStrings.getLocalString("wsgen.rtexception",
-                    "Exception occured in the wsgen process {0}",e));
+            throw new RuntimeException (format(rb.getString("wsgen.rtexception"),
+                    e.getMessage()));
 
         }
     }
@@ -790,9 +787,8 @@ public class WebServicesDeployer extends WebDeployer {
             WebComponentDescriptor webComp = nextEndpoint.getWebComponentImpl();
 
             if( !nextEndpoint.hasServletImplClass() ) {
-                throw new DeploymentException( localStrings.getLocalString(
-                        "enterprise.deployment.backend.cannot_find_servlet",
-                        "Runtime settings error.  Cannot find servlet-impl-class for endpoint {0} ",
+                throw new DeploymentException( format(rb.getString(
+                        "enterprise.deployment.backend.cannot_find_servlet"),
                         nextEndpoint.getEndpointName()));
 
             }
@@ -826,11 +822,9 @@ public class WebServicesDeployer extends WebDeployer {
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL);
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
-            logger.log(Level.INFO,
-            localStrings.getLocalString("enterprise.deployment.endpoint.registration",
-                                               "WebService deployed \n Webservice Endpoint {1} listening at address at {2}"
-                                                , new Object[] { nextEndpoint,
-                                           nextEndpoint.getEndpointName(), actualAddress }));
+            logger.info(format(rb.getString("enterprise.deployment.endpoint.registration"),
+
+                          nextEndpoint.getEndpointName(), actualAddress.toString() ));
 
            
             
@@ -839,6 +833,9 @@ public class WebServicesDeployer extends WebDeployer {
 
     }
 
+    private String format(String key, String ... values){
+        return MessageFormat.format(key,values);
+    }
 
 }
 
