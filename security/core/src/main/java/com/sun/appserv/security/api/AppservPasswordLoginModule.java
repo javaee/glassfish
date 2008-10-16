@@ -51,6 +51,10 @@ import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
+import com.sun.enterprise.security.common.AppservPasswordLoginModuleInterface;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 
 /**
@@ -65,7 +69,9 @@ import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
  * call commitUserAuthentication().
  *
  */
-public abstract class AppservPasswordLoginModule implements LoginModule
+@Service
+@Scoped(PerLookup.class)
+public  class AppservPasswordLoginModule implements  AppservPasswordLoginModuleInterface
 {
     // The _subject, _sharedState and _options satisfy LoginModule and are
     // shared across sub-classes
@@ -89,7 +95,7 @@ public abstract class AppservPasswordLoginModule implements LoginModule
     //TODO:V3 not sure if the second argument is correct.
     protected final static StringManager sm =
         StringManager.getManager(LoginCallbackHandler.class);
-
+    private LoginModule userDefinedLoginModule = null;
     
     /**
      * Initialize this login module.
@@ -345,5 +351,18 @@ public abstract class AppservPasswordLoginModule implements LoginModule
      * @throws LoginException on authentication failure.
      *
      */
-    abstract protected void authenticateUser() throws LoginException;
+    //abstract protected void authenticateUser() throws LoginException;
+    protected void authenticateUser() throws LoginException {
+        if (userDefinedLoginModule instanceof com.sun.appserv.security.AppservPasswordLoginModule) {
+            com.sun.appserv.security.AppservPasswordLoginModule m = 
+                    (com.sun.appserv.security.AppservPasswordLoginModule)userDefinedLoginModule;
+            m.authenticateUser();
+            return;
+        }
+        throw new UnsupportedOperationException("Internal Error: Should not come here");
+    }
+
+    public void setLoginModuleForAuthentication(LoginModule userDefinedLoginModule) {
+        this.userDefinedLoginModule = userDefinedLoginModule;
+    }
 }
