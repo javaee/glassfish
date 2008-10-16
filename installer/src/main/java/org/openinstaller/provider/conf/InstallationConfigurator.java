@@ -628,13 +628,17 @@ void unconfigureGlassfish(String installDir) throws Exception {
 	File domainsDir = null;
 	File startWrapperFile = null;
 	File stopWrapperFile = null;
+	File modulesDir = null;
         if (isWindows) {
 	    domainsDir = new File (installDir + "\\glassfish\\domains");
+	    modulesDir = new File (installDir + "\\glassfish\\modules");
+	    
 	    startWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-start-domain.bat");
 	    stopWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-stop-domain.bat");
 	}
 	else {
             domainsDir = new File (installDir + "/glassfish/domains");
+	    modulesDir = new File (installDir + "/glassfish/modules");
 	    startWrapperFile = new File(installDir + "/glassfish/lib/asadmin-start-domain");
 	    stopWrapperFile = new File(installDir + "/glassfish/lib/asadmin-stop-domain");
         }
@@ -648,6 +652,13 @@ void unconfigureGlassfish(String installDir) throws Exception {
         if (domainsDir.exists()) {
             deleteDirectory(domainsDir);
 	}
+	// delete modules dir content explicitly since it will contain
+	// uncompressed jar files and UC content unknown to OI installer
+	if (modulesDir.exists()) {
+            deleteDirectory(modulesDir);
+	}
+
+
 
     }
     catch (Exception e) {
