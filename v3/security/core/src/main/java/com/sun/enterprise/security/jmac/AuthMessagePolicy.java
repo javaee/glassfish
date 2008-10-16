@@ -108,18 +108,6 @@ public class AuthMessagePolicy {
                 if (delegate != null) {
                     binding = delegate.getBinding(s, properties);
                 }
-                /*V3:Commented
-		WSDLPort p = (WSDLPort) properties.get("WSDL_MODEL");
-		QName portName = null;
-		if (p != null) {
-		    portName = p.getName();
-		}
-		if (portName != null) {
-		    ServiceRefPortInfo i = s.getPortInfoByPort(portName);
-		    if (i != null) {
-			binding = i.getMessageSecurityBinding();
-		    }
-		}*/
 	    }
 	}
 

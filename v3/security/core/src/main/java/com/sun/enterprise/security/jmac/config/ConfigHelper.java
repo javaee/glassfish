@@ -309,7 +309,7 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
         
         AuthConfigRegistrationListener listener;
         int referenceCount = 1;
-        
+        private WebServicesDelegate delegate = null;
         public AuthConfigRegistrationWrapper(String layer, String appCtxt) {
             this.layer = layer;
             this.appCtxt = appCtxt;
@@ -317,6 +317,7 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
 	    this.wLock = rwLock.writeLock();
             enabled = (factory != null);
             listener = new AuthConfigRegistrationListener(layer, appCtxt);
+            delegate = Globals.get(WebServicesDelegate.class);
         }
         
         public AuthConfigRegistrationListener getListener() {
@@ -352,7 +353,6 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
         public void disableWithRefCount() {
             if (referenceCount <= 1) {
                disable();
-               WebServicesDelegate delegate = Globals.get(WebServicesDelegate.class);
                if (delegate != null) {
                    delegate.removeListener(this);
                }

@@ -870,34 +870,6 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 		    get(HttpServletConstants.IS_MANDATORY);
 		return Boolean.valueOf(isMandatoryStr).toString();
 	    } else if (GFServerConfigProvider.SOAP.equals(layer)) {
-		/*V3: Start Comment SOAP Layer support
-                // make this more efficient by operating on packet 
-                String rvalue = null;
-                if (messageInfo instanceof PacketMessageInfo) {
-                    PacketMessageInfo pmi = (PacketMessageInfo) messageInfo;
-                    Packet p = (Packet) pmi.getRequestPacket();
-                    if (p != null) {
-                        Message m = p.getMessage();
-                        if (m != null) {
-                            WSDLPort port = 
-                                (WSDLPort) messageInfo.getMap().get("WSDL_MODEL");
-                            if (port != null) {
-                                WSDLBoundOperation w = m.getOperation(port);
-                                if (w != null) {
-                                    QName n = w.getName();
-                                    if (n != null) {
-                                        rvalue = n.getLocalPart();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return rvalue;
-                } else {
-                    // make this more efficient by operating on packet 
-                    return getOpName((SOAPMessage)messageInfo.getRequestMessage());
-                } 
-		V3: Send Comment SOAP Layer support */
                 if (wsdelegate != null) {
                     return wsdelegate.getAuthContextID(messageInfo);
                 }
@@ -908,72 +880,6 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         }
 
         // we should be able to replace the following with a method on packet
-
-	/*V3:Start Comment SOAP Layer support
-	private String getOpName(SOAPMessage message) {
-            if (message == null) {
-                return null;
-            }
-
-            String rvalue = null;
-
-            // first look for a SOAPAction header. 
-            // this is what .net uses to identify the operation
-
-            MimeHeaders headers = message.getMimeHeaders();
-            if (headers != null) {
-                String[] actions = headers.getHeader("SOAPAction");
-                if (actions != null && actions.length > 0) {
-                    rvalue = actions[0];
-                    if (rvalue != null && rvalue.equals("\"\"")) {
-                        rvalue = null;
-                    }
-                }
-            } 
-
-            // if that doesn't work then we default to trying the name
-            // of the first child element of the SOAP envelope.
-
-            if (rvalue == null) {
-                Name name = getName(message);
-                if (name != null) {
-                    rvalue = name.getLocalName();
-                }
-            }
-        
-            return rvalue;
-        }
-
-        private Name getName(SOAPMessage message) {
-            Name rvalue = null;
-            SOAPPart soap = message.getSOAPPart();
-            if (soap != null) {
-                try {
-                    SOAPEnvelope envelope = soap.getEnvelope(); 
-                    if (envelope != null) {
-                        SOAPBody body = envelope.getBody();
-                        if (body != null) {
-                            Iterator it = body.getChildElements();
-                            while (it.hasNext()) {
-                                Object o = it.next();
-                                if (o instanceof SOAPElement) {
-				  rvalue = ((SOAPElement) o).getElementName(); 
-				  break;
-                                }
-			    }
-			}
-                    }
-                } catch (SOAPException se) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "WSS: Unable to get SOAP envelope",
-                                   se);
-                    }
-                }
-            }
-        
-            return rvalue;
-        }
-	V3:End Comment SOAP Layer support */
 
         /**
          * Causes a dynamic anthentication context configuration object to 
@@ -1009,13 +915,9 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 	    if (GFServerConfigProvider.HTTPSERVLET.equals(layer)) {
 		return new HttpServletAuthParam(info);
 	    } else if (GFServerConfigProvider.SOAP.equals(layer)) {
-		/*V3: Start Comment SOAP Layer support
-		return new SOAPAuthParam(info);
-		V3: End Comment SOAP Layer support*/
                 if (wsdelegate != null) {
                     return wsdelegate.newSOAPAuthParam(info);
                 }
-                
 	    } 
 	    throw new AuthException("unsupported AuthParam type");
 	}

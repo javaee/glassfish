@@ -58,5 +58,6 @@
         <module>inmemory.jacc.provider</module>
         <module>javax.security.jacc</module>
         <module>javax.security.auth.message</module>
+        <module>webservices.security</module>
    </modules>
 </project>
