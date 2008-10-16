@@ -141,7 +141,7 @@ public class PwcCoyoteRequest extends Request {
         super.configureSessionCookie(cookie);
 
         PwcWebModule wm = (PwcWebModule) getContext();
-        SessionCookieConfig cookieConfig = wm.getSessionCookieConfig();
+        SessionCookieConfig cookieConfig = wm.getSessionCookieConfigFromSunWebXml();
 
         if (cookieConfig != null) {
 

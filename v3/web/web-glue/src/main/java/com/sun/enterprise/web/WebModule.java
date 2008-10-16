@@ -1771,7 +1771,7 @@ public class WebModule extends PwcWebModule {
                         logger.fine("WebModule[" + getPath() + "]: "
                                     + cookieConfig);
                     }
-                    setSessionCookieConfig(cookieConfig);
+                    setSessionCookieConfigFromSunWebXml(cookieConfig);
                 }
             }
         }

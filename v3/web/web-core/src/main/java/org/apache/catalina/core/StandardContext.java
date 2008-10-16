@@ -97,6 +97,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
@@ -783,8 +784,12 @@ public class StandardContext
     /**
      * Encoded path.
      */
-    private String encodedPath = null;
-
+    private String encodedPath = null;  
+    
+    /**
+     * Session cookie config
+     */
+    private SessionCookieConfig sessionCookieConfig = null;
 
     // ----------------------------------------------------- Context Properties
 
@@ -2681,7 +2686,44 @@ public class StandardContext
             addFilterMap(fmap, isMatchAfter);
         }      
      }
+
+        
+    /**
+     * Sets the session tracking cookie configuration for this 
+     * <tt>ServletContext</tt>.
+     *
+     * <p>The given <tt>SessionCookieConfig</tt> replaces any
+     * session tracking cookie configuration that was previously set.
+     *
+     * @param sessionCookieConfig 
+     * @throws IllegalStateException if this <tt>ServletContext</tt> has
+     * already been initialized
+     */
+    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
+                
+        if (initialized) {
+            throw new IllegalStateException
+                    (sm.getString("applicationContext.sessionCookieConfig.initialized"));
+        }
+        this.sessionCookieConfig = sessionCookieConfig;
+        
+    }
+ 
      
+    /**
+     * Gets the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>.
+     *
+     * @return the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
+     * was ever set for this <tt>ServletContext</tt>
+     */
+    public SessionCookieConfig getSessionCookieConfig() {
+        
+        return sessionCookieConfig;
+        
+    }
+    
 
     /**
      * Add the classname of an InstanceListener to be added to each

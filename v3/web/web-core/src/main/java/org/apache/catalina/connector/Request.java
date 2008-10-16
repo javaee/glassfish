@@ -93,6 +93,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequestAttributeEvent;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletResponse;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -532,7 +533,7 @@ public class Request
     protected Context context = null;
     protected ServletContext servletContext = null;
 
-
+    
     // --------------------------------------------------------- Public Methods
 
     /**
@@ -2927,6 +2928,7 @@ public class Request
      * @param cookie The JSESSIONID cookie to be configured
      */
     protected void configureSessionCookie(Cookie cookie) {
+
         cookie.setMaxAge(-1);
         String contextPath = null;
         // START GlassFish 1024
@@ -2951,6 +2953,19 @@ public class Request
         if (isSecure()) {
             cookie.setSecure(true);
         }
+        
+        // Overridde the default config with servlet context sessionCookieConfig
+        if ((servletContext!=null) && 
+                (servletContext.getSessionCookieConfig()!=null)) {
+            SessionCookieConfig sessionCookieConfig = 
+                                    servletContext.getSessionCookieConfig();
+            cookie.setDomain(sessionCookieConfig.getDomain());
+            cookie.setPath(sessionCookieConfig.getPath());
+            cookie.setComment(sessionCookieConfig.getComment());
+            cookie.setSecure(sessionCookieConfig.isSecure());
+            cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
+        }
+        
     }
 
 

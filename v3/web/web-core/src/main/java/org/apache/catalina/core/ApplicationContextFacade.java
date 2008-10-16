@@ -81,13 +81,14 @@ import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.SessionCookieConfig;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.security.SecurityUtil;
@@ -136,7 +137,7 @@ public final class ApplicationContextFacade
     
     private static Logger sysLog = Logger.getLogger(
         ApplicationContextFacade.class.getName());
-
+    
         
     // ----------------------------------------------------------- Constructors
 
@@ -524,6 +525,50 @@ public final class ApplicationContextFacade
         }
     }
 
+        
+    /**
+     * Sets the session tracking cookie configuration for this 
+     * <tt>ServletContext</tt>.
+     *
+     * <p>The given <tt>SessionCookieConfig</tt> replaces any
+     * session tracking cookie configuration that was previously set.
+     *
+     * @param sessionCookieConfig 
+     * @throws IllegalStateException if this <tt>ServletContext</tt> has
+     * already been initialized
+     */
+    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
+                        
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            doPrivileged("setSessionCookieConfig",
+                         new Object[] {sessionCookieConfig});
+        } else {
+            context.setSessionCookieConfig(sessionCookieConfig);
+        }
+        
+    }
+ 
+     
+    /**
+     * Gets the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>.
+     *
+     * @return the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
+     * was ever set for this <tt>ServletContext</tt>
+     */
+    public SessionCookieConfig getSessionCookieConfig() {
+                
+        
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (SessionCookieConfig) doPrivileged("getSessionCookieConfig", null);
+        } else {
+            return context.getSessionCookieConfig();
+        }
+        
+    }
+    
+    
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this

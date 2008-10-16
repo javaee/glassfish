@@ -140,7 +140,7 @@ public abstract class PwcWebModule extends StandardContext {
     /**
      * Return the session cookie configuration for this web module.
      */
-    public SessionCookieConfig getSessionCookieConfig() {
+    public SessionCookieConfig getSessionCookieConfigFromSunWebXml() {
         return _cookieConfig;
     }
 
@@ -150,7 +150,7 @@ public abstract class PwcWebModule extends StandardContext {
      *
      * @param cookieConfig The new session cookie configuration
      */
-    public void setSessionCookieConfig(SessionCookieConfig cookieConfig) {
+    public void setSessionCookieConfigFromSunWebXml(SessionCookieConfig cookieConfig) {
         _cookieConfig = cookieConfig;
     }
 

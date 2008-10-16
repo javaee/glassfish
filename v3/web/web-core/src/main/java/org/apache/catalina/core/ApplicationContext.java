@@ -81,6 +81,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.SessionCookieConfig;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.ContainerEvent;
@@ -224,8 +225,8 @@ public class ApplicationContext
      */
     private ThreadLocal<DispatchData> dispatchData =
         new ThreadLocal<DispatchData>();
-
-
+    
+    
     // --------------------------------------------------------- Public Methods
 
 
@@ -1049,7 +1050,7 @@ public class ApplicationContext
                             servletNames);
     }
 
-     
+    
     /**
      * Adds a filter mapping with the given url patterns, and
      * dispatcher types for the filter with the given filter name to this
@@ -1073,7 +1074,40 @@ public class ApplicationContext
                                         isMatchAfter, urlPatterns);
     }
 
+        
+    /**
+     * Sets the session tracking cookie configuration for this 
+     * <tt>ServletContext</tt>.
+     *
+     * <p>The given <tt>SessionCookieConfig</tt> replaces any
+     * session tracking cookie configuration that was previously set.
+     *
+     * @param sessionCookieConfig 
+     * @throws IllegalStateException if this <tt>ServletContext</tt> has
+     * already been initialized
+     */
+    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
+                
+        context.setSessionCookieConfig(sessionCookieConfig);
+        
+    }
+ 
      
+    /**
+     * Gets the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>.
+     *
+     * @return the session tracking cookie configuration of this 
+     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
+     * was ever set for this <tt>ServletContext</tt>
+     */
+    public SessionCookieConfig getSessionCookieConfig() {
+        
+        return context.getSessionCookieConfig();
+        
+    }
+ 
+ 
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this ApplicationContext is
