@@ -404,8 +404,9 @@ for this installation.&lt;BR&gt;\
 UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
 The Update Tool periodically checks for available updates and collects some \
 system data. For more information about the data that is collected, see the \
-&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; page.\
-&lt;BR&gt;\
+&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;\
+GlassFish Usage Metrics&lt;/a&gt; page \
+(http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;p&gt;&lt;font face='Sans-Serif'&gt;\
