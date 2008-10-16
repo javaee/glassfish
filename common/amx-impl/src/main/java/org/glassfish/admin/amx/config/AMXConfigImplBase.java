@@ -646,7 +646,6 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         ConfigBean newConfigBean = null;
         final PropertiesCallback  callback = new PropertiesCallback( argSpt.getProperties(), argSpt.getSystemProperties() );
-        cdebug( "createConfigGeneric: 2 ");
         try
         {
             newConfigBean = ConfigSupport.createAndSet( getConfigBean(), elementClass, changes, callback);
@@ -656,7 +655,6 @@ public class AMXConfigImplBase extends AMXImplBase
             cdebug( ExceptionUtil.toString(t) );
             throw new RuntimeException( t );
         }
-        cdebug( "createConfigGeneric: 3 ");
 
         //----------------------
         //
@@ -665,7 +663,6 @@ public class AMXConfigImplBase extends AMXImplBase
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
         final ObjectName objectName = newConfigBean.getObjectName();
-        cdebug( "NEW OBJECTNAME:  " + objectName);
         
         //
         // Set the properties and system properties.  Ideally, this should be part of the original
@@ -736,11 +733,9 @@ public class AMXConfigImplBase extends AMXImplBase
         
         final String j2eeType = Util.getJ2EEType( returnType );
         checkJ2EETypeMatches( j2eeType, operationName );
-        cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType.getName() );
                         
         final AMXCreateInfo amxCreateInfo = getAMXCreateInfo( m, returnType, argSpt.numArgs() );
         final String[] paramNames = amxCreateInfo.paramNames();
-        cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
         argSpt.addExplicitAttrs( paramNames );
     
         final ContainedTypeInfo   subInfo = new ContainedTypeInfo( getConfigBean() );
@@ -756,7 +751,6 @@ public class AMXConfigImplBase extends AMXImplBase
             throw new IllegalArgumentException();
         }
   
-        cdebug( "calling ConfigSupport.createAndSet() " );
         ConfigBean newConfigBean = null;
         
         final List<ConfigSupport.AttributeChanges> changes = toAttributeChanges(argSpt.getAttrs());
@@ -777,7 +771,6 @@ public class AMXConfigImplBase extends AMXImplBase
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
         final ObjectName objectName = newConfigBean.getObjectName();
-        cdebug( "NEW OBJECTNAME:  " + objectName);
        
        /*
         // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -873,7 +866,6 @@ public class AMXConfigImplBase extends AMXImplBase
             for( final String propName : properties.keySet() )
             {
                 final String propValue = properties.get(propName);
-                cdebug ("################## Creating property " + propName + " = " + propValue );
                 try
                 {
                     pa.createPropertyConfig( propName, propValue );
@@ -891,7 +883,6 @@ public class AMXConfigImplBase extends AMXImplBase
             for( final String propName : systemProperties.keySet() )
             {
                 final String propValue = systemProperties.get(propName);
-                debug ("################## Creating System property " + propName + " = " + propValue );
                 pa.createSystemPropertyConfig( propName, propValue );
             }
         }
@@ -967,8 +958,6 @@ public class AMXConfigImplBase extends AMXImplBase
         final AMXConfigImplBase child = (AMXConfigImplBase)get__ObjectRef( containeeObjectName );
         try
         {
-cdebug( "REMOVING config of class " + child.getConfigBean().getProxyType().getName() + " from  parent of type " + 
-    getConfigBean().getProxyType().getName() + ", ObjectName = " + JMXUtil.toString(containeeObjectName) );
             ConfigSupport.deleteChild( getConfigBean(), child.getConfigBean() );
         }
         catch( final TransactionFailure tf )
@@ -1035,19 +1024,16 @@ cdebug( "REMOVING config of class " + child.getConfigBean().getProxyType().getNa
    {
         if ( args == null || args.length == 0 )
         {
-cdebug( "removeConfig: by operation name only" );
             // remove a singleton
             removeConfig( operationName );
         }
         else if ( args.length == 1 )
         {
-cdebug( "removeConfig: by operationName + name" );
             // remove by name, type is implicit in method name
             removeConfig( operationNameToJ2EEType(operationName), (String)args[0] );
         }
         else if ( args.length == 2 )
         {
-cdebug( "removeConfig: by  j2eeType + name" );
             // generic form
             if ( ! operationName.equals( "removeConfig" ) )
             {

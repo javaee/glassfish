@@ -1377,7 +1377,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
             final AttributeChangeNotification	n	= 
                 builder.buildAttributeChange( msg, name, attrType, when, oldValue, newValue );
             
-            System.out.println( "AttributeChangeNotification: " + AttributeChangeNotificationStringifier.DEFAULT.stringify(n) );
+            //cdebug( "AttributeChangeNotification: " + AttributeChangeNotificationStringifier.DEFAULT.stringify(n) );
             sendNotification( n );
         }
 	}
@@ -1454,7 +1454,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 	{
 		final AttributeList	successList	= new AttributeList();
         
-		System.out.println( "AMXImplBase.setAttributes = " + SmartStringifier.toString( attrs ) );
+		//cdebug( "AMXImplBase.setAttributes = " + SmartStringifier.toString( attrs ) );
 		
         final AttributeList delegatedAttrs = new AttributeList();
         final AttributeList otherAttrs = new AttributeList();

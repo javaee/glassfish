@@ -244,7 +244,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         }
         catch ( final RetryableException e)
         {
-            debug("Retryable...");
+            //debug("Retryable...");
             t.rollback();
             throw new TransactionFailure(e.getMessage(), e);
         }
@@ -493,15 +493,15 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         if ( notMatched.keySet().size() != 0 )
         {
-            debug( "setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString( notMatched.keySet() ) + "}" );
+            //debug( "setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString( notMatched.keySet() ) + "}" );
         }
         
         final AttributeList successfulAttrs = new AttributeList();
         
         if ( xmlAttrs.size() != 0 )
         {
-            debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
-                CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
+            //debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
+            //    CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
             
             final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
             Transactions.get().addTransactionsListener(myListener);
