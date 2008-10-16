@@ -215,6 +215,9 @@ public class LogDomains
     /** core/kernel Logger */
     public static final String SERVICES_LOGGER = DOMAIN_ROOT + "enterprise.system.core.services";
 
+    /**webservices logger */
+    public static final String WEBSERVICES_LOGGER=DOMAIN_ROOT + "enterprise.webservices";
+
 
 
 
