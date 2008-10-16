@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.security.api;
+package com.sun.appserv.security;
 
 import java.security.BasicPermission;
 

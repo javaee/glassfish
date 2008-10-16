@@ -61,6 +61,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
+import com.sun.appserv.security.ProgrammaticLoginPermission;
+
 /**
  * Implement programmatic login.
  *

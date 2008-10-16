@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sun.enterprise.security.audit.AuditModule;
+import com.sun.appserv.security.AuditModule;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 /*V3:Commented
