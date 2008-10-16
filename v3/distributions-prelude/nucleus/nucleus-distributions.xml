@@ -131,13 +131,6 @@ own identifying information: Portions Copyright [yyyy]
     <delete
         file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
 
-    <!-- copy uc client scripts -->
-    <unzip dest="${image.dir}/bin">
-        <fileset dir="../target">
-            <include name="ucbootstrap*.zip"/>
-        </fileset>
-    </unzip>
-
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/updatetool"/>
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
     <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/pkg"/>
