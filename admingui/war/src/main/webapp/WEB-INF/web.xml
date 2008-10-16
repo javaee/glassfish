@@ -13,6 +13,10 @@
         <param-name>com.sun.jsftemplating.RESOURCE_PREFIX</param-name>
         <param-value>/html</param-value>
     </context-param>
+    <context-param>
+        <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
+        <param-value>true</param-value>
+    </context-param>
     <filter>
         <filter-name>UploadFilter</filter-name>
         <filter-class>com.sun.webui.jsf.util.UploadFilter</filter-class>
