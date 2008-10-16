@@ -200,7 +200,6 @@
 	<delete includeemptydirs="true">
 		<fileset dir="${basedir}">
 			<include name="**/*.output"/>
-			<include name="**/*.log"/>
 		</fileset>
 	</delete>
         <delete>
