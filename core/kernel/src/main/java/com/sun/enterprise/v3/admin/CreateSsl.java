@@ -263,24 +263,12 @@ public class CreateSsl implements AdminCommand {
     throws PropertyVetoException {
 
         newSsl.setCertNickname(certName);
-
-        if (ssl2Enabled)
-            newSsl.setSsl2Enabled(ssl2Enabled.toString());
-
+        newSsl.setSsl2Enabled(ssl2Enabled.toString());
         newSsl.setSsl2Ciphers(ssl2ciphers);
-
-        if (!ssl3Enabled)
-            newSsl.setSsl3Enabled(ssl3Enabled.toString());
-
+        newSsl.setSsl3Enabled(ssl3Enabled.toString());
         newSsl.setSsl3TlsCiphers(ssl3tlsciphers);
-
-        if (!tlsenabled)
-            newSsl.setTlsEnabled(tlsenabled.toString());
-
-        if (!tlsrollbackenabled)
-            newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
-
-        if (clientauthenabled)
-	    newSsl.setClientAuthEnabled(clientauthenabled.toString());
+        newSsl.setTlsEnabled(tlsenabled.toString());
+        newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
+        newSsl.setClientAuthEnabled(clientauthenabled.toString());
     }
 }

@@ -112,6 +112,15 @@ public class DeleteSsl implements AdminCommand {
                     return;
                 }
                 
+                if (httpListener.getSsl() == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.httpsslnotfound", 
+                        "HTTP Listener named {0} does not have a ssl config", 
+                        listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;                    
+                }
+                
                 ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
                     public Object run(HttpListener param) 
                     throws PropertyVetoException, TransactionFailure {
@@ -136,6 +145,15 @@ public class DeleteSsl implements AdminCommand {
                     return;
                 }
                 
+                if (iiopListener.getSsl() == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.iiopsslnotfound", 
+                        "IIOP Listener named {0} does not have a ssl config", 
+                        listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;                    
+                }
+
                 ConfigSupport.apply(new SingleConfigCode<IiopListener>() {
                     public Object run(IiopListener param) 
                     throws PropertyVetoException, TransactionFailure {
