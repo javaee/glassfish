@@ -1646,7 +1646,7 @@ public class StandardSession
                     && manager.getDistributable()
                     && !isSerializable(value)) {
             	throw new IllegalArgumentException
-                	(sm.getString("standardSession.setAttribute.iae")); 
+                	(sm.getString("standardSession.setAttribute.iae", name)); 
 	}
 
         // Construct an event with the new value
