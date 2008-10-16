@@ -90,6 +90,9 @@ own identifying information: Portions Copyright [yyyy]
         <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
         <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
+    <antcall target="pack-compression">
+         <param name="image.directory" value="${installer.image.dir}"/>
+    </antcall>
     <exec dir="${installer.image.dir}/glassfishv3-prelude" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
     </exec>
@@ -287,4 +290,18 @@ origin-for-darwin-universal-sun-contrib]]>
     </delete>
 </target>
 
+<!-- pack200 compression -->
+<target name="pack-compression">
+    <apply executable="pack200" dest="${image.directory}/glassfishv3-prelude/glassfish/modules" parallel="false">
+        <targetfile/>
+        <srcfile/>
+        <fileset dir="${image.directory}/glassfishv3-prelude/glassfish/modules" includes="**/*.jar" />
+        <mapper type="glob" from="*.jar" to="*.pack.gz"/>
+    </apply>
+
+    <!-- remove *.pack.gz files -->
+    <delete>
+        <fileset dir="${image.directory}/glassfishv3-prelude/glassfish/modules" includes="**/*.jar"/>
+    </delete>
+</target>
 </project>
