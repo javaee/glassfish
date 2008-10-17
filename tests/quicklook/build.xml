@@ -196,7 +196,9 @@
 	<delete includeemptydirs="true">
 		<fileset dir="${basedir}">
 			<include name="**/*.output"/>
-			<include name="**/*.log"/>
+			<!-- Causes problem with a debug build of JDK that spits out a "hotspot.log" file which can NOT be deleted while the VM is running...
+			    <include name="**/*.log"/>
+			-->
 		</fileset>
 	</delete>
         <delete>
