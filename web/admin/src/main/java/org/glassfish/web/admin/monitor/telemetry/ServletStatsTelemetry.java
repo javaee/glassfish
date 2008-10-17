@@ -68,11 +68,11 @@ public class ServletStatsTelemetry{
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
-        activeServletsLoadedCount.setName("activeServletsLoadedCount");
+        activeServletsLoadedCount.setName("activeservletsloadedcount-count");
         parent.addChild(activeServletsLoadedCount);
-        maxServletsLoadedCount.setName("maxServletsLoadedCount");
+        maxServletsLoadedCount.setName("maxservletsloadedcount-count");
         parent.addChild(maxServletsLoadedCount);
-        totalServletsLoadedCount.setName("totalServletsLoadedCount");
+        totalServletsLoadedCount.setName("totalservletsloadedcount-count");
         parent.addChild(totalServletsLoadedCount);
         this.webMonitoringEnabled = webMonitoringEnabled;
     }

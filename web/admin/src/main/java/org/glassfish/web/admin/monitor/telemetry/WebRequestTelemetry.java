@@ -92,19 +92,19 @@ public class WebRequestTelemetry implements PostConstruct {
             webRequestNode = parent;
             //add maxTime attribute    
             Method m1 = requestProcessTime.getClass().getMethod("getMaximumTime", (Class[]) null);
-            TreeNode maxTime = TreeNodeFactory.createMethodInvoker("maxTime", requestProcessTime, "request", m1);
+            TreeNode maxTime = TreeNodeFactory.createMethodInvoker("maxtime-count", requestProcessTime, "request", m1);
             parent.addChild(maxTime);
             //add requestCount
             requestProcessTime.getCount();
             Method m2 = requestProcessTime.getClass().getMethod("getCount", (Class[]) null);
-            TreeNode requestCount = TreeNodeFactory.createMethodInvoker("requestCount", requestProcessTime, "request", m2);
+            TreeNode requestCount = TreeNodeFactory.createMethodInvoker("requestcount-count", requestProcessTime, "request", m2);
             parent.addChild(requestCount);
             //add processTime
             Method m3 = requestProcessTime.getClass().getMethod("getTime", (Class[]) null);
-            TreeNode processingTime = TreeNodeFactory.createMethodInvoker("processingTime", requestProcessTime, "request", m3);
+            TreeNode processingTime = TreeNodeFactory.createMethodInvoker("processingtime-count", requestProcessTime, "request", m3);
             parent.addChild(processingTime);
             //add errorCount
-            errorCount.setName("errorCount");
+            errorCount.setName("errorcount-count");
             parent.addChild(errorCount);
         } catch (NoSuchMethodException ex) {
             Logger.getLogger(WebRequestTelemetry.class.getName()).log(Level.SEVERE, null, ex);
