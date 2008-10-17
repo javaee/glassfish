@@ -58,7 +58,7 @@ public interface SystemApplications extends ConfigBeanProxy, Injectable  {
      * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModuleorApplication property.
      * Objects of the following type(s) are allowed in the list
      * {@link LifecycleModule }
-     * {@link J2EeApplication }
+     * {@link J2eeApplication }
      * {@link EjbModule }
      * {@link WebModule }
      * {@link ConnectorModule }

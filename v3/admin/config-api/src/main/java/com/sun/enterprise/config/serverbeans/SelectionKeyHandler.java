@@ -43,19 +43,16 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 
 /**
- * {@link SelectionKeyHandler} defines {@link Transport}'s {@link SelectionKey}
- * events handling logic.
+ * Defines {@link Transport}'s events handling logic.
  */
 @AMXConfigInfo(amxInterfaceName="org.glassfish.admin.amx.config.grizzly.SelectionKeyHandlerConfig")
 @Configured
 public interface SelectionKeyHandler extends ConfigBeanProxy, PropertyBag, Injectable {
 
     /**
-     * Get the {@link SelectionKeyHandler} name, which could be used
-     * as reference
+     * Get the name, which could be used as reference
      *
-     * @return the {@link SelectionKeyHandler} name, which could be used
-     * as reference
+     * @return the name, which could be used as reference
      */
     @Attribute(required = true, key = true)
     public String getName();
@@ -64,8 +61,7 @@ public interface SelectionKeyHandler extends ConfigBeanProxy, PropertyBag, Injec
      * Set the {@link SelectionKeyHandler} name, which could be used
      * as reference
      *
-     * @param name the {@link SelectionKeyHandler} name, which could be used
-     * as reference
+     * @param name the name, which could be used as reference
      */
     public void setName(String name);
 
@@ -78,12 +74,9 @@ public interface SelectionKeyHandler extends ConfigBeanProxy, PropertyBag, Injec
     public String getClassname();
 
     /**
-     * Set the {@link SelectionKeyHandler} implementation class name
-     *
-     * @param classname the {@link SelectionKeyHandler}
-     *        implementation class name
+     * Set the implementation class name
      */
-    public String setClassname();
+    public void setClassname(String classname);
 
     /**
      * Get the timeout, in seconds, after which idle key

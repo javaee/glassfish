@@ -93,7 +93,7 @@ public interface NetworkListener extends ConfigBeanProxy, Injectable, PropertyBa
     /**
      * Sets the name of the {@link Protocol}.
      *
-     * @param transport the name of the {@link Protocol}.
+     * @param protocol the name of the {@link Protocol}.
      */
     public void setProtocolRef(String protocol);
 

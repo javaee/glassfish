@@ -86,26 +86,25 @@ public interface Protocol extends ConfigBeanProxy, PropertyBag, Injectable {
      * settings. False means that the {@link Protocol} is not secured and
      * the {@link Ssl} member, if present, will be ignored.
      *
-     * @param securityEnabled the {@link Protocol} security status
+     * @param securityEnabled the security status
      */
     public void setSecurityEnabled(String securityEnabled);
 
     /**
-     * Get the max temporary {@link Selector} number, which could be used by
+     * Get the max temporary selector number, which could be used by
      * this {@link Protocol}
      *
-     * @return the max temporary {@link Selector} number, which could be used by
-     * this {@link Protocol}
+     * @return the max temporary selector number, which could be used.
      */
     @Attribute
     public String getMaxSelectors();
 
     /**
-     * Set the max temporary {@link Selector} number, which could be used by
+     * Set the max temporary selector number, which could be used by
      * this {@link Protocol}
      *
-     * @param maxSelectors the max temporary {@link Selector} number,
-     * which could be used by this {@link Protocol}
+     * @param maxSelectors the max temporary selectornumber,
+     * which could be used
      */
     public void setMaxSelectors(String maxSelectors);
 
@@ -191,17 +190,17 @@ public interface Protocol extends ConfigBeanProxy, PropertyBag, Injectable {
     public void setOobInline(String oobInline);
 
     /**
-     * Get the {@link Protocol> SSL configuration
+     * Get the SSL configuration
      *
-     * @return the {@link Protocol> SSL configuration
+     * @return the SSL configuration
      */
     @Element
     public Ssl getSsl();
 
     /**
-     * Set the {@link Protocol> SSL configuration
+     * Set the SSL configuration
      *
-     * @param ssl the {@link Protocol> SSL configuration
+     * @param ssl the SSL configuration
      */
     public void setSsl(Ssl ssl);
 
