@@ -576,13 +576,7 @@ public class ApplicationLifecycle {
 
         for (ModuleInfo module : modules) {
             try {
-                ClassLoader cloader = module.getApplicationContainer().getClassLoader();
                 stop(module, context, logger);
-                try {
-                    PreDestroy.class.cast(cloader).preDestroy();
-                } catch (Exception e) {
-                    // ignore, the class loader does not need to be explicitely stopped.
-                }
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "Cannot stop module " +
                         module.getContainerInfo().getSniffer().getModuleType(),e );
