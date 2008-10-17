@@ -35,6 +35,8 @@
  */
 
 package com.sun.enterprise.deployment.node;
+import java.io.*;
+import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 
 /**
  *Provides the appropriate implementation depending on the current
@@ -59,12 +61,40 @@ public class SaxParserHandlerFactory {
          *case, there is no product installation directory (at least none can
          *be assumed).  The DTDs and schemas will be retrieved from the
          *JWS-specific jar file instead (SaxParserHandlerBundled).
-         */
-        if (System.getProperty("com.sun.aas.installRoot") == null) {
-            result = new SaxParserHandlerBundled();
-        } else {
+         *
+         *bnevins, Oct 16, 2008.  On Oct. 8, 2008 installRoot was changed to be setup
+         *earlier in the startup.  As a result, Embedded GF broke.  It sets up a fake installRoot, 
+         *because there is *no* install-root.
+         *Improvement: don't just see if installRoot is set -- make sure installRoot
+         *is bonafide.
+          */ 
+        
+        if(installRootIsValid()) 
             result = new SaxParserHandler();
-        }
+        else
+            result = new SaxParserHandlerBundled();
+
         return result;
+    }
+    
+    private static boolean installRootIsValid() {
+        // In the context of this class, we need to make sure that we know if we 
+        //have a route to local DTDs.  Period.
+        
+        String ir = System.getProperty(INSTALL_ROOT_PROPERTY);
+        
+        if(!ok(ir))
+            return false;
+        
+        File dtds = new File(new File(ir), "lib/dtds");
+        
+        if(!dtds.isDirectory())
+            return false;
+        
+        return true;
+    }
+
+    private static boolean ok(String ir) {
+        return ir != null && ir.length() > 0;
     }
 }

@@ -187,6 +187,7 @@
                 <module>tests</module>
                 <module>osgi-platforms</module>
                 <module>flashlight</module>
+                <module>embedded</module>
             </modules>
         </profile>
         <profile>
