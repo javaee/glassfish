@@ -101,6 +101,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
 
     /**
      * Sets the value of the ssl2Ciphers property.
+     * Values:  rc4, rc4export, rc2, rc2export, idea, des, desede3.
      *
      * @param value allowed object is
      *              {@link String }
@@ -125,10 +126,12 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
     public void setSsl3Enabled(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the ssl3TlsCiphers property.
-     *
-     * @return possible object is
-     *         {@link String }
+     A comma-separated list of the SSL3 ciphers used, with the prefix + to enable or - to 
+        disable, for example +SSL_RSA_WITH_RC4_128_MD5 . Allowed values are 
+        SSL_RSA_WITH_RC4_128_MD5, SSL_RSA_WITH_3DES_EDE_CBC_SHA, SSL_RSA_WITH_DES_CBC_SHA, 
+        SSL_RSA_EXPORT_WITH_RC4_40_MD5, SSL_RSA_WITH_NULL_MD5, SSL_RSA_WITH_RC4_128_SHA, and 
+        SSL_RSA_WITH_NULL_SHA. Values available in previous releases are supported for backward 
+        compatibility.
      */
     @Attribute
     public String getSsl3TlsCiphers();

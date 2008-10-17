@@ -61,7 +61,7 @@ import java.util.List;
 public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 
     /**
-     * Gets the value of the authLayer property.
+     * Gets the value of the authLayer property. Values: "SOAP" or "HttpServlet".
      *
      * @return possible object is
      *         {@link String }

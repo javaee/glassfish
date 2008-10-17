@@ -57,7 +57,7 @@ import java.io.Serializable;
 public interface ResourceRef extends ConfigBeanProxy, Injectable  {
 
     /**
-     * Gets the value of the enabled property.
+     * Determines whether the resource is active or ignored.
      *
      * @return possible object is
      *         {@link String }
@@ -74,7 +74,7 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
     public void setEnabled(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the ref property.
+     * References the name attribute of a resources, such as an {@link JdbcResource} or {@link JdbcConnectionPool}.
      *
      * @return possible object is
      *         {@link String }

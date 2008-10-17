@@ -84,7 +84,7 @@ public interface ManagerProperties extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="60")
     public String getReapIntervalInSeconds();
 
     /**
@@ -101,7 +101,7 @@ public interface ManagerProperties extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="-1")
     public String getMaxSessions();
 
     /**

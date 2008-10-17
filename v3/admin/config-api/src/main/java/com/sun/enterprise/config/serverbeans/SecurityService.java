@@ -200,7 +200,9 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
     public void setActivateDefaultPrincipalToRoleMapping(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the mappedPrincipalClass property.
+     * Customizes the java.security.Principal implementation class used 
+     * when activate-default-principal-to-role-mapping is set to true.
+     * Should the default be set to com.sun.enterprise.deployment.Group?
      *
      * @return possible object is
      *         {@link String }

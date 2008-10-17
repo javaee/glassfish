@@ -65,7 +65,7 @@ public interface SessionProperties extends ConfigBeanProxy, Injectable, Property
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="600")
     public String getTimeoutInSeconds();
 
     /**

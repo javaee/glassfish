@@ -57,7 +57,8 @@ import java.io.Serializable;
 public interface RequestPolicy extends ConfigBeanProxy, Injectable  {
     
     /**
-     * Gets the value of the authSource property.
+     * auth-source Specifies the type of required authentication, either sender (user name and password),
+      or content (digital signature).
      *
      * @return possible object is
      *         {@link String }
@@ -74,7 +75,8 @@ public interface RequestPolicy extends ConfigBeanProxy, Injectable  {
     public void setAuthSource(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the authRecipient property.
+     * Specifies whether recipient authentication occurs before or after content authentication.
+     Allowed values are 'before-content' and 'after-content'.
      *
      * @return possible object is
      *         {@link String }

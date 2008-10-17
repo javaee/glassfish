@@ -61,6 +61,7 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the useThreadPoolIds property.
+     * Specifies a comma-separated list of thread-pool ids.
      *
      * @return possible object is
      *         {@link String }
