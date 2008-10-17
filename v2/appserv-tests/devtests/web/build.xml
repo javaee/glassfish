@@ -271,7 +271,7 @@
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
-        <!-- Disabled until Issue 6043 has been fixed
+        <!-- Disabled for v3 prelude until Issue 6043 has been fixed
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
         -->
         <ant dir="classloaderMemoryLeak" target="all"/>
@@ -280,6 +280,9 @@
         <ant dir="extraClassPathJarUrl" target="all"/>
         <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
         <ant dir="classloaderGetResourceJarFile" target="all"/>
+        <!-- Disabled for v3 prelude
+        <ant dir="classloaderGetResourcesDelegateFalse" target="all"/>
+        -->
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
