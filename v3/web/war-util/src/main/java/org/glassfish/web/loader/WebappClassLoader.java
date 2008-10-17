@@ -1323,6 +1323,58 @@ public class WebappClassLoader
 
 
     /**
+     * Finds all the resources with the given name.
+     */
+    public Enumeration<URL> getResources(String name) throws IOException {
+
+	final Enumeration[] enums = new Enumeration[2];
+
+        Enumeration<URL> localResources = findResources(name);
+        Enumeration<URL> parentResources = null;
+        if (parent != null) {
+            parentResources = parent.getResources(name);
+        } else {
+            return localResources;
+        }
+
+        if (delegate) {
+            enums[0] = parentResources;
+            enums[1] = localResources;
+        } else {
+            enums[0] = localResources;
+            enums[1] = parentResources;
+        }
+
+        return new Enumeration() {
+
+            int index = 0;
+
+            private boolean next() {
+                while (index < enums.length) {
+                    if (enums[index] != null &&
+                            enums[index].hasMoreElements()) {
+                        return true;
+                    }
+                    index++;
+                }
+                return false;
+            }
+
+            public boolean hasMoreElements() {
+                return next();
+            }
+
+            public URL nextElement() {
+                if (!next()) {
+                    throw new NoSuchElementException();
+                }
+                return (URL)enums[index].nextElement();
+            }
+        };
+    }
+
+
+    /**
      * Load the class with the specified name.  This method searches for
      * classes in the same manner as <code>loadClass(String, boolean)</code>
      * with <code>false</code> as the second argument.
