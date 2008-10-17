@@ -1334,7 +1334,7 @@ public class WebappClassLoader
         if (parent != null) {
             parentResources = parent.getResources(name);
         } else {
-            return localResources;
+            parentResources = system.getResources(name);
         }
 
         if (delegate) {
