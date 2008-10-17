@@ -25,23 +25,82 @@ else
 fi
 }
 
+locate_java() {
+
+    # Search path for locating java
+    java_locs="$JAVA_HOME/bin:/bin:/usr/bin:/usr/java/bin:$PATH"
+    # Convert colons to spaces
+    java_locs=`echo $java_locs | tr ":" " "`
+
+    for j in $java_locs; do
+        # Check if version is sufficient
+        major=0
+        minor=0
+        if [ -x "$j/java" ]; then
+            version=`"$j/java" -version 2>&1 | grep version | cut -d'"' -f2`
+            major=`echo $version | cut -d'.' -f1`
+            minor=`echo $version | cut -d'.' -f2`
+        fi
+
+        # We want 1.5 or newer
+        if [ "$major" -eq "1" -a "$minor" -ge "5" ];  then
+            echo "$j/java"
+            return
+        fi
+        if [ "$major" -gt "1" ];  then
+            echo "$j/java"
+            return
+        fi
+    done
+
+    echo ""
+}
+
+locate_jar() {
+
+    # Search path for locating jar
+    jar_locs="$JAVA_HOME/bin:/bin:/usr/bin:/usr/java/bin:$PATH"
+    # Convert colons to spaces
+    jar_locs=`echo $jar_locs | tr ":" " "`
+
+    for j in $jar_locs; do
+        if [ -x "$j/jar" ]; then
+            echo "$j/jar"
+	    return
+        fi
+    done
+
+    echo ""
+}
+
 ARGS=""
 export ARGS 
 _POSIX2_VERSION=199209
 export _POSIX2_VERSION
 
-#Check for JAVA_HOME if not set then bailout
-if [ -z "${JAVA_HOME}" ]
-then
-	echo "Environment variable JAVA_HOME is not set. Please set it to a valid directory and rerun this program."
-	exit 105
+#validate JAVA_HOME, leave full validation to OI.
+my_java=`locate_java`
+
+if [ -z "$my_java" ]; then
+    echo
+    echo "Could not locate a suitable Java runtime."
+    echo "Please ensure that you have Java 5 or newer installed on your system"
+    echo "and accessible in your PATH or by setting JAVA_HOME"
+    exit 105
 fi
 
-#validate JAVA_HOME, leave full validation to OI.
-if [ ! -f "${JAVA_HOME}/bin/jar" ]
-then
-	echo "Please set JAVA_HOME to a valid directory and rerun this program."
-	exit 106
+my_java_bin=`dirname $my_java`
+JAVA_HOME=`dirname $my_java_bin`
+export JAVA_HOME
+
+my_jar=`locate_jar`
+
+if [ -z "$my_jar" ]; then
+    echo
+    echo "Could not locate a suitable jar utility."
+    echo "Please ensure that you have Java 5 or newer installed on your system"
+    echo "and accessible in your PATH or by setting JAVA_HOME"
+    exit 105
 fi
 
 while [ $# -gt 0 ]
@@ -91,9 +150,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +104l $0 > $tmp/tmp.jar
+tail +163l $0 > $tmp/tmp.jar
 cd $tmp
-$JAVA_HOME/bin/jar xvf tmp.jar 
+$my_jar xvf tmp.jar 
 rm tmp.jar
 chmod ugo+x product-installer.sh
 chmod ugo+x install/bin/engine-wrapper
