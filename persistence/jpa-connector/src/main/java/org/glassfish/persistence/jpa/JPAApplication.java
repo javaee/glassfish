@@ -203,13 +203,14 @@ public class JPAApplication implements ApplicationContainer {
                     "emf = {0}", emf); // NOI18N
 
         RootDeploymentDescriptor rootDD = pud.getParent().getParent();
+        Application application;
         if (rootDD.isApplication()) {
-            Application.class.cast(rootDD).addEntityManagerFactory(
-                    pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
+            application = Application.class.cast(rootDD);
         } else {
-            BundleDescriptor.class.cast(rootDD).addEntityManagerFactory(
-                    pInfo.getPersistenceUnitName(), emf);
+            application = BundleDescriptor.class.cast(rootDD).getApplication();
         }
+        application.addEntityManagerFactory(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
+
 
         return emf;
     }
