@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-jdbc-management</artifactId>
     <name>Glassfish JDBC Connector Management Package</name>

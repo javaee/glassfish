@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>nucleus</artifactId>
     <name>Glassfish v3 Nucleus Distribution(</name>
@@ -145,25 +145,25 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>felix</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>pkg-java</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-hk2</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-grizzly</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
@@ -175,13 +175,13 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
 
@@ -189,31 +189,31 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>cli-optional</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>server-mgmt</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>realms</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-api</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
     </dependencies>

@@ -54,7 +54,7 @@
   </developers>
   <properties>
     <management-api.version>1.1-rev-1</management-api.version>
-    <amx-api.version>10.0-SNAPSHOT</amx-api.version>
+    <amx-api.version>3.0-SNAPSHOT</amx-api.version>
   </properties>
   <dependencies>
     <dependency>
@@ -105,7 +105,7 @@
 	<dependency>
 		<groupId>org.glassfish.common</groupId>
 		<artifactId>amx-api</artifactId>
-		<version>${amx-api.version}</version>
+		<version>${project.version}</version>
 	</dependency>
     -->
 

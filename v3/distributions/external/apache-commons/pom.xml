@@ -43,7 +43,7 @@
     <parent>
         <groupId>org.glassfish.external</groupId>
         <artifactId>external</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>apache-commons</artifactId>
     <!-- Don't use bundle packaging. There are issues in using

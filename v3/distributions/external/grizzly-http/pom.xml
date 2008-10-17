@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.external</groupId>
         <artifactId>external</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-module</artifactId>
@@ -50,13 +50,6 @@
     <packaging>jar</packaging>
     <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
-    <properties>
-        <!-- When you change the following property, please change grizzly.package-version as well -->
-        <grizzly.original-version>1.8.6.2</grizzly.original-version>
-        <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
-             we map it manually -->
-        <grizzly.package-version>1.8.6.2</grizzly.package-version>
-    </properties>      
     <build>
         <plugins>
             <plugin>

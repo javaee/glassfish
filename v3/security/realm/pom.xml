@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.security</groupId>
         <artifactId>securitymodule</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>        
     </parent>    
     <groupId>org.glassfish.security</groupId>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>ldapbp-repackaged</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

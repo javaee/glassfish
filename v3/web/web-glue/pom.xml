@@ -39,7 +39,7 @@
     <parent>
         <groupId>org.glassfish.web</groupId>
     	<artifactId>web</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web-glue</artifactId>
@@ -116,6 +116,11 @@
     </build>
     <dependencies>
          <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-cli</artifactId>
             <version>${project.version}</version>
@@ -135,13 +140,6 @@
 			<artifactId>stats77</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-      <!--
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.javaee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-      -->
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>

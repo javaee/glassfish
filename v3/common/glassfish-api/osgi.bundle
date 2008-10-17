@@ -1,0 +1,20 @@
+_exportcontents: \
+                        com.sun.appserv.jdbc, \
+                        org.glassfish.api, \
+                        org.glassfish.api.admin, \
+                        org.glassfish.api.admin.config, \
+                        org.glassfish.api.admingui, \
+                        org.glassfish.api.amx, \
+                        org.glassfish.api.container, \
+                        org.glassfish.api.content, \
+                        org.glassfish.api.deployment, \
+                        org.glassfish.api.deployment.archive, \
+                        org.glassfish.api.event, \
+                        org.glassfish.api.invocation, \
+                        org.glassfish.api.logging, \
+                        org.glassfish.api.monitoring, \
+                        org.glassfish.api.naming, \
+                        org.glassfish.api.web, \
+                        org.glassfish.api.branding
+Import-Package: com.sun.grizzly.*; version=${grizzly.package-version}, *
+

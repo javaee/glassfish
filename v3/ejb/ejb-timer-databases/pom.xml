@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.glassfish.ejb</groupId>
         <artifactId>ejb</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>ejb-timer-databases</artifactId>
@@ -56,7 +56,7 @@
                             <tasks>
                                 <!-- place the ejb timer app jar into the location -->
                                 <resolveArtifact artifactId="ejb-timer-service-app"
-                                                 todir="target/classes/glassfish/lib/install/applications"/>
+                                      todir="target/classes/glassfish/lib/install/applications"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -65,7 +65,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+            </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
     </build>
 
     <dependencies>

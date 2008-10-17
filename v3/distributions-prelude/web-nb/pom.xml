@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>web-nb</artifactId>
     <name>Glassfish v3 Web-NB Distribution(</name>
@@ -146,73 +146,73 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-common</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-registration</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-management</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-amx</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jca</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jpa</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jta</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jsf</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-web-management</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-web</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc-management</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency> 
     </dependencies>

@@ -41,7 +41,7 @@
     <parent>
     <groupId>org.glassfish.persistence</groupId>
         <artifactId>persistence</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>eclipselink-wrapper</artifactId>

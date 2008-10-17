@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-nucleus</artifactId>
     <name>Glassfish Nucleus Package</name>
@@ -76,22 +76,22 @@
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>api-exporter</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>glassfish</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>kernel</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
   	</dependency>  
 	<dependency>
            <groupId>org.glassfish.admin</groupId>
            <artifactId>admin-cli</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.branding</groupId>
@@ -118,9 +118,9 @@
        <dependency>
            <groupId>org.glassfish.docs</groupId>
            <artifactId>basedocs</artifactId>
-	   	   <version>0.2-SNAPSHOT</version>
-	   	   <type>distribution-fragment</type>
-	   </dependency> 
+           <version>0.1</version> <!-- TODO: Upgrade to next release version -->
+	   <type>distribution-fragment</type>
+        </dependency> 
 	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->

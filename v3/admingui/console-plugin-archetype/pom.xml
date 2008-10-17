@@ -4,13 +4,13 @@
   <artifactId>console-plugin-archetype</artifactId>
   <packaging>maven-archetype</packaging>
   <name>Admin Console Plugin Archetype</name>
-  <version>10.0-SNAPSHOT</version>
+  <version>3.0-SNAPSHOT</version>
   <build>
     <extensions>
       <extension>
         <groupId>org.glassfish.build</groupId>
         <artifactId>maven-glassfish-extension</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>

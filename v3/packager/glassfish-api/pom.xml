@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-api</artifactId>
     <name>Glassfish API Package</name>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-	    <version>${glassfish-api.version}</version>
+	    <version>${project.version}</version>
         </dependency> 
         <dependency>
             <groupId>org.glassfish.common</groupId>

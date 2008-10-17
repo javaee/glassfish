@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-jdbc</artifactId>
     <name>Glassfish JDBC Package</name>
@@ -73,7 +73,7 @@
         <dependency>        
           <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
-            <version>${jdbc-ra.version}</version>
+            <version>${project.version}</version>
             <type>distribution-fragment</type> 
   	</dependency>
 

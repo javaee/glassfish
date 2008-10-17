@@ -3,14 +3,12 @@
     <parent>
         <groupId>org.glassfish.build</groupId>
         <artifactId>build</artifactId>
-        <version>10.0-alpha-5-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.build</groupId>
     <artifactId>maven-glassfish-extension</artifactId>
-    <version>10.0-alpha-5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Maven extension for building GlassFish</name>
     <description>

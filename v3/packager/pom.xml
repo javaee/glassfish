@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -82,6 +82,15 @@
 	<module>javadb</module>	
     </modules>
 
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
 
     <profiles>
         <profile>

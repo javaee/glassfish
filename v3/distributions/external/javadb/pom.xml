@@ -40,7 +40,7 @@
     <parent>
         <groupId>org.glassfish.external</groupId>
         <artifactId>external</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javadb</artifactId>
@@ -84,6 +84,13 @@
                 </executions>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
     </build>
 
     <developers>

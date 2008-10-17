@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.deployment</groupId>
         <artifactId>deployment</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>dol</artifactId>
     <packaging>hk2-jar</packaging>

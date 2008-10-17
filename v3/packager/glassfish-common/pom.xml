@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-common</artifactId>
     <name>Glassfish Commons Package</name>
@@ -73,17 +73,17 @@
       <dependency>
            <groupId>org.glassfish.common</groupId>
            <artifactId>annotation-framework</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.common</groupId>
            <artifactId>container-common</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.common</groupId>
            <artifactId>glassfish-naming</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
    	</dependency>
     	<dependency>
            <groupId>org.glassfish.api</groupId>

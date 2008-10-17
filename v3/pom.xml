@@ -48,10 +48,11 @@
     <groupId>org.glassfish</groupId>
     <artifactId>glassfish-parent</artifactId>
     <packaging>pom</packaging>
-    <version>10.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
-        <connection>scm:svn:https://${java.net.username}@glassfish-svn.dev.java.net/glassfish-svn/gfsvn/trunk/v3/${pom.artifactId}</connection>
+        <connection>https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</connection>
+        <developerConnection>https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</developerConnection>
     </scm>
     <issueManagement>
         <system>IssueTracker</system>
@@ -88,7 +89,6 @@
     <properties>
     	<maven.repo.local>${basedir}/.m2/repository</maven.repo.local>
         <ant.version>1.7.0</ant.version>
-        <glassfish.version>10.0-SNAPSHOT</glassfish.version>
         <javaee-api.version>6.0-alpha-1</javaee-api.version>
         <activation-api.version>1.1.1</activation-api.version>
         <transaction-api.version>1.1-rev-1</transaction-api.version>
@@ -98,9 +98,7 @@
         <persistence-api.version>1.0-rev-1</persistence-api.version>
         <connector-api.version>1.6-alpha-1</connector-api.version>
         <management-api.version>1.1-rev-1</management-api.version>
-        <amx-api.version>10.0-SNAPSHOT</amx-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
-        <security-api.version>1.2-SNAPSHOT</security-api.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jsp-api.version>2.1</jsp-api.version>
         <el-impl.version>1.1</el-impl.version>
@@ -110,8 +108,11 @@
         <jsf-impl.version>1.2_10-b01</jsf-impl.version>
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>${project.version}</grizzly.version>        
+        <!-- When you change the following property, please change grizzly.package-version as well -->
         <grizzly.original-version>1.8.6.2</grizzly.original-version>
+        <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
+             we map it manually -->
+        <grizzly.package-version>1.8.6.2</grizzly.package-version>
         <jsp-impl.version>2.1-SNAPSHOT</jsp-impl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
@@ -122,33 +123,25 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-
-	<!-- Note: if you are attempting to change hk2 version.. please change at build/pom.xml location too. Thanks!
-         -->
         <hk2.version>0.3.34</hk2.version>
         <hk2.plugin.version>0.3.34</hk2.plugin.version>
 
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
-        <pe.version>10.0-SNAPSHOT</pe.version>
-        <dist.version>10.0-SNAPSHOT</dist.version>
         <product.name>GlassFish</product.name>
-        <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
         <abbrev_product_name>glassfish</abbrev_product_name>
+        <version_prefix>v</version_prefix>
         <major_version>3</major_version>
         <minor_version>0</minor_version>
-        <version_prefix>v</version_prefix>
         <version_suffix></version_suffix>
-        <nucleus.version>0.1-SNAPSHOT</nucleus.version>
+        <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
         <jruby-scripting.version>0.6.26</jruby-scripting.version>
         <jmac-api.version>1.0-rev-1</jmac-api.version>
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
         <stax-api.version>1.0-2</stax-api.version> 
-        <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 	<dataprovider.version>4.2</dataprovider.version>
 	<jsftemplating.version>1.2.4</jsftemplating.version>
-    	<glassfish-api.version>10.0.422</glassfish-api.version>        
     	<glassfish-corba.version>3.0.0-b001</glassfish-corba.version>        
 	<uc-pkg-client.version>1.0.7-15.1269</uc-pkg-client.version>
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
@@ -158,45 +151,75 @@
 
 
     <modules>
-        <module>javaee-api</module>
+        <!-- Don't add any other module here. Instead add them in debug profile -->
       	<module>build</module>
-      	<module>common</module>
-      	<module>deployment</module>
-      	<module>admin</module>
-      	<module>core</module>
-      	<module>transaction</module>
-      	<module>web</module>
-	<module>ejb</module>
-      	<module>connectors</module>
-      	<module>jdbc</module>
-      	<module>persistence</module>
-      	<module>extras</module>
-	<module>admingui</module>
-      	<module>distributions</module>
-        <module>security</module>
-        <module>registration</module>
-        <module>tests</module>
-        <module>osgi-platforms</module>
-        <module>flashlight</module>
-        <module>embedded</module>
     </modules>
+    <profiles>
+        <profile>
+            <!-- this profile is used during the development -->
+            <id>debug</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <!-- Every time you change module list, please change 
+                     the same under release profile as well (below) -->
+                <module>javaee-api</module>
+              	<module>common</module>
+              	<module>deployment</module>
+              	<module>admin</module>
+              	<module>core</module>
+              	<module>transaction</module>
+              	<module>web</module>
+                <module>ejb</module>
+              	<module>connectors</module>
+              	<module>jdbc</module>
+              	<module>persistence</module>
+              	<module>extras</module>
+                <module>admingui</module>
+              	<module>distributions</module>
+                <module>security</module>
+                <module>registration</module>
+                <module>tests</module>
+                <module>osgi-platforms</module>
+                <module>flashlight</module>
+                <module>embedded</module>
+            </modules>
+        </profile>
+        <profile>
+            <!--
+                The GlassFish build depends on maven-glassfish-plugin as an extension,
+                so it causes a chicken and egg problem during a release;
+                Maven tries to resolve all extensions early on, but it fails
+                because the maven-glassfish-plugin is not built yet.
+
+                So the work around is a release in two-phase. First we
+                do "mvn release:prepare", which fails due to the problem described above.
+                At this point the workspace is left with POM that has non-SNAPSHOT version.
+                So now we run "mvn -P release-phase1" and builds the build module.
+                This puts maven-glassfish-plugin in local repo,
+                so the retry of "mvn release:prepare" now works.
+            -->
+            <id>release-phase1</id>
+        </profile>
+    </profiles>
     <repositories>
         <repository>
             <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
             <id>glassfish-repository-wsinterop</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://maven.dyndns.org/glassfish/</url>
-	          <snapshots>
-			          <updatePolicy>never</updatePolicy>
-				    </snapshots>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://download.java.net/maven/glassfish</url>
-	          <snapshots>
-			          <updatePolicy>never</updatePolicy>
-				    </snapshots>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </repository>
         <!-- all the other repositories are inherited -->
     </repositories>
@@ -247,7 +270,18 @@
                 <plugin>
                     <groupId>org.glassfish.build</groupId>
                     <artifactId>maven-glassfish-plugin</artifactId>
-                    <version>10.0-alpha-5-SNAPSHOT</version>
+                    <version>${project.version}</version>
+                    <configuration>
+                        <!-- configuration for the checkout mojo -->
+                        <checkoutDirectory>.</checkoutDirectory>
+                        <skipCheckoutIfExists>true</skipCheckoutIfExists>
+                        <!-- configuration for the run mojo -->
+                        <distribution>
+                            <groupId>org.glassfish.distributions</groupId>
+                            <artifactId>web</artifactId>
+                            <version>${project.version}</version>
+                        </distribution>
+                    </configuration>
                 </plugin>
 
 	        <plugin>
@@ -272,22 +306,6 @@
         <!--    End: Parent Plugin Management Section    -->
 
         <plugins>
-            <plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
-                <configuration>
-                    <!-- configuration for the checkout mojo -->
-                    <checkoutDirectory>.</checkoutDirectory>
-                    <skipCheckoutIfExists>true</skipCheckoutIfExists>
-                    <!-- configuration for the run mojo -->
-                    <distribution>
-                        <groupId>org.glassfish.distributions</groupId>
-                        <artifactId>web</artifactId>
-                        <version>${pe.version}</version>
-                    </distribution>
-                </configuration>
-            </plugin>
-
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
                  Please note: we use the manifest goal only and not the bundle goal.
                   The bundle goal can lead to very surprising results if the
@@ -346,21 +364,6 @@
                     <forkMode>none</forkMode>
                 </configuration>
             </plugin>
-            <!--plugin>
-                <!- - configuration for compiling HK2 jars - ->
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <processors>
-                        <processor>
-                            <!- - handle runtime MBean annotations like JSR-255 - ->
-                            <groupId>org.glassfish.admin.rt-ann</groupId>
-                            <artifactId>apt</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                        </processor>
-                    </processors>
-                </configuration>
-            </plugin-->
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -373,13 +376,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-extension</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </extension>
-        </extensions>
     </build>
     
     <!--  Begin: Dependency management 				-->
@@ -399,6 +395,12 @@
 
             <dependency>
                 <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven</artifactId>
+                <version>${hk2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.enterprise</groupId>
                 <artifactId>osgi-adapter</artifactId>
                 <version>${hk2.version}</version>
             </dependency>
@@ -412,13 +414,22 @@
             <dependency>
                 <groupId>org.glassfish.common</groupId>
                 <artifactId>glassfish-api</artifactId>
-	        <version>${glassfish-api.version}</version>
+                <!-- TODO: Change it to ${project.version} when we have a gf-jruby-connector
+                     that has integrated glassfish-api built from latest prelude branch.
+                -->
+	        <version>10.0.422</version>
             </dependency>
 
             <dependency>
                <groupId>org.glassfish.external</groupId>
                <artifactId>grizzly-module</artifactId>
-               <version>${grizzly.version}</version>
+               <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+               <groupId>org.glassfish.external</groupId>
+               <artifactId>grizzly-optionals</artifactId>
+               <version>${project.version}</version>
             </dependency>
 
 	    <dependency>

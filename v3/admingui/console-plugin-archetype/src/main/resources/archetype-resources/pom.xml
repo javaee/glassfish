@@ -43,7 +43,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>${artifactId}</artifactId>
     <groupId>${groupId}</groupId>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

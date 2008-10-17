@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-registration</artifactId>
     <name>Glassfish Registration Package</name>
@@ -94,27 +94,27 @@
       <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>registration-api</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>registration-impl</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
       </dependency>
       <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>glassfish-registration</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.external</groupId>
            <artifactId>sysnet-registration-repackaged</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>     
        <dependency>
            <groupId>org.glassfish.external</groupId>
            <artifactId>commons-codec-repackaged</artifactId>
-           <version>${glassfish.version}</version>
+           <version>${project.version}</version>
        </dependency>     
     </dependencies>
 

@@ -40,12 +40,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>pom</artifactId>
-        <version>2</version>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.0-SNAPSHOT</version>
     </parent>  
     <groupId>org.glassfish.common</groupId>
     <artifactId>glassfish-api</artifactId>
-    <version>${glassfish-api.version}</version>
     <packaging>hk2-jar</packaging>
     <name>Public APIs of Glassfish V3</name>
 
@@ -61,89 +60,10 @@
             </roles>
         </developer>
     </developers>
-    <properties>
-    	<glassfish-api.version>10.0.422</glassfish-api.version>
-        <!-- When you change the following property, please change grizzly.package-version as well -->
-        <grizzly.original-version>1.8.6.2</grizzly.original-version>
-        <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
-             we map it manually -->
-        <grizzly.package-version>1.8.6.2</grizzly.package-version>
-        <hk2.plugin.version>0.3.30</hk2.plugin.version>    
-        <hk2.version>0.3.30</hk2.version>    
-    </properties>
-    <build>
-    	<plugins>
-            <!-- Configure maven-bundle-plugin to generate OSGi manifest.
-                 Please note: we use the manifest goal only and not the bundle goal.
-                  The bundle goal can lead to very surprising results if the
-                  package names are not correctly specified. So,
-                  we use the jar plugin to generate the jar.-->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <!-- Enable the plugin for hk2-jar packaging type -->
-                    <supportedProjectTypes>
-                        <supportedProjectType>hk2-jar</supportedProjectType>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
-                    <instructions>
-                        <!-- _include does not work. See Felix-620.
-                        <_include>osgi.bundle</_include>
-                        -->
-                        <Export-Package>
-                        com.sun.appserv.jdbc,
-                        org.glassfish.api,
-                        org.glassfish.api.admin,
-                        org.glassfish.api.admin.config,                        
-                        org.glassfish.api.admingui,
-                        org.glassfish.api.amx,
-                        org.glassfish.api.container,
-                        org.glassfish.api.content,
-                        org.glassfish.api.deployment,
-                        org.glassfish.api.deployment.archive,
-                        org.glassfish.api.event,
-                        org.glassfish.api.invocation,
-                        org.glassfish.api.logging,
-                        org.glassfish.api.monitoring,
-                        org.glassfish.api.naming,
-                        org.glassfish.api.web,
-                        org.glassfish.api.branding
-                        </Export-Package>
-                        <Import-Package>com.sun.grizzly.*; version=${grizzly.package-version}, *</Import-Package>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <extensions>true</extensions>
-		<!-- do not remove the version here, as this pom does not inherit  parent glassfish-parent pom -->
-                <version>${hk2.plugin.version}</version>
-                <configuration>
-                    <archive>
-                        <!-- Use the manifest.mf produced by maven-bundle-plugin:manifest -->
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>    
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>

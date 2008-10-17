@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     
     <groupId>org.glassfish.installer</groupId>
@@ -52,8 +52,14 @@
  		      </dependencies>
              </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
     </build>
-
     <dependencies>
         <dependency>
            <groupId>org.openinstaller</groupId>
@@ -75,7 +81,7 @@
          <dependency>
            <groupId>com.sun.pkg.bootstrap</groupId>
            <artifactId>pkg-client</artifactId>
-           <version>0.0.0.15</version>
+	   <version>0.0.0.15</version>
 	</dependency> 
 	<dependency>
             <groupId>org.glassfish.registration</groupId>

@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>console-branding-plugin</artifactId>
     <packaging>hk2-jar</packaging>
@@ -141,12 +141,12 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>${glassfish-api.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
         </dependency>
 	<dependency>
 	    <groupId>com.sun.woodstock</groupId>

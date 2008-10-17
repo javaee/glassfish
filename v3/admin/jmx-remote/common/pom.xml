@@ -46,7 +46,7 @@
 
         <artifactId>jmx-remote</artifactId>
 
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
 
     </parent>
 

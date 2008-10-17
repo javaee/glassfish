@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <artifactId>console-core</artifactId>
     <packaging>hk2-jar</packaging>
@@ -89,37 +89,37 @@
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-client</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>registration-api</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>registration-impl</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>glassfish-registration</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-api</artifactId>
-            <version>${amx-api.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>securitycommon</artifactId>
-            <version>${glassfish.version}</version>
+            <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>

@@ -1,39 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
     <groupId>org.glassfish.build</groupId>
     <artifactId>build</artifactId>
-    <version>10.0-alpha-5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
     <modules>
         <module>maven-glassfish-plugin</module>
         <module>maven-glassfish-extension</module>
     </modules>
-    <repositories>
-        <repository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://download.java.net/maven/glassfish</url>
-        </repository>
-        <repository>
-            <id>maven2.java.net</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/glassfish</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>maven2.java.net</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/2</url>
-        </pluginRepository>
-    </pluginRepositories>
     <distributionManagement>
         <repository>            
             <uniqueVersion>false</uniqueVersion>
@@ -53,30 +32,4 @@
         </extensions>
     </build>
        
-    <scm>
-        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</connection>
-        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</developerConnection>
-    </scm>
-
-    <properties>
-      <hk2.version>0.3.33</hk2.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2</artifactId>
-                <version>${hk2.version}</version>
-            </dependency>
-	    <dependency>
-              <groupId>com.sun.enterprise</groupId>
-              <artifactId>hk2-maven</artifactId>
-              <version>${hk2.version}</version>
-        </dependency>
-
-
-        </dependencies>
-    </dependencyManagement>
-
 </project>
