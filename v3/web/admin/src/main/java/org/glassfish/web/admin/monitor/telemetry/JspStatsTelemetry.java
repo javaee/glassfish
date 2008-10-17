@@ -68,11 +68,11 @@ public class JspStatsTelemetry{
         this.logger = logger;
         this.moduleName = moduleName;
         this.vsName = vsName;
-        activeJspsLoadedCount.setName("activeJspsLoadedCount");
+        activeJspsLoadedCount.setName("activejspsloadedcount-count");
         parent.addChild(activeJspsLoadedCount);
-        maxJspsLoadedCount.setName("maxJspsLoadedCount");
+        maxJspsLoadedCount.setName("maxjspsloadedcount-count");
         parent.addChild(maxJspsLoadedCount);
-        totalJspsLoadedCount.setName("totalJspsLoadedCount");
+        totalJspsLoadedCount.setName("totaljspsloadedcount-count");
         parent.addChild(totalJspsLoadedCount);
         this.webMonitoringEnabled = webMonitoringEnabled;
     }

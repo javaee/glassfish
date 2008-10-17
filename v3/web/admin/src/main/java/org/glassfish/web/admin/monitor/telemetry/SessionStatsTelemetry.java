@@ -73,21 +73,21 @@ public class SessionStatsTelemetry{
         this.moduleName = moduleName;
         this.vsName = vsName;
         this.webMonitoringEnabled = webMonitoringEnabled;
-        activeSessionsCurrent.setName("activeSessionsCurrent");
+        activeSessionsCurrent.setName("activesessionscurrent-count");
         parent.addChild(activeSessionsCurrent);
-        sessionsTotal.setName("sessionsTotal");
+        sessionsTotal.setName("sessionstotal-count");
         parent.addChild(sessionsTotal);
-        activeSessionsHigh.setName("activeSessionsHigh");
+        activeSessionsHigh.setName("activesessionshigh-count");
         parent.addChild(activeSessionsHigh);
-        rejectedSessionsTotal.setName("rejectedSessionsTotal");
+        rejectedSessionsTotal.setName("rejectedsessionstotal-count");
         parent.addChild(rejectedSessionsTotal);
-        expiredSessionsTotal.setName("expiredSessionsTotal");
+        expiredSessionsTotal.setName("expiredsessionstotal-count");
         parent.addChild(expiredSessionsTotal);
-        persistedSessionsTotal.setName("persistedSessionsTotal");
+        persistedSessionsTotal.setName("persistedsessionstotal-count");
         parent.addChild(persistedSessionsTotal);
-        passivatedSessionsTotal.setName("passivatedSessionsTotal");
+        passivatedSessionsTotal.setName("passivatedsessionstotal-count");
         parent.addChild(passivatedSessionsTotal);
-        activatedSessionsTotal.setName("activatedSessionsTotal");
+        activatedSessionsTotal.setName("activatedsessionstotal-count");
         parent.addChild(activatedSessionsTotal);
      }
 

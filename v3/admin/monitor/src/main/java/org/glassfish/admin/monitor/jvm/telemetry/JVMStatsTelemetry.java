@@ -115,7 +115,8 @@ public class JVMStatsTelemetry {
         String[] mList = {"getLoadedClassCount", "getTotalLoadedClassCount", "getUnloadedClassCount"};
         for (String methodName : mList) {
             Method method = ClassLoadingMXBean.class.getMethod(methodName);
-            String nodeName = createNodeName(methodName);
+            //String nodeName = createNodeName(methodName);
+            String nodeName = createNodeName(methodName, (method.getReturnType()).isAssignableFrom(String.class) );
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, clBean, "jvm", method);
             classLoadingSystemNode.addChild(tn);
@@ -129,7 +130,8 @@ public class JVMStatsTelemetry {
         String[] mList = {"getName", "getTotalCompilationTime"};
         for (String methodName : mList) {
             Method method = CompilationMXBean.class.getMethod(methodName);
-            String nodeName = createNodeName(methodName);
+            //String nodeName = createNodeName(methodName);
+            String nodeName = createNodeName(methodName, (method.getReturnType()).isAssignableFrom(String.class) );
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, compBean, "jvm", method);
             compilationSystemNode.addChild(tn);
@@ -145,7 +147,8 @@ public class JVMStatsTelemetry {
             String[] mList = {"getCollectionCount", "getCollectionTime"};
             for (String methodName : mList) {
                 Method method = GarbageCollectorMXBean.class.getMethod(methodName);
-                String nodeName = createNodeName(methodName);
+                //String nodeName = createNodeName(methodName);
+                String nodeName = createNodeName(methodName, (method.getReturnType()).isAssignableFrom(String.class) );
                 TreeNode tn = 
                         TreeNodeFactory.createMethodInvoker(nodeName, gcBean, "jvm", method);
                 gcNode.addChild(tn);
@@ -162,7 +165,7 @@ public class JVMStatsTelemetry {
         createMemoryUsageNodes(memBean.getNonHeapMemoryUsage(), "NonHeap", memoryNode);
         Method method = MemoryMXBean.class.getMethod("getObjectPendingFinalizationCount", (Class[]) null);
         TreeNode tn = 
-                    TreeNodeFactory.createMethodInvoker("objectPendingFinalizationCount", memBean, "jvm", method);
+                    TreeNodeFactory.createMethodInvoker("objectpendingfinalizationcount-count", memBean, "jvm", method);
             memoryNode.addChild(tn);
         return memoryNode;
     }
@@ -171,15 +174,16 @@ public class JVMStatsTelemetry {
         String[] mList = {"getCommitted", "getInit" , "getMax", "getUsed"};
         for (String methodName : mList) {
             Method method = memUsage.getClass().getMethod(methodName, (Class[]) null);
-            String nodeName = createMemUsageNodeName(methodName, type);
+            String nodeName = createMemUsageNodeName(methodName, type, (method.getReturnType()).isAssignableFrom(String.class) );
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, memUsage, "jvm", method);
             memoryNode.addChild(tn);
         }
     }
     
-    private String createMemUsageNodeName(String methodName, String type) {
-        return createNodeName(methodName) + type + "Size";
+    private String createMemUsageNodeName(String methodName, String type, boolean isString) {
+        //return createNodeName(methodName) + type + "Size";
+        return createNodeName(methodName+type+"size", isString);
     }
     
     private TreeNode createOperatingSystemNode() throws NoSuchMethodException {
@@ -188,7 +192,8 @@ public class JVMStatsTelemetry {
         String[] mList = {"getArch", "getAvailableProcessors", "getName", "getVersion"};
         for (String methodName : mList) {
             Method method = OperatingSystemMXBean.class.getMethod(methodName, (Class[]) null);
-            String nodeName = createNodeName(methodName);
+            //String nodeName = createNodeName(methodName);
+            String nodeName = createNodeName(methodName, (method.getReturnType()).isAssignableFrom(String.class) );
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, osBean, "jvm", method);
             operatingSystemNode.addChild(tn);
@@ -204,7 +209,14 @@ public class JVMStatsTelemetry {
             "getSpecVersion", "getUptime", "getVmName", "getVmVendor", "getVmVersion"};
         for (String methodName : mList) {
             Method method = RuntimeMXBean.class.getMethod(methodName, (Class[]) null);
-            String nodeName = createNodeName(methodName);
+            //String nodeName = createNodeName(methodName);
+            boolean isString = false;
+            if ( (method.getReturnType()).isAssignableFrom(String.class) ) {
+                isString = true;
+            } else if ( (method.getReturnType()).isAssignableFrom(java.util.List.class)) {
+                isString = true;
+            }
+            String nodeName = createNodeName(methodName, isString);
             TreeNode tn = 
                     TreeNodeFactory.createMethodInvoker(nodeName, rtBean, "jvm", method);
             runtimeNode.addChild(tn);
@@ -214,8 +226,13 @@ public class JVMStatsTelemetry {
         return runtimeNode;
     }
     
-    private String createNodeName(String methodName) {
-        return methodName.substring(3,4).toLowerCase() + methodName.substring(4);
+    private String createNodeName(String methodName, boolean isString) {
+        if (isString) {
+            return methodName.substring(3).toLowerCase() + "-current";
+        } else {
+            return methodName.substring(3).toLowerCase() + "-count";
+        }
+        //return methodName.substring(3,4).toLowerCase() + methodName.substring(4);
     }
     
     /*
