@@ -56,7 +56,7 @@
                             <tasks>
                                 <!-- place the ejb timer app jar into the location -->
                                 <resolveArtifact artifactId="ejb-timer-service-app"
-                                      todir="target/classes/glassfish/lib/install/applications"/>
+                                   tofile="target/classes/glassfish/lib/install/applications/ejb-timer-service-app.war"/>
                             </tasks>
                         </configuration>
                         <goals>
