@@ -178,7 +178,7 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
                         str(pce.getNewValue()),
                         objectName,
                         reason);
-               //xdebug( "SystemStatusImpl: UnprocessedConfigChange: " + ucc );
+                xdebug( "SystemStatusImpl: UnprocessedConfigChange: " + ucc );
                 changesObjects.add( ucc.toArray() );
             } 
         }

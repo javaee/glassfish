@@ -167,7 +167,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                 final ConfigBeanProxy cbp = (ConfigBeanProxy)newValue;
                 final ConfigBean cb = asConfigBean( ConfigBean.unwrap(cbp) );
                 final Class<? extends ConfigBeanProxy> proxyClass = cb.getProxyType();
-                debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean: " + proxyClass.getName() );
+                //debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean: " + proxyClass.getName() );
                 final boolean doWait = amxIsRunning();
                 handleConfigBean( cb, doWait );   // wait until registered
                 newConfigBeans.add( cb );
@@ -177,7 +177,7 @@ public final class AMXConfigLoader extends MBeanImplBase
                 // REMOVE
                 final ConfigBeanProxy cbp = (ConfigBeanProxy)oldValue;
                 final ConfigBean cb = asConfigBean( ConfigBean.unwrap( cbp ) );
-                debug( "AMXConfigLoader.sortAndDispatch: remove (recursive) ConfigBean: " + cb.getObjectName() );
+                //debug( "AMXConfigLoader.sortAndDispatch: remove (recursive) ConfigBean: " + cb.getObjectName() );
                 configBeanRemoved( cb );
             }
             else

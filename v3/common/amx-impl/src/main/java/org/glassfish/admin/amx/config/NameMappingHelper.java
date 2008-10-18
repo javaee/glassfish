@@ -248,8 +248,7 @@ final class NameMappingHelper {
                 final Object value   = asStringType( valueIn );
                 if ( value != valueIn )
                 {
-                    debug( "Attribute " + amxAttrName + " auto converted from " +
-                        valueIn.getClass().getName() + " to " + value.getClass().getName() );
+                    //debug( "Attribute " + amxAttrName + " auto converted from " + valueIn.getClass().getName() + " to " + value.getClass().getName() );
                 }
                 
                 // We accept only Strings, String[] or null
@@ -272,8 +271,7 @@ final class NameMappingHelper {
                 {
                     noMatch.put( amxAttrName, valueIn );
                 }
-                debug( "Attribute " + amxAttrName + "<=>" + xmlName +
-                    " is of class " + ((value == null) ? null : value.getClass().getName()) );
+               // debug( "Attribute " + amxAttrName + "<=>" + xmlName + " is of class " + ((value == null) ? null : value.getClass().getName()) );
             }
             else
             {
