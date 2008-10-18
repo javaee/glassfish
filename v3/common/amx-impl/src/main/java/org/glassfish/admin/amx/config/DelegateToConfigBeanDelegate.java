@@ -244,7 +244,6 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         }
         catch ( final RetryableException e)
         {
-            debug("Retryable...");
             t.rollback();
             throw new TransactionFailure(e.getMessage(), e);
         }
@@ -500,8 +499,8 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         if ( xmlAttrs.size() != 0 )
         {
-            debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
-                CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
+            //debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
+           //     CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
             
             final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
             Transactions.get().addTransactionsListener(myListener);
@@ -524,6 +523,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             finally
             {
                 Transactions.get().waitForDrain();
+
                 Transactions.get().removeTransactionsListener(myListener);
             }
         
