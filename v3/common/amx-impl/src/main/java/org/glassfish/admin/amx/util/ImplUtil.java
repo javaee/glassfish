@@ -89,7 +89,7 @@ public final class ImplUtil
         public static void
     unregisterAMXMBeans( final MBeanServer mbs, final ObjectName objectName )
     {
-        ImplUtil.getLogger().info( "Unregister MBean hierarchy for: " + objectName );
+        ImplUtil.getLogger().fine( "Unregister MBean hierarchy for: " + objectName );
         unregisterAMXMBeans( ProxyFactory.getInstance(mbs).getProxy(objectName) );
     }
     
@@ -110,7 +110,7 @@ public final class ImplUtil
         }
         catch( JMException e )
         {
-            debug( "unregisterOneMBean: " + objectName + " FAILED: " + ExceptionUtil.toString(e));
+            getLogger().warning( "unregisterOneMBean: " + objectName + " FAILED: " + ExceptionUtil.toString(e));
         }
         return success;
     }
