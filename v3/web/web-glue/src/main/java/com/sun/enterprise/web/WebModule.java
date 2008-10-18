@@ -1242,6 +1242,8 @@ public class WebModule extends PwcWebModule {
                     setSecurePagesWithPragma(securePagesWithPragma);
                 } else if (name.equalsIgnoreCase("useMyFaces")){
                     setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
+                } else if (name.equalsIgnoreCase("useBundledJsf")){
+                    setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
                 } else if (name.startsWith("alternatedocroot_")) {
                     parseAlternateDocBase(name, value);
                 } else {
