@@ -646,7 +646,6 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         ConfigBean newConfigBean = null;
         final PropertiesCallback  callback = new PropertiesCallback( argSpt.getProperties(), argSpt.getSystemProperties() );
-        cdebug( "createConfigGeneric: 2 ");
         try
         {
             newConfigBean = ConfigSupport.createAndSet( getConfigBean(), elementClass, changes, callback);
@@ -656,7 +655,6 @@ public class AMXConfigImplBase extends AMXImplBase
             cdebug( ExceptionUtil.toString(t) );
             throw new RuntimeException( t );
         }
-        cdebug( "createConfigGeneric: 3 ");
 
         //----------------------
         //
@@ -665,7 +663,6 @@ public class AMXConfigImplBase extends AMXImplBase
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
         final ObjectName objectName = newConfigBean.getObjectName();
-        cdebug( "NEW OBJECTNAME:  " + objectName);
         
         //
         // Set the properties and system properties.  Ideally, this should be part of the original
@@ -760,43 +757,7 @@ public class AMXConfigImplBase extends AMXImplBase
         ConfigBean newConfigBean = null;
         
         final List<ConfigSupport.AttributeChanges> changes = toAttributeChanges(argSpt.getAttrs());
-        final PropertiesCallback  callback = new PropertiesCallback( argSpt.getProperties(), argSpt.getSystemProperties() );
-        try
-        {
-            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, changes, callback);
-        }
-        catch( Throwable t )
-        {
-            cdebug( ExceptionUtil.toString(t) );
-            throw new RuntimeException( t );
-        }
-
-        //
-        // Force a synchronous processing of the new ConfigBean into an AMX MBean
-        //
-        final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
-        amxLoader.handleConfigBean( newConfigBean, true );
-        final ObjectName objectName = newConfigBean.getObjectName();
-        cdebug( "NEW OBJECTNAME:  " + objectName);
-       
-       /*
-        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if ( resolver.supportsProperties() && properties.keySet().size() == 0 )
-        {
-            properties.put( "test1", "value1" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            properties.put( "test2", "value2" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            properties.put( "test3", "value3" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        }
-        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        */
-        
-        //
-        // Set the properties and system properties.  Ideally, this should be part of the original
-        // transaction, but doing so would require creating sub-elements of the newly-created element,
-        // an undertaking that is more involved.
-        //
-        final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
-        setAllProperties( newAMX, argSpt.getProperties(), argSpt.getSystemProperties() );
+        final ObjectName objectName = finishCreate( newItemClass, argSpt, changes);
     
         return objectName;
    }
