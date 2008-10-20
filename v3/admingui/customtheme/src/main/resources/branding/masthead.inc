@@ -1,5 +1,6 @@
 		<sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/customTheme/images/masthead-product_name_open1.png" 
-                     productImageDescription="Glassfish V3 Prelude Administration Console" 
+                     style="border-width: 0px" 
+                     productImageDescription="Glassfish v3 Prelude Administration Console" 
                      productImageWidth="385" 
                      productImageHeight="18" 
                     userInfo="#{userName}"  userInfoLabel="$resource{i18n.masthead.userInfoLabel}"

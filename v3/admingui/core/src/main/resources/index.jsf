@@ -44,12 +44,12 @@
         if($session{supportCluster}){
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
-        setAttribute(key="framesetRows" value="$int{94}");
+        setAttribute(key="framesetRows" value="$int{103}");
         #if(! $session{restartRequired}){
         #    setAttribute(key="framesetRows" value="$int{71}");
         #}
         #if($session{restartRequired}){
-        #    setAttribute(key="framesetRows" value="$int{94}");
+        #    setAttribute(key="framesetRows" value="$int{103}");
         #}
    />
     <sun:html> 

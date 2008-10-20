@@ -4,13 +4,14 @@
 #/>
 
 <sun:panelGroup id="ucPanel" separator="">
-    <sun:imageHyperlink id="imgHlink" url="#{request.contextPath}/updateCenter/update.jsf"   
+    <sun:imageHyperlink id="imgHlink" url="#{request.contextPath}/updateCenter/update.jsf"
+        style="text-decoration: none"   
         alt="#{pageSession.linkMsg}" 
 	toolTip="#{pageSession.linkMsg}"
         #icon="#{pageSession.linkIcon}" 
         imageURL="#{request.contextPath}/resource/updateCenter/images/updateCenter.png" 
         text="#{pageSession.linkMsg}"
-        style="color:white; margin-left: 5px;"
+        style="color:white; margin-left: 5px; text-decoration: none;"
         target="main" rendered="#{pageSession.showUpdateMsg}"
     />
     <!afterCreate
