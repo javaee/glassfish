@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -65,10 +65,7 @@
     </target>
 
     <target name="copyResources" depends="init-common">
-        <copy todir="${env.S1AS_HOME}/lib" failonerror="true">
-            <fileset dir="lib" includes="*.jar"/>
-        </copy>
-        <copy file="mytest.jar" todir="${env.S1AS_HOME}/lib"
+        <copy file="lib/mytest.jar" todir="${env.S1AS_HOME}/lib"
               failonerror="true"/>
     </target>
 
