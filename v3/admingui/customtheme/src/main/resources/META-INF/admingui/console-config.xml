@@ -21,10 +21,16 @@
         />  
         <integration-point 
                 id="customtheme" 
-                type="org.glassfish.admingui:loginbackground" 
+                type="org.glassfish.admingui:loginform"
                 priority="100"
-                content="branding/loginbackground.inc" 
+                content="branding/loginform.inc"
         />          
+        <integration-point
+                id="customtheme"
+                type="org.glassfish.admingui:versioninfo"
+                priority="100"
+                content="branding/versioninfo.inc"
+        />
         <integration-point 
                 id="customtheme" 
                 type="org.glassfish.admingui:upsellframepe" 
