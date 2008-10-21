@@ -26,9 +26,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
@@ -43,7 +41,9 @@ import javax.sql.DataSource;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -99,13 +99,26 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
             //TODO Need to modify this to be more generic.
             // Iterate through all the bundles for the app and collect pu references in referencedPus
-            List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
+            Map <String, PersistenceUnitDescriptor> referencedPusMap = new HashMap<String, PersistenceUnitDescriptor>();
             for (BundleDescriptor bundle : bundles) {
-                allReferencedPus.addAll(bundle.findReferencedPUs());
+                Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
+                for(PersistenceUnitDescriptor pu : pusReferencedFromBundle) {
+                    // TODO : This is a hack to localize and minimize. changes Need to fix this properly post prelude to take care of ear case.
+                    // For EJBs inside war, we get two bundles inside applications. If both of them are referring
+                    // to same pu, we will get two pus being instantiaed. Put the pus in a map to just enlist one
+                    // pu of given name for creating emf. For prelude is guaranted that pu of given name in an application
+                    // has to refer to same pu
+                    referencedPusMap.put(pu.getName(), pu);
+                }
+
             }
             // EMFs get created here. JPAApplication maintains list of created EMFs so that they
             // can be closed at undeploy
-            JPAApplication jpaApp = new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+            List<PersistenceUnitDescriptor> referencedPus = new ArrayList<PersistenceUnitDescriptor>();
+            for (Map.Entry<String, PersistenceUnitDescriptor> entry : referencedPusMap.entrySet()) {
+                referencedPus.add(entry.getValue());
+            }
+            JPAApplication jpaApp = new JPAApplication(referencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
 
             // Store jpaApp in DeploymentContext to retrieve it during load
             context.addModuleMetaData(jpaApp);
