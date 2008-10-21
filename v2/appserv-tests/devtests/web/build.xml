@@ -355,7 +355,9 @@
         <ant dir="sslMultiSelector" target="all"/>
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
+        <!-- Exclude for prelude, since port unification not supported
         <ant dir="wrongTransport" target="all"/>
+        -->
         <ant dir="maxKeepAliveRequests" target="all"/>
         <ant dir="httpRequestWhitespaceTolerance" target="all"/>
         <ant dir="multiByteHttpRequestBuffer" target="all"/>
