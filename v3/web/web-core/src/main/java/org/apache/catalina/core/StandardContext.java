@@ -4840,29 +4840,22 @@ public class StandardContext
 
 
     /**
-     * Send an application stop event to all interested listeners.
+     * Send an application stop event to all interested lifecycle listeners.
      * Return <code>true</code> if all events were sent successfully,
      * or <code>false</code> otherwise.
      */
-    public boolean listenerStop() {
+    private boolean lifecycleListenerStop() {
 
         if (log.isLoggable(Level.FINE))
             log.fine("Sending application stop events");
 
         boolean ok = true;
         Object[] listeners = getApplicationLifecycleListeners();
-        Object[] eventListeners = getApplicationEventListeners();
-        if (listeners == null && eventListeners == null) {
+        if (listeners == null) {
             return (ok);
         }
         ServletContextEvent event =
             new ServletContextEvent(getServletContext());
-        for (int i=0; i<eventListeners.length; i++) {
-            if (eventListeners[i] != null) {
-                fireContainerEvent(ContainerEvent.PRE_DESTROY, 
-                                   eventListeners[i]);
-            }
-        }
         for (int i = 0; i < listeners.length; i++) {
             int j = (listeners.length - 1) - i;
             if (listeners[j] == null) {
@@ -4890,8 +4883,29 @@ public class StandardContext
             }
         }
 
-        setApplicationEventListeners(null);
         setApplicationLifecycleListeners(null);
+
+        return ok;
+    }
+
+
+    private boolean eventListenerStop() {
+
+        boolean ok = true;
+
+        Object[] eventListeners = getApplicationEventListeners();
+        if (eventListeners == null) {
+            return (ok);
+        }
+
+        for (int i=0; i<eventListeners.length; i++) {
+            if (eventListeners[i] != null) {
+                fireContainerEvent(ContainerEvent.PRE_DESTROY, 
+                                   eventListeners[i]);
+            }
+        }
+
+        setApplicationEventListeners(null);
 
         return (ok);
     }
@@ -5663,8 +5677,15 @@ public class StandardContext
                 ((Lifecycle) manager).stop();
             }
             
-            // Stop our application listeners
-            listenerStop();
+            /*
+             * Stop all lifecycle listeners, including those of type
+             * ServletContextListener. For the latter, it is important
+             * that they are passed a ServletContext to their
+             * contextDestroyed() method that still has all its attributes
+             * set. In other words, it is important that we invoke these
+             * listeners before calling context.clearAttributes()
+             */
+            lifecycleListenerStop();
 
             // Finalize our character set mapper
             setCharsetMapper(null);
@@ -5684,6 +5705,15 @@ public class StandardContext
             // Clear all application-originated servlet context attributes
             if (context != null)
                 context.clearAttributes();
+
+            /*
+             * Stop all event listeners, including those of type
+             * ServletContextAttributeListener. For the latter, it is 
+             * important that we invoke them after calling
+             * context.clearAttributes, so that they receive the corresponding
+             * attribute removal events
+             */
+            eventListenerStop();
             
             // Stop resources
             resourcesStop();
