@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,create-vs,create-listener,restart-server-instance-common,run,unsetDefaultWebModule,undeploy,delete-listener,delete-vs"/>
+    <target name="all" depends="create-vs,build,deploy,create-listener,run,unsetDefaultWebModule,undeploy,delete-listener,delete-vs"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
