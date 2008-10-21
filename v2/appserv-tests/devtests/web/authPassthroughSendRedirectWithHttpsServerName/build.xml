@@ -50,6 +50,7 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.http-listener.http-listener-1.server-name=https://lbhost:8888"/>
         </antcall>
+        <sleep seconds="5"/>
     </target>
 
     <target name="re-deploy" depends="init-common">

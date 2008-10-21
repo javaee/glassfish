@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="disable-http-service-sso,restart-server-instance-common,setup,build,deploy,run,undeploy,restore"/>
+    <target name="all" depends="disable-http-service-sso,setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
