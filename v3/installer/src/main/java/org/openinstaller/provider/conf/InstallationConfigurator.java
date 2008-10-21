@@ -48,12 +48,18 @@ import com.sun.pkg.bootstrap.Bootstrap;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.File;
+import java.io.InputStream;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.jar.*;
+import java.util.zip.*;
 import java.lang.*;
 
 public final class InstallationConfigurator implements Configurator, NotificationListener {
@@ -137,7 +143,7 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
          status = ResultReport.ResultStatus.FAIL;
      }
   
-     return new ResultReport(status, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
+     return new ResultReport(status, "http://docs.sun.com/doc/820-5968 ", "http://docs.sun.com/doc/820-5968", null, productError);
          
 }
 
@@ -166,7 +172,7 @@ public ResultReport unConfigure (final PropertySheet aSheet, final boolean aVali
          
      }
 
-    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-4836", "http://docs.sun.com/doc/820-4836", null, productError);
+    return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-5968", "http://docs.sun.com/doc/820-5968", null, productError);
 }
 
 public void handleNotification (final Notification aNotification,
@@ -205,6 +211,20 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 	Runtime.getRuntime().exec("/bin/chmod a+x " +
 			installDir + "/bin/asadmin");
     }
+
+    //unpack jar files in all directories under glassfish/modules
+    
+    String modulesDir = installDir + File.separator + "glassfish" +
+	    File.separator + "modules";
+    
+    success = unpackJars(modulesDir) 
+	    && unpackJars(modulesDir + File.separator + "web");
+    
+    // if jar extraction failed there is no point in continuing...
+
+    if (!success) {
+	 return success;
+    }		 
 
     //create domain startup/shutdown wrapper scripts used by program
     //group menu items
@@ -608,13 +628,17 @@ void unconfigureGlassfish(String installDir) throws Exception {
 	File domainsDir = null;
 	File startWrapperFile = null;
 	File stopWrapperFile = null;
+	File modulesDir = null;
         if (isWindows) {
 	    domainsDir = new File (installDir + "\\glassfish\\domains");
+	    modulesDir = new File (installDir + "\\glassfish\\modules");
+	    
 	    startWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-start-domain.bat");
 	    stopWrapperFile = new File(installDir + "\\glassfish\\lib\\asadmin-stop-domain.bat");
 	}
 	else {
             domainsDir = new File (installDir + "/glassfish/domains");
+	    modulesDir = new File (installDir + "/glassfish/modules");
 	    startWrapperFile = new File(installDir + "/glassfish/lib/asadmin-start-domain");
 	    stopWrapperFile = new File(installDir + "/glassfish/lib/asadmin-stop-domain");
         }
@@ -628,6 +652,13 @@ void unconfigureGlassfish(String installDir) throws Exception {
         if (domainsDir.exists()) {
             deleteDirectory(domainsDir);
 	}
+	// delete modules dir content explicitly since it will contain
+	// uncompressed jar files and UC content unknown to OI installer
+	if (modulesDir.exists()) {
+            deleteDirectory(modulesDir);
+	}
+
+
 
     }
     catch (Exception e) {
@@ -715,5 +746,59 @@ static public void deleteDirectory(File objName) throws Exception {
 		}
 	}
 	objName.delete();
-	}
+}
+
+public boolean unpackJars(String unpackDir) {
+
+            File packFile;
+            Pack200.Unpacker unpacker = Pack200.newUnpacker();
+            SortedMap<String,String> unpackerProp = unpacker.properties();
+            // check if unpackDir exists, if it doesn't return true
+            
+            File targetDir = new File(unpackDir);
+	        
+	    if (!targetDir.exists()) {
+	        return true;
+	    }
+	    
+	    try {
+
+	        final String[] fileList = targetDir.list();
+
+	        for (int i = 0 ; i < fileList.length ; i ++) {
+		    final String fileName = targetDir + File.separator + fileList[i];
+
+		    if (fileName.endsWith(".pack.gz")) {
+
+			LOGGER.log(Level.INFO, "Uncompressing " + fileName);
+		        String unpackedFileName = fileName.substring(0, fileName.length()-8) + ".jar";
+                        FileOutputStream fos = new FileOutputStream(unpackedFileName);
+                        JarOutputStream jos = new JarOutputStream(
+                                                    new BufferedOutputStream(fos));
+                        FileInputStream fis = new FileInputStream(fileName);
+                        InputStream is = new BufferedInputStream(new GZIPInputStream(fis)); 
+                        unpacker.unpack(is, jos);
+                        fis.close();
+		        jos.close();
+		        
+
+	                packFile = new File(fileName);
+	                packFile.delete();
+                       
+	                LOGGER.log(Level.INFO, "Uncompressed " + fileName);
+                                               
+		    }
+		}
+
+            }
+            catch (Exception e) {
+               LOGGER.log(Level.INFO, "Error uncompressing file:"
+	           + e.getMessage());            
+               
+               return false;
+            }
+
+            return true;
+
+}
 }

@@ -80,7 +80,7 @@
 
 	<resolveArtifact groupID="com.sun.pkg.bootstrap" artifactId="pkg-bootstrap" property="pkg-bootstrap.jar"/>
 
-	<resolveArtifact groupID="com.sun.pkg.bootstrap" artifactId="pkg-client" property="pkg-client.jar"/>
+	<resolveArtifact groupID="com.sun.pkg" artifactId="pkg-client" property="pkg-client.jar"/>
 
 
     </target>

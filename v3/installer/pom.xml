@@ -76,10 +76,10 @@
         <dependency>
            <groupId>com.sun.pkg.bootstrap</groupId>
            <artifactId>pkg-bootstrap</artifactId>
-           <version>0.0.0.15</version>
+           <version>0.0.0.15.4</version>
          </dependency>
          <dependency>
-           <groupId>com.sun.pkg.bootstrap</groupId>
+           <groupId>com.sun.pkg</groupId>
            <artifactId>pkg-client</artifactId>
 	   <version>0.0.0.15</version>
 	</dependency> 

@@ -25,6 +25,7 @@ navigpanel_image=/templates/LeftPanel.jpg
 logopanel_image=/templates/LogoPanel.jpg
 top_left_image=/templates/glassfish_logo.png
 bottom_left_image=/templates/community-logo.png
+icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 leftpanel_font=Arial-BOLD-13
@@ -403,8 +404,9 @@ for this installation.&lt;BR&gt;\
 UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
 The Update Tool periodically checks for available updates and collects some \
 system data. For more information about the data that is collected, see the \
-&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; page.\
-&lt;BR&gt;\
+&lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;\
+GlassFish Usage Metrics&lt;/a&gt; page \
+(http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
 ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;p&gt;&lt;font face='Sans-Serif'&gt;\
@@ -489,9 +491,8 @@ UPGRADE_DECLINE_TOOLTIP=Select this option not to upgrade the software.
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # L10n: only translate the "Please wait" string.  leave the rest unchanged.
-PROGRESS_WAIT=&lt;HTML&gt;&lt;BODY&gt;\
-               Please wait\
-               &lt;/BODY&gt;&lt;/HTML&gt;
+PROGRESS_WAIT=Please wait...
+              
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 REGISTRATION_PROGRESS=Registration Progress
