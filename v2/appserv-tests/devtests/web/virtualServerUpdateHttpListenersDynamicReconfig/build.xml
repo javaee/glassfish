@@ -82,6 +82,7 @@
         <antcall target="create-virtual-server-vs2"/>
         <antcall target="create-http-listener"/>
         <antcall target="set-http-listeners"/>
+        <sleep seconds="10"/>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />

@@ -66,9 +66,9 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.http-listener.http-listener-2.ssl.client-auth-enabled=true"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
         <antcall target="create-virtual-server"/>
         <antcall target="set-http-listeners"/>
+        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="reset-http-listeners" depends="init-common">
@@ -77,6 +77,7 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.myvs.http-listeners=http-listener-1"/>
         </antcall>
+        <sleep seconds="5"/>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />

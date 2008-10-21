@@ -26,6 +26,7 @@
             <arg line="--defaultvs server3" />
             <arg line="http-listener-server"/>
         </exec>
+        <sleep seconds="5"/>
     </target>
     
     <target name="create-virtual-server" depends="init-common">

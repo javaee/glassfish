@@ -43,6 +43,7 @@
             <param name="operand.props"
                    value="--hosts 127.0.0.1 --defaultwebmodule ${appname}-web ${new-virtual-server}"/>
         </antcall>
+        <sleep seconds="5"/>
     </target>
 
     <target name="delete-vs" depends="init-common">
@@ -59,6 +60,7 @@
             <param name="operand.props"
                    value="--listeneraddress 0.0.0.0 --listenerport ${new-http-port} --defaultvs ${new-virtual-server} ${new-http-listener}"/>
         </antcall>
+        <sleep seconds="5"/>
     </target>
 
     <target name="delete-listener" depends="init-common">
