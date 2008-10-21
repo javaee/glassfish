@@ -61,7 +61,6 @@
 
           <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/modules/glassfish-10.0-SNAPSHOT.jar"
             includes="WebTest.java"/>
 
     </target> 
