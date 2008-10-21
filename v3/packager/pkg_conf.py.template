@@ -21,13 +21,14 @@
 # example, grizzly version would look like 1.8.2-0,0. 
 
 glassfish_version="3.0,0-@BUILD_ID@"
-felix_version="1.0.4,0-0"
+felix_version="1.2.2,0-0"
 javadb_version="10.2.2.1,0-0"
 corba_omgapi_version="3.0.0,0-1"
 jsf_version="1.2.10,0-1"
 grizzly_version="1.8.6.2,0-0"
+metro_version="1.4,0-0"
 
 #description
 glassfish_description="GlassFish v3 Application Server"
-glassfish_description_long="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0)."
+glassfish_description_long="GlassFish v3 Prelude is the first production-ready release of the GlassFish v3 Application Server. This includes Java EE 5 based web tier, scripting support, OSGi support, JDBC and persistence API on top of the new modular kernel of GlassFish. In addition, through update center the users will be obtain new Java EE 6 APIs and containers (for example, EJB 3.1 and JAX-RS 1.0). Refer to www.sun.com/glassfish for production support from Sun Microsystems, Inc."
 glassfish_info_classification="Application Servers"
