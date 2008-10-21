@@ -81,7 +81,7 @@
          <dependency>
            <groupId>com.sun.pkg</groupId>
            <artifactId>pkg-client</artifactId>
-	   <version>0.0.0.15</version>
+           <version>${uc-pkg-client.version}</version>
 	</dependency> 
 	<dependency>
             <groupId>org.glassfish.registration</groupId>
