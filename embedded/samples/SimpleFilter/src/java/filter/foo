@@ -1,0 +1,142 @@
+his example illustrates one way that the servlet filters can perform pre-login and post-login processing during form login.
+
+Servlet filter source code: LoginFilter.java
+/**
+ * A servlet filter example: This example filters j_security_check and
+ * performs pre-login action to determine if the user trying to log in
+ * is in the revoked list. If the user is on the revoked list, an error is
+ * sent back to the browser.
+ *
+ * This filter reads the revoked list file name from the FilterConfig 
+ * passed in the init() method. It reads the revoked user list file and
+ * creates a revokedUsers list.
+ * 
+ * When the doFilter method is called, the user logging in is checked 
+ * to make sure that the user is not on the revoked Users list.
+ *
+ */
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+
+public class LoginFilter implements Filter {
+
+   protected FilterConfig filterConfig;
+
+   java.util.List revokeList; 
+   
+
+   /**
+    * init() : init() method called when the filter is instantiated.
+    * This filter is instantiated the first time j_security_check is 
+    * invoked for the application (When a protected servlet in the 
+    * application is accessed).
+    */
+   public void init(FilterConfig filterConfig) throws ServletException {
+      this.filterConfig = filterConfig;
+
+      // read revoked user list
+      revokeList = new java.util.ArrayList(); 
+      readConfig();
+   }
+
+
+   /**
+    * destroy() : destroy() method called when the filter is taken 
+    * out of service.
+    */
+   public void destroy() {
+      this.filterConfig = null;
+      revokeList = null;
+   }
+
+   /**
+    * doFilter() : doFilter() method called before the servlet to 
+    * which this filter is mapped is invoked. Since this filter is  
+    * mapped to j_security_check,this method is called before 
+    * j_security_check action is posted.
+    */
+   public void doFilter(ServletRequest request, ServletResponse response, 
+FilterChain chain) throws java.io.IOException, ServletException {
+
+
+      HttpServletRequest req = (HttpServletRequest)request;
+      HttpServletResponse res = (HttpServletResponse)response;
+
+      // pre login action
+      
+      // get username 
+      String username = req.getParameter("j_username");
+
+      // if user is in revoked list send error
+      if ( revokeList.contains(username) ) {
+      res.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+      return;
+      }
+      
+      // call next filter in the chain : let j_security_check authenticate 
+      // user
+      chain.doFilter(request, response);
+
+      // post login action
+
+   }
+
+   /**
+    * readConfig() : Reads revoked user list file and creates a revoked 
+    * user list.
+    */
+   private void readConfig() {
+      if ( filterConfig != null ) {
+
+         // get the revoked user list file and open it.
+         BufferedReader in;
+         try { 
+               String filename = filterConfig.getInitParameter("RevokedUsers");
+               in = new BufferedReader( new FileReader(filename));
+         } catch ( FileNotFoundException fnfe) {
+               return;
+         }
+	
+         // read all the revoked users and add to revokeList. 
+         String userName;
+         try {
+               while ( (userName = in.readLine()) != null ) 
+                   revokeList.add(userName);
+         } catch (IOException ioe) {
+         }
+
+      }
+  
+   }
+
+   
+}
+
+Important: In the previous code sample, the line that begins public void doFilter(ServletRequest request is broken into two lines for illustrative purposes only. The public void doFilter(ServletRequest request line and the line after it are one continuous line.
+An example of the web.xml file that shows the LoginFilter filter configured and mapped to the j_security_check URL:
+
+<filter id="Filter_1">
+    <filter-name>LoginFilter</filter-name>
+	   <filter-class>LoginFilter</filter-class>
+	        <description>Performs pre-login and post-login operation</description>
+			 <init-param>
+			 <param-name>RevokedUsers</param-name>
+			 <param-value>c:\WebSphere\AppServer\installedApps\
+                            <app-name>\revokedUsers.lst</param-value>
+				</init-param>
+</filter-id>
+
+<filter-mapping>
+	<filter-name>LoginFilter</filter-name>
+	    <url-pattern>/j_security_check</url-pattern>
+</filter-mapping>
+
+An example of a revoked user list file:
+
+user1
+cn=user1,o=ibm,c=us
+user99
+cn=user99,o=ibm,c=us
+
