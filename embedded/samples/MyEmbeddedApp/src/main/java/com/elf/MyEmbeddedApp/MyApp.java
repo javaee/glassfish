@@ -22,10 +22,13 @@ public class MyApp {
             myGF = new AppServer(9999);
             File simpleWar = new File("simple.war");
             File JSPAppWar = new File("JSPApp.war");
+            File filterWar = new File("SimpleFilter.war");
             System.out.println("Exists: " + simpleWar.exists());
             System.out.println("Located simple.war");
             System.out.println("Exists: " + JSPAppWar.exists());
             System.out.println("Located JSPApp.war");
+            System.out.println("Exists: " + filterWar.exists());
+            System.out.println("Located SimpleFilter.war");
             
             /*
             App simple = myGF.deploy(simpleWar);
@@ -33,6 +36,8 @@ public class MyApp {
             */
              App jsp = myGF.deploy(JSPAppWar);
             System.out.println("Deployed JSP.  Test with: http://localhost:9999/JSPApp/");
+             App filter = myGF.deploy(filterWar);
+            System.out.println("Deployed Filter.  Test with: http://localhost:9999/Ann-Filter/test/TestServlet");
         } 
         catch (Exception e) {
             e.printStackTrace();
