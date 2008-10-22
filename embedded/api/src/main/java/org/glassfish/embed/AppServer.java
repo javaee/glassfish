@@ -104,6 +104,7 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
 
 /**
  * Entry point to the embedded GlassFish Server.
@@ -412,23 +413,14 @@ public class AppServer {
         started = true;
 
         try {
-            final Module[] proxyMod = new Module[1];
-
-            // ANONYMOUS CLASS HERE!!
-            ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
-                public Module find(Class clazz) {
-                    Module m = super.find(clazz);
-                    if (m == null)
-                        return proxyMod[0];
-                    return m;
-                }
-            };
-
-            proxyMod[0] = modulesRegistry.add(new ProxyModuleDefinition(getClass().getClassLoader()));
+            
+            EmbeddedModulesRegistryImpl reg = new EmbeddedModulesRegistryImpl();
             StartupContext startupContext = new StartupContext(createTempDir(), new String[0]);
 
 
+            // !!!!!!!!!!!!!!!!!!!!!!!!!
             // ANONYMOUS CLASS HERE!!
+            // !!!!!!!!!!!!!!!!!!!!!!!!!
             Main main = new Main() {
                 @Override
                 protected InhabitantsParser createInhabitantsParser(Habitat habitat1) {
@@ -438,7 +430,7 @@ public class AppServer {
             };
 
 
-            habitat = main.launch(modulesRegistry, startupContext);
+            habitat = main.launch(reg, startupContext);
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
