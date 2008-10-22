@@ -44,8 +44,10 @@
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
     <target name="all" depends="start-server,build,deploy,runtest,undeploy,stop-server" />    
+    <target name="build-deploy" depends="build,deploy" />
+
    
-    <target name="build">
+    <target name="build" depends="compile-tests">
          <property name="war.file.ext" value="${war.file}.war"/>
         <antcall target="build-impl"/>
     </target>

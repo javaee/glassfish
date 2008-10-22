@@ -26,43 +26,76 @@ for QuickLook tests</font></b></big></font></big></h1>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
 <br>
-Install/unzip the glassfish bundle to a directory. <b> As of Sept 17
-2008, this directory must be named "glassfish" eg /tests/glassfish</b>
+The QuickLook (QL) implements three profiles (web profile, dev_debug
+profile and glassfish profile) to run QL in 3 different scenarios:
+testing v3 web distribution, testing v3 web distribution in
+debug mode, testing v3 glassfish distribution.<br>
+<br>
+First, install/unzip the glassfish bundle to a directory. As of Sept 17
+2008, this directory must be named<b> "glassfish" eg /tests/glassfish</b>
 <br>
 Let's call the full
 path to glassfish directory as {V3 Installation Dir}.&nbsp; Please do
 not
 install glassfish under v3/tests/quicklook since the "clean" target of
-QuickLook will clean up all war files under quicklook directory. Change
-directory to v3/tests/quicklook. All italic text below indicate a
+QL will clean up all war files under quicklook directory. Change
+directory to <span style="font-weight: bold;">v3/tests/quicklook</span>.
+All italic text below indicate a
 command. <br>
 <br>
-<span style="font-weight: bold;">1. To Run All Web Bundle Tests from
-Top Level:</span><br>
+<span style="font-weight: bold;">1. To Run QL in Web Profile:</span><br>
+<br>
+The web profile is the default profile and is for running QL against v3
+<span style="font-weight: bold;">web distribution</span>. <br>
 <ul>
   <li>For <span style="font-weight: bold;">web.zip</span> bundle of
-V3, {V3 Installation Dir} is equivelent to <span
- style="font-weight: bold;">/test/glassfish</span> in the example
+V3, {V3 Installation Dir} is equivelent to /test/glassfish in the
+example
 above. </li>
   <ul style="font-style: italic;">
     <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
   </ul>
   <li>For <span style="font-weight: bold;">web-ips.zip</span> bundle
-of V3,{V3 Installation Dir} is equivelent to in <span
- style="font-weight: bold;">/test/glassfishv3-prelude/glassfish</span>:
-    <br>
+of V3, the same command can be used but {V3 Installation Dir} is
+equivelent to in /test/glassfishv3-prelude/glassfish: <br>
   </li>
+</ul>
+<i style="font-style: italic;"></i><span style="font-style: italic;"></span>
+<ul>
   <ul>
-    <li><i style="font-style: italic;">mvn -Dglassfish.home=</i><span
- style="font-style: italic;">{V3 Installation Dir}</span><i
- style="font-style: italic;"> </i><span style="font-style: italic;"></span><i>
-test</i><span style="font-style: italic;">| tee run.log</span></li>
   </ul>
 </ul>
 <i><span style="font-style: italic;"></span></i>The test results will
-be in test-output-web directory.<br>
+be in test-output directory.<br>
 <br>
-<span style="font-weight: bold;">2. To Run Individual Test Suite from
+<span style="font-weight: bold;">2. To Run QL in V3 Debug Profile:</span><br>
+<br>
+Usually, user wants to run QL against a running v3 instance started
+in debug mode. The dev_debug profile can be used (-P dev_debug) in this
+scenario. <br>
+<ul>
+  <li>Start v3 in debug mode. For example: <span
+ style="font-style: italic;">java -jar modules/glassfish.jar</span><br>
+    <span style="font-style: italic;"></span></li>
+  <li><span style="font-style: italic;">mvn -Dglassfish.home={V3
+Installation Dir} <span style="font-weight: bold;">-Pdev_debug</span>
+test | tee run.log</span><br>
+  </li>
+</ul>
+Note: The tests require restart domain (admincli) will be skipped in
+this scenario.<br>
+<br>
+<span style="font-weight: bold;">3. To Run QL in Glassfish Profile:</span><br>
+<br>
+The v3 glassfish distribution includes extra modules such as EJB, jts
+and corba. The glassfish profile (-P test_gd) should be used for
+testing the v3 glassfish distribution.<br>
+<ul style="font-style: italic;">
+  <li>mvn -Dglassfish.home={V3 Installation Dir} <span
+ style="font-weight: bold;">-P test_gd test</span> | tee run.log</li>
+</ul>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;">4.
+To Run Individual Test Suite from
 Directory Level:</span><br>
 <br>
 After the first run with maven from top level, the dependency jars will
@@ -82,9 +115,19 @@ Installation Dir} all</span><br>
     </li>
   </ul>
 </ul>
-<span style="font-weight: bold;">3. To Run Additional Tests (JRuby, EJB
-tests)</span><span style="font-weight: bold;">:</span><br>
-To run JRuby tests:<br>
+<span style="font-weight: bold;">5. To Run JRuby Tests</span><span
+ style="font-weight: bold;"> in QL:</span><br>
+<br>
+The JRuby tests need JRuby/Rails gems environment and JRuby/Rails will
+be downloaded form maven repository. Due to the size of JRuby/Rails,
+this test suite was not integrated with other QL tests and needs to be
+run separately. For the first time of running JRuby tests, the
+JRuby/Rails env will be
+setup and this will take a little time depend on network connection
+(two minutes on my machine). The
+JRuby setup will be done in local maven repository and this step will
+be skipped for the future runs if the same local maven repro is
+used.&nbsp; To run the JRuby tests in QL<br>
 <ul>
   <li>From top level v3/tests/quicklook dir:</li>
   <ul style="font-style: italic;">
@@ -96,29 +139,7 @@ test | tee run.log</li>
     <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
   </ul>
 </ul>
-For the first time of running JRuby tests, the JRuby/Rails env will be
-setup so this will take a little time (one minute on my machine). The
-JRuby setup will be done in local maven repository and this step will
-be skipped for the future runs if the same local maven repro is
-used.&nbsp; <br>
-<br>
-To run EJB Singleton tests:<br>
-<ul>
-  <li>From top level v3/tests/quicklook dir:</li>
-  <ul style="font-style: italic;">
-    <li>mvn -f ejb/singleton/pom.xml -Dglassfish.home={V3 Installation
-Dir}
-test | tee run.log</li>
-  </ul>
-  <li>Or from v3/tests/quicklook/ejb/singleton dir:</li>
-  <ul style="font-style: italic;">
-    <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
-  </ul>
-</ul>
-The test results for JRuby and EJB Singleton will be in
-test-output-glassfish directory.<br>
-<br>
-<span style="font-weight: bold;">4. Using Local Maven Repository in
+<span style="font-weight: bold;">6. Using Local Maven Repository in
 Non-Default Directory:</span><br>
 Section 1 and 2 assume the use of default local maven repository
 directory, ${user.home}/.m2/repository. If you local maven repository
@@ -131,7 +152,7 @@ of the following ways to point to your specific maven repository:<br>
  style="font-style: italic;">MVN_OPTS="-D-Xmx512M
 -Dmaven.repo.local={Local_Maven}"</span></li>
     <li>Make a symbolic link from&nbsp;${user.home}/.m2/repository to
-the actuall maven repository.</li>
+the actuall maven repository (will not work on windows platform).</li>
   </ul>
 </ul>
 <p style="margin-bottom: 0in;"><big><big style="font-weight: bold;">II.

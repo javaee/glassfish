@@ -45,6 +45,7 @@
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
     <target name="all" depends="build,deploy,runtest,undeploy"/>
+    <target name="build-deploy" depends="build,deploy" />
    
     <target name="build">
          <property name="war.file.ext" value="${war.file}.war"/>

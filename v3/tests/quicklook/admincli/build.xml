@@ -12,6 +12,8 @@
 
 <target name="all" depends="start-derby,start-server,build,deploy,runtest,undeploy,stop-server,stop-derby"/>
 
+<target name="build-deploy" depends="build,deploy" />
+
 <target name="build" depends="compile-tests">
    <record name="admincli-restart.output" action="start"/>
    <antcall target="create-jdbc-connection-pool"/>

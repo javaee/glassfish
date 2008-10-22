@@ -35,7 +35,7 @@
  holder.
 -->
 
-<project name="GlassFish-V3-QuickLook" default="default" basedir=".">
+<project name="GlassFish-V3-QuickLook" default="all" basedir=".">
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
@@ -43,124 +43,71 @@
     <description>Builds, tests, and runs the project V3 Quicklook</description>
     <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>
-	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
-        <echo message="testng jar value: ${testng.jar}"/ -->
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
-        <antcall target="build"/>
-        <antcall target="deploy"/>
-        <antcall target="runtest"/>
+	<antcall target="build-deploy"/>
+        <ant dir="admincli" target="build-deploy"/>
+        <antcall target="runtest">
+        <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-	<move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/>
+	<!-- move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/ -->
         <antcall target="testng-summary"/>
         <antcall target="quicklook-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
-
-    <!-- top level target for testing web distribution   -->
-    <target name="all_wd" depends="clean">
-        <record name="all_wd.output" action="start"/>
-        <antcall target="startDerby"/>        
+    <!-- Target for testing glassfish distribution (containing EJB)  -->
+    <target name="all_gd" depends="clean">
+        <record name="allrun.output" action="start"/>
+        <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
-        <antcall target="web_distribution"/>
+        <antcall target="build-deploy"/>
+        <ant dir="admincli" target="build-deploy"/>
+        <ant dir="ejb/singleton" target="build-deploy"/>
+        <antcall target="runtest">
+        <param name="testng.xml" value="testng_gd.xml"/> </antcall>
+        <ant dir="ejb/singleton" target="undeploy"/>
+        <antcall target="undeploy"/>
         <antcall target="stop-server"/>
-        <antcall target="stopDerby"/>
-	<move file="test-output" tofile="test-output-wd" failonerror="false" overwrite="true"/>
-        <record name="all_wd.output" action="stop"/>
+        <antcall target="stop-derby"/>
+        <antcall target="testng-summary"/>
+        <record name="allrun.output" action="stop"/>
     </target>
 
-    <!-- all test suites for web distribution   -->
-    <target name="web_distribution">  
-        <echo message="ANT PROJECT ${ant.project.name}"/>
-        <ant dir="classloader/hellojsf" target="all"/>
-        <ant dir="web/helloworld" target="all"/>
-        <ant dir="web/jsfastrologer" target="all"/>
-        <ant dir="web/jsfinjection" target="all"/>
-        <ant dir="jdbc/jdbcusertx" target="all"/>
-        <ant dir="persistence/jpainjectemf" target="all"/>
-        <ant dir="security/helloworld" target="all"/>
-        <!--not working yet
-        <ant dir="admin" target="all"/>
-        <ant dir="adminconsole" target="all"/>
-        -->
+    <!-- Target for testing glassfish distribution (containing EJB)  -->
+    <target name="dev_debug" depends="clean">
+        <record name="allrun.output" action="start"/>
+        <antcall target="start-derby"/>
+        <antcall target="build-deploy"/>
+        <antcall target="runtest">
+        <param name="testng.xml" value="testng_debug.xml"/> </antcall>
+        <antcall target="undeploy"/>
+        <antcall target="stop-derby"/>
+        <antcall target="testng-summary"/>
+        <record name="allrun.output" action="stop"/>
     </target>
-        
-    <!-- <import file="nbproject/build-impl.xml"/>-->
-    
-    <target name="copyJARS">
-        <echo message="Copying testng.jar to ${ant.home}/lib"/>
-        <copy todir="${ant.home}/lib" verbose="true">
-            <fileset dir="${basedir}/lib">
-                <include name="**/testng*.*"/>
-            </fileset>
-        </copy>      
-    </target>
-    <target name="default">
-        <echo message="ANT.HOME is ${ant.home}"/>
-        <antcall target="copyJARS"/>
-        <echo message="ant build (Compiles and Packages testsuites)"/>
-        <echo message="ant deploy (Deploys test to GlassFish server)"/>
-        <echo message="ant compile-tests (Compiles TestNG test)"/>
-        <echo message="ant runtest (Runs TestNG test)"/>
-        <echo message="ant report (Creates TestNG Report)"/>
-        <echo message="ant archive (Creates zip of testbase}"/>
-        <echo message=""/>
-    </target>
-    
-    <target name="build">  
+
+    <target name="build-deploy">
         <record name="build.output" action="start"/>
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
         <ant dir="adminconsole" target="build"/>
-        <ant dir="classloader/hellojsf" target="build"/>
-        <ant dir="web/helloworld" target="build"/>
-        <ant dir="web/jsfastrologer" target="build"/>
-        <ant dir="web/jsfinjection" target="build"/>
-        <ant dir="admincli" target="build"/>
-        <ant dir="jdbc/jdbcusertx" target="build"/>
-        <ant dir="persistence/jpainjectemf" target="build"/>
-        <ant dir="security/helloworld" target="build"/>
-        <ant dir="security/basicauth" target="build"/>
+        <ant dir="classloader/hellojsf" target="build-deploy"/>
+        <ant dir="web/helloworld" target="build-deploy"/>
+        <ant dir="web/jsfastrologer" target="build-deploy"/>
+        <ant dir="web/jsfinjection" target="build-deploy"/>
+        <ant dir="jdbc/jdbcusertx" target="build-deploy"/>
+        <ant dir="persistence/jpainjectemf" target="build-deploy"/>
+        <ant dir="security/helloworld" target="build-deploy"/>
+        <ant dir="security/basicauth" target="build-deploy"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
         <ant dir="adminweb/basic" target="build"/>-->
         <record name="build.output" action="stop"/>
-    </target>
-    
-    
-    <target name="compile-tests">            
-        <record name="compiletests.output" action="start"/>
-        <ant dir="classloader/hellojsf" target="compile-tests"/>
-        <ant dir="web/helloworld" target="compile-tests"/>
-        <ant dir="web/jsfastrologer" target="compile-tests"/>
-        <ant dir="web/jsfinjection" target="compile-tests"/>
-        <ant dir="jdbc/jdbcusertx" target="compile-tests"/>
-        <ant dir="persistence/jpainjectemf" target="compile-tests"/>
-        <ant dir="security/helloworld" target="compile-tests"/>
-        <!-- ant dir="web/strutsbasic" target="compile-tests"/ -->
-        <!-- ant dir="persistence/servlet-jpa-app" target="compile-tests"/ -->
-        <record name="compiletests.output" action="stop"/>
-    </target>
-    
-    <target name="deploy">
-        <record name="deploy.output" action="start"/>
-        <ant dir="admincli" target="deploy"/>
-        <ant dir="classloader/hellojsf" target="deploy"/>
-        <ant dir="web/helloworld" target="deploy"/>
-        <ant dir="web/jsfastrologer" target="deploy"/>
-        <ant dir="web/jsfinjection" target="deploy"/>
-        <ant dir="jdbc/jdbcusertx" target="deploy"/>
-        <ant dir="persistence/jpainjectemf" target="deploy"/>
-        <ant dir="security/helloworld" target="deploy"/>
-        <ant dir="security/basicauth" target="deploy"/>
-        <!-- ant dir="web/strutsbasic" target="deploy"/ -->
-        <!-- ant dir="persistence/servlet-jpa-app" target="deploy"/ -->   
-        <record name="deploy.output" action="stop"/>
     </target>
     
     <target name="undeploy">
@@ -179,15 +126,6 @@
         <record name="undeploy.output" action="stop"/>
     </target>
 
-    <target name="noproject">
-	    <delete includeemptydirs="true">
-		<fileset dir="${basedir}">
-			<include name="**/nbproject"/>
-		</fileset>
-	</delete>
-    </target>
-    
-   
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
     <target name="clean">
         <delete dir="${basedir}/classes"/>
@@ -229,9 +167,9 @@
     </taskdef>
     
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
-    <target  name="runtest" depends="compile-tests,initprops">    
+    <target  name="runtest" depends="initprops">    
         <record name="runtestng.output" action="start"/>
-        <echo message="=============Starting TestNG functional tests from testng.xml ============"/>    
+        <echo message="=============Starting TestNG functional tests from ${testng.xml} ============"/>    
         <property name="hasTestNGXML" value="true"/>
         
         <mkdir dir="${test.report}"/>    
@@ -242,37 +180,25 @@
             <jvmarg value="-Dhttp.port=${glassfish.http.port}"/>
             <sysproperty key="basedir" value="${basedir}"/>
             <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
-            <xmlfileset dir="." includes="testng.xml"/>
-            
+            <xmlfileset dir="." includes="${testng.xml}"/>
         </testng>
-        
         <record name="runtestng.output" action="stop"/>
-        
-        
-        <!-- <antcall target="-post-test-run"/>-->
-        
     </target>  
     
     <!-- Generate the TestNG report -->
     <target name="report" depends="initprops">
         <echo message="Generating report at ${test.report}"/>
-        <macrodef name="gen-report">
-            <attribute name="name" />
-            <sequential>
-                <junitreport todir="${basedir}/test-output-@{name}">
+                <junitreport todir="${basedir}/test-output">
                     <fileset dir=".">
-                        <include name="**/test-output-@{name}/**/*.xml"/>
+                        <include name="**/test-output/**/*.xml"/>
                         <!--<exclude name="**/testng-failed.xml"/>-->
                     </fileset>
-                    <report format="noframes" todir="${basedir}/test-output-@{name}"/>
+                    <report format="noframes" todir="${basedir}/test-output"/>
                 </junitreport>
-            </sequential>
-        </macrodef>
-        <gen-report name="web" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
     
-    <!-- Generate the TestNG report -->
+<!--
     <target name="reportAll" depends="initprops">        
         <echo message="Generating report at ${test.report}"/>
         <macrodef name="gen-report">
@@ -281,7 +207,6 @@
                 <junitreport todir="${basedir}/test-output-@{name}">
                     <fileset dir=".">
                         <include name="**/test-output-@{name}/**/*.xml"/>
-                        <!--<exclude name="**/testng-failed.xml"/>-->
                     </fileset>
                     <report format="noframes" todir="${basedir}/test-output-@{name}"/>
                 </junitreport>
@@ -291,6 +216,7 @@
         <gen-report name="glassfish" />
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
+-->
     
     <target name="initprops">
         <property name="build.class.dir" value="${basedir}/classes/test"/>

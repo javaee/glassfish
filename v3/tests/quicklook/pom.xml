@@ -64,9 +64,19 @@
 
                                 <echo message="compile classpath: ${compile_classpath}"/>
                                 <echo message="plugin classpath:  ${plugin_classpath}"/>
-                                <ant dir="." antfile="build.xml" target="all">
+                                <if test="${test.wd}">
+                                  <ant dir="." antfile="build.xml" target="all">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
-                                </ant>
+                                  </ant>
+                                </if>
+                         	<if test="${test.gd}">
+                            	    <ant dir="." antfile="build.xml" target="all_gd"/>
+                                    <property name="glassfish.home" value="${glassfish.home}"/>
+                        	</if>
+                         	<if test="${test.debug}">
+                            	    <ant dir="." antfile="build.xml" target="dev_debug"/>
+                                    <property name="glassfish.home" value="${glassfish.home}"/>
+                        	</if>
                             </tasks>
                         </configuration>
                         <goals>
@@ -123,6 +133,29 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <test.wd>true</test.wd>
+            </properties>
+        </profile>
+        <profile>
+            <id>test_gd</id>
+            <properties>
+                <test.gd>true</test.gd>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev_debug</id>
+            <properties>
+                <test.debug>true</test.debug>
+            </properties>
+        </profile>
+    </profiles>
     <repositories>
         <repository>
             <id>glassfish-repository</id>

@@ -171,11 +171,7 @@
     
       
 <target name="deploy-v3-impl" depends="setOSConditions">
-    <echo message="glassfish.home is ${glassfish.home}"/>
-    <echo message="deploying in v3 mode"/>
-    <echo message="./${war.file}"/>
-    <echo message="OS is ${os.name}"/>    
-
+    <echo message="deploying ${war.file}"/>
     <antcall target="deploy-v3-impl-unix"/>
     <antcall target="deploy-v3-impl-windows"/>
 </target>
@@ -200,7 +196,6 @@
 </target>
 
 <target name="undeploy-v3-impl" depends="setOSConditions">
-    <echo message="undeploying in v3 mode"/>
     <echo message="./${war.file}"/>
     
     <antcall target="undeploy-v3-impl-unix"/>

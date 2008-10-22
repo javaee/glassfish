@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<project name="jsftemplating" default="default" basedir=".">
+<project name="hellojsf" default="all" basedir=".">
     
     <property file="${ws.root}/build.properties"/>
     <property file="build.properties"/>
@@ -47,8 +47,9 @@
     <description>Builds, tests, and runs the project Hello JSP Application</description>
     
 <target name="all" depends="build,deploy,runtest,undeploy" />
+<target name="build-deploy" depends="build,deploy" />
 
-<target name="build">
+<target name="build" depends="compile-tests">
     <property name="war.file.ext" value="${war.file}.war"/>
     <echo message="Now creating a war file ${dist.dir}/${war.file.ext}"/>
 
