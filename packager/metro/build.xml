@@ -38,16 +38,6 @@ own identifying information: Portions Copyright [yyyy]
 
 	<chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
 
-	<!-- this is temporary, jar names to be resolved during their
-	build	-->
-
-	<move file="target/stage/glassfishv3-prelude/glassfish/modules/webservices-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/webservices.jar" />
-
-	<move file="target/stage/glassfishv3-prelude/glassfish/modules/jaxb-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/jaxb.jar" />
-	
-
         <if test="${compression}">
 	       <antcall target="pack.compression" />
 	</if>
