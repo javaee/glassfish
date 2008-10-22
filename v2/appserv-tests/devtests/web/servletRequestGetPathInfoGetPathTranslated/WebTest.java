@@ -118,7 +118,15 @@ public class WebTest {
 
         boolean first = true;
         String line = null;
+        int pos = expectedResponse.indexOf("workspace");
+        if (pos>=0) {
+            expectedResponse = expectedResponse.substring(pos);
+        }
         while ((line = br.readLine()) != null) {
+            pos = line.indexOf("workspace");
+            if (pos>=0) {
+                line = line.substring(pos);
+            }
             if (first) {
                 if (!EXPECTED_RESPONSE.equals(line)) {
                     System.err.println("Wrong response, expected: "
