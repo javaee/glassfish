@@ -42,6 +42,8 @@ import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.hk2.component.InhabitantsFile;
 
+import java.io.*;
+import java.net.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -53,6 +55,7 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.DataInputStream;
+import java.net.URI;
 
 /**
  * {@link ModuleDefinition} that doesn't actually load any new jars,
@@ -121,7 +124,10 @@ public class ProxyModuleDefinition implements ModuleDefinition {
     }
 
     public URI[] getLocations() {
-        return EMPTY_URI_ARRAY;
+        // We need to return the classpath, chopped up here.  Otherwise JSP
+        // compilation will fail with JDK >= 6
+        
+        return uris;
     }
 
     public String getVersion() {
@@ -144,7 +150,33 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         return metadata;
     }
 
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+    
+    private static boolean ok(String[] ss) {
+        return ss != null && ss.length > 0;
+    }
+    
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final ModuleDependency[] EMPTY_MODULE_DEFINITIONS_ARRAY = new ModuleDependency[0];
-    private static final URI[] EMPTY_URI_ARRAY = new URI[0];
+    private static /* almost final */ URI[] uris = new URI[0];
+    
+    static {
+        // It is impossible to change java.class.path after the JVM starts --
+        // so cache away a copy...
+        String cp = System.getProperty("java.class.path");
+        
+        if(ok(cp)) {
+            String[] paths = cp.split(System.getProperty("path.separator"));
+
+            if(ok(paths)) {
+                uris = new URI[paths.length];
+
+                for(int i = 0; i < paths.length; i++) {
+                    uris[i] = new File(paths[i]).toURI();
+                }
+            }
+        }
+    }
 }
