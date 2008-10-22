@@ -53,7 +53,7 @@
             <param name="password" value="${testpassword}"/>
             <param name="groups" value="${testgroup}"/>
         </antcall>
-        <sleep seconds="10"/>
+        <sleep seconds="20"/>
     </target>
 
     <target name="restore" depends="init-common">

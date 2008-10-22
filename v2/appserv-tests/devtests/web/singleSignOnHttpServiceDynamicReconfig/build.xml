@@ -50,6 +50,7 @@
             <param name="password" value="${testpassword}"/>
             <param name="groups" value="${testgroup}"/>
         </antcall>
+        <sleep seconds="10"/>
     </target>
 
     <target name="build" depends="compile">
