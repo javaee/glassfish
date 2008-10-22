@@ -42,10 +42,12 @@ own identifying information: Portions Copyright [yyyy]
 	build	-->
 
 	<move file="target/stage/glassfishv3-prelude/glassfish/modules/webservices-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/webservices.jar" />
-
+		tofile="target/stage/glassfishv3-prelude/glassfish/modules/webservices.jar"
+		failonerror="false"/>
+		
 	<move file="target/stage/glassfishv3-prelude/glassfish/modules/jaxb-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/jaxb.jar" />
+		tofile="target/stage/glassfishv3-prelude/glassfish/modules/jaxb.jar"
+	       	failonerror="false"/>
 	
 
         <if test="${compression}">
