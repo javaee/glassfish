@@ -14,7 +14,7 @@ package com.sun.cli.jmxcmd.cmd;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.sun.cli.jcmd.util.stringifier.IteratorStringifier;
+import com.sun.appserv.management.util.stringifier.IteratorStringifier;
 
 import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
 import com.sun.cli.jcmd.util.misc.ClassUtil;

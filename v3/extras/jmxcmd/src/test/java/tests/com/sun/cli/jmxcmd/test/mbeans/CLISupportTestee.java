@@ -25,11 +25,10 @@ import javax.management.*;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.cli.jcmd.util.misc.StringUtil;
 
-import com.sun.cli.jmxcmd.util.jmx.InvokeHelper;
 
 /*
 	A DynamicMBean used as a target for testing CLI

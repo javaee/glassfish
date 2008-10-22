@@ -68,10 +68,10 @@ import java.text.MessageFormat;
 
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
-import com.sun.cli.jcmd.util.stringifier.Stringifier;
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistry;
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistryImpl;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.StringifierRegistry;
+import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
 
 /**
 	Escapes/unescapes strings

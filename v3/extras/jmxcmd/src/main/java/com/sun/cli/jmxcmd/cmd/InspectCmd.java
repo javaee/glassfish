@@ -15,7 +15,7 @@ package com.sun.cli.jmxcmd.cmd;
 import com.sun.cli.jmxcmd.support.InspectRequest;
 import com.sun.cli.jmxcmd.support.InspectResult;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.cli.jcmd.util.stringifier.*;
+import com.sun.appserv.management.util.stringifier.*;
 
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.OptionDependency;
@@ -39,7 +39,7 @@ import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
-import com.sun.cli.jmxcmd.util.jmx.MBeanGenerator;
+import com.sun.appserv.management.util.jmx.MBeanGenerator;
 
 	
 /**

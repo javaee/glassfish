@@ -34,12 +34,13 @@ import com.sun.cli.jcmd.framework.CmdEnv;
 import com.sun.cli.jcmd.framework.FileNames;
 import com.sun.cli.jcmd.framework.CmdException;
 
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
-import com.sun.cli.jcmd.util.stringifier.Stringifier;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.misc.Output;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.misc.DebugState;
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.DebugState;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.cmd.OptionInfo;
 import com.sun.cli.jcmd.util.cmd.ImmutableOptionInfo;
 import com.sun.cli.jcmd.util.cmd.OptionInfoImpl;
@@ -58,13 +59,13 @@ import com.sun.cli.jmxcmd.support.ConnectInfo;
 import com.sun.cli.jmxcmd.support.ArgParserException;
 
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
-import com.sun.cli.jmxcmd.util.jmx.MBeanServerConnection_Debug;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.MBeanServerConnection_Debug;
 
 import com.sun.cli.jmxcmd.spi.JMXConnectorProvider;
 import com.sun.cli.jmxcmd.spi.InProcessConnectorProvider;
 
-import com.sun.cli.jmxcmd.util.jmx.ConnectionSource;
+import com.sun.appserv.management.client.ConnectionSource;
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;
@@ -79,7 +80,7 @@ import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 		- supplies aliases feature
 		- supplies the notion of a target
  */
-public abstract class JMXCmd extends CmdBase
+public abstract class JMXCmd extends CmdBase implements Output
 {
 	final String []	ALL_TARGET	= new String [] { "all" };
 	
@@ -122,7 +123,8 @@ public abstract class JMXCmd extends CmdBase
 	{
 		private final ConnectionMgr			mConnectionMgr;
 		private final String				mConnectionName;
-		private MBeanServerConnection		mMBeanServerConnection;
+		private volatile MBeanServerConnection		mMBeanServerConnection;
+        private volatile JMXConnector                mJMXConnector;
 		
 			public
 		ConnectionMgrConnectionSource(
@@ -132,7 +134,26 @@ public abstract class JMXCmd extends CmdBase
 			mConnectionMgr	= connectionMgr;
 			mConnectionName	= connectionName;
 		}
+        
+        public JMXConnector getJMXConnector(final boolean forceNew )
+        {
+            try
+            {
+                getMBeanServerConnection(forceNew);
+            }
+            catch( IOException e )
+            {
+                throw new RuntimeException(e);
+            }
+            return mJMXConnector;
+        }
 		
+			public MBeanServerConnection
+		getExistingMBeanServerConnection()
+        {
+            return mMBeanServerConnection;
+        }
+        
 			public MBeanServerConnection
 		getMBeanServerConnection( final boolean forceNew )
 			throws java.io.IOException
@@ -153,13 +174,14 @@ public abstract class JMXCmd extends CmdBase
 				{
 					throw new IOException( e.getMessage() );
 				}
-				
-				conn	= jmxConn.getMBeanServerConnection();
-				
+                
+                mJMXConnector = jmxConn;
+                
+				conn	= mJMXConnector.getMBeanServerConnection();
 				
 				// wrap the connection with our hooked version
-				final MBeanServerConnection_Debug		hookedConn = 
-						new MBeanServerConnection_Debug( conn, new ConnectionDebugState( ), JMXCmd.this );
+                final DebugState ds = new DebugState.Impl(false);
+				final MBeanServerConnection_Debug		hookedConn = new MBeanServerConnection_Debug( conn, ds, JMXCmd.this );
 
 				if ( "true".equalsIgnoreCase( connectInfo.getParam( connectInfo.CACHE_MBEAN_INFO ) ) )
 				{
@@ -421,7 +443,7 @@ public abstract class JMXCmd extends CmdBase
 		final ConnectionSource			connSource	= createConnectionSource( name );
 		final MBeanServerConnection		conn		= connSource.getMBeanServerConnection( false );
 		//final MBeanServerConnection conn	=
-			//new com.sun.cli.jmxcmd.util.jmx.MBeanServerConnection_Perf( connX, getOutput() );
+			//new com.sun.appserv.management.util.jmx.MBeanServerConnection_Perf( connX, getOutput() );
 		
 
 		final CLISupportMBean		cliSupport		= new CLISupport( conn, getAliasMgr());

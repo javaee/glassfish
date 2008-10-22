@@ -26,10 +26,10 @@ import com.sun.cli.jcmd.framework.CmdEnvKeys;
 // to get the Cmd classes we need to register
 import com.sun.cli.jmxcmd.cmd.*;
 
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistryImpl;
+import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
 import com.sun.cli.jmxcmd.support.StringifierRegistryIniter;
 
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
 /**

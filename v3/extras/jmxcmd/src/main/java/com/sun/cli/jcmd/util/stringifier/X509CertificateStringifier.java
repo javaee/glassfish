@@ -54,7 +54,7 @@
  * own identifying information: Portions Copyright [yyyy] 
  * [name of copyright owner]
  */
-package com.sun.cli.jcmd.util.stringifier;
+package com.sun.appserv.management.util.stringifier;
 
 
 import java.security.cert.X509Certificate;

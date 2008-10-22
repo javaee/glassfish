@@ -11,9 +11,9 @@
  
 package com.sun.cli.jcmd;
 
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistryIniter;
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistryIniterImpl;
-import com.sun.cli.jcmd.util.stringifier.StringifierRegistry;
+import com.sun.appserv.management.util.stringifier.StringifierRegistryIniter;
+import com.sun.appserv.management.util.stringifier.StringifierRegistryIniterImpl;
+import com.sun.appserv.management.util.stringifier.StringifierRegistry;
 
 /**
 	Registers all JCmd-specific Stringifiers.

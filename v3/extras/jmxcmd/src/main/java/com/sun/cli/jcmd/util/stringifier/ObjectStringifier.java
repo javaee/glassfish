@@ -61,7 +61,7 @@
  * $Date: 2005/11/08 22:39:27 $
  */
  
-package com.sun.cli.jcmd.util.stringifier;
+package com.sun.appserv.management.util.stringifier;
 
 /**
 	Useful as a default Stringifier even though it does nothing more than

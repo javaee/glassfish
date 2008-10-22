@@ -48,7 +48,7 @@ import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.rmi.RMIConnectorServer;
 import javax.naming.NamingException;
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 import com.sun.cli.jcmd.framework.CmdEnv;

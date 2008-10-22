@@ -16,9 +16,9 @@ import com.sun.cli.jcmd.util.cmd.LineReader;
 import com.sun.cli.jcmd.util.misc.TokenizerImpl;
 import com.sun.cli.jcmd.util.misc.TokenizerParams;
 import com.sun.cli.jcmd.util.misc.TokenizerException;
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.StringUtil;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 

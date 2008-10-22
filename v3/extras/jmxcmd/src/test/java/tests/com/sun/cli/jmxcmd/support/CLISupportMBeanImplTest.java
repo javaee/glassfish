@@ -24,8 +24,8 @@ import java.net.URI;
 import javax.management.*;
 
 import com.sun.cli.jcmd.util.misc.ClassUtil;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
 import com.sun.cli.jmxcmd.support.InspectRequest;
@@ -438,6 +438,7 @@ public final class CLISupportMBeanImplTest extends junit.framework.TestCase
 	}
 
 	
+/*
 		public void
 	testURL()
 		throws Exception
@@ -450,6 +451,7 @@ public final class CLISupportMBeanImplTest extends junit.framework.TestCase
 		}
 		assertEquals( input, result.mResult );
 	}
+
 	
 		public void
 	testURI()
@@ -459,7 +461,7 @@ public final class CLISupportMBeanImplTest extends junit.framework.TestCase
 		final InvokeResult	result	= invokeSimpleTestee( "testURI", input.toString() );
 		assertEquals( input, result.mResult );
 	}
-	
+*/
 	
 	
 	/*

@@ -54,13 +54,13 @@ import com.sun.cli.jcmd.util.cmd.CmdInfoImpl;
 import com.sun.cli.jcmd.util.cmd.OperandsInfo;
 import com.sun.cli.jcmd.util.cmd.OperandsInfoImpl;
 
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
-import com.sun.cli.jmxcmd.util.jmx.MBeanGenerator;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.MBeanGenerator;
 
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.ArrayUtil;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 

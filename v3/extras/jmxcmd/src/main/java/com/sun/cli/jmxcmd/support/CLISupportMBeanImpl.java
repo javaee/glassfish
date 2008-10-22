@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
 import java.io.IOException;
 import javax.management.*;
 
-import com.sun.cli.jcmd.util.stringifier.*;
+import com.sun.appserv.management.util.stringifier.*;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
-import com.sun.cli.jmxcmd.util.jmx.ObjectNameQueryImpl;
-import com.sun.cli.jmxcmd.util.jmx.stringifier.MBeanOperationInfoStringifier;
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
-import com.sun.cli.jmxcmd.util.jmx.AttributeFilter;
-import com.sun.cli.jmxcmd.util.jmx.ReadWriteAttributeFilter;
+import com.sun.appserv.management.util.jmx.ObjectNameQueryImpl;
+import com.sun.appserv.management.util.jmx.stringifier.MBeanOperationInfoStringifier;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.AttributeFilter;
+import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
 
 	 
 interface ClassQuery

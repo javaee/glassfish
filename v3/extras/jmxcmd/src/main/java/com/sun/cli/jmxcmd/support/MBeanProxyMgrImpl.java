@@ -44,13 +44,13 @@ import javax.management.IntrospectionException;
 import javax.management.ReflectionException;
 import javax.management.MalformedObjectNameException;
 
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
-import com.sun.cli.jmxcmd.util.jmx.ConnectionSource;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.client.ConnectionSource;
 import com.sun.cli.jcmd.util.misc.SetUtil;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 
 
 /**

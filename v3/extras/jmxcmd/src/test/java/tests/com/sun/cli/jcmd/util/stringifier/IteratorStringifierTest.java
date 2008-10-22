@@ -9,7 +9,7 @@
  * $Date: 2003/11/12 02:25:27 $
  */
  
-package com.sun.cli.jcmd.util.stringifier;
+package com.sun.appserv.management.util.stringifier;
 
 import java.util.Iterator;
 import java.util.Set;

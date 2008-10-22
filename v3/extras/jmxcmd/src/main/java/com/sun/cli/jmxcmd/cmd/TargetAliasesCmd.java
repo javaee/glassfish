@@ -15,8 +15,8 @@ import javax.management.ObjectName;
 
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.cli.jcmd.util.stringifier.*;
-import com.sun.cli.jcmd.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.stringifier.*;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;

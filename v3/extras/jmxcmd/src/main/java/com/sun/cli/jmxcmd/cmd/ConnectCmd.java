@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Iterator;
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.stringifier.IteratorStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.IteratorStringifier;
 
 import com.sun.cli.jcmd.util.misc.StringValuePersister;
 import com.sun.cli.jcmd.util.misc.ClassUtil;

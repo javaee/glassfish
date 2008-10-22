@@ -10,7 +10,7 @@
  * $Date: 2005/11/08 22:39:26 $
  */
  
-package com.sun.cli.jcmd.util.stringifier;
+package com.sun.appserv.management.util.stringifier;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import java.security.cert.Certificate;

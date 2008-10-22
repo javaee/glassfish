@@ -58,7 +58,7 @@ package com.sun.cli.jcmd.util.misc;
 
 import java.util.Set;
 
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 
 
 /**

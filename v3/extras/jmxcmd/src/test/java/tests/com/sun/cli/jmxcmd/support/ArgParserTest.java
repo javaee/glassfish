@@ -13,7 +13,7 @@ package com.sun.cli.jmxcmd.support;
 
 import junit.framework.TestCase;
 
-import com.sun.cli.jcmd.util.stringifier.*;
+import com.sun.appserv.management.util.stringifier.*;
 
 import com.sun.cli.jmxcmd.support.ParseResult;
 import com.sun.cli.jmxcmd.support.ParseResultStringifier;

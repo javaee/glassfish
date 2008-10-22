@@ -12,7 +12,7 @@
 
 package com.sun.cli.jmxcmd.support;
 
-import com.sun.cli.jcmd.util.stringifier.*;
+import com.sun.appserv.management.util.stringifier.*;
 
 
 /**

@@ -19,11 +19,11 @@ import javax.management.AttributeList;
 
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 
-import com.sun.cli.jcmd.util.stringifier.Stringifier;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
-import com.sun.cli.jcmd.util.stringifier.IteratorStringifier;
-import com.sun.cli.jmxcmd.util.jmx.stringifier.AttributeStringifier;
-import com.sun.cli.jmxcmd.util.jmx.AttributeComparator;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.IteratorStringifier;
+import com.sun.appserv.management.util.jmx.stringifier.AttributeStringifier;
+import com.sun.appserv.management.util.jmx.AttributeComparator;
 
 
 /**

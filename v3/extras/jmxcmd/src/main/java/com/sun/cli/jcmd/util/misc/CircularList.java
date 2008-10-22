@@ -68,7 +68,7 @@ import java.util.ArrayList;
 import java.util.AbstractList;
 
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 /**

@@ -12,7 +12,7 @@
 package com.sun.cli.jcmd.framework;
 
 import java.util.Arrays;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 import com.sun.cli.jcmd.util.cmd.CmdInfos;
 import com.sun.cli.jcmd.util.cmd.CmdInfo;

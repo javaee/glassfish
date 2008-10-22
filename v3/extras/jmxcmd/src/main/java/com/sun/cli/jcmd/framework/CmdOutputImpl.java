@@ -14,7 +14,7 @@ package com.sun.cli.jcmd.framework;
 
 import java.io.PrintStream;
 import com.sun.cli.jcmd.util.misc.DebugState;
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 
 
 /**

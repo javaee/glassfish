@@ -34,7 +34,7 @@ import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanAttributeInfo;
 
-import com.sun.cli.jcmd.util.stringifier.*;
+import com.sun.appserv.management.util.stringifier.*;
 import com.sun.cli.jcmd.util.cmd.ArgHelper;
 import com.sun.cli.jcmd.util.cmd.IllegalOptionException;
 import com.sun.cli.jcmd.util.cmd.OptionsInfo;
@@ -45,9 +45,9 @@ import com.sun.cli.jcmd.util.cmd.DisallowedOptionDependency;
 import com.sun.cli.jcmd.util.cmd.OperandsOptionDependency;
 import com.sun.cli.jcmd.util.cmd.OptionDependency;
 
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
-import com.sun.cli.jmxcmd.util.jmx.AttributeFilter;
-import com.sun.cli.jmxcmd.util.jmx.ReadWriteAttributeFilter;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.AttributeFilter;
+import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
 import com.sun.cli.jcmd.util.misc.CompareUtil;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.StringifiedList;

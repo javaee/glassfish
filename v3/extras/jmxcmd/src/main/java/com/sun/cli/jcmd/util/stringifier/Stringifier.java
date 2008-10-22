@@ -62,7 +62,7 @@
  */
  
  
-package com.sun.cli.jcmd.util.stringifier;
+package com.sun.appserv.management.util.stringifier;
 
 /**
 	Convert an object to a String.  The intent of this is to provide a flexible means

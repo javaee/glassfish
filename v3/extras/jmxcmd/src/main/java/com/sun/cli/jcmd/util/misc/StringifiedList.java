@@ -66,7 +66,7 @@ package com.sun.cli.jcmd.util.misc;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 /**

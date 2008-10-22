@@ -27,8 +27,8 @@ import com.sun.cli.jcmd.util.misc.StringEscaperTest;
 import com.sun.cli.jmxcmd.support.ArgParserTest;
 import com.sun.cli.jmxcmd.support.AliasMgrTest;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanImplTest;
-import com.sun.cli.jmxcmd.util.jmx.ObjectNameQueryImplTest;
-import com.sun.cli.jcmd.util.stringifier.IteratorStringifierTest;
+import com.sun.appserv.management.util.jmx.ObjectNameQueryImplTest;
+import com.sun.appserv.management.util.stringifier.IteratorStringifierTest;
 
 
 

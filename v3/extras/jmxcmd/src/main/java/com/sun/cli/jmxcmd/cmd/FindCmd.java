@@ -34,12 +34,12 @@ import javax.management.InstanceNotFoundException;
 
 import com.sun.cli.jmxcmd.support.ResultsForGetSet;
 import com.sun.cli.jmxcmd.support.CLISupportMBeanProxy;
-import com.sun.cli.jmxcmd.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.cli.jcmd.framework.IllegalUsageException;
-import com.sun.cli.jcmd.util.stringifier.IteratorStringifier;
-import com.sun.cli.jcmd.util.stringifier.SmartStringifier;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.IteratorStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 import com.sun.cli.jcmd.util.misc.TokenizerImpl;
 import com.sun.cli.jcmd.util.misc.ArrayConversion;
 import com.sun.cli.jcmd.util.misc.RegexUtil;
@@ -423,7 +423,7 @@ public class FindCmd extends JMXCmd
 			establishProxy();
 			
 			final Set<ObjectName> objectNames = resolveQualifiedTargets( targets );
-			final Set<String> objectNameStrings	= JMXUtil.objectNamesToStringSet( objectNames );
+			final List<String> objectNameStrings	= JMXUtil.objectNamesToStrings( objectNames );
 			final String[]	nameStrings			= (String[])
 								objectNameStrings.toArray( new String[ objectNameStrings.size() ] );
 			
@@ -457,7 +457,7 @@ public class FindCmd extends JMXCmd
 				filteredSet	= initialSet;
 			}
 			
-			Set<String>	resultSet	= JMXUtil.objectNamesToStringSet( filteredSet );
+			Set<String>	resultSet	= new HashSet<String>( JMXUtil.objectNamesToStrings( filteredSet ) );
 			
 			if ( add )
 			{

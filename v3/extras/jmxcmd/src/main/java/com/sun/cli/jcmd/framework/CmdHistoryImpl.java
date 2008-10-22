@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import com.sun.cli.jcmd.util.misc.StringEscaper;
 import com.sun.cli.jcmd.util.misc.SafeSave;
 import com.sun.cli.jcmd.util.misc.FileUtils;
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 
 /**

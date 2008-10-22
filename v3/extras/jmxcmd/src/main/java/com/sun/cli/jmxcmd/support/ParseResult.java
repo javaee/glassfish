@@ -13,7 +13,7 @@
  
 package com.sun.cli.jmxcmd.support;
 
-import com.sun.cli.jcmd.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
 
 /**
  */
