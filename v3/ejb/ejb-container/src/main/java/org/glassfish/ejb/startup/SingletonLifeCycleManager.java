@@ -1,7 +1,7 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.ejb.Container;
-import com.sun.ejb.containers.SingletonContainer;
+import com.sun.ejb.containers.AbstractSingletonContainer;
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
 import java.util.*;
@@ -29,14 +29,14 @@ public class SingletonLifeCycleManager {
 
     Set<Container> initializedSingletons = new HashSet<Container>();
 
-    private Map<String, SingletonContainer> name2Container =
-            new HashMap<String, SingletonContainer>();
+    private Map<String, AbstractSingletonContainer> name2Container =
+            new HashMap<String, AbstractSingletonContainer>();
 
     public SingletonLifeCycleManager() {
 
     }
 
-    public void addSingletonContainer(SingletonContainer c) {
+    public void addSingletonContainer(AbstractSingletonContainer c) {
         c.setSingletonLifeCycleManager(this);
         EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) c.getEjbDescriptor();
         String modName = sdesc.getEjbBundleDescriptor().getName();
@@ -46,11 +46,11 @@ public class SingletonLifeCycleManager {
         this.addDependency(src, depends);
 
         //TODO: names can be of the form jarName#beanName
-        name2Container.put(src, (SingletonContainer) c);
+        name2Container.put(src, (AbstractSingletonContainer) c);
     }
 
     public void doStartup() {
-        SingletonContainer[] partialOrder = this.getPartiallyOrderedSingletonDescriptors();
+        AbstractSingletonContainer[] partialOrder = this.getPartiallyOrderedSingletonDescriptors();
         int orderSz = partialOrder.length;
 
         StringBuilder sb = new StringBuilder("[**]Singleton partial order: ");
@@ -70,13 +70,13 @@ public class SingletonLifeCycleManager {
         }
     }
 
-    public void initializeSingleton(SingletonContainer c) {
-        if (!initializedSingletons.contains(c)) {
+    public synchronized void initializeSingleton(AbstractSingletonContainer c) {
+        if (! initializedSingletons.contains(c)) {
             List<String> computedDeps = computeDependencies(c.getEjbDescriptor().getName());
             int sz = computedDeps.size();
-            SingletonContainer[] deps = new SingletonContainer[sz];
+            AbstractSingletonContainer[] deps = new AbstractSingletonContainer[sz];
             for (int i = 0; i < sz; i++) {
-                deps[i] = (SingletonContainer)
+                deps[i] = (AbstractSingletonContainer)
                         name2Container.get(computedDeps.get(i));
 
                 initializeSingleton(deps[i]);
@@ -165,12 +165,12 @@ public class SingletonLifeCycleManager {
 
     }
 
-    public SingletonContainer[] getPartiallyOrderedSingletonDescriptors() {
+    public AbstractSingletonContainer[] getPartiallyOrderedSingletonDescriptors() {
         String[] computedDeps = getPartialOrdering();
         int sz = computedDeps.length;
-        SingletonContainer[] deps = new SingletonContainer[sz];
+        AbstractSingletonContainer[] deps = new AbstractSingletonContainer[sz];
         for (int i = 0; i < sz; i++) {
-            deps[i] = (SingletonContainer)
+            deps[i] = (AbstractSingletonContainer)
                     name2Container.get(computedDeps[i]);
         }
 

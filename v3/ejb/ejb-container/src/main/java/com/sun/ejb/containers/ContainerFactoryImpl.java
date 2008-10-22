@@ -82,7 +82,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                 EjbSingletonDescriptor sd = (EjbSingletonDescriptor) ejbDescriptor;
                 
                 if (sd.isSingleton()) {
-                    container = new SingletonContainer(ejbDescriptor, loader);
+                    container = new BMCSingletonContainer(ejbDescriptor, loader);
                 }
             } else if (ejbDescriptor instanceof EjbSessionDescriptor) {
                 EjbSessionDescriptor sd = (EjbSessionDescriptor)ejbDescriptor;

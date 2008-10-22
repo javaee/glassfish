@@ -25,7 +25,7 @@ package org.glassfish.ejb.startup;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
-import com.sun.ejb.containers.SingletonContainer;
+import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
@@ -112,8 +112,8 @@ public class EjbApplication
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
-                if (container instanceof SingletonContainer) {
-                    singletonLCM.addSingletonContainer((SingletonContainer) container);
+                if (container instanceof AbstractSingletonContainer) {
+                    singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
                 }
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
