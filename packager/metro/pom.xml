@@ -105,7 +105,8 @@
        <dependency>
           <groupId>com.sun.xml.bind</groupId>
            <artifactId>jaxb</artifactId>
-           <version>${jaxb.version}</version>
+	   <version>${jaxb.version}</version>
+	   <classifier>osgi</classifier>
        </dependency> 
     
     </dependencies>
