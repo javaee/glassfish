@@ -415,10 +415,7 @@
             <dependency>
                 <groupId>org.glassfish.common</groupId>
                 <artifactId>glassfish-api</artifactId>
-                <!-- TODO: Change it to ${project.version} when we have a gf-jruby-connector
-                     that has integrated glassfish-api built from latest prelude branch.
-                -->
-	        <version>10.0.422</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
