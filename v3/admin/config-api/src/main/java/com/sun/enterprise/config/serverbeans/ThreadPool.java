@@ -42,10 +42,15 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Element;
+import java.util.List;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -190,4 +195,12 @@ public interface ThreadPool extends ConfigBeanProxy, PropertyBag, Injectable  {
      */
     public void setClassname(String classname);
 
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

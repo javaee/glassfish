@@ -47,6 +47,9 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -60,7 +63,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
 @Configured
-public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, ReferenceContainer {
+public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named, ReferenceContainer {
 
     /**
      * Gets the value of the configRef property.
@@ -179,7 +182,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system properties" )
     @Element
+    @Override
     public List<SystemProperty> getSystemProperty();
 
     @DuckTyped
@@ -242,4 +247,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }, server);
         }
     }
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

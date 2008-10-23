@@ -49,6 +49,12 @@ import java.io.Serializable;
 import java.util.List;
 
 
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 /**
  *
  */
@@ -128,4 +134,20 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link String }
      */
     public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    
+    
+  /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="cmt-max-runtime-exceptions", defaultValue="1", dataType=NonNegativeInteger.class,
+            description="Deprecated. Specifies the maximum number of RuntimeException occurrences allowed from a message-driven bean's " +
+                "method when container-managed transactions are used")
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
+
 }

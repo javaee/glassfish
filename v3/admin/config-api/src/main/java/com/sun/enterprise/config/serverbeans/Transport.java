@@ -39,8 +39,14 @@ package com.sun.enterprise.config.serverbeans;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
+import java.util.List;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  * {@link Transport} defines one specific transport and its properties.
@@ -139,6 +145,15 @@ public interface Transport extends ConfigBeanProxy, PropertyBag, Injectable {
      *        associated with the {@link Transport}
      */
     public void setSelectionKeyHandlerRef(String selectionKeyHandler);
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }
 
 

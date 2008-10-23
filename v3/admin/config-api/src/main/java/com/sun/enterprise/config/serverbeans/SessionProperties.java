@@ -48,6 +48,9 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.quality.ToDo;
 /**
  *
  */
@@ -75,4 +78,13 @@ public interface SessionProperties extends ConfigBeanProxy, Injectable, Property
      *              {@link String }
      */
     public void setTimeoutInSeconds(String value) throws PropertyVetoException;
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

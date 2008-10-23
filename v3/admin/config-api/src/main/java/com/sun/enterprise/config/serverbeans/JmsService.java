@@ -48,6 +48,9 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -268,4 +271,36 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Element
     public List<JmsHost> getJmsHost();
-}
+    
+     /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="instance-name", defaultValue="imqbroker",
+            description="The full Sun GlassFish Message Queue broker instance name"),
+            
+        @PropertyDesc(name="instance-name-suffix", defaultValue="xxxxxxxxxxxxxxxxxx",
+            description="A suffix to add to the full Message Queue broker instance name. The suffix is separated " +
+                "from the instance name by an underscore character (_). For example, if the instance name is 'imqbroker', " +
+                "appending the suffix 'xyz' changes the instance name to 'imqbroker_xyz'"),
+            
+        @PropertyDesc(name="append-version", defaultValue="",
+            description="If true, appends the major and minor version numbers, preceded by underscore characters (_), " +
+                "to the full Message Queue broker instance name. For example, if the instance name is 'imqbroker', " +
+                "appending the version numbers changes the instance name to imqbroker_8_0"),
+            
+        @PropertyDesc(name="user-name", defaultValue="xxxxxxxxxxxxxxxxxx",
+            description="Specifies the user name for creating the JMS connection. Needed only if the default " +
+                "username/password of guest/guest is not available in the broker"),
+            
+        @PropertyDesc(name="password", defaultValue="xxxxxxxxxxxxxxxxxx",
+            description="Specifies the password for creating the JMS connection. Needed only if the default " +
+                "username/password of guest/guest is not available in the broker")
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
+    
+    }

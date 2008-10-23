@@ -42,6 +42,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 /**
  * {@link Protocols} contains the description of higher level {@link Protocol}s
  * like: http, https, iiop, etc.
@@ -55,6 +59,15 @@ public interface Protocols extends ConfigBeanProxy, PropertyBag, Injectable {
      */
     @Element(required=true)
     public List<Protocol> getProtocol();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }
 
 

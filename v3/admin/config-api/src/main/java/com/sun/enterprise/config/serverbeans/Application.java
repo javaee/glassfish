@@ -50,6 +50,10 @@ import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 
 /**
  *
@@ -311,4 +315,13 @@ public interface Application extends ConfigBeanProxy, Injectable, Module, Proper
             return null;
         }
     }
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

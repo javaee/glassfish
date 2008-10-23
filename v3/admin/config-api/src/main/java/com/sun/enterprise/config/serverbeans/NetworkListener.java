@@ -40,6 +40,13 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
+import java.util.List;
+
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /** 
  * Binds the {@link Transport} and the {@link Protocol}.
@@ -153,6 +160,15 @@ public interface NetworkListener extends ConfigBeanProxy, Injectable, PropertyBa
      * {@link NetworkListener} to process incoming requests.
      */
     public void setThreadPoolRef(String threadPool);
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }
 
 

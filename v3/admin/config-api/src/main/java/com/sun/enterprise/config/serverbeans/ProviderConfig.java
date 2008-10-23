@@ -48,6 +48,9 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -146,4 +149,32 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
      *              {@link ResponsePolicy }
      */
     public void setResponsePolicy(ResponsePolicy value) throws PropertyVetoException;
+    
+
+  /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="security.config", defaultValue="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml",
+            description="Specifies the location of the message security configuration file"),
+            
+        @PropertyDesc(name="debug", defaultValue="false", dataType=Boolean.class,
+            description="Enables dumping of server provider debug messages to the server log"),
+            
+        @PropertyDesc(name="dynamic.username.password", defaultValue="false", dataType=Boolean.class,
+            description="Signals the provider runtime to collect the user name and password from the " +
+                "CallbackHandler for each request. If false, the user name and password for wsse:UsernameToken(s) is " +
+                "collected once, during module initialization. Applicable only for a ClientAuthModule"),
+            
+        @PropertyDesc(name="encrypencryption.key.alias", defaultValue="s1as",
+            description="Specifies the encryption key used by the provider. The key is identified by its keystore alias"),
+            
+        @PropertyDesc(name="signature.key.alaias", defaultValue="s1as",
+            description="Specifies the signature key used by the provider. The key is identified by its keystore alias")
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
 }

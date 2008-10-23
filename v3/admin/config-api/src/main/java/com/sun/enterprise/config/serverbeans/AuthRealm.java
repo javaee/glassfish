@@ -33,20 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
 import org.jvnet.hk2.config.Element;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -92,4 +93,56 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link String }
      */
     public void setClassname(String value) throws PropertyVetoException;
+    
+    /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="jaas-context",
+            description="jaas-contextfile,jdbcSpecifies the JAAS (Java Authentication and Authorization Service) context"),
+        @PropertyDesc(name="file", defaultValue="${com.sun.aas.instanceRoot}/config/keyfile",
+            description="file realm. Specifies the file that stores user names, passwords, and group names."),
+        @PropertyDesc(name="assign-groups",
+            description="file, jdbc realms. Comma-separated list of group names."),
+        @PropertyDesc(name="datasource-jndi",
+            description="Specifies name of the jdbc-resource for the database"),
+        @PropertyDesc(name="user-table",
+            description="Specifies the name of the user table in the database"),
+        @PropertyDesc(name="user-name-column",
+            description="Specifies the name of the user name column in the database user table"),
+        @PropertyDesc(name="password-column",
+            description="Specifies the name of the password column in the database user table"),
+        @PropertyDesc(name="group-table",
+            description="Specifies the name of the group table in the database"),
+        @PropertyDesc(name="group-name-column",
+            description="Specifies the name of the group name column in the database user table"),
+        @PropertyDesc(name="db-user",
+            description="The database user name in the realm instead of that in the jdbc-connection-pool. " +
+                "Prevents other applications from looking up the database, getting a connection, and browsing the user table"),
+        @PropertyDesc(name="db-password",
+            description="The database password in the realm instead of that in the jdbc-connection-pool. " +
+                "Prevents other applications from looking up the database, getting a connection, and browsing the user table"),
+        @PropertyDesc(name="digest-algorithm", values={"MD5", "none", "SHA"},
+            description="Any algorithm supported in the JDK"),
+        @PropertyDesc(name="encoding", values={"Hex", "Base64"},
+            description="Specifies the encoding. If digest-algorithm is specified, the default is Hex, otherwise no encoding is specified"),
+        @PropertyDesc(name="charset",
+            description="Specifies the charset for the digest algorithm")
+    }
+    )
+    @Element
+    List<Property> getProperty();
 }
+
+
+
+
+
+
+
+
+
+
+
+

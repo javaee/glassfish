@@ -43,11 +43,20 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+import java.util.List;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
+
+import org.glassfish.config.support.datatypes.PositiveInteger;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 
 /**
  *
@@ -161,4 +170,40 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
      *              {@link String }
      */
     public void setKeypointInterval(String value) throws PropertyVetoException;
+    
+    
+
+   /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="oracle-xa-recovery-workaround", defaultValue="true", dataType=Boolean.class,
+            description="If true, the Oracle XA Resource workaround is used in transaction recovery"),
+            
+        @PropertyDesc(name="disable-distributed-transaction-logging", defaultValue="false", dataType=Boolean.class,
+            description="If true, disables transaction logging, which might improve performance. " +
+                "If the automatic-recovery attribute is set to true , this property is ignored"),
+            
+        @PropertyDesc(name="xaresource-txn-timeout", defaultValue="120", dataType=PositiveInteger.class,
+            description=" Changes the XAResource timeout. In some cases, the XAResource default timeout can cause " +
+                "transactions to be aborted, so it is desirable to change it"),
+            
+        @PropertyDesc(name="pending-txn-cleanup-interval", defaultValue="60", dataType=PositiveInteger.class,
+            description="Interval in seconds at which an asynchronous thread checks for pending transactions and completes them"),
+            
+        @PropertyDesc(name="use-last-agent-optimization", defaultValue="true", dataType=Boolean.class,
+            description="Enables last agent optimization, which improves the throughput of transactions. " +
+                "If one non-XA resource is used with XA resources in the same transaction, the non XA resource is the last agent"),
+            
+        @PropertyDesc(name="wait-time-before-recovery-insec", defaultValue="60", dataType=PositiveInteger.class,
+            description="Wait time in seconds after which an instance starts the recovery for a dead instance"),
+            
+        @PropertyDesc(name="db-logging-resource",
+            description="db-logging-resource NDI name of the JDBC resource for the database to which transactions are logged")
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
 }

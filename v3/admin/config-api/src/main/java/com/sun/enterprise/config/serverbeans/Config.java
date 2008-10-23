@@ -33,9 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
@@ -48,11 +45,15 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.config.support.datatypes.Port;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.Container;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -83,7 +84,7 @@ import org.glassfish.api.admin.config.Container;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigConfig" )
 @Configured
-public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named {
+public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named {
 
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.
@@ -445,8 +446,31 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named 
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Any more legal system properties?" )
+@PropertiesDesc(
+    systemProperties=true,
+    props={
+        @PropertyDesc(name="HTTP_LISTENER_PORT", defaultValue="8080", dataType=Port.class),
+        @PropertyDesc(name="HTTP_SSL_LISTENER_PORT", defaultValue="1043", dataType=Port.class),
+        @PropertyDesc(name="HTTP_ADMIN_LISTENER_PORT", defaultValue="4848", dataType=Port.class),
+        @PropertyDesc(name="IIOP_LISTENER_PORT", defaultValue="3700", dataType=Port.class),
+        @PropertyDesc(name="IIOP_SSL_LISTENER_PORT", defaultValue="1060", dataType=Port.class),
+        @PropertyDesc(name="IIOP_SSL_MUTUALAUTH_PORT", defaultValue="1061", dataType=Port.class),
+        @PropertyDesc(name="JMX_SYSTEM_CONNECTOR_PORT", defaultValue="8686", dataType=Port.class)
+    }
+    )
+    @Override
     @Element
     public List<SystemProperty> getSystemProperty();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 
     /**
      * Get the configuration for other types of containers.
@@ -456,3 +480,6 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, Named 
     @Element("*")
     List<Container> getContainers();
 }
+
+
+

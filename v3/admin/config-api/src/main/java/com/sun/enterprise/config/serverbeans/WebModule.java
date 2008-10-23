@@ -33,9 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
@@ -50,6 +47,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -239,4 +239,13 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Module, Property
      */
     @Element
     public List<WebServiceEndpoint> getWebServiceEndpoint();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

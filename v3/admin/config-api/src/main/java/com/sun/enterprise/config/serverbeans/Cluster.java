@@ -47,6 +47,9 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -61,7 +64,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
 @Configured
-public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, ReferenceContainer {
+public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named, ReferenceContainer {
 
     /**
      * Gets the value of the configRef property.
@@ -221,8 +224,19 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * {@link SystemProperty }
      */
     @Element
+    @Override
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
     public List<SystemProperty> getSystemProperty();
 
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
+    
     @DuckTyped
     public String getReference();
 

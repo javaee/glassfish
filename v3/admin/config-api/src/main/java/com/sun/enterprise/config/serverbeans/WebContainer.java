@@ -47,6 +47,12 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.config.support.datatypes.PositiveInteger;
+
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.quality.ToDo;
+
 
 /**
  *
@@ -76,4 +82,20 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link SessionConfig }
      */
     public void setSessionConfig(SessionConfig value) throws PropertyVetoException;
+
+    /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="dispatcher-max-depth", defaultValue="20", dataType=PositiveInteger.class,
+            description="Prevents recursive include or forward statements from creating an infinite loop by setting a maximum " +
+                "nested dispatch level. If this level is exceeded, the following message is written to the server log: " +
+                "Exceeded maximum depth for nested request dispatches")
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
+
 }

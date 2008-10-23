@@ -43,9 +43,14 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import java.util.List;
 
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.Port;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 
 /**
@@ -212,4 +217,13 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link Ssl }
      */
     public void setSsl(Ssl value) throws PropertyVetoException;
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

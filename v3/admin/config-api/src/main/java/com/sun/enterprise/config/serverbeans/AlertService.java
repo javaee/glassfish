@@ -46,6 +46,10 @@ import org.jvnet.hk2.component.Injectable;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 
 /**
  *
@@ -81,4 +85,13 @@ public interface AlertService extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Element
     public List<AlertSubscription> getAlertSubscription();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

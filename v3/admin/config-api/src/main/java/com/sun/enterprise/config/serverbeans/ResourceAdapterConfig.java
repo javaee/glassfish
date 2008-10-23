@@ -48,6 +48,9 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -127,4 +130,13 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *              {@link String }
      */
     public void setResourceAdapterName(String value) throws PropertyVetoException;
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

@@ -44,6 +44,10 @@ import org.jvnet.hk2.config.Element;
 import java.util.List;
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 /**
  * {@link PortUnification} defines logic how to host
  * several protocols on a single tcp port.
@@ -96,4 +100,13 @@ public interface PortUnification extends ConfigBeanProxy, PropertyBag, Injectabl
      */
     @Element
     public List<ProtocolFinder> getProtocolFinder();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

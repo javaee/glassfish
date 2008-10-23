@@ -47,6 +47,10 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -117,4 +121,13 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      *              {@link DasConfig }
      */
     public void setDasConfig(DasConfig value) throws PropertyVetoException;
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

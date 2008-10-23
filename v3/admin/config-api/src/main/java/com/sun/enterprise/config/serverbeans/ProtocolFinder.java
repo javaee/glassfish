@@ -40,6 +40,12 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
+import java.util.List;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 /**
  * {@link ProtocolFinder} describes a protocol finder/recognizer, 
@@ -104,6 +110,15 @@ public interface ProtocolFinder extends ConfigBeanProxy, PropertyBag, Injectable
      * a request, which was recognized by this {@link ProtocolFinder}
      */
     public void setProtocol(Protocol protocol);
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }
   
 

@@ -47,6 +47,10 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -74,4 +78,13 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
      *              {@link ModuleMonitoringLevels }
      */
     public void setModuleMonitoringLevels(ModuleMonitoringLevels value) throws PropertyVetoException;
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

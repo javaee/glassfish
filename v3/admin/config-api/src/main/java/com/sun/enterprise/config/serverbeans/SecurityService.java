@@ -43,6 +43,7 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -50,6 +51,10 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
 
 
 /* @XmlType(name = "", propOrder = {
@@ -309,4 +314,13 @@ public interface SecurityService extends ConfigBeanProxy, Injectable, PropertyBa
      */
     @Element
     public List<MessageSecurityConfig> getMessageSecurityConfig();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
 }

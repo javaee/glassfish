@@ -50,6 +50,10 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
 /**
  *
  */
@@ -68,7 +72,7 @@ import java.util.List;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
-public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
 
     /**
      * Gets the value of the applicationRoot property.
@@ -295,8 +299,51 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Any more legal system properties?" )
+@PropertiesDesc(
+    systemProperties=true,
+    props={
+        @PropertyDesc(name="com.sun.aas.installRoot",
+            description="Operating system dependent. Path to the directory where the server is installed"),
+            
+        @PropertyDesc(name="com.sun.aas.instanceRoot",
+            description="Operating system dependent. Path to the top level directory for a server instance"),
+            
+        @PropertyDesc(name="com.sun.aas.hostName",
+            description="Operating system dependent. Path to the name of the host (machine)"),
+            
+        @PropertyDesc(name="com.sun.aas.javaRoot",
+            description="Operating system dependent. Path to the library directory for the Sun GlassFish Message Queue software"),
+            
+        @PropertyDesc(name="com.sun.aas.imqLib",
+            description="Operating system dependent. Path to the installation directory for the Java runtime"),
+            
+        @PropertyDesc(name="com.sun.aas.imqLib",
+            description="Operating system dependent. Path to the installation directory for the Java runtime"),
+            
+        @PropertyDesc(name="com.sun.aas.configName", defaultValue="server-config",
+            description="Name of the <config> used by a server instance"),
+            
+        @PropertyDesc(name="com.sun.aas.instanceName", defaultValue="server1",
+            description="Name of the server instance. Not used in the default configuration, but can be used to customize configuration"),
+            
+        @PropertyDesc(name="com.sun.aas.domainName", defaultValue="domain1",
+            description="Name of the domain. Not used in the default configuration, but can be used to customize configuration")
+    }
+    )
+    @Override
     @Element
     public List<SystemProperty> getSystemProperty();
+    
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Override
+    @Element
+    List<Property> getProperty();
+    
 
     @DuckTyped
     List<Application> getAllDefinedSystemApplications();

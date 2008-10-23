@@ -51,6 +51,15 @@ import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import org.glassfish.config.support.datatypes.PositiveInteger;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.quality.ToDo;
+
+
+
 /* @XmlType(name = "", propOrder = {
     "httpAccessLog",
     "property"
@@ -194,4 +203,167 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *              {@link HttpAccessLog }
      */
     public void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException;
+    
+    
+   /**
+        Properties.
+     */
+@PropertiesDesc(
+    props={
+        @PropertyDesc(name="sso-max-inactive-seconds", defaultValue="300", dataType=PositiveInteger.class,
+            description="The time after which a user's single sign-on record becomes eligible for purging if " +
+                "no client activity is received. Since single sign-on applies across several applications on the same virtual server, " +
+                "access to any of the applications keeps the single sign-on record active. Higher values provide longer " +
+                "single sign-on persistence for the users at the expense of more memory use on the server"),
+            
+        @PropertyDesc(name="sso-reap-interval-seconds", defaultValue="60", dataType=PositiveInteger.class,
+            description="Interval between purges of expired single sign-on records"),
+            
+        @PropertyDesc(name="ssoCookieSecure", defaultValue="dynamic", values={"true","false","dynamic"},
+            description="Sets the Secure attribute of any JSESSIONIDSSO cookies associated with the web " +
+                "applications deployed to this virtual server. Applicable only if the sso-enabled property is set to true. " +
+                "To set the Secure attribute of a JSESSIONID cookie, use the cookieSecure cookie-properties property in the sun-web.xml file"),
+            
+        @PropertyDesc(name="setCacheControl",
+            description="Comma-separated list of Cache-Control response directives. For a list of valid directives, " +
+                "see section 14.9 of the document at http://www.ietf.org/rfc/rfc2616.txt"),
+            
+        @PropertyDesc(name="accessLoggingEnabled", defaultValue="false", dataType=Boolean.class,
+            description="Enables access logging for this virtual server only"),
+            
+        @PropertyDesc(name="accessLogBufferSize", defaultValue="32768", dataType=PositiveInteger.class,
+            description="Size in bytes of the buffer where access log calls are stored. If the value is " +
+                "less than 5120, a warning message is issued, and the value is set to 5120. To set this " +
+                "property for all virtual servers, set it as a property of the parent http-service"),
+            
+        @PropertyDesc(name="accessLogWriterInterval", defaultValue="300", dataType=PositiveInteger.class,
+            description="Number of seconds before the log is written to the disk. The access log is written when " +
+            "the buffer is full or when the interval expires. If the value is 0, the buffer is always written even if " +
+            "it is not full. This means that each time the server is accessed, the log message is stored directly to the file. " +
+            "To set this property for all virtual servers, set it as a property of the parent http-service"),
+            
+        @PropertyDesc(name="allowRemoteAddress",
+            description="Comma-separated list of regular expression patterns that the remote client's IP address is " +
+                "compared to. If this property is specified, the remote address must match for this request to be accepted. " +
+                "If this property is not specified, all requests are accepted unless the remote address matches a 'denyRemoteAddress' pattern"),
+            
+        @PropertyDesc(name="denyRemoteAddress", 
+            description="Comma-separated list of regular expression patterns that the remote client's " +
+                "IP address is compared to. If this property is specified, the remote address must not " +
+                "match for this request to be accepted. If this property is not specified, request " +
+                "acceptance is governed solely by the 'allowRemoteAddress' property"),
+            
+        @PropertyDesc(name="allowRemoteHost",
+            description="Comma-separated list of regular expression patterns that the remote client's " +
+                "hostname (as returned by java.net.Socket.getInetAddress().getHostName()) is compared to. " +
+                "If this property is specified, the remote hostname must match for the request to be accepted. " +
+                "If this property is not specified, all requests are accepted unless the remote hostname matches a 'denyRemoteHost' pattern"),
+            
+        @PropertyDesc(name="denyRemoteHost",
+            description="Specifies a comma-separated list of regular expression patterns that the remote client's " +
+                "hostname (as returned by java.net.Socket.getInetAddress().getHostName()) is compared to. " +
+                "If this property is specified, the remote hostname must not match for this request to be accepted. " +
+                "If this property is not specified, request acceptance is governed solely by the 'allowRemoteHost' property"),
+            
+        @PropertyDesc(name="authRealm",
+            description="Specifies the name attribute of an “auth-realm” on page 23 element, which overrides " + 
+                "the server instance's default realm for stand-alone web applications deployed to this virtual server. " +
+                "A realm defined in a stand-alone web application's web.xml file overrides the virtual server's realm"),
+            
+        @PropertyDesc(name="securePagesWithPragma", defaultValue="true", dataType=Boolean.class,
+            description="Set this property to false to ensure that for all web applications on this virtual server " +
+                "file downloads using SSL work properly in Internet Explorer. You can set this property for a specific web application."),
+            
+        @PropertyDesc(name="contextXmlDefault",
+            description="The location, relative to domain-dir, of the context.xml file for this virtual server, if one is used"),
+            
+        @PropertyDesc(name="allowLinking", defaultValue="false", dataType=Boolean.class,
+            description="If true, resources that are symbolic links in web applications on this virtual server are served. " +
+            "The value of this property in the sun-web.xml file takes precedence if defined. " +
+            "Caution: setting this property to true on Windows systems exposes JSP source code."),
+    
+        /**
+            Specifies an alternate document root (docroot), where n is a positive integer that 
+            allows specification of more than one. Alternate docroots allow web applications to 
+            serve requests for certain resources from outside their own docroot, based on whether 
+            those requests match one (or more) of the URI patterns of the web application's 
+            alternate docroots.
+            <p>
+            If a request matches an alternate docroot's URI pattern, it is mapped to the alternate 
+            docroot by appending the request URI (minus the web application's context root) to 
+            the alternate docroot's physical location (directory). If a request matches multiple URI 
+            patterns, the alternate docroot is determined according to the following precedence 
+            order: 
+            <p>
+            <ul>
+                <li>Exact match</li>
+                <li>Longest path match</li>
+                <li>Extension match</li>
+            </ul>
+            For example, the following properties specify three alternate docroots. The URI 
+            pattern of the first alternate docroot uses an exact match, whereas the URI patterns of 
+            the second and third alternate docroots use extension and longest path prefix matches, 
+            respectively.
+            <p>
+            &lt;property name="alternatedocroot_1" value="from=/my.jpg dir=/srv/images/jpg"/><br>
+            &lt;property name="alternatedocroot_2" value="from=*.jpg dir=/srv/images/jpg"/> <br>
+            &lt;property name="alternatedocroot_3" value="from=/jpg/* dir=/src/images"/> <br>
+            <p>
+            The value of each alternate docroot has two components: The first component, from, 
+            specifies the alternate docroot's URI pattern, and the second component, dir, specifies 
+            the alternate docroot's physical location (directory). Spaces are allowed in the dir 
+            component.
+            <p>
+            You can set this property for a specific web application. For details, see “sun-web-app” 
+            in Sun GlassFish Enterprise Server v3 Prelude Application Deployment Guide.
+         */
+        @PropertyDesc(name="alternatedocroot_*",
+            description="The '*' denotes a positive integer. Example: " +
+            "<property property name=\"alternatedocroot_1\" value=\"from=/my.jpg dir=/srv/images/jpg\" />"),
+        
+        /**
+            Specifies custom error page mappings for the virtual server, which are inherited by all 
+            web applications deployed on the virtual server. A web application can override these 
+            custom error page mappings in its web.xml deployment descriptor. The value of each 
+            send-error_n property has three components, which may be specified in any order: 
+            The first component, code, specifies the three-digit HTTP response status code for 
+            which the custom error page should be returned in the response.<p>
+            The second component, path, specifies the absolute or relative file system path of the 
+            custom error page. A relative file system path is interpreted as relative to the 
+            domain-dir/config directory. <p>
+            The third component, reason, is optional and specifies the text of the reason string 
+            (such as Unauthorized or Forbidden) to be returned. <p>
+            For example:<br>
+            &lt;property name="send-error_1" value="code=401 path=/myhost/401.html reason=MY-401-REASON" /> 
+            <p>
+            This example property definition causes the contents of /myhost/401.html to be 
+            returned with 401 responses, along with this response line:<br>
+            HTTP/1.1 401 MY-401-REASON 
+            */
+        @PropertyDesc(name="send-error_*",
+            description="The '*' denotes a positive integer. Example: " +
+            "<property name=\"send-error_1\" value=\"code=401 path=/myhost/401.html reason=MY-401-REASON\" />"),
+        
+        /**
+            Specifies that a request for an old URL is treated as a request for a new URL. These 
+            properties are inherited by all web applications deployed on the virtual server. The 
+            value of each redirect_n property has two components, which may be specified in 
+            any order--
+            <p>
+            The first component, from, specifies the prefix of the requested URI to match. 
+            <p>
+            The second component, url-prefix, specifies the new URL prefix to return to the 
+            client. The from prefix is simply replaced by this URL prefix.
+            For example:<br>
+                &lt;property name="redirect_1" value="from=/dummy url-prefix=http://etude"/>
+         */
+        @PropertyDesc(name="redirect_*",
+            description="The '*' denotes a positive integer. Example: " +
+            "<property name=\"redirect_1\" value=\"from=/dummy url-prefix=http://etude\" />" )
+    }
+    )
+    @Override
+    @Element
+    List<Property> getProperty();
+
 }

@@ -42,52 +42,43 @@ import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.quality.ToDo;
-
 /**
- * Base interface for those configuration objects that has nested &lt;property> elements.
+ * Base interface for those configuration objects that has nested &lt;system-property> elements.
  * <p>
  * <em>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
- * for each legal property<em>.
- * @author Kohsuke Kawaguchi
+ * for each legal system-property<em>.
  */
-public interface PropertyBag {
+public interface SystemPropertyBag {
     /**
-     * Gets the value of the property property.
+     * Gets the list of system-property.
      * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
+     * returned list will be present inside the object.
      * This is why there is not a <CODE>set</CODE> method for the property property.
-     * <p/>
      * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getProperty().add(newItem);
+     *    getSystemProperty().add(newItem);
      * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
      * Objects of the following type(s) are allowed in the list
-     * {@link Property }
+     * {@link SystemProperty }
      */
-    @Element("property")
-    List<Property> getProperty();
+    @Element("system-property")
+    List<SystemProperty> getSystemProperty();
 
     @DuckTyped
-    Property getProperty(String name);
+    SystemProperty getSystemProperty(String name);
 
     /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
+     * Returns a property value if the bean has system properties and one of its
+     * system-property names is equal to the one passed.
      *
-     * @param name the property name requested
+     * @param name the system property name requested
      * @return the property value or null if not found
      */
     @DuckTyped
-    String getPropertyValue(String name);
+    String getSystemPropertyValue(String name);
 
     /**
      * Returns a property value if the bean has properties and one of its
@@ -99,10 +90,9 @@ public interface PropertyBag {
     @DuckTyped
     String getPropertyValue(String name, String defaultValue);
 
-    
     public class Duck {
-        public static Property getProperty(PropertyBag me, String name) {
-            for (Property prop : me.getProperty()) {
+        public static SystemProperty getSystemProperty(final SystemPropertyBag me, final String name) {
+            for (final SystemProperty prop : me.getSystemProperty()) {
                 if (prop.getName().equals(name)) {
                     return prop;
                 }
@@ -110,12 +100,12 @@ public interface PropertyBag {
             return null;
         }
 
-        public static String getPropertyValue(PropertyBag me, String name) {
-            return getPropertyValue(me,name,null);
+        public static String getPropertyValue(final SystemPropertyBag me, final String name) {
+            return getSystemPropertyValue(me,name,null);
         }
 
-        public static String getPropertyValue(PropertyBag me, String name, String defaultValue) {
-            Property prop = getProperty(me, name);
+        public static String getSystemPropertyValue(final SystemPropertyBag me, final String name, final String defaultValue) {
+            final SystemProperty prop = getSystemProperty(me, name);
             if (prop != null) {
                 return prop.getValue();
             }
