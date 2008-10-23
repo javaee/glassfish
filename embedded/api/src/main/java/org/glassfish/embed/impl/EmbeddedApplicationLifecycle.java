@@ -35,12 +35,11 @@
  *
  */
 
-
-
 /**
  *
  * @author bnevins
  */
+
 package org.glassfish.embed.impl;
 
 import java.util.LinkedList;
