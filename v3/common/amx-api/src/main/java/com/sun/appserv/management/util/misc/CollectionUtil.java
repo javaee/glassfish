@@ -72,7 +72,7 @@ public final class CollectionUtil
 		final String	 delim )
 	{
 	    final String[]  strings   = toStringArray( c );
-	    Arrays.sort( strings );
+	    //Arrays.sort( strings );
 	    
 		return StringUtil.toString( delim, (Object[])strings );
 	}

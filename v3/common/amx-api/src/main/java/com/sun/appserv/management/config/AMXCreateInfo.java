@@ -51,6 +51,7 @@ import java.lang.annotation.Target;
   <p>
   See {@link PropertyConfig} for an example of class annotation; see 
   {@link ResourcesConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
+  <p>Items that are named <em>must</em> make the key value the first item in paramNames().
   
   See also org.glassfish.api.amx.AMXConfigInfo in glassfish-api.
 */
