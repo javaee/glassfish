@@ -29,7 +29,9 @@
                         com.sun.enterprise.util.uuid, \
                         com.sun.enterprise.util.zip, \
                         com.sun.logging, \
+                        org.glassfish.quality, \
                         org.glassfish.resource.common, \
                         org.glassfish.security.common, \
-                        com.sun.logging.enterprise.system.core, \                        org.glassfish.server
+                        com.sun.logging.enterprise.system.core, \
+                        org.glassfish.server
 
