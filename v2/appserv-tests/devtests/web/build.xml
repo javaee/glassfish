@@ -202,6 +202,7 @@
         <ant dir="webServletAnnotation" target="all"/>
         <ant dir="servletFilterAnnotation" target="all"/>
         <ant dir="webServletContextListenerAnnotation" target="all"/>
+        <ant dir="sessionCookieConfig" target="all"/>
         -->
     </target>
 
