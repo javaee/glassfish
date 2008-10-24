@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.RequestPolicy;
 import java.util.List;
 

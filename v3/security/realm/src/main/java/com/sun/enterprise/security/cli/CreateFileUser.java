@@ -54,7 +54,7 @@ import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 
 /**

@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;

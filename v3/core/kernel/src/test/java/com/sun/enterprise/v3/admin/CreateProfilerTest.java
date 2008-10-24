@@ -44,7 +44,7 @@ import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 
 import org.glassfish.api.admin.AdminCommandContext;
 import org.junit.After;

@@ -27,7 +27,7 @@ import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import java.util.Arrays;

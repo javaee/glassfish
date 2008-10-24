@@ -49,7 +49,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 import java.util.List;

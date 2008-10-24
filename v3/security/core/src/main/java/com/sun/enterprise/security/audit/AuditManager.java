@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sun.appserv.security.AuditModule;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 /*V3:Commented
 import com.sun.enterprise.config.serverbeans.ServerBeansFactory;

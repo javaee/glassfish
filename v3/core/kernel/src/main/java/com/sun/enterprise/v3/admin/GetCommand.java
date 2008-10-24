@@ -123,7 +123,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             // if we get more of these special cases, we should switch to a Renderer pattern
-            if (node.getKey().model.targetTypeName.equals("com.sun.enterprise.config.serverbeans.Property")) {
+            if (node.getKey().model.targetTypeName.equals("org.glassfish.api.admin.config.Property")) {
                  // special display for properties...
                 if (matches(node.getValue(), pattern)) {
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();

@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 
 /**
  * @author Rob Ruyak

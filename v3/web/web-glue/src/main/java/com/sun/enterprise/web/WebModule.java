@@ -67,7 +67,7 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.universal.BASE64Encoder;

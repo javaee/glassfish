@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.security.cli;
 
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;

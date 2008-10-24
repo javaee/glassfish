@@ -74,7 +74,7 @@ import org.glassfish.api.invocation.ResourceHandler;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 
 /**
  * Implementation of javax.transaction.TransactionManager interface.

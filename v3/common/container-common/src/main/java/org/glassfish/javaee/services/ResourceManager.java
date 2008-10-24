@@ -43,6 +43,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.naming.NamingObjectsProvider;
+import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;

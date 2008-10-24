@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;

@@ -39,8 +39,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 
-/**
+/***
     Annotation for creating AMXConfig MBeans, to be used on ConfigBeanProxy
     interfaces which ultimately result in AMXConfig MBeans.
     <p>
@@ -61,6 +62,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @AMXMBeanMetadata
+@Documented
 //@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
     /**

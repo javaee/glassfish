@@ -46,7 +46,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation that holds an array of {@link PropertyDesc} for properties eg {@link Property}. 
+ * Annotation that holds an array of {@link PropertyDesc} for properties eg {@link Property}.
  * Needed because it's not otherwise possible to have more than one annotation of the same type.
  */
 @Retention(RUNTIME)

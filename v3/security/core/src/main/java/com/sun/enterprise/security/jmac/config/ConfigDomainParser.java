@@ -48,7 +48,7 @@ import java.io.IOException;
 import javax.security.auth.message.MessagePolicy;
 
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
-import com.sun.enterprise.config.serverbeans.Property;                
+import org.glassfish.api.admin.config.Property;                
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.RequestPolicy;
 import com.sun.enterprise.config.serverbeans.ResponsePolicy;

@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;

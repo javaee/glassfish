@@ -785,11 +785,11 @@ public class AMXConfigImplBase extends AMXImplBase
                     Class<ConfigBeanProxy> propClass = null;
                     
                     try {
-                        propClass = (Class<ConfigBeanProxy>)Class.forName("com.sun.enterprise.config.serverbeans.Property");
+                        propClass = (Class<ConfigBeanProxy>)Class.forName("org.glassfish.api.admin.config.Property");
                     }
                     catch( final ClassNotFoundException e )
                     {
-                        throw new TransactionFailure("Can't find com.sun.enterprise.config.serverbeans.Property");
+                        throw new TransactionFailure("Can't find org.glassfish.api.admin.config.Property");
                     }
                         
                     for( final String propertyName : mProperties.keySet() )
