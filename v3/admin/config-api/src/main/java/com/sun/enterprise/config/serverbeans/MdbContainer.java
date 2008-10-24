@@ -146,7 +146,6 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
                 "method when container-managed transactions are used")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 

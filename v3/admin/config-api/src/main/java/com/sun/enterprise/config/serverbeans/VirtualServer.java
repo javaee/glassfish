@@ -362,7 +362,6 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
             "<property name=\"redirect_1\" value=\"from=/dummy url-prefix=http://etude\" />" )
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 

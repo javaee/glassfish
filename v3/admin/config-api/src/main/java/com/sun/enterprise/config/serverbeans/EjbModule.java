@@ -231,7 +231,6 @@ public interface EjbModule extends ConfigBeanProxy, Injectable, Module, Property
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
-    @Override
     @Element
     List<Property> getProperty();
 }

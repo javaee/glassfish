@@ -274,7 +274,6 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, Pro
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
-    @Override
     @Element
     List<Property> getProperty();
 }

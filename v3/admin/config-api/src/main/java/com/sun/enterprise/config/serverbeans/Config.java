@@ -459,7 +459,6 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, System
         @PropertyDesc(name="JMX_SYSTEM_CONNECTOR_PORT", defaultValue="8686", dataType=Port.class)
     }
     )
-    @Override
     @Element
     public List<SystemProperty> getSystemProperty();
     
@@ -468,7 +467,6 @@ public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, System
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
-    @Override
     @Element
     List<Property> getProperty();
 

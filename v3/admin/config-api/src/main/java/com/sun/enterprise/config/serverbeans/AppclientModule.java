@@ -156,7 +156,6 @@ public interface AppclientModule extends ConfigBeanProxy, Injectable, Module, Pr
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
-    @Override
     @Element
     List<Property> getProperty();
 }

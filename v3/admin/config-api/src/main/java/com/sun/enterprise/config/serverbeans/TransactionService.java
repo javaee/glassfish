@@ -203,7 +203,6 @@ public interface TransactionService extends ConfigBeanProxy, Injectable, Propert
             description="db-logging-resource NDI name of the JDBC resource for the database to which transactions are logged")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 }

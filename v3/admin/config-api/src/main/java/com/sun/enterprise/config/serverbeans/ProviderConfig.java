@@ -174,7 +174,6 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
             description="Specifies the signature key used by the provider. The key is identified by its keystore alias")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 }

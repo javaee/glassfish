@@ -585,7 +585,6 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
             description="connection attributes")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 }

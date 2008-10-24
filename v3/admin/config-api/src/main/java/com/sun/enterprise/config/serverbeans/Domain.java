@@ -331,7 +331,6 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             description="Name of the domain. Not used in the default configuration, but can be used to customize configuration")
     }
     )
-    @Override
     @Element
     public List<SystemProperty> getSystemProperty();
     
@@ -340,7 +339,6 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
-    @Override
     @Element
     List<Property> getProperty();
     

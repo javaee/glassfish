@@ -299,7 +299,6 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
                 "username/password of guest/guest is not available in the broker")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
     

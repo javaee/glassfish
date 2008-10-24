@@ -94,7 +94,6 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
                 "Exceeded maximum depth for nested request dispatches")
     }
     )
-    @Override
     @Element
     List<Property> getProperty();
 

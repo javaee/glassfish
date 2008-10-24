@@ -397,7 +397,6 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
         description="Character set used to decode the request URIs received on this HTTP listener. " +
             "Must be a valid IANA character set name. Overrides the property of the parent http-service")
 })
-	@Override
-    @Element("property")
+	@Element("property")
     List<Property> getProperty();
 }
