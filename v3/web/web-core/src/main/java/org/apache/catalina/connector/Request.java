@@ -2961,6 +2961,7 @@ public class Request
                                     servletContext.getSessionCookieConfig();
             cookie.setDomain(sessionCookieConfig.getDomain());
             cookie.setPath(sessionCookieConfig.getPath());
+            cookie.setVersion(1);
             cookie.setComment(sessionCookieConfig.getComment());
             cookie.setSecure(sessionCookieConfig.isSecure());
             cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
