@@ -41,14 +41,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
-    Annotation for creating {@link AMXConfig} MBeans, to be used on ConfigBeanProxy
+    Annotation for creating AMXConfig MBeans, to be used on ConfigBeanProxy
     interfaces which ultimately result in AMXConfig MBeans.
     <p>
     The complete ObjectName with which an MBean is registered will be generated
     based in part upon this information; additional ObjectName properties can
     (and usual are) inserted in addition to the required ones, including 
     ones that define the containment hierarchy (following the same convention
-    as does JSR 77). See {@link #j2eeType} for more information.
+    as does JSR 77).
     <p>
     To generically participate as an AMX configuration MBean, a config interface need
     only annotate itself like this:
@@ -65,7 +65,7 @@ import java.lang.annotation.Target;
 public @interface AMXConfigInfo {
     /**
         The default behavior is/will be to derive all attributes automatically from the ConfigBean.
-        Specify a sub-interface of {@link AMXConfig} if desired.  By specifying AMXConfig.class
+        Specify a sub-interface of AMXConfig if desired.  By specifying AMXConfig.class
         as the amxInterface(), the MBeanInfo will automagically include all attributes
         from the config interface.
         <p>
@@ -77,7 +77,7 @@ public @interface AMXConfigInfo {
     public String amxInterfaceName() default "";
     
      
-    /**
+    /*
 KEEP until it's clear we won't need this
 not clear if this is needed; the interface should specify it
        <em>If a generic AMX interface is used in {@link #amxInterface},
@@ -119,7 +119,7 @@ not clear if this is needed; the interface should specify it
     String j2eeType() default "";
     */
     
-    /**
+    /*
 KEEP until it's clear we will never need this
         Optional hint for generating the ObjectName; could be used to indicate
         an appropriate name and/or a key or lookup value for finding the correct name.
@@ -132,7 +132,7 @@ KEEP until it's clear we will never need this
      */
 
     /**
-       Declares that there may be at most one MBean registered with this {@link #j2eeType}
+       Declares that there may be at most one MBean registered with this j2eeType
        <em>within its parent's scope</em>.
        By convention, singleton MBeans should all use the same name ("na"),
        because its j2eeType alone effectively denotes the name.  The AMX subsystem
