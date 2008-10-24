@@ -49,8 +49,8 @@ import org.glassfish.quality.ToDo;
 /**
  * Base interface for those configuration objects that has nested &lt;property> elements.
  * <p>
- * <em>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
- * for each legal property<em>.
+ * <b>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
+ * for each legal property</b>.
  * @author Kohsuke Kawaguchi
  */
 public interface PropertyBag {

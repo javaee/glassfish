@@ -45,8 +45,8 @@ import java.util.List;
 /**
  * Base interface for those configuration objects that has nested &lt;system-property> elements.
  * <p>
- * <em>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
- * for each legal system-property<em>.
+ * <b>Important: document legal properties using {@link PropertiesDesc}, one {@link PropertyDesc}
+ * for each legal system-property</b>.
  */
 public interface SystemPropertyBag {
     /**
