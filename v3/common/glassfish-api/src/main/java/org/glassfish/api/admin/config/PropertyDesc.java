@@ -42,12 +42,12 @@ import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
 
 import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Describes properties or system properties that might exist as sub-elements.
  */
-@Retention(RUNTIME)
+@Retention(SOURCE)  // not needed at runtime until we have something to make use of it
 @Target({TYPE})
 @Documented
 public @interface PropertyDesc {
