@@ -184,7 +184,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, System
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system properties" )
     @Element
-    @Override
     public List<SystemProperty> getSystemProperty();
 
     @DuckTyped

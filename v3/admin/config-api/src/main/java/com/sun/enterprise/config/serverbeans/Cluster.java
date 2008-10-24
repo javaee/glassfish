@@ -224,7 +224,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Syste
      * {@link SystemProperty }
      */
     @Element
-    @Override
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
     public List<SystemProperty> getSystemProperty();
 
