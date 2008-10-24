@@ -39,7 +39,7 @@ package com.sun.enterprise.configapi.tests;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import org.jvnet.hk2.config.*;

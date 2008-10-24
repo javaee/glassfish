@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import org.glassfish.tests.utils.Utils;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.api.admin.config.Property;
 
 
 import java.beans.PropertyVetoException;

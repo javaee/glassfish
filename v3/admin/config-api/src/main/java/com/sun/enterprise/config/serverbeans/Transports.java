@@ -45,6 +45,9 @@ import org.jvnet.hk2.config.Element;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
+
 import org.glassfish.quality.ToDo;
 
 /**

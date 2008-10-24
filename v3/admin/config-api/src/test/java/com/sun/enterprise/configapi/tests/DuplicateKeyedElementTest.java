@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.glassfish.tests.utils.Utils;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;

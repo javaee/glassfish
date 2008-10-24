@@ -41,7 +41,7 @@ import org.jvnet.hk2.config.*;
 import org.glassfish.tests.utils.Utils;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.AccessLog;
-import com.sun.enterprise.config.serverbeans.Property;
+import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 
 import java.util.Map;
