@@ -56,9 +56,6 @@
         <sun:property id="jvm"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.Jvm}">                           
             <sun:dropDown id="Http" selected="#{configMap['JVM']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
         </sun:property>          
-<!--        <sun:property id="threadPool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.ThreadPool}">
-            <sun:dropDown id="Web" selected="#{configMap['threadPool']}" labels={"$resource{web.monitoring.Low}" "$resource{web.monitoring.High}" "$resource{web.monitoring.Off}"} values={"LOW", "HIGH", "OFF"} />
-        </sun:property>-->
         "<br /><br />
     </define>
 </composition>

@@ -34,76 +34,32 @@
  holder.
 -->
 <!-- configuration/webContainerManager.jsf -->
-<sun:page>
- <!beforeCreate
+<!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
-    getWebManagerProps(ConfigName="#{configName}", ReapInterval=>$attribute{reapInterval}, MaxSessions=>$attribute{maxSessions}, 
-    SessFileName=>$attribute{sessFileName}, SessionIdGen=>$attribute{sessionIdGen},
-    Properties=>$page{props});
-    getTableList(Properties="#{props}", TableList=>$attribute{tableList});          
- />
-#include "/shared/restart.inc" 
- <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webContainer.managerProp}" parseOnLoad="false" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-#include "webContainerTabs.inc"            
-#include "/shared/alertMsg.inc"            
-                <!-- Page Title -->
-                 <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.managerProp}" > 
-                     <!-- Buttons  -->                    
-                     <!facet pageButtonsTop>
-                     <sun:panelGroup id="topButtons">
-                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-                         <!command
-                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                         convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
-                         prepareSuccessfulMsg();
-                         setPageSessionAttribute(key="props", value="${newProps}");
-                         saveWebManagerProps( 
-                             ConfigName="#{configName}"
-                             ReapInterval="#{reapInterval}"
-                             MaxSessions="#{maxSessions}"
-                             SessFileName="#{sessFileName}"
-                             SessionIdGen="#{sessionIdGen}"
-                             newProps="${newProps}"
-                         );
-                         />
-                         </sun:button>
-                     </sun:panelGroup>
-                     </facet>      
-                     </sun:title>
-                     <!-- PropertySheet .... -->
-                     <sun:propertySheet id="propertySheet">			 
-                         <!-- Text Field section -->   
-                         <sun:propertySheetSection id="propertySectionTextField">
-                            <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.reapIntervalLabel}" helpText="$resource{i18n.webManager.reapIntervalHelp}" >
-                                <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{requestScope.reapInterval}" />      
-                                <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
-                            </sun:property>
-                            <sun:property id="MaxSessionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.maxSessionsLabel}" >
-                                <sun:textField id="MaxSessions" styleClass="integer" columns="$int{20}" text="#{requestScope.maxSessions}" />      
-                            </sun:property>
-                            <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessFileNameLabel}" helpText="$resource{i18n.webManager.sessFileNameHelp}" >
-                                <sun:textField id="SessFileName" columns="$int{50}" text="#{requestScope.sessFileName}" />      
-                            </sun:property>
-                            <sun:property id="SessionIdGenProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessionIdGenLabel}" helpText="$resource{i18n.webManager.sessionIdGenHelp}" >
-                                <sun:textField id="SessionIdGen" columns="$int{50}" text="#{requestScope.sessionIdGen}" />      
-                            </sun:property>
-                         </sun:propertySheetSection>
-                     </sun:propertySheet>    
-#include "/shared/propertyTable.inc"                      
-                 
-	<sun:hidden id="helpKey" value="$resource{help.webContainerManager}" />
-            </sun:form>
-        </sun:body>
-#include "/shared/changeButtonsJS.inc"         
-    </sun:html>
-</sun:page>
+    setResourceBundle(key="web" bundle="org.glassfish.admingui.core.Strings")
+/>
+<!composition template="/templates/adminConsolePropSheetPropTable.tpl"
+    pageTitle="$resource{web.headings.webGeneral}"
+    helpBundle="org.glassfish.admingui.core.Helplinks"
+    helpKey="$resource{help.webContainerGeneral}"
+    amxConfigName="webContainerConfig.sessionConfig.sessionManagerConfig.managerPropertiesConfig"
+    amxConfigAttributes={"reapIntervalInSeconds","maxSessions","sessionFileName","sessionIdGeneratorClassname"}>
+    <!define name="properties">
+        <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.reapIntervalLabel}" helpText="$resource{i18n.webManager.reapIntervalHelp}" >
+            <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{configMap['reapIntervalInSeconds']}" />
+            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+        <sun:property id="MaxSessionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.maxSessionsLabel}" >
+            <sun:textField id="MaxSessions" styleClass="integer" columns="$int{20}" text="#{configMap['maxSessions']}" />
+        </sun:property>
+        <sun:property id="SessFileNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessFileNameLabel}" helpText="$resource{i18n.webManager.sessFileNameHelp}" >
+            <sun:textField id="SessFileName" columns="$int{50}" text="#{configMap['sessionFileName']}" />
+        </sun:property>
+        <sun:property id="SessionIdGenProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webManager.sessionIdGenLabel}" helpText="$resource{i18n.webManager.sessionIdGenHelp}" >
+            <sun:textField id="SessionIdGen" columns="$int{50}" text="#{configMap['sessionIdGeneratorClassname']}" />
+        </sun:property>
+    </define>
+    <!define name="tabSet">
+#include "webContainerTabs.inc"
+    </define>
+</composition>

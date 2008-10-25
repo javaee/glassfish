@@ -41,7 +41,8 @@
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     setAttribute(key="helpKey" value="$resource{help.serverJvmOptions}" );
 />
-
+/*
 #include "/shared/jvmOptions_1.inc"
 #include "serverInstTabs.inc"
 #include "/shared/jvmOptions_2.inc"
+*/

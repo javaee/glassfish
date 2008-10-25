@@ -135,14 +135,16 @@ public class AmxHandlers {
         AMXConfig amxConfig = (AMXConfig) handlerCtx.getInputValue("moduleConfig");
         Map<String, Object> map = (Map<String, Object>) handlerCtx.getInputValue("configMap");
 
-        MiscUtil.setValueExpression("#{amxConfig}", amxConfig);
+        if (map != null) {
+            MiscUtil.setValueExpression("#{amxConfig}", amxConfig);
 
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-        final ELContext elContext = facesContext.getELContext();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
-                    createValueExpression(elContext, "#{amxConfig." + entry.getKey() + "}", Object.class);
-            propVE.setValue(elContext, entry.getValue());
+            final FacesContext facesContext = FacesContext.getCurrentInstance();
+            final ELContext elContext = facesContext.getELContext();
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                ValueExpression propVE = facesContext.getApplication().getExpressionFactory().
+                        createValueExpression(elContext, "#{amxConfig." + entry.getKey() + "}", Object.class);
+                propVE.setValue(elContext, entry.getValue());
+            }
         }
     }
 
