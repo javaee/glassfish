@@ -46,7 +46,6 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.policy.PolicyMap;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.security.webservices.CommonServerSecurityPipe;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyException;
