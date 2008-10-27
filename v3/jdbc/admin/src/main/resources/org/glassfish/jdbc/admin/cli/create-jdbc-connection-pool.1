@@ -27,6 +27,7 @@ SYNOPSIS
      [ --lazyconnectionassociation ={false|true}]
      [ --associatewiththread ={false|true}] [ --matchconnections ={false|true}]
      [ --maxconnectionusagecount =count]
+     [--validateatmostonceperiod=interval]
      [--wrapjdbcobjects={false|true}]
      [ --description  text] [--property (name=value)
      [:name=value]*] connectionpoolid
@@ -50,7 +51,7 @@ OPTIONS
          If set to true, the command-line statement is echoed  on
          the standard output. Default is false.
 
-Java EE 5           Last change: 22 Sep 2008                    1
+Java EE 5           Last change: 22 Oct 2008                    1
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -101,7 +102,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          In this example, password is  the  actual  administrator
          password.
 
-Java EE 5           Last change: 22 Sep 2008                    2
+Java EE 5           Last change: 22 Oct 2008                    2
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -154,7 +155,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          The name of the vendor-supplied JDBC datasource resource
          manager.
 
-Java EE 5           Last change: 22 Sep 2008                    3
+Java EE 5           Last change: 22 Oct 2008                    3
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -206,7 +207,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          The transaction-isolation-level on the  pooled  database
          connections.  This option does not have a default value.
 
-Java EE 5           Last change: 22 Sep 2008                    4
+Java EE 5           Last change: 22 Oct 2008                    4
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -256,7 +257,7 @@ Administration Commands            create-jdbc-connection-pool(1)
          value is false. One  attempt  is  made  to  re-establish
          failed connections.
 
-Java EE 5           Last change: 22 Sep 2008                    5
+Java EE 5           Last change: 22 Oct 2008                    5
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -308,7 +309,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
          The default value is 0, which specifies that  Enterprise
 
-Java EE 5           Last change: 22 Sep 2008                    6
+Java EE 5           Last change: 22 Oct 2008                    6
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -359,7 +360,7 @@ Administration Commands            create-jdbc-connection-pool(1)
      --lazyconnectionassociation
          Specifies  whether  a  physical  connection  should   be
 
-Java EE 5           Last change: 22 Sep 2008                    7
+Java EE 5           Last change: 22 Oct 2008                    7
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -411,7 +412,7 @@ Administration Commands            create-jdbc-connection-pool(1)
 
              A connection should not be matched with the resource
 
-Java EE 5           Last change: 22 Sep 2008                    8
+Java EE 5           Last change: 22 Oct 2008                    8
 
 Administration Commands            create-jdbc-connection-pool(1)
 
@@ -433,8 +434,17 @@ Administration Commands            create-jdbc-connection-pool(1)
          The default value is 0, which specifies no limit on  the
          number of times that a connection can be reused.
 
-     --wrapjdbcobjects
+     --validateatmostonceperiod
 
+         Specifies the time interval in seconds  between  succes-
+         sive request to validate a connection at most once. Set-
+         ting this attribute to an  appropriate  value  minimizes
+         the number of validation requests by a connection.
+
+         The default value is 0, which specifies that the connec-
+         tion is never validated.
+
+     --wrapjdbcobjects
          Specifies whether the  pooling  infrastructure  provides
          wrapped JDBC objects to applications.
 
@@ -453,6 +463,10 @@ Administration Commands            create-jdbc-connection-pool(1)
 
              o    java.sql.CallableStatement
 
+Java EE 5           Last change: 22 Oct 2008                    9
+
+Administration Commands            create-jdbc-connection-pool(1)
+
              o    java.sql.DatabaseMetaData
 
              o    java.sql.PreparedStatement
@@ -461,10 +475,6 @@ Administration Commands            create-jdbc-connection-pool(1)
 
              o    java.sql.Statement
          Possible values of --wrapjdbcobjects are as follows:
-
-Java EE 5           Last change: 22 Sep 2008                    9
-
-Administration Commands            create-jdbc-connection-pool(1)
 
          false
 
@@ -503,15 +513,16 @@ EXAMPLES
        asadmin> create-jdbc-connection-pool --user admin
        --passwordfile passwords.txt --host localhost --port 7070
        --datasourceclassname org.apache.derby.jdbc.ClientDataSource
+
+Java EE 5           Last change: 22 Oct 2008                   10
+
+Administration Commands            create-jdbc-connection-pool(1)
+
        --restype javax.sql.XADataSource
        --property portNumber=1527:password=APP:user=APP:serverName=
        localhost:databaseName=sun-appserv-samples:connectionAttributes=;
        create\=true sample_derby_pool
        Command create-jdbc-connection-pool executed successfully
-
-Java EE 5           Last change: 22 Sep 2008                   10
-
-Administration Commands            create-jdbc-connection-pool(1)
 
      Where, the sample_derby_pool is created. The escape  charac-
      ter backslash (\fR) is used in the --property option to dis-
@@ -529,5 +540,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 5           Last change: 22 Sep 2008                   11
+Java EE 5           Last change: 22 Oct 2008                   11
 
