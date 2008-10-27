@@ -42,13 +42,8 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import javax.servlet.ServletContext;
 import com.sun.xml.ws.transport.http.servlet.ServletModule;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.server.BoundEndpoint;
-import javax.xml.ws.WebServiceException;
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 public class JAXWSContainer extends Container {
     
@@ -85,7 +80,10 @@ public class JAXWSContainer extends Container {
         }
         if((spiType == com.sun.xml.ws.api.server.ServerPipelineHook.class) ||
            (spiType == com.sun.xml.ws.assembler.ServerPipelineHook.class)){
-            return((T)new ServerPipeCreator(endpoint));
+            Habitat h = Globals.getDefaultHabitat();
+            ServerPipeCreator s = h.getByContract(ServerPipeCreator.class);
+            s.init(endpoint);
+            return((T)s);
         }
         if(spiType == ResourceInjector.class) {
             // Give control of injection time only for servlet endpoints

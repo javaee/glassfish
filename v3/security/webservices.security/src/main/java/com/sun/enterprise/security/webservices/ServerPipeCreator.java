@@ -38,14 +38,11 @@ package com.sun.enterprise.security.webservices;
 
 import java.util.HashMap;
 
-import javax.xml.ws.http.HTTPBinding;
 
 import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.assembler.ServerPipelineHook;
-import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
 import com.sun.xml.ws.policy.PolicyMap;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -56,6 +53,9 @@ import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMapKey;
 
 import com.sun.xml.wss.provider.wsit.PipeConstants;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 
 /**
@@ -63,28 +63,22 @@ import com.sun.xml.wss.provider.wsit.PipeConstants;
  *  app server monitoing pipes to the StandAlonePipeAssembler and 
  *  TangoPipeAssembler
  */
-public class ServerPipeCreator extends ServerPipelineHook {
+@Service
+@Scoped(Singleton.class)
+public class ServerPipeCreator extends org.glassfish.webservices.ServerPipeCreator {
     
-    private WebServiceEndpoint endpoint;
-    private boolean isHttpBinding;
-
     private static final String SECURITY_POLICY_NAMESPACE_URI_SUBMISSION = 
             "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";
     private static final String SECURITY_POLICY_NAMESPACE_URI_SPECVERSION= 
             "http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702";       
-    public ServerPipeCreator(WebServiceEndpoint ep){
-        endpoint = ep;
-	isHttpBinding = 
-	    ((HTTPBinding.HTTP_BINDING.equals
-	      (endpoint.getProtocolBinding())) ? true : false); 
+    
+    public ServerPipeCreator(){
+        super();
     }
     
-    public Pipe createMonitoringPipe(ServerPipeAssemblerContext ctxt, Pipe tail) {
-        //TODO:resolve dependency on jsr-109 module
-        //return new MonitoringPipe(ctxt, tail, endpoint);
-        return null;
-    }    
-    
+    public void init(WebServiceEndpoint ep) {
+        super.init(ep);
+    }
     public Pipe createSecurityPipe(PolicyMap map, SEIModel sei,
             WSDLPort port, WSEndpoint owner, Pipe tail) {
 

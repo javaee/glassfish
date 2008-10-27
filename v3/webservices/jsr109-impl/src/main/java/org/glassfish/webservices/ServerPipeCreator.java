@@ -36,58 +36,46 @@
 
 package org.glassfish.webservices;
 
-import java.util.HashMap;
 
 import javax.xml.ws.http.HTTPBinding;
 
 import com.sun.xml.ws.api.pipe.Pipe;
+import com.sun.xml.ws.assembler.ServerPipelineHook;
+import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
+
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.assembler.ServerPipelineHook;
-import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
 import com.sun.xml.ws.policy.PolicyMap;
-
-import com.sun.enterprise.deployment.WebServiceEndpoint;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This is used by JAXWSContainer to return proper 196 security and
  *  app server monitoing pipes to the StandAlonePipeAssembler and 
  *  TangoPipeAssembler
  */
-public class ServerPipeCreator extends ServerPipelineHook {
+@Contract
+public abstract class ServerPipeCreator extends ServerPipelineHook {
     
-    private WebServiceEndpoint endpoint;
-    private boolean isHttpBinding;
+    protected WebServiceEndpoint endpoint;
+    protected boolean isHttpBinding;
 
-    public ServerPipeCreator(WebServiceEndpoint ep){
+    protected ServerPipeCreator(){
+    }
+    
+    public void init(WebServiceEndpoint ep){
         endpoint = ep;
 	isHttpBinding = 
 	    ((HTTPBinding.HTTP_BINDING.equals
 	      (endpoint.getProtocolBinding())) ? true : false); 
     }
-    
 
-  public Pipe createMonitoringPipe(ServerPipeAssemblerContext ctxt, Pipe tail) {
+    public Pipe createMonitoringPipe(ServerPipeAssemblerContext ctxt, Pipe tail) {
         return new MonitoringPipe(ctxt, tail, endpoint);
     }    
     
-  /*  public Pipe createSecurityPipe(PolicyMap map, SEIModel sei,
-            WSDLPort port, WSEndpoint owner, Pipe tail) {
-
-	HashMap props = new HashMap();
-
-	props.put(PipeConstants.POLICY,map);
-	props.put(PipeConstants.SEI_MODEL,sei);
-	props.put(PipeConstants.WSDL_MODEL,port);
-	props.put(PipeConstants.ENDPOINT,owner);
-	props.put(PipeConstants.SERVICE_ENDPOINT,endpoint);
-	props.put(PipeConstants.NEXT_PIPE,tail);
-
-        if (WsUtil.isSecurityEnabled(map, port)) {
-		endpoint.setSecurePipeline();
-        }
-
-        return new CommonServerSecurityPipe(props, tail, isHttpBinding);
-    }    */
+    public abstract Pipe createSecurityPipe(PolicyMap map, SEIModel sei,
+            WSDLPort port, WSEndpoint owner, Pipe tail);
+    
 }

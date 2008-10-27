@@ -89,6 +89,10 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
@@ -101,16 +105,17 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-common</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

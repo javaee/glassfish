@@ -149,10 +149,10 @@
             <version>${project.version}</version>
             <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
-        <!-- <dependency>
+        <dependency>
          <groupId>org.glassfish.webservices</groupId>
          <artifactId>jsr109-impl</artifactId>
          <version>${project.version}</version>
-        </dependency> -->
+        </dependency>
     </dependencies>
 </project>
