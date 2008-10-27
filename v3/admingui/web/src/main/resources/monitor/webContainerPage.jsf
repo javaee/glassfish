@@ -77,7 +77,7 @@
                             serverName='#{request.serverName}',
                             application="#{appVal}",
                             virtualServer="#{compVal}",
-                            statNames={'errorCount' 'maxTime' 'processingTime' 'requestCount'},
+                            statNames={'errorcount-count' 'maxtime-count' 'processingtime-count' 'requestcount-count'},
                             type="request",
                             stats=>$attribute{requestStats});
                     />
