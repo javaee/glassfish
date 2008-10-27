@@ -43,7 +43,7 @@ DESCRIPTION
              o    -Denvironment=Production
 
          o    Startup parameters for the Virtual Machine for  the
-              Java   platform   (Java   Virtual  Machine  or  JVM
+              Java   platform  (Java  Virtual  Machine  or  JVMTM
               machine).
 
          The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
@@ -86,15 +86,16 @@ Administration Commands                     create-jvm-options(1)
      option.
 
          o    Restart is not required for Java system  properties
-              whose  names  do  not start with -Djava or -Djavax.
-              For example, restart is not required for  the  Java
-              system property -Denvironment=Production.
+              whose  names  do not start with -Djava. or -Djavax.
+              (including the trailing period). For example,  res-
+              tart  is  not required for the Java system property
+              -Denvironment=Production.
 
          o    Restart is required for the following options:
 
              o    System  properties  whose  names   start   with
-                  -Djava.     or     -Djavax.,    for    example,
-                  -Djava.security.manager
+                  -Djava.  or  -Djavax.  (including  the trailing
+                  period), for example, -Djava.security.manager
 
              o    Startup parameters for  the  JVM  machine,  for
                   example, -Xmx1024m, -client or -d64
@@ -114,7 +115,7 @@ Administration Commands                     create-jvm-options(1)
      see the reference page for the operating system that you are
      using:
 
-         o    Solaris Operating System (Solaris  OS)  and  Linux:
+         o    SolarisTM Operating System (Solaris OS) and  Linux:
               java    -    the    Java    application    launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 

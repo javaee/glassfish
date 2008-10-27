@@ -78,15 +78,16 @@ Administration Commands                     delete-jvm-options(1)
      option.
 
          o    Restart is not required for Java system  properties
-              whose  names  do  not start with -Djava or -Djavax.
-              For example, restart is not required for  the  Java
-              system property -Denvironment=Production.
+              whose  names  do not start with -Djava. or -Djavax.
+              (including the trailing period). For example,  res-
+              tart  is  not required for the Java system property
+              -Denvironment=Production.
 
          o    Restart is required for the following options:
 
              o    System  properties  whose  names   start   with
-                  -Djava.     or     -Djavax.,    for    example,
-                  -Djava.security.manager
+                  -Djava.  or  -Djavax.  (including  the trailing
+                  period), for example, -Djava.security.manager
 
              o    Startup parameters for  the  JVM  machine,  for
                   example, -Xmx1024m, -client or -d64
@@ -98,13 +99,12 @@ Administration Commands                     delete-jvm-options(1)
 
          2.   start-domain(1)
 
-     For more information about the  Java  application  launcher,
-     see the reference page for the operating system that you are
-
 Java EE 5           Last change: 30 Sep 2008                    2
 
 Administration Commands                     delete-jvm-options(1)
 
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
      using:
 
          o    Solaris Operating System (Solaris  OS)  and  Linux:
