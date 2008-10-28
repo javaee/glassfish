@@ -58,6 +58,9 @@ own identifying information: Portions Copyright [yyyy]
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
          <rejar destfile="${finaljar}">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+            <manifest>
+                 <attribute name="Main-Class" value="org.glassfish.embed.EmbeddedMain"/>
+             </manifest>
         </rejar>
 
         <attachArtifact file="${finaljar}"/>
