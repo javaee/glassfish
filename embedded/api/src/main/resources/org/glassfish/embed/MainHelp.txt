@@ -1,7 +1,15 @@
-test
-blah blah
-blah blah
-blah blah
-blah blah
-blah blah
-blah blah
+*******************************************************************************
+*******                  Welcome to Embedded GlassFish            *************
+*******************************************************************************
+
+Below are a list of valid options.  To use the longname, prepend it with '--'.  
+To use a short name prepend it with '-'.  
+
+Example to start an Embedded GlassFish Server with a web app packaged in a jar:
+
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar --war myapp.war
+
+==or==
+
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -w myapp.war
+
