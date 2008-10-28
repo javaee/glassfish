@@ -1,0 +1,6 @@
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\AppServer.java:172: warning - Tag @link: can't find createVirtualServer(GFHttpListener) in org.glassfish.embed.AppServer
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\AppServer.java:506: warning - @return tag has no arguments.
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\EmbeddedHttpListener.java:48: warning - Tag @link: reference not found: GFVirtualServer
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\EmbeddedHttpListener.java:48: warning - Tag @link: reference not found: GFVirtualServer
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\EmbeddedHttpListener.java:48: warning - Tag @link: reference not found: GFVirtualServer
+[WARNING] C:\v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\EmbeddedHttpLis

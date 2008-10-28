@@ -54,9 +54,11 @@ import static java.util.logging.Level.INFO;
  */
 public class Main_old {
     public static void main(String[] args) throws Exception {
-        AppServer.setLogLevel(INFO);
+        long startTime = System.currentTimeMillis();
+        Server.setLogLevel(INFO);
 
-         AppServer glassfish = new AppServer(9999);
+
+         Server glassfish = new Server(8888);
         //if you want to use your own domain.xml
         //Server glassfish = new Server(new File("domain.xml").toURI().toURL());
         //if you want to use your own default-web.xml file
@@ -67,7 +69,7 @@ public class Main_old {
 
 //        GFApplication app = glassfish.deploy(new File("./hudson.war"));
 
-        while (true) {
+        //while (true) {
             //File killerApp = new File("C:/gf/v3/embedded/api/killer-app");
             File killerApp = new File("killer-app");
             ScatteredWar scat = new ScatteredWar(
@@ -77,20 +79,36 @@ public class Main_old {
                 Collections.singleton(
                     new File(killerApp,"target/classes").toURI().toURL())
             );
-            App app = glassfish.deploy(new File("simple.war"));
-            //App app = glassfish.deploy(scat);
+            //Console.getKey("Hit any key (Attach debugger now!! ");
+            System.out.println("\n\n\nXXXXXXXXXXXXXXXXstarted Server in " +
+                    (System.currentTimeMillis() - startTime) + " msec\n\n\n" );
+
+
+            Application app = glassfish.deploy(new File("simple.war"));
+            
+            
+            
+            //Application app = glassfish.deployWar(scat);
+
+
+
+            
             // if you want to use another context root for example "/"
             // GFApplication app = glassfish.deployWar(war, "/");
             // if you want to use the default context root but another virtual server
             // GFApplication app = glassfish.deployWar(war, null, "myServerId");     
 
             System.out.println("Ready!");
+            System.out.println("Deployed a JSP/Servlet Scattered war in " +
+                    (System.currentTimeMillis() - startTime) + " msec" );
 
             // wait for enter
-            new BufferedReader(new InputStreamReader(System.in)).readLine();
+            //char key = Console.getKey("Hit any key to exit.");
 
-            app.undeploy();
-        }
+            //app.undeploy();
+            //glassfish.stop();
+            //System.out.println("If you see this, V3 core did NOT do a System.exit()");
+        //}
 
 //        glassfish.stop();
     }

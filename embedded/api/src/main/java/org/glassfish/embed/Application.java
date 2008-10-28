@@ -46,12 +46,12 @@ import org.glassfish.embed.impl.SilentActionReport;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class App {
-    private final AppServer owner;
+public final class Application {
+    private final Server owner;
     private final ApplicationInfo app;
     private final DeploymentContext deploymentContext;
 
-    public App(AppServer owner, ApplicationInfo app, DeploymentContext deploymentContext) {
+    public Application(Server owner, ApplicationInfo app, DeploymentContext deploymentContext) {
         this.owner = owner;
         this.app = app;
         this.deploymentContext = deploymentContext;
@@ -60,7 +60,7 @@ public final class App {
     /**
      * Which Server is this application deployed on?
      */
-    public AppServer getOwner() {
+    public Server getOwner() {
         return owner;
     }
 

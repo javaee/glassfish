@@ -51,7 +51,7 @@ import static java.util.logging.Level.INFO;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Main {
+public class Main_new {
     public static void main(String[] args) {
         try {
 
@@ -59,9 +59,9 @@ public class Main {
             pr("A Very Simple Sample of Using Embedded GlassFish");
             pr("");
             File war = getWar();
-            AppServer.setLogLevel(INFO);
-            AppServer glassfish = new AppServer(9999);
-            App app = glassfish.deploy(war);
+            Server.setLogLevel(INFO);
+            Server glassfish = new Server(9999);
+            Application app = glassfish.deploy(war);
             pr(war.toString() + " deployed. GlassFish is listening at port 9999 for HTTP traffic.");
 
             char key = Console.getKey("Hit Enter to stop the server and exit.  Enter 'X' to *not* call System.exit()");

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,42 +32,20 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
-
-package org.glassfish.embed.impl;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
-import javax.xml.stream.XMLStreamException;
-import org.glassfish.config.support.ConfigurationPersistence;
-import org.glassfish.embed.Server;
-import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.v3.server.DomainXml;
-import org.glassfish.server.ServerEnvironmentImpl;
-
+package org.glassfish.embed.args;
 
 /**
- * Loads the default empty domain.xml.
- * 
- * @author Kohsuke Kawaguchi
+ *
+ * @author bnevins
  */
-public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersistence {
-    @Inject
-    protected Server server;
- 
-    public EmbeddedDomainXml() {
-    }
+public class BoolArg extends Arg{
 
+    public BoolArg(String ln, String sn, boolean defaultValue, String desc) {
+        super(ln, sn, Boolean.toString(defaultValue), desc);
+    }
     @Override
-    protected URL getDomainXml(ServerEnvironmentImpl env) {
-//        return getClass().getResource("/org/glassfish/embed/domain.xml");
-        return server.getDomainXml();
-    }
-
-    public void save(DomDocument doc) throws IOException, XMLStreamException {
-        // we don't want to persist domain.xml
+    boolean requiresParameter() {
+        return false;
     }
 }

@@ -22,8 +22,8 @@ public class DeployWebAppTest {
     @BeforeClass
     public static void setUpClass() {
         try {
-        System.out.println("Starting AppServer on port 9999");
-        myGF = new AppServer(9999);
+        System.out.println("Starting Server on port 9999");
+        myGF = new Server(9999);
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class DeployWebAppTest {
     @Test
     public void garbageWar() throws Exception{
         File qqq = new File("xxxxxx");
-        App app = null;
+        Application app = null;
         
         try {
             app = myGF.deploy(qqq);
@@ -64,7 +64,7 @@ public class DeployWebAppTest {
         File simpleWar = SmartFile.sanitize(new File("target/test-classes/simple.war"));
         assertTrue(simpleWar.exists());
         System.out.println("Located simple.war");
-        App app = null;
+        Application app = null;
         
         try {
             app = myGF.deploy(simpleWar);
@@ -77,5 +77,5 @@ public class DeployWebAppTest {
         System.out.println("Simple War deployed and undeployed OK...");
     }
     
-    private static AppServer myGF;
+    private static Server myGF;
 }
