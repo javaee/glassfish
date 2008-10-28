@@ -7,14 +7,14 @@ package smoke;
 
 import java.io.*;
 import org.glassfish.embed.*;
-import org.glassfish.embed.AppServer;
+import org.glassfish.embed.Server;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
  * Important Note:
  *  Need a negative test case for bad port number -- or any initialization failure
- * of AppServer.  Currently no exception is thrown back!!!!!
+ * of Server.  Currently no exception is thrown back!!!!!
  * @author bnevins
  */
 public class SmokeTest {
@@ -34,8 +34,8 @@ public class SmokeTest {
     @Test
     public void deploySimpleWar() {
         try {
-            AppServer myGF = new AppServer(9999);
-            App app = myGF.deploy(simpleWar);
+            Server myGF = new Server(9999);
+            Application app = myGF.deploy(simpleWar);
             
             // TODO -- get output at port 9999
             
@@ -62,8 +62,8 @@ public class SmokeTest {
      public static void setUpClass() {
         try {
             banner("Starting SmokeTests for GFE-All");
-        System.out.println("Starting AppServer on port 9999");
-        myGF = new AppServer(999999);
+        System.out.println("Starting Server on port 9999");
+        myGF = new Server(999999);
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -73,7 +73,7 @@ public class SmokeTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
         System.out.println("TearDownClass Here!");
-        System.out.println("Stopping AppServer...");
+        System.out.println("Stopping Server...");
         myGF.stop();
     }
     
@@ -97,7 +97,7 @@ public class SmokeTest {
             
             // oops!  GF Core does a System.exit() on myGF.stop() !!!!
             // Need to fork a VM for EVERY test  -- or use a different file for negative tests...
-            AppServer myGF = new AppServer(65999);
+            Server myGF = new Server(65999);
             banner("NEED to change core API --> this should be a FAT error!");
             myGF.stop();
         }
@@ -117,8 +117,8 @@ public class SmokeTest {
     @Test
     public void badWar() throws Exception{
         File qqq = new File("xxxxxx");
-        AppServer myGF = new AppServer(9999);
-        App app = null;
+        Server myGF = new Server(9999);
+        Application app = null;
         
         try {
             app = myGF.deploy(qqq);
