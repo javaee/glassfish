@@ -94,42 +94,10 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-hk2</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-grizzly</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-api</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>  
-        <!-- for dol files -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-common</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>  
-        
-        <dependency>
-            <groupId>org.glassfish.embedded</groupId>
-            <artifactId>glassfish-embedded-api</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>  
+        </dependency>
     </dependencies>
   
   <developers>
