@@ -2380,11 +2380,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             boolean dummy,
             Properties props) {
 
-        List hostList = StringUtils.parseStringList(virtualServers, " ,");
-        if (hostList == null || hostList.size() == 0) {
-            return;
-        }
-
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("WebContainer.unloadWebModule(): contextRoot: "
                     + contextRoot + " appName:" + appName);
@@ -2401,6 +2396,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         Engine[] engines = _embedded.getEngines();
+        List hostList = StringUtils.parseStringList(virtualServers, " ,");
+        boolean unloadFromAll = (hostList == null) || (hostList.size() == 0);
         boolean hasBeenUndeployed = false;
         Container[] hostArray = null;
         VirtualServer host = null;
@@ -2411,7 +2408,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             for (int i = 0; i < hostArray.length; i++) {
                 host = (VirtualServer) hostArray[i];
 
-                if (hostList.contains(host.getName())
+                /**
+                 * Related to Bug: 4904290
+                 * Do not unloadload module on ADMIN_VS
+                 */
+                if ( unloadFromAll && host.getName().equalsIgnoreCase(
+                        VirtualServer.ADMIN_VS)){
+                    continue;
+                }
+
+                if (unloadFromAll
+                        || hostList.contains(host.getName())
                         || verifyAlias(hostList,host)){
 
                     context = (WebModule) host.findChild(contextRoot);
@@ -2495,20 +2502,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public boolean suspendWebModule(String contextRoot,
                                     String appName,
                                     String hosts) {
-
-        boolean hasBeenSuspended = false;
-
-        List hostList = StringUtils.parseStringList(hosts, " ,");
-        if (hostList == null || hostList.size() == 0) {
-            return hasBeenSuspended;
-        }
-
         // tomcat contextRoot starts with "/"
         if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
 
         Engine[] engines = _embedded.getEngines();
+        List hostList = StringUtils.parseStringList(hosts, " ,");
+        boolean suspendOnAll = (hostList == null) || (hostList.size() == 0);
+        boolean hasBeenSuspended = false;
         Container[] hostArray = null;
         VirtualServer host = null;
         Context context = null;
@@ -2518,7 +2520,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             for (int i = 0; i < hostArray.length; i++) {
                 host = (VirtualServer) hostArray[i];
 
-                if (hostList.contains(host.getName())
+                /**
+                 * Related to Bug: 4904290
+                 * Do not unloadload module on ADMIN_VS
+                 */
+                if (suspendOnAll
+                        && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)){
+                    continue;
+                }
+
+                if (suspendOnAll
+                        || hostList.contains(host.getName())
                         || verifyAlias(hostList, host)){
 
                     context = (Context) host.findChild(contextRoot);
