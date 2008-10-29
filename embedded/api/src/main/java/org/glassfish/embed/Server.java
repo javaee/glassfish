@@ -300,7 +300,7 @@ public class Server {
         return dir;
     }
 
-    public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener) {
+    public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener) throws EmbeddedException{
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         if (started)
             throw new IllegalStateException();
@@ -323,9 +323,8 @@ public class Server {
             Transformer t = TransformerFactory.newInstance().newTransformer();
             t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
             domainXmlUrl = domainFile.toURI().toURL();
-        } catch (IOException e) {
-            throw new EmbeddedException("Failed to write domain XML", e);
-        } catch (TransformerException e) {
+        } 
+        catch (Exception e) {
             throw new EmbeddedException("Failed to write domain XML", e);
         }
 
@@ -408,7 +407,7 @@ public class Server {
     /**
      * Starts the server if hasn't done so already. Necessary to work around the live HTTP listener update.
      */
-    private void start() {
+    private void start() throws EmbeddedException{
         if (started) return;
         started = true;
 
@@ -435,9 +434,7 @@ public class Server {
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
             env = habitat.getComponent(ServerEnvironmentImpl.class);
-        } catch (IOException e) {
-            throw new EmbeddedException(e);
-        } catch (BootException e) {
+        } catch (Exception e) {
             throw new EmbeddedException(e);
         }
 
@@ -451,23 +448,31 @@ public class Server {
      * @throws IOException If the given archive reports {@link IOException} from one of its methods,
      *                     that exception will be passed through.
      */
-    public Application deploy(File archive) throws IOException {
-        start();
-        ReadableArchive a = archiveFactory.openArchive(archive);
+    public Application deploy(File archive) throws EmbeddedException {
+        try {
+            start();
+            ReadableArchive a = archiveFactory.openArchive(archive);
 
-        if (!archive.isDirectory()) {
-            // explode (if I don't, WarHandler won't work)
-            ArchiveHandler h = appLife.getArchiveHandler(a);
+            if (!archive.isDirectory()) {
 
-            File tmpDir = new File(a.getName());
-            FileUtils.whack(tmpDir);
-            tmpDir.mkdirs();
-            h.expand(a, archiveFactory.createArchive(tmpDir));
-            a.close();
-            a = archiveFactory.openArchive(tmpDir);
+                ArchiveHandler h = appLife.getArchiveHandler(a);
+
+                File tmpDir = new File(a.getName());
+                FileUtils.whack(tmpDir);
+                tmpDir.mkdirs();
+                h.expand(a, archiveFactory.createArchive(tmpDir));
+                a.close();
+                a = archiveFactory.openArchive(tmpDir);
+            }
+            return deploy(a);
+        }
+        catch (EmbeddedException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new EmbeddedException(ex);
         }
 
-        return deploy(a);
     }
 
     /**
@@ -487,7 +492,7 @@ public class Server {
      * @throws IOException If the given archive reports {@link IOException} from one of its methods,
      *                     that exception will be passed through.
      */
-    public Application deploy(ReadableArchive a) throws IOException {
+    public Application deploy(ReadableArchive a) throws EmbeddedException {
         return deploy(a, null);
     }
 
@@ -503,32 +508,39 @@ public class Server {
      * @return
      * @throws IOException
      */
-    public Application deploy(ReadableArchive a, Properties params) throws IOException {
-        start();
+    public Application deploy(ReadableArchive a, Properties params)  throws EmbeddedException {
+        try {
+            start();
 
-        ArchiveHandler h = appLife.getArchiveHandler(a);
+            ArchiveHandler h = appLife.getArchiveHandler(a);
 
-        // now prepare sniffers
+            // now prepare sniffers
+            //is this required?
+            ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
 
-        //is this required?
-        ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
+            ClassLoader cl = h.getClassLoader(parentCL, a);
+            Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
-        ClassLoader cl = h.getClassLoader(parentCL, a);
-        Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
+            // TODO: we need to stop this totally type-unsafe way of passing parameters
+            if (params == null) {
+                params = new Properties();
+            }
+            params.put(ParameterNames.NAME, a.getName());
+            params.put(ParameterNames.ENABLED, "true");
+            final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
 
-        // TODO: we need to stop this totally type-unsafe way of passing parameters
-        if (params == null) {
-            params = new Properties();
+            SilentActionReport r = new SilentActionReport();
+            ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
+            r.check();
+
+            return new Application(this, appInfo, deploymentContext);
         }
-        params.put(ParameterNames.NAME, a.getName());
-        params.put(ParameterNames.ENABLED, "true");
-        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
-
-        SilentActionReport r = new SilentActionReport();
-        ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
-        r.check();
-
-        return new Application(this, appInfo, deploymentContext);
+        catch (EmbeddedException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new EmbeddedException(ex);
+        }
     }
 
     /**
@@ -562,7 +574,7 @@ public class Server {
      * @param contextRoot   the context root to use
      * @param virtualServer the virtual server ID
      */
-    public Application deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
+    public Application deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws EmbeddedException {
         Properties params = new Properties();
         if (virtualServer == null) {
             virtualServer = "server";
@@ -581,7 +593,7 @@ public class Server {
      * @param contextRoot the context root to use
      * @throws IOException
      */
-    public Application deployWar(ScatteredWar war, String contextRoot) throws IOException {
+    public Application deployWar(ScatteredWar war, String contextRoot) throws EmbeddedException {
         return deployWar(war, contextRoot, null);
     }
 
@@ -591,7 +603,7 @@ public class Server {
      *
      * @param war the scattered war
      */
-    public Application deployWar(ScatteredWar war) throws IOException {
+    public Application deployWar(ScatteredWar war) throws EmbeddedException {
         return deployWar(war, null, null);
     }
 

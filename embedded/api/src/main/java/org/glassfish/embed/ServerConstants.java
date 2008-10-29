@@ -42,5 +42,9 @@ package org.glassfish.embed;
  * @author bnevins
  */
 public class ServerConstants {
-    public static final int defaultHttpPort =  8888;
+    public static final int             defaultHttpPort             =  8888;
+	public static final String			loggingResourceBundle		= "org.glassfish.embed.LocalStrings";
+	public static final String			exceptionResourceBundle		= "/org/glassfish/embed/LocalStrings.properties";
+    public static final int             MIN_PORT                    = 1;
+    public static final int             MAX_PORT                    = (256 * 256) - 1;
 }

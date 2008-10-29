@@ -37,15 +37,17 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.embed.args.*;
+import org.glassfish.embed.util.StringUtils;
 
 /**
- *
+ * 
  * @author bnevins
  */
 public class EmbeddedMain {
@@ -53,28 +55,59 @@ public class EmbeddedMain {
         try {
             if(args.length == 0)
                 usage();
+
+            // parse commandline arguments
             ArgProcessor proc = new ArgProcessor(argDescriptions, args);
             Map<String, String> params = proc.getParams();
-            List<String> operands = proc.getOperands();
 
-            System.out.println("params size = " + params.size());
-
-            if(params.get("help") != null)
+            if(Boolean.parseBoolean(params.get("help")))
                 usage();
-            
-            // temp
+
+            LoggerHelper.fine("params size = " + params.size());
             Set<Map.Entry<String,String>> set = params.entrySet();
             
             for(Map.Entry<String,String> entry : set) {
-                System.out.println(entry.getKey() + "=" + entry.getValue());
+                LoggerHelper.fine(entry.getKey() + "=" + entry.getValue());
             }
             
-            
+            // create an Info object based on the commandline args
+            EmbeddedInfo info = paramsToInfo(params);
+            LoggerHelper.finer(info.toString());
+            EmbeddedRunner runner = new EmbeddedRunner(info);
+            runner.run();
         }
-        catch(IllegalArgumentException e) {
-            System.out.println(e);
-            usage();
+        catch(Exception e) {
+            LoggerHelper.severe(e.toString());
+            //usage();
         }
+    }
+
+    /**
+     * This method knows and understands what the commandline args mean...
+     * Do minimal error detection here.  The ironclad checking is done in
+     * the Info object later.
+     */
+    private static EmbeddedInfo paramsToInfo(Map<String, String> params) throws EmbeddedException {
+        EmbeddedInfo info = new EmbeddedInfo();
+        String warName = params.get("war");
+        
+        if(StringUtils.ok(warName)) {
+           info.addArchive(new File(warName)); 
+        }
+        
+        String port = params.get("port");
+        
+        if(!StringUtils.ok(port)) 
+            throw new EmbeddedException("internal", StringHelper.get("no_default_http_port"));
+        
+        try {
+            info.setHttpPort(Integer.parseInt(port));
+        }
+        catch(NumberFormatException nfe) {
+            throw new EmbeddedException("port_not_int", port);
+        }
+        
+        return info;
     }
 
     private static void usage()
@@ -100,15 +133,9 @@ public class EmbeddedMain {
     {
         //       longname       shortname   default or req                                      description
         new Arg("war",          "w",            false,                                          "War File"),
-        new Arg("port",          "p",            "" + ServerConstants.defaultHttpPort,          "HTTP Port"),
-        new Arg("help",          "h",            false,                                         "Help"),
-        
-        
-        /*new BoolArg("regexp", "r", false, "Regular Expression"),
-        new Arg("dir", "d", ".", "Search Directory Root"),
-        new Arg("ext", "x", "java", "File Extensions"),
-        new BoolArg("ic", null, true, "Case Insensitive"),
-        new BoolArg("filenameonly", "f", false, "Return Filenames Only"),
-         */
+        new Arg("port",         "p",            "" + ServerConstants.defaultHttpPort,          "HTTP Port"),
+        new BoolArg("help",     "h",            false,                                         "Help"),
     };
+    
+    private LocalStringsImpl strings = new LocalStringsImpl(this.getClass());
 }

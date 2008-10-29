@@ -67,7 +67,7 @@ public final class Application {
     /**
      * Undeploys this application.
      */
-    public void undeploy() {
+    public void undeploy() throws EmbeddedException{
         SilentActionReport r = new SilentActionReport();
         owner.appLife.undeploy(app.getName(),deploymentContext, r);
         r.check();

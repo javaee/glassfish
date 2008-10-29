@@ -58,7 +58,7 @@ public class SilentActionReport extends ActionReporter {
     /**
      * If the execution failed, throws an exception.
      */
-    public void check() {
+    public void check() throws EmbeddedException {
         if(isFailure()) {
             Throwable t = getFailureCause();
             if (t instanceof Error)

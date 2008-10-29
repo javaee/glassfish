@@ -37,23 +37,27 @@
 
 package org.glassfish.embed;
 
+import java.io.*;
+
 /**
- * Indicates a failure inside GlassFish.
  *
- * @author Kohsuke Kawaguchi
  * @author bnevins
  */
-public class EmbeddedException extends Exception {
-    public EmbeddedException(String message) {
-        super(StringHelper.get(message));
+class EmbeddedRunner {
+
+    EmbeddedRunner(EmbeddedInfo info) throws EmbeddedException {
+        this.info = info;
     }
-    public EmbeddedException(String message, Throwable cause) {
-        super(StringHelper.get(message), cause);
+
+    void run() throws EmbeddedException {
+        info.validate();
+        Server server = new Server(info.httpPort);
+        
+        for(File f : info.archives) {
+            server.deploy(f);
+            LoggerHelper.info("deploy_successful", f);
+        }
     }
-    public EmbeddedException(Throwable cause) {
-        super(cause);
-    }
-    public EmbeddedException(String s, Object... objs) {
-        super(StringHelper.get(s, objs));
-    }
+
+    private EmbeddedInfo info;
 }

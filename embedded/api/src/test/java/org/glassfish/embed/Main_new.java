@@ -41,8 +41,10 @@ package org.glassfish.embed;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Level.INFO;
+import java.util.logging.Logger;
 
 /**
  * Launches a mock-up HK2 environment that doesn't provide
@@ -74,7 +76,10 @@ public class Main_new {
                 System.exit(0);
             
         }
-        catch (IOException ex) {
+        catch (EmbeddedException ex) {
+            Logger.getLogger(Main_new.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        catch (Exception ex) {
             error(ex.toString() + ex);
         }
     }
