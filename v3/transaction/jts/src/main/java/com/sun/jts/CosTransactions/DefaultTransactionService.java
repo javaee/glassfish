@@ -116,14 +116,15 @@ public class DefaultTransactionService implements TransactionService,
     private static boolean recoverable = false;
     private static boolean poasCreated = false;
     private static boolean active = false;
-	/*
-		Logger to log transaction messages
-	*/ 
-	static Logger _logger = LogDomains.getLogger(DefaultTransactionService.class, LogDomains.TRANSACTION_LOGGER);
+    /*
+        Logger to log transaction messages
+    */ 
+    static Logger _logger = LogDomains.getLogger(DefaultTransactionService.class, LogDomains.TRANSACTION_LOGGER);
     public static final String JTS_SERVER_ID = "com.sun.jts.persistentServerId"; /* FROZEN */
+    public static final String JTS_XA_SERVER_NAME = "com.sun.jts.xa-servername";
 
    
-	/**Default constructor.
+    /**Default constructor.
      *
      * @param
      *
@@ -201,17 +202,21 @@ public class DefaultTransactionService implements TransactionService,
                     properties.getProperty("com.sun.CORBA.POA.ORBServerId"/*#Frozen*/);
             }
             if (serverId != null) {
-					_logger.log(Level.INFO,"jts.startup_msg",serverId);
+                    _logger.log(Level.INFO,"jts.startup_msg",serverId);
             }
             String serverName = "UnknownHost"/*#Frozen*/;
-            try {
-                serverName = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ex) {
+            if(properties.getProperty(JTS_XA_SERVER_NAME) != null) {
+                 serverName = properties.getProperty(JTS_XA_SERVER_NAME);
+            } else {
+                try {
+                    serverName = InetAddress.getLocalHost().getHostName();
+                } catch (UnknownHostException ex) {
+                }
             }
             if( serverId != null ) {
                 Configuration.setServerName(serverName + "," + 
-		    Configuration.getPropertyValue(Configuration.INSTANCE_NAME)
-		    +  ",P" + serverId/*#Frozen*/, true);
+            Configuration.getPropertyValue(Configuration.INSTANCE_NAME)
+            +  ",P" + serverId/*#Frozen*/, true);
                 recoverable = true;
             } else {
                 long timestamp = System.currentTimeMillis();
@@ -225,7 +230,7 @@ public class DefaultTransactionService implements TransactionService,
                 if (orb != null)
                     createPOAs();
             } catch( Exception exc ) {
-				_logger.log(Level.WARNING,"jts.unexpected_error_when_creating_poa",exc);
+                _logger.log(Level.WARNING,"jts.unexpected_error_when_creating_poa",exc);
                 throw new INTERNAL(MinorCode.TSCreateFailed,CompletionStatus.COMPLETED_NO);
             }
         }
@@ -236,7 +241,7 @@ public class DefaultTransactionService implements TransactionService,
            try {
                 currentInstance = new CurrentImpl();
             } catch( Exception exc ) {
-				_logger.log(Level.WARNING,"jts.unexpected_error_when_creating_current",exc);
+                _logger.log(Level.WARNING,"jts.unexpected_error_when_creating_current",exc);
                 throw new INTERNAL(MinorCode.TSCreateFailed,CompletionStatus.COMPLETED_NO);
             }
 
@@ -252,15 +257,15 @@ public class DefaultTransactionService implements TransactionService,
             try {
                 namingContext = NamingContextHelper.narrow(orb.resolve_initial_references("NameService"/*#Frozen*/));
             } catch( InvalidName inexc ) {
-				// _logger.log(Level.WARNING,"jts.orb_not_running");
-				if (_logger.isLoggable(Level.FINE)) {
-					_logger.log(Level.FINE,"jts.orb_not_running");
-				}
+                // _logger.log(Level.WARNING,"jts.orb_not_running");
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,"jts.orb_not_running");
+                }
             } catch( Exception exc ) {
-				// _logger.log(Level.WARNING,"jts.orb_not_running");
-				if (_logger.isLoggable(Level.FINE)) {
-					_logger.log(Level.FINE,"jts.orb_not_running");
-				}
+                // _logger.log(Level.WARNING,"jts.orb_not_running");
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,"jts.orb_not_running");
+                }
             }
 
         // Create a TransactionFactory object and register it with the naming service
@@ -292,7 +297,7 @@ public class DefaultTransactionService implements TransactionService,
                 //if( !recoverable )
                 //_logger.log(Level.WARNING,"jts.non_persistent_server");
             } catch( Exception exc ) {
-				_logger.log(Level.WARNING,"jts.cannot_register_with_orb","TransactionFactory");
+                _logger.log(Level.WARNING,"jts.cannot_register_with_orb","TransactionFactory");
             }
 
             active = true; // transaction manager is alive and available
