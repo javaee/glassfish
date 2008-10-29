@@ -838,6 +838,9 @@ public class ContextConfig
                 source =
                     new InputSource("file://" + file.getAbsolutePath());
                 stream = new FileInputStream(file);
+                // Add as watched resource so that cascade reload occurs if a default
+                // config file is modified/added/removed
+                context.addWatchedResource(file.getAbsolutePath());
             }
         } catch (Exception e) {
             log.log(Level.SEVERE,
