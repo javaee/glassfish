@@ -283,7 +283,8 @@ public class EjbInvocation
      */
     public boolean useFastPath = false;
   
-    
+    private java.util.concurrent.locks.Lock cmcLock;
+
     /**
      * Used by JACC implementation to get an enterprise bean
      * instance for the EnterpriseBean policy handler.  The jacc
@@ -339,7 +340,15 @@ public class EjbInvocation
         // Can be null, which means preInvokeTxStatus is no longer applicable.
         preInvokeTxStatus = txStatus;
     }
-    
+
+    public java.util.concurrent.locks.Lock getCMCLock() {
+        return cmcLock;
+    }
+
+    public void setCMCLock(java.util.concurrent.locks.Lock l) {
+        cmcLock = l;
+    }
+
     //Implementation of InvocationContext methods
     
     private int interceptorIndex;

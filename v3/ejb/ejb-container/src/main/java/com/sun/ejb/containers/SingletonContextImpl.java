@@ -33,92 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.ejb.containers;
 
-package org.glassfish.ejb.deployment;
-
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-
-import javax.ejb.LockType;
+import javax.ejb.SessionContext;
 
 /**
+ * Implementation of EJBContext for Singleton SessionBeans
+ *
  * @author Mahesh Kannan
  */
-public class EjbSingletonDescriptor
-        extends EjbSessionDescriptor {
 
-    private static final String[] _emptyDepends = new String[] {};
+public final class SingletonContextImpl
+        extends AbstractSessionContextImpl
+        implements SessionContext {
 
-    private boolean startupFlag;
 
-    private String[] depends = _emptyDepends;
-
-    private Class singletonClass;
-
-    private boolean isCMC = true;
-
-    private String cmcInXML;
-
-    private LockType defaultLockType = LockType.WRITE;
-
-    public EjbSingletonDescriptor() {
-        super();
-    }
-
-    public EjbSingletonDescriptor(EjbDescriptor ejbDesc) {
-        super(ejbDesc);
-    }
-
-    public boolean isSingleton() {
-        return true;
-    }
-
-    public boolean isStartup() {
-        return startupFlag;
-    }
-
-    public void setStartup() {
-        startupFlag = true;
-    }
-
-    public String[] getDepends() {
-        return depends;
-    }
-
-    public void setDepends(String[] dep) {
-        this.depends = dep;
-    }
-
-    public Class getSingletonClass() {
-        return singletonClass;
-    }
-
-    public void setSingletonClass(Class singletonClass) {
-        this.singletonClass = singletonClass;
-    }
-
-    public boolean isContainerManagedConcurrency() {
-        return isCMC;
-    }
-
-    public void setContainerManagedConcurrency(boolean value) {
-        this.isCMC = value;
-    }
-
-    public String getCMCInXML() {
-        return cmcInXML;
-    }
-
-    public void setCMCInXML(String value) {
-        cmcInXML = value;
-    }
-
-    public void setDefaultLockType(LockType type) {
-        this.defaultLockType = type;
-    }
-
-    public LockType getDefaultLockType() {
-        return defaultLockType;
+    SingletonContextImpl(Object ejb, BaseContainer container) {
+        super(ejb, container);
     }
 
 }

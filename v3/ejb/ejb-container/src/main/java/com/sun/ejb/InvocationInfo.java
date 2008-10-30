@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.EjbRemovalInfo;
 import com.sun.enterprise.security.CachedPermission;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
  * InvocationInfo caches various attributes of the method that
@@ -88,6 +89,8 @@ public class InvocationInfo {
     public EjbRemovalInfo     removalInfo;
 
     public boolean isTxRequiredLocalCMPField = false;
+
+    public MethodLockInfo methodLockInfo;
     
     public InvocationInfo(Method method) {
         this.method = method;

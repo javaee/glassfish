@@ -81,7 +81,9 @@ public final class ContainerFactoryImpl implements ContainerFactory {
             if (ejbDescriptor instanceof EjbSingletonDescriptor) {
                 EjbSingletonDescriptor sd = (EjbSingletonDescriptor) ejbDescriptor;
                 
-                if (sd.isSingleton()) {
+                if (sd.isContainerManagedConcurrency()) {
+                    container = new CMCSingletonContainer(ejbDescriptor, loader);
+                } else {
                     container = new BMCSingletonContainer(ejbDescriptor, loader);
                 }
             } else if (ejbDescriptor instanceof EjbSessionDescriptor) {

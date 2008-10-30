@@ -39,45 +39,78 @@ package com.sun.ejb.containers;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.EjbInvocation;
+import com.sun.ejb.InvocationInfo;
+import com.sun.ejb.MethodLockInfo;
 
-import javax.transaction.Transaction;
-import java.util.logging.Level;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicBoolean;
+import javax.ejb.ConcurrentAccessTimeoutException;
+import javax.ejb.LockType;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.TimeUnit;
 
-import org.glassfish.ejb.startup.SingletonLifeCycleManager;
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
 /**
  * @author Mahesh Kannan
  */
-public class BMCSingletonContainer
+public class CMCSingletonContainer
         extends AbstractSingletonContainer {
 
-    private AtomicInteger invCount = new AtomicInteger(0);
+    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
 
-    public BMCSingletonContainer(EjbDescriptor desc, ClassLoader cl)
+    private final ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
+
+    private final ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
+
+    private final Lock defaultLock;
+
+    private final MethodLockInfo defaultMethodLockInfo;
+
+    public CMCSingletonContainer(EjbDescriptor desc, ClassLoader cl)
             throws Exception {
         super(desc, cl);
+        LockType defaultLockType = ((EjbSingletonDescriptor) desc).getDefaultLockType();
+        defaultLock = (defaultLockType == LockType.WRITE) ? writeLock : readLock;
+        defaultMethodLockInfo = new MethodLockInfo(defaultLock == readLock,
+                MethodLockInfo.NO_TIMEOUT, TimeUnit.SECONDS);
+        System.out.println("** CMC Singleton Container **");
     }
 
     protected ComponentContext _getContext(EjbInvocation inv) {
         checkInit();
+        InvocationInfo invInfo = inv.invocationInfo;
 
-        synchronized (invCount) {
-            invCount.incrementAndGet();
-            ((SingletonContextImpl) singletonCtx).setState(EJBContextImpl.BeanState.INVOKING);
+        MethodLockInfo lockInfo = (invInfo.methodLockInfo == null)
+                ? defaultMethodLockInfo : invInfo.methodLockInfo;
+        Lock theLock = lockInfo.isReadLockedMethod() ? readLock : writeLock;
+
+        if (lockInfo.getTimeout() == MethodLockInfo.NO_TIMEOUT) {
+            theLock.lock();
+        } else {
+            try {
+                boolean lockStatus = theLock.tryLock(lockInfo.getTimeout(), lockInfo.getUnit());
+                if (! lockStatus) {
+                    String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() + " " + lockInfo.getUnit();
+                    throw new ConcurrentAccessTimeoutException(msg);
+                }
+            } catch (InterruptedException inEx) {
+                String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() + " " + lockInfo.getUnit();
+                throw new ConcurrentAccessTimeoutException(msg);
+            }
         }
+
+
+        //Now that we have acquired the lock, remember it
+        inv.setCMCLock(theLock);
         
-        //For now return this as we support only BMC
+        //Now that we have the lock return the singletonCtx
         return singletonCtx;
     }
 
     public void releaseContext(EjbInvocation inv) {
-        synchronized (invCount) {
-            int val = invCount.decrementAndGet();
-            if (val == 0) {
-                ((SingletonContextImpl) singletonCtx).setState(EJBContextImpl.BeanState.READY);
-            }
+        Lock theLock = inv.getCMCLock();
+        if (theLock != null) {
+            theLock.unlock();
         }
     }
 

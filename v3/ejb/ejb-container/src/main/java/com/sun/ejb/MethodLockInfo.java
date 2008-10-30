@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -34,91 +35,46 @@
  * holder.
  */
 
-package org.glassfish.ejb.deployment;
+package com.sun.ejb;
 
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbRemovalInfo;
+import com.sun.enterprise.security.CachedPermission;
 
-import javax.ejb.LockType;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
+ * MethodLockInfo caches various attributes of lock attributes
+ *
  * @author Mahesh Kannan
  */
-public class EjbSingletonDescriptor
-        extends EjbSessionDescriptor {
 
-    private static final String[] _emptyDepends = new String[] {};
+public class MethodLockInfo {
 
-    private boolean startupFlag;
+    public static final int NO_TIMEOUT = -32767;
 
-    private String[] depends = _emptyDepends;
+    private boolean isReadLockedMethod;
 
-    private Class singletonClass;
+    private long timeout = NO_TIMEOUT;
 
-    private boolean isCMC = true;
+    private TimeUnit unit;
 
-    private String cmcInXML;
-
-    private LockType defaultLockType = LockType.WRITE;
-
-    public EjbSingletonDescriptor() {
-        super();
+    public MethodLockInfo(boolean isReadLocked, long timeout, TimeUnit unit) {
+        this.isReadLockedMethod = isReadLocked;
+        this.timeout = timeout;
+        this.unit = unit;
     }
 
-    public EjbSingletonDescriptor(EjbDescriptor ejbDesc) {
-        super(ejbDesc);
+    public boolean isReadLockedMethod() {
+        return isReadLockedMethod;
     }
 
-    public boolean isSingleton() {
-        return true;
+    public long getTimeout() {
+        return timeout;
     }
 
-    public boolean isStartup() {
-        return startupFlag;
-    }
-
-    public void setStartup() {
-        startupFlag = true;
-    }
-
-    public String[] getDepends() {
-        return depends;
-    }
-
-    public void setDepends(String[] dep) {
-        this.depends = dep;
-    }
-
-    public Class getSingletonClass() {
-        return singletonClass;
-    }
-
-    public void setSingletonClass(Class singletonClass) {
-        this.singletonClass = singletonClass;
-    }
-
-    public boolean isContainerManagedConcurrency() {
-        return isCMC;
-    }
-
-    public void setContainerManagedConcurrency(boolean value) {
-        this.isCMC = value;
-    }
-
-    public String getCMCInXML() {
-        return cmcInXML;
-    }
-
-    public void setCMCInXML(String value) {
-        cmcInXML = value;
-    }
-
-    public void setDefaultLockType(LockType type) {
-        this.defaultLockType = type;
-    }
-
-    public LockType getDefaultLockType() {
-        return defaultLockType;
+    public TimeUnit getUnit() {
+        return unit;
     }
 
 }

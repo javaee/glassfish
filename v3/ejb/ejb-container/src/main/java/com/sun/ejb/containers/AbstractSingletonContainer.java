@@ -37,14 +37,10 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.EjbInvocation;
-import com.sun.ejb.containers.util.pool.AbstractPool;
-import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
-import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
@@ -297,7 +293,7 @@ public abstract class AbstractSingletonContainer
     }
 
     private void createBeanPool() {
-        this.singletonCtxFactory = new SessionContextFactory();
+        this.singletonCtxFactory = new SingletonContextFactory();
     }
 
     protected void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
@@ -466,23 +462,23 @@ public abstract class AbstractSingletonContainer
     * left to deliver the invocation to.
     * Called from SessionContextFactory.create() !
     */
-    private SessionContextImpl createStatelessEJB()
+    private SingletonContextImpl createSingletonEJB()
         throws CreateException
     { 
         EjbInvocation ejbInv = null;
-        SessionContextImpl context;
+        SingletonContextImpl context;
 
         try {
             // create new stateless EJB
             Object ejb = ejbClass.newInstance();
 
             // create SessionContext and set it in the EJB
-            context = new SessionContextImpl(ejb, this);
+            context = new SingletonContextImpl(ejb, this);
             context.setInterceptorInstances(
                     interceptorManager.createInterceptorInstances());
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
-            ejbInv = super.createEjbInvocation();
+            ejbInv = createEjbInvocation();
             ejbInv.ejb = ejb;
             ejbInv.context = context;
             invocationManager.preInvoke(ejbInv);
@@ -553,7 +549,7 @@ public abstract class AbstractSingletonContainer
     /**
      * Allow overriding this method by the TimerBeanContainer
      */
-    void setSessionContext(Object ejb, SessionContextImpl context)
+    void setSessionContext(Object ejb, SingletonContextImpl context)
             throws Exception {
         if( ejb instanceof SessionBean ) {
             ((SessionBean)ejb).setSessionContext(context);
@@ -729,45 +725,50 @@ public abstract class AbstractSingletonContainer
 	return 0; //TODO FIXME
     }
 
-    protected class SessionContextFactory
+    protected class SingletonContextFactory
         implements ObjectFactory
     {
 
         public Object create(Object param) {
             try {
-                    return createStatelessEJB();
+                    return createSingletonEJB();
             } catch (CreateException ex) {
                     throw new EJBException(ex);
             }
         }
 
         public void destroy(Object obj) {
-            SessionContextImpl sessionCtx = (SessionContextImpl) obj;
+            SingletonContextImpl singletonCtx = (SingletonContextImpl) obj;
             // Note: stateless SessionBeans cannot have incomplete transactions
             // in progress. So it is ok to destroy the EJB.
 
-            Object sb = sessionCtx.getEJB();
-            if (sessionCtx.getState() != EJBContextImpl.BeanState.DESTROYED) {
+            if (singletonCtx == null) {
+                //possible if the bean was never accessed and it wasn't marked with @Startup
+                return;
+            }
+            
+            Object sb = singletonCtx.getEJB();
+            if (singletonCtx.getState() != EJBContextImpl.BeanState.DESTROYED) {
                 //Called from pool implementation to reduce the pool size.
                 //So need to call ejb.ejbRemove()
                 // mark context as destroyed
-                sessionCtx.setState(EJBContextImpl.BeanState.DESTROYED);
+                singletonCtx.setState(EJBContextImpl.BeanState.DESTROYED);
                 EjbInvocation ejbInv = null;
                 try {
                     // NOTE : Context class-loader is already set by Pool
                     ejbInv = createEjbInvocation();
                     ejbInv.ejb = sb;
-                    ejbInv.context = sessionCtx;
+                    ejbInv.context = singletonCtx;
                     invocationManager.preInvoke(ejbInv);
-                    sessionCtx.setInEjbRemove(true);        
+                    singletonCtx.setInEjbRemove(true);
    
                     interceptorManager.intercept(
-                            CallbackType.PRE_DESTROY, sessionCtx);
+                            CallbackType.PRE_DESTROY, singletonCtx);
 
                 } catch ( Throwable t ) {
                      _logger.log(Level.FINE, "ejbRemove exception", t);
                 } finally {
-                    sessionCtx.setInEjbRemove(false);
+                    singletonCtx.setInEjbRemove(false);
                     if( ejbInv != null ) {
                         invocationManager.postInvoke(ejbInv);
                     }
@@ -776,7 +777,7 @@ public abstract class AbstractSingletonContainer
                 //Called from forceDestroyBean
                 //So NO need to call ejb.ejbRemove()
                 // mark the context's transaction for rollback
-                Transaction tx = sessionCtx.getTransaction();
+                Transaction tx = singletonCtx.getTransaction();
                 try {
                     if ( (tx != null) && 
                         (tx.getStatus() != Status.STATUS_NO_TRANSACTION ) )  {
@@ -788,12 +789,12 @@ public abstract class AbstractSingletonContainer
             }
 
             // tell the TM to release resources held by the bean
-            //TODO [P1] transactionManager.ejbDestroyed(sessionCtx);
+            //TODO [P1] transactionManager.ejbDestroyed(singletonCtx);
 
-            sessionCtx.setTransaction(null);
+            singletonCtx.setTransaction(null);
 
-            sessionCtx.deleteAllReferences();
-            sessionCtx = null;
+            singletonCtx.deleteAllReferences();
+            singletonCtx = null;
         }
     } // SessionContextFactory{}
 

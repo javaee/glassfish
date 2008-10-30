@@ -47,8 +47,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.transaction.UserTransaction;
-import javax.xml.rpc.handler.MessageContext;
 import java.util.*;
 
 
@@ -62,10 +60,10 @@ import static com.sun.ejb.containers.StatefulSessionContainer.EEMRefInfoKey;
  */
 
 public final class SessionContextImpl
-    extends EJBContextImpl
-    implements SessionContext, StatefulEJBContext
+    extends AbstractSessionContextImpl
+    implements StatefulEJBContext
 {
-    private Object instanceKey;
+
     private boolean completedTxStatus;
     private boolean afterCompletionDelayed=false;
     private boolean committing=false;
@@ -77,7 +75,6 @@ public final class SessionContextImpl
     private transient int refCount = 0;
 
     private boolean txCheckpointDelayed;
-    private String ejbName;
     private long    lastPersistedAt;
 
     private long version;
@@ -95,16 +92,10 @@ public final class SessionContextImpl
     
     SessionContextImpl(Object ejb, BaseContainer container) {
         super(ejb, container);
-        EjbSessionDescriptor sessionDesc = 
+        EjbSessionDescriptor sessionDesc =
             (EjbSessionDescriptor) getContainer().getEjbDescriptor();
         isStateless = sessionDesc.isStateless();
         isStateful  = sessionDesc.isStateful();
-
-	this.ejbName = sessionDesc.getName();
-    }
-
-    public String toString() {
-	return ejbName + "; id: " + instanceKey;
     }
 
     public Map<EntityManagerFactory, EntityManager> getExtendedEntityManagerMap() {
@@ -160,6 +151,7 @@ public final class SessionContextImpl
         return getEmfsRegisteredWithTx().contains(emf);
     }
 
+    @Override
     public TimerService getTimerService() throws IllegalStateException {
         if( isStateful ) {
             throw new IllegalStateException
@@ -179,131 +171,8 @@ public final class SessionContextImpl
 
         return new EJBTimerServiceWrapper(timerService, this);
     }
-    
-    public UserTransaction getUserTransaction()
-        throws IllegalStateException
-    {
-        // The state check ensures that an exception is thrown if this
-        // was called from setSession/EntityContext. The instance key check
-        // ensures that an exception is not thrown if this was called
-        // from a stateless SessionBean's ejbCreate.
-        if ( (state == BeanState.CREATED) && (instanceKey == null) )
-            throw new IllegalStateException("Operation not allowed");
-        
-        return ((BaseContainer)getContainer()).getUserTransaction();
-    }
-    
-    public MessageContext getMessageContext() {
-        if( isStateless ) {
-            InvocationManager invManager = EjbContainerUtilImpl.getInstance().getInvocationManager();
-            try {
-                ComponentInvocation inv = invManager.getCurrentInvocation();
-                    
-                if( (inv != null) && isWebServiceInvocation(inv) ) {
-                    return ((EjbInvocation)inv).messageContext;
-                } else {
-                    throw new IllegalStateException("Attempt to access " +
-                       "MessageContext outside of a web service invocation");
-                }
-            } catch(Exception e) {
-                IllegalStateException ise = new IllegalStateException();
-                ise.initCause(e);
-                throw ise;
-            }
-        } else {
-            throw new IllegalStateException
-                ("Attempt to access MessageContext from stateful session ejb");
-        }
-    }
 
-    public <T> T getBusinessObject(Class<T> businessInterface) 
-        throws IllegalStateException
-    {
-
-        // getBusinessObject not allowed for Stateless/Stateful beans
-        // until after dependency injection
-        if ( instanceKey == null ) {
-            throw new IllegalStateException("Operation not allowed");
-        }
-
-        T businessObject = null;
-
-        EjbDescriptor ejbDesc = container.getEjbDescriptor();
-
-        if( businessInterface != null ) {
-            String intfName = businessInterface.getName();
-            
-            if( (ejbLocalBusinessObjectImpl != null) &&
-                ejbDesc.getLocalBusinessClassNames().contains(intfName) ) {
-
-                // Get proxy corresponding to this business interface.
-                businessObject = (T) ejbLocalBusinessObjectImpl
-                    .getClientObject(intfName);
-
-            } else if( (ejbRemoteBusinessObjectImpl != null) &&
-                   ejbDesc.getRemoteBusinessClassNames().contains(intfName)) {
-                /*TODO
-                // Create a new client object from the stub for this
-                // business interface.
-                String generatedIntf = 
-                    EJBUtils.getGeneratedRemoteIntfName(intfName);
-
-                java.rmi.Remote stub = 
-                    ejbRemoteBusinessObjectImpl.getStub(generatedIntf);
-
-                try {
-                    businessObject = (T) EJBUtils.createRemoteBusinessObject
-                        (container.getClassLoader(), intfName, stub);
-                } catch(Exception e) {
-
-                    IllegalStateException ise = new IllegalStateException
-                        ("Error creating remote business object for " +
-                         intfName);
-                    ise.initCause(e);
-                    throw ise;
-                }
-                */
-            }
-        }
-        
-        if( businessObject == null ) {
-            throw new IllegalStateException("Invalid business interface : " +
-                businessInterface + " for ejb " + ejbDesc.getName());
-        }
-        
-        return businessObject;
-    }
-
-    public Class getInvokedBusinessInterface() 
-        throws IllegalStateException
-    {
-
-        Class businessInterface = null;
-
-        try {
-            ComponentInvocation inv = EjbContainerUtilImpl.getInstance().getCurrentInvocation();
-            
-            if( (inv != null) && (inv instanceof EjbInvocation) ) {
-                EjbInvocation invocation = (EjbInvocation) inv;
-                if( invocation.isBusinessInterface ) {
-                    businessInterface = invocation.clientInterface;
-                } 
-            }
-        } catch(Exception e) {
-            IllegalStateException ise = new IllegalStateException();
-            ise.initCause(e);
-            throw ise;
-        }        
-
-        if( businessInterface == null ) {
-            throw new IllegalStateException("Attempt to call " + 
-               "getInvokedBusinessInterface outside the scope of a business " +
-                                            "method");
-        }
-
-        return businessInterface;
-    }
-    
+    @Override
     protected void checkAccessToCallerSecurity()
         throws IllegalStateException
     {
@@ -326,7 +195,7 @@ public final class SessionContextImpl
         
     }
     
-    
+    @Override
     public void checkTimerServiceMethodAccess()
         throws IllegalStateException
     {
@@ -349,15 +218,6 @@ public final class SessionContextImpl
             ("EJB Timer method calls cannot be called in this context");
         }
     }
-    
-    public Object getInstanceKey() {
-        return instanceKey;
-    }
-    
-    public void setInstanceKey(Object instanceKey) {
-        this.instanceKey = instanceKey;
-    }
-    
     
     boolean getCompletedTxStatus() {
         return completedTxStatus;
@@ -385,15 +245,6 @@ public final class SessionContextImpl
     
     void setInAfterCompletion(boolean flag) {
         inAfterCompletion = flag;
-    }
-
-    private ComponentInvocation getCurrentComponentInvocation() {
-        BaseContainer container = (BaseContainer) getContainer();
-        return container.invocationManager.getCurrentInvocation();
-    }
-    
-    private boolean isWebServiceInvocation(ComponentInvocation inv) {
-        return (inv instanceof EjbInvocation) && ((EjbInvocation)inv).isWebService;
     }
     
     // Used to check if stateful session bean is in ejbCreate.

@@ -53,6 +53,7 @@ import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
+import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandler;
 import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
@@ -64,44 +65,46 @@ import org.jvnet.hk2.annotations.Service;
  * @author Shing Wai Chan
  */
 @Service
-public class TransactionAttributeHandler extends AbstractAttributeHandler
+public class LockHandler extends AbstractAttributeHandler
         implements PostProcessor {
 
-    public TransactionAttributeHandler() {
+    public LockHandler() {
     }
-    
+
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return TransactionAttribute.class;
-    }    
-        
+        return Lock.class;
+    }
+
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-            EjbContext[] ejbContexts) throws AnnotationProcessorException {
-        
-        TransactionAttribute taAn = 
-            (TransactionAttribute) ainfo.getAnnotation();
+                                                        EjbContext[] ejbContexts) throws AnnotationProcessorException {
+
+        Lock lockAnn =
+                (Lock) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
-            EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-            ContainerTransaction containerTransaction =
-                getContainerTransaction(taAn.value());
+            if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
+                EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+                LockType lockType = lockAnn.value();
 
-            if (ElementType.TYPE.equals(ainfo.getElementType())) {
-                ejbContext.addPostProcessInfo(ainfo, this);
-            } else {
-                Method annMethod = (Method) ainfo.getAnnotatedElement();
-                
-                Set txBusMethods = ejbDesc.getTxBusinessMethodDescriptors();
-                for (Object next : txBusMethods) {
-                    MethodDescriptor nextDesc = (MethodDescriptor) next;
-                    Method m = nextDesc.getMethod(ejbDesc);
-                    if( TypeUtil.sameMethodSignature(m, annMethod) &&
-                            ejbDesc.getContainerTransactionFor(nextDesc) == null ) {
-                        // override by xml
-                        ejbDesc.setContainerTransactionFor
-                            (nextDesc, containerTransaction);
+                if (ElementType.TYPE.equals(ainfo.getElementType())) {
+                    ejbContext.addPostProcessInfo(ainfo, this);
+                    System.out.println("***SAW Lock AT CLASS LEVEL***");
+                } else {
+                    Method annMethod = (Method) ainfo.getAnnotatedElement();
+
+                    Set busMethods = singletonDesc.getMethodDescriptors();
+                    for (Object next : busMethods) {
+                        MethodDescriptor nextDesc = (MethodDescriptor) next;
+                        Method m = nextDesc.getMethod(singletonDesc);
+                        if (TypeUtil.sameMethodSignature(m, annMethod)) {// &&
+                                //singletonDesc.getCMCLockFor(nextDesc) == null) {
+                            // override by xml
+                           // singletonDesc.setCMCLockFor(nextDesc, lockType);
+                            System.out.println("$$$$$ Got ann: " + lockType + "  ON " + annMethod);
+                        }
                     }
                 }
             }
@@ -110,47 +113,17 @@ public class TransactionAttributeHandler extends AbstractAttributeHandler
         return getDefaultProcessedResult();
     }
 
-    private ContainerTransaction getContainerTransaction(
-            TransactionAttributeType taType) {
-        switch(taType) {
-            case MANDATORY:
-                return new ContainerTransaction(
-                        ContainerTransaction.MANDATORY,
-                        ContainerTransaction.MANDATORY);
-            case REQUIRED:
-                return new ContainerTransaction(
-                        ContainerTransaction.REQUIRED,
-                        ContainerTransaction.REQUIRED);
-            case REQUIRES_NEW:
-                return new ContainerTransaction(
-                        ContainerTransaction.REQUIRES_NEW,
-                        ContainerTransaction.REQUIRES_NEW);
-            case SUPPORTS:
-                return new ContainerTransaction(
-                        ContainerTransaction.SUPPORTS,
-                        ContainerTransaction.SUPPORTS);
-            case NOT_SUPPORTED:
-                return new ContainerTransaction(
-                        ContainerTransaction.NOT_SUPPORTED,
-                        ContainerTransaction.NOT_SUPPORTED);
-            default: // NEVER
-                return new ContainerTransaction(
-                        ContainerTransaction.NEVER,
-                        ContainerTransaction.NEVER);
-        }
-    }
-
     /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
-     * annotation type.
+     * @return an array of annotation types this annotation handler would
+     *         require to be processed (if present) before it processes it's own
+     *         annotation type.
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
-        
-        return new Class[] {
-            MessageDriven.class, Stateful.class, Stateless.class, Singleton.class,
+
+        return new Class[]{
+                MessageDriven.class, Stateful.class, Stateless.class, Singleton.class,
                 Timeout.class, TransactionManagement.class};
-                
+
     }
 
     protected boolean supportTypeInheritance() {
@@ -158,25 +131,25 @@ public class TransactionAttributeHandler extends AbstractAttributeHandler
     }
 
     public void postProcessAnnotation(AnnotationInfo ainfo,
-            AnnotatedElementHandler aeHandler)
+                                      AnnotatedElementHandler aeHandler)
             throws AnnotationProcessorException {
-        EjbContext ejbContext = (EjbContext)aeHandler;
+        EjbContext ejbContext = (EjbContext) aeHandler;
         EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-        TransactionAttribute taAn = 
-            (TransactionAttribute) ainfo.getAnnotation();
-        ContainerTransaction containerTransaction =
-            getContainerTransaction(taAn.value());
-        Class classAn = (Class)ainfo.getAnnotatedElement();
+        Lock lockAnn = (Lock) ainfo.getAnnotation();
+        LockType lockType = lockAnn.value();
+        Class classAn = (Class) ainfo.getAnnotatedElement();
 
-        Set txBusMethods = ejbDesc.getTxBusinessMethodDescriptors();
-        for (Object mdObj : txBusMethods) {
-            MethodDescriptor md = (MethodDescriptor)mdObj;
+        Set busMethods = ejbDesc.getMethodDescriptors();
+        for (Object mdObj : busMethods) {
+            MethodDescriptor md = (MethodDescriptor) mdObj;
+            /*
             // override by xml
             if (classAn.equals(ejbContext.getDeclaringClass(md)) &&
                     ejbDesc.getContainerTransactionFor(md) == null) {
-                ejbDesc.setContainerTransactionFor(
-                    md, containerTransaction);
+                //ejbDesc.setContainerTransactionFor(
+                        //md, containerTransaction);
             }
+            */
         }
     }
 }
