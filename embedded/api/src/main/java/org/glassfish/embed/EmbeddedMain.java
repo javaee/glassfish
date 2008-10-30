@@ -59,6 +59,7 @@ public class EmbeddedMain {
             // parse commandline arguments
             ArgProcessor proc = new ArgProcessor(argDescriptions, args);
             Map<String, String> params = proc.getParams();
+            List<String> operands = proc.getOperands();
 
             if(Boolean.parseBoolean(params.get("help")))
                 usage();
@@ -71,7 +72,7 @@ public class EmbeddedMain {
             }
             
             // create an Info object based on the commandline args
-            EmbeddedInfo info = paramsToInfo(params);
+            EmbeddedInfo info = paramsToInfo(params, operands);
             LoggerHelper.finer(info.toString());
             EmbeddedRunner runner = new EmbeddedRunner(info);
             runner.run();
@@ -87,12 +88,21 @@ public class EmbeddedMain {
      * Do minimal error detection here.  The ironclad checking is done in
      * the Info object later.
      */
-    private static EmbeddedInfo paramsToInfo(Map<String, String> params) throws EmbeddedException {
+    private static EmbeddedInfo paramsToInfo(Map<String, String> params, List<String> operands) throws EmbeddedException {
         EmbeddedInfo info = new EmbeddedInfo();
+        
+        /*  Use operands for war filenames -- for now....
         String warName = params.get("war");
         
         if(StringUtils.ok(warName)) {
            info.addArchive(new File(warName)); 
+        }
+         */
+
+        for(String s : operands) {
+            if(StringUtils.ok(s)) {
+               info.addArchive(new File(s));
+            }
         }
         
         String port = params.get("port");
@@ -132,7 +142,7 @@ public class EmbeddedMain {
     private final static Arg[] argDescriptions = new Arg[]
     {
         //       longname       shortname   default or req                                      description
-        new Arg("war",          "w",            false,                                          "War File"),
+        //new Arg("war",          "w",            false,                                          "War File"),
         new Arg("port",         "p",            "" + ServerConstants.defaultHttpPort,          "HTTP Port"),
         new BoolArg("help",     "h",            false,                                         "Help"),
     };

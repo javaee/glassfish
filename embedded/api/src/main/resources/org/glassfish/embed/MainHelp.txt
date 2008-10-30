@@ -2,14 +2,18 @@
 *******                  Welcome to Embedded GlassFish            *************
 *******************************************************************************
 
-Below are a list of valid options.  To use the longname, prepend it with '--'.  
+Below are a list of valid options.
+To use the longname, prepend it with '--'.  
 To use a short name prepend it with '-'.  
+The webapp war file names should be supplied after all the options.
+You can enter as many web apps as you like.
 
 Example to start an Embedded GlassFish Server with a web app packaged in a jar:
 
-java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar --war myapp.war
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar myapp.war
 
-==or==
+Same example but listen at port 80 instead of the default 8888
 
-java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -w myapp.war
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
+
 
