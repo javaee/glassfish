@@ -163,7 +163,16 @@ public final class EmbeddedWebContainer extends Embedded {
                                  boolean useDOLforDeployment,
                                  WebBundleDescriptor wbd) {
 
-        File configFile = new File(location, Constants.WEB_CONTEXT_XML);
+        File configFile = null;
+        // check contextPath.xml and /META-INF/context.xml if not found
+        if (ctxPath.equals("")) {
+            configFile = new File(getCatalinaHome()+"/config", "ROOT.xml");
+        } else {
+            configFile = new File(getCatalinaHome()+"/config", ctxPath+".xml");
+        }
+        if (!configFile.exists()) {
+            configFile = new File(location, Constants.WEB_CONTEXT_XML);
+        }
         WebModule context = new WebModule(id, webContainer);
         context.setDebug(debug);
         context.setPath(ctxPath);
