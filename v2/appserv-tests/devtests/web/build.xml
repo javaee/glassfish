@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="324"/>
+    <property name="TOTAL_EXPECTED" value="325"/>
 
     &commonSetup;
     &commonBuild;
@@ -211,6 +211,7 @@
         <ant dir="commonsLogging" target="all"/>
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
         <ant dir="contextXmlConfig" target="all"/> 
+        <ant dir="contextPathXmlConfig" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
         <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/> 
