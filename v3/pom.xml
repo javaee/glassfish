@@ -51,8 +51,8 @@
     <version>3.0-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
-        <connection>https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</connection>
-        <developerConnection>https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</developerConnection>
+        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</connection>
+        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</developerConnection>
     </scm>
     <issueManagement>
         <system>IssueTracker</system>
