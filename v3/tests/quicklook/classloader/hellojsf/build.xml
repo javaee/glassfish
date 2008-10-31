@@ -61,7 +61,7 @@
             <include name="*.jar"/>
         </lib>
     </war>
-    <copy file="${dist.dir}/${war.file.ext}" tofile="./${war.file.ext}"/>
+    <!-- copy file="${dist.dir}/${war.file.ext}" tofile="./${war.file.ext}"/ -->
 </target>
     
     <target name="deploy">
