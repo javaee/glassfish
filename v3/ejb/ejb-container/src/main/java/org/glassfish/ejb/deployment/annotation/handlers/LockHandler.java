@@ -45,7 +45,6 @@ import java.util.Set;
 import javax.ejb.*;
 
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.deployment.ContainerTransaction;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 
@@ -60,13 +59,13 @@ import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.TransactionAttribute.
+ * This handler is responsible for handling the javax.ejb.Lock.
  *
- * @author Shing Wai Chan
+ * @author Mahesh Kannan
+ * @author Marina Vatkina
  */
 @Service
-public class LockHandler extends AbstractAttributeHandler
-        implements PostProcessor {
+public class LockHandler extends AbstractAttributeHandler {
 
     public LockHandler() {
     }
@@ -79,19 +78,20 @@ public class LockHandler extends AbstractAttributeHandler
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
-                                                        EjbContext[] ejbContexts) throws AnnotationProcessorException {
+            EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
         Lock lockAnn =
                 (Lock) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
             if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+                EjbSingletonDescriptor singletonDesc = 
+                        (EjbSingletonDescriptor) ejbContext.getDescriptor();
                 LockType lockType = lockAnn.value();
 
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
-                    ejbContext.addPostProcessInfo(ainfo, this);
-                    System.out.println("***SAW Lock AT CLASS LEVEL***");
+                    System.out.println("***Setting Lock " + lockType + " AT CLASS LEVEL***");
+                    singletonDesc.setDefaultLockType(lockType);
                 } else {
                     Method annMethod = (Method) ainfo.getAnnotatedElement();
 
@@ -99,11 +99,10 @@ public class LockHandler extends AbstractAttributeHandler
                     for (Object next : busMethods) {
                         MethodDescriptor nextDesc = (MethodDescriptor) next;
                         Method m = nextDesc.getMethod(singletonDesc);
-                        if (TypeUtil.sameMethodSignature(m, annMethod)) {// &&
-                                //singletonDesc.getCMCLockFor(nextDesc) == null) {
+                        if (TypeUtil.sameMethodSignature(m, annMethod)) {
                             // override by xml
-                           // singletonDesc.setCMCLockFor(nextDesc, lockType);
                             System.out.println("$$$$$ Got ann: " + lockType + "  ON " + annMethod);
+                            singletonDesc.setCMCLockFor(nextDesc, lockType);
                         }
                     }
                 }
@@ -120,9 +119,7 @@ public class LockHandler extends AbstractAttributeHandler
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
 
-        return new Class[]{
-                MessageDriven.class, Stateful.class, Stateless.class, Singleton.class,
-                Timeout.class, TransactionManagement.class};
+        return new Class[]{Singleton.class, ConcurrencyManagement.class};
 
     }
 
@@ -130,26 +127,4 @@ public class LockHandler extends AbstractAttributeHandler
         return true;
     }
 
-    public void postProcessAnnotation(AnnotationInfo ainfo,
-                                      AnnotatedElementHandler aeHandler)
-            throws AnnotationProcessorException {
-        EjbContext ejbContext = (EjbContext) aeHandler;
-        EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-        Lock lockAnn = (Lock) ainfo.getAnnotation();
-        LockType lockType = lockAnn.value();
-        Class classAn = (Class) ainfo.getAnnotatedElement();
-
-        Set busMethods = ejbDesc.getMethodDescriptors();
-        for (Object mdObj : busMethods) {
-            MethodDescriptor md = (MethodDescriptor) mdObj;
-            /*
-            // override by xml
-            if (classAn.equals(ejbContext.getDeclaringClass(md)) &&
-                    ejbDesc.getContainerTransactionFor(md) == null) {
-                //ejbDesc.setContainerTransactionFor(
-                        //md, containerTransaction);
-            }
-            */
-        }
-    }
 }

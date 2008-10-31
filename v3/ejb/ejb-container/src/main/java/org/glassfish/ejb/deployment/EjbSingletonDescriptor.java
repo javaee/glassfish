@@ -36,8 +36,15 @@
 
 package org.glassfish.ejb.deployment;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.util.EjbVisitor;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.ejb.LockType;
 
@@ -46,6 +53,9 @@ import javax.ejb.LockType;
  */
 public class EjbSingletonDescriptor
         extends EjbSessionDescriptor {
+
+    private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(EjbSingletonDescriptor.class);
 
     private static final String[] _emptyDepends = new String[] {};
 
@@ -61,12 +71,20 @@ public class EjbSingletonDescriptor
 
     private LockType defaultLockType = LockType.WRITE;
 
+    private HashMap<MethodDescriptor, LockType> methodContainerLocks = null;
+
     public EjbSingletonDescriptor() {
         super();
     }
 
     public EjbSingletonDescriptor(EjbDescriptor ejbDesc) {
         super(ejbDesc);
+    }
+
+    public void addEjbDescriptor(EjbSingletonDescriptor ejbDesc) {
+        super.addEjbDescriptor((EjbDescriptor)ejbDesc);
+        this.methodContainerLocks = 
+             new HashMap<MethodDescriptor, LockType>(ejbDesc.getMethodContainerLocks());
     }
 
     public boolean isSingleton() {
@@ -113,7 +131,13 @@ public class EjbSingletonDescriptor
         cmcInXML = value;
     }
 
+    /**
+     * Sets the default lock type for the given bean.
+     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
+     */
     public void setDefaultLockType(LockType type) {
+        checkLockTypeAllowed();
+        System.out.println("@@@@SETTING DEFAULT TO: " + type);
         this.defaultLockType = type;
     }
 
@@ -121,4 +145,74 @@ public class EjbSingletonDescriptor
         return defaultLockType;
     }
 
+    /**
+     * Sets the lock type for the given method descriptor.
+     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
+     */
+    public void setCMCLockFor(MethodDescriptor methodDescriptor, LockType lockType) {
+        LockType oldValue = getCMCLockFor(methodDescriptor);
+        if (oldValue == null || (oldValue != null && !(oldValue.equals(lockType)))) {
+            checkLockTypeAllowed();
+            System.out.println("@@@@put " + methodDescriptor + " " + lockType);
+            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + lockType);
+            getMethodContainerLocks().put(methodDescriptor, lockType);
+        }
+    }
+
+    /**
+     * Fetches the assigned lock type object for the given method object or null.
+     */
+    public LockType getCMCLockFor(MethodDescriptor methodDescriptor) {
+        return  getMethodContainerLocks().get(methodDescriptor);
+    }
+
+    /**
+     * Returns a formatted String of the attributes of this object.
+     */
+    public void print(StringBuffer toStringBuffer) {
+        super.print(toStringBuffer);
+        toStringBuffer.append("\n ContainerManagedConcurrency ").append(isContainerManagedConcurrency());
+        if (isContainerManagedConcurrency()) {
+            toStringBuffer.append("\n defaultLockType ").append(defaultLockType);
+        }
+        toStringBuffer.append("\n methodContainerLocks ").append(getMethodContainerLocks());
+    }
+
+    /**
+     * visit the descriptor and all sub descriptors with a DOL visitor implementation
+     *
+     * @param aVisitor a visitor to traverse the descriptors
+     */
+    public void visit(EjbVisitor aVisitor) {
+        super.visit(aVisitor);
+        for (Iterator e = getMethodContainerLocks().keySet().iterator(); e.hasNext();) {
+            MethodDescriptor md = (MethodDescriptor) e.next();
+            LockType lt = getMethodContainerLocks().get(md);
+            // XXX ??? aVisitor.accept(md, lt);
+        }
+    }
+
+    private void removeCMCLockFor(MethodDescriptor methodDescriptor) {
+        getMethodContainerTransactions().remove(methodDescriptor);
+    }
+
+    /**
+     * Return a copy of the mapping held internally of method descriptors 
+     * to LockType objects.
+     */
+    private HashMap<MethodDescriptor, LockType> getMethodContainerLocks() {
+        if (this.methodContainerLocks == null) {
+            this.methodContainerLocks = new HashMap<MethodDescriptor, LockType>();
+        }
+        return methodContainerLocks;
+    }
+
+    private void checkLockTypeAllowed() {
+        if (isCMC == false) {
+            throw new IllegalArgumentException(localStrings.getLocalString(
+                    "enterprise.deployment.exceptionlocktypespecifiedinbeanwithbeanlocktype",
+                    "Lock attributes may not be specified on a bean with nean managed lock type" 
+                    ));
+        }
+    }
 }

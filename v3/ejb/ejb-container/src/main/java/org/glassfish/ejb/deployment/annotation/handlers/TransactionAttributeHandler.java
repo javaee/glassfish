@@ -157,6 +157,10 @@ public class TransactionAttributeHandler extends AbstractAttributeHandler
         return true;
     }
 
+    /**
+     * Set the default value (from class type annotation) on all
+     * methods that don't have a value.
+     */
     public void postProcessAnnotation(AnnotationInfo ainfo,
             AnnotatedElementHandler aeHandler)
             throws AnnotationProcessorException {

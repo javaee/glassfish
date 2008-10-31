@@ -54,7 +54,7 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractAttributeHandle
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.TransactionManagement.
+ * This handler is responsible for handling the javax.ejb.ConcurrencyManagement.
  *
  * @author Shing Wai Chan
  */
