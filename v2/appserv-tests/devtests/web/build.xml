@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="325"/>
+    <property name="TOTAL_EXPECTED" value="326"/>
 
     &commonSetup;
     &commonBuild;
@@ -139,6 +139,7 @@
         <ant dir="httpServletGetAllDeclaredMethods" target="all"/>
         <ant dir="getServerNameAndPort" target="all"/>
         <ant dir="sessionIdUrlRewrite" target="all"/>
+        <ant dir="sessionIdUrlRewriteSessionTrackingMode" target="all"/>
         <ant dir="dirListing" target="all"/>
         <ant dir="cacheControlResponseHeaders" target="all"/>
         <ant dir="mimeMappingInheritedFromDefaultWebXml" target="all"/>
