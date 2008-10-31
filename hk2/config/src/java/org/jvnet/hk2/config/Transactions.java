@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Jerome Dochez
  */
 
+@Service
 public final class Transactions {
 
     private static Transactions singleton;
@@ -106,7 +107,7 @@ public final class Transactions {
                             try {
                                 if ( job.mEvents.size() != 0 ) {
                                     job.process(listener);
-                                }
+                               }
                             } finally {
                                 job.releaseLatch();
                             }
