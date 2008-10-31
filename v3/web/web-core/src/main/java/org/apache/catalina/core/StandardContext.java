@@ -98,6 +98,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
@@ -181,6 +182,8 @@ public class StandardContext
     private static final ClassLoader standardContextClassLoader =
         StandardContext.class.getClassLoader();
 
+    private static final EnumSet<SessionTrackingMode> DEFAULT_SESSION_TRACKING_MODES =
+        EnumSet.of(SessionTrackingMode.COOKIE);
 
     // ----------------------------------------------------------- Constructors
 
@@ -779,6 +782,9 @@ public class StandardContext
     private ArrayList<AlternateDocBase> alternateDocBases = null;
 
     private boolean useMyFaces;
+
+    private EnumSet<SessionTrackingMode> sessionTrackingModes;
+
 
     /**
      * GMT timezone - all HTTP dates are on GMT
@@ -2712,13 +2718,12 @@ public class StandardContext
      * already been initialized
      */
     public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
-                
         if (isContextInitializedCalled) {
-            throw new IllegalStateException
-                    (sm.getString("applicationContext.sessionCookieConfig.initialized"));
+            throw new IllegalStateException(
+                sm.getString("applicationContext.sessionCookieConfig.initialized", getName()));
         }
+
         this.sessionCookieConfig = sessionCookieConfig;
-        
     }
  
      
@@ -2731,11 +2736,69 @@ public class StandardContext
      * was ever set for this <tt>ServletContext</tt>
      */
     public SessionCookieConfig getSessionCookieConfig() {
-        
         return sessionCookieConfig;
-        
     }
     
+
+    /**
+     * Sets the session tracking modes that are to become effective for this
+     * <tt>ServletContext</tt>.
+     */
+    public void setSessionTrackingModes(EnumSet<SessionTrackingMode> sessionTrackingModes) {
+
+        if (sessionTrackingModes.contains(SessionTrackingMode.SSL)) {
+            throw new IllegalArgumentException(
+                sm.getString(
+                    "applicationContext.sessionTrackingModes.iae.unsupported",
+                    SessionTrackingMode.SSL, getName()));
+        }
+        if (sessionTrackingModes.contains(SessionTrackingMode.URL) &&
+                sessionTrackingModes.contains(SessionTrackingMode.COOKIE)) {
+            throw new IllegalArgumentException(
+                sm.getString(
+                    "applicationContext.sessionTrackingModes.iae",
+                    sessionTrackingModes, getName()));
+        }
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.sessionTrackingModes.initialized", getName()));
+        }
+
+        this.sessionTrackingModes = sessionTrackingModes;
+
+        if (sessionTrackingModes.contains(SessionTrackingMode.COOKIE)) {
+            setCookies(true);
+        } else {
+            setCookies(false);
+        }
+    }
+
+
+    /**
+     * Gets the session tracking modes that are supported by default for this
+     * <tt>ServletContext</tt>.
+     *
+     * @return enum set of the session tracking modes supported by default for
+     * this <tt>ServletContext</tt>
+     */
+    public EnumSet<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        return DEFAULT_SESSION_TRACKING_MODES;
+    }
+
+
+    /**
+     * Gets the session tracking modes that are in effect for this
+     * <tt>ServletContext</tt>.
+     *
+     * @return enum set of the session tracking modes in effect for this
+     * <tt>ServletContext</tt>
+     */
+    public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        return (sessionTrackingModes != null ? sessionTrackingModes :
+            DEFAULT_SESSION_TRACKING_MODES);
+    }
+
 
     /**
      * Add the classname of an InstanceListener to be added to each

@@ -89,6 +89,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.security.SecurityUtil;
@@ -568,7 +569,40 @@ public final class ApplicationContextFacade
         
     }
     
-    
+
+    /**
+     * Sets the session tracking modes that are to become effective for this
+     * <tt>ServletContext</tt>.
+     */
+    public void setSessionTrackingModes(EnumSet<SessionTrackingMode> sessionTrackingModes) {
+        context.setSessionTrackingModes(sessionTrackingModes);
+    }
+
+
+    /**
+     * Gets the session tracking modes that are supported by default for this
+     * <tt>ServletContext</tt>.
+     *
+     * @return enum set of the session tracking modes supported by default for
+     * this <tt>ServletContext</tt>
+     */
+    public EnumSet<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        return context.getDefaultSessionTrackingModes();
+    }
+
+
+    /**
+     * Gets the session tracking modes that are in effect for this
+     * <tt>ServletContext</tt>.
+     *
+     * @return enum set of the session tracking modes in effect for this
+     * <tt>ServletContext</tt>
+     */
+    public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        return context.getEffectiveSessionTrackingModes();
+    }
+
+
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this
