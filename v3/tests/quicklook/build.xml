@@ -132,7 +132,7 @@
 	<delete verbose="true" includeemptydirs="true">
 		<fileset dir="${basedir}" includes="**/classes"/>
 	</delete>
-        <delete dir="${basedir}/test-output-web" includeemptydirs="true"/>
+        <delete dir="${basedir}/test-output" includeemptydirs="true"/>
         <delete dir="${basedir}/test-output-glassfish" includeemptydirs="true"/>
         <delete dir="${basedir}/dist" includeemptydirs="true"/>
 	<delete includeemptydirs="true">
@@ -140,14 +140,6 @@
 			<include name="**/*.output"/>
 		</fileset>
 	</delete>
-        <delete>
-            <fileset dir="${basedir}" includes="*.zip"/>
-        </delete>
-        <echo message="Deleting all WAR/EAR in local testsuite directories!!!"/>
-        <echo message="There should not be any WAR file checked in."/>
-        <delete>
-            <fileset dir="." includes="**/*.war"/>
-        </delete>
     </target>
         
     
