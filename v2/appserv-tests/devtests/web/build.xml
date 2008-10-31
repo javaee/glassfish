@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="326"/>
+    <property name="TOTAL_EXPECTED" value="327"/>
 
     &commonSetup;
     &commonBuild;
@@ -199,11 +199,11 @@
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
+        <ant dir="sessionCookieConfig" target="all"/>
         <!-- for Servlet 3.0
         <ant dir="webServletAnnotation" target="all"/>
         <ant dir="servletFilterAnnotation" target="all"/>
         <ant dir="webServletContextListenerAnnotation" target="all"/>
-        <ant dir="sessionCookieConfig" target="all"/>
         -->
     </target>
 
