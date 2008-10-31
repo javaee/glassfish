@@ -42,11 +42,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Properties;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
-import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Node;
+
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * This node is responsible for handling property (name, value) 

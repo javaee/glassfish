@@ -35,24 +35,22 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.logging.Level;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.annotation.InitParam;
-
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
+import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import com.sun.enterprise.deployment.EnvironmentProperty; 
-import com.sun.enterprise.deployment.WebComponentDescriptor; 
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import javax.servlet.annotation.InitParam;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * This handler is responsible in handling

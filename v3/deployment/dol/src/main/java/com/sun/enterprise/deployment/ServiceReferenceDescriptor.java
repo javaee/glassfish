@@ -35,19 +35,17 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.LinkedList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Iterator;
-
-import java.io.*;
-
-import java.net.URL;
-import javax.xml.namespace.QName;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.types.HandlerChainContainer;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import javax.xml.namespace.QName;
+import java.io.File;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Information about a J2EE web service client.

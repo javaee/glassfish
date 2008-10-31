@@ -49,8 +49,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.io.File;
-
 /**
  * Contains all deployment descriptor constants.
  *

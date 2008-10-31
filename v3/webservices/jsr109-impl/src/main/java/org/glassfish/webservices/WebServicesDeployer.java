@@ -36,6 +36,7 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -684,7 +685,7 @@ public class WebServicesDeployer extends WebDeployer {
         try {
             File dir = new File(dirName);
             if(dir.exists()) {
-                Iterator fileSetIter = com.sun.enterprise.deployment.util.FileUtil.getAllFilesUnder(dir, new JarFilter(), false).iterator();
+                Iterator fileSetIter = FileUtils.getAllFilesUnder(dir, new JarFilter(), false).iterator();
                 while(fileSetIter.hasNext()) {
                     cp+=(File.pathSeparator+((File)fileSetIter.next()).getAbsolutePath());
                 }

@@ -36,20 +36,19 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
+import com.sun.enterprise.deployment.MailConfiguration;
+import com.sun.enterprise.deployment.ResourcePrincipal;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.MailConfiguration;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node handles the runtime deployment descriptors for resource-ref tag

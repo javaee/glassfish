@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * This class handle the method element 

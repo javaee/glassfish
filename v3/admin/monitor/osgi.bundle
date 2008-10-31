@@ -7,7 +7,6 @@
                         com.sun.enterprise.management.support, \
                         org.glassfish.flashlight, \
                         org.glassfish.flashlight.annotations, \
-                        org.glassfish.flashlight.datatree, \
                         org.glassfish.flashlight.datatree.factory, \
                         org.glassfish.flashlight.statistics, \
                         org.glassfish.flashlight.statistics.factory, \

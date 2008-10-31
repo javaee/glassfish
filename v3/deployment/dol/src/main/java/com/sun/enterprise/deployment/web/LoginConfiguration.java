@@ -36,9 +36,7 @@
 
 package com.sun.enterprise.deployment.web;
 
-import java.util.Enumeration;
-
-    /**
+/**
     * @author Danny Coward
      */
 

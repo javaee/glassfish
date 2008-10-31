@@ -36,11 +36,14 @@
 
 package com.sun.enterprise.deployment.annotation.factory;
 
-import com.sun.enterprise.deployment.*;
-import org.glassfish.apf.AnnotatedElementHandler;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.annotation.context.AppClientContext;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
+import org.glassfish.apf.AnnotatedElementHandler;
 
 /**
  * The Factory is reponsible for creating AnnotatedElementHandler.

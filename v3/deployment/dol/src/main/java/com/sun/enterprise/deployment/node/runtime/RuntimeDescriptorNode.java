@@ -36,26 +36,23 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import org.w3c.dom.Node;
-import org.w3c.dom.Document;
-
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.types.EjbReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.types.EjbReferenceContainer;
+import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
+import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
+import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
 import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorFactory;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.logging.Level;
 
 /**
  * Superclass for all the runtime descriptor nodes

@@ -36,14 +36,14 @@
 
 package com.sun.enterprise.deployment.runtime;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Vector;
-
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
 public class CheckpointAtEndOfMethodDescriptor extends Descriptor{
 

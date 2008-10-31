@@ -35,8 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.JmsDestinationReference;
-        
 /**
  * I am an object representing a dependency on a JMS Destination
  * (Queue/Topic)

@@ -35,15 +35,11 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.io.Serializable;
-import java.util.Properties;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.logging.*;
-import com.sun.logging.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
 
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This descriptor holds the security configuration of an EJB IOR.
@@ -69,7 +65,7 @@ public class EjbIORConfigurationDescriptor implements Serializable {
     private String callerPropagation = SUPPORTED;
     private boolean required = false;
        
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
     
     /** 
     * Default constructor. 

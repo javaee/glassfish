@@ -37,10 +37,11 @@
 package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.util.DOLUtils;
-import java.io.InputStream;
-import java.util.logging.Level;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.InputStream;
+import java.util.logging.Level;
 
 /**
  *Provides access to schemas and DTDs to Java Web Start-launched app clients 

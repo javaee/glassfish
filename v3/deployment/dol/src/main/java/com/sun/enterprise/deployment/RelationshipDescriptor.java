@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.lang.reflect.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 

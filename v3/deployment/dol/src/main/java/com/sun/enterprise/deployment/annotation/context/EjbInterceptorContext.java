@@ -35,10 +35,10 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
+import com.sun.enterprise.deployment.EjbInterceptor;
+
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-
-import com.sun.enterprise.deployment.EjbInterceptor;
 
 /**
  * This provides a context for a of interceptor.

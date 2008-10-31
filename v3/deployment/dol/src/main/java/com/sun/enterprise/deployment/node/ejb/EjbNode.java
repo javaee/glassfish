@@ -36,41 +36,17 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Iterator;
-import java.util.Map;
-import org.w3c.dom.Node;
-import java.util.logging.Level;
-
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.types.EjbReference;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DisplayableComponentNode;
-import com.sun.enterprise.deployment.node.EnvEntryNode;
-import com.sun.enterprise.deployment.node.EjbReferenceNode;
-import com.sun.enterprise.deployment.node.EntityManagerReferenceNode;
-import com.sun.enterprise.deployment.node.EntityManagerFactoryReferenceNode;
-import com.sun.enterprise.deployment.node.ServiceReferenceNode;
-import com.sun.enterprise.deployment.node.EjbLocalReferenceNode;
-import com.sun.enterprise.deployment.node.ResourceRefNode;
-import com.sun.enterprise.deployment.node.ResourceEnvRefNode;
-import com.sun.enterprise.deployment.node.MessageDestinationRefNode;
-import com.sun.enterprise.deployment.node.LifecycleCallbackNode;
-
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This class is responsible for handling all common information

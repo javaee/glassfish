@@ -36,29 +36,28 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
+import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
-import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-
+import org.glassfish.apf.Scanner;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.apf.Scanner;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
+import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
-import org.xml.sax.SAXParseException;
 
 /**
  * @author Mahesh Kannan

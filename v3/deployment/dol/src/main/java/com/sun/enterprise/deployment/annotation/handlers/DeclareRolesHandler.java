@@ -35,26 +35,17 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-
-import javax.annotation.security.DeclareRoles;
-
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.RoleReference;
-import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotationProcessorException;
-import org.glassfish.apf.HandlerProcessingResult;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import org.glassfish.apf.AnnotationInfo;
+import org.glassfish.apf.AnnotationProcessorException;
+import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
+
+import javax.annotation.security.DeclareRoles;
+import java.lang.annotation.Annotation;
 
 /**
  * This handler is responsible for handling the

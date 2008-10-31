@@ -36,16 +36,13 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.util.Iterator;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.UserDataConstraint;
-import org.glassfish.deployment.common.DeploymentException;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Iterator;
 
 /**
  * Default implementation of all the DOL visitor interface for convenience

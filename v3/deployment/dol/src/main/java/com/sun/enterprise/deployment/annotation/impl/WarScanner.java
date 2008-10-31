@@ -35,21 +35,21 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.web.AppListenerDescriptor;
+import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Level;
-
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.web.ServletFilter;
-import com.sun.enterprise.deployment.web.AppListenerDescriptor;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
 
 
 /**

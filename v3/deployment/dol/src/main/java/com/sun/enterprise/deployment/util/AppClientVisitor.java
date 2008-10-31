@@ -42,7 +42,6 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.types.EjbReference;
 
 /**
  * This class defines a Visitor API for the DOL application client descriptor. 

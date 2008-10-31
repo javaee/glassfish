@@ -36,9 +36,6 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.types.EjbReference;
 
 /**

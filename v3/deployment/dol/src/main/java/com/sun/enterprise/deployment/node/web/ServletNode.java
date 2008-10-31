@@ -36,26 +36,19 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.node.DisplayableComponentNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.SecurityRoleRefNode;
-import com.sun.enterprise.deployment.node.RunAsNode;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RoleReference;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.node.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node is responsible for handling the servlet xml sub tree

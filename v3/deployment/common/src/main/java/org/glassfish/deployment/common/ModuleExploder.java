@@ -51,7 +51,7 @@ public class ModuleExploder {
     protected static final StringManager localStrings =
             StringManager.getManager(ModuleExploder.class );
 
-    protected static final Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    protected static final Logger logger = LogDomains.getLogger(ModuleExploder.class, LogDomains.DPL_LOGGER);;
 
     protected static final String PRESERVED_MANIFEST_NAME = java.util.jar.JarFile.MANIFEST_NAME + ".preserved";
 

@@ -35,19 +35,18 @@
  */
 package com.sun.enterprise.deployment.node.runtime.connector;
 
-import java.util.List;
-import java.util.Map;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
-import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.runtime.connector.ResourceAdapter;
 import com.sun.enterprise.deployment.runtime.connector.RoleMap;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This node handles the sun-connector runtime deployment descriptors 

@@ -36,21 +36,18 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-
-import java.util.List;
-import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
-
-import javax.xml.namespace.QName;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.WebServiceHandler;
 import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.WebServiceHandler;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node does xml marshalling to/from web service handlers.

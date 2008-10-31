@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  */
 public class ConnectorClassLoader extends EJBClassLoader {
 
-    private static final Logger _logger = LogDomains.getLogger(ConnectorClassLoader.class, LogDomains.UTIL_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ConnectorClassLoader.class, LogDomains.CORE_LOGGER);
 
     private static ConnectorClassLoader classLoader = null;
 

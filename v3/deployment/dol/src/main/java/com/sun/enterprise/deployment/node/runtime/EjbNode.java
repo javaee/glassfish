@@ -36,39 +36,19 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.logging.Level;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.ServiceReferenceNode;
-import com.sun.enterprise.deployment.node.WebServiceEndpointNode;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbCMPEntityDescriptor;
-import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbIORConfigurationDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.runtime.MdbConnectionFactoryDescriptor;
-import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
-import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
-import com.sun.enterprise.deployment.runtime.FlushAtEndOfMethodDescriptor;
-import com.sun.enterprise.deployment.runtime.CheckpointAtEndOfMethodDescriptor;
-import com.sun.enterprise.deployment.QueryDescriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.types.EjbReference;    
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.runtime.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node handles all runtime information for ejbs

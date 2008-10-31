@@ -36,17 +36,16 @@
 
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityDescriptor;
+import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This node handles message-security element

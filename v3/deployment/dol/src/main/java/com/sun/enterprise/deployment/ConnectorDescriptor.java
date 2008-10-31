@@ -35,19 +35,18 @@
  */
  package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.util.jar.*;
-import java.io.*;
-import java.util.zip.*;
-import java.util.logging.Level;
-import com.sun.enterprise.deployment.util.ConnectorVisitor;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.node.connector.ConnectorNode;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import com.sun.enterprise.deployment.runtime.connector.SunConnector;
+import com.sun.enterprise.deployment.util.ConnectorVisitor;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.DescriptorVisitor;
+
 import javax.enterprise.deploy.shared.ModuleType;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
 /**
  * Deployment Information for connector
  *

@@ -35,14 +35,13 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.lang.reflect.Method;     
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.*;
-import java.util.logging.Level;
-
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
 
     /**
     * Objects of this kind represent the deployment information describing a 

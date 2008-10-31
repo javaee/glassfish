@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  * object on the instance is invoked
  * @author Harpreet Singh
  */
-public interface MethodInvoker extends TreeNode {
+public interface MethodInvoker extends TreeElement {
 
     void setMethod (Method m);
 

@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * This node handles request-protection and response-protection elements

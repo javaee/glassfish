@@ -145,8 +145,6 @@ import com.sun.ejb.EJBUtils;
 @IdClass(com.sun.ejb.containers.TimerPrimaryKey.class)
 public class TimerState implements Serializable {
 
-    // private static final Logger logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
-
     // Timer states
     public static final int ACTIVE    = 0;
     public static final int CANCELLED = 1;

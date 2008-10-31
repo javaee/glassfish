@@ -37,17 +37,18 @@
 
 package com.sun.enterprise.deployment.io;
 
-import java.io.File;
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
-import org.jvnet.hk2.annotations.Service;
-
-import org.glassfish.api.ContractProvider;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.xml.*;
-import com.sun.enterprise.deployment.node.SaxParserHandler;
 import com.sun.enterprise.deployment.node.SaxParserHandlerFactory;
+import com.sun.enterprise.deployment.xml.*;
+import org.glassfish.api.ContractProvider;
+import org.jvnet.hk2.annotations.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.enterprise.deploy.shared.ModuleType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 
 /**
  * Factory for DeploymentDescriptorFile implementations

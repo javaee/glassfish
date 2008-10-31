@@ -35,11 +35,13 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.io.*;
-import java.io.Serializable;
-
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Descriptor is the root class for all objects

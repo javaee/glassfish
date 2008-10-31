@@ -35,12 +35,11 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.sun.enterprise.deployment.types.EntityManagerReference;
 
 import javax.persistence.PersistenceContextType;
-
-import com.sun.enterprise.deployment.types.EntityManagerReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An object representing an component environment reference 

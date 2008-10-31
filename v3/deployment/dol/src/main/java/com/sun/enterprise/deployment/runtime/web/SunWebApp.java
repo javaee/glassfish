@@ -36,12 +36,6 @@
 
 package com.sun.enterprise.deployment.runtime.web;
 
-import java.beans.*;
-import java.util.*;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.runtime.common.EjbRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;

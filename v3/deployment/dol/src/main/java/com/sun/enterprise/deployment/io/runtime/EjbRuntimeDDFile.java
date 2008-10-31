@@ -39,10 +39,10 @@ package com.sun.enterprise.deployment.io.runtime;
 
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
+import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
-import com.sun.enterprise.deployment.io.DescriptorConstants;
-import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
 
 
 /**

@@ -35,11 +35,12 @@
  */
 package com.sun.enterprise.deployment.util;
 
-import java.io.IOException;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Hashtable;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 public class FileClassLoader extends ClassLoader {
     String codebase;

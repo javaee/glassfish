@@ -36,12 +36,12 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * This node is responsible for handling init-param and context-param xml subtree.

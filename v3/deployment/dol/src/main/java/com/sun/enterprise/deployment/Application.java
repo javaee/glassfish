@@ -35,10 +35,11 @@
  */
 package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.archivist.EjbArchivist;
-import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
@@ -46,14 +47,13 @@ import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.types.RoleMappingContainer;
 import com.sun.enterprise.deployment.util.*;
-import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.resource.common.Resource;
-
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.Habitat;
+
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
@@ -169,7 +169,7 @@ public class Application extends RootDeploymentDescriptor
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = com.sun.enterprise.deployment.util.LogDomains.getLogger(DeploymentUtils.class, com.sun.enterprise.deployment.util.LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
 
 
     /**

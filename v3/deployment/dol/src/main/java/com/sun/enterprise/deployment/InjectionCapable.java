@@ -35,8 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 import java.util.Set;
 
 /**

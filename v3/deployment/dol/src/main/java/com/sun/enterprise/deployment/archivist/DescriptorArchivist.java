@@ -37,29 +37,17 @@
 package com.sun.enterprise.deployment.archivist;
 
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.File;
-import java.util.Iterator;
-
-import javax.enterprise.deploy.shared.ModuleType;
-
-import org.glassfish.api.deployment.archive.Archive;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
-import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
-import com.sun.enterprise.deployment.WebService;
+import javax.enterprise.deploy.shared.ModuleType;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * This class is responsible for writing deployment descriptors 

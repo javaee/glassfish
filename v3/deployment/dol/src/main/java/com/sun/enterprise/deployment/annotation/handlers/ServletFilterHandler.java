@@ -35,26 +35,24 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.annotation.ServletFilter;
-import javax.servlet.annotation.InitParam;
-
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ServletFilterDescriptor;
+import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
+import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import com.sun.enterprise.deployment.EnvironmentProperty; 
-import com.sun.enterprise.deployment.ServletFilterDescriptor; 
-import com.sun.enterprise.deployment.ServletFilterMappingDescriptor; 
-import com.sun.enterprise.deployment.WebBundleDescriptor; 
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
+import javax.servlet.DispatcherType;
+import javax.servlet.annotation.InitParam;
+import javax.servlet.annotation.ServletFilter;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.logging.Level;
 
 /**
  * This handler is responsible in handling

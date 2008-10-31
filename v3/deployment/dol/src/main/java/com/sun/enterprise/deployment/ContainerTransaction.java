@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**

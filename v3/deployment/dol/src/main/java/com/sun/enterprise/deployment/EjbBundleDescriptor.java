@@ -36,25 +36,20 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.io.File;
-import java.util.logging.*;
-import com.sun.logging.*;
-
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
 import com.sun.enterprise.deployment.node.ejb.EjbBundleNode;
-import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.runtime.IASPersistenceManagerDescriptor;
 import com.sun.enterprise.deployment.runtime.PersistenceManagerInUse;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
+import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.EjbVisitor;
-import com.sun.enterprise.deployment.util.LogDomains;    
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import javax.enterprise.deploy.shared.ModuleType;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * I represent all the configurable deployment information contained in

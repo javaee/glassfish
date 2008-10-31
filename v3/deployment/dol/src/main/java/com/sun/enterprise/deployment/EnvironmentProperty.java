@@ -35,18 +35,14 @@
  */
  package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
+import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.WebDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.RelativePathResolver;
-import com.sun.enterprise.deployment.util.TypeUtil;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
     /** 

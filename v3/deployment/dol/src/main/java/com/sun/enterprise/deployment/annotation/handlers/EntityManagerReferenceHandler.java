@@ -35,30 +35,24 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.util.Map;
-
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import java.util.logging.Level;
-
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceProperty;
-
 import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
-
+import com.sun.enterprise.deployment.annotation.context.AppClientContext;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
-import com.sun.enterprise.deployment.annotation.context.AppClientContext;
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.jvnet.hk2.annotations.Service;
+
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceProperty;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This handler is responsible for handling the 

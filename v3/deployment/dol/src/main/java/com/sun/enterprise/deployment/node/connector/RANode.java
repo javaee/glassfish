@@ -42,30 +42,14 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import java.util.*;
-import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.SecurityPermission;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.BundleNode;
-import com.sun.enterprise.deployment.node.ConfigurableNode;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.XMLNode;
-import com.sun.enterprise.deployment.MessageListener;
-import com.sun.enterprise.deployment.node.connector.MessageListenerNode;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.ConnectorTagNames;
+import org.w3c.dom.Node;
 
-//for 1.0 DTD
-import com.sun.enterprise.deployment.AuthMechanism;
-import com.sun.enterprise.deployment.SecurityPermission;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.Map;
 
 
 /**

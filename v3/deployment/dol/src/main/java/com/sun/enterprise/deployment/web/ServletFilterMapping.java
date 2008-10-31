@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.deployment.web;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /** Servlet filter objects */
 public interface ServletFilterMapping {

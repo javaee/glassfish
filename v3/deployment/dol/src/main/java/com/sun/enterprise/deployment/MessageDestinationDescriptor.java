@@ -43,11 +43,11 @@ package com.sun.enterprise.deployment;
  * @author Kenneth Saks
  */
 
-import java.util.Set;
+import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
+
 import java.util.HashSet;
 import java.util.Iterator;
-
-import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
+import java.util.Set;
 
 public class MessageDestinationDescriptor extends Descriptor implements NamedDescriptor{
 

@@ -42,24 +42,19 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import java.util.*;
-import org.xml.sax.Attributes;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.OutboundResourceAdapter;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.OutboundResourceAdapter;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.ConfigurableNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.node.XMLElement;
-
-import org.xml.sax.Attributes;
+import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This node signifies the connection-definition tag in Connector DTD

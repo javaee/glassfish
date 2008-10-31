@@ -35,17 +35,17 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This node is responsible for handling runtime descriptor

@@ -37,13 +37,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.xml.PersistenceTagNames;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-
-import java.util.Map;
-import java.util.HashMap;
-
+import com.sun.enterprise.deployment.xml.PersistenceTagNames;
 import org.xml.sax.Attributes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This node is responsible for reading details about one <persistence-unit/>

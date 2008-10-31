@@ -35,10 +35,13 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-
 import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.SecurityRoleReference;
+
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Common data and behavior of the deployment

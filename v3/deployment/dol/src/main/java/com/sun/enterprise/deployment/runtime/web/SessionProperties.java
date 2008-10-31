@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.deployment.runtime.web;
 
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
-
 /**
 * this class contains runtime information for the web bundle 
 * it was kept to be backward compatible with the schema2beans descriptors

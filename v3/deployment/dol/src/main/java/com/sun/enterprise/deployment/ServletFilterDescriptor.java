@@ -35,12 +35,11 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.io.*;
-import java.util.*;
-import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.web.ServletFilter;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
+
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * Deployment object representing the servlet filter spec

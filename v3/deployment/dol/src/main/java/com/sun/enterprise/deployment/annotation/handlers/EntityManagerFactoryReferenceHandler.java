@@ -35,26 +35,20 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import java.util.logging.Level;
-
-import javax.persistence.PersistenceUnit;
-
 import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
-
-import org.glassfish.apf.AnnotatedElementHandler;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.jvnet.hk2.annotations.Service;
+
+import javax.persistence.PersistenceUnit;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 /**
  * This handler is responsible for handling the 

@@ -36,12 +36,12 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
+import com.sun.enterprise.deployment.ErrorPageDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.ErrorPageDescriptor;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import java.util.Map;
 
 /**
  * This node handles the error-page xml tag

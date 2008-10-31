@@ -2,8 +2,8 @@ package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 
-import java.util.Vector;
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * BeanMethodCalculator contract, needed until we move EJB descriptors to

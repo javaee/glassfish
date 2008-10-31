@@ -197,7 +197,7 @@ public abstract class ASMainOSGi {
             // maybe the jdk...
             if (System.getProperty("java.version").compareTo("1.6") > 0) {
                 File jdkHome = new File(System.getProperty("java.home"));
-                derbyLib = new File(jdkHome, "db/lib");
+                derbyLib = new File(jdkHome, "../db/lib");
             }
         }
         if (!derbyLib.exists()) {

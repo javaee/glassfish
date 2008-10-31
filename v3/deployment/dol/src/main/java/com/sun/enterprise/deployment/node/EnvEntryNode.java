@@ -36,13 +36,13 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.InjectionTarget;
-import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * This node is responsible for handling all env-entry related xml tags

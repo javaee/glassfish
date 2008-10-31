@@ -35,17 +35,14 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is responsible for handling the runtime resource

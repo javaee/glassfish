@@ -18,7 +18,7 @@ public class TreeNodeFactory {
     
     public static TreeNode createTreeNode (String name, Object instance, 
             String category){
-        TreeNode tn = new TreeNodeImpl (name, instance, category);
+        TreeNode tn = new TreeNodeImpl (name, category);
         tn.setEnabled (true);
         return tn;
     }

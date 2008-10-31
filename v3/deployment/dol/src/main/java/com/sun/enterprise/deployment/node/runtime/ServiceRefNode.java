@@ -35,28 +35,23 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.logging.Level;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.NameValuePairNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
-import java.net.URL;
-import java.net.MalformedURLException;
 import javax.xml.namespace.QName;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.NameValuePairNode;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
-import com.sun.enterprise.deployment.NameValuePairDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * This node is responsible for handling runtime info for

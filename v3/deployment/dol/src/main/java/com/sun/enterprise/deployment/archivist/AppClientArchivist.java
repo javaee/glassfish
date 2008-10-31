@@ -44,16 +44,14 @@ import com.sun.enterprise.deployment.io.runtime.AppClientRuntimeDDFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
-import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 import java.util.jar.Attributes;

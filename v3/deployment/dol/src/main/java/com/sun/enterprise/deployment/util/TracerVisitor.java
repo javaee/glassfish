@@ -36,30 +36,11 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.util.Iterator;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.RoleReference;
-import com.sun.enterprise.deployment.ContainerTransaction;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.WebService;
-import com.sun.enterprise.deployment.QueryDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
 
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
+import java.util.Iterator;
 
 /**
  *

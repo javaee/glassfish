@@ -36,17 +36,15 @@
  
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Iterator;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
 
 public abstract class RuntimeBundleNode<T extends RootDeploymentDescriptor>
         extends DeploymentDescriptorNode<T> implements RootXMLNode<T> {

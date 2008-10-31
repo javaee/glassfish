@@ -36,12 +36,9 @@
 
 package com.sun.enterprise.deployment.types;
 
-import com.sun.enterprise.deployment.web.ContextParameter;
-
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.InjectionCapable;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.InjectionCapable;
 
 /** 
  * Protocol associated with defining an EJB Interface

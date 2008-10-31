@@ -7,33 +7,14 @@ package org.glassfish.flashlight.datatree;
 
 import java.util.Collection;
 import java.util.List;
-import org.jvnet.hk2.annotations.Contract;
 
 /**
  * TreeNode maintains all the Runtime Monitoring Data
  * @author Harpreet Singh
  */
-public interface TreeNode {
+public interface TreeNode extends TreeElement {
 
 
-    public String getName ();
-    public void setName (String name);
-    // TBD getValue should take varargs
-    /**
-     * @return <p>
-     * <ul> 
-     * <li> Leaf nodes: Return value that this node has: </li>
-     * <ul> 
-     *  <li> Set up by a call to setValue.</li>
-     *  <li> getValue() of
-     * {@link org.glassfish.flashlight.statistics Default Statistics data types}
-     * </ul>
-     * <li> For non-leaf nodes, the call is equivalent to {@link #getChildNodes() } 
-     * </ul>
-     */
-    public Object getValue ();
-    public void setValue (Object value);
-   
     public String getCategory ();
     public void setCategory (String category);
     
@@ -61,7 +42,7 @@ public interface TreeNode {
      * 
      * @return Collection<TreeNode> collection of children
      */
-    public Collection<TreeNode> getChildNodes (); 
+    public Collection<TreeNode> getChildNodes ();
     
     /**
      * 

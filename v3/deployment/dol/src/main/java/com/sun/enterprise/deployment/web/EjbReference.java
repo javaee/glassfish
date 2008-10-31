@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.deployment.web;
 
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 
 /** 

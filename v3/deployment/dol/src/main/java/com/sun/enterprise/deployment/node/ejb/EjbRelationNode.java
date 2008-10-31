@@ -42,18 +42,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.LocalizedInfoNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RelationRoleDescriptor;
 import com.sun.enterprise.deployment.RelationshipDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  *

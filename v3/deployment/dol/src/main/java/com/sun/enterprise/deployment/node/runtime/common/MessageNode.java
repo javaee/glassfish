@@ -36,26 +36,16 @@
 
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import java.util.Iterator;
-import java.util.ArrayList;
-
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.XMLNode;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.MethodNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
+import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import org.w3c.dom.Node;
 
 /**
  * This node handles message element

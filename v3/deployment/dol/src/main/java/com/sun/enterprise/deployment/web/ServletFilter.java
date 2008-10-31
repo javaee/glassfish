@@ -36,7 +36,8 @@
 
 package com.sun.enterprise.deployment.web;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
 /** Servlet filter objects */
 public interface ServletFilter {

@@ -34,11 +34,11 @@
  * holder.
  */
 package com.sun.enterprise.deployment;
- 
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.*;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
+
+import java.util.*;
 
 /**
     * Objects of this kind represent the deployment information describing a single 

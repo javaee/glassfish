@@ -54,12 +54,6 @@ public class EjbContainerStarter
     @Inject
     Logger logger;
 
-
-    /**
-     * The logger to use for logging ALL web container related messages.
-     */
-    //protected static final Logger _logger = LogDomains.getLogger("EJB_LOGGER");
-    
     private String instanceName;
 
     public void postConstruct() {

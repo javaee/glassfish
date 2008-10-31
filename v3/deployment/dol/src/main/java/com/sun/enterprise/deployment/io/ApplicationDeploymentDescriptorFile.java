@@ -37,8 +37,8 @@
 package com.sun.enterprise.deployment.io;
 
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.ApplicationNode;
+import com.sun.enterprise.deployment.node.RootXMLNode;
 
 /**
  * This class is responsible for handling J2EE applications 

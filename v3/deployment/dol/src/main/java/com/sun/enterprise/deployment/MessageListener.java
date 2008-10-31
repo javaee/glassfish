@@ -35,11 +35,7 @@
  */
  package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.util.jar.*;
-import java.io.*;
-import java.util.zip.*;
-import com.sun.enterprise.deployment.EnvironmentProperty;
+import java.util.Set;
 
 /**
  * connector1.5

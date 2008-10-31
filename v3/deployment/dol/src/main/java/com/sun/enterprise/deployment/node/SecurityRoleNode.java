@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
+import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.SecurityRoleDescriptor;
 import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.Role;
+import java.util.Map;
 
 /**
  *

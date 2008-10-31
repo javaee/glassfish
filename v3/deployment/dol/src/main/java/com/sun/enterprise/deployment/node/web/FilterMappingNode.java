@@ -42,18 +42,18 @@
 
 package com.sun.enterprise.deployment.node.web;
 
+import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.net.URLPattern;
+import org.w3c.dom.Node;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.util.net.URLPattern;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
 /**

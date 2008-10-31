@@ -36,14 +36,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
+import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.InjectionTarget;
-import com.sun.enterprise.deployment.node.LocalizedNode;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.Descriptor;
+import java.util.Map;
 
 /**
  * This class handles all information related to the message-destination-ref 

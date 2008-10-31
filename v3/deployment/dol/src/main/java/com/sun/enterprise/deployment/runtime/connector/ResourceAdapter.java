@@ -42,8 +42,8 @@
 
 package com.sun.enterprise.deployment.runtime.connector;
 
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 
 /**
  * This class was based on the schema2beans generated one modified

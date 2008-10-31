@@ -45,6 +45,7 @@ import com.sun.enterprise.deployment.backend.ClientJarMaker;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
@@ -99,7 +100,7 @@ public class ClientJarMakerThread extends Thread {
         } catch(DeploymentException e) {
             // unfortunetely, we cannot provide failures feedback to the client
             // at this point, but we certainly need to log it.
-            DeploymentLogger.get().log(Level.SEVERE, 
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, 
                 localStrings.getString("enterprise.deployment.error_creating_client_jar", 
                     e.getLocalizedMessage()) ,e);
         
@@ -110,7 +111,9 @@ public class ClientJarMakerThread extends Thread {
         }
         
         // friendly log
-        DeploymentLogger.get().fine("Created client jar file for " + moduleID + " at " + clientJar.getAbsolutePath());
+        if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+            DOLUtils.getDefaultLogger().fine("Created client jar file for " + moduleID + " at " + clientJar.getAbsolutePath());
+        }
         
     }
    

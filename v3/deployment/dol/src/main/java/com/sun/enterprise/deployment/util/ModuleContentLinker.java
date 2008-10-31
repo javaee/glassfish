@@ -37,16 +37,15 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WSDolSupport;
+import com.sun.enterprise.deployment.WebService;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.api.Globals;
 
-//import javax.xml.ws.WebServiceClient;
-import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.logging.Level;
 
 /**
@@ -89,7 +88,35 @@ public class ModuleContentLinker extends DefaultDOLVisitor {
     private URL internalGetUrl(ModuleDescriptor module, String uri) 
         throws Exception {
         File moduleLocation = getModuleLocation(module);
-        URL url = FileUtil.getEntryAsUrl(moduleLocation, uri);
+        URL url = getEntryAsUrl(moduleLocation, uri);
+        return url;
+    }
+
+    public static URL createJarUrl(File jarFile, String entry)
+        throws MalformedURLException, IOException {
+        return new URL("jar:" + jarFile.toURI().toURL() + "!/" + entry);
+    }
+
+    public static URL getEntryAsUrl(File moduleLocation, String uri)
+        throws MalformedURLException, IOException {
+        URL url = null;
+        try {
+            url = new URL(uri);
+        } catch(java.net.MalformedURLException e) {
+            // ignore
+            url = null;
+        }
+        if (url!=null) {
+            return url;
+        }
+        if( moduleLocation != null ) {
+            if( moduleLocation.isFile() ) {
+                url = createJarUrl(moduleLocation, uri);
+            } else {
+                String path = uri.replace('/', File.separatorChar);
+                url = new File(moduleLocation, path).toURI().toURL();
+            }
+        }
         return url;
     }
 

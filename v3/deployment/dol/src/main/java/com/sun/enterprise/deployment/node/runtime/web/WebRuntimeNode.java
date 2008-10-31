@@ -36,16 +36,8 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 
 /**
  * This node is the superclass for all web related runtime nodes

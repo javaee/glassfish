@@ -19,8 +19,6 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.j2ee.statistics.Statistic;
-import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /**
  * User: Jerome Dochez
@@ -40,7 +38,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
     @Param(primary = true)
     String pattern="";
 
-    @Inject
+    @Inject(optional=true)
     private MonitoringRuntimeDataRegistry mrdr;
     
     public void execute(AdminCommandContext context) {
@@ -92,6 +90,13 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         if ((pattern == null) || (pattern.equals(""))) {
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage("match pattern is invalid or null");
+            return;
+        }
+
+        if (mrdr==null) {
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage("monitoring facility not installed");
+            return;
         }
 
         //Grab the monitoring tree root from habitat and get the attributes using pattern
@@ -103,7 +108,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = sortTreeNodesByCompletePathName(tn.getNodes(pattern));
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
-            if (!( (tn1 instanceof Statistic ) || (tn1 instanceof MethodInvoker))) {//tn1.hasChildNodes() ) 
+            if (tn1.hasChildNodes() ) {
                 System.out.println(tn1.getCompletePathName());
                 //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getCompletePathName());
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();
@@ -111,5 +116,5 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
             }
         }
         report.setActionExitCode(ExitCode.SUCCESS);
-    }
+    }                                       
 }

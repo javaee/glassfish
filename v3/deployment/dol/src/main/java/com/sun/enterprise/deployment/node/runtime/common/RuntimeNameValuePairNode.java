@@ -42,8 +42,8 @@
 
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import com.sun.enterprise.deployment.node.NameValuePairNode;
 import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.node.NameValuePairNode;
 
 /**
  *

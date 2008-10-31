@@ -35,22 +35,17 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.Resources;
-
-import org.glassfish.apf.AnnotatedElementHandler;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.jvnet.hk2.annotations.Service;
+
+import javax.annotation.Resource;
+import javax.annotation.Resources;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This handler is responsible for handling javax.annotation.Resources

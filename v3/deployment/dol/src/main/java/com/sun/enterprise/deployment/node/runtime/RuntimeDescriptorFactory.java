@@ -36,47 +36,22 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.logging.Level;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.IASPersistenceManagerDescriptor;
 import com.sun.enterprise.deployment.runtime.PersistenceManagerInUse;
-import com.sun.enterprise.deployment.runtime.web.Servlet;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-
-// all registered descriptors
-import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
-import com.sun.enterprise.deployment.runtime.common.EjbRef;
-import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
-import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
-import com.sun.enterprise.deployment.runtime.common.ResourceRef;
-import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
+import com.sun.enterprise.deployment.runtime.common.*;
 import com.sun.enterprise.deployment.runtime.connector.MapElement;
 import com.sun.enterprise.deployment.runtime.connector.Principal;
 import com.sun.enterprise.deployment.runtime.connector.ResourceAdapter;
 import com.sun.enterprise.deployment.runtime.connector.RoleMap;
-import com.sun.enterprise.deployment.runtime.web.Cache;
-import com.sun.enterprise.deployment.runtime.web.CacheHelper;
-import com.sun.enterprise.deployment.runtime.web.CacheMapping;
+import com.sun.enterprise.deployment.runtime.web.*;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
-import com.sun.enterprise.deployment.runtime.web.ConstraintField;
-import com.sun.enterprise.deployment.runtime.web.CookieProperties;
-import com.sun.enterprise.deployment.runtime.web.DefaultHelper;
-import com.sun.enterprise.deployment.runtime.web.JspConfig;
-import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
-import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
-import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
-import com.sun.enterprise.deployment.runtime.web.SessionConfig;
-import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.deployment.runtime.web.SessionProperties;
-import com.sun.enterprise.deployment.runtime.web.StoreProperties;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This class is responsible for instanciating  runtime Descriptor classes

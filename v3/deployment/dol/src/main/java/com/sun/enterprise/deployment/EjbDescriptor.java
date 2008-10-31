@@ -36,32 +36,19 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.util.logging.*;
-
-import org.glassfish.deployment.common.DeploymentUtils;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.types.EjbReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-// Ludo 12/10/2001: IAS specific info needed here because we cannot have multi-inheritance in Java and that iAS specific
-// info is needed in some/all of the sub-classes of EjBDescriptor:
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
-
-
+import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
-import com.sun.enterprise.deployment.util.LogDomains;
 import com.sun.enterprise.deployment.util.InterceptorBindingTranslator.TranslationResults;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This abstract class encapsulates the meta-information describing
@@ -183,7 +170,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
 
     private IASEjbExtraDescriptors iASEjbExtraDescriptors = new IASEjbExtraDescriptors();  // Ludo 12/10/2001 extra DTD info only for iAS
 

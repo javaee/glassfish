@@ -35,8 +35,9 @@
  */
 package com.sun.enterprise.deployment.types;
 
-import java.util.List;
 import com.sun.enterprise.deployment.WebServiceHandlerChain;
+
+import java.util.List;
 
 /**
  * This interface defines API related to handler chain containers

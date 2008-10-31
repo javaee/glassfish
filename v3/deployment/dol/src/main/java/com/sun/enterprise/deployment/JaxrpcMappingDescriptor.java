@@ -35,11 +35,7 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /** 
  * Holds namespace-to-package mapping information from a 

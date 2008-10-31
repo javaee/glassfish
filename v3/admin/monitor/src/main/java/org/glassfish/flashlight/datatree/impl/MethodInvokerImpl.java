@@ -15,8 +15,8 @@ import java.lang.reflect.Method;
  */
 public class MethodInvokerImpl extends AbstractTreeNode implements MethodInvoker {
     Method method;
-    Object methodInstance; 
-    
+    Object methodInstance;
+
     public void setMethod (Method m){
         method = m;
     }

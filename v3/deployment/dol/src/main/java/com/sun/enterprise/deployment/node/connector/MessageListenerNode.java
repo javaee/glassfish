@@ -36,23 +36,17 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import java.util.*;
-import org.xml.sax.Attributes;
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.InboundResourceAdapter;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.ConfigurableNode;
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.MessageListener;
-import com.sun.enterprise.deployment.node.connector.ActivationSpecNode;
-
-import org.xml.sax.Attributes;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This node is responsible for handling the Connector DTD related message-listener XML tag

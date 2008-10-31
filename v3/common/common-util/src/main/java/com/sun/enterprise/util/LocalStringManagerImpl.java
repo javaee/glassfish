@@ -53,7 +53,7 @@ import com.sun.logging.*;
 public class LocalStringManagerImpl implements LocalStringManager {
 
     // START OF IASRI 4660742
-    //WARNING: _logger must be initialized upon demand in this case. The 
+    //WARNING: _logger must be initialized upon demand in this case. The
     //reason is that this static init happens before the ServerContext
     //is initialized
     private static Logger _logger = null;
@@ -61,7 +61,7 @@ public class LocalStringManagerImpl implements LocalStringManager {
 
     private Class defaultClass;
 
-    //No need to worry about synchronization here as getLogger call is 
+    //No need to worry about synchronization here as getLogger call is
     //synchronized, worse case logger will get initialized to the same
     //value 2x.
     private static Logger getLogger() {

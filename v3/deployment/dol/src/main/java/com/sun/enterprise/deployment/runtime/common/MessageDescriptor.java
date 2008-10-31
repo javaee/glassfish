@@ -36,14 +36,14 @@
 
 package com.sun.enterprise.deployment.runtime.common;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class MessageDescriptor extends RuntimeDescriptor {
     public static final String JAVA_METHOD = "JavaMethod";

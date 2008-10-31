@@ -35,12 +35,12 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.HashSet;
+import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
 
 import javax.enterprise.deploy.shared.ModuleType;
-import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Information about the web services defined in a single module.

@@ -35,8 +35,8 @@
  */
  package com.sun.enterprise.deployment;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * I am an abstract super class of all ejb descriptors.

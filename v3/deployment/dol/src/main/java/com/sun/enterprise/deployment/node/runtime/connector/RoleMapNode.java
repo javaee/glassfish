@@ -35,15 +35,13 @@
  */
 package com.sun.enterprise.deployment.node.runtime.connector;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
-import com.sun.enterprise.deployment.runtime.connector.RoleMap;
 import com.sun.enterprise.deployment.runtime.connector.MapElement;
+import com.sun.enterprise.deployment.runtime.connector.RoleMap;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * This node handles the role-map runtime deployment descriptors 

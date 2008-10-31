@@ -73,6 +73,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import com.sun.enterprise.deployment.backend.ClientJarMaker;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
 import com.sun.enterprise.util.zip.ZipItem;
@@ -86,7 +87,7 @@ import com.sun.enterprise.util.zip.ZipItem;
  */
 class ClientJarMakerUtils {
 
-    private static final Logger logger = DeploymentLogger.get();
+    private static final Logger logger = DOLUtils.getDefaultLogger();
 
     static void populateStubs(WritableArchive target, ZipItem[] stubs) 
         throws IOException {
@@ -250,9 +251,9 @@ class ClientJarMakerUtils {
             addJARClassPathElementsFromDirectory(appArchive, appArchive, libraries);
         }
         
-        if (DeploymentLogger.get().isLoggable(Level.FINEST)) {
+        if (DOLUtils.getDefaultLogger().isLoggable(Level.FINEST)) {
             for (String lib : libraries) {
-                DeploymentLogger.get().fine(
+                DOLUtils.getDefaultLogger().fine(
                     "Adding to the appclient jar, library [" + lib + "]");
             }
         }

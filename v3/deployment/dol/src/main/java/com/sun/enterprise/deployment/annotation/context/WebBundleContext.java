@@ -35,18 +35,17 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.types.HandlerChainContainer;
+import org.glassfish.apf.AnnotatedElementHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import org.glassfish.apf.AnnotatedElementHandler;
-import com.sun.enterprise.deployment.types.HandlerChainContainer;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This ClientContext implementation holds a top level reference

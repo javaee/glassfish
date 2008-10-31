@@ -42,11 +42,7 @@
 
 package com.sun.enterprise.deployment.node;
 
-import org.xml.sax.Attributes;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.TagNames;
 
 /**

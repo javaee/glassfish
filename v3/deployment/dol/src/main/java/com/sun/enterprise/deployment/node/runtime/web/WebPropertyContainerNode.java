@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import com.sun.enterprise.deployment.runtime.web.WebPropertyContainer;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 

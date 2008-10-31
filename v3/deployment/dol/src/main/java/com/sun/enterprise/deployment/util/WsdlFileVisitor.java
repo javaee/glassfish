@@ -36,11 +36,11 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebService;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *

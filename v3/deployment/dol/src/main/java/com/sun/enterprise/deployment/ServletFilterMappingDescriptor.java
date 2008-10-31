@@ -35,9 +35,9 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.io.*;
-import java.util.*;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
+
+import java.util.*;
 
 /**
  * Deployment object representing the servlet filter mapping spec

@@ -35,39 +35,17 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-
-import com.sun.enterprise.deployment.web.MimeMapping;
-import com.sun.enterprise.deployment.web.AppListenerDescriptor;
-import com.sun.enterprise.deployment.web.ResourceReference;
-import com.sun.enterprise.deployment.web.ContextParameter;
-import com.sun.enterprise.deployment.web.SecurityRole;
-import com.sun.enterprise.deployment.web.SecurityRoleReference;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.EnvironmentEntry;
-import com.sun.enterprise.deployment.web.ServletFilter;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
-
-import com.sun.enterprise.deployment.util.WebBundleVisitor;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
-
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
-import com.sun.enterprise.deployment.types.EjbReferenceContainer;
-import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.types.EjbReference;
+import com.sun.enterprise.deployment.types.*;
+import com.sun.enterprise.deployment.util.DescriptorVisitor;
+import com.sun.enterprise.deployment.util.WebBundleVisitor;
+import com.sun.enterprise.deployment.web.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.enterprise.deploy.shared.ModuleType;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.*;
 
 /**
  * I am an object that represents all the deployment information about

@@ -35,42 +35,31 @@
  */
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import java.util.HashMap;
-
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.node.appclient.AppClientNode;
+import com.sun.enterprise.deployment.node.connector.ConnectorNode;
+import com.sun.enterprise.deployment.node.ejb.EjbBundleNode;
+import com.sun.enterprise.deployment.node.runtime.AppClientRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
+import com.sun.enterprise.deployment.node.web.WebBundleNode;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.SAXNotRecognizedException;
+import com.sun.enterprise.deployment.xml.DTDRegistry;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.NamespaceSupport;
-import org.xml.sax.InputSource;
-import org.xml.sax.Attributes;
-import org.xml.sax.XMLReader;
-import org.xml.sax.Locator;
-
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-
-import com.sun.enterprise.deployment.node.ejb.EjbBundleNode;
-import com.sun.enterprise.deployment.node.web.WebBundleNode;
-import com.sun.enterprise.deployment.node.connector.ConnectorNode;
-import com.sun.enterprise.deployment.node.appclient.AppClientNode;
-import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.AppClientRuntimeNode;
-import com.sun.enterprise.deployment.xml.DTDRegistry;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
 /**

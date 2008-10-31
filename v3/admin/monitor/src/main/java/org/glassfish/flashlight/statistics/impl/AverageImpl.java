@@ -47,7 +47,6 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     
     public AverageImpl() {
         super.name = NAME;
-        super.instance = this;
         super.enabled = true;
         startTime = System.currentTimeMillis();
     }

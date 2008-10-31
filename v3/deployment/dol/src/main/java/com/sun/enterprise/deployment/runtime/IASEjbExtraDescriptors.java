@@ -42,17 +42,15 @@
 
 package com.sun.enterprise.deployment.runtime;
 
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.DescriptorConstants;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
+
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-
-
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.DescriptorConstants;
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
-import com.sun.enterprise.deployment.util.DOLUtils;
 
 /** 
  * Class that contains all the extra iAS elements for an EJB that are not 

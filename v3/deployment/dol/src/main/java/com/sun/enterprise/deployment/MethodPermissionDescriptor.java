@@ -42,9 +42,9 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * This class defines a method permission information in the assembly 

@@ -36,8 +36,9 @@
 
 package com.sun.enterprise.deployment.types;
 
-import java.util.Set;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+
+import java.util.Set;
 
 /**
  * This interface defines the behaviour of a Java EE component containaing 

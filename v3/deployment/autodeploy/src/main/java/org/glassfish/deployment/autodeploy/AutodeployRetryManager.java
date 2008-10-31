@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -52,7 +51,7 @@ import org.jvnet.hk2.component.Singleton;
  * failed to deploy earlier and has remained stable in size for a 
  * (configurable) period of time.  
  * <p>
- * The main public entry point are the {@link ç} method and
+ * The main public entry point are the {@link ÔøΩ} method and
  * the {@link reportSuccessfulDeployment}, 
  * {@link reportFailedDeployment}, {@link reportSuccessfulUndeployment}, and
  * {@link reportUnsuccessfulUndeployment} methods.  
@@ -122,7 +121,7 @@ public class AutodeployRetryManager implements PostConstruct {
     private int timeout;
 
     public void postConstruct() {
-        sLogger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+        sLogger = LogDomains.getLogger(AutodeployRetryManager.class, LogDomains.DPL_LOGGER);
         setTimeout();
     }
     

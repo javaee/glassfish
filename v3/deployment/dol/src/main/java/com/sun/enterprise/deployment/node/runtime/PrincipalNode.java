@@ -36,12 +36,11 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.glassfish.security.common.PrincipalImpl;
+import org.w3c.dom.Node;
 
 /**
  * This mode handles the principal definition in the runtine DDs

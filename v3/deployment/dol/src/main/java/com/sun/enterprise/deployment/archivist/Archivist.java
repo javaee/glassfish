@@ -36,18 +36,13 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import org.glassfish.apf.Scanner;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import org.glassfish.apf.*;
 import com.sun.enterprise.deployment.annotation.factory.AnnotatedElementHandlerFactory;
 import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
-import org.glassfish.apf.impl.DefaultErrorHandler;
-import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.OptionalPkgDependency;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import static com.sun.enterprise.deployment.io.DescriptorConstants.PERSISTENCE_DD_ENTRY;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
@@ -59,10 +54,12 @@ import com.sun.enterprise.deployment.util.TracerVisitor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
-import com.sun.logging.LogDomains;
+import org.glassfish.apf.*;
+import org.glassfish.apf.impl.DefaultErrorHandler;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.deployment.common.OptionalPkgDependency;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -88,7 +85,7 @@ import java.util.logging.Logger;
 public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
     protected static final Logger logger =
-            LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+            DOLUtils.getDefaultLogger();
 
     public static final String MANIFEST_VERSION_VALUE = "1.0";
 

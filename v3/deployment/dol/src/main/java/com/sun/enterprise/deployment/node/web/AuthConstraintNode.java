@@ -42,14 +42,14 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.SecurityRoleDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * This node contains the auth-constraint xml node

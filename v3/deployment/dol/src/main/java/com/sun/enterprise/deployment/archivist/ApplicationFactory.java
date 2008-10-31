@@ -23,17 +23,16 @@
 
 package com.sun.enterprise.deployment.archivist;
 
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -41,11 +40,11 @@ import org.xml.sax.SAXParseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
-import java.net.URI;
 
 /**
  * Factory for application object
@@ -65,7 +64,7 @@ public class ApplicationFactory implements ContractProvider {
     ArchivistFactory archivistFactory;
 
     protected static final Logger logger =
-            LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+            DOLUtils.getDefaultLogger();
 
     // resources...
     private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Archivist.class);

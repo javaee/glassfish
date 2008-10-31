@@ -35,14 +35,10 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.HashSet;
-
 import javax.xml.namespace.QName;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * This class describes a web service message handler.

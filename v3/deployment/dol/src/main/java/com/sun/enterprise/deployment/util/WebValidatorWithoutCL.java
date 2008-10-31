@@ -37,7 +37,6 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.InjectionCapable;
-import com.sun.enterprise.deployment.EjbDescriptor;
 
 /**
  * This class validates the part of the web bundle descriptor that 

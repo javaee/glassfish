@@ -42,23 +42,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
-import java.util.HashMap;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.XMLNode;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.LocalizedInfoNode;
-import com.sun.enterprise.deployment.node.ConfigurableNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.RelationRoleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbCMPEntityDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
+import com.sun.enterprise.deployment.RelationRoleDescriptor;
+import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
+import org.w3c.dom.Node;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is responsible for handling the ejb-relationship-role xml elements

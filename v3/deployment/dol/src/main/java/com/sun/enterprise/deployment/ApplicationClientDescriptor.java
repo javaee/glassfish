@@ -35,25 +35,15 @@
  */
  package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.util.jar.*;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceEnvReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReference;
-import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
-import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
-import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import com.sun.enterprise.deployment.node.appclient.AppClientNode;
+import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
+import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.AppClientVisitor;
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import javax.enterprise.deploy.shared.ModuleType;
+import java.util.*;
     /**
     * I represent all the deployment information about
     * an application client [{0}].

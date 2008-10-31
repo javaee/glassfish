@@ -36,18 +36,18 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import javax.security.auth.Subject;
-
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
+
+import javax.security.auth.Subject;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * This class validates a EJB Bundle descriptor once loaded from an .jar file

@@ -36,14 +36,12 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import org.xml.sax.Attributes;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 
 /**
 * node for locale-charset-info tag

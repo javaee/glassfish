@@ -41,9 +41,9 @@ import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
-import java.util.Map;
 import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  *

@@ -36,10 +36,11 @@
 
 package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deployment.util.DOLUtils;
+
 import java.lang.reflect.Method;
-import java.util.logging.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * This class contains information about EJB-QL queries for
@@ -77,7 +78,7 @@ public final class QueryDescriptor extends Descriptor {
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
 	
     public QueryDescriptor()
     {

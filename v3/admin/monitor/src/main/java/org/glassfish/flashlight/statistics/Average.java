@@ -9,7 +9,7 @@ import org.glassfish.j2ee.statistics.RangeStatistic;
  */
 
 @Contract
-public interface Average extends TreeNode, RangeStatistic{
+public interface Average extends RangeStatistic{
 
     public void addDataPoint(long value);
 
@@ -24,8 +24,4 @@ public interface Average extends TreeNode, RangeStatistic{
     public long getMax ();
 
     public long getTotal ();
-
-    @Override
-    public String toString();    
-    
 }

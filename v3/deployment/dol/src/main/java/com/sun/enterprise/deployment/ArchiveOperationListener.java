@@ -35,7 +35,8 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 public interface ArchiveOperationListener {
 

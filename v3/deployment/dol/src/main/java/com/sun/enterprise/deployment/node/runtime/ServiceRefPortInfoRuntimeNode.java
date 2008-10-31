@@ -35,24 +35,20 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.logging.Level;
+import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.ServiceRefPortInfo;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.NameValuePairNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.common.MessageSecurityBindingNode;
+import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
-import com.sun.enterprise.deployment.NameValuePairDescriptor;
-import com.sun.enterprise.deployment.node.NameValuePairNode;
-import com.sun.enterprise.deployment.node.runtime.common.MessageSecurityBindingNode;
-import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This node is responsible for handling runtime info for

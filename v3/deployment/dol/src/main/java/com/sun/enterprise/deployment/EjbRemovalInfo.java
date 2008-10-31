@@ -36,14 +36,11 @@
 
 package com.sun.enterprise.deployment;
 
-import java.io.Serializable;
-import java.util.logging.*;
-import com.sun.logging.*;
-
-import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deployment.util.DOLUtils;
+
+import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  * Contains information about a stateful session bean remove method.
@@ -54,7 +51,7 @@ public class EjbRemovalInfo implements Serializable
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbRemovalInfo.class);
 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
 
     private MethodDescriptor removeMethod;
     private boolean retainIfException = false;

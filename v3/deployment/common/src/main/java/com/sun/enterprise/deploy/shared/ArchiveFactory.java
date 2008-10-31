@@ -56,7 +56,7 @@ public class ArchiveFactory implements ContractProvider {
     @Inject
     Habitat habitat;
 
-    final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    final static Logger logger = LogDomains.getLogger(ArchiveFactory.class, LogDomains.DPL_LOGGER);
 
     public WritableArchive createArchive(File path) throws java.io.IOException {
         try {

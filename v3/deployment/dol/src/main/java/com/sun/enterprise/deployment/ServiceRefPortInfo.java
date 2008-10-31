@@ -35,22 +35,13 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Iterator;
-
-import java.io.*;
-
-import java.net.URL;
-import java.net.MalformedURLException;
-import javax.xml.namespace.QName;
-        
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+
+import javax.xml.namespace.QName;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Information about a single WSDL port or port type in a service reference.

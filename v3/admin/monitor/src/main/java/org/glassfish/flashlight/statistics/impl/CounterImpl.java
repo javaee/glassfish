@@ -36,8 +36,6 @@ public class CounterImpl extends AbstractTreeNode implements Counter {
     private long startTime = 0;
 
     public CounterImpl() {
-        super.setName(NAME);
-        super.setEnabled(true);
         startTime = System.currentTimeMillis();
     }
 

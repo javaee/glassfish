@@ -35,10 +35,9 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InjectionInfo {
 

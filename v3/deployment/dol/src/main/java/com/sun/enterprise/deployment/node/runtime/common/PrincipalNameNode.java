@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Element;

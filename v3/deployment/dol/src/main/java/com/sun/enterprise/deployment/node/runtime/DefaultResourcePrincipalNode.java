@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.ResourcePrincipal;
+import org.w3c.dom.Node;
 
 /**
  * This node handles the runtime deployment descriptor tag 

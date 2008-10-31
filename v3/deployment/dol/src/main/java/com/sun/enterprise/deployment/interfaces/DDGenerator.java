@@ -40,8 +40,6 @@
 
 package com.sun.enterprise.deployment.interfaces;
 
-import java.util.*;
-
 /**
  * This interface defines the common API implemented by dd generator classes
  *

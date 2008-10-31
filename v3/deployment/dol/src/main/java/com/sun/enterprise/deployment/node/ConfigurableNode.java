@@ -43,9 +43,6 @@
 package com.sun.enterprise.deployment.node;
 
 import java.util.Map;
-import java.util.HashMap;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
 
 /**
  * ConfigurableNode able to treat dispatch element values to descriptors based 

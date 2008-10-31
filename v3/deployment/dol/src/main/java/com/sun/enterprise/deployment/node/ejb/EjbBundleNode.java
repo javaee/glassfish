@@ -37,43 +37,14 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.*;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
+import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.BundleNode;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.SecurityRoleNode;
-import com.sun.enterprise.deployment.node.ContainerTransactionNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.MessageDestinationNode;
-
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbEntityDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.MethodPermissionDescriptor;
-import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
-import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
-import com.sun.enterprise.deployment.EjbInterceptor;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
-
-import com.sun.enterprise.deployment.Role;
+import java.util.*;
 
 /**
  * This class handles ejb bundle xml files

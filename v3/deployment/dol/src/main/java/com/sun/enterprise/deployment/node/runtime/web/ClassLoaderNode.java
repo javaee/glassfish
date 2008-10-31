@@ -36,15 +36,13 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.node.XMLElement;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
 * node for class-loader tag

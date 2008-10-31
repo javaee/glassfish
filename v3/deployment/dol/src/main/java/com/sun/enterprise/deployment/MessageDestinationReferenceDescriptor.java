@@ -35,8 +35,6 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Set;
-
 import com.sun.enterprise.deployment.types.MessageDestinationReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 

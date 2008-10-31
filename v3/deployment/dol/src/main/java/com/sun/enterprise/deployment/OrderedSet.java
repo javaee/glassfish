@@ -35,7 +35,9 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * I am an ordered collection that does not allow duplicates.

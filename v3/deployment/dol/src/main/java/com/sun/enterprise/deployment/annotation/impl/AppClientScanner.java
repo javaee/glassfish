@@ -35,26 +35,15 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import org.glassfish.apf.impl.AnnotationUtils;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
-
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Implementation of the Scanner interface for AppClient

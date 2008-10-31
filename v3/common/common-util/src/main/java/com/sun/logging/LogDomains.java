@@ -122,10 +122,6 @@ public class LogDomains
     /**
      * Field
      */
-    public static final String ROOT_LOGGER = DOMAIN_ROOT + "enterprise";
-    /**
-     * Field
-     */
     //START OF IASRI 4660742
     /**
      * Field
@@ -140,10 +136,6 @@ public class LogDomains
      * Field
      */
     public static final String JNDI_LOGGER = DOMAIN_ROOT + "enterprise.system.core.naming";
-    /**
-     * Field
-     */
-    public static final String APPVERIFY_LOGGER = DOMAIN_ROOT + "enterprise.system.tools.verifier";
     /**
      * Field
      */

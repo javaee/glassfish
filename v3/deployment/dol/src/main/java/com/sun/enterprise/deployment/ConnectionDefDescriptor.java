@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import java.util.Iterator;
 import java.util.Set;
 
 /**

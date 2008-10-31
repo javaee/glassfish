@@ -45,21 +45,16 @@ package com.sun.enterprise.deployment;
 
 
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.enterprise.deployment.types.HandlerChainContainer;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
+import org.glassfish.internal.api.Globals;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
-import com.sun.enterprise.deployment.types.HandlerChainContainer;
-import org.glassfish.internal.api.Globals;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 
 /**

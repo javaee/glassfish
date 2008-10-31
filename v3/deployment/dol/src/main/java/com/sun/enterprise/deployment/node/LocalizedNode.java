@@ -42,14 +42,14 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
+import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+
 import java.util.Iterator;
 import java.util.Locale;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.xml.TagNames;
+import java.util.Map;
 
 /**
  * This class is responsible for handling the xml lang attribute of 

@@ -36,16 +36,18 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.lang.reflect.*;
-import java.util.logging.*;
-
+import com.sun.enterprise.deployment.util.BeanMethodCalculator;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.EjbVisitor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import com.sun.enterprise.deployment.util.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.Globals;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * This class contains information about EJB1.1 and EJB2.0 CMP EntityBeans.
@@ -71,7 +73,7 @@ public class EjbCMPEntityDescriptor extends EjbEntityDescriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbCMPEntityDescriptor.class);
 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
         
     
     public EjbCMPEntityDescriptor() {

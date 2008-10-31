@@ -36,18 +36,16 @@
 
 package com.sun.enterprise.deployment;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import java.lang.reflect.*;
-
-import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.util.*;
-import com.sun.enterprise.deployment.xml.*;
 import com.sun.enterprise.deployment.interfaces.QueryParser;
-import com.sun.enterprise.deployment.runtime.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deployment.runtime.IASEjbCMPFinder;
+import com.sun.enterprise.deployment.runtime.PrefetchDisabledDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * This class contains information about EJB1.1 and EJB2.0 CMP EntityBeans.
@@ -68,7 +66,7 @@ public  class IASEjbCMPEntityDescriptor extends EjbCMPEntityDescriptor {
     // for i18N
     private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(IASEjbCMPEntityDescriptor.class);
-    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = DOLUtils.getDefaultLogger();
 
     // Standard String and Character variables.
     private static final char DOT                  = '.';   // NOI18N

@@ -23,22 +23,15 @@
 
 package com.sun.enterprise.deployment.util;
 
+import com.sun.enterprise.deployment.annotation.introspection.AnnotationScanner;
 import com.sun.enterprise.deployment.annotation.introspection.ClassFile;
 import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
-import com.sun.enterprise.deployment.annotation.introspection.AnnotationScanner;
-
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Abstract superclass for specific types of annotation detectors.

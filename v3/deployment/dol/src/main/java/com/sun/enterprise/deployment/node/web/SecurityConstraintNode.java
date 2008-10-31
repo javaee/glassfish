@@ -42,17 +42,17 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Enumeration;
-import java.util.Map;
+import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
+import com.sun.enterprise.deployment.SecurityConstraintImpl;
+import com.sun.enterprise.deployment.UserDataConstraintImpl;
+import com.sun.enterprise.deployment.WebResourceCollectionImpl;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.SecurityConstraintImpl;
-import com.sun.enterprise.deployment.WebResourceCollectionImpl;
-import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.UserDataConstraintImpl;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import java.util.Enumeration;
+import java.util.Map;
 
 /** 
  * This node handles the security-contraint xml tag

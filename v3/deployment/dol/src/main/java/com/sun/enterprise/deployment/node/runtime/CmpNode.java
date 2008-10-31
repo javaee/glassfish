@@ -35,19 +35,16 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.IASEjbCMPFinder;
 import com.sun.enterprise.deployment.runtime.PrefetchDisabledDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.PersistenceDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.ResourcePrincipal;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This node handles the cmp runtime deployment descriptors 

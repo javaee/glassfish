@@ -37,12 +37,12 @@
 
 package com.sun.enterprise.deployment.io.runtime;
 
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
+import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
+import com.sun.enterprise.deployment.node.RootXMLNode;
+import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
 
 /**
  * This class is responsible for handling the XML configuration information

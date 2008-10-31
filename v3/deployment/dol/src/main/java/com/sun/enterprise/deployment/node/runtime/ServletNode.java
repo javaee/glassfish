@@ -42,8 +42,6 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -52,6 +50,7 @@ import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
 
 /**
  * This node is handling all runtime deployment descriptors 

@@ -35,12 +35,15 @@
  */
  package com.sun.enterprise.deployment;
 
+import com.sun.enterprise.deployment.web.AuthorizationConstraint;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
-import com.sun.enterprise.deployment.web.AuthorizationConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 
     /** 

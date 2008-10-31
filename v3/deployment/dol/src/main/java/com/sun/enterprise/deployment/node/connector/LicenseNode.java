@@ -36,17 +36,13 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import java.util.*;
-import org.xml.sax.Attributes;
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.LicenseDescriptor;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.XMLElement;
-
-import org.xml.sax.Attributes;
+import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import org.w3c.dom.Node;
+
+import java.util.Map;
 
 
 /**

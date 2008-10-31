@@ -36,12 +36,13 @@
 
 package com.sun.enterprise.deployment.interfaces;
 
-import java.util.Iterator;
-import java.util.Enumeration;
-import java.security.Principal;
-import java.util.Map;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This interface defines the protocol used by the DOL to access the role

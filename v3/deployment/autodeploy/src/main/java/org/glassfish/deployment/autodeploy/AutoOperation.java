@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -53,7 +52,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public abstract class AutoOperation {
     
-    final static Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    final static Logger sLogger=LogDomains.getLogger(AutoOperation.class, LogDomains.DPL_LOGGER);
     final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
 
     /**

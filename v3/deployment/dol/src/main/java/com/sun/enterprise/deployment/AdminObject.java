@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * <!ELEMENT adminobject (adminobject-interface, adminobject-class, config-property*)>

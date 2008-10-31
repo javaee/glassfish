@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.deployment.node;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**

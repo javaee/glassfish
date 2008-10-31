@@ -52,8 +52,6 @@ import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.Serializable;
 
-import org.objectweb.asm.util.TraceClassVisitor;
-
 public class EjbOptionalIntfGenerator
     extends ClassLoader
     implements Opcodes {
@@ -99,8 +97,9 @@ public class EjbOptionalIntfGenerator
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
-        ClassVisitor tv = (_debug)
-                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
+//        ClassVisitor tv = (_debug)
+//                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
+        ClassVisitor tv = cw;
         String intfInternalName = intfClassName.replace('.', '/');
         String objectInternalName = Type.getType(Object.class).getInternalName();
         tv.visit(V1_1, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
@@ -133,9 +132,9 @@ public class EjbOptionalIntfGenerator
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
-        ClassVisitor tv = (_debug)
-                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
-
+//        ClassVisitor tv = (_debug)
+//                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
+        ClassVisitor tv = cw;
         boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
 
         String[] interfaces = null;

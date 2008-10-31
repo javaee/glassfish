@@ -37,6 +37,9 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import java.beans.PropertyChangeEvent;
@@ -56,6 +59,8 @@ public class GlassFishDocument extends DomDocument {
         super(habitat);
 
         final DomDocument doc = this;
+
+        Transactions transactions = habitat.getComponent(Transactions.class);
         Transactions.get(executor).addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {

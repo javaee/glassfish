@@ -36,29 +36,11 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.Map;
-import java.util.Set;
-
-import org.xml.sax.Attributes;
-import org.w3c.dom.Node;
-import org.w3c.dom.Document;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.JaxrpcMappingDescriptor;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.BundleNode;
-import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import org.xml.sax.Attributes;
+
+import java.util.*;
 
 /**
  * Root node for jaxrpc mapping deployment descriptor

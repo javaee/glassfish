@@ -36,8 +36,8 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * This class holds information about a web server virtual 

@@ -38,12 +38,11 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.util.io.FileUtils;
 
 import javax.enterprise.deploy.shared.ModuleType;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * This descriptor represents contents for one persistence.xml file.

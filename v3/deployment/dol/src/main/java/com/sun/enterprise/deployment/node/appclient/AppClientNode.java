@@ -37,46 +37,20 @@
 
 package com.sun.enterprise.deployment.node.appclient;
 
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.node.*;
+import com.sun.enterprise.deployment.types.EjbReference;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.ApplicationClientTagNames;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.types.EjbReference;
-
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.xml.ApplicationClientTagNames;
-
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.BundleNode;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.XMLNode;
-import com.sun.enterprise.deployment.node.EjbReferenceNode;
-import com.sun.enterprise.deployment.node.EjbLocalReferenceNode;
-import com.sun.enterprise.deployment.node.ResourceRefNode;
-import com.sun.enterprise.deployment.node.EnvEntryNode;
-import com.sun.enterprise.deployment.node.ResourceEnvRefNode;
-import com.sun.enterprise.deployment.node.MessageDestinationRefNode;
-import com.sun.enterprise.deployment.node.EntityManagerReferenceNode;
-import com.sun.enterprise.deployment.node.EntityManagerFactoryReferenceNode;
-import com.sun.enterprise.deployment.node.ServiceReferenceNode;
-import com.sun.enterprise.deployment.node.MessageDestinationNode;
-import com.sun.enterprise.deployment.node.LifecycleCallbackNode;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
 
 /**
  * This class is responsible for handling app clients

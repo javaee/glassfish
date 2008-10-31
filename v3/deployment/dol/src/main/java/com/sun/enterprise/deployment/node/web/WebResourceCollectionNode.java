@@ -36,18 +36,18 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.util.net.URLPattern;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.net.URLPattern;
+import org.w3c.dom.Node;
+
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * This nodes handles the web-collection xml tag element

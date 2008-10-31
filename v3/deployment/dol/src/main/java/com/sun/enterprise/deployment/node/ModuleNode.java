@@ -36,21 +36,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
-
-import javax.enterprise.deploy.shared.ModuleType;
-
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.util.DOLUtils;
+import javax.enterprise.deploy.shared.ModuleType;
+import java.util.Map;
 
 /**
  * This node is responsible for handling the module xml fragment from 

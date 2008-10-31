@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.deployment.runtime.common;
 
-import java.util.ArrayList;
-
 import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
+
+import java.util.ArrayList;
 
 public class MessageSecurityDescriptor extends RuntimeDescriptor {
     public static final String MESSAGE = "Message";

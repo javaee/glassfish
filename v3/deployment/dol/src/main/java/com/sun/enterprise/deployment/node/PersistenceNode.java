@@ -37,9 +37,9 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.xml.PersistenceTagNames;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
+import com.sun.enterprise.deployment.xml.PersistenceTagNames;
 
 import java.util.ArrayList;
 import java.util.Collections;

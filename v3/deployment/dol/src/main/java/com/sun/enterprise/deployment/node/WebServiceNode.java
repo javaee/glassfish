@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.*;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import javax.xml.namespace.QName;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /** 
  * This node is responsible for loading web services

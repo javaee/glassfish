@@ -37,10 +37,12 @@
 
 package com.sun.enterprise.deployment.runtime;
 
-import java.beans.*;
-import java.util.List;
-import java.util.ArrayList;
 import com.sun.enterprise.deployment.Descriptor;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This base class defines common behaviour and data for all runtime

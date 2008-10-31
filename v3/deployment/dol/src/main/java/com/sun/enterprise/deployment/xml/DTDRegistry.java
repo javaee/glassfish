@@ -37,7 +37,6 @@
 // START OF IASRI 4661135
 
 package com.sun.enterprise.deployment.xml;
-import java.util.Hashtable;
 
 public final class DTDRegistry {
 

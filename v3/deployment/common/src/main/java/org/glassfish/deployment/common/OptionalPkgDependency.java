@@ -42,17 +42,15 @@
   
 package org.glassfish.deployment.common;
 
+import com.sun.logging.LogDomains;
+
 import java.io.*;
 import java.text.MessageFormat;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
-import java.net.URL;
-import com.sun.logging.LogDomains;
 import java.util.logging.*;
 import java.util.*;
-import java.util.zip.ZipException;
-import java.rmi.RemoteException;
 
 
 /**
@@ -71,7 +69,7 @@ public class OptionalPkgDependency {
     // extension name and specification version in their manifest.
     private static Set extDirJars = new LinkedHashSet();
 
-    private static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    private static Logger logger = LogDomains.getLogger(OptionalPkgDependency.class, LogDomains.DPL_LOGGER);
 
     public OptionalPkgDependency() {      
     }

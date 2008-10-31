@@ -36,9 +36,10 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
+
 import java.io.Serializable;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Shared implementation for deployment descriptor entities that can refer

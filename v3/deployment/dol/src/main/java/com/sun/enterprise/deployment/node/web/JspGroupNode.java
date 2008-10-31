@@ -36,16 +36,16 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.JspGroupDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.LocalizedInfoNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * This node is responsible for handling jsp-group xml tag

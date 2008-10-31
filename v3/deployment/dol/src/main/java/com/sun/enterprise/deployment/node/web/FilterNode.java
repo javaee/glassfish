@@ -36,17 +36,14 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Vector;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.ServletFilterDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-
 import com.sun.enterprise.deployment.node.DisplayableComponentNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * This class is responsible for handling filter xml node

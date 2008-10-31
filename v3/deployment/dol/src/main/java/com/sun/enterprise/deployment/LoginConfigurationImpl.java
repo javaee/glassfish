@@ -37,12 +37,11 @@
 
 
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-//START OF IASRI 4660482 
-import java.util.logging.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //END OF IASRI 4660482 
 
 
@@ -62,7 +61,7 @@ public class LoginConfigurationImpl extends Descriptor implements LoginConfigura
     public static final String AUTHENTICATION_METHOD_CLIENT_CERTIFICATE = LoginConfiguration.CLIENT_CERTIFICATION_AUTHENTICATION;
 
     //START OF IASRI 4660482 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
     //END OF IASRI 4660482 
 
     private String authenticationMethod;

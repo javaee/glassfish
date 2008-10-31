@@ -35,29 +35,22 @@
  */
 package com.sun.enterprise.deployment.node.runtime;
 
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.common.MessageSecurityBindingNode;
 import com.sun.enterprise.deployment.node.runtime.common.RuntimeNameValuePairNode;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
-import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
-import com.sun.enterprise.deployment.runtime.web.Servlet;
 import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import java.util.*;
-import java.util.logging.Level;
-import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node is responsible for handling runtime info for

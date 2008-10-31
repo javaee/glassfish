@@ -42,15 +42,12 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.MethodNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.MethodPermissionDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
+import com.sun.enterprise.deployment.MethodPermissionDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.node.MethodNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 
 /**

@@ -35,9 +35,8 @@
  */
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.web.SecurityRoleReference;
 import com.sun.enterprise.deployment.web.SecurityRole;
+import com.sun.enterprise.deployment.web.SecurityRoleReference;
 
 /** 
  * Special kind of environment property that encapsulates the primitive roles 

@@ -35,7 +35,8 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
     /**
     * Objects implementing this interface allow their

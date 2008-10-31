@@ -36,13 +36,11 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.lang.reflect.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.logging.*;
-import com.sun.logging.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deployment.util.DOLUtils;
+
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 /** 
  * This class contains deployment information for an EntityBean with
@@ -70,7 +68,7 @@ public class EjbEntityDescriptor extends EjbDescriptor {
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbEntityDescriptor.class);
 
-               static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+               static Logger _logger = DOLUtils.getDefaultLogger();
  
 
     

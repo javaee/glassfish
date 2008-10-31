@@ -36,25 +36,16 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.logging.*;
-import com.sun.logging.*;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
 import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
-import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Contains information about jndiEnvironmentRefsGroup.
@@ -67,7 +58,7 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(JndiEnvironmentRefsGroupDescriptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = DOLUtils.getDefaultLogger();
 
     protected Map<CallbackType,
                 Set<LifecycleCallbackDescriptor>> callbackDescriptors

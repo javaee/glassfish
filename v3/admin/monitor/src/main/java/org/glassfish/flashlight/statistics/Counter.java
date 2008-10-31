@@ -7,6 +7,7 @@ package org.glassfish.flashlight.statistics;
 
 import org.glassfish.j2ee.statistics.CountStatistic;
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.datatree.TreeElement;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

@@ -5,7 +5,9 @@
 package org.glassfish.flashlight.datatree.impl;
 
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.flashlight.datatree.TreeElement;
 import org.glassfish.flashlight.annotations.Monitorable;
+import org.glassfish.j2ee.statistics.Statistic;
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -27,7 +29,6 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
             new ConcurrentHashMap<String, TreeNode>();
 
     protected String name;    // The node object itself
-    protected Object instance;
     protected String category;
     protected String description;
 
@@ -38,6 +39,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     private TreeNode parent = null;
     // Special character Regex to be converted to .* for v2 compatibility
     private String STAR = "*";
+
 
     public String getName() {
         return this.name;
@@ -58,11 +60,6 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         }
         return null;
     }
-
-    public void setValue(Object value) {
-       this.instance = value;
-    }
-
 
     public boolean isEnabled() {
         return this.enabled;

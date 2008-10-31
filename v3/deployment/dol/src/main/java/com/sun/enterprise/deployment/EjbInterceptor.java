@@ -36,20 +36,12 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.logging.*;
-import com.sun.logging.*;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.LinkedList;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Contains information about 1 ejb interceptor.
@@ -60,7 +52,7 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbInterceptor.class);
 
-    private static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    private static final Logger _logger = DOLUtils.getDefaultLogger();
 
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescriptors;
     private String interceptorClassName;

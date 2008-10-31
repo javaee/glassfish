@@ -35,12 +35,12 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.types.HandlerChainContainer;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.types.HandlerChainContainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This provides a context for Application Client.

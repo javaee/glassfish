@@ -61,7 +61,6 @@ public class SessionStatsTelemetry{
     private TreeNode sessionNode = null;
 
     private Logger logger;    
-    //Logger logger = LogDomains.getLogger(this.getClass().getName());
     private Collection<ProbeClientMethodHandle> handles;
     private boolean webMonitoringEnabled;
     private boolean isEnabled = true;

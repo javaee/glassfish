@@ -42,6 +42,8 @@
  
 package com.sun.appserv.util.cache;
 
+import com.sun.logging.LogDomains;
+
 import java.text.MessageFormat;
 
 import java.util.ArrayList;
@@ -52,8 +54,6 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.ResourceBundle;
-
-import com.sun.common.util.logging.LogDomains;
 
 /**
  * BaseCache
@@ -143,7 +143,7 @@ public class BaseCache implements Cache {
     public void init(int maxEntries, float loadFactor, Properties props) {
 
         // web container logger
-        _rb = LogDomains.getLogger(BaseCache.class,LogDomains.CMN_LOGGER).getResourceBundle();
+        _rb = LogDomains.getLogger(BaseCache.class,LogDomains.UTIL_LOGGER).getResourceBundle();
 
         if (maxEntries <= 0) {
             String msg = _rb.getString("cache.BaseCache.illegalMaxEntries");

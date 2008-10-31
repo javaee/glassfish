@@ -42,25 +42,19 @@
 
 package com.sun.enterprise.deployment.node.connector;
 
-import java.util.*;
-import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
-import java.util.logging.Level;
-
-import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.node.BundleNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.XMLNode;
-import com.sun.enterprise.deployment.MessageListener;
-import com.sun.enterprise.deployment.node.connector.MessageListenerNode;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**

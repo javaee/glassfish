@@ -35,14 +35,8 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 
 /**
  * This interface provides an abstraction for handle resource references.

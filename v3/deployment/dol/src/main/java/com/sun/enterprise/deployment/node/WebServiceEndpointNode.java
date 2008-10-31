@@ -42,18 +42,14 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
-import java.util.logging.Level;
-import javax.xml.namespace.QName;
-
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node handles the web service endpoint definition

@@ -36,7 +36,11 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.web.WebResourceCollection;
-import java.util.*;
+
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /** 
  * This descriptor represents a description of a portion of a web app

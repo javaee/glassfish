@@ -36,17 +36,15 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
 import com.sun.enterprise.deployment.runtime.web.Cache;
 import com.sun.enterprise.deployment.runtime.web.CacheHelper;
-import com.sun.enterprise.deployment.runtime.web.DefaultHelper;
 import com.sun.enterprise.deployment.runtime.web.CacheMapping;
+import com.sun.enterprise.deployment.runtime.web.DefaultHelper;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.node.XMLElement;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
 * node for cache tag

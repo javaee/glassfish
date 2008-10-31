@@ -41,6 +41,7 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.deployment.util.DOLUtils;
 
 /**
  * All client jar file are created in a separate thread when the client
@@ -121,7 +122,7 @@ public class ClientJarMakerRegistry {
             maker.join();
         } catch(InterruptedException e) {
             StringManager localStrings = StringManager.getManager( ClientJarMakerRegistry.class );            
-            DeploymentLogger.get().log(Level.SEVERE, 
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, 
                 localStrings.getString("enterprise.deployment.error_creating_client_jar", 
                     e.getLocalizedMessage()) ,e);            
         }

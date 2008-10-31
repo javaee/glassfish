@@ -42,12 +42,12 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RoleReference;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * This class handles the DD xml security-role-ref tag

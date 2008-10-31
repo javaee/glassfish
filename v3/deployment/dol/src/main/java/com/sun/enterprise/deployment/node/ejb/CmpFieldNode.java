@@ -36,15 +36,12 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
+import com.sun.enterprise.deployment.FieldDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
+import java.util.Map;
 
 /**
  * This node is responsible for handling all sub-element of cmp-field tag

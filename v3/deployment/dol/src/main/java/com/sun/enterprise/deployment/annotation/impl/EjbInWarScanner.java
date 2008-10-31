@@ -37,17 +37,16 @@
 package com.sun.enterprise.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.*;
+import org.glassfish.apf.impl.AnnotationUtils;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.Iterator;
-
-import org.glassfish.apf.impl.AnnotationUtils;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.

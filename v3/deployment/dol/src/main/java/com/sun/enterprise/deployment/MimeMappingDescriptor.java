@@ -36,6 +36,7 @@
  package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.web.MimeMapping;
+
 import java.io.Serializable;
 
     /*** I represent a mapping between a mime type and a file extension for specifiying how

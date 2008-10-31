@@ -42,13 +42,12 @@
 
 package com.sun.enterprise.deployment.deploy.spi;
 
-import java.io.IOException;
-import java.net.URI;
-import javax.enterprise.deploy.spi.Target;
-import javax.enterprise.deploy.spi.status.ProgressObject;
-
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+
+import javax.enterprise.deploy.spi.Target;
+import javax.enterprise.deploy.spi.status.ProgressObject;
+import java.io.IOException;
 
 /**
  *

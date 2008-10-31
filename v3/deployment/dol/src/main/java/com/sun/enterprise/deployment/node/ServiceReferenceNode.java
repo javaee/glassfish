@@ -42,17 +42,18 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.*;
-import java.util.logging.Level;
+import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.ServiceRefPortInfo;
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
-import com.sun.enterprise.deployment.InjectionTarget;
-import com.sun.enterprise.deployment.util.DOLUtils;
 import javax.xml.namespace.QName;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
 
 /** 
  * This node is responsible for loading web services

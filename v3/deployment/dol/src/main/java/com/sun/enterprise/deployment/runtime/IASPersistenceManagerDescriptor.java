@@ -36,13 +36,11 @@
 
 package com.sun.enterprise.deployment.runtime;
 
-import java.util.*;
-import java.lang.reflect.*;
-import java.util.logging.*;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import java.util.logging.Logger;
 
 
 /** 

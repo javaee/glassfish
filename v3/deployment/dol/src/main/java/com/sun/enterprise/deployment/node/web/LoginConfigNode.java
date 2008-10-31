@@ -42,12 +42,12 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.LoginConfigurationImpl;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /** 
  * This node handles the login-config xml tag

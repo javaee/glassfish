@@ -36,14 +36,16 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import javax.sql.DataSource;
-import java.util.logging.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.deployment.web.ResourceReference;
-import com.sun.enterprise.util.LocalStringManagerImpl; // IASRI 4718559
-import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * This descriptor represents a dependency on a resource.
@@ -127,7 +129,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
    // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static final Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static final Logger _logger = DOLUtils.getDefaultLogger();
     
 
     /**

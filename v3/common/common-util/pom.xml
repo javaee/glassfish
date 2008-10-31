@@ -64,6 +64,18 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+          <source>1.4</source>
+          <target>1.4</target>                
+                    <excludes>
+                        <exclude>**/ha/spi/*.java</exclude>
+                        <exclude>com/sun/enterprise/util/diagnostics/*</exclude>
+                    </excludes>
+                </configuration>
+             </plugin>        
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>

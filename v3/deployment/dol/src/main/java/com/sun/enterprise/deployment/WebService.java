@@ -35,14 +35,10 @@
  */
 package com.sun.enterprise.deployment;
 
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.io.File;
+import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
-
-import java.io.*;
-import java.net.*;
 
 
 /**

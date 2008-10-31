@@ -36,9 +36,9 @@
 package com.sun.enterprise.deployment;
 
 import java.io.Serializable;
-import java.util.Vector;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.Vector;
 
 /**
  * This class contains all the information for the deployment extension 

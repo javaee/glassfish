@@ -36,8 +36,9 @@
 
 package com.sun.enterprise.deployment.types;
 
-import java.util.Set;
 import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
+
+import java.util.Set;
 
 /**
  * This type defines the behaviour of a J2EE Component containing 

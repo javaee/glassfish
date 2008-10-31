@@ -36,19 +36,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
-import java.util.Iterator;
-
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.SecurityRoleRefNode;
-import com.sun.enterprise.deployment.node.SecurityRoleNode;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RoleReference;
+import com.sun.enterprise.deployment.node.SecurityRoleRefNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This class is responsible for reading/writing all information

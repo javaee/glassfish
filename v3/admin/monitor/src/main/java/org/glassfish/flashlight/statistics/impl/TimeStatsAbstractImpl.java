@@ -39,7 +39,6 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
     } ;
     
     protected static final String NEWLINE = System.getProperty("line.separator");
-    
 
    public double getTime() {
         return average.getAverage();

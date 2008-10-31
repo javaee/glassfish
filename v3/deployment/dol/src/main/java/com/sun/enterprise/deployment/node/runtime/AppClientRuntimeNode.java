@@ -36,21 +36,15 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.w3c.dom.Node;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.xml.DTDRegistry;
-import com.sun.enterprise.deployment.util.DOLUtils;
+import org.w3c.dom.Node;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This node is responsible for saving all J2EE RI runtime

@@ -48,7 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
 import sun.misc.URLClassPath;
-import com.sun.common.util.logging.LogDomains;
+import com.sun.logging.LogDomains;
 
 
 /**
@@ -301,7 +301,7 @@ public class ClassLoaderUtil {
      *@return the Logger for this component
      */
     private static Logger getLogger() {
-        return LogDomains.getLogger(ClassLoaderUtil.class, LogDomains.CMN_LOGGER);
+        return LogDomains.getLogger(ClassLoaderUtil.class, LogDomains.UTIL_LOGGER);
     }
     
     /**

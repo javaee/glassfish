@@ -37,8 +37,9 @@
 
 package com.sun.enterprise.deployment.types;
 
-import java.util.Set;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+
+import java.util.Set;
 
 /**
  * This class defines the behaviour of a descriptor containing resource references

@@ -36,13 +36,16 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
-import java.lang.reflect.*;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.logging.Level;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.TypeUtil;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentException;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.logging.Level;
 
 /** 
  * This class contains information about the persistent state

@@ -35,14 +35,14 @@
  */
 package com.sun.enterprise.deployment.node.runtime.common;
 
-import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import java.util.List;
-import java.util.Map;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * This node handles all the role mapping information

@@ -35,12 +35,14 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
-import org.glassfish.apf.impl.AnnotationUtils;
-import org.glassfish.apf.impl.JavaEEScanner;
-import org.glassfish.apf.Scanner;
 import com.sun.enterprise.deployment.annotation.introspection.ClassFile;
 import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
 import com.sun.enterprise.deployment.annotation.introspection.DefaultAnnotationScanner;
+import org.glassfish.apf.Scanner;
+import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.apf.impl.JavaEEScanner;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,9 +55,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * This is an abstract class of the Scanner interface for J2EE module.

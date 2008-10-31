@@ -36,21 +36,18 @@
 
 package com.sun.enterprise.deployment.node;
 
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import org.w3c.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.Map;
-
-import org.xml.sax.Attributes;
-import org.w3c.dom.Node;
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
-
-import com.sun.enterprise.deployment.util.DOLUtils;
+import java.util.logging.Level;
 
 /**
  * This class is responsible for loading and saving XML elements

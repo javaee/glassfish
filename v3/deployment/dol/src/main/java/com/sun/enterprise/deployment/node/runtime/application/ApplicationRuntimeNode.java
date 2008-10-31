@@ -38,28 +38,22 @@
 package com.sun.enterprise.deployment.node.runtime.application;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import org.glassfish.security.common.Group;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
-import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
-import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.XMLNode;
 import com.sun.enterprise.deployment.Role;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
+import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import java.util.Iterator;
+import org.glassfish.security.common.Group;
+import org.w3c.dom.Node;
+
+import javax.enterprise.deploy.shared.ModuleType;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import javax.enterprise.deploy.shared.ModuleType;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * This node handles all runtime-information pertinent to applications

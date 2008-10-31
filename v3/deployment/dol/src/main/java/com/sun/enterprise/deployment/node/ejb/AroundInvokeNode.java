@@ -36,17 +36,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import org.w3c.dom.Node;
-
+import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 
 /**

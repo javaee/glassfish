@@ -35,30 +35,9 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.types.*;
 import org.glassfish.apf.context.AnnotationContext;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-
-import java.util.Iterator;
-import java.util.Set;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.WritableJndiNameEnvironment;
-import org.glassfish.apf.ProcessingContext;
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.types.EjbReferenceContainer;
-import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
-import com.sun.enterprise.deployment.types.ResourceReferenceContainer;
-import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.HandlerChainContainer;
 
 /**
  * This provides an abstraction for handle resource references.

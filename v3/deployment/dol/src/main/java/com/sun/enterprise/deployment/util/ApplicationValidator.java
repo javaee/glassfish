@@ -36,20 +36,11 @@
 
 package com.sun.enterprise.deployment.util;
 
-import java.util.*;
-import java.util.logging.Level;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbIORConfigurationDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import java.io.File;
+import com.sun.enterprise.deployment.*;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * This class is responsible for validating the loaded DOL classes and 

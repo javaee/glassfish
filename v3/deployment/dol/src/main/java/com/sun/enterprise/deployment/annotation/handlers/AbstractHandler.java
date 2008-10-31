@@ -35,24 +35,18 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.AnnotationTypesProvider;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.apf.*;
+import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.apf.impl.HandlerProcessingResultImpl;
+import org.jvnet.hk2.annotations.Inject;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.glassfish.apf.AnnotatedElementHandler;
-import org.glassfish.apf.AnnotationHandler;
-import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.AnnotationProcessorException;
-import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.apf.ResultType;
-import org.glassfish.apf.impl.AnnotationUtils;
-import org.glassfish.apf.impl.HandlerProcessingResultImpl;
-import org.jvnet.hk2.annotations.Inject;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.AnnotationTypesProvider;
 
 /**
  * This is an abstract base class for Handlers.

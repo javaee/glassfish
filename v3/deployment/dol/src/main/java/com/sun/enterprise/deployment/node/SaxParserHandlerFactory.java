@@ -35,8 +35,10 @@
  */
 
 package com.sun.enterprise.deployment.node;
-import java.io.*;
+
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
+
+import java.io.File;
 
 /**
  *Provides the appropriate implementation depending on the current

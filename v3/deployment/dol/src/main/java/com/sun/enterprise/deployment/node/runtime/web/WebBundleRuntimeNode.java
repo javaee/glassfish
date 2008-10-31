@@ -36,56 +36,31 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
-
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.Descriptor;
-import org.glassfish.security.common.Group;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.*;
 import com.sun.enterprise.deployment.node.runtime.common.EjbRefNode;
 import com.sun.enterprise.deployment.node.runtime.common.ResourceEnvRefNode;
 import com.sun.enterprise.deployment.node.runtime.common.ResourceRefNode;
 import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
-import com.sun.enterprise.deployment.node.ServiceReferenceNode;
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.Role;
-import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
-import com.sun.enterprise.deployment.runtime.common.EjbRef;
-import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
-import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
-import com.sun.enterprise.deployment.runtime.common.ResourceRef;
-import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
-import com.sun.enterprise.deployment.runtime.web.Cache;
+import com.sun.enterprise.deployment.runtime.common.*;
+import com.sun.enterprise.deployment.runtime.web.*;
 import com.sun.enterprise.deployment.runtime.web.ClassLoader;
-import com.sun.enterprise.deployment.runtime.web.IdempotentUrlPattern;
-import com.sun.enterprise.deployment.runtime.web.Servlet;
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.runtime.web.SessionConfig;
-import com.sun.enterprise.deployment.runtime.web.JspConfig;
-import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.types.EjbReference;   
+import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.WritableJndiNameEnvironment;
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import org.glassfish.security.common.Group;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

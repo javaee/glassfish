@@ -37,19 +37,6 @@
 
 package com.sun.enterprise.deployment.io;
 
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.runtime.AppClientRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
-import com.sun.enterprise.deployment.node.runtime.connector.ConnectorNode;
-
 /**
  * This class is responsible for handling the XML configuration information
  * for the J2EE Reference Implementation runtime descriptors.

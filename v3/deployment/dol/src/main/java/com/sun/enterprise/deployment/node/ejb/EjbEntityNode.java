@@ -36,26 +36,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbEntityDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbCMPEntityDescriptor;
-import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
-import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.QueryDescriptor;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *  This class handles all information pertinent to CMP and BMP entity beans

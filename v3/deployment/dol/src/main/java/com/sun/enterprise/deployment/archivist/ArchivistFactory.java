@@ -36,10 +36,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.ContractProvider;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -49,7 +46,6 @@ import org.jvnet.hk2.component.Singleton;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**

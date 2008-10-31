@@ -425,6 +425,79 @@ public class FileUtils {
     }
 
     /**
+    * Return a set of all the files (File objects) under the directory specified, with
+    * relative pathnames filtered with the filename filter (can be null for all files).
+    */
+    public static Set getAllFilesUnder(File directory, FilenameFilter filenameFilter) throws IOException {
+	if (!directory.exists() || !directory.isDirectory()) {
+	    throw new IOException("Problem with: " + directory + ". You must supply a directory that exists");
+	}
+        return getAllFilesUnder(directory, filenameFilter, true);
+    }
+
+    public static Set getAllFilesUnder(File directory, FilenameFilter filenameFilter, boolean relativize) throws IOException {
+        Set allFiles = new TreeSet();
+        File relativizingDir = relativize ? directory : null;
+        recursiveGetFilesUnder( relativizingDir, directory, filenameFilter,
+                                allFiles, false );
+        return allFiles;
+    }
+
+    public static Set getAllFilesAndDirectoriesUnder(File directory) throws IOException {
+	if (!directory.exists() || !directory.isDirectory()) {
+	    throw new IOException("Problem with: " + directory + ". You must supply a directory that exists");
+	}
+	Set allFiles = new TreeSet();
+	recursiveGetFilesUnder(directory, directory, null, allFiles, true);
+	return allFiles;
+    }
+
+    // relativizingRoot can be null, in which case no relativizing is
+    // performed.
+    private static void recursiveGetFilesUnder(File relativizingRoot, File directory, FilenameFilter filenameFilter, Set set, boolean returnDirectories) {
+	File[] files = directory.listFiles(filenameFilter);
+	for (int i = 0; i < files.length; i++) {
+	    if (files[i].isDirectory()) {
+		recursiveGetFilesUnder(relativizingRoot, files[i], filenameFilter, set, returnDirectories);
+		if (returnDirectories) {
+                    if( relativizingRoot != null ) {
+                        set.add(relativize(relativizingRoot, files[i]));
+                    } else {
+                        set.add(files[i]);
+                    }
+		}
+	    } else {
+                if( relativizingRoot != null ) {
+                    set.add(relativize(relativizingRoot, files[i]));
+                } else {
+                    set.add(files[i]);
+                }
+	    }
+    	}
+    }
+
+    /**
+     * Given a directory and a fully-qualified file somewhere
+     * under that directory, return the portion of the child
+     * that is relative to the parent.
+     */
+    public static File relativize(File parent, File child) {
+	String baseDir         = parent.getAbsolutePath();
+	String baseDirAndChild = child.getAbsolutePath();
+
+        String relative = baseDirAndChild.substring(baseDir.length(),
+                                                    baseDirAndChild.length());
+
+        // Strip off any extraneous file separator character.
+        if( relative.startsWith(File.separator) ) {
+            relative = relative.substring(1);
+        }
+
+	return new File(relative);
+    }
+    
+
+    /**
      * Executes the supplied work object until the work is done or the max.
      * retry count is reached.
      *

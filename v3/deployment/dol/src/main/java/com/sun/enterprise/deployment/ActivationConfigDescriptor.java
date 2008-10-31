@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.*;
+import java.util.Set;
 
 /** 
  * This class holds a set of activation config properties.

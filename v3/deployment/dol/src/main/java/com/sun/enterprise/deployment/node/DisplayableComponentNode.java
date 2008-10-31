@@ -37,13 +37,9 @@
 package com.sun.enterprise.deployment.node;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Node;
 
 
 /**

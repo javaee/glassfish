@@ -36,28 +36,17 @@
 
 package com.sun.enterprise.deployment;
 
-import java.io.Serializable;
-import java.util.Properties;
-
-/**
- * IASRI 4629057: RI needs modifications to mail configuration to enable
- * javaMail APIs in iAS7.  Change to get mail resources from IAS server.xml
- * (with server_7_0.dtd).
- * Added multiple mail resources handling.
- *
- * IASRI 4650786: JavaMail should support dynamic reconfiguration.
- */
-// START OF IASRI 4629057
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Enumeration;
 import com.sun.enterprise.deployment.interfaces.MailResourceIntf;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.repository.ResourceProperty;
-// END OF IASRI 4629057
 
-import java.util.logging.*;
-import com.sun.enterprise.deployment.util.LogDomains;
-import org.glassfish.deployment.common.DeploymentUtils;
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** 
@@ -129,7 +118,7 @@ public class MailConfiguration implements Serializable {
     // Create logger object per Java SDK 1.4 to log messages
     // introduced Santanu De, Sun Microsystems, March 2002
 
-    static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    static Logger _logger = DOLUtils.getDefaultLogger();
     
     /** 
      * This constructs the mail configuration based on the username and

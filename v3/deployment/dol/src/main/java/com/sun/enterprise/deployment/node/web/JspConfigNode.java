@@ -36,15 +36,15 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.Map;
-import java.util.Enumeration;
-import org.w3c.dom.Node;
+import com.sun.enterprise.deployment.JspConfigDescriptor;
+import com.sun.enterprise.deployment.JspGroupDescriptor;
+import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.JspConfigDescriptor;
-import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
-import com.sun.enterprise.deployment.JspGroupDescriptor;
 import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Enumeration;
 
 /**
  * This node represents the <jsp-config> element in a web application.

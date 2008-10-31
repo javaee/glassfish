@@ -53,8 +53,8 @@ package com.sun.appserv.server.util;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger; 
-import com.sun.appserv.BytecodePreprocessor; 
-import com.sun.common.util.logging.LogDomains; 
+import com.sun.appserv.BytecodePreprocessor;
+import com.sun.logging.LogDomains;
 
 /**
  * PreprocessorUtil is a utility class for managing the bytecode 
@@ -88,7 +88,7 @@ public class PreprocessorUtil {
      * @return - the processed class byte array.
      */    
     public static byte[] processClass (String className, byte[] classBytes) {
-        Logger _logger = LogDomains.getLogger(PreprocessorUtil.class, LogDomains.CMN_LOGGER);
+        Logger _logger = LogDomains.getLogger(PreprocessorUtil.class, LogDomains.UTIL_LOGGER);
         byte[] goodBytes = classBytes;
         if (_preprocessorEnabled) {            
             if (_preprocessor != null) {
@@ -130,7 +130,7 @@ public class PreprocessorUtil {
     }
     
     private synchronized static void setupPreprocessor(String[] ppClassNames) {
-        Logger _logger = LogDomains.getLogger(PreprocessorUtil.class, LogDomains.CMN_LOGGER);
+        Logger _logger = LogDomains.getLogger(PreprocessorUtil.class, LogDomains.UTIL_LOGGER);
 
         if (_preprocessor != null)
             // The preprocessors have already been set up.

@@ -36,13 +36,13 @@
 
 package com.sun.enterprise.deployment.io;
 
-import java.util.Vector;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
+
+import java.util.Vector;
 
 /**
  * This class is responsible for handling the 

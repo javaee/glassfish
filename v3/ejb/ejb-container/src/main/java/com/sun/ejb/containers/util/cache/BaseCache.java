@@ -165,7 +165,7 @@ public class BaseCache implements Cache {
     public void init(int maxEntries, float loadFactor, Properties props) {
 
         // web container logger
-        _rb = LogDomains.getLogger(BaseCache.class, LogDomains.UTIL_LOGGER).getResourceBundle();
+        _rb = LogDomains.getLogger(BaseCache.class, LogDomains.EJB_LOGGER).getResourceBundle();
         
         if (maxEntries <= 0) {
             String msg = _rb.getString("cache.BaseCache.illegalMaxEntries");

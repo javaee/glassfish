@@ -36,97 +36,14 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.logging.Level;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
-import com.sun.enterprise.deployment.xml.ConnectorTagNames;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.xml.ApplicationClientTagNames;
-import com.sun.enterprise.deployment.xml.ApplicationTagNames;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
-import com.sun.enterprise.deployment.xml.PersistenceTagNames;
-
-
-
-// all registered descriptors
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.MethodPermissionDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbEntityDescriptor;
-import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
-import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.RoleReference;
-import com.sun.enterprise.deployment.QueryDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
-import com.sun.enterprise.deployment.RelationRoleDescriptor;
-import com.sun.enterprise.deployment.SecurityPermission;
-import com.sun.enterprise.deployment.LicenseDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.MimeMappingDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
-import com.sun.enterprise.deployment.AuthMechanism;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.MessageListener;
-import com.sun.enterprise.deployment.OutboundResourceAdapter;
-import com.sun.enterprise.deployment.InboundResourceAdapter;
-import com.sun.enterprise.deployment.AdminObject;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.SecurityConstraintImpl;
-import com.sun.enterprise.deployment.UserDataConstraintImpl;
-import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.WebResourceCollectionImpl;
-import com.sun.enterprise.deployment.ServletFilterDescriptor;
-import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
-import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
-import com.sun.enterprise.deployment.ErrorPageDescriptor;
-import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
-import com.sun.enterprise.deployment.LoginConfigurationImpl;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.ActivationConfigDescriptor;
-import com.sun.enterprise.deployment.LocaleEncodingMappingListDescriptor;
-import com.sun.enterprise.deployment.LocaleEncodingMappingDescriptor;
-import com.sun.enterprise.deployment.JspConfigDescriptor;
-import com.sun.enterprise.deployment.JspGroupDescriptor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.EjbRemovalInfo;
-import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
-import com.sun.enterprise.deployment.EjbInitInfo;
-import com.sun.enterprise.deployment.InjectionTarget;
-import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
-
-// Web services related classes
-import com.sun.enterprise.deployment.WebService;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.WebServiceHandler;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
-
-// JSR 220 Persistence related descriptor
-import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-
-
-import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.xml.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This class is responsible for instanciating  Descriptor classes

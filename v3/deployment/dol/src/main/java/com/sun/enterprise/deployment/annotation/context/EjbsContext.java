@@ -35,12 +35,11 @@
  */
 package com.sun.enterprise.deployment.annotation.context;
 
+import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.apf.context.AnnotationContext;
+
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
-
-import com.sun.enterprise.deployment.EjbDescriptor;
-import org.glassfish.apf.ProcessingContext;
 
 
 /**

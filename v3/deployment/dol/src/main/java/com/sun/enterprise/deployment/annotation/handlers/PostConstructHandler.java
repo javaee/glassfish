@@ -35,19 +35,16 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-
-import javax.annotation.PostConstruct;
-
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import org.jvnet.hk2.annotations.Service;
+
+import javax.annotation.PostConstruct;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * This handler is responsible for handling javax.annotation.PostConstruct 

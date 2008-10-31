@@ -36,33 +36,17 @@
 
 package com.sun.enterprise.deployment.node.web;
 
-import java.util.*;
-import org.w3c.dom.Node;
-
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.*;
-
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.WebTagNames;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-
 import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.MimeMappingDescriptor;
-import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
-import com.sun.enterprise.deployment.ServletFilterDescriptor;
-import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
-import com.sun.enterprise.deployment.ErrorPageDescriptor;
-import com.sun.enterprise.deployment.JspConfigDescriptor;
-import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
-import com.sun.enterprise.deployment.LocaleEncodingMappingListDescriptor;
-import com.sun.enterprise.deployment.SecurityConstraintImpl;
-import com.sun.enterprise.deployment.LoginConfigurationImpl;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import org.w3c.dom.Node;
+
+import java.util.*;
 
 /**
  * This node is responsible for handling the web-app xml tree

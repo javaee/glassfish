@@ -35,13 +35,11 @@
  */
 package com.sun.enterprise.deployment.util;
 
-import java.lang.reflect.*;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Hashtable;
 import com.sun.enterprise.deployment.FieldDescriptor;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * Datatype management utility methods

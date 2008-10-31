@@ -42,13 +42,9 @@
 
 package com.sun.enterprise.deployment.util;
 
+import com.sun.enterprise.deployment.*;
+
 import java.util.Iterator;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodPermission;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.ContainerTransaction;
-import com.sun.enterprise.deployment.FieldDescriptor;
-import com.sun.enterprise.deployment.QueryDescriptor;
 
 /**
  * This class is responsible for visiting DOL ejb related  descritpors

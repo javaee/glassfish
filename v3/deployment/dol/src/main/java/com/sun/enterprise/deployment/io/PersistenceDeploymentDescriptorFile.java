@@ -37,9 +37,9 @@
 
 package com.sun.enterprise.deployment.io;
 
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.PersistenceNode;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.PersistenceNode;
+import com.sun.enterprise.deployment.node.RootXMLNode;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM

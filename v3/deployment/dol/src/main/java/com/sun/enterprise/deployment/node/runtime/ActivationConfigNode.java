@@ -36,21 +36,17 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import org.w3c.dom.Node;
-
-import java.util.Set;
-import java.util.Iterator;
-
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ActivationConfigDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import org.w3c.dom.Node;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is responsible for hanlding the activation config elements.

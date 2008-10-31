@@ -35,10 +35,10 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
-import org.glassfish.apf.impl.AnnotationUtils;
 import com.sun.enterprise.deployment.*;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.apf.impl.AnnotationUtils;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;

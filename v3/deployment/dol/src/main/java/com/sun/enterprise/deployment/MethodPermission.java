@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.Role;
-
 /**
  * Represents a method permission. A method permission can be associated to 
  * a role, be unchecked or excluded.

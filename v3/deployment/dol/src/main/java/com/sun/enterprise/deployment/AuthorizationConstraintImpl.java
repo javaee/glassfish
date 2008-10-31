@@ -35,13 +35,13 @@
  */
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.web.SecurityRole;
 import com.sun.enterprise.deployment.web.AuthorizationConstraint;
+import com.sun.enterprise.deployment.web.SecurityRole;
 
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * This descriptor represents an authorization contraint on a security 

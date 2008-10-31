@@ -36,15 +36,15 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-import java.util.Iterator;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.ExtensionElementDescriptor;
-import com.sun.enterprise.deployment.DynamicAttributesDescriptor;
 import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This node is responsible for loading and saving any type of 

@@ -36,18 +36,15 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import java.util.Map;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.RunAsNode;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 
-import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.RunAsNode;
-
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.xml.EjbTagNames;
+import java.util.Map;
 
 /**
  * This node handles all information relative to security-indentity tag

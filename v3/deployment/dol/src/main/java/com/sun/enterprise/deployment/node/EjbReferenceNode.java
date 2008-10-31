@@ -36,16 +36,15 @@
 
 package com.sun.enterprise.deployment.node;
 
-import java.util.Map;
-
-import org.w3c.dom.Node;
-
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
+import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * This class handles all information in the ejb-reference xml node

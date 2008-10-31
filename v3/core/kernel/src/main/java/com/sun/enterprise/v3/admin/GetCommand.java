@@ -54,10 +54,6 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
-import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.statistics.Counter;
-import org.glassfish.j2ee.statistics.Statistic;
-import org.glassfish.flashlight.datatree.MethodInvoker;
 
 /**
  * User: Jerome Dochez
@@ -78,7 +74,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     @Param(primary = true)
     String pattern;
 
-    @Inject
+    @Inject(optional=true)
     private MonitoringRuntimeDataRegistry mrdr;
     
     public void execute(AdminCommandContext context) {
@@ -157,6 +153,13 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         if ((pattern == null) || (pattern.equals(""))) {
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage("match pattern is invalid or null");
+            return;
+        }
+
+        if (mrdr==null) {
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage("monitoring facility not installed");
+            return;
         }
 
         //Grab the monitoring tree root from habitat and get the attributes using pattern
@@ -169,9 +172,10 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
-            if ((! tn1.hasChildNodes()) && 
-                    ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
+//            if ((! tn1.hasChildNodes()) &&
+//                    ((tn1 instanceof Statistic) || (tn1 instanceof MethodInvoker))) {
                 //Counter c = (Counter)tn1;
+            if (!tn1.hasChildNodes()) {
                 map.put(tn1.getCompletePathName(), tn1.getValue());
             }
         }

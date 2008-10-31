@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.deployment.interfaces;
 
-import java.util.Properties;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This class defines APIs to access configuration properties

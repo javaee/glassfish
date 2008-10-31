@@ -36,11 +36,6 @@
 
 package com.sun.enterprise.deployment.types;
 
-import com.sun.enterprise.deployment.web.ContextParameter;
-
-import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 
 /** 

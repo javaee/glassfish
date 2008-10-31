@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.deployment.runtime.web;
 
-import com.sun.enterprise.deployment.runtime.RuntimeDescriptor;
-
 public class ClassLoader extends WebPropertyContainer {
     static public final String EXTRA_CLASS_PATH = "ExtraClassPath";
     static public final String DELEGATE = "Delegate";

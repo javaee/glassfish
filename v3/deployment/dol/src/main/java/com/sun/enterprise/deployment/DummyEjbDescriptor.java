@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.deployment;
 
-import java.util.logging.Level;
-
 import com.sun.enterprise.deployment.util.DOLUtils;
+
+import java.util.logging.Level;
 
 /**
  * A dummy implementation of the EjbDescriptor

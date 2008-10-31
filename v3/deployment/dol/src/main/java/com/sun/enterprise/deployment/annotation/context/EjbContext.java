@@ -42,25 +42,23 @@
 
 package com.sun.enterprise.deployment.annotation.context;
 
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
+import com.sun.enterprise.deployment.types.HandlerChainContainer;
+import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
+import com.sun.enterprise.deployment.util.TypeUtil;
+import org.glassfish.apf.AnnotationInfo;
+import org.glassfish.apf.AnnotationProcessorException;
+import org.glassfish.apf.impl.ComponentDefinition;
+
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import org.glassfish.apf.AnnotatedElementHandler;
-import org.glassfish.apf.AnnotationProcessorException;
-import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.ProcessingContext;
-import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
-import org.glassfish.apf.impl.ComponentDefinition;
-import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
-import com.sun.enterprise.deployment.types.HandlerChainContainer;
-import com.sun.enterprise.deployment.util.TypeUtil;
 
 /**
  *

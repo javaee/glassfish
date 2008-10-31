@@ -103,25 +103,7 @@
        </dependency>
        <dependency>
            <groupId>com.sun.enterprise</groupId>
-           <artifactId>hk2</artifactId>
-                  <exclusions>
-            	<groupId>javax.xml.stream</groupId>
-            	<artifactId>stax-api</artifactId>
-           </exclusions>
-       </dependency>
-       <dependency>
-           <groupId>com.sun.enterprise</groupId>
            <artifactId>osgi-adapter</artifactId>
-       </dependency>
-       <!-- Since HK2 needs StAX at runtime, we need the following-->
-       <dependency>
-           <groupId>com.sun.enterprise</groupId>
-           <artifactId>stax-osgi</artifactId>
-           <version>${hk2.version}</version>
-           <exclusions>
-               <groupId>woodstox</groupId>
-               <artifactId>wstx-asl</artifactId>
-           </exclusions>
        </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
