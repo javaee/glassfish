@@ -218,7 +218,7 @@ public class TableHandlers {
         if ( !(props == null || props.isEmpty()) ){
             Object test  = props.get ((props.keySet().toArray())[0]);
             //If this is a PropertyConfigMap, the value will not be NULL; must be a Property list
-            if (test == null || test instanceof String){
+            if ( (test == null ) || (! (test instanceof PropertyConfig))){
                  getTableListFromProperties(handlerCtx);
                  return;
             }
