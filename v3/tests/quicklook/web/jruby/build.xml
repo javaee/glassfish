@@ -5,6 +5,7 @@
 <property file="build.properties"/>
 <property file="${ws.root}/build.properties"/>
 <property name="JRUBY_HOME" value="${jruby_path}/jruby-all-1.1.3"/>
+<property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
  
 <description>Builds, tests, and runs the JRuby Applications</description>
     <import file="${ws.root}/gfproject/build-impl.xml"/>
@@ -24,6 +25,10 @@
 
 <target name="deploy">
    <record name="deploy.output" action="start"/>
+   <mkdir dir="${dist.dir}"/>
+   <copy todir="${dist.dir}/helloapp">
+      <fileset dir="helloapp"/>
+   </copy>
    <antcall target="deploy-v3-impl">
       <param name="deployed.app" value="helloapp"/>
    </antcall>
