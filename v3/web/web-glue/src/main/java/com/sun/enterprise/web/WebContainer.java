@@ -1858,28 +1858,36 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebModuleConfig wmInfo, String j2eeApplication,
             Properties deploymentProperties) {
 
-        List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
-
         String vsIDs = wmInfo.getVirtualServers();
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
-        if (vsList == null || vsList.size() == 0) {
-            return results;
-        }
+        boolean loadToAll = (vsList == null) || (vsList.size() == 0);
 
         Engine[] engines =  _embedded.getEngines();
+
+        List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         for (int j=0; j<engines.length; j++) {
             Container[] vsArray = engines[j].findChildren();
             for (int i = 0; i < vsArray.length; i++) {
                 if (vsArray[i] instanceof VirtualServer) {
                     VirtualServer vs = (VirtualServer) vsArray[i];
 
-                    if (vsList.contains(vs.getID())
+                    /*
+                     * Fix for bug# 4913636:
+                     * If the vsList is null and the virtual server is
+                     * __asadmin, continue with next iteration
+                     * because we don't want to load user apps on __asadmin
+                     */
+                    if (vs.getID().equals(VirtualServer.ADMIN_VS) && loadToAll) {
+                        continue;
+                    }
+
+                    if ( loadToAll
+                            || vsList.contains(vs.getID())
                             || verifyAlias(vsList,vs)){
 
                         WebModule ctx = null;
                         try {
-                            ctx = loadWebModule(vs, wmInfo, j2eeApplication,
-                                                deploymentProperties);
+                            ctx = loadWebModule(vs, wmInfo, j2eeApplication, deploymentProperties);
                             results.add(new Result(ctx));
                         } catch (Throwable t) {
                             if (ctx != null) {
