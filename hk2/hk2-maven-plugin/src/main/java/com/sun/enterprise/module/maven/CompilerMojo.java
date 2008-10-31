@@ -133,7 +133,7 @@ public class CompilerMojo
     {
         return compileSourceRoots;
     }
-
+                                     
     protected List getClasspathElements()
     {
         return classpathElements;
