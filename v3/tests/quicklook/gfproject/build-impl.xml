@@ -192,8 +192,8 @@
             <exclude name="**/persistence.xml"/>
         </webinf>        
     </war>
-    <antcall target="update-war-struts"/>
-    <copy file="${dist.dir}/${war.file.ext}" tofile="./${war.file.ext}"/>
+    <!-- antcall target="update-war-struts"/ -->
+    <!-- copy file="${dist.dir}/${war.file.ext}" tofile="./${war.file.ext}"/ -->
 </target>
 
 <target name="update-war-struts" if="add.struts.jar">
