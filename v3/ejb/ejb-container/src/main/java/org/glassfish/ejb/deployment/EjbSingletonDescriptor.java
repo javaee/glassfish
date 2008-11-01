@@ -38,6 +38,7 @@ package org.glassfish.ejb.deployment;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -47,6 +48,7 @@ import com.sun.enterprise.deployment.util.EjbVisitor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.ejb.LockType;
+import javax.ejb.AccessTimeout;
 
 /**
  * @author Mahesh Kannan
@@ -69,9 +71,9 @@ public class EjbSingletonDescriptor
 
     private String cmcInXML;
 
-    private LockType defaultLockType = LockType.WRITE;
+    private MethodLockInfo defaultMethodLockInfo = new MethodLockInfo(LockType.WRITE);
 
-    private HashMap<MethodDescriptor, LockType> methodContainerLocks = null;
+    private HashMap<MethodDescriptor, MethodLockInfo> methodContainerLocks = null;
 
     public EjbSingletonDescriptor() {
         super();
@@ -84,7 +86,7 @@ public class EjbSingletonDescriptor
     public void addEjbDescriptor(EjbSingletonDescriptor ejbDesc) {
         super.addEjbDescriptor((EjbDescriptor)ejbDesc);
         this.methodContainerLocks = 
-             new HashMap<MethodDescriptor, LockType>(ejbDesc.getMethodContainerLocks());
+             new HashMap<MethodDescriptor, MethodLockInfo>(ejbDesc.getMethodContainerLocks());
     }
 
     public boolean isSingleton() {
@@ -137,32 +139,85 @@ public class EjbSingletonDescriptor
      */
     public void setDefaultLockType(LockType type) {
         checkLockTypeAllowed();
-        System.out.println("@@@@SETTING DEFAULT TO: " + type);
-        this.defaultLockType = type;
+        System.out.println("@@@@SETTING DEFAULT LockType TO: " + type);
+        defaultMethodLockInfo.setLockType(type);
+    }
+
+    /**
+     * Sets the default AccessTimeout for the given bean.
+     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
+     */
+    public void setDefaultAccessTimeout(AccessTimeout value) {
+        checkLockTypeAllowed();
+        System.out.println("@@@@SETTING DEFAULT AccessTimeout TO: " + value);
+        defaultMethodLockInfo.setTimeout(value.value());
+        defaultMethodLockInfo.setUnit(value.unit());
+    }
+
+    public MethodLockInfo getDefaultMethodLockInfo() {
+        return defaultMethodLockInfo;
     }
 
     public LockType getDefaultLockType() {
-        return defaultLockType;
+        return defaultMethodLockInfo.getLockType();
+    }
+
+    /**
+     * Sets the AccessTimeout for the given method descriptor.
+     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
+     */
+    public void setCMCAccessTimeoutFor(MethodDescriptor methodDescriptor, AccessTimeout value) {
+        MethodLockInfo info = getCMCLockFor(methodDescriptor);
+        long time = value.value();
+        TimeUnit unit = value.unit();
+        boolean changed = false;
+
+        if (info == null) {
+            checkLockTypeAllowed();
+            info = new MethodLockInfo(time, unit);
+            changed = true;
+        } else if (info.getTimeout() != time || !(info.getUnit().equals(unit))) {
+            info.setTimeout(time);
+            info.setUnit(unit);
+            changed = true;
+        }
+
+        if (changed) {
+            System.out.println("@@@@put " + methodDescriptor + " " + info);
+            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + info);
+            getMethodContainerLocks().put(methodDescriptor, info);
+        }
     }
 
     /**
      * Sets the lock type for the given method descriptor.
      * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
      */
-    public void setCMCLockFor(MethodDescriptor methodDescriptor, LockType lockType) {
-        LockType oldValue = getCMCLockFor(methodDescriptor);
-        if (oldValue == null || (oldValue != null && !(oldValue.equals(lockType)))) {
+    public void setCMCLockTypeFor(MethodDescriptor methodDescriptor, LockType lockType) {
+        MethodLockInfo info = getCMCLockFor(methodDescriptor);
+        boolean changed = false;
+
+        if (info == null) {
             checkLockTypeAllowed();
-            System.out.println("@@@@put " + methodDescriptor + " " + lockType);
-            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + lockType);
-            getMethodContainerLocks().put(methodDescriptor, lockType);
+            info = new MethodLockInfo(lockType);
+            changed = true;
+        } else if(info.getLockType() == null || 
+                !(info.getLockType().equals(lockType))) {
+            info.setLockType(lockType);
+            changed = true;
+        }
+
+        if (changed) {
+            System.out.println("@@@@put " + methodDescriptor + " " + info);
+            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + info);
+            getMethodContainerLocks().put(methodDescriptor, info);
         }
     }
 
     /**
      * Fetches the assigned lock type object for the given method object or null.
      */
-    public LockType getCMCLockFor(MethodDescriptor methodDescriptor) {
+    public MethodLockInfo getCMCLockFor(MethodDescriptor methodDescriptor) {
         return  getMethodContainerLocks().get(methodDescriptor);
     }
 
@@ -173,7 +228,7 @@ public class EjbSingletonDescriptor
         super.print(toStringBuffer);
         toStringBuffer.append("\n ContainerManagedConcurrency ").append(isContainerManagedConcurrency());
         if (isContainerManagedConcurrency()) {
-            toStringBuffer.append("\n defaultLockType ").append(defaultLockType);
+            toStringBuffer.append("\n defaultMethodLockInfo ").append(defaultMethodLockInfo);
         }
         toStringBuffer.append("\n methodContainerLocks ").append(getMethodContainerLocks());
     }
@@ -187,7 +242,7 @@ public class EjbSingletonDescriptor
         super.visit(aVisitor);
         for (Iterator e = getMethodContainerLocks().keySet().iterator(); e.hasNext();) {
             MethodDescriptor md = (MethodDescriptor) e.next();
-            LockType lt = getMethodContainerLocks().get(md);
+            MethodLockInfo lt = getMethodContainerLocks().get(md);
             // XXX ??? aVisitor.accept(md, lt);
         }
     }
@@ -198,11 +253,11 @@ public class EjbSingletonDescriptor
 
     /**
      * Return a copy of the mapping held internally of method descriptors 
-     * to LockType objects.
+     * to MethodLockInfo objects.
      */
-    private HashMap<MethodDescriptor, LockType> getMethodContainerLocks() {
+    private HashMap<MethodDescriptor, MethodLockInfo> getMethodContainerLocks() {
         if (this.methodContainerLocks == null) {
-            this.methodContainerLocks = new HashMap<MethodDescriptor, LockType>();
+            this.methodContainerLocks = new HashMap<MethodDescriptor, MethodLockInfo>();
         }
         return methodContainerLocks;
     }

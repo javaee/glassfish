@@ -59,39 +59,36 @@ import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Lock.
+ * This handler is responsible for handling the javax.ejb.AccessTimeout.
  *
  * @author Mahesh Kannan
  * @author Marina Vatkina
  */
 @Service
-public class LockHandler extends AbstractAttributeHandler {
+public class AccessTimeoutHandler extends AbstractAttributeHandler {
 
-    public LockHandler() {
+    public AccessTimeoutHandler() {
     }
 
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return Lock.class;
+        return AccessTimeout.class;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        Lock lockAnn =
-                (Lock) ainfo.getAnnotation();
+        AccessTimeout timeout = (AccessTimeout) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
             if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
                 EjbSingletonDescriptor singletonDesc = 
                         (EjbSingletonDescriptor) ejbContext.getDescriptor();
-                LockType lockType = lockAnn.value();
-
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
-                    System.out.println("***Setting Lock " + lockType + " AT CLASS LEVEL***");
-                    singletonDesc.setDefaultLockType(lockType);
+                    System.out.println("***Setting AccessTimeout " + timeout + " AT CLASS LEVEL***");
+                    singletonDesc.setDefaultAccessTimeout(timeout);
                 } else {
                     Method annMethod = (Method) ainfo.getAnnotatedElement();
 
@@ -101,8 +98,8 @@ public class LockHandler extends AbstractAttributeHandler {
                         Method m = nextDesc.getMethod(singletonDesc);
                         if (TypeUtil.sameMethodSignature(m, annMethod)) {
                             // override by xml
-                            System.out.println("$$$$$ Got ann: " + lockType + "  ON " + annMethod);
-                            singletonDesc.setCMCLockTypeFor(nextDesc, lockType);
+                            System.out.println("$$$$$ Got ann: " + timeout + "  ON " + annMethod);
+                            singletonDesc.setCMCAccessTimeoutFor(nextDesc, timeout);
                         }
                     }
                 }
