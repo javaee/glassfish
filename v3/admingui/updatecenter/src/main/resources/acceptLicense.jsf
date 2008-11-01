@@ -82,7 +82,7 @@
                 getLicenseText(selectedRows="#{selectedRows}" license=>$page{licenseText});
             />
             "<pre><font size="2" />
-                <sun:textArea id="lic" rows="$int{20}" columns="$int{90}" text="#{licenseText}" />
+                <sun:textArea id="lic" rows="$int{20}" columns="$int{90}" text="#{licenseText}" disabled="#{true}" />
             "</pre> 
         </sun:property>
         
