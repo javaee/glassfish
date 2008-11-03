@@ -82,9 +82,9 @@ public class ConnectionDefinitionUtils {
                 }
             }
         } catch (SecurityException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
         } catch (ClassNotFoundException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
         }
         ignoreOracle10gProperties(connectionDefinitionClassName, propertySet);
         return propertySet.keySet();
@@ -194,16 +194,16 @@ public class ConnectionDefinitionUtils {
                 hm.put(property, defaultVal);
             }
         } catch (ClassNotFoundException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
             //since the specified connectionDefinitionClassName is not found, 
             //return the standard JDBC properties
             addDefaultJDBCProperties(hm);
         } catch (InstantiationException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
         } catch (IllegalAccessException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
         } catch (SecurityException e) {
-            handleException(e);
+            handleException(e, connectionDefinitionClassName);
         }
         return hm;
     }
@@ -219,11 +219,13 @@ public class ConnectionDefinitionUtils {
         }
     }
 
-    private static void handleException(Exception ex) {
-        ex.printStackTrace();
+    private static void handleException(Exception ex, String className) {
+        _logger.log(Level.FINE, "Exception while trying to find properties of class [ "+className+" ]", ex);
+        //TODO V3 logStrings ?
         _logger.log(
             Level.SEVERE,
-            "Exception while trying to find properties ",
+            "Exception while trying to find properties of class [ "+className+" ], " +
+                    "set log-level of CONNECTOR to FINE for more information",
             ex.getMessage());
     }
 
