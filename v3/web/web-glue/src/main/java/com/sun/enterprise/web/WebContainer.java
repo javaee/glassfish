@@ -37,25 +37,90 @@
 package com.sun.enterprise.web;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.net.URL;
 import java.text.MessageFormat;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.*;
+import java.util.logging.Logger;
+import javax.servlet.jsp.JspFactory;
 
+import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
+import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
+import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
+import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
+import com.sun.enterprise.admin.monitor.stats.ServletStats;
+import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ConnectionPool;
+import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpFileCache;
+import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpProtocol;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.J2eeApplication;
+import com.sun.enterprise.config.serverbeans.KeepAlive;
+import com.sun.enterprise.config.serverbeans.LogService;
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import com.sun.enterprise.config.serverbeans.MonitoringService;
+import com.sun.enterprise.config.serverbeans.RequestProcessing;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.SessionProperties;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
+import com.sun.enterprise.deployment.runtime.web.SessionManager;
+import com.sun.enterprise.deployment.runtime.web.StoreProperties;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
+import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.util.Result;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
+import com.sun.enterprise.web.logger.IASLogger;
+import com.sun.enterprise.web.monitor.PwcServletStats;
+import com.sun.enterprise.web.monitor.impl.PwcServletStatsImpl;
+import com.sun.enterprise.web.monitor.impl.PwcWebModuleStatsImpl;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
+import com.sun.enterprise.web.stats.HTTPListenerStatsImpl;
+import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
+import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
+import com.sun.enterprise.web.stats.ServletStatsImpl;
+import com.sun.enterprise.web.stats.WebModuleStatsImpl;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.hk2.component.ConstructorWomb;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.Connector;
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Loader;
-import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Loader;
 import org.apache.catalina.Realm;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
@@ -65,100 +130,28 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.xmlparser.ParserUtils;
-
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.J2eeApplication;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.LogService;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.DasConfig;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.ConnectionPool;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.HttpFileCache;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Property;
-import com.sun.enterprise.config.serverbeans.RequestProcessing;
-import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.config.serverbeans.SessionProperties;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
-import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.deployment.runtime.web.StoreProperties;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
-import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.Result;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
-import com.sun.enterprise.web.logger.IASLogger;
-import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.appserv.security.provider.ProxyHandler;
-import com.sun.appserv.server.util.Version;
-import com.sun.logging.LogDomains;
-
-// monitoring imports
-import com.sun.enterprise.admin.monitor.stats.ServletStats;
-import com.sun.enterprise.web.stats.HTTPListenerStatsImpl;
-import com.sun.enterprise.web.stats.ServletStatsImpl;
-import com.sun.enterprise.web.monitor.PwcServletStats;
-import com.sun.enterprise.web.monitor.impl.PwcServletStatsImpl;
-import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
-import com.sun.enterprise.web.stats.WebModuleStatsImpl;
-import com.sun.enterprise.web.monitor.impl.PwcWebModuleStatsImpl;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
-import com.sun.enterprise.config.serverbeans.MonitoringService;
-import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
-import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
-
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.v3.services.impl.V3Mapper;
-import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.hk2.component.ConstructorWomb;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
-
-import javax.naming.spi.NamingManager;
-import javax.servlet.jsp.JspFactory;
-import java.lang.reflect.*;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.EntityResolver;
-
-import com.sun.enterprise.security.integration.RealmInitializer;
 
 /**
  * Web container service
@@ -211,13 +204,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             JspProbeProvider.class.getClassLoader(),
             new Class[] { JspProbeProvider.class },
             new NoopInvocationHandler());
-                         
+
     private static final RequestProbeProvider NO_OP_REQUEST_PROBE_PROVIDER =
         (RequestProbeProvider) Proxy.newProxyInstance(
             RequestProbeProvider.class.getClassLoader(),
             new Class[] { RequestProbeProvider.class },
             new NoopInvocationHandler());
-    
+
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -253,10 +246,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ClassLoaderHierarchy clh;
-    
+
     @Inject
     GrizzlyService grizzlyService;
-    
+
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
 
@@ -273,22 +266,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * The id of this web container object.
      */
     private String _id = null;
-   
+
     /**
      * Allow disabling accessLog mechanism
      */
     protected boolean globalAccessLoggingEnabled = true;
-    
+
     /**
      * AccessLog buffer size for storing logs.
      */
-    protected String globalAccessLogBufferSize = null;   
-   
+    protected String globalAccessLogBufferSize = null;
+
     /**
      * AccessLog interval before the valve flush its buffer to the disk.
      */
-    protected String globalAccessLogWriteInterval = null;  
-   
+    protected String globalAccessLogWriteInterval = null;
+
     /**
      * The default-redirect port
      */
@@ -303,7 +296,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     protected ServerEnvironment instance = null;
-    
+
     // TODO
     //protected WebModulesManager webModulesManager = null;
     //protected AppsManager appsManager = null;
@@ -422,9 +415,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected WebModuleProbeProvider webModuleProbeProvider = null;
 
     protected Habitat habitat;
-    
+
     protected HttpServiceConfigListener configListener = null;
-    
+
     // Indicates whether we are being shut down
     private boolean isShutdown = false;
 
@@ -434,11 +427,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     static {
         if (System.getProperty(DOL_DEPLOYMENT) != null){
-            useDOLforDeployment = Boolean.valueOf(
-                    System.getProperty(DOL_DEPLOYMENT)).booleanValue();
+            useDOLforDeployment = Boolean.valueOf(System.getProperty(DOL_DEPLOYMENT));
         }
     }
-    
+
     public void postConstruct() {
 
         createProbeProviders();
@@ -452,7 +444,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _appsWorkRoot =
             instance.getApplicationCompileJspPath().getAbsolutePath();
         _modulesRoot = instance.getApplicationRepositoryPath();
-        
+
         setTldScan();
 
         // START S1AS 6178005
@@ -509,7 +501,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             try {
                 depth = Integer.parseInt(maxDepth);
             } catch (NumberFormatException e) {}
-                
+
             if (depth > 0) {
                 Request.setMaxDispatchDepth(depth);
                 if (_logger.isLoggable(Level.FINE)) {
@@ -519,22 +511,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
         }
-    
+
         LogService logService = cfg.getLogService();
         String logServiceFile = null;
         if (logService != null) {
             logServiceFile = logService.getFile();
         }
-        
+
         _embedded = new EmbeddedWebContainer(_serverContext, this, logServiceFile);
-        
+
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
         _embedded.setUseNaming(false);
         if (_debug > 1)
             _embedded.setDebug(_debug);
         _embedded.setLogger(new IASLogger(_logger));
-        
+
         // TODO (Sahoo): Stop using ModuleImpl
         engine = _embedded.createEngine();
         engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
@@ -588,22 +580,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // TODO : revisit later
         //ejbWebServiceRegistryListener.register(habitat);
 
-        ConstructorWomb<HttpServiceConfigListener> womb = 
+        ConstructorWomb<HttpServiceConfigListener> womb =
                 new ConstructorWomb<HttpServiceConfigListener>(
-                HttpServiceConfigListener.class, 
-                habitat, 
+                HttpServiceConfigListener.class,
+                habitat,
                 null);
         configListener = womb.get(null);
-        
+
         ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
                 configListener.httpService);
-        httpServiceBean.addListener(configListener);    
-        
+        httpServiceBean.addListener(configListener);
+
         configListener.setContainer(this);
         configListener.setLogger(_logger);
 
         events.register(this);
-        
+
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
 
@@ -621,15 +613,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
             createJKConnector(null, httpService);
-            
+
             setDefaultRedirectPort(defaultRedirectPort);
-            
+
             // Configure virtual servers
             createHosts(httpService, aConfig.getSecurityService());
         }
 
         loadDefaultWebModules();
-       
+
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
         // start the embedded container
@@ -640,10 +632,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                "Unable to start web container", le);
             return;
         }
-        
+
         // TODO not yet
         //enableVirtualServerMonitoring();
-        
+
         /*
         if (_reloadingEnabled) {
             // Enable dynamic reloading (via the .reload file) for all
@@ -679,7 +671,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    
+
     public void preDestroy() {
         try {
             _embedded.stop();
@@ -744,19 +736,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return WebDeployer.class;
     }
 
-    
+
     public WebConnector getJkConnector() {
         return jkConnector;
     }
-    
-    
+
+
     /**
-     * Use an http-listener subelements and creates a corresponding 
+     * Use an http-listener subelements and creates a corresponding
      * Tomcat Connector for each.
      *
      * @param httpService The http-service element
      * @param httpListener the configuration element.
-     */       
+     */
     protected WebConnector createHttpListener(HttpListener httpListener,
                                               HttpService httpService) {
         return createHttpListener(httpListener, httpService, null);
@@ -770,10 +762,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (!Boolean.valueOf(httpListener.getEnabled())) {
             return null;
         }
-                                 
+
         int port = 8080;
         WebConnector connector;
-        
+
         checkHostnameUniqueness(httpListener.getId(), httpService);
 
         try {
@@ -805,10 +797,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
              * connections on any/all local addresses.
              */
         }
-        
+
         connector = (WebConnector)_embedded.createConnector(address, port,
                                                             isSecure);
-        
+
         if (mapper != null) {
             connector.setMapper(mapper);
         } else {
@@ -833,7 +825,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         _embedded.addConnector(connector);
-    
+
         portMap.put(httpListener.getId(),
                     Integer.valueOf(httpListener.getPort()));
         connectorMap.put(httpListener.getId(), connector);
@@ -843,9 +835,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if ( defaultRedirectPort != -1 ){
             connector.setRedirectPort(defaultRedirectPort);
         }
-        
+
         ObservableBean httpListenerBean = (ObservableBean) ConfigSupport.getImpl(httpListener);
-        httpListenerBean.addListener(configListener);  
+        httpListenerBean.addListener(configListener);
 
         return connector;
     }
@@ -855,12 +847,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * mod_jk, mod_jk2 or mod_ajp.
      */
     private void createJKConnector(HttpListener httpListener, HttpService httpService) {
-        
+
         int port = 8009;
-        
+
         if (httpListener == null) {
-            String portString = 
-                    System.getProperty("com.sun.enterprise.web.connector.enableJK");       
+            String portString =
+                    System.getProperty("com.sun.enterprise.web.connector.enableJK");
             if (portString == null) {
                 // do not create JK Connector if property is not set
                 return;
@@ -875,7 +867,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             port = Integer.parseInt(httpListener.getPort());
         }
-                
+
         jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0",
                                                                 port, "ajp");
         jkConnector.configureJKProperties();
@@ -886,14 +878,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             defaultHost = httpListener.getDefaultVirtualServer();
             jkConnectorName = httpListener.getId();
         }
-        jkConnector.setDefaultHost(defaultHost);        
-        jkConnector.setName(jkConnectorName);     
+        jkConnector.setDefaultHost(defaultHost);
+        jkConnector.setName(jkConnectorName);
         jkConnector.setDomain(_serverContext.getDefaultDomainName());
         jkConnector.configureHttpProtocol(httpService.getHttpProtocol());
         _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
                                 + defaultHost + " listening on port: "
                                 + port);
-                
+
         boolean found = false;
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
             if (m.getPort() == port){
@@ -902,9 +894,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 break;
             }
         }
-        
-        _embedded.addConnector(jkConnector); 
-            
+
+        _embedded.addConnector(jkConnector);
+
     }
 
     /**
@@ -912,11 +904,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * http-listener element in domain.xml does not specify its own
      * redirect-port attribute.
      *
-     * The given defaultRedirectPort corresponds to the port number of the 
+     * The given defaultRedirectPort corresponds to the port number of the
      * first security-enabled http-listener in domain.xml.
      *
      * This method does nothing if none of the http-listener elements is
-     * security-enabled, in which case Tomcat's default redirect port (443) 
+     * security-enabled, in which case Tomcat's default redirect port (443)
      * will be used.
      *
      * @param defaultRedirectPort The redirect port to be assigned to any
@@ -929,10 +921,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 if (connectors[i].getRedirectPort() == -1) {
                     connectors[i].setRedirectPort(defaultRedirectPort);
                 }
-            } 
+            }
         }
     }
-    
+
     /**
      * Configure http-service properties.
      */
@@ -949,12 +941,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             for (Property httpServiceProp : httpServiceProps) {
                 String propName = httpServiceProp.getName();
                 String propValue = httpServiceProp.getValue();
-                               
+
                 if (connector.configureHttpListenerProperty(propName,
                                                             propValue)) {
                     continue;
                 }
-                
+
                 if ("connectionTimeout".equals(propName)) {
                     connector.setConnectionTimeout(
                                                 Integer.parseInt(propValue));
@@ -989,9 +981,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         httpServiceProp.getName());
                 }
             }
-        }    
-    }    
-        
+        }
+    }
+
     /*
      * Ensures that the host names of all virtual servers associated with the
      * HTTP listener with the given listener id are unique.
@@ -1047,11 +1039,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                                        listenerId });
                         }
                     }
-		}    
-            }        
-        }            
+		}
+            }
+        }
     }
-    
+
 
     /**
      * Enumerates the virtual-server subelements of the given http-service
@@ -1077,12 +1069,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param vsBean The virtual-server configuration bean
      * @param httpService The http-service element.
      * @param securityService The security-service element
-     */            
+     */
     public VirtualServer createHost(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
                 HttpService httpService,
                 SecurityService securityService) {
-        
+
         MimeMap mm = null;
         String vs_id = vsBean.getId();
 
@@ -1090,7 +1082,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (docroot == null) {
             docroot = vsBean.getDocroot();
         }
-        
+
         validateDocroot(docroot,
                         vs_id,
                         vsBean.getDefaultWebModule());
@@ -1101,8 +1093,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // cache control
         Property cacheProp = vsBean.getProperty("setCacheControl");
         if ( cacheProp != null ){
-            vs.configureCacheControl(cacheProp.getValue()); 
-        }        
+            vs.configureCacheControl(cacheProp.getValue());
+        }
 
         PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
@@ -1130,19 +1122,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Add Host to Engine
         engine.addChild(vs);
-        
-        ObservableBean virtualServerBean = (ObservableBean) ConfigSupport.getImpl(vsBean);
-        virtualServerBean.addListener(configListener);  
 
-        return vs;        
+        ObservableBean virtualServerBean = (ObservableBean) ConfigSupport.getImpl(vsBean);
+        virtualServerBean.addListener(configListener);
+
+        return vs;
     }
 
     /**
      * Validate the docroot properties of a virtual-server.
      */
-    protected boolean validateDocroot(String docroot, String vs_id, 
+    protected boolean validateDocroot(String docroot, String vs_id,
                                       String defaultWebModule){
-       
+
         // docroot vs default-web-module
         if (docroot != null ) {
             // If the docroot is invalid and there is no default module,
@@ -1155,7 +1147,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 throw new IllegalArgumentException(msg);
             } else if (!isValid) {
 
-                _logger.log(Level.WARNING, "virtual-server " + vs_id 
+                _logger.log(Level.WARNING, "virtual-server " + vs_id
                             + " has an invalid docroot: " + docroot );
             }
         } else if (defaultWebModule == null) {
@@ -1165,7 +1157,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         return true;
     }
-    
+
 
     /**
      * Configures the given virtual server.
@@ -1188,7 +1180,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (listeners == null) {
             return;
         }
-        
+
         HashSet<HttpListener> httpListeners = new HashSet<HttpListener>();
         for (int i=0; i < listeners.size(); i++){
             boolean found = false;
@@ -1206,12 +1198,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             vs.getName() + " does not exist");
             }
         }
-        
+
         configureHostPortNumbers(vs, httpListeners);
         vs.configureCatalinaProperties();
         vs.configureAuthRealm(securityService);
     }
-        
+
     /**
      * Configures the given virtual server with the port numbers of its
      * associated http listeners.
@@ -1223,7 +1215,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void configureHostPortNumbers(
             VirtualServer vs,
             HashSet<HttpListener> httpListeners){
-       
+
         boolean addJkListenerPort = (jkConnector != null
             && !vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS));
 
@@ -1233,7 +1225,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 Integer port = portMap.get(httpListener.getId());
                 if (port != null) {
                     portsList.add(port);
-                }               
+                }
             } else {
                 if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
                     String msg = rb.getString(
@@ -1242,9 +1234,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                                vs.getName());
                     throw new IllegalArgumentException(msg);
                 }
-            }   
+            }
         }
-        
+
         int numPorts = portsList.size();
         if (addJkListenerPort) {
             numPorts++;
@@ -1269,7 +1261,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             vs.setPorts(ports);
         }
     }
-    
+
     /*
      * Enables monitoring of all virtual servers.
      */
@@ -1279,19 +1271,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             Container[] hostArray = engines[j].findChildren();
             for (int i = 0; i < hostArray.length; i++) {
                 VirtualServer vs = (VirtualServer) hostArray[i];
-                enableVirtualServerMonitoring(vs);            
+                enableVirtualServerMonitoring(vs);
             }
         }
     }
-    
+
     /*
      * Enables monitoring of all virtual servers.
      */
-    private void enableVirtualServerMonitoring(VirtualServer vs){        
+    private void enableVirtualServerMonitoring(VirtualServer vs){
         ServerContext sc = getServerContext();
         MonitoringRegistry monitoringRegistry = sc.getDefaultHabitat().getComponent(MonitoringRegistry.class);
 
-        
+
         PWCVirtualServerStatsImpl vsStats = new PWCVirtualServerStatsImpl(vs);
         try {
             monitoringRegistry.registerPWCVirtualServerStats(vsStats,
@@ -1303,10 +1295,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         + vs.getID(), e);
         }
 
-        PWCRequestStatsImpl pwcRequestStatsImpl = 
-                new PWCRequestStatsImpl(sc.getDefaultDomainName());  
+        PWCRequestStatsImpl pwcRequestStatsImpl =
+                new PWCRequestStatsImpl(sc.getDefaultDomainName());
         vs.setPWCRequestStatsImpl(pwcRequestStatsImpl);
-        
+
         try {
             monitoringRegistry.registerPWCRequestStats(pwcRequestStatsImpl,
                         vs.getID(),
@@ -1317,9 +1309,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.WARNING, msg, mre);
         }
     }
-        
+
     /**
-     * Configures the keep-alive properties on all HTTP connectors  
+     * Configures the keep-alive properties on all HTTP connectors
      * from the given keep-alive config.
      *
      * @param httpService http-service config to use
@@ -1328,12 +1320,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         KeepAlive keepAlive = httpService.getKeepAlive();
         Connector[] connectors = _embedded.findConnectors();
-                    
-        for (int i=0; i < connectors.length; i++){    
+
+        for (int i=0; i < connectors.length; i++){
             ((PECoyoteConnector)connectors[i]).configureKeepAlive(keepAlive);
         }
     }
-        
+
     /**
      * Configures all HTTP connectors with connection-pool related info.
      *
@@ -1343,12 +1335,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         ConnectionPool cp = httpService.getConnectionPool();
         Connector[] connectors = _embedded.findConnectors();
-                    
-        for (int i=0; i < connectors.length; i++){    
+
+        for (int i=0; i < connectors.length; i++){
             ((PECoyoteConnector)connectors[i]).configureConnectionPool(cp);
         }
     }
-         
+
     /**
      * Configures all HTTP connectors with http-protocol related info.
      *
@@ -1358,15 +1350,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         HttpProtocol httpProtocol = httpService.getHttpProtocol();
         Connector[] connectors = _embedded.findConnectors();
-                    
-        for (int i=0; i < connectors.length; i++){    
+
+        for (int i=0; i < connectors.length; i++){
             ((PECoyoteConnector)connectors[i]).configureHttpProtocol(
                 httpProtocol);
         }
     }
-        
+
     /**
-     * Configures the Grizzly FileCache mechanism on all HTTP connectors 
+     * Configures the Grizzly FileCache mechanism on all HTTP connectors
      *
      * @param httpService http-service config to use
      */
@@ -1374,13 +1366,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         HttpFileCache httpFileCache = httpService.getHttpFileCache();
         Connector[] connectors = _embedded.findConnectors();
-                    
-        for (int i=0; i < connectors.length; i++){    
+
+        for (int i=0; i < connectors.length; i++){
             ((PECoyoteConnector)connectors[i]).configureFileCache(
                 httpFileCache);
         }
     }
-        
+
     /**
      * Configures all HTTP connector with the given request-processing
      * config.
@@ -1391,8 +1383,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         RequestProcessing rp = httpService.getRequestProcessing();
         Connector[] connectors = _embedded.findConnectors();
-                    
-        for (int i=0; i < connectors.length; i++){    
+
+        for (int i=0; i < connectors.length; i++){
             ((PECoyoteConnector)connectors[i]).configureRequestProcessing(rp);
         }
     }
@@ -1645,7 +1637,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         Engine[] engines =  _embedded.getEngines();
         String defaultPath = null;
-        
+
         for (int j=0; j<engines.length; j++) {
             Container[] vsArray = engines[j].findChildren();
             for (int i = 0; i < vsArray.length; i++) {
@@ -1662,7 +1654,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         continue;
                     }
 
-                    WebModuleConfig wmInfo = vs.getDefaultWebModule(domain, 
+                    WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
                             habitat.getComponent(
                             WebDeployer.class) );
                     if (wmInfo != null) {
@@ -1930,9 +1922,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
 
-        if (wmContextPath.equals("") && vs.getDefaultWebModuleID() != null) {
+        if (wmContextPath.length() == 0 && vs.getDefaultWebModuleID() != null) {
             String msg = rb.getString("webcontainer.defaultWebModuleConflict");
-            msg = MessageFormat.format(msg, 
+            msg = MessageFormat.format(msg,
                     new Object[] { wmName, wmContextPath, vs.getID() });
             throw new Exception(msg);
         }
@@ -1950,13 +1942,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         String displayContextPath = null;
-        if (wmContextPath.equals(""))
+        if (wmContextPath.length() == 0)
             displayContextPath = "/";
         else
             displayContextPath = wmContextPath;
 
-        HashMap adHocPaths = null;
-        HashMap adHocSubtrees = null;
+        Map<String, AdHocServletInfo> adHocPaths = null;
+        Map<String, AdHocServletInfo> adHocSubtrees = null;
         WebModule ctx = (WebModule)vs.findChild(wmContextPath);
         if (ctx != null) {
             if (ctx instanceof AdHocWebModule) {
@@ -1998,9 +1990,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 return ctx;
             } else {
                 String msg = rb.getString("webcontainer.duplicateContextRoot");
-                msg = MessageFormat.format(msg,
-                    new Object[] { vs.getID(), displayContextPath, wmName });
-                throw new Exception(msg);
+                throw new Exception(MessageFormat.format(msg, vs.getID(), displayContextPath, wmName));
             }
         }
 
@@ -2057,7 +2047,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Object containing web.xml information
         WebBundleDescriptor wbd = wmInfo.getDescriptor();
-        
+
         // Set the context root
         if (wbd != null) {
             ctx.setContextRoot(wbd.getContextRoot());
@@ -2108,14 +2098,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // set the sun-web config bean
         ctx.setIasWebAppConfigBean(iasBean);
-            
+
         // Configure SingleThreadedServletPools, work/tmp directory etc
         ctx.configureMiscSettings(iasBean, vs, displayContextPath);
 
         // Configure alternate docroots if dummy web module
         if (ctx.getID().startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
             ctx.setAlternateDocBases(vs.getProperties());
-        } 
+        }
 
         // Configure the class loader delegation model, classpath etc
         Loader loader = ctx.configureLoader(iasBean, wmInfo);
@@ -2160,7 +2150,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * Standalone webapps inherit the realm referenced by
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
-                     */                    
+                     */
                     if (realm != null && realm instanceof RealmInitializer) {
                         ((RealmInitializer)realm).initializeRealm(
                             wbd, isSystem, vs.getAuthRealmName());
@@ -2179,7 +2169,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             if (wbd.getApplication() != null &&
                     wbd.getApplication().isVirtual()) {
                 wbd.visit(new WebValidatorWithoutCL());
-            }    
+            }
         }
 
         // Add virtual server mime mappings, if present
@@ -2205,7 +2195,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.addChild(ctx);
 
         ctx.loadSessions(deploymentProperties);
-        
+
         return ctx;
     }
 
@@ -2228,7 +2218,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             int[] ports,
             WebModuleConfig wmInfo)
             throws LifecycleException {
-        
+
         String defaultContextPath = null;
         if (wmInfo!=null) {
             defaultContextPath = wmInfo.getContextPath();
@@ -2360,8 +2350,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param contextRoot the context's name to undeploy
      * @param appName the J2EE appname used at deployment time
      * @param virtualServers List of current virtual-server object.
-     * @param wbd Web bundle descriptor, or null if dummy context
-     *        (see loadWebModule())
      */
     public void unloadWebModule(String contextRoot,
             String appName,
@@ -2376,8 +2364,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @param contextRoot the context's name to undeploy
      * @param appName the J2EE appname used at deployment time
      * @param virtualServers List of current virtual-server object.
-     * @param wbd Web bundle descriptor, or null if dummy context
-     *        (see loadWebModule())
      * @param dummy true if the web module to be undeployed is a dummy web
      *        module, that is, a web module created off of a virtual server's
      *        docroot
@@ -2396,7 +2382,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         cleanSecurityContext(appName);
 
         // tomcat contextRoot starts with "/"
-        if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
+        if (contextRoot.length() != 0 && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         } else if ("/".equals(contextRoot)) {
             // Make corresponding change as in WebModuleConfig.getContextPath()
@@ -2405,32 +2391,27 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         Engine[] engines = _embedded.getEngines();
         List hostList = StringUtils.parseStringList(virtualServers, " ,");
-        boolean unloadFromAll = (hostList == null) || (hostList.size() == 0);
+        boolean unloadFromAll = (hostList == null) || (hostList.isEmpty());
         boolean hasBeenUndeployed = false;
-        Container[] hostArray = null;
         VirtualServer host = null;
         WebModule context = null;
-
-        for (int j = 0; j < engines.length; j++) {
-            hostArray = engines[j].findChildren();
-            for (int i = 0; i < hostArray.length; i++) {
-                host = (VirtualServer) hostArray[i];
-
+        for(Engine engine : engines) {
+            Container[] hostArray = engine.findChildren();
+            for(Container aHostArray : hostArray) {
+                host = (VirtualServer)aHostArray;
                 /**
                  * Related to Bug: 4904290
                  * Do not unloadload module on ADMIN_VS
                  */
-                if ( unloadFromAll && host.getName().equalsIgnoreCase(
-                        VirtualServer.ADMIN_VS)){
+                if(unloadFromAll && host.getName().equalsIgnoreCase(
+                    VirtualServer.ADMIN_VS)) {
                     continue;
                 }
-
-                if (unloadFromAll
-                        || hostList.contains(host.getName())
-                        || verifyAlias(hostList,host)){
-
-                    context = (WebModule) host.findChild(contextRoot);
-                    if (context != null) {
+                if(unloadFromAll
+                    || hostList.contains(host.getName())
+                    || verifyAlias(hostList, host)) {
+                    context = (WebModule)host.findChild(contextRoot);
+                    if(context != null) {
                         context.saveSessions(props);
                         host.removeChild(context);
                         try {
@@ -2442,46 +2423,45 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                              * domain shutdown, so that they may be resumed
                              * after the domain has been restarted.
                              */
-                            if (!isShutdown) {
+                            if(!isShutdown) {
                                 context.destroy();
                             }
-                        } catch (Exception ex) {
+                        } catch(Exception ex) {
                             _logger.log(Level.WARNING,
-                                    "[WebContainer] Context " + contextRoot
+                                "[WebContainer] Context " + contextRoot
                                     + " threw exception in destroy()", ex);
                         }
-                        if (_logger.isLoggable(Level.FINEST)) {
+                        if(_logger.isLoggable(Level.FINEST)) {
                             _logger.log(Level.FINEST,
-                                    "[WebContainer] Context " + contextRoot
+                                "[WebContainer] Context " + contextRoot
                                     + " undeployed from " + host);
                         }
                         hasBeenUndeployed = true;
                         host.fireContainerEvent(
-                                Deployer.REMOVE_EVENT, context);
+                            Deployer.REMOVE_EVENT, context);
                         /*
                          * If the web module that has been unloaded
                          * contained any mappings for ad-hoc paths,
                          * those mappings must be preserved by registering an
                          * ad-hoc web module at the same context root
                          */
-                        if (context.hasAdHocPaths()
-                        || context.hasAdHocSubtrees()) {
+                        if(context.hasAdHocPaths()
+                            || context.hasAdHocSubtrees()) {
                             WebModule wm = createAdHocWebModule(
-                                    context.getID(),
-                                    host,
-                                    contextRoot,
-                                    context.getJ2EEApplication());
+                                context.getID(),
+                                host,
+                                contextRoot,
+                                context.getJ2EEApplication());
                             wm.addAdHocPaths(context.getAdHocPaths());
                             wm.addAdHocSubtrees(context.getAdHocSubtrees());
                         }
-
                         // START GlassFish 141
-                        if (!dummy) {
+                        if(!dummy) {
                             WebModuleConfig wmInfo =
-                                    host.createSystemDefaultWebModuleIfNecessary(
+                                host.createSystemDefaultWebModuleIfNecessary(
                                     habitat.getComponent(
-                                    WebDeployer.class));
-                            if (wmInfo != null) {
+                                        WebDeployer.class));
+                            if(wmInfo != null) {
                                 loadStandaloneWebModule(host, wmInfo);
                             }
                         }
@@ -2511,42 +2491,34 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     String appName,
                                     String hosts) {
         // tomcat contextRoot starts with "/"
-        if (!contextRoot.equals("") && !contextRoot.startsWith("/") ) {
+        if (contextRoot.length() != 0 && !contextRoot.startsWith("/") ) {
             contextRoot = "/" + contextRoot;
         }
-
-        Engine[] engines = _embedded.getEngines();
         List hostList = StringUtils.parseStringList(hosts, " ,");
-        boolean suspendOnAll = (hostList == null) || (hostList.size() == 0);
+        boolean suspendOnAll = (hostList == null) || (hostList.isEmpty());
         boolean hasBeenSuspended = false;
-        Container[] hostArray = null;
         VirtualServer host = null;
         Context context = null;
-
-        for (int j = 0; j < engines.length; j++) {
-            hostArray = engines[j].findChildren();
-            for (int i = 0; i < hostArray.length; i++) {
-                host = (VirtualServer) hostArray[i];
-
+        for (Engine engine1 : _embedded.getEngines()) {
+            for (Container aHostArray : engine1.findChildren()) {
+                host = (VirtualServer)aHostArray;
                 /**
                  * Related to Bug: 4904290
                  * Do not unloadload module on ADMIN_VS
                  */
                 if (suspendOnAll
-                        && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)){
+                    && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
                     continue;
                 }
-
                 if (suspendOnAll
-                        || hostList.contains(host.getName())
-                        || verifyAlias(hostList, host)){
-
-                    context = (Context) host.findChild(contextRoot);
+                    || hostList.contains(host.getName())
+                    || verifyAlias(hostList, host)) {
+                    context = (Context)host.findChild(contextRoot);
                     if (context != null) {
                         context.setAvailable(false);
                         if (_logger.isLoggable(Level.FINEST)) {
                             _logger.log(Level.FINEST,
-                                    "[WebContainer] Context "
+                                "[WebContainer] Context "
                                     + contextRoot + " disabled from "
                                     + host);
                         }
@@ -2772,7 +2744,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // searching for TLD listener. JSF application mandate the search, as
         // well as shared TLD added to the
         // property com.sun.enterprise.taglisteners
-        if ( tldListeners != null && tldListeners.size() > 0 ){
+        if ( tldListeners != null && !tldListeners.isEmpty()){
             // By default, domain.xml contains no element.
             TldConfig.setScanParentTldListener(true);
         }

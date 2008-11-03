@@ -126,42 +126,42 @@ public interface Container {
      * The ContainerEvent event type sent when a child container is added
      * by <code>addChild()</code>.
      */
-    public static final String ADD_CHILD_EVENT = "addChild";
+    String ADD_CHILD_EVENT = "addChild";
 
 
     /**
      * The ContainerEvent event type sent when a Mapper is added
      * by <code>addMapper()</code>.
      */
-    public static final String ADD_MAPPER_EVENT = "addMapper";
+    String ADD_MAPPER_EVENT = "addMapper";
 
 
     /**
      * The ContainerEvent event type sent when a valve is added
      * by <code>addValve()</code>, if this Container supports pipelines.
      */
-    public static final String ADD_VALVE_EVENT = "addValve";
+    String ADD_VALVE_EVENT = "addValve";
 
 
     /**
      * The ContainerEvent event type sent when a child container is removed
      * by <code>removeChild()</code>.
      */
-    public static final String REMOVE_CHILD_EVENT = "removeChild";
+    String REMOVE_CHILD_EVENT = "removeChild";
 
 
     /**
      * The ContainerEvent event type sent when a Mapper is removed
      * by <code>removeMapper()</code>.
      */
-    public static final String REMOVE_MAPPER_EVENT = "removeMapper";
+    String REMOVE_MAPPER_EVENT = "removeMapper";
 
 
     /**
      * The ContainerEvent event type sent when a valve is removed
      * by <code>removeValve()</code>, if this Container supports pipelines.
      */
-    public static final String REMOVE_VALVE_EVENT = "removeValve";
+    String REMOVE_VALVE_EVENT = "removeValve";
 
 
     // ------------------------------------------------------------- Properties
@@ -172,7 +172,7 @@ public interface Container {
      * the corresponding version number, in the format
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
-    public String getInfo();
+    String getInfo();
 
 
     /**
@@ -180,7 +180,7 @@ public interface Container {
      * no associated Loader, return the Loader associated with our parent
      * Container (if any); otherwise, return <code>null</code>.
      */
-    public Loader getLoader();
+    Loader getLoader();
 
 
     /**
@@ -188,7 +188,7 @@ public interface Container {
      *
      * @param loader The newly associated loader
      */
-    public void setLoader(Loader loader);
+    void setLoader(Loader loader);
 
 
     /**
@@ -196,7 +196,7 @@ public interface Container {
      * no associated Logger, return the Logger associated with our parent
      * Container (if any); otherwise return <code>null</code>.
      */
-    public Logger getLogger();
+    Logger getLogger();
 
 
     /**
@@ -204,7 +204,7 @@ public interface Container {
      *
      * @param logger The newly associated Logger
      */
-    public void setLogger(Logger logger);
+    void setLogger(Logger logger);
 
 
     /**
@@ -212,7 +212,7 @@ public interface Container {
      * no associated Manager, return the Manager associated with our parent
      * Container (if any); otherwise return <code>null</code>.
      */
-    public Manager getManager();
+    Manager getManager();
 
 
     /**
@@ -220,20 +220,20 @@ public interface Container {
      *
      * @param manager The newly associated Manager
      */
-    public void setManager(Manager manager);
+    void setManager(Manager manager);
 
 
     /**
      * Return an object which may be utilized for mapping to this component.
      */
-    public Object getMappingObject();
+    Object getMappingObject();
 
 
     /**
      * Return the Pipeline object that manages the Valves associated with
      * this Container.
      */
-    public Pipeline getPipeline();
+    Pipeline getPipeline();
 
 
     /**
@@ -245,7 +245,7 @@ public interface Container {
      * the thread will invoke the executePeriodic method on this container 
      * and all its children.
      */
-    public int getBackgroundProcessorDelay();
+    int getBackgroundProcessorDelay();
 
 
     /**
@@ -255,7 +255,7 @@ public interface Container {
      * @param delay The delay in seconds between the invocation of 
      *              backgroundProcess methods
      */
-    public void setBackgroundProcessorDelay(int delay);
+    void setBackgroundProcessorDelay(int delay);
 
 
     /**
@@ -263,7 +263,7 @@ public interface Container {
      * Container.  Within the set of child containers belonging to a particular
      * parent, Container names must be unique.
      */
-    public String getName();
+    String getName();
 
 
     /**
@@ -277,14 +277,14 @@ public interface Container {
      *  added to the children of a parent Container (after which the name
      *  may not be changed)
      */
-    public void setName(String name);
+    void setName(String name);
 
 
     /**
      * Return the Container for which this Container is a child, if there is
      * one.  If there is no defined parent, return <code>null</code>.
      */
-    public Container getParent();
+    Container getParent();
 
 
     /**
@@ -298,13 +298,13 @@ public interface Container {
      * @exception IllegalArgumentException if this Container refuses to become
      *  attached to the specified Container
      */
-    public void setParent(Container container);
+    void setParent(Container container);
 
 
     /**
      * Return the parent class loader (if any) for web applications.
      */
-    public ClassLoader getParentClassLoader();
+    ClassLoader getParentClassLoader();
 
 
     /**
@@ -315,7 +315,7 @@ public interface Container {
      *
      * @param parent The new parent class loader
      */
-    public void setParentClassLoader(ClassLoader parent);
+    void setParentClassLoader(ClassLoader parent);
 
 
     /**
@@ -323,7 +323,7 @@ public interface Container {
      * no associated Realm, return the Realm associated with our parent
      * Container (if any); otherwise return <code>null</code>.
      */
-    public Realm getRealm();
+    Realm getRealm();
 
 
     /**
@@ -331,7 +331,7 @@ public interface Container {
      *
      * @param realm The newly associated Realm
      */
-    public void setRealm(Realm realm);
+    void setRealm(Realm realm);
 
 
     /**
@@ -339,7 +339,7 @@ public interface Container {
      * is no associated Resources object, return the Resources associated with
      * our parent Container (if any); otherwise return <code>null</code>.
      */
-    public DirContext getResources();
+    DirContext getResources();
 
 
     /**
@@ -347,7 +347,7 @@ public interface Container {
      *
      * @param resources The newly associated Resources
      */
-    public void setResources(DirContext resources);
+    void setResources(DirContext resources);
 
 
     // --------------------------------------------------------- Public Methods
@@ -358,7 +358,7 @@ public interface Container {
      * invoked inside the classloading context of this container. Unexpected
      * throwables will be caught and logged.
      */
-    public void backgroundProcess();
+    void backgroundProcess();
 
 
     /**
@@ -378,7 +378,7 @@ public interface Container {
      * @exception IllegalStateException if this Container does not support
      *  child Containers
      */
-    public void addChild(Container child);
+    void addChild(Container child);
 
 
     /**
@@ -386,7 +386,7 @@ public interface Container {
      *
      * @param listener The listener to add
      */
-    public void addContainerListener(ContainerListener listener);
+    void addContainerListener(ContainerListener listener);
 
 
     /**
@@ -395,7 +395,7 @@ public interface Container {
      * @param type Event type
      * @param data Event data
      */
-    public void fireContainerEvent(String type, Object data);
+    void fireContainerEvent(String type, Object data);
 
 
     /**
@@ -403,7 +403,7 @@ public interface Container {
      *
      * @param listener The listener to add
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener);
+    void addPropertyChangeListener(PropertyChangeListener listener);
 
 
     /**
@@ -412,14 +412,14 @@ public interface Container {
      *
      * @param name Name of the child Container to be retrieved
      */
-    public Container findChild(String name);
+    Container findChild(String name);
 
 
     /**
      * Return the set of children Containers associated with this Container.
      * If this Container has no children, a zero-length array is returned.
      */
-    public Container[] findChildren();
+    Container[] findChildren();
 
 
     /**
@@ -427,7 +427,7 @@ public interface Container {
      * If this Container has no registered container listeners, a zero-length
      * array is returned.
      */
-    public ContainerListener[] findContainerListeners();
+    ContainerListener[] findContainerListeners();
 
 
     /**
@@ -442,7 +442,7 @@ public interface Container {
      * @exception ServletException if a ServletException was thrown
      *  while processing this request
      */
-    public void invoke(Request request, Response response)
+    void invoke(Request request, Response response)
         throws IOException, ServletException;
 
 
@@ -452,7 +452,7 @@ public interface Container {
      *
      * @param child Existing child Container to be removed
      */
-    public void removeChild(Container child);
+    void removeChild(Container child);
 
 
     /**
@@ -460,7 +460,7 @@ public interface Container {
      *
      * @param listener The listener to remove
      */
-    public void removeContainerListener(ContainerListener listener);
+    void removeContainerListener(ContainerListener listener);
 
 
     /**
@@ -468,7 +468,7 @@ public interface Container {
      *
      * @param listener The listener to remove
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener);
+    void removePropertyChangeListener(PropertyChangeListener listener);
 
 
     /**
@@ -478,7 +478,7 @@ public interface Container {
      *
      * @return true if the check is required; false otherwise.
      */
-    public boolean isCheckIfRequestIsSecure();
+    boolean isCheckIfRequestIsSecure();
 
 
     /**
@@ -491,5 +491,5 @@ public interface Container {
      * @param checkIfRequestIsSecure true if check is required, false
      * otherwise
      */
-    public void setCheckIfRequestIsSecure(boolean checkIfRequestIsSecure);
+    void setCheckIfRequestIsSecure(boolean checkIfRequestIsSecure);
 }

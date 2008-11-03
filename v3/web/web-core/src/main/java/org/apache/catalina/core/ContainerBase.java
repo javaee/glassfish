@@ -57,7 +57,6 @@
 
 package org.apache.catalina.core;
 
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -68,8 +67,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.concurrent.locks.*;
-import java.util.logging.*;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -98,7 +101,6 @@ import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.commons.modeler.Registry;
 import org.apache.naming.resources.ProxyDirContext;
-
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -196,7 +198,7 @@ public abstract class ContainerBase
     /**
      * The child Containers belonging to this Container, keyed by name.
      */
-    protected HashMap children = new HashMap();
+    protected Map<String, Container> children = new HashMap<String, Container>();
 
 
     /**
@@ -989,8 +991,7 @@ public abstract class ContainerBase
     public Container[] findChildren() {
 
         synchronized (children) {
-            Container results[] = new Container[children.size()];
-            return ((Container[]) children.values().toArray(results));
+            return children.values().toArray(new Container[children.size()]);
         }
 
     }
@@ -1340,8 +1341,8 @@ public abstract class ContainerBase
 
         // Stop our child containers, if any
         Container children[] = findChildren();
-        for (int i = 0; i < children.length; i++) {
-            removeChild(children[i]);
+        for(Container aChildren : children) {
+            removeChild(aChildren);
         }
 
         // START SJSAS 6330332

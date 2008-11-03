@@ -65,8 +65,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -75,19 +75,19 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.*;
+import java.util.logging.Level;
 import javax.servlet.ServletContext;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Loader;
 import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.LifecycleSupport;
 
 /**
  * Standard implementation of the <b>Manager</b> interface that provides
@@ -201,6 +201,7 @@ public class StandardManager
      *
      * @param container The associated Container
      */
+    @Override
     public void setContainer(Container container) {
 
         // De-register from the old Container (if any)
@@ -225,6 +226,7 @@ public class StandardManager
      * the corresponding version number, in the format
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
+    @Override
     public String getInfo() {
 
         return (this.info);
@@ -272,6 +274,7 @@ public class StandardManager
     /**
      * Return the descriptive short name of this Manager implementation.
      */
+    @Override
     public String getName() {
 
         return (name);
@@ -316,6 +319,7 @@ public class StandardManager
      * @exception IllegalStateException if a new session cannot be
      *  instantiated for any reason
      */
+    @Override
     public Session createSession() {
 
         if ((maxActiveSessions >= 0) &&
@@ -348,6 +352,7 @@ public class StandardManager
      * @return the new session, or <code>null</code> if a session with the
      * requested id already exists
      */
+    @Override
     public Session createSession(String sessionId) {
 
         if ((maxActiveSessions >= 0) &&
@@ -365,6 +370,7 @@ public class StandardManager
     /*
      * Releases any resources held by this session manager.
      */
+    @Override
     public void release() {
         super.release();
         clearStore();
@@ -618,57 +624,49 @@ public class StandardManager
      *
      * @exception IOException if an input/output error occurs
      */
-    private void doUnloadToFile(boolean doExpire) throws IOException {   
+    private void doUnloadToFile(boolean doExpire) throws IOException {
 
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Unloading persisted sessions");
-        }
-
-        // Open an output stream to the specified pathname, if any
-        File file = file();
-        if (file == null) {
-            return;
-        }
-
-        boolean haveValidDirectory = isDirectoryValidFor(
-            file.getAbsolutePath());
-        if(!haveValidDirectory) {
-            return;
-        }
-        
-        if (log.isLoggable(Level.FINE)) {
-            log.fine(sm.getString("standardManager.unloading", pathname));
-        }
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file.getAbsolutePath());
-            writeSessions(fos, doExpire);
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Unloading complete");
+            if(log.isLoggable(Level.FINE)) {
+                log.fine("Unloading persisted sessions");
             }
-        } catch (IOException ioe) {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException f) {
-                    ;
-                }
-                fos = null;
+
+            // Open an output stream to the specified pathname, if any
+            File file = file();
+            if(file == null || !isDirectoryValidFor(file.getAbsolutePath())) {
+                return;
             }
-            throw ioe;
-        } finally {
+            if(log.isLoggable(Level.FINE)) {
+                log.fine(sm.getString("standardManager.unloading", pathname));
+            }
+            FileOutputStream fos = null;
             try {
-                if (fos != null) {
-                    fos.close();
+                fos = new FileOutputStream(file.getAbsolutePath());
+                writeSessions(fos, doExpire);
+                if(log.isLoggable(Level.FINE)) {
+                    log.fine("Unloading complete");
                 }
-            } catch (IOException f) {
-                // ignore
+            } catch(IOException ioe) {
+                if(fos != null) {
+                    try {
+                        fos.close();
+                    } catch(IOException f) {
+                        ;
+                    }
+                    fos = null;
+                }
+                throw ioe;
+            } finally {
+                try {
+                    if(fos != null) {
+                        fos.close();
+                    }
+                } catch(IOException f) {
+                    // ignore
+                }
             }
         }
-    }
-    
-    
+
+
     /*
      * Writes all active sessions to the given output stream.
      *
@@ -879,7 +877,6 @@ public class StandardManager
 
     }
 
-
     /**
      * Gracefully terminate the active use of the public methods of this
      * component.  This method should be the last one called on a given
@@ -911,13 +908,13 @@ public class StandardManager
 
         // Expire all active sessions and notify their listeners
         Session sessions[] = findSessions();
-        for (int i = 0; i < sessions.length; i++) {
-            StandardSession session = (StandardSession) sessions[i];
-            if (!session.isValid())
+        for(Session session : sessions) {
+            if(!session.isValid()) {
                 continue;
+            }
             try {
                 session.expire();
-            } catch (Throwable t) {
+            } catch(Throwable t) {
                 ;
             }
         }

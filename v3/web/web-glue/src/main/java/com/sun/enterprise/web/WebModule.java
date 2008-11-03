@@ -39,24 +39,34 @@ package com.sun.enterprise.web;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.*;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.J2eeApplication;
+import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetInfo;
 import com.sun.enterprise.deployment.runtime.web.LocaleCharsetMap;
@@ -66,14 +76,11 @@ import com.sun.enterprise.deployment.runtime.web.SessionProperties;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.config.serverbeans.J2eeApplication;
-import org.glassfish.api.admin.config.Property;
-import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.universal.BASE64Encoder;
 import com.sun.enterprise.universal.BASE64Decoder;
-import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.universal.BASE64Encoder;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -88,18 +95,17 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.core.StandardPipeline;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.admin.config.Property;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
-import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -137,10 +143,10 @@ public class WebModule extends PwcWebModule {
     
     private WebContainer webContainer;
 
-    private final HashMap<String,AdHocServletInfo> adHocPaths;
+    private final Map<String,AdHocServletInfo> adHocPaths;
     private boolean hasAdHocPaths;
 
-    private final HashMap<String,AdHocServletInfo> adHocSubtrees;
+    private final Map<String,AdHocServletInfo> adHocSubtrees;
     private boolean hasAdHocSubtrees;
 
     private StandardPipeline adHocPipeline;
@@ -239,10 +245,10 @@ public class WebModule extends PwcWebModule {
         }
 
         if (iasBean.isParameterEncoding()) {
-            formHintField = (String) iasBean.getAttributeValue(
+            formHintField = iasBean.getAttributeValue(
                                                 SunWebApp.PARAMETER_ENCODING,
                                                 SunWebApp.FORM_HINT_FIELD);
-            defaultCharset = (String) iasBean.getAttributeValue(
+            defaultCharset = iasBean.getAttributeValue(
                                                 SunWebApp.PARAMETER_ENCODING,
                                                 SunWebApp.DEFAULT_CHARSET);
         }
@@ -259,10 +265,10 @@ public class WebModule extends PwcWebModule {
              */
             if (lcinfo.isParameterEncoding()
                     && !iasBean.isParameterEncoding()) {
-                formHintField = (String) lcinfo.getAttributeValue(
+                formHintField = lcinfo.getAttributeValue(
                                         LocaleCharsetInfo.PARAMETER_ENCODING,
                                         LocaleCharsetInfo.FORM_HINT_FIELD);
-                defaultCharset = (String) lcinfo.getAttributeValue(
+                defaultCharset = lcinfo.getAttributeValue(
                                         LocaleCharsetInfo.PARAMETER_ENCODING,
                                         LocaleCharsetInfo.DEFAULT_CHARSET);
             }
@@ -286,6 +292,7 @@ public class WebModule extends PwcWebModule {
      * @return true if this web module specifies a locale-charset-map in its
      * sun-web.xml, false otherwise
      */
+    @Override
     public boolean hasLocaleToCharsetMapping() {
         LocaleCharsetMap[] locCharsetMap = getLocaleCharsetMap();
         return (locCharsetMap != null && locCharsetMap.length > 0);
@@ -303,6 +310,7 @@ public class WebModule extends PwcWebModule {
      * specify any locale-charset-map in its sun-web.xml, or no match was
      * found
      */
+    @Override
     public String mapLocalesToCharset(Enumeration locales) {
 
         String encoding = null;
@@ -320,7 +328,7 @@ public class WebModule extends PwcWebModule {
                 for (int i=0; i<locCharsetMap.length && !matchFound; i++) {
                     String language = locCharsetMap[i].getAttributeValue(
                                                 LocaleCharsetMap.LOCALE);
-                    if (language == null || language.equals("")) {
+                    if (language == null || "".equals(language)) {
                         continue;
                     }
                     String country = null;
@@ -451,6 +459,7 @@ public class WebModule extends PwcWebModule {
     /**
      * Starts this web module.
      */
+    @Override
     public synchronized void start() throws LifecycleException {
         // Start and register Tomcat mbeans
         super.start();
@@ -469,6 +478,7 @@ public class WebModule extends PwcWebModule {
     /**
      * Stops this web module.
      */
+    @Override
     public void stop() throws LifecycleException {
         // Unregister monitoring mbeans only if this web module was
         // successfully started, because if stop() is called during an
@@ -495,6 +505,7 @@ public class WebModule extends PwcWebModule {
      *
      * @param container The virtual server parent
      */
+    @Override
     public void setParent(Container container) {
         super.setParent(container);
 
@@ -525,6 +536,7 @@ public class WebModule extends PwcWebModule {
      * @return true if this web module contains any ad-hoc paths, false
      * otherwise
      */
+    @Override
     public boolean hasAdHocPaths() {
         return this.hasAdHocPaths;
     }
@@ -584,20 +596,16 @@ public class WebModule extends PwcWebModule {
      * @param newPaths Mappings of ad-hoc paths to the servlets responsible
      * for servicing them
      */    
-    void addAdHocPaths(HashMap newPaths) {
+    void addAdHocPaths(Map<String, AdHocServletInfo> newPaths) {
 
         if (newPaths == null || newPaths.isEmpty()) {
             return;
         }
-
-        Iterator<String> iter = newPaths.keySet().iterator();
-        while (iter.hasNext()) {
-            String adHocPath = iter.next();
-            AdHocServletInfo servletInfo = (AdHocServletInfo)
-                newPaths.get(adHocPath);
+        for(String adHocPath : newPaths.keySet()) {
+            AdHocServletInfo servletInfo = newPaths.get(adHocPath);
             Wrapper adHocWrapper = (Wrapper)
                 findChild(servletInfo.getServletName());
-            if (adHocWrapper == null) {
+            if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
@@ -615,20 +623,15 @@ public class WebModule extends PwcWebModule {
      * @param newSubtrees Mappings of ad-hoc subtree paths to the servlets
      * responsible for servicing them
      */    
-    void addAdHocSubtrees(HashMap newSubtrees) {
+    void addAdHocSubtrees(Map<String, AdHocServletInfo> newSubtrees) {
 
         if (newSubtrees == null || newSubtrees.isEmpty()) {
             return;
         }
-
-        Iterator<String> iter = newSubtrees.keySet().iterator();
-        while (iter.hasNext()) {
-            String adHocSubtree = iter.next();
-            AdHocServletInfo servletInfo = (AdHocServletInfo)
-                newSubtrees.get(adHocSubtree);
-            Wrapper adHocWrapper = (Wrapper)
-                findChild(servletInfo.getServletName());
-            if (adHocWrapper == null) {
+        for(String adHocSubtree : newSubtrees.keySet()) {
+            AdHocServletInfo servletInfo = newSubtrees.get(adHocSubtree);
+            Wrapper adHocWrapper = (Wrapper)findChild(servletInfo.getServletName());
+            if(adHocWrapper == null) {
                 adHocWrapper = createAdHocWrapper(servletInfo);
                 addChild(adHocWrapper);
             }
@@ -645,7 +648,7 @@ public class WebModule extends PwcWebModule {
      * @return The ad-hoc path to servlet mappings managed by this web
      * module.
      */
-    HashMap getAdHocPaths() {
+    Map<String, AdHocServletInfo> getAdHocPaths() {
         return adHocPaths;
     }
 
@@ -657,7 +660,7 @@ public class WebModule extends PwcWebModule {
      * @return The ad-hoc subtree path to servlet mappings managed by
      * this web module.
      */
-    HashMap getAdHocSubtrees() {
+    Map<String, AdHocServletInfo> getAdHocSubtrees() {
         return adHocSubtrees;
     }
 
@@ -672,6 +675,7 @@ public class WebModule extends PwcWebModule {
      * given path, or null if the given path does not represent an ad-hoc
      * path
      */
+    @Override
     public String getAdHocServletName(String path) {
 
         if (!hasAdHocPaths() && !hasAdHocSubtrees()) {
@@ -689,10 +693,8 @@ public class WebModule extends PwcWebModule {
 
         // Check if given path starts with any of the ad-hoc subtree paths
         if (servletInfo == null && path != null && hasAdHocSubtrees()) {
-            Iterator<String> iter = adHocSubtrees.keySet().iterator();
-            while (iter.hasNext()) {
-                String adHocSubtree = iter.next();
-                if (path.startsWith(adHocSubtree)) {
+            for(String adHocSubtree : adHocSubtrees.keySet()) {
+                if(path.startsWith(adHocSubtree)) {
                     servletInfo = adHocSubtrees.get(adHocSubtree);
                     break;
                 }
@@ -811,34 +813,32 @@ public class WebModule extends PwcWebModule {
      * @param sfm The filter mappings of this web module as specified in the
      * deployment descriptor
      */
+    @SuppressWarnings({"unchecked"})
     void addFilterMap(ServletFilterMapping sfm) {
 
         FilterMaps filterMaps = new FilterMaps();
 
         filterMaps.setFilterName(sfm.getName());
 
-        Set dispatchers = sfm.getDispatchers(); 
+        Set<String> dispatchers = sfm.getDispatchers();
         if (dispatchers != null) {
-            Iterator<String> iter = dispatchers.iterator();
-            while (iter.hasNext()){
-                filterMaps.setDispatcher(iter.next());
+            for(String dispatcher : dispatchers) {
+                filterMaps.setDispatcher(dispatcher);
             }
         }
         
-        List servletNames = sfm.getServletNames();
+        List<String> servletNames = sfm.getServletNames();
         if (servletNames != null) {
-            Iterator<String> iter = servletNames.iterator();
-            while (iter.hasNext()) {
-                filterMaps.addServletName(iter.next());
-	    }
+            for(String servletName : servletNames) {
+                filterMaps.addServletName(servletName);
+            }
         }
 
-        List urlPatterns = sfm.getURLPatterns();
+        List<String> urlPatterns = sfm.getURLPatterns();
         if (urlPatterns != null) {
-            Iterator<String> iter = urlPatterns.iterator();
-            while (iter.hasNext()) {
-                filterMaps.addURLPattern(iter.next());
-	    }
+            for(String urlPattern : urlPatterns) {
+                filterMaps.addURLPattern(urlPattern);
+            }
         }
 
         addFilterMaps(filterMaps);
@@ -860,12 +860,8 @@ public class WebModule extends PwcWebModule {
         adHocWrapper.setName(servletInfo.getServletName());
         Map<String,String> initParams = servletInfo.getServletInitParams();
         if (initParams != null && !initParams.isEmpty()) {
-            Iterator<String> iter = initParams.keySet().iterator();
-            while (iter.hasNext()) {
-                String paramName = iter.next();
-                adHocWrapper.addInitParameter(
-                    paramName,
-                    initParams.get(paramName));
+            for(String paramName : initParams.keySet()) {
+                adHocWrapper.addInitParameter(paramName, initParams.get(paramName));
             }              
         }
 
@@ -892,10 +888,10 @@ public class WebModule extends PwcWebModule {
         
         if (iasBean != null && iasBean.sizeWebProperty() > 0) {
             WebProperty[] wprops = iasBean.getWebProperty();
-            for (int i = 0; i < wprops.length; i++) {
-                propName = wprops[i].getAttributeValue("name");
-                propValue = wprops[i].getAttributeValue("value");
-                configureCatalinaProperties(propName,propValue);
+            for(WebProperty wprop : wprops) {
+                propName = wprop.getAttributeValue("name");
+                propValue = wprop.getAttributeValue("value");
+                configureCatalinaProperties(propName, propValue);
             }
         }      
     }
@@ -903,8 +899,8 @@ public class WebModule extends PwcWebModule {
     
     /**
      * Configure the <code>WebModule</code< properties.
-     * @param name the property name
-     * @param value the property value
+     * @param propName the property name
+     * @param propValue the property value
      */
     protected void configureCatalinaProperties(String propName,String propValue){
         if (propName == null || propValue == null) {
@@ -1145,7 +1141,7 @@ public class WebModule extends PwcWebModule {
             }
         }
         if ( (urlPattern.startsWith("/")) &&
-	     (urlPattern.indexOf("*.") < 0)) {
+	     (!urlPattern.contains("*."))) {
             return (true);
         } else {
             return (false);
@@ -1174,82 +1170,82 @@ public class WebModule extends PwcWebModule {
 
         if ((bean != null) && (bean.sizeWebProperty() > 0)) {
             WebProperty[] props = bean.getWebProperty();
-            for (int i = 0; i < props.length; i++) {
-
-                String name = props[i].getAttributeValue("name");
-                String value = props[i].getAttributeValue("value");
-                if (name == null || value == null) {
+            for(WebProperty prop : props) {
+                String name = prop.getAttributeValue("name");
+                String value = prop.getAttributeValue("value");
+                if(name == null || value == null) {
                     throw new IllegalArgumentException(
                         rb.getString("webcontainer.nullWebProperty"));
                 }
-
-                if (name.equalsIgnoreCase("singleThreadedServletPoolSize")) {
+                if("singleThreadedServletPoolSize".equalsIgnoreCase(name)) {
                     int poolSize = getSTMPoolSize();
                     try {
                         poolSize = Integer.parseInt(value);
-                    } catch (NumberFormatException e) {
+                    } catch(NumberFormatException e) {
                         Object[] params =
-                        { value, contextPath, Integer.toString(poolSize) };
+                            {value, contextPath, Integer.toString(poolSize)};
                         logger.log(Level.WARNING,
-                                   "webcontainer.invalidServletPoolSize",
-                                   params);
+                            "webcontainer.invalidServletPoolSize",
+                            params);
                     }
-                    if (poolSize > 0) {
+                    if(poolSize > 0) {
                         setSTMPoolSize(poolSize);
                     }
 
-                } else if (name.equalsIgnoreCase("tempdir")) {
+                } else if("tempdir".equalsIgnoreCase(name)) {
                     setWorkDir(value);
-                } else if (name.equalsIgnoreCase("crossContextAllowed")) {
+                } else if("crossContextAllowed".equalsIgnoreCase(name)) {
                     boolean crossContext = Boolean.parseBoolean(value);
                     setCrossContext(crossContext);
-                } else if (name.equalsIgnoreCase("allowLinking")) {
+                } else if("allowLinking".equalsIgnoreCase(name)) {
                     allowLinking = ConfigBeansUtilities.toBoolean(value);
                     // START S1AS8PE 4817642
-                } else if (name.equalsIgnoreCase("reuseSessionID")) {
+                } else if("reuseSessionID".equalsIgnoreCase(name)) {
                     boolean reuse = ConfigBeansUtilities.toBoolean(value);
                     setReuseSessionID(reuse);
-                    if (reuse) {
-                        Object[] params = { contextPath,
-                        vs.getID() };
+                    if(reuse) {
+                        Object[] params = {
+                            contextPath,
+                            vs.getID()
+                        };
                         logger.log(Level.WARNING,
-                                   "webcontainer.sessionIDsReused",
-                                   params);
+                            "webcontainer.sessionIDsReused",
+                            params);
                     }
                     // END S1AS8PE 4817642
-                } else if(name.equalsIgnoreCase("useResponseCTForHeaders")) {
-                    if(value.equalsIgnoreCase("true")) {
+                } else if("useResponseCTForHeaders".equalsIgnoreCase(name)) {
+                    if("true".equalsIgnoreCase(value)) {
                         setResponseCTForHeaders();
                     }
-                } else if(name.equalsIgnoreCase("encodeCookies")) {
+                } else if("encodeCookies".equalsIgnoreCase(name)) {
                     boolean flag = ConfigBeansUtilities.toBoolean(value);
                     setEncodeCookies(flag);
                     // START RIMOD 4642650
-                } else if (name.equalsIgnoreCase("relativeRedirectAllowed")) {
+                } else if("relativeRedirectAllowed".equalsIgnoreCase(name)) {
                     boolean relativeRedirect = ConfigBeansUtilities.toBoolean(value);
                     setAllowRelativeRedirect(relativeRedirect);
                     // END RIMOD 4642650
-                } else if (name.equalsIgnoreCase("fileEncoding")) {
+                } else if("fileEncoding".equalsIgnoreCase(name)) {
                     setFileEncoding(value);
-                } else if (name.equalsIgnoreCase("enableTldValidation")
-                &&  ConfigBeansUtilities.toBoolean(value)) {
+                } else if("enableTldValidation".equalsIgnoreCase(name)
+                    && ConfigBeansUtilities.toBoolean(value)) {
                     setTldValidation(true);
-                } else if (name.equalsIgnoreCase("enableTldNamespaceAware")
-                &&  ConfigBeansUtilities.toBoolean(value)) {
+                } else if("enableTldNamespaceAware".equalsIgnoreCase(name)
+                    && ConfigBeansUtilities.toBoolean(value)) {
                     setTldNamespaceAware(true);
-                } else if (name.equalsIgnoreCase("securePagesWithPragma")){
+                } else if("securePagesWithPragma".equalsIgnoreCase(name)) {
                     boolean securePagesWithPragma = ConfigBeansUtilities.toBoolean(value);
                     setSecurePagesWithPragma(securePagesWithPragma);
-                } else if (name.equalsIgnoreCase("useMyFaces")){
+                } else if("useMyFaces".equalsIgnoreCase(name)) {
                     setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
-                } else if (name.equalsIgnoreCase("useBundledJsf")){
+                } else if("useBundledJsf".equalsIgnoreCase(name)) {
                     setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
-                } else if (name.startsWith("alternatedocroot_")) {
+                } else if(name.startsWith("alternatedocroot_")) {
                     parseAlternateDocBase(name, value);
                 } else {
-                    Object[] params = { name, value };
+                    Object[] params = {name, value};
                     logger.log(Level.WARNING, "webcontainer.invalidProperty",
-                               params);
+                        params);
                 }
             }
         }
@@ -1306,12 +1302,9 @@ public class WebModule extends PwcWebModule {
             // creates the list of endpoint addresses
             String[] endpointAddresses;
             WebServicesDescriptor webService = wbd.getWebServices();
-            Vector endpointList = new Vector();
-            for (Iterator endpoints = webService.getEndpoints().iterator();
-            endpoints.hasNext();) {
-                WebServiceEndpoint wse = (WebServiceEndpoint)
-                    endpoints.next();
-                if (wbd.getContextRoot()!=null) {
+            Vector<String> endpointList = new Vector<String>();
+            for(WebServiceEndpoint wse : webService.getEndpoints()) {
+                if(wbd.getContextRoot() != null) {
                     endpointList.add(wbd.getContextRoot() + "/" +
                         wse.getEndpointAddressUri());
                 } else {
@@ -1368,10 +1361,10 @@ public class WebModule extends PwcWebModule {
                 System.getProperty("com.sun.enterprise.overrideablejavaxpackages");
 
         if (packagesName != null) {
-            List overridablePackages =
+            List<String> overridablePackages =
                     StringUtils.parseStringList(packagesName, " ,");
-            for( int i=0; i < overridablePackages.size(); i++){
-                loader.addOverridablePackage((String)overridablePackages.get(i));
+            for(String overridablePackage : overridablePackages) {
+                loader.addOverridablePackage(overridablePackage);
             }
         }
         // END PE 4985680
@@ -1599,23 +1592,19 @@ public class WebModule extends PwcWebModule {
         if (props == null || props.length == 0) {
             return;
         }
-
-        for (int i = 0; i < props.length; i++) {
-
-            name = props[i].getAttributeValue(WebProperty.NAME);
-            value = props[i].getAttributeValue(WebProperty.VALUE);
-
-            if (name == null || value == null) {
+        for(WebProperty prop : props) {
+            name = prop.getAttributeValue(WebProperty.NAME);
+            value = prop.getAttributeValue(WebProperty.VALUE);
+            if(name == null || value == null) {
                 throw new IllegalArgumentException(
                     rb.getString("webcontainer.nullWebProperty"));
             }
-
-            if (name.equalsIgnoreCase("ignoreHiddenJarFiles")) {
+            if("ignoreHiddenJarFiles".equalsIgnoreCase(name)) {
                 loader.setIgnoreHiddenJarFiles(ConfigBeansUtilities.toBoolean(value));
             } else {
-                Object[] params = { name, value };
+                Object[] params = {name, value};
                 logger.log(Level.WARNING, "webcontainer.invalidProperty",
-                           params);
+                    params);
             }
         }
     }
@@ -1681,27 +1670,24 @@ public class WebModule extends PwcWebModule {
         setCookies(webContainer.instanceEnableCookies);
 
         if ((spBean != null) && (spBean.sizeWebProperty() > 0)) {
-            WebProperty[] props = spBean.getWebProperty();
-            for (int i = 0; i < props.length; i++) {
-
-                String name = props[i].getAttributeValue(WebProperty.NAME);
-                String value = props[i].getAttributeValue(WebProperty.VALUE);
-                if (name == null || value == null) {
+            for(WebProperty prop : spBean.getWebProperty()) {
+                String name = prop.getAttributeValue(WebProperty.NAME);
+                String value = prop.getAttributeValue(WebProperty.VALUE);
+                if(name == null || value == null) {
                     throw new IllegalArgumentException(
                         rb.getString("webcontainer.nullWebProperty"));
                 }
-
-                if (name.equalsIgnoreCase("timeoutSeconds")) {
+                if("timeoutSeconds".equalsIgnoreCase(name)) {
                     try {
                         timeoutSeconds = Integer.parseInt(value);
                         timeoutConfigured = true;
-                    } catch (NumberFormatException e) {
+                    } catch(NumberFormatException e) {
                         // XXX need error message
                     }
-                } else if (name.equalsIgnoreCase("enableCookies")) {
+                } else if("enableCookies".equalsIgnoreCase(name)) {
                     setCookies(ConfigBeansUtilities.toBoolean(value));
                 } else {
-                    Object[] params = { name };
+                    Object[] params = {name};
                     logger.log(Level.INFO, "webcontainer.notYet", params);
                 }
             }
@@ -1736,36 +1722,34 @@ public class WebModule extends PwcWebModule {
             WebProperty[] props = bean.getWebProperty();
             if (props != null) {
                 SessionCookieConfig cookieConfig = new SessionCookieConfig();
-                for (int i = 0; i < props.length; i++) {
-
-                    String name = props[i].getAttributeValue(WebProperty.NAME);
-                    String value = props[i].getAttributeValue(WebProperty.VALUE);
-                    if (name == null || value == null) {
+                for(WebProperty prop : props) {
+                    String name = prop.getAttributeValue(WebProperty.NAME);
+                    String value = prop.getAttributeValue(WebProperty.VALUE);
+                    if(name == null || value == null) {
                         throw new IllegalArgumentException(
                             rb.getString("webcontainer.nullWebProperty"));
                     }
-
-                    if (name.equalsIgnoreCase("cookieName")) {
+                    if("cookieName".equalsIgnoreCase(name)) {
                         cookieConfig.setName(value);
-                    } else if (name.equalsIgnoreCase("cookiePath")) {
+                    } else if("cookiePath".equalsIgnoreCase(name)) {
                         cookieConfig.setPath(value);
-                    } else if (name.equalsIgnoreCase("cookieMaxAgeSeconds")) {
+                    } else if("cookieMaxAgeSeconds".equalsIgnoreCase(name)) {
                         try {
                             cookieConfig.setMaxAge(Integer.parseInt(value));
-                        } catch (NumberFormatException e) {
+                        } catch(NumberFormatException e) {
                             // XXX need error message
                         }
-                    } else if (name.equalsIgnoreCase("cookieDomain")) {
+                    } else if("cookieDomain".equalsIgnoreCase(name)) {
                         cookieConfig.setDomain(value);
-                    } else if (name.equalsIgnoreCase("cookieComment")) {
+                    } else if("cookieComment".equalsIgnoreCase(name)) {
                         cookieConfig.setComment(value);
-                    } else if (name.equalsIgnoreCase("cookieSecure")) {
+                    } else if("cookieSecure".equalsIgnoreCase(name)) {
                         cookieConfig.setSecure(value);
                     } else {
-                        Object[] params = { name, value };
+                        Object[] params = {name, value};
                         logger.log(Level.WARNING,
-                                   "webcontainer.invalidProperty",
-                                   params);
+                            "webcontainer.invalidProperty",
+                            params);
                     }
                 }
                 if (props.length > 0) {
@@ -1797,42 +1781,52 @@ public class WebModule extends PwcWebModule {
      * HTTP session related probe events
      */
 
+    @Override
     public void sessionCreatedEvent(HttpSession session) {
         sessionProbeProvider.sessionCreatedEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionDestroyedEvent(HttpSession session) {
         sessionProbeProvider.sessionDestroyedEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionRejectedEvent(int maxSessions) {
         sessionProbeProvider.sessionRejectedEvent(maxSessions, _id, vsId);
     }
 
+    @Override
     public void sessionExpiredEvent(HttpSession session) {
         sessionProbeProvider.sessionExpiredEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionPersistedStartEvent(HttpSession session) {
         sessionProbeProvider.sessionPersistedStartEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionPersistedEndEvent(HttpSession session) {
         sessionProbeProvider.sessionPersistedEndEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionActivatedStartEvent(HttpSession session) {
         sessionProbeProvider.sessionActivatedStartEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionActivatedEndEvent(HttpSession session) {
         sessionProbeProvider.sessionActivatedEndEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionPassivatedStartEvent(HttpSession session) {
         sessionProbeProvider.sessionPassivatedStartEvent(session, _id, vsId);
     }
 
+    @Override
     public void sessionPassivatedEndEvent(HttpSession session) {
         sessionProbeProvider.sessionPassivatedEndEvent(session, _id, vsId);
     }
@@ -1858,7 +1852,6 @@ class V3WebappLoader extends WebappLoader {
     final ClassLoader cl;
 
     V3WebappLoader(ClassLoader cl) {
-        super();
         this.cl = cl;
     }
 

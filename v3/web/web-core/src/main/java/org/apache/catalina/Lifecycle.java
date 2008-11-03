@@ -78,44 +78,44 @@ public interface Lifecycle {
     /**
      * The LifecycleEvent type for the "component init" event.
      */
-    public static final String INIT_EVENT = "init";
+    String INIT_EVENT = "init";
     // END GlassFish 2439
 
 
     /**
      * The LifecycleEvent type for the "component start" event.
      */
-    public static final String START_EVENT = "start";
+    String START_EVENT = "start";
 
 
     /**
      * The LifecycleEvent type for the "component before start" event.
      */
-    public static final String BEFORE_START_EVENT = "before_start";
+    String BEFORE_START_EVENT = "before_start";
 
 
     /**
      * The LifecycleEvent type for the "component after start" event.
      */
-    public static final String AFTER_START_EVENT = "after_start";
+    String AFTER_START_EVENT = "after_start";
 
 
     /**
      * The LifecycleEvent type for the "component stop" event.
      */
-    public static final String STOP_EVENT = "stop";
+    String STOP_EVENT = "stop";
 
 
     /**
      * The LifecycleEvent type for the "component before stop" event.
      */
-    public static final String BEFORE_STOP_EVENT = "before_stop";
+    String BEFORE_STOP_EVENT = "before_stop";
 
 
     /**
      * The LifecycleEvent type for the "component after stop" event.
      */
-    public static final String AFTER_STOP_EVENT = "after_stop";
+    String AFTER_STOP_EVENT = "after_stop";
 
 
     // --------------------------------------------------------- Public Methods
@@ -126,14 +126,14 @@ public interface Lifecycle {
      *
      * @param listener The listener to add
      */
-    public void addLifecycleListener(LifecycleListener listener);
+    void addLifecycleListener(LifecycleListener listener);
 
 
     /**
      * Get the lifecycle listeners associated with this lifecycle. If this 
      * Lifecycle has no listeners registered, a zero-length array is returned.
      */
-    public LifecycleListener[] findLifecycleListeners();
+    LifecycleListener[] findLifecycleListeners();
 
 
     /**
@@ -141,7 +141,7 @@ public interface Lifecycle {
      *
      * @param listener The listener to remove
      */
-    public void removeLifecycleListener(LifecycleListener listener);
+    void removeLifecycleListener(LifecycleListener listener);
 
 
     /**
@@ -153,7 +153,7 @@ public interface Lifecycle {
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
      */
-    public void start() throws LifecycleException;
+    void start() throws LifecycleException;
 
 
     /**
@@ -165,7 +165,7 @@ public interface Lifecycle {
      * @exception LifecycleException if this component detects a fatal error
      *  that needs to be reported
      */
-    public void stop() throws LifecycleException;
+    void stop() throws LifecycleException;
 
 
 }
