@@ -495,7 +495,7 @@ public class WebModule extends PwcWebModule {
         }
        
         // Stop and unregister Tomcat mbeans
-        super.stop();
+        super.stop(getWebContainer().isShutdown());
     }
 
 

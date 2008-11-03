@@ -686,6 +686,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return javaEEObjectStreamFactory;
     }
 
+    public boolean isShutdown() {
+        return isShutdown;
+    }
 
     /**
      * Gets the probe provider for servlet related events.

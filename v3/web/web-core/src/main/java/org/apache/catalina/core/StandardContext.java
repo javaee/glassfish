@@ -5744,6 +5744,17 @@ public class StandardContext
      */
     @Override
     public synchronized void stop() throws LifecycleException {
+        stop(false);
+    }
+
+    /**
+     * Stop this Context component.
+     *
+     * @param isShutdown true if this Context is being stopped as part
+     * of a domain shutdown (as opposed to an undeployment), and false otherwise
+     * @exception LifecycleException if a shutdown error occurs
+     */
+    public synchronized void stop(boolean isShutdown) throws LifecycleException {
 
         // Validate and update our current component state
         if (!started) {
@@ -5786,17 +5797,21 @@ public class StandardContext
             super.threadStop();
 
             if ((manager != null) && (manager instanceof Lifecycle)) {
-                ((Lifecycle)manager).stop();
+                if(manager instanceof StandardManager) {
+                    ((StandardManager)manager).stop(isShutdown);
+                } else {
+                    ((Lifecycle)manager).stop();
+                }
             }
 
             /*
-            * Stop all lifecycle listeners, including those of type
-            * ServletContextListener. For the latter, it is important
-            * that they are passed a ServletContext to their
-            * contextDestroyed() method that still has all its attributes
-            * set. In other words, it is important that we invoke these
-            * listeners before calling context.clearAt tributes()
-            */
+             * Stop all lifecycle listeners, including those of type
+             * ServletContextListener. For the latter, it is important
+             * that they are passed a ServletContext to their
+             * contextDestroyed() method that still has all its attributes
+             * set. In other words, it is important that we invoke these
+             * listeners before calling context.clearAt tributes()
+             */
             lifecycleListenerStop();
 
             // Finalize our character set mapper
