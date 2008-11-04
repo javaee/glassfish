@@ -85,7 +85,6 @@ public final class EmbeddedFileSystem {
     }
 
     static void cleanup() {
-        System.out.println("TEMP:  cleanup here!!!");
         if(efs.autoDelete) {
             FileUtils.whack(efs.installRoot);
             FileUtils.whack(efs.instanceRoot);
