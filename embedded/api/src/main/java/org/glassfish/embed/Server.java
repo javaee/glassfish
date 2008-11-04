@@ -37,15 +37,12 @@
 
 package org.glassfish.embed;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.security.SecuritySniffer;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
@@ -59,6 +56,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
+import java.io.*;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
@@ -72,7 +70,6 @@ import org.glassfish.embed.impl.EmbeddedDomainXml;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 import org.glassfish.embed.impl.EmbeddedWebDeployer;
 import org.glassfish.embed.impl.EntityResolverImpl;
-import org.glassfish.embed.impl.ProxyModuleDefinition;
 import org.glassfish.embed.impl.ScatteredWarHandler;
 import org.glassfish.embed.impl.SilentActionReport;
 import org.glassfish.internal.api.Init;
@@ -89,7 +86,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -149,6 +145,10 @@ public class Server {
     /*pkg-private*/ /*almost final*/ ArchiveFactory archiveFactory;
     /*pkg-private*/ /*almost  final*/ ServerEnvironmentImpl env;
 
+    /**
+     * TODO constructors and startup need revamping!
+     */
+
     private Server(URL domainXmlUrl, boolean start) throws EmbeddedException {
 
         setShutdownHook();
@@ -181,15 +181,22 @@ public class Server {
      */
     public Server(int httpPort) throws EmbeddedException {
         this(null, false);
+
+        // force creation...
+        EmbeddedFileSystem.getInstallRoot();
+
         try {
             domainXml = parseDefaultDomainXml();
-        } catch (IOException e) {
-            throw new EmbeddedException(e);
-        } catch (SAXException e) {
-            throw new EmbeddedException(e);
-        } catch (ParserConfigurationException e) {
+        } catch (Exception e) {
             throw new EmbeddedException(e);
         }
+
+        try {
+            jdbcHack();
+        } catch (Exception e) {
+            throw new EmbeddedException("jdbc_hack_failure", e);
+        }
+
         createVirtualServer(createHttpListener(httpPort));
         start();
     }
@@ -293,13 +300,6 @@ public class Server {
         parser.replace(WebEntityResolver.class, EntityResolverImpl.class);
 
         return parser;
-    }
-
-    /*pkg-private*/ File createTempDir() throws IOException {
-        File dir = File.createTempFile("glassfish", "embedded");
-        dir.delete();
-        dir.mkdirs();
-        return dir;
     }
 
     public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener) throws EmbeddedException{
@@ -416,7 +416,7 @@ public class Server {
         try {
             
             EmbeddedModulesRegistryImpl reg = new EmbeddedModulesRegistryImpl();
-            StartupContext startupContext = new StartupContext(createTempDir(), new String[0]);
+            StartupContext startupContext = new StartupContext(EmbeddedFileSystem.getInstallRoot(), new String[0]);
 
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!
@@ -433,6 +433,7 @@ public class Server {
 
 
             habitat = main.launch(reg, startupContext);
+            EmbeddedFileSystem.setSystemProps();
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -637,5 +638,67 @@ public class Server {
                 System.out.println("Cleaning up files");
                 EmbeddedFileSystem.cleanup();
             }});
+    }
+
+    /**
+     * Nov 4, 2008 bnevins
+     * temporary horrible hack.  Core v3 looks at a specific location in the filesystem
+     * for magical files.  Today, I can not change core, so I'm hacking from the embedded
+     * side.  This will go away before the final release.
+     *
+     * Hint: com.sun.appserv.connectors.internal.api.ConnectorsUtil.getSystemModuleLocation
+     */
+    private void jdbcHack() throws IOException {
+        // NASTY CODE!!!!
+        //File root = EmbeddedFileSystem.getInstallRoot();
+        String cpName = "__cp_jdbc_ra/META-INF";
+        String dsName = "__ds_jdbc_ra/META-INF";
+        String xaName = "__xa_jdbc_ra/META-INF";
+
+        // the directories on disk
+        File cp = new File(ConnectorsUtil.getSystemModuleLocation(cpName));
+        File ds = new File(ConnectorsUtil.getSystemModuleLocation(dsName));
+        File xa = new File(ConnectorsUtil.getSystemModuleLocation(xaName));
+
+        // create them if necessary
+        cp.mkdirs();
+        ds.mkdirs();
+        xa.mkdirs();
+
+        // these are the magic files that core JDBC code wants
+        cp = new File(cp, "ra.xml");
+        ds = new File(ds, "ra.xml");
+        xa = new File(xa, "ra.xml");
+
+        // if they already exist -- we are done!
+        if(cp.exists() && ds.exists() && xa.exists())
+            return;
+
+        Class clazz = getClass();
+        final String base = "/org/glassfish/embed";
+
+        BufferedReader cpr = new BufferedReader(new InputStreamReader(
+                clazz.getResourceAsStream(base + "/" + cpName + "/ra.xml")));
+        BufferedReader dsr = new BufferedReader(new InputStreamReader(
+                clazz.getResourceAsStream(base + "/" + dsName + "/ra.xml")));
+        BufferedReader xar = new BufferedReader(new InputStreamReader(
+                clazz.getResourceAsStream(base + "/" + xaName + "/ra.xml")));
+
+        copy(cpr, cp);
+        copy(dsr, ds);
+        copy(xar, xa);
+    }
+
+    private static void copy(BufferedReader in, File out) throws FileNotFoundException, IOException {
+        // If we did regular byte copying -- we would have a horrible mess on Windows
+        // this way we get the right line termintors on any platform.
+        PrintWriter pw = new PrintWriter(out);
+
+        for(String s = in.readLine(); s != null; s = in.readLine()) {
+            pw.println(s);
+        }
+
+        pw.close();
+        in.close();
     }
 }

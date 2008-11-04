@@ -34,14 +34,12 @@
  * holder.
  *
  */
-
 package org.glassfish.embed;
 
+import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * There are currently some ugly things we MUST do:
@@ -54,6 +52,11 @@ import java.util.logging.Logger;
  * @author bnevins
  */
 public final class EmbeddedFileSystem {
+
+    public static void setSystemProps() {
+        efs.setSystemPropsInternal();
+    }
+
     public static File getInstallRoot() {
         return efs.installRoot;
     }
@@ -67,8 +70,11 @@ public final class EmbeddedFileSystem {
 
         f.mkdirs();
 
-        if(!f.isDirectory())
+        if (!f.isDirectory()) {
             throw new EmbeddedException("bad_install_root", f);
+        }
+
+        efs.setSystemPropsInternal();
     }
 
     public static void setInstanceRoot(File f) throws EmbeddedException {
@@ -76,8 +82,11 @@ public final class EmbeddedFileSystem {
 
         f.mkdirs();
 
-        if(!f.isDirectory())
+        if (!f.isDirectory()) {
             throw new EmbeddedException("bad_instance_root", f);
+        }
+
+        efs.setSystemPropsInternal();
     }
 
     public static void setAutoDelete(boolean b) {
@@ -85,22 +94,26 @@ public final class EmbeddedFileSystem {
     }
 
     static void cleanup() {
-        if(efs.autoDelete) {
+        if (efs.autoDelete) {
             FileUtils.whack(efs.installRoot);
             FileUtils.whack(efs.instanceRoot);
         }
     }
 
-    private EmbeddedFileSystem(){
-            defaultRoots.mkdirs();
-            installRoot = SmartFile.sanitize(defaultRoots);
-            instanceRoot = SmartFile.sanitize(defaultRoots);
-   }
+    private EmbeddedFileSystem() {
+        defaultRoots.mkdirs();
+        installRoot = SmartFile.sanitize(defaultRoots);
+        instanceRoot = SmartFile.sanitize(defaultRoots);
+        setSystemPropsInternal();
+    }
 
-    private static final    File                defaultRoots    = new File("gfe");
-    private static final    EmbeddedFileSystem  efs             = new EmbeddedFileSystem();
-    
-    private                 File                installRoot;
-    private                 File                instanceRoot;
-    private                 boolean             autoDelete      = true;
+    private void setSystemPropsInternal() {
+        System.setProperty(INSTANCE_ROOT_PROPERTY, instanceRoot.getPath());
+        System.setProperty(INSTALL_ROOT_PROPERTY, installRoot.getPath());
+    }
+    private static final File defaultRoots = new File("gfe");
+    private static final EmbeddedFileSystem efs = new EmbeddedFileSystem();
+    private File installRoot;
+    private File instanceRoot;
+    private boolean autoDelete = true;
 }

@@ -3,7 +3,7 @@
   <applications />
   <resources>
         <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="userpool">
-            <property name="databaseName" value="d:/temp/databases/userdb" />
+            <property name="databaseName" value="${com.sun.aas.instanceRoot}/userdb" />
             <property name="connectionAttributes" value=";create=true" />
         </jdbc-connection-pool>
         <jdbc-resource pool-name="userpool" jndi-name="jdbc/userpool" />
