@@ -4033,10 +4033,11 @@ public abstract class BaseContainer
             // before tm.begin() was called
             return newException;
         }
-        
-        if ( isSession && !isStatelessSession )
-            ((SessionContextImpl)context).setTxCompleting(true);
-        
+
+        if ( isSession && !isStatelessSession && (context instanceof SessionContextImpl)) {
+            ((SessionContextImpl) context).setTxCompleting(true);
+        }
+
         // A new tx was started, so we must commit/rollback
         if ( newException != null
         && isSystemUncheckedException(newException) ) {
