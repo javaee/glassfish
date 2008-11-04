@@ -77,7 +77,7 @@
            <version>${jsf-api.version}</version>
        </dependency>
        <dependency>
-            <groupId>javax.faces</groupId>
+            <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf-impl.version}</version>
         </dependency>
