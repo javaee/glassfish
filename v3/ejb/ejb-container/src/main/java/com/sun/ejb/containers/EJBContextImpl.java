@@ -71,13 +71,11 @@ public abstract class EJBContextImpl
     private static final Logger _logger =
             EjbContainerUtilImpl.getInstance().getLogger();
 
-    public enum BeanState {CREATED, POOLED, READY, INVOKING, INCOMPLETE_TX,
+    public enum BeanState {NOT_INITIALIZED, CREATED, POOLED, READY, INVOKING, INCOMPLETE_TX,
         IN_PASSIVATE, PASSIVATED, IN_ACTIVATE, ACTIVATED, IN_REMOVE, DESTROYED}
 
     private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(EJBContextImpl.class);
-
-    protected static final int NOT_INITIALIZED = -999;  // not initialized state
     
     private Object ejb;
     
@@ -197,7 +195,16 @@ public abstract class EJBContextImpl
     boolean isInEjbRemove() {
         return inEjbRemove;
     }
-    
+
+
+    /**
+     * Returns true if this context has NOT progressed past its initial
+     * state.  The point at which this happens is container-specific.
+     */
+    boolean isUnitialized() {
+        return (state == EJBContextImpl.BeanState.NOT_INITIALIZED);
+    }
+
     public long getLastTimeUsed() {
         return lastTimeUsed;
     }

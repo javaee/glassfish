@@ -46,6 +46,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
+import com.sun.enterprise.v3.server.ExecutorServiceFactory;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -63,6 +64,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.reflect.Proxy;
@@ -121,6 +123,9 @@ public class EjbContainerUtilImpl
 
     @Inject //Note:- Not specific to any ejb descriptor
     private EJBServerConfigLookup ejbServerConfigLookup;
+
+    @Inject
+    ExecutorServiceFactory executorService;
 
     private  static EjbContainerUtil _me;
 
@@ -232,6 +237,10 @@ public class EjbContainerUtilImpl
 
     public ServerContext getServerContext() {
         return serverContext;
+    }
+
+    public ExecutorServiceFactory getExecutorService() {
+        return executorService;
     }
 
     public  ContainerSynchronization getContainerSync(Transaction jtx)

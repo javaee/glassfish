@@ -45,14 +45,11 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
 
 import javax.ejb.*;
 import javax.transaction.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.rmi.PortableRemoteObject;
 import javax.ejb.ConcurrentAccessException;
 
 import javax.persistence.PersistenceContextType;
@@ -63,14 +60,9 @@ import com.sun.enterprise.deployment.*;
 
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
-import com.sun.enterprise.admin.monitor.*;
-import com.sun.enterprise.util.io.FileUtils;
-
 import java.util.logging.*;
 
 import com.sun.logging.*;
-
-import com.sun.ejb.containers.util.cache.*;
 
 import com.sun.appserv.util.cache.CacheListener;
 
