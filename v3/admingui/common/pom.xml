@@ -145,7 +145,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.faces</groupId>
+            <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
 	    <version>${jsf-api.version}</version>
         </dependency>

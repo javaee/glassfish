@@ -163,10 +163,12 @@
             <artifactId>javax.servlet.jsp</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--
         <dependency>
-            <groupId>javax.faces</groupId>
+            <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
         </dependency>
+        -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
