@@ -128,7 +128,7 @@ public class Server {
      */
     private boolean started;
 
-    protected /*almost final*/ Habitat habitat;
+    /*pkg-private*/ /*almost final*/ Habitat habitat;
 
     /**
      * Work around until the live HTTP listener support comes back.
@@ -139,17 +139,19 @@ public class Server {
      * To navigate around {@link #domainXml}.
      */
     private final XPath xpath = XPathFactory.newInstance().newXPath();
-    protected URL domainXmlUrl;
-    protected URL defaultWebXml;
+    /*pkg-private*/ URL domainXmlUrl;
+    /*pkg-private*/ URL defaultWebXml;
 
     // key components inside GlassFish. We access them all the time,
     // so we might just as well keep them here for ease of access.
-    protected /*almost final*/ ApplicationLifecycle appLife;
-    protected /*almost final*/ SnifferManager snifMan;
-    protected /*almost final*/ ArchiveFactory archiveFactory;
-    protected /*almost  final*/ ServerEnvironmentImpl env;
+    /*pkg-private*/ /*almost final*/ ApplicationLifecycle appLife;
+    /*pkg-private*/ /*almost final*/ SnifferManager snifMan;
+    /*pkg-private*/ /*almost final*/ ArchiveFactory archiveFactory;
+    /*pkg-private*/ /*almost  final*/ ServerEnvironmentImpl env;
 
-    protected Server(URL domainXmlUrl, boolean start) throws EmbeddedException {
+    private Server(URL domainXmlUrl, boolean start) throws EmbeddedException {
+
+        setShutdownHook();
         this.domainXmlUrl = domainXmlUrl;
         if (this.domainXmlUrl == null) { // if not defined get the default one
             this.domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
@@ -169,7 +171,7 @@ public class Server {
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
      */
-    public Server(URL domainXmlUrl) throws EmbeddedException {
+    private Server(URL domainXmlUrl) throws EmbeddedException {
         this(domainXmlUrl, true);
     }
 
@@ -214,7 +216,7 @@ public class Server {
         return defaultWebXml;
     }
 
-    protected URL getDomainXML() {
+    /*pkg-private*/ URL getDomainXML() {
         return domainXmlUrl;
     }
 
@@ -229,7 +231,7 @@ public class Server {
      * Tweaks the 'recipe' --- for embedded use, we'd like GFv3 to behave a little bit
      * differently from normal stand-alone use.
      */
-    protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+    /*pkg-private*/ InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
         // (GlassFish server may be extended by the user)
         parser.habitat.add(new ExistingSingletonInhabitant<Server>(Server.class, this));
@@ -293,7 +295,7 @@ public class Server {
         return parser;
     }
 
-    protected File createTempDir() throws IOException {
+    /*pkg-private*/ File createTempDir() throws IOException {
         File dir = File.createTempFile("glassfish", "embedded");
         dir.delete();
         dir.mkdirs();
@@ -318,8 +320,8 @@ public class Server {
          * Write domain.xml to a temporary file. UGLY UGLY UGLY.
          */
         try {
-            File domainFile = File.createTempFile("domain", "xml");
-            domainFile.deleteOnExit();
+            File dir = EmbeddedFileSystem.getInstanceRoot();
+            File domainFile = new File(dir, "domain.xml");
             Transformer t = TransformerFactory.newInstance().newTransformer();
             t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
             domainXmlUrl = domainFile.toURI().toURL();
@@ -419,6 +421,7 @@ public class Server {
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!
             // ANONYMOUS CLASS HERE!!
+            // TODO
             // !!!!!!!!!!!!!!!!!!!!!!!!!
             Main main = new Main() {
                 @Override
@@ -457,7 +460,7 @@ public class Server {
 
                 ArchiveHandler h = appLife.getArchiveHandler(a);
 
-                File tmpDir = new File(a.getName());
+                File tmpDir = new File(EmbeddedFileSystem.getInstanceRoot(), a.getName());
                 FileUtils.whack(tmpDir);
                 tmpDir.mkdirs();
                 h.expand(a, archiveFactory.createArchive(tmpDir));
@@ -623,4 +626,16 @@ public class Server {
         }
     }
 
+        private void setShutdownHook() {
+
+        //final String msg = strings.get("serverStopped", info.getType());
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                // logger won't work anymore...
+                //System.out.println(msg);
+                // TODO TEMP
+                System.out.println("Cleaning up files");
+                EmbeddedFileSystem.cleanup();
+            }});
+    }
 }

@@ -2,15 +2,11 @@
   <system-applications />
   <applications />
   <resources>
-    <!--jdbc-resource enabled="true" pool-name="DerbyPool" jndi-name="jdbc/__default" object-type="user" />
-    <jdbc-connection-pool connection-validation-method="auto-commit" steady-pool-size="8" associate-with-thread="false" connection-leak-reclaim="false" idle-timeout-in-seconds="300" validate-atmost-once-period-in-seconds="0" lazy-connection-enlistment="false" connection-creation-retry-interval-in-seconds="10" max-pool-size="32" is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.ClientDataSource" max-connection-usage-count="0" res-type="javax.sql.DataSource" name="DerbyPool" match-connections="false" is-connection-validation-required="false" fail-all-connections="false" allow-non-component-callers="false" statement-timeout-in-seconds="-1" non-transactional-connections="false" lazy-connection-association="false" max-wait-time-in-millis="60000" connection-creation-retry-attempts="0" pool-resize-quantity="2" wrap-jdbc-objects="false" connection-leak-timeout-in-seconds="0">
-      <property name="PortNumber" value="1527" />
-      <property name="Password" value="APP" />
-      <property name="User" value="APP" />
-      <property name="serverName" value="localhost" />
-      <property name="DatabaseName" value="sun-appserv-samples" />
-      <property name="connectionAttributes" value=";create=true" />
-    </jdbc-connection-pool-->
+        <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="userpool">
+            <property name="databaseName" value="d:/temp/databases/userdb" />
+            <property name="connectionAttributes" value=";create=true" />
+        </jdbc-connection-pool>
+        <jdbc-resource pool-name="userpool" jndi-name="jdbc/userpool" />
   </resources>
   <servers>
     <server name="server" config-ref="server-config">

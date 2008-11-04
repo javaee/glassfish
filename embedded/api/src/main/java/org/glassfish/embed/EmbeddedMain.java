@@ -143,7 +143,7 @@ public class EmbeddedMain {
     {
         //       longname       shortname   default or req                                      description
         //new Arg("war",          "w",            false,                                          "War File"),
-        new Arg("port",         "p",            "" + ServerConstants.defaultHttpPort,          "HTTP Port"),
+        new Arg("port",         "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,          "HTTP Port"),
         new BoolArg("help",     "h",            false,                                         "Help"),
     };
     

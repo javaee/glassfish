@@ -122,7 +122,7 @@ class LoggerHelper {
 
     static {
         try {
-            logger = Logger.getLogger("embedded", ServerConstants.loggingResourceBundle);
+            logger = Logger.getLogger("embedded", ServerConstants.LOGGING_RESOURCE_BUNDLE);
         }
         catch (Throwable t) {
             try {

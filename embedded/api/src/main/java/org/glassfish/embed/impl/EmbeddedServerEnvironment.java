@@ -40,6 +40,7 @@ package org.glassfish.embed.impl;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.io.File;
+import org.glassfish.embed.EmbeddedFileSystem;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -47,6 +48,6 @@ import java.io.File;
 public class EmbeddedServerEnvironment extends ServerEnvironmentImpl {
     public EmbeddedServerEnvironment() {
         // TODO: we really don't want to have domainRoot, so it should be eventually just null or something
-        super(new File("."));
+        super(EmbeddedFileSystem.getInstallRoot());
     }
 }

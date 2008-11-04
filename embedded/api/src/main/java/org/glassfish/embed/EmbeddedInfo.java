@@ -71,6 +71,11 @@ public class EmbeddedInfo {
 
         validateArchives();
         validatePort();
+        validateFilesystem();
+    }
+
+    public void setFilesystemRoot(File f) {
+
     }
 
     @Override
@@ -85,10 +90,11 @@ public class EmbeddedInfo {
 
     //////////////////////  pkg-private  //////////////////////
     
-    int                     httpPort         = ServerConstants.defaultHttpPort;
+    int                     httpPort         = ServerConstants.DEFAULT_HTTP_PORT;
     List<File>              archives         = new LinkedList<File>(); 
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
+
 
     //////////////////////  all private below //////////////////////
 
@@ -98,6 +104,10 @@ public class EmbeddedInfo {
             if(!f.exists())
                 throw new EmbeddedException("no_such_file", f);
         }
+    }
+
+    private void validateFilesystem() {
+        //throw new UnsupportedOperationException("Not yet implemented");
     }
     
     private void validatePort() throws EmbeddedException {
