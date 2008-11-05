@@ -132,7 +132,7 @@
 	<delete verbose="true" includeemptydirs="true">
 		<fileset dir="${basedir}" includes="**/classes"/>
 	</delete>
-        <delete dir="${basedir}/test-output" includeemptydirs="true"/>
+        <!-- delete dir="${basedir}/test-output" includeemptydirs="true"/ -->
         <delete dir="${basedir}/test-output-glassfish" includeemptydirs="true"/>
         <delete dir="${basedir}/dist" includeemptydirs="true"/>
 	<delete includeemptydirs="true">
