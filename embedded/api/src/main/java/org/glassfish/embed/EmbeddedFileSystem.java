@@ -40,6 +40,10 @@ import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * There are currently some ugly things we MUST do:
@@ -65,6 +69,11 @@ public final class EmbeddedFileSystem {
         return efs.instanceRoot;
     }
 
+    public static void setRoot(File f) throws EmbeddedException {
+        setInstallRoot(f);
+        setInstanceRoot(f);
+    }
+    
     public static void setInstallRoot(File f) throws EmbeddedException {
         efs.installRoot = SmartFile.sanitize(f);
 
@@ -97,6 +106,19 @@ public final class EmbeddedFileSystem {
         if (efs.autoDelete) {
             FileUtils.whack(efs.installRoot);
             FileUtils.whack(efs.instanceRoot);
+        }
+    }
+
+    static URL getDomainXmlUrl() {
+        File dom = new File(getInstanceRoot(), "domain.xml");
+
+        if(!dom.exists())
+            return null;
+        try {
+            return dom.toURI().toURL();
+        }
+        catch (MalformedURLException ex) {
+            return null;
         }
     }
 

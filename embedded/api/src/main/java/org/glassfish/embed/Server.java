@@ -149,19 +149,22 @@ public class Server {
      * TODO constructors and startup need revamping!
      */
 
-    private Server(URL domainXmlUrl, boolean start) throws EmbeddedException {
+    private Server(URL dx, boolean start) throws EmbeddedException {
 
         setShutdownHook();
-        this.domainXmlUrl = domainXmlUrl;
-        if (this.domainXmlUrl == null) { // if not defined get the default one
-            this.domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
-            if (this.domainXmlUrl == null) {
-                throw new AssertionError("domain.xml is missing from resources");
-            }
-        }
-        if (start) {
+        domainXmlUrl = dx;
+
+        if(domainXmlUrl == null)
+            domainXmlUrl = EmbeddedFileSystem.getDomainXmlUrl();
+
+        if(domainXmlUrl == null)
+            domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
+
+        if(domainXmlUrl == null)
+            throw new EmbeddedException("bad_domain_xml");
+
+        if (start)
             start();
-        }
     }
 
     /**
@@ -322,9 +325,12 @@ public class Server {
         try {
             File dir = EmbeddedFileSystem.getInstanceRoot();
             File domainFile = new File(dir, "domain.xml");
-            Transformer t = TransformerFactory.newInstance().newTransformer();
-            t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
-            domainXmlUrl = domainFile.toURI().toURL();
+
+            if(!domainFile.exists()) {
+                Transformer t = TransformerFactory.newInstance().newTransformer();
+                t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
+                domainXmlUrl = domainFile.toURI().toURL();
+            }
         } 
         catch (Exception e) {
             throw new EmbeddedException("Failed to write domain XML", e);
@@ -702,3 +708,6 @@ public class Server {
         in.close();
     }
 }
+
+
+

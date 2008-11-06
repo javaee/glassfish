@@ -39,7 +39,6 @@ package org.glassfish.embed;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,7 +103,9 @@ public class EmbeddedMain {
                info.addArchive(new File(s));
             }
         }
-        
+
+
+        //////   port  //////
         String port = params.get("port");
         
         if(!StringUtils.ok(port)) 
@@ -116,7 +117,24 @@ public class EmbeddedMain {
         catch(NumberFormatException nfe) {
             throw new EmbeddedException("port_not_int", port);
         }
-        
+
+        ///////   dir   /////////
+        String fn = params.get("dir");
+
+        if(StringUtils.ok(fn)) {
+            File f = new File(fn);
+            f.mkdirs(); // it is acceptable for it to not exist yet.
+
+            if(!f.isDirectory())
+                throw new EmbeddedException("bad_dir", f);
+
+            EmbeddedFileSystem.setInstallRoot(f);
+            EmbeddedFileSystem.setInstanceRoot(f);
+        }
+
+        ////////  autodelete //////
+
+        EmbeddedFileSystem.setAutoDelete(Boolean.parseBoolean(params.get("autodelete")));
         return info;
     }
 
@@ -141,10 +159,12 @@ public class EmbeddedMain {
 
     private final static Arg[] argDescriptions = new Arg[]
     {
-        //       longname       shortname   default or req                                      description
-        //new Arg("war",          "w",            false,                                          "War File"),
-        new Arg("port",         "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,          "HTTP Port"),
-        new BoolArg("help",     "h",            false,                                         "Help"),
+        //       longname       shortname   default or req                                     description
+        //new Arg("war",          "w",            false,                                       "War File"),
+        new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
+        new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
+        new BoolArg("autodelete",   "x",            false,                                         "Automtically delete Filesystem"),
+        new BoolArg("help",         "h",            false,                                         "Help"),
     };
     
     private LocalStringsImpl strings = new LocalStringsImpl(this.getClass());
