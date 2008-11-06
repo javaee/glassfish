@@ -52,12 +52,14 @@ import javax.ejb.Local;
 import javax.ejb.RemoteHome;
 import javax.ejb.LocalHome;
 import javax.ejb.Stateless;
+import javax.ejb.Asynchronous;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.DummyEjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.util.TypeUtil;
 
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
@@ -368,10 +370,12 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             } else if( next.getAnnotation(Local.class) != null ) {
 
                 localIntfNames.add(nextIntfName);
+                processAsynchronousAnnotation(next, ejbDesc);
 
             } else if( next.getAnnotation(Remote.class) != null ) {
                 
                 remoteIntfNames.add(nextIntfName);
+                processAsynchronousAnnotation(next, ejbDesc);
 
             } else {
 
@@ -385,6 +389,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                     } else {
                         localIntfNames.add(nextIntfName);
                     }
+                    processAsynchronousAnnotation(next, ejbDesc);
 
                 } else {
                     
@@ -402,6 +407,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                 ejbDesc.addLocalBusinessClassName(next);
             }
         }
+
         if (remoteIntfNames.size() > 0) {
             for(String next : remoteIntfNames) {
                 ejbDesc.addRemoteBusinessClassName(next);
@@ -505,4 +511,46 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         
     }
 
+    private void processAsynchronousAnnotation(Class intf, 
+            EjbDescriptor ejbDesc) throws AnnotationProcessorException {
+        if (logger.isLoggable(Level.FINE)) {            
+            logger.fine("Looking for @Asynchronous annotation on " + intf);
+        }
+
+        boolean definedOnIntf = (intf.getAnnotation(Asynchronous.class) != null);
+        Method[] methods = intf.getMethods();
+        for (Method m0 : methods) {
+            if (definedOnIntf || m0.getAnnotation(Asynchronous.class) != null) {
+                checkValidReturnType(m0);
+                Set mds = ejbDesc.getMethodDescriptors();
+                for (Object next : mds) {
+                    MethodDescriptor nextDesc = (MethodDescriptor) next;
+                    Method m = nextDesc.getMethod(ejbDesc);
+                    if(TypeUtil.sameMethodSignature(m, m0)) { 
+                        // override by xml
+                        // XXX TODO: Verify that the Future type matches return type
+
+                        if (logger.isLoggable(Level.FINE)) {            
+                            logger.fine("Setting asynchronous flag on " + nextDesc);
+                        }
+                        nextDesc.setAsynchronous(true);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Verify that the return type is void or Future<V>
+     */
+    private void checkValidReturnType(Method m) throws AnnotationProcessorException {
+        /**
+         *** TBD ***
+        if ( !(m.getReturnType().equals(Void.TYPE) ||
+                m.getReturnType().equals(java.util.concurrent.Future.class)) ) {
+            throw new AnnotationProcessorException("Return type of a method " + m +
+                    "annotated as @Asynchronous is not void or Future<V>");
+        }
+        **/
+    }
 }
