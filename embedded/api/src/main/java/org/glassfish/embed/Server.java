@@ -409,7 +409,7 @@ public class Server {
     /**
      * Starts the server if hasn't done so already. Necessary to work around the live HTTP listener update.
      */
-    private void start() throws EmbeddedException{
+    public void start() throws EmbeddedException{
         if (started) return;
         started = true;
 
