@@ -39,6 +39,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -145,6 +147,10 @@ public class AsynchronousHandler extends AbstractAttributeHandler
             if(sameAsynchronousMethodSignature(m, m0)) {
                 // override by xml
 
+                /** XXX TODO: Compare that the Future type matches return type
+                 when @Asynchronous is on the interface as we don't look
+                 at bean methods in that case. **/
+
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Setting asynchronous flag on " + nextDesc);
                 }
@@ -169,14 +175,18 @@ public class AsynchronousHandler extends AbstractAttributeHandler
      * Returns true if two methods have the same signatures 
      * or if one returns a Future of the return type of the other
      */
-    private boolean sameAsynchronousMethodSignature(Method m1, Method m2) {
-        if(TypeUtil.sameMethodSignature(m1, m2)) {
+    private boolean sameAsynchronousMethodSignature(Method asyncm, Method otherm) {
+        if(TypeUtil.sameMethodSignature(asyncm, otherm)) {
             return true;
-        } else if ((m1.getName().equals(m2.getName())) &&
-                TypeUtil.sameParamTypes(m1, m2) ) {
-            // It's not the same return type, so it' a Future<V> vs. <V>
-            // XXX TODO: Compare that the Future type matches return type
-            return true; 
+        } else if ((asyncm.getName().equals(otherm.getName())) &&
+                TypeUtil.sameParamTypes(asyncm, otherm) ) {
+
+            // It's not the same return type, so it should be a Future<V> vs. <V>
+            Type asyncmt = asyncm.getGenericReturnType();
+            Type othermt = otherm.getGenericReturnType();
+
+            return othermt.equals(
+                    ((ParameterizedType)asyncmt).getActualTypeArguments()[0]); 
         }
         return false;
     }
