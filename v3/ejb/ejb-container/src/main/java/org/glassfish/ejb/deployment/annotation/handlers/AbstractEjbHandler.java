@@ -419,6 +419,15 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
         for(Class next : clientInterfaces) {
             processAsynchronousAnnotation(next, ejbDesc);
+
+            // Recursively call super-interfaces if there are any
+            // and if they are not listed explicitly
+            Class[] superintfs = next.getInterfaces();
+            for(Class c : superintfs) {
+                if (!clientInterfaces.contains(c)) {
+                    processAsynchronousAnnotation(c, ejbDesc);
+                }
+            }
         }
 
         // Do Adapted @Home / Adapted @LocalHome processing here too since
