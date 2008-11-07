@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 
 import javax.ejb.*;
 
@@ -59,7 +60,10 @@ import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.Asynchronous.
+ * This handler is responsible for handling the javax.ejb.Asynchronous
+ * annotation on the Bean class. Annotation on the interfaces or specific 
+ * methods on the interfaces are processed by the AbstractEjbHandler (with
+ * the calls to the same #setAsynchronous() method call here.
  *
  * @author Marina Vatkina
  */
@@ -87,18 +91,7 @@ public class AsynchronousHandler extends AbstractAttributeHandler
                 ejbContext.addPostProcessInfo(ainfo, this);
             } else {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
-                checkValidReturnType(annMethod);
-                
-                Set methods = ejbDesc.getMethodDescriptors();
-                for (Object next : methods) {
-                    MethodDescriptor nextDesc = (MethodDescriptor) next;
-                    Method m = nextDesc.getMethod(ejbDesc);
-                    if( TypeUtil.sameMethodSignature(m, annMethod) ) {
-                        // override by xml
-                        // XXX TODO: Verify that the Future type matches return type
-                        nextDesc.setAsynchronous(true);
-                    }
-                }
+                setAsynchronous(annMethod, ejbDesc);
             }
         }
 
@@ -124,6 +117,8 @@ public class AsynchronousHandler extends AbstractAttributeHandler
     /**
      * Set the default value (from class type annotation) on all
      * methods that don't have a value.
+     * Class type annotation applies to all EJB 3.x Local/Remote/no-interface 
+     * views in which  that  business method is exposed for that bean. 
      */
     public void postProcessAnnotation(AnnotationInfo ainfo,
             AnnotatedElementHandler aeHandler)
@@ -132,33 +127,57 @@ public class AsynchronousHandler extends AbstractAttributeHandler
         EjbDescriptor ejbDesc = ejbContext.getDescriptor();
         Class classAn = (Class)ainfo.getAnnotatedElement();
 
-        Set methods = ejbDesc.getMethodDescriptors();
-        for (Object mdObj : methods) {
-            MethodDescriptor md = (MethodDescriptor)mdObj;
-            // override by xml
-            if (classAn.equals(ejbContext.getDeclaringClass(md)) && 
-                isValidReturnType(md.getMethod(ejbDesc))) {
-                // XXX TODO: Verify that the Future type matches return type
-                md.setAsynchronous(true);
-            }
+        Method[] methods = classAn.getDeclaredMethods();
+        for (Method m0 : methods) {
+            setAsynchronous(m0, ejbDesc);
         }
     }
 
-    /**
-     * Returns true if return type of the method is void or Future<V>
-     */
-    private boolean isValidReturnType(Method m) {
-        return (m.getReturnType().equals(Void.TYPE) || 
-                m.getReturnType().equals(Future.class));
+    protected void setAsynchronous(Method m0, EjbDescriptor ejbDesc) 
+            throws AnnotationProcessorException {
+        Set mds = ejbDesc.getClientBusinessMethodDescriptors();
+        for (Object next : mds) {
+            MethodDescriptor nextDesc = (MethodDescriptor) next;
+            Method m = nextDesc.getMethod(ejbDesc);
+            // Check return type on the business method
+            // XXX TODO: Verify that the Future type matches return type
+            checkValidReturnType(m);
+            if(sameAsynchronousMethodSignature(m, m0)) {
+                // override by xml
+
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Setting asynchronous flag on " + nextDesc);
+                }
+                nextDesc.setAsynchronous(true);
+                break;
+            }
+        }
     }
 
     /**
      * Verify that the return type is void or Future<V>
      */
     private void checkValidReturnType(Method m) throws AnnotationProcessorException {
-        if (!isValidReturnType(m)) {
+        if ( !(m.getReturnType().equals(Void.TYPE) ||
+                m.getReturnType().equals(Future.class)) ) {
             throw new AnnotationProcessorException("Return type of a method " + m +
                     "annotated as @Asynchronous is not void or Future<V>");
         }
+    }
+
+    /**
+     * Returns true if two methods have the same signatures 
+     * or if one returns a Future of the return type of the other
+     */
+    private boolean sameAsynchronousMethodSignature(Method m1, Method m2) {
+        if(TypeUtil.sameMethodSignature(m1, m2)) {
+            return true;
+        } else if ((m1.getName().equals(m2.getName())) &&
+                TypeUtil.sameParamTypes(m1, m2) ) {
+            // It's not the same return type, so it' a Future<V> vs. <V>
+            // XXX TODO: Compare that the Future type matches return type
+            return true; 
+        }
+        return false;
     }
 }

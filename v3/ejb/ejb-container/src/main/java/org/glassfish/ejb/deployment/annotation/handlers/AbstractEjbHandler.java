@@ -314,6 +314,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
         Set<String> localIntfNames = new HashSet<String>();
         Set<String> remoteIntfNames = new HashSet<String>();
+        Set<Class> clientInterfaces = new HashSet<Class>();
 
         Class ejbClass = (Class)ainfo.getAnnotatedElement();
 
@@ -328,6 +329,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         if( remoteBusAnn != null ) {
             for(Class next : remoteBusAnn.value()) {
                 remoteIntfNames.add(next.getName());
+                clientInterfaces.add(next);
             }
             emptyRemoteBusAnn = remoteIntfNames.isEmpty();
         }
@@ -336,6 +338,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         if( localBusAnn != null ) {
             for(Class next : localBusAnn.value()) {
                 localIntfNames.add(next.getName());
+                clientInterfaces.add(next);
             }
         }
 
@@ -370,12 +373,12 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             } else if( next.getAnnotation(Local.class) != null ) {
 
                 localIntfNames.add(nextIntfName);
-                processAsynchronousAnnotation(next, ejbDesc);
+                clientInterfaces.add(next);
 
             } else if( next.getAnnotation(Remote.class) != null ) {
                 
                 remoteIntfNames.add(nextIntfName);
-                processAsynchronousAnnotation(next, ejbDesc);
+                clientInterfaces.add(next);
 
             } else {
 
@@ -389,7 +392,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                     } else {
                         localIntfNames.add(nextIntfName);
                     }
-                    processAsynchronousAnnotation(next, ejbDesc);
+                    clientInterfaces.add(next);
 
                 } else {
                     
@@ -412,6 +415,10 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             for(String next : remoteIntfNames) {
                 ejbDesc.addRemoteBusinessClassName(next);
             }
+        }
+
+        for(Class next : clientInterfaces) {
+            processAsynchronousAnnotation(next, ejbDesc);
         }
 
         // Do Adapted @Home / Adapted @LocalHome processing here too since
@@ -517,40 +524,15 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             logger.fine("Looking for @Asynchronous annotation on " + intf);
         }
 
+        // XXX Inject instead?
+        AsynchronousHandler asHandler = new AsynchronousHandler();
+
         boolean definedOnIntf = (intf.getAnnotation(Asynchronous.class) != null);
-        Method[] methods = intf.getMethods();
+        Method[] methods = intf.getDeclaredMethods();
         for (Method m0 : methods) {
             if (definedOnIntf || m0.getAnnotation(Asynchronous.class) != null) {
-                checkValidReturnType(m0);
-                Set mds = ejbDesc.getMethodDescriptors();
-                for (Object next : mds) {
-                    MethodDescriptor nextDesc = (MethodDescriptor) next;
-                    Method m = nextDesc.getMethod(ejbDesc);
-                    if(TypeUtil.sameMethodSignature(m, m0)) { 
-                        // override by xml
-                        // XXX TODO: Verify that the Future type matches return type
-
-                        if (logger.isLoggable(Level.FINE)) {            
-                            logger.fine("Setting asynchronous flag on " + nextDesc);
-                        }
-                        nextDesc.setAsynchronous(true);
-                    }
-                }
+                asHandler.setAsynchronous(m0, ejbDesc);
             }
         }
-    }
-
-    /**
-     * Verify that the return type is void or Future<V>
-     */
-    private void checkValidReturnType(Method m) throws AnnotationProcessorException {
-        /**
-         *** TBD ***
-        if ( !(m.getReturnType().equals(Void.TYPE) ||
-                m.getReturnType().equals(java.util.concurrent.Future.class)) ) {
-            throw new AnnotationProcessorException("Return type of a method " + m +
-                    "annotated as @Asynchronous is not void or Future<V>");
-        }
-        **/
     }
 }
