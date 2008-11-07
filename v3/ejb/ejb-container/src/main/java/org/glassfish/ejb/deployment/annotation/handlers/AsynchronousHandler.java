@@ -141,15 +141,15 @@ public class AsynchronousHandler extends AbstractAttributeHandler
         for (Object next : mds) {
             MethodDescriptor nextDesc = (MethodDescriptor) next;
             Method m = nextDesc.getMethod(ejbDesc);
-            // Check return type on the business method
-            // XXX TODO: Verify that the Future type matches return type
-            checkValidReturnType(m);
             if(sameAsynchronousMethodSignature(m, m0)) {
                 // override by xml
 
                 /** XXX TODO: Compare that the Future type matches return type
                  when @Asynchronous is on the interface as we don't look
                  at bean methods in that case. **/
+
+                // Check return type on the business method
+                checkValidReturnType(m);
 
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Setting asynchronous flag on " + nextDesc);
@@ -179,9 +179,10 @@ public class AsynchronousHandler extends AbstractAttributeHandler
         if(TypeUtil.sameMethodSignature(asyncm, otherm)) {
             return true;
         } else if ((asyncm.getName().equals(otherm.getName())) &&
-                TypeUtil.sameParamTypes(asyncm, otherm) ) {
+                TypeUtil.sameParamTypes(asyncm, otherm)  && 
+                asyncm.getReturnType().equals(Future.class) ) {
 
-            // It's not the same return type, so it should be a Future<V> vs. <V>
+            // If it's not the same return type, it should be a Future<V> vs. <V>
             Type asyncmt = asyncm.getGenericReturnType();
             Type othermt = otherm.getGenericReturnType();
 
