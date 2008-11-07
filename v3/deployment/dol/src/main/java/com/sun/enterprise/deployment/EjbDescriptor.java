@@ -1728,38 +1728,17 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     public Set getMethodDescriptors() {
 
         ClassLoader classLoader = getEjbBundleDescriptor().getClassLoader();
-        Set methods = new HashSet();
+        Set methods = getBusinessMethodDescriptors();
 
         try {
             if (isRemoteInterfacesSupported()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getHomeClassName()), MethodDescriptor.EJB_HOME);
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getRemoteClassName()), MethodDescriptor.EJB_REMOTE);
-            }
-
-            if (isRemoteBusinessInterfacesSupported()) {
-                for (String intf : getRemoteBusinessClassNames()) {
-                    addAllInterfaceMethodsIn(methods, classLoader.loadClass(intf), MethodDescriptor.EJB_REMOTE);
-                }
             }
 
             if (isLocalInterfacesSupported()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getLocalHomeClassName()), MethodDescriptor.EJB_LOCALHOME);
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getLocalClassName()), MethodDescriptor.EJB_LOCAL);
             }
 
-            if (isLocalBusinessInterfacesSupported()) {
-                for (String intf : getLocalBusinessClassNames()) {
-                    addAllInterfaceMethodsIn(methods, classLoader.loadClass(intf), MethodDescriptor.EJB_LOCAL);
-                }
-            }
-
-            if (isOptionalLocalBusinessViewSupported()) {
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), MethodDescriptor.EJB_OPTIONAL_LOCAL);                
-            }
-
-            if (hasWebServiceEndpointInterface()) {
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getWebServiceEndpointInterfaceName()), MethodDescriptor.EJB_WEB_SERVICE);
-            }
         } catch (Throwable t) {
             /*
             t.printStackTrace();
@@ -1793,9 +1772,16 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     /**
+     * Returns the set of local/remote/no-interface view business method descriptors I have.
+     */
+    public Set getClientBusinessMethodDescriptors() {
+        return getLocalRemoteBusinessMethodDescriptors();
+    }
+
+    /**
      * Returns the full set of business method descriptors I have
      */
-    private Set getBusinessMethodDescriptors() {
+    private Set getLocalRemoteBusinessMethodDescriptors() {
 
         ClassLoader classLoader = getEjbBundleDescriptor().getClassLoader();
 
@@ -1822,12 +1808,27 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 }
             }
 
-            if (hasWebServiceEndpointInterface()) {
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getWebServiceEndpointInterfaceName()), MethodDescriptor.EJB_WEB_SERVICE);
-            }
-
             if (isOptionalLocalBusinessViewSupported()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), MethodDescriptor.EJB_OPTIONAL_LOCAL);                    
+            }
+        } catch (Throwable t) {
+            _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getBusinessMethodDescriptors())"});
+
+            throw new RuntimeException(t);
+        }
+        return methods;
+    }
+
+    /**
+     * Returns the full set of business method descriptors I have
+     */
+    private Set getBusinessMethodDescriptors() {
+        ClassLoader classLoader = getEjbBundleDescriptor().getClassLoader();
+        Set methods = getLocalRemoteBusinessMethodDescriptors();
+
+        try {
+            if (hasWebServiceEndpointInterface()) {
+                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getWebServiceEndpointInterfaceName()), MethodDescriptor.EJB_WEB_SERVICE);
             }
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getBusinessMethodDescriptors())"});
