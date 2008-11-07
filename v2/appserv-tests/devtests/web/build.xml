@@ -248,6 +248,7 @@
         <ant dir="sessionIdCustomGenerator" target="all"/>
         <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
+        <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
         <ant dir="webappDeployDashDashLibraries" target="all"/>
