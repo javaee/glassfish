@@ -355,17 +355,25 @@ final class ApplicationDispatcher
      * @exception ServletException if a servlet exception occurs
      */
     public void forward(ServletRequest request, ServletResponse response)
-        throws ServletException, IOException
-    {
+            throws ServletException, IOException {
+        forward(request, response, true);
+    }
+
+    void forward(ServletRequest request, ServletResponse response,
+                 boolean isCommit)
+            throws ServletException, IOException {
+
         if (Globals.IS_SECURITY_ENABLED) {
             try {
                 PrivilegedForward dp = new PrivilegedForward(request,response);
                 AccessController.doPrivileged(dp);
                 // START SJSAS 6374990
-                ApplicationDispatcherForward.commit(
-                    (HttpServletRequest) request,
-                    (HttpServletResponse) response,
-                    context, wrapper);
+                if (isCommit) {
+                    ApplicationDispatcherForward.commit(
+                        (HttpServletRequest) request,
+                        (HttpServletResponse) response,
+                        context, wrapper);
+                }
                 // END SJSAS 6374990
             } catch (PrivilegedActionException pe) {
                 Exception e = pe.getException();
@@ -376,10 +384,12 @@ final class ApplicationDispatcher
         } else {
             doForward(request,response);
             // START SJSAS 6374990
-            ApplicationDispatcherForward.commit(
-                (HttpServletRequest) request,
-                (HttpServletResponse) response,
-                context, wrapper);
+            if (isCommit) {
+                ApplicationDispatcherForward.commit(
+                    (HttpServletRequest) request,
+                    (HttpServletResponse) response,
+                    context, wrapper);
+            }
             // END SJSAS 6374990
         }
     }
@@ -884,7 +894,7 @@ final class ApplicationDispatcher
                     filterChain.doFilter(request, response);
                 } else {
                     ApplicationFilterChain.servletService(
-                        request, response, servlet, wrapper.isSupportsAsync(),
+                        request, response, servlet, wrapper.isAsyncSupported(),
                         support, origRequest);
                 }
                 // END IASRI 4665318

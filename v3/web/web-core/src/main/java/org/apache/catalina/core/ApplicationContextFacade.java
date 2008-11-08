@@ -80,6 +80,7 @@ import java.util.logging.*;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
+import javax.servlet.AsyncDispatcher;
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.RequestDispatcher;
@@ -600,6 +601,15 @@ public final class ApplicationContextFacade
      */
     public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return context.getEffectiveSessionTrackingModes();
+    }
+
+
+    /**
+     * Returns an AsyncDispatcher object that acts
+     * as a wrapper for the resource located at the given path.
+     */
+    public AsyncDispatcher getAsyncDispatcher(String path) {
+        return context.getAsyncDispatcher(path);
     }
 
 

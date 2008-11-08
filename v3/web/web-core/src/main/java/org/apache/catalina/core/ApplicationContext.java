@@ -75,6 +75,7 @@ import java.security.SecurityPermission;
 import javax.naming.Binding;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.servlet.AsyncDispatcher;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -1135,6 +1136,16 @@ public class ApplicationContext
      */
     public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return context.getEffectiveSessionTrackingModes();
+    }
+
+
+    /**
+     * Returns an AsyncDispatcher object that acts
+     * as a wrapper for the resource located at the given path.
+     */
+    public AsyncDispatcher getAsyncDispatcher(String path) {
+        return new AsyncDispatcherImpl(
+            (ApplicationDispatcher)getRequestDispatcher(path));
     }
 
 

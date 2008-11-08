@@ -81,15 +81,19 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.logging.*;
+
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
-
 import javax.security.auth.Subject;
+
+import javax.servlet.AsyncDispatcher;
+import javax.servlet.AsyncListener;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestAttributeEvent;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletResponse;
@@ -525,7 +529,9 @@ public class Request
 
     private String requestURI = null;
 
-    private boolean supportsAsync = false;
+    private boolean isAsyncSupported = false;
+
+    private boolean isAsyncStarted = false;
 
     /**
      * Associated context.
@@ -3743,24 +3749,115 @@ public class Request
 
 
     /**
-     * Disables async support on this request.
+     * Starts async processing on this request.
      */
-    public void disableAsyncSupport() {
-        supportsAsync = false;
+    public void startAsync() throws IllegalStateException {
+        startAsync(null);
     }
 
 
     /**
-     * Tests whether this request supports async mode.
+     * Starts async processing on this request.
+     */
+    public void startAsync(Runnable runnable) throws IllegalStateException {
+        if (!isAsyncSupported()) {
+            throw new IllegalStateException("Async not supported for this " +
+                                            "request");
+        }
+
+        isAsyncStarted = true;
+
+        // TBD
+    }
+        
+
+    /**
+     * Checks whether async processing has started on this request.
+     */
+    public boolean isAsyncStarted() {
+        return isAsyncStarted;
+    }
+
+
+    /**
+     * Completes any async processing on this request, causing the response
+     * to be committed.
+     */
+    public void doneAsync() {
+        if (!isAsyncStarted) {
+            throw new IllegalStateException("startAsync not called");
+        }
+
+        isAsyncStarted = false;
+
+        // TBD
+    }
+
+
+    /**
+     * Disables async support for this request.
      *
-     * Async mode is disabled as soon as the request has passed a filter
+     * Async support is disabled as soon as this request has passed a filter
      * or servlet that does not support async (either via the designated
      * annotation or declaratively).
-     *
-     * @return true if this request supports async mode, false otherwise
+     */
+    public void disableAsyncSupport() {
+        isAsyncSupported = false;
+    }
+
+
+    /**
+     * Checks whether this request supports async.
      */
     public boolean isAsyncSupported() {
-        return supportsAsync;
+        return isAsyncSupported;
+    }
+
+
+    /**
+     * Obtains an AsyncDispatcher for the original URI to which this request
+     * was first dispatched.
+     */
+    public AsyncDispatcher getAsyncDispatcher() {
+        return getAsyncDispatcher(getServletPath() + getPathInfo());
+    }
+
+
+    /**
+     * Obtains an AsyncDispatcher for the given path.
+     */
+    public AsyncDispatcher getAsyncDispatcher(String path) {
+
+        if (path == null) {
+            throw new IllegalArgumentException("Missing path");
+        }
+
+        if (servletContext == null) {
+            return null;
+        }
+
+        return servletContext.getAsyncDispatcher(path);
+    }
+
+
+    /**
+     * Registers the given AsyncListener with this request.
+     *
+     * If async processing is started on this request, an AsyncEvent
+     * containing the given (possibly wrapped) ServletRequest and
+     * ServletResponse objects will be sent to the AsyncListener 
+     * when the async processing has completed or timed out.
+     * 
+     * @param listener the AsyncListener to be registered
+     * @param servletRequest the (possibly wrapped) ServletRequest object
+     * that will be passed to the AsyncListener as part of the AsyncEvent 
+     * @param servletResponse the (possibly wrapped) ServletResponse object
+     * that will be passed to the AsyncListener as part of the AsyncEvent 
+     */
+    public void addAsyncListener(AsyncListener listener,
+                                 ServletRequest servletRequest,
+                                 ServletResponse servletResponse) {
+        // TBD
     }
 
 

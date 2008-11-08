@@ -423,13 +423,13 @@ public interface Request {
 
 
     /**
-     * Tests whether this request supports async mode.
+     * Checks whether this request supports async processing.
      *
-     * Async mode is disabled as soon as the request has passed a filter
-     * or servlet that does not support async (either via the designated
-     * annotation or declaratively).
+     * Async support will be disabled as soon as this request has passed a
+     * filter or servlet that does not support async processing (either
+     * via the designated annotation or declaratively).
      *
-     * @return true if this request supports async mode, false otherwise
+     * @return true if this request supports async processing, false otherwise
      */
     public boolean isAsyncSupported();
 }

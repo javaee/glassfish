@@ -70,6 +70,8 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Locale;
 import java.net.Socket;
+import javax.servlet.AsyncDispatcher;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -1033,6 +1035,102 @@ public class RequestFacade
         }
 
         return request.getRemotePort();
+    }
+
+
+    /**
+     * Starts async processing on this request.
+     */
+    public void startAsync() throws IllegalStateException {
+        startAsync(null);
+    }
+
+
+    /**
+     * Starts async processing on this request.
+     */
+    public void startAsync(Runnable runnable) throws IllegalStateException {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.startAsync();
+    }
+        
+
+    /**
+     * Checks whether async processing has started on this request.
+     */
+    public boolean isAsyncStarted() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.isAsyncStarted();
+    }
+
+
+    /**
+     * Completes any async processing on this request, causing the response
+     * to be committed.
+     */
+    public void doneAsync() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.doneAsync();
+    }
+
+
+    /**
+     * Checks whether this request supports async.
+     */
+    public boolean isAsyncSupported() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.isAsyncSupported();
+    }
+
+
+    /**
+     * Obtains an AsyncDispatcher for the original URI to which this request
+     * was first dispatched.
+     */
+    public AsyncDispatcher getAsyncDispatcher() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getAsyncDispatcher();
+    }
+
+
+    /**
+     * Obtains an AsyncDispatcher for the given path.
+     */
+    public AsyncDispatcher getAsyncDispatcher(String path) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getAsyncDispatcher(path);
+    }
+
+
+    /**
+     * Registers the given AsyncListener with this request.
+     */
+    public void addAsyncListener(AsyncListener listener,
+                                 ServletRequest servletRequest,
+                                 ServletResponse servletResponse) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.addAsyncListener(listener, servletRequest, servletResponse);
     }
 
 
