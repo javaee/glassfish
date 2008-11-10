@@ -200,11 +200,9 @@
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="sessionCookieConfig" target="all"/>
-        <!-- for Servlet 3.0
         <ant dir="webServletAnnotation" target="all"/>
         <ant dir="servletFilterAnnotation" target="all"/>
         <ant dir="webServletContextListenerAnnotation" target="all"/>
-        -->
     </target>
 
     <target name="web-container">
@@ -284,9 +282,7 @@
         <ant dir="extraClassPathJarUrl" target="all"/>
         <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
         <ant dir="classloaderGetResourceJarFile" target="all"/>
-        <!-- Disabled for v3 prelude
         <ant dir="classloaderGetResourcesDelegateFalse" target="all"/>
-        -->
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
